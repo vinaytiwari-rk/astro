@@ -220,6 +220,12 @@ export const HouseWisePanel: React.FC<{
                       : isHi ? 'कोई नहीं' : 'None'}
                   </span>
                 </div>
+                <div className="small-text muted" style={{ marginTop: 6 }}>
+                  <strong>{isHi ? 'उपाय:' : 'Upay / Guidance:'}</strong>{' '}
+                  {isHi
+                    ? `${trPlanet(h.lordPlanet, lang)} के मंत्र-जप एवं सात्विक दान से ${h.houseNumber}वें भाव का शुभत्व बढ़ता है।`
+                    : `Honor ${h.lordPlanet} on its weekday and cultivate discipline in House ${h.houseNumber} affairs.`}
+                </div>
               </article>
             );
           })}

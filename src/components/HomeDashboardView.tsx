@@ -228,15 +228,27 @@ export const HomeDashboardView: React.FC<HomeDashboardViewProps> = ({
   // Upcoming Festivals / Ekadashi / Purnima / Sankranti (next 6 from today)
   const upcomingFestivals = useMemo(() => {
     const yr = nowClock.getFullYear();
-    const list = computeAnnualHinduCalendar(yr, settings.ayanamsa, livePanchangChart.offsetMinutesUsed);
+    const list = computeAnnualHinduCalendar(
+      yr,
+      settings.ayanamsa,
+      livePanchangChart.offsetMinutesUsed,
+      panchangLoc.latitude,
+      panchangLoc.longitude
+    );
     const nextYrList =
       nowClock.getMonth() >= 10
-        ? computeAnnualHinduCalendar(yr + 1, settings.ayanamsa, livePanchangChart.offsetMinutesUsed)
+        ? computeAnnualHinduCalendar(
+            yr + 1,
+            settings.ayanamsa,
+            livePanchangChart.offsetMinutesUsed,
+            panchangLoc.latitude,
+            panchangLoc.longitude
+          )
         : [];
     return [...list, ...nextYrList]
       .filter((e) => e.date >= currentMoment.date)
       .slice(0, 6);
-  }, [nowClock, settings.ayanamsa, livePanchangChart.offsetMinutesUsed, currentMoment.date]);
+  }, [nowClock, settings.ayanamsa, livePanchangChart.offsetMinutesUsed, panchangLoc.latitude, panchangLoc.longitude, currentMoment.date]);
 
   // --- Row 3: Live Rashifal Selector ---
   const [rashifalPeriod, setRashifalPeriod] = useState<RashifalPeriod>('daily');
@@ -722,15 +734,16 @@ export const HomeDashboardView: React.FC<HomeDashboardViewProps> = ({
 
             <div className="portal-panchang-rows">
               <div className="panchang-kv">
-                <span>{isHi ? 'वार / मास' : 'Vara / Lunar Month'}</span>
+                <span>{isHi ? 'वार / मास / ऋतु' : 'Vara / Lunar Month / Ritu'}</span>
                 <strong>
-                  {pan.vara.name} · {isHi ? deepPanchangNow.activeMasaHi : deepPanchangNow.activeMasaEn}
+                  {trTerm(pan.vara.name, lang)} · {isHi ? deepPanchangNow.activeMasaHi : deepPanchangNow.activeMasaEn} ·{' '}
+                  <span className="muted small-text">{isHi ? deepPanchangNow.rituHi : deepPanchangNow.rituEn}</span>
                 </strong>
               </div>
               <div className="panchang-kv is-highlight">
                 <span>{isHi ? 'तिथि एवं पक्ष' : 'Tithi & Paksha'}</span>
                 <strong>
-                  {pan.tithi.name} ({pan.tithi.paksha}) · {pan.tithi.percentRemaining}% {isHi ? 'शेष' : 'left'}
+                  {trTerm(pan.tithi.name, lang)} ({trTerm(pan.tithi.paksha, lang)}) · {pan.tithi.percentRemaining}% {isHi ? 'शेष' : 'left'}
                 </strong>
               </div>
               <div className="panchang-kv">
@@ -742,7 +755,7 @@ export const HomeDashboardView: React.FC<HomeDashboardViewProps> = ({
               <div className="panchang-kv">
                 <span>{isHi ? 'योग / करण' : 'Yoga / Karana'}</span>
                 <strong>
-                  {pan.yoga.name} / {pan.karana.name}
+                  {trTerm(pan.yoga.name, lang)} / {trTerm(pan.karana.name, lang)}
                 </strong>
               </div>
               <div className="panchang-kv">

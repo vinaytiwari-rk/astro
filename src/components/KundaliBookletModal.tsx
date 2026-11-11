@@ -27,6 +27,7 @@ import {
 } from '../i18n/translations';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 import { VedicChartSvg } from './VedicChartSvg';
+import { PatrikaBookFullPrintEdition } from './predictions/PatrikaBookContent';
 
 interface KundaliBookletModalProps {
   open: boolean;
@@ -774,6 +775,13 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
           </section>
             </>
           )}
+
+          <PatrikaBookFullPrintEdition
+            chart={chart}
+            chartStyle={chartStyle}
+            report={report}
+            language={language}
+          />
 
           {branding.enabled && (branding.footerNote || branding.kendraName) && (
             <footer className="booklet-footer">

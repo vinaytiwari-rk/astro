@@ -33,6 +33,7 @@ import {
   PlanetInSignPanel,
 } from './predictions/PlanetSignNakshatraPanels';
 import { AdvancedTechniquesPanel } from './predictions/AdvancedTechniquesPanel';
+import { PredictionsPatrikaFrame } from './predictions/PatrikaBookContent';
 import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { YutiPanel } from './predictions/YutiPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
@@ -394,7 +395,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
       {report.paramayus.exceeded ? (
         <ParamayusLockBanner status={report.paramayus} />
       ) : (
-        <>
+        <PredictionsPatrikaFrame chart={chart} report={report}>
           {subTab === 'eventsLedger' && <LifeEventsLedgerPanel ledger={report.lifeEventsLedger} />}
           {subTab === 'pastFuture' && report.pastFutureLife && (
             <PastLifeFuturePanel report={report.pastFutureLife} />
@@ -443,7 +444,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
           }
         />
       )}
-        </>
+        </PredictionsPatrikaFrame>
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 import { CHALDEAN_ORDER, NAKSHATRAS, SIGNS, VARA_INFO } from './constants';
 import { calculateChart } from './calculator';
 import { computeSunriseSunsetForLocalDay } from './ephemeris';
-import { formatDateDmy, formatLocalTimeFromUtc } from './time';
+import { computeAnnualHinduCalendar } from './panchangExtra';
+import { formatDateDmy, formatLocalTimeFromUtc, resolveUtcFromBirth } from './time';
 import type { BirthInput, CalcSettings, SevenPlanetId } from './types';
 
 export interface DoGhatiSlot {
@@ -227,32 +228,65 @@ export function computeMonthlyPanchang(
   settings: CalcSettings
 ): MonthlyPanchangDay[] {
   const daysInMonth = new Date(Date.UTC(year, month1to12, 0)).getUTCDate();
+  const baseOffset = resolveUtcFromBirth(
+    `${year}-${String(month1to12).padStart(2, '0')}-01`,
+    '06:00:00',
+    baseInput.timezone,
+    baseInput.utcOffsetMinutes
+  ).offsetMinutes;
+  const annualEvents = computeAnnualHinduCalendar(
+    year,
+    settings.ayanamsa,
+    baseOffset,
+    baseInput.latitude,
+    baseInput.longitude
+  );
+  const eventsByDate = new Map<string, typeof annualEvents>();
+  for (const ev of annualEvents) {
+    const arr = eventsByDate.get(ev.date) ?? [];
+    arr.push(ev);
+    eventsByDate.set(ev.date, arr);
+  }
+
   const list: MonthlyPanchangDay[] = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const isoDate = `${year}-${String(month1to12).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const tzOff = resolveUtcFromBirth(
+      isoDate,
+      '06:00:00',
+      baseInput.timezone,
+      baseInput.utcOffsetMinutes
+    ).offsetMinutes;
+    const noonUtc = Date.UTC(year, month1to12 - 1, d, 12, 0, 0) - tzOff * 60_000;
+    const sunTimes = computeSunriseSunsetForLocalDay(noonUtc, tzOff, baseInput.latitude, baseInput.longitude);
+    const srMs = sunTimes.sunriseMs ?? Date.UTC(year, month1to12 - 1, d, 6, 0, 0) - tzOff * 60_000;
+    // Evaluate Panchang exactly 1 minute after local Sunrise for true Udaya Tithi & Nakshatra
+    const srLocalStr = formatLocalTimeFromUtc(srMs + 60_000, tzOff, true);
+    const timeForSunrise = srLocalStr.length === 8 ? srLocalStr : '06:30:00';
+
     const c = calculateChart(
-      { ...baseInput, id: `mp-${isoDate}`, name: 'Monthly Panchang', date: isoDate, time: '08:00:00' },
+      { ...baseInput, id: `mp-${isoDate}`, name: 'Monthly Panchang', date: isoDate, time: timeForSunrise },
       settings
     );
     const p = c.panchang;
     const tNum = p.tithi.number;
-    let highlightTagEn: string | null = null;
-    let highlightTagHi: string | null = null;
-    if (tNum === 11 || tNum === 26) {
-      highlightTagEn = 'Ekadashi';
-      highlightTagHi = 'एकादशी व्रत';
-    } else if (tNum === 13 || tNum === 28) {
-      highlightTagEn = 'Pradosh';
-      highlightTagHi = 'प्रदोष व्रत';
-    } else if (tNum === 15) {
-      highlightTagEn = 'Purnima';
-      highlightTagHi = 'पूर्णिमा';
-    } else if (tNum === 30) {
-      highlightTagEn = 'Amavasya';
-      highlightTagHi = 'अमावस्या';
-    } else if (tNum === 19 || tNum === 4) {
-      highlightTagEn = 'Chaturthi';
-      highlightTagHi = 'चतुर्थी';
+    const dayEvs = eventsByDate.get(isoDate) ?? [];
+    const primaryEv =
+      dayEvs.find((e) => e.category === 'festival') ??
+      dayEvs.find((e) => e.category === 'ekadashi') ??
+      dayEvs.find((e) => e.category === 'sankranti') ??
+      dayEvs[0];
+
+    let highlightTagEn: string | null = primaryEv ? primaryEv.nameEn : null;
+    let highlightTagHi: string | null = primaryEv ? primaryEv.nameHi : null;
+    if (!highlightTagEn) {
+      if (tNum === 13 || tNum === 28) {
+        highlightTagEn = 'Pradosh';
+        highlightTagHi = 'प्रदोष व्रत';
+      } else if (tNum === 19 || tNum === 4) {
+        highlightTagEn = 'Chaturthi';
+        highlightTagHi = 'चतुर्थी';
+      }
     }
 
     list.push({

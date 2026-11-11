@@ -44,7 +44,7 @@ import {
   trBadge,
 } from '../i18n/hindiPredictions';
 import { useLanguage } from '../i18n/LanguageContext';
-import { trPlanet, trPlanetShort } from '../i18n/translations';
+import { trPlanet, trPlanetShort, trTerm } from '../i18n/translations';
 import { DateDmyInput } from './DateDmyInput';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
@@ -205,8 +205,15 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
   const [festYear, setFestYear] = useState<number>(() => new Date().getFullYear());
   const [festCat, setFestCat] = useState<'all' | 'festival' | 'ekadashi' | 'sankranti' | 'purnima_amavasya'>('festival');
   const hinduEvents = useMemo(
-    () => computeAnnualHinduCalendar(festYear, settings.ayanamsa, chart.offsetMinutesUsed),
-    [festYear, settings.ayanamsa, chart.offsetMinutesUsed]
+    () =>
+      computeAnnualHinduCalendar(
+        festYear,
+        settings.ayanamsa,
+        chart.offsetMinutesUsed,
+        chart.input.latitude,
+        chart.input.longitude
+      ),
+    [festYear, settings.ayanamsa, chart.offsetMinutesUsed, chart.input.latitude, chart.input.longitude]
   );
   const filteredFestivals = useMemo(
     () => (festCat === 'all' ? hinduEvents : hinduEvents.filter((e) => e.category === festCat)),
@@ -254,72 +261,85 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
 
   return (
     <div className="view-stack">
-      <div className="charts-toolbar">
-        <div className="subtab-bar">
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'btr' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('btr')}
-          >
-            <Clock size={13} /> {t.toolsTabs.btr}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'avasthas' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('avasthas')}
-          >
-            <Flame size={13} /> {t.toolsTabs.avasthas}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'panchapakshi' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('panchapakshi')}
-          >
-            <Feather size={13} /> {lang === 'hi' ? 'पंच पक्षी शास्त्र' : 'Pancha Pakshi (5-Bird)'}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'deep_panchang' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('deep_panchang')}
-          >
-            <ShieldCheck size={13} />{' '}
-            {lang === 'hi' ? 'संवत्सर, दिशाशूल, वास व मुहूर्त योग' : 'Samvatsara · Shoola/Vaasa · Muhurta'}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'muhurta' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('muhurta')}
-          >
-            <Search size={13} /> {t.toolsTabs.muhurta}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'calendar' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('calendar')}
-          >
-            <Calendar size={13} /> {t.toolsTabs.calendar}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'do_ghati' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('do_ghati')}
-          >
-            <Clock size={13} /> {lang === 'hi' ? 'दो-घटी मुहूर्त (30)' : 'Do Ghati Muhurat'}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'hora_24' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('hora_24')}
-          >
-            <Clock size={13} /> {lang === 'hi' ? '24 घंटे होरा कैलकुलेटर' : 'Hora Calculator (24h)'}
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn ${subTab === 'monthly_panchang' ? 'is-active' : ''}`}
-            onClick={() => setSubTab('monthly_panchang')}
-          >
-            <Calendar size={13} /> {lang === 'hi' ? 'मासिक पंचांग' : 'Monthly Panchang'}
-          </button>
+      <div className="tools-grouped-bar">
+        <div className="tools-group-row">
+          <span className="tools-group-label">
+            {lang === 'hi' ? 'कुंडली एवं सूक्ष्म काल' : 'Natal & Subtle Timing'}
+          </span>
+          <div className="tools-group-pills">
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'btr' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('btr')}
+            >
+              <Clock size={13} /> {t.toolsTabs.btr}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'avasthas' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('avasthas')}
+            >
+              <Flame size={13} /> {t.toolsTabs.avasthas}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'panchapakshi' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('panchapakshi')}
+            >
+              <Feather size={13} /> {lang === 'hi' ? 'पंच पक्षी शास्त्र' : 'Pancha Pakshi (5-Bird)'}
+            </button>
+          </div>
+        </div>
+
+        <div className="tools-group-row">
+          <span className="tools-group-label">
+            {lang === 'hi' ? 'पंचांग, होरा व मुहूर्त' : 'Panchang, Hora & Calendars'}
+          </span>
+          <div className="tools-group-pills">
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'deep_panchang' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('deep_panchang')}
+            >
+              <ShieldCheck size={13} />{' '}
+              {lang === 'hi' ? 'संवत्सर, शूल व वास' : 'Samvatsara · Shoola/Vaasa'}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'do_ghati' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('do_ghati')}
+            >
+              <Clock size={13} /> {lang === 'hi' ? 'दो-घटी मुहूर्त (30)' : 'Do Ghati Muhurat'}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'hora_24' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('hora_24')}
+            >
+              <Clock size={13} /> {lang === 'hi' ? '24 घंटे होरा' : '24h Hora'}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'monthly_panchang' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('monthly_panchang')}
+            >
+              <Calendar size={13} /> {lang === 'hi' ? 'मासिक पंचांग' : 'Monthly Panchang'}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'muhurta' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('muhurta')}
+            >
+              <Search size={13} /> {t.toolsTabs.muhurta}
+            </button>
+            <button
+              type="button"
+              className={`subtab-btn ${subTab === 'calendar' ? 'is-active' : ''}`}
+              onClick={() => setSubTab('calendar')}
+            >
+              <Calendar size={13} /> {t.toolsTabs.calendar}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1286,10 +1306,10 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
                         </div>
                       )}
                     </td>
-                    <td>{row.weekday}</td>
-                    <td>{row.tithi}</td>
-                    <td>{row.nakshatra}</td>
-                    <td>{row.yoga}</td>
+                    <td>{trTerm(row.weekday, lang)}</td>
+                    <td>{row.tithi.split(' (').map((part) => trTerm(part.replace(')', ''), lang)).join(' · ')}</td>
+                    <td>{trTerm(row.nakshatra, lang)}</td>
+                    <td>{trTerm(row.yoga, lang)}</td>
                     <td className="mono">{row.sunrise} / {row.sunset}</td>
                     <td className="mono">{row.rahuKalam}</td>
                   </tr>

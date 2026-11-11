@@ -37,6 +37,7 @@ import {
   compute24HourHoraTable,
   computeChineseHoroscope,
   computeDoGhatiMuhurta,
+  computeMonthlyPanchang,
   computeShivaSwarodaya,
 } from '../vedicUtilities';
 import {
@@ -69,6 +70,7 @@ import {
   getKpHoraryLongitude,
 } from '../predictions/dashaPrashna';
 import { generatePredictionReport } from '../predictions/engine';
+import { computePatrikaBookData } from '../predictions/patrikaBook';
 import { inspectHypotheticalNakshatra } from '../predictions/planetInNakshatra';
 import { inspectHypotheticalPlanetInSign } from '../predictions/planetInSign';
 import { inspectCustomYuti } from '../predictions/yutiPredictions';
@@ -1014,5 +1016,89 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const oldSheet = computeBasicDetailsSheet(oldChart);
     expect(oldSheet.paramayusLocked).toBe(true);
     expect(oldSheet.favourablePoints.find((r) => r.key === 'good_years')!.valueEn).toContain('Locked');
+  });
+
+  it('computes complete 34-chapter Patrika Book dataset (bilingual, Shodhana, Dasha Support Index, 12 House chapters & Paramayus enforcement)', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const report = generatePredictionReport(chart, '2026-11-11');
+    const book = computePatrikaBookData(chart, '2026-11-11', report);
+
+    expect(book.paramayusLocked).toBe(false);
+    expect(book.shodashaDeities.length).toBe(20);
+    expect(book.vaiseshikamsha.length).toBe(7);
+    expect(book.savAnalysis.houses.length).toBe(12);
+    expect(book.savAnalysis.shodhana.length).toBe(7);
+    expect(book.savAnalysis.lifeAreas.length).toBe(7);
+    expect(book.savAnalysis.oppositeBalance.length).toBe(6);
+    expect(book.avasthaNarratives.length).toBe(9);
+    expect(book.avasthaNarratives[0].interpretationHi).toMatch(/[\u0900-\u097F]/);
+
+    // Dasha support index -100..+100 across 9 planets
+    expect(book.dashaSupportIndex.rows.length).toBe(9);
+    for (const row of book.dashaSupportIndex.rows) {
+      expect(row.average).toBeGreaterThanOrEqual(-100);
+      expect(row.average).toBeLessThanOrEqual(100);
+    }
+
+    // Master Horoscope Ch 28: 6 Lagna parts, 4 Asc Divisional readings, 12 House Chapters
+    expect(book.horoscopeChapters.lagnaSections.length).toBe(6);
+    expect(book.horoscopeChapters.ascDivisionalReadings.length).toBe(4);
+    expect(book.horoscopeChapters.houseChapters.length).toBe(12);
+    expect(book.horoscopeChapters.houseChapters[0].topicReadingHi).toMatch(/[\u0900-\u097F]/);
+    expect(book.horoscopeChapters.rahuKetuNakshatra.rahuReadingHi).toMatch(/[\u0900-\u097F]/);
+    expect(book.horoscopeChapters.gochar10Years.length).toBeGreaterThan(0);
+
+    // >120yr Paramayus chart clears predictive 10-yr Gochar and sets lock
+    const historic = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const histRep = generatePredictionReport(historic, '2026-11-11');
+    const histBook = computePatrikaBookData(historic, '2026-11-11', histRep);
+    expect(histBook.paramayusLocked).toBe(true);
+    expect(histBook.horoscopeChapters.gochar10Years.length).toBe(0);
+  });
+
+  it('computes accurate Drik Panchang Ritu, Adhika Masa, sunrise-based Monthly Panchang & 2026-2027 Hindu Festival Dates', () => {
+    const chart2026 = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+
+    // 1. Kartika (Nov 11, 2026) Ritu must be Sharad (Autumn), not Varsha (Monsoon)
+    const nov11Deep = computeDeepPanchangMuhurta('2026-11-11', '12:00:00', 28.6139, 77.209, 330, DEFAULT_SETTINGS, 'purnimanta');
+    expect(nov11Deep.rituEn).toContain('Sharad');
+    expect(nov11Deep.activeMasaEn).toBe('Kartika');
+
+    // 2. Adhika Jyeshtha detection (June 5, 2026)
+    const adhikaDeep = computeDeepPanchangMuhurta('2026-06-05', '12:00:00', 28.6139, 77.209, 330, DEFAULT_SETTINGS, 'purnimanta');
+    expect(adhikaDeep.isAdhikaMasa).toBe(true);
+    expect(adhikaDeep.activeMasaEn).toContain('Adhika Jyeshtha');
+
+    // 3. 2026 Major Festivals verified against Dharma-Shastra Kaals
+    const cal2026 = computeAnnualHinduCalendar(2026, 'lahiri', 330);
+    const findDate = (list: typeof cal2026, needle: string) =>
+      list.find((e) => e.nameEn.includes(needle))?.date;
+
+    expect(findDate(cal2026, 'Makar Sankranti')).toBe('2026-01-14');
+    expect(findDate(cal2026, 'Maha Shivratri')).toBe('2026-02-15');
+    expect(findDate(cal2026, 'Chaitra Navratri')).toBe('2026-03-19');
+    expect(findDate(cal2026, 'Rama Navami')).toBe('2026-03-26');
+    expect(findDate(cal2026, 'Hanuman Jayanti')).toBe('2026-04-02');
+    expect(findDate(cal2026, 'Raksha Bandhan')).toBe('2026-08-28');
+    expect(findDate(cal2026, 'Krishna Janmashtami')).toBe('2026-09-04');
+    expect(findDate(cal2026, 'Ganesh Chaturthi')).toBe('2026-09-14');
+    expect(findDate(cal2026, 'Dhanteras')).toBe('2026-11-06');
+    expect(findDate(cal2026, 'Diwali / Deepavali')).toBe('2026-11-08');
+    expect(findDate(cal2026, 'Govardhan Puja')).toBe('2026-11-10');
+    expect(findDate(cal2026, 'Bhai Dooj')).toBe('2026-11-11');
+
+    // 4. 2027 Major Festivals
+    const cal2027 = computeAnnualHinduCalendar(2027, 'lahiri', 330);
+    expect(findDate(cal2027, 'Makar Sankranti')).toBe('2027-01-15');
+    expect(findDate(cal2027, 'Maha Shivratri')).toBe('2027-03-06');
+    expect(findDate(cal2027, 'Chaitra Navratri')).toBe('2027-04-07');
+    expect(findDate(cal2027, 'Sharad Navratri')).toBe('2027-09-30');
+    expect(findDate(cal2027, 'Diwali / Deepavali')).toBe('2027-10-29');
+    expect(findDate(cal2027, 'Bhai Dooj')).toBe('2027-10-31');
+
+    // 5. Sunrise-anchored Monthly Panchang overlays Festivals cleanly
+    const nov2026 = computeMonthlyPanchang(2026, 11, { ...chart2026.input, latitude: 28.6139, longitude: 77.209 }, DEFAULT_SETTINGS);
+    expect(nov2026.find((d) => d.isoDate === '2026-11-08')?.highlightTagEn).toContain('Diwali');
+    expect(nov2026.find((d) => d.isoDate === '2026-11-11')?.highlightTagEn).toContain('Bhai Dooj');
   });
 });

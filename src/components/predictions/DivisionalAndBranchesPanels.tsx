@@ -173,61 +173,59 @@ export const BranchesAndNumerologyPanel: React.FC<{
 
   return (
     <div className="view-stack">
-      <div className="charts-toolbar">
-        <div className="subtab-bar">
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'numerology' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('numerology')}
-          >
-            <Grid3x3 size={14} />
-            <span>{isHi ? 'अंक ज्योतिष व लो शु ग्रिड' : 'Numerology & Lo Shu Grid'}</span>
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'life_branches' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('life_branches')}
-          >
-            <Compass size={14} />
-            <span>{isHi ? 'जीवन शाखाएँ (वित्त/करियर/विवाह/रोग)' : 'Vedic Branches (Wealth/Career/Medical)'}</span>
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'kp' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('kp')}
-          >
-            <Star size={14} />
-            <span>{isHi ? 'KP पध्दति व रूलिंग प्लैनेट्स' : 'KP System & Ruling Planets'}</span>
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'lal_kitab' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('lal_kitab')}
-          >
-            <Flame size={14} />
-            <span>{isHi ? 'लाल किताब (टेवा व 35-Yr दशा)' : 'Lal Kitab System'}</span>
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'varshaphala_jaimini' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('varshaphala_jaimini')}
-          >
-            <Layers size={14} />
-            <span>{isHi ? 'ताजिक वर्षफल (16 सहम) व जैमिनी' : 'Varshaphala & Jaimini'}</span>
-          </button>
-          <button
-            type="button"
-            className={`subtab-btn branch-btn ${branchMode === 'doshas_remedies' ? 'is-active' : ''}`}
-            onClick={() => setBranchMode('doshas_remedies')}
-          >
-            <ShieldCheck size={14} />
-            <span>
-              {isHi
-                ? `दोष (${report.kundaliDoshas.presentCount}), उपाय व रत्न`
-                : `Doshas (${report.kundaliDoshas.presentCount}), Remedies & Gems`}
-            </span>
-          </button>
-        </div>
+      <div className="branch-grid-bar" role="tablist" aria-label="Astrology Branch Sections">
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'numerology' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('numerology')}
+        >
+          <Grid3x3 size={14} />
+          <span>{isHi ? 'अंक ज्योतिष व लो शु' : 'Numerology & Lo Shu'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'life_branches' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('life_branches')}
+        >
+          <Compass size={14} />
+          <span>{isHi ? 'जीवन शाखाएँ (वित्त/रोग)' : 'Vedic Life Branches'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'kp' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('kp')}
+        >
+          <Star size={14} />
+          <span>{isHi ? 'KP व रूलिंग प्लैनेट्स' : 'KP & Ruling Planets'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'lal_kitab' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('lal_kitab')}
+        >
+          <Flame size={14} />
+          <span>{isHi ? 'लाल किताब (टेवा/उपाय)' : 'Lal Kitab System'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'varshaphala_jaimini' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('varshaphala_jaimini')}
+        >
+          <Layers size={14} />
+          <span>{isHi ? 'वर्षफल व जैमिनी' : 'Varshaphala & Jaimini'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'doshas_remedies' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('doshas_remedies')}
+        >
+          <ShieldCheck size={14} />
+          <span>
+            {isHi
+              ? `दोष (${report.kundaliDoshas.presentCount}), उपाय व रत्न`
+              : `Doshas (${report.kundaliDoshas.presentCount}) & Remedies`}
+          </span>
+        </button>
       </div>
 
       {/* 1. NUMEROLOGY & LO SHU GRID */}

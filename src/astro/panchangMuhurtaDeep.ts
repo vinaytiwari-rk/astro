@@ -334,16 +334,18 @@ export function computeDeepPanchangMuhurta(
   const sun = momentChart.planets.find((p) => p.id === 'Sun')!;
   const utcMs = Date.parse(momentChart.utcIso);
 
-  // Weekday (0=Sun..6=Sat)
+  // Sunrise-based Vedic Weekday (0=Sun..6=Sat)
   const [yr, mo, dy] = dateStr.split('-').map((n) => parseInt(n, 10));
-  const weekdayIdx = new Date(Date.UTC(yr, mo - 1, dy)).getUTCDay();
+  const varaNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const parsedVara = varaNames.indexOf(momentChart.panchang.vara.name);
+  const weekdayIdx = parsedVara >= 0 ? parsedVara : new Date(Date.UTC(yr, mo - 1, dy)).getUTCDay();
 
-  // Amanta vs Purnimanta Lunar Month & Adhika Masa detection
+  // Amanta vs Purnimanta Lunar Month & Adhika Masa detection via exact New Moon bounds
   let prevNmMs = utcMs - 15 * 86400_000;
   let nextNmMs = utcMs + 15 * 86400_000;
   try {
-    const prevSearch = Astronomy.SearchMoonPhase(0, new Date(utcMs), -35);
-    const nextSearch = Astronomy.SearchMoonPhase(0, new Date(utcMs + 120_000), 35);
+    const prevSearch = Astronomy.SearchMoonPhase(0, new Date(utcMs + 60_000), -35);
+    const nextSearch = Astronomy.SearchMoonPhase(0, new Date(utcMs + 180_000), 35);
     if (prevSearch) prevNmMs = prevSearch.date.getTime();
     if (nextSearch) nextNmMs = nextSearch.date.getTime();
   } catch {
@@ -356,10 +358,21 @@ export function computeDeepPanchangMuhurta(
 
   // Chaitra = Sun in Pisces (11) at New Moon => +1 mod 12
   const amantaIdx = (sunSignAtPrevNm + 1) % 12;
-  const purnimantaIdx = paksha === 'Krishna' ? (amantaIdx + 1) % 12 : amantaIdx;
+  // During an Adhika Masa both Shukla & Krishna halves bear that Adhika month name
+  const purnimantaIdx = isAdhikaMasa
+    ? amantaIdx
+    : paksha === 'Krishna'
+      ? (amantaIdx + 1) % 12
+      : amantaIdx;
 
-  const amantaMasa = HINDU_MASAS[amantaIdx];
-  const purnimantaMasa = HINDU_MASAS[purnimantaIdx];
+  const amantaBase = HINDU_MASAS[amantaIdx];
+  const purnimantaBase = HINDU_MASAS[purnimantaIdx];
+  const amantaMasa = isAdhikaMasa
+    ? { ...amantaBase, en: `Adhika ${amantaBase.en}`, hi: `अधिक ${amantaBase.hi}` }
+    : amantaBase;
+  const purnimantaMasa = isAdhikaMasa
+    ? { ...purnimantaBase, en: `Adhika ${purnimantaBase.en}`, hi: `अधिक ${purnimantaBase.hi}` }
+    : purnimantaBase;
   const activeMasa = lunarSystem === 'amanta' ? amantaMasa : purnimantaMasa;
 
   // Era Years (Vikram Samvat & Shaka Samvat + 60 Samvatsara Cycle)
@@ -372,6 +385,8 @@ export function computeDeepPanchangMuhurta(
   const sam = SAMVATSARA_60[samIdx];
 
   // Ritu & Ayana from Sun Sign (0=Aries..11=Pisces)
+  // Pisces(11)+Aries(0)=Vasanta, Taurus(1)+Gemini(2)=Grishma, Cancer(3)+Leo(4)=Varsha,
+  // Virgo(5)+Libra(6)=Sharad, Scorpio(7)+Sagittarius(8)=Hemanta, Capricorn(9)+Aquarius(10)=Shishira
   const ss = sun.signIndex;
   const rituMap: Array<{ en: string; hi: string }> = [
     { en: 'Vasanta (Spring)', hi: 'वसंत ऋतु' },
@@ -387,7 +402,7 @@ export function computeDeepPanchangMuhurta(
     { en: 'Shishira (Winter)', hi: 'शिशिर ऋतु' },
     { en: 'Shishira (Winter)', hi: 'शिशिर ऋतु' },
   ];
-  const ritu = rituMap[(ss + 11) % 12]; // Pisces/Aries=Vasanta..Aquarius=Shishira
+  const ritu = rituMap[(ss + 1) % 12];
   const isUttarayana = ss >= 9 || ss <= 2; // Makara..Mithuna
 
   // Special Tithi Identity (amavasya_purnima_naming_taxonomy.json MIT)

@@ -331,14 +331,23 @@ export function computeSunriseSunsetForLocalDay(
     nextSunriseMs = nextSr ? nextSr.date.getTime() : sunriseMs + 86_400_000;
   }
 
+  const moonriseMs =
+    moonrise && moonrise.date.getTime() < localMidnightUtcMs + 86_400_000
+      ? moonrise.date.getTime()
+      : null;
+  const moonsetMs =
+    moonset && moonset.date.getTime() < localMidnightUtcMs + 86_400_000
+      ? moonset.date.getTime()
+      : null;
+
   return {
     sunriseMs,
     sunsetMs,
     vedicSunriseMs,
     vedicSunsetMs,
     nextSunriseMs,
-    moonriseMs: moonrise ? moonrise.date.getTime() : null,
-    moonsetMs: moonset ? moonset.date.getTime() : null,
+    moonriseMs,
+    moonsetMs,
   };
 }
 

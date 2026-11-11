@@ -169,6 +169,12 @@ export function App() {
     }
   }, [settings]);
 
+  useEffect(() => {
+    const onOpenBooklet = () => setBookletOpen(true);
+    window.addEventListener('jyotish:open-booklet', onOpenBooklet);
+    return () => window.removeEventListener('jyotish:open-booklet', onOpenBooklet);
+  }, []);
+
   const activeInput = useMemo(
     () => profiles.find((p) => p.id === activeId) || profiles[0],
     [profiles, activeId]
