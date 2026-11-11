@@ -7,7 +7,7 @@ import { evaluateParamayusStatus } from './predictions/paramayus';
 import { normalizeDeg } from './time';
 import type { ChartData, SevenPlanetId } from './types';
 
-export type RashifalPeriod = 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type RashifalPeriod = 'daily' | 'tomorrow' | 'weekly' | 'weekly_love' | 'monthly' | 'yearly';
 
 export interface RashiForecastItem {
   signIndex: number;
@@ -17,8 +17,12 @@ export interface RashiForecastItem {
   moodHi: string;
   dailyEn: string;
   dailyHi: string;
+  tomorrowEn: string;
+  tomorrowHi: string;
   weeklyEn: string;
   weeklyHi: string;
+  weeklyLoveEn: string;
+  weeklyLoveHi: string;
   monthlyEn: string;
   monthlyHi: string;
   yearlyEn: string;
@@ -112,12 +116,15 @@ export function computeRashifalReport(
   const time = new Astronomy.AstroTime(new Date(ms));
   const ayan = computeAyanamsaDeg(time, natalChart.settings.ayanamsa);
 
-  const signOf = (id: SevenPlanetId) => {
-    const lon = normalizeDeg(getTropicalPosition(id, time, 'mean').lon - ayan);
+  const signOf = (id: SevenPlanetId, offsetDays = 0) => {
+    const tObj = offsetDays === 0 ? time : new Astronomy.AstroTime(new Date(ms + offsetDays * 86_400_000));
+    const ay = offsetDays === 0 ? ayan : computeAyanamsaDeg(tObj, natalChart.settings.ayanamsa);
+    const lon = normalizeDeg(getTropicalPosition(id, tObj, 'mean').lon - ay);
     return Math.floor(lon / 30) % 12;
   };
 
   const tMoon = signOf('Moon');
+  const tTomorrowMoon = signOf('Moon', 1);
   const tSun = signOf('Sun');
   const tMars = signOf('Mars');
   const tMer = signOf('Mercury');
@@ -131,6 +138,7 @@ export function computeRashifalReport(
 
   return Array.from({ length: 12 }, (_, rIdx) => {
     const hMoon = hDiff(tMoon, rIdx);
+    const hTomMoon = hDiff(tTomorrowMoon, rIdx);
     const hSun = hDiff(tSun, rIdx);
     const hJup = hDiff(tJup, rIdx);
     const hSat = hDiff(tSat, rIdx);
@@ -168,6 +176,24 @@ export function computeRashifalReport(
     const yearEn = `In ${yearStr}, Jupiter in H${hJup} and Saturn in H${hSat} define major growth vs discipline pillars — ${[2, 5, 7, 9, 11].includes(hJup) ? 'strong Jupiterian expansion favors career, wisdom & finances.' : 'patient structured progress rewards steady consistency.'}`;
     const yearHi = `वर्ष ${yearStr} में बृहस्पति (${hJup}वें भाव) व शनि (${hSat}वें भाव) का गोचर मुख्य दिशा तय करेगा — ${[2, 5, 7, 9, 11].includes(hJup) ? 'गुरु का शुभ गोचर भाग्य, धन, शिक्षा व परिवार में विस्तार देगा।' : 'धैर्य, नियमबद्ध परिश्रम व बचत से स्थायी सफलता सुनिश्चित होगी।'}`;
 
+    const tomorrowEn =
+      [1, 3, 6, 7, 10, 11].includes(hTomMoon)
+        ? `Tomorrow's Moon transits auspicious House ${hTomMoon} from your Rashi — excellent momentum for meetings, travel & joyful progress.`
+        : `Tomorrow's Moon enters House ${hTomMoon} from your Rashi — keep schedule unhurried and double-check details calmly.`;
+    const tomorrowHi =
+      [1, 3, 6, 7, 10, 11].includes(hTomMoon)
+        ? `कल चंद्रमा आपकी राशि से ${hTomMoon}वें शुभ भाव में गोचर करेगा — महत्वपूर्ण बैठक, यात्रा व लाभकारी अवसर मिलेंगे।`
+        : `कल चंद्रमा ${hTomMoon}वें भाव में रहेगा — कार्यों में शांति व सावधानी बनाए रखना हितकर रहेगा।`;
+
+    const weeklyLoveEn =
+      [1, 2, 5, 7, 9, 11].includes(hVen)
+        ? `Weekly Love & Relationships: Venus in H${hVen} enhances romantic warmth, family dinners, and heartfelt reconciliation.`
+        : `Weekly Love & Relationships: Venus in H${hVen} & Mars in H${hMars} advise gentle communication and quality shared time.`;
+    const weeklyLoveHi =
+      [1, 2, 5, 7, 9, 11].includes(hVen)
+        ? `साप्ताहिक प्रेम व दांपत्य: शुक्र (${hVen}वें भाव) प्रेम, पारिवारिक सौहार्द व मधुर संवाद को प्रबल बना रहे हैं।`
+        : `साप्ताहिक प्रेम व दांपत्य: शुक्र (${hVen}वें) व मंगल (${hMars}वें) के प्रभाव से वाणी में मधुरता व संयम आवश्यक रहेगा।`;
+
     const c = RASHI_COLORS[rIdx];
     return {
       signIndex: rIdx,
@@ -177,8 +203,12 @@ export function computeRashifalReport(
       moodHi,
       dailyEn: `${moonToneEn} Lucky momentum comes from focused priority work.`,
       dailyHi: `${moonToneHi} आवश्यक कार्यों को प्राथमिकता देना लाभप्रद रहेगा।`,
+      tomorrowEn,
+      tomorrowHi,
       weeklyEn: `${sunMerEn} Keep mid-week deadlines organized.`,
       weeklyHi: `${sunMerHi} सप्ताह के मध्य में वित्तीय व पारिवारिक तालमेल अच्छा रहेगा।`,
+      weeklyLoveEn,
+      weeklyLoveHi,
       monthlyEn: monthEn,
       monthlyHi: monthHi,
       yearlyEn: yearEn,

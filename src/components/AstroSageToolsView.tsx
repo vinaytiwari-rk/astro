@@ -33,6 +33,22 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
     const id = requestedMode?.id;
     if (id === 'numerology' || id === 'rashifal' || id === 'baby_names' || id === 'gems_rudraksha') {
       setMode(id);
+    } else if (id === 'rashifal_tomorrow') {
+      setMode('rashifal');
+      setRashiPeriod('tomorrow');
+    } else if (id === 'rashifal_weekly') {
+      setMode('rashifal');
+      setRashiPeriod('weekly');
+    } else if (id === 'rashifal_weekly_love') {
+      setMode('rashifal');
+      setRashiPeriod('weekly_love');
+    } else if (id === 'rashifal_monthly') {
+      setMode('rashifal');
+      setRashiPeriod('monthly');
+    } else if (id === 'rashifal_2027') {
+      setMode('rashifal');
+      setRashiPeriod('yearly');
+      setRashiDate('2027-01-15');
     }
   }, [requestedMode?.nonce, requestedMode?.id]);
 
@@ -140,7 +156,9 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                   {(
                     [
                       ['daily', isHi ? 'दैनिक' : 'Daily'],
+                      ['tomorrow', isHi ? 'कल' : 'Tomorrow'],
                       ['weekly', isHi ? 'साप्ताहिक' : 'Weekly'],
+                      ['weekly_love', isHi ? 'साप्ताहिक प्रेम' : 'Weekly Love'],
                       ['monthly', isHi ? 'मासिक' : 'Monthly'],
                       ['yearly', isHi ? `वार्षिक (${rashiDate.slice(0, 4)})` : `Yearly (${rashiDate.slice(0, 4)})`],
                     ] as Array<[RashifalPeriod, string]>
@@ -198,19 +216,27 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                 <strong>
                   {rashiPeriod === 'daily'
                     ? (isHi ? 'आज का राशिफल:' : "Today's Overview:")
-                    : rashiPeriod === 'weekly'
-                      ? (isHi ? 'साप्ताहिक फल:' : 'Weekly Forecast:')
-                      : rashiPeriod === 'monthly'
-                        ? (isHi ? 'मासिक फल:' : 'Monthly Outlook:')
-                        : (isHi ? 'वार्षिक भविष्यफल:' : 'Annual Horoscope:')}
+                    : rashiPeriod === 'tomorrow'
+                      ? (isHi ? 'कल का राशिफल:' : "Tomorrow's Overview:")
+                      : rashiPeriod === 'weekly'
+                        ? (isHi ? 'साप्ताहिक फल:' : 'Weekly Forecast:')
+                        : rashiPeriod === 'weekly_love'
+                          ? (isHi ? 'साप्ताहिक प्रेम व संबंध:' : 'Weekly Love & Harmony:')
+                          : rashiPeriod === 'monthly'
+                            ? (isHi ? 'मासिक फल:' : 'Monthly Outlook:')
+                            : (isHi ? 'वार्षिक भविष्यफल:' : 'Annual Horoscope:')}
                 </strong>{' '}
                 {rashiPeriod === 'daily'
                   ? (isHi ? activeRashifal.dailyHi : activeRashifal.dailyEn)
-                  : rashiPeriod === 'weekly'
-                    ? (isHi ? activeRashifal.weeklyHi : activeRashifal.weeklyEn)
-                    : rashiPeriod === 'monthly'
-                      ? (isHi ? activeRashifal.monthlyHi : activeRashifal.monthlyEn)
-                      : (isHi ? activeRashifal.yearlyHi : activeRashifal.yearlyEn)}
+                  : rashiPeriod === 'tomorrow'
+                    ? (isHi ? activeRashifal.tomorrowHi : activeRashifal.tomorrowEn)
+                    : rashiPeriod === 'weekly'
+                      ? (isHi ? activeRashifal.weeklyHi : activeRashifal.weeklyEn)
+                      : rashiPeriod === 'weekly_love'
+                        ? (isHi ? activeRashifal.weeklyLoveHi : activeRashifal.weeklyLoveEn)
+                        : rashiPeriod === 'monthly'
+                          ? (isHi ? activeRashifal.monthlyHi : activeRashifal.monthlyEn)
+                          : (isHi ? activeRashifal.yearlyHi : activeRashifal.yearlyEn)}
               </div>
 
               <div className="pred-bullets">

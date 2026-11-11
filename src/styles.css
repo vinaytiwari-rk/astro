@@ -235,7 +235,25 @@ body {
   display: grid;
   grid-template-columns: 252px minmax(0, 1fr);
   flex: 1;
-  min-height: calc(100vh - 52px);
+  min-height: calc(100vh - 92px);
+}
+
+.workspace-shell.is-home-portal {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.workspace-shell.is-home-portal .side-rail {
+  display: none;
+}
+
+.workspace-shell.is-home-portal .side-rail.is-mobile-open {
+  display: flex;
+}
+
+.workspace-shell.is-home-portal .main-content {
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .side-rail {
@@ -2653,4 +2671,829 @@ body {
   height: 24px;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Clean Horizontal Portal Top Navigation Bar */
+.portal-top-nav {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.portal-top-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-top-nav-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 38px;
+}
+
+.portal-nav-link {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+.portal-nav-link:hover {
+  color: var(--accent);
+  background: var(--bg-subtle);
+}
+
+.portal-nav-link.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Redesigned Clean Portal Home Layout */
+.portal-active-label {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+.portal-triple-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.portal-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.portal-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px 9px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  border-radius: 7px 7px 0 0;
+}
+
+.portal-card-head h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.portal-card-sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.portal-form-body,
+.portal-panchang-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.portal-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.portal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.portal-field > span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.portal-field .date-dmy-box.is-compact {
+  width: 100%;
+}
+
+.portal-city-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.portal-coords-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  background: var(--bg-subtle);
+  border-radius: 6px;
+}
+
+.portal-pair-tabs {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.portal-pair-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.portal-pair-tabs button.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.portal-pair-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11.5px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border-strong);
+}
+
+.portal-cta-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: filter 0.14s ease, transform 0.12s ease;
+}
+
+.portal-cta-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.portal-panchang-city-bar {
+  position: relative;
+}
+
+.portal-panchang-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.portal-panchang-rows .panchang-kv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  font-size: 12px;
+}
+
+.portal-panchang-rows.compact .panchang-kv {
+  padding: 5px 9px;
+}
+
+.portal-panchang-rows .panchang-kv > span {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.portal-panchang-rows .panchang-kv > strong {
+  text-align: right;
+  font-weight: 600;
+}
+
+.portal-panchang-rows .panchang-kv.is-highlight {
+  background: var(--accent-soft);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+}
+
+.portal-panchang-rows .panchang-kv.is-warn strong {
+  color: var(--bad);
+}
+
+/* Middle 2-Column Split (Services 4x4 + Right Current Period & Festivals) */
+.portal-main-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.portal-panel {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 12px 14px;
+}
+
+.portal-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 9px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.portal-panel-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.portal-services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.portal-service-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.14s ease, transform 0.12s ease, background 0.14s ease;
+}
+
+.portal-service-tile:hover {
+  border-color: var(--accent);
+  background: var(--bg-subtle);
+  transform: translateY(-1px);
+}
+
+.portal-tile-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.portal-tile-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.portal-services-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border);
+}
+
+.portal-services-footer button {
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.portal-services-footer button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.portal-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.portal-panel-foot-link {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.portal-fest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.portal-fest-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  font-size: 12px;
+}
+
+.portal-fest-date {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.portal-fest-name {
+  font-weight: 500;
+}
+
+/* Row 3: Horoscope / Rashifal Bar */
+.portal-rashi-strip {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.portal-rashi-pill {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 7px 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.portal-rashi-pill:hover {
+  border-color: var(--accent);
+}
+
+.portal-rashi-pill.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.portal-natal-dot {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.portal-rashifal-readout {
+  padding: 10px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.portal-rashifal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.portal-rashifal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 1080px) {
+  .portal-triple-grid {
+    grid-template-columns: 1fr;
+  }
+  .portal-main-split {
+    grid-template-columns: 1fr;
+  }
+  .portal-rashi-strip {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .portal-services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .portal-rashi-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 2-Tier Portal Mega Menu (Matches Reference Warm Cream Tier 1 + Crisp White Tier 2) */
+.mega-nav-wrapper {
+  position: relative;
+  z-index: 68;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(34, 27, 21, 0.05);
+}
+
+.mega-tier-1 {
+  background: #fdf2c6;
+  border-bottom: 1px solid #e7d493;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+[data-theme='dark'] .mega-tier-1 {
+  background: #1a2130;
+  border-bottom-color: #2f3b52;
+}
+
+.mega-tier-1::-webkit-scrollbar,
+.mega-tier-2::-webkit-scrollbar {
+  display: none;
+}
+
+.mega-tier-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mega-t1-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 9px;
+  border: none;
+  background: transparent;
+  color: #1f1b16;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+}
+
+[data-theme='dark'] .mega-t1-btn {
+  color: var(--text);
+}
+
+.mega-t1-btn:hover,
+.mega-t1-btn.is-active {
+  color: #dc2626;
+}
+
+[data-theme='dark'] .mega-t1-btn:hover,
+[data-theme='dark'] .mega-t1-btn.is-active {
+  color: var(--accent);
+}
+
+.mega-t1-btn.is-active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--bg-elevated);
+}
+
+.mega-caret {
+  opacity: 0.65;
+}
+
+.mega-tier-2 {
+  background: var(--bg-elevated);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mega-t2-btn {
+  border: none;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 11px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mega-t2-btn:last-child {
+  border-right: none;
+}
+
+.mega-t2-btn:hover {
+  color: var(--accent);
+  background: var(--bg-subtle);
+}
+
+/* Sacred Prayers, Ramshalaka 15x15, Hanuman 7x7, Ganesh Prashna */
+.prayer-text-block {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--accent);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.ramshalaka-grid {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(22px, 1fr));
+  gap: 3px;
+  max-width: 560px;
+}
+
+.hanuman-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(34px, 1fr));
+  gap: 5px;
+  max-width: 360px;
+}
+
+.ganesh-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(46px, 1fr));
+  gap: 6px;
+  max-width: 420px;
+}
+
+.oracle-cell-btn {
+  padding: 6px 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.oracle-cell-btn:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.oracle-cell-btn.is-wide {
+  padding: 10px 6px;
+}
+
+/* Basic Details 4-Table Structured Sheet (Person | Avakhada | Favourable | Ghatak) */
+.basic-step-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.basic-banner-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.basic-main-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.basic-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.basic-details-2x2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.basic-sheet-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.basic-sheet-head {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-subtle));
+  border-bottom: 1px solid var(--border);
+}
+
+.basic-kv-table td {
+  padding: 6px 10px;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.basic-kv-key {
+  width: 44%;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.basic-kv-val {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.basic-kv-val.tone-good {
+  color: var(--good);
+}
+
+.basic-kv-val.tone-warn {
+  color: var(--bad);
+}
+
+.basic-kv-val.tone-accent {
+  color: var(--accent);
+}
+
+.basic-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  padding: 12px 14px;
+}
+
+.basic-quick-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.basic-quick-link-btn:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--bg-elevated));
+  color: var(--accent);
+}
+
+.basic-link-check {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Higher Harmonic & Nadi Vargas (D64..D360) */
+.varga-mode-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.higher-varga-selector-panel {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.higher-selector-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.higher-compare-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.higher-pill-row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(84px, 1fr));
+  gap: 6px;
+}
+
+.higher-varga-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg-subtle);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.higher-varga-pill span {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+}
+
+.higher-varga-pill.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.higher-varga-pill.is-active span {
+  color: var(--accent-ink);
+  opacity: 0.9;
+}
+
+.higher-khara-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-subtle));
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.sensitivity-zero-row {
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-elevated));
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .basic-details-2x2-grid,
+  .basic-links-grid {
+    grid-template-columns: 1fr;
+  }
+  .higher-pill-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

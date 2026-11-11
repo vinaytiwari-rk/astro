@@ -11,7 +11,8 @@ export type MainTab =
   | 'transits'
   | 'tools'
   | 'astro_tools'
-  | 'match';
+  | 'match'
+  | 'hub';
 
 export interface RouteRequest {
   tab: MainTab;

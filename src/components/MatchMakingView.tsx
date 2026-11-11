@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Baby, Calendar, Compass, Flame, Heart, ShieldAlert, Sparkles } from 'lucide-react';
 import { calculateChart } from '../astro/calculator';
 import { computeAshtakoota } from '../astro/matchmaking';
 import { computeDeepMarriageMatch } from '../astro/matchmakingDeep';
+import { computeSouthIndianPorutham } from '../astro/porutham';
 import { evaluateParamayusStatus } from '../astro/predictions/paramayus';
 import { formatDateDmy } from '../astro/time';
 import type { BirthInput, CalcSettings, ChartData, ChartStyle } from '../astro/types';
@@ -17,6 +18,12 @@ interface MatchMakingViewProps {
   activeProfileId: string;
   settings: CalcSettings;
   chartStyle: ChartStyle;
+  requestedPair?: {
+    brideId?: string;
+    groomId?: string;
+    subTab?: 'overview' | 'porutham' | 'sphuta' | 'vivaha' | 'pooja' | 'house_sign';
+    nonce: number;
+  };
 }
 
 function toChartBadges(chart: ChartData, varga: 'D1' | 'D9', lang: AppLanguage): ChartBadgeItem[] {
@@ -36,10 +43,12 @@ export const MatchMakingView: React.FC<MatchMakingViewProps> = ({
   activeProfileId,
   settings,
   chartStyle,
+  requestedPair,
 }) => {
   const { lang, t } = useLanguage();
-  const [brideId, setBrideId] = useState<string>(activeProfileId);
+  const [brideId, setBrideId] = useState<string>(requestedPair?.brideId || activeProfileId);
   const [groomId, setGroomId] = useState<string>(() => {
+    if (requestedPair?.groomId) return requestedPair.groomId;
     const livingAlt = profiles.find((p) => {
       if (p.id === activeProfileId) return false;
       const y = parseInt(p.date.slice(0, 4), 10);
@@ -47,8 +56,18 @@ export const MatchMakingView: React.FC<MatchMakingViewProps> = ({
     });
     return livingAlt?.id || profiles.find((p) => p.id !== activeProfileId)?.id || activeProfileId;
   });
+
+  useEffect(() => {
+    if (requestedPair?.brideId && requestedPair?.groomId) {
+      setBrideId(requestedPair.brideId);
+      setGroomId(requestedPair.groomId);
+    }
+    if (requestedPair?.subTab) {
+      setMatchSubTab(requestedPair.subTab);
+    }
+  }, [requestedPair?.nonce, requestedPair?.brideId, requestedPair?.groomId, requestedPair?.subTab]);
   const [chartView, setChartView] = useState<'D1' | 'D9'>('D1');
-  const [matchSubTab, setMatchSubTab] = useState<'overview' | 'sphuta' | 'vivaha' | 'pooja' | 'house_sign'>('overview');
+  const [matchSubTab, setMatchSubTab] = useState<'overview' | 'porutham' | 'sphuta' | 'vivaha' | 'pooja' | 'house_sign'>('overview');
 
   const brideInput = profiles.find((p) => p.id === brideId) || profiles[0];
   const groomInput = profiles.find((p) => p.id === groomId) || profiles[profiles.length - 1];
@@ -69,6 +88,10 @@ export const MatchMakingView: React.FC<MatchMakingViewProps> = ({
   const deepResult = useMemo(
     () => (matchLocked ? null : computeDeepMarriageMatch(brideChart, groomChart, rawResult)),
     [matchLocked, brideChart, groomChart, rawResult]
+  );
+  const poruthamReport = useMemo(
+    () => computeSouthIndianPorutham(brideChart, groomChart),
+    [brideChart, groomChart]
   );
 
   const gunaPct = Math.round((result.totalObtained / result.totalMax) * 100);
@@ -226,6 +249,15 @@ export const MatchMakingView: React.FC<MatchMakingViewProps> = ({
             onClick={() => setMatchSubTab('house_sign')}
           >
             {lang === 'hi' ? 'राशि व भाव (H1–H12) मिलान' : 'Sign & House (H1–H12) Match'}
+          </button>
+          <button
+            type="button"
+            className={`subtab-btn ${matchSubTab === 'porutham' ? 'is-active' : ''}`}
+            onClick={() => setMatchSubTab('porutham')}
+          >
+            {lang === 'hi'
+              ? `दश पोरुथम् (${poruthamReport.totalScore}/10)`
+              : `10-Porutham (${poruthamReport.totalScore}/10)`}
           </button>
         </div>
       </div>
@@ -1142,6 +1174,64 @@ export const MatchMakingView: React.FC<MatchMakingViewProps> = ({
             </div>
           </section>
         </>
+      )}
+
+      {matchSubTab === 'porutham' && (
+        <section className="panel">
+          <div className="panel-header">
+            <h2>
+              <Sparkles size={16} />{' '}
+              {lang === 'hi'
+                ? 'दक्षिण भारतीय दश पोरुथम् मिलान (10-Porutham Compatibility)'
+                : 'South Indian Dasa Porutham (10-Fold Star & Rashi Compatibility)'}
+            </h2>
+            <span className={`tag ${poruthamReport.criticalRajjuPass ? 'tag-varg' : 'tag-combust'}`}>
+              {poruthamReport.totalScore} / {poruthamReport.maxScore} ·{' '}
+              {poruthamReport.criticalRajjuPass
+                ? lang === 'hi'
+                  ? 'रज्जु शुभ (PASS)'
+                  : 'Rajju PASS'
+                : lang === 'hi'
+                  ? 'रज्जु दोष सावधानी'
+                  : 'Rajju Caution'}
+            </span>
+          </div>
+
+          <div className="pred-card-body">
+            <div className="gochar-banner is-info" style={{ marginBottom: 12 }}>
+              <strong>{lang === 'hi' ? poruthamReport.verdictHi : poruthamReport.verdictEn}</strong>
+            </div>
+
+            <div className="table-scroll">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>{lang === 'hi' ? 'पोरुथम्' : 'Porutham'}</th>
+                    <th>{lang === 'hi' ? 'वधू (Bride)' : 'Bride'}</th>
+                    <th>{lang === 'hi' ? 'वर (Groom)' : 'Groom'}</th>
+                    <th>{lang === 'hi' ? 'स्थिति' : 'Status'}</th>
+                    <th>{lang === 'hi' ? 'विवरण' : 'Inference'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {poruthamReport.items.map((item) => (
+                    <tr key={item.key}>
+                      <td><strong>{lang === 'hi' ? item.nameHi : item.nameEn}</strong></td>
+                      <td>{item.brideVal}</td>
+                      <td>{item.groomVal}</td>
+                      <td>
+                        <span className={`badge ${item.passed ? 'badge-ok' : 'badge-bad'}`}>
+                          {item.status} ({item.score})
+                        </span>
+                      </td>
+                      <td className="wrap-cell small-cell">{lang === 'hi' ? item.noteHi : item.noteEn}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       )}
         </>
       )}

@@ -28,6 +28,11 @@ import {
   computeDeepPanchangMuhurta,
   type LunarMonthSystem,
 } from '../astro/panchangMuhurtaDeep';
+import {
+  compute24HourHoraTable,
+  computeDoGhatiMuhurta,
+  computeMonthlyPanchang,
+} from '../astro/vedicUtilities';
 import { evaluateParamayusStatus } from '../astro/predictions/paramayus';
 import { formatDateDmy } from '../astro/time';
 import type { BirthInput, CalcSettings, ChartData } from '../astro/types';
@@ -56,6 +61,9 @@ type ToolSubTab =
   | 'avasthas'
   | 'panchapakshi'
   | 'deep_panchang'
+  | 'do_ghati'
+  | 'hora_24'
+  | 'monthly_panchang'
   | 'muhurta'
   | 'calendar';
 
@@ -76,10 +84,19 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
       id === 'avasthas' ||
       id === 'panchapakshi' ||
       id === 'deep_panchang' ||
+      id === 'do_ghati' ||
+      id === 'hora_24' ||
+      id === 'monthly_panchang' ||
       id === 'muhurta' ||
       id === 'calendar'
     ) {
       setSubTab(id);
+    } else if (id === 'calendar_2027') {
+      setSubTab('calendar');
+      setFestYear(2027);
+    } else if (id === 'muhurta_2027') {
+      setSubTab('muhurta');
+      setMuhurtaStart('2027-01-01');
     }
   }, [requestedSubTab?.nonce, requestedSubTab?.id]);
 
@@ -196,6 +213,37 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
     [hinduEvents, festCat]
   );
 
+  // Do Ghati, 24h Hora & Monthly Panchang state
+  const [monthYear, setMonthYear] = useState<number>(() => new Date().getFullYear());
+  const [monthNum, setMonthNum] = useState<number>(() => new Date().getMonth() + 1);
+  const doGhatiSlots = useMemo(
+    () =>
+      computeDoGhatiMuhurta(
+        pakshiDate,
+        chart.input.latitude,
+        chart.input.longitude,
+        chart.offsetMinutesUsed
+      ),
+    [pakshiDate, chart.input.latitude, chart.input.longitude, chart.offsetMinutesUsed]
+  );
+  const hora24Slots = useMemo(
+    () =>
+      compute24HourHoraTable(
+        pakshiDate,
+        chart.input.latitude,
+        chart.input.longitude,
+        chart.offsetMinutesUsed
+      ),
+    [pakshiDate, chart.input.latitude, chart.input.longitude, chart.offsetMinutesUsed]
+  );
+  const monthlyPanchangRows = useMemo(
+    () =>
+      subTab === 'monthly_panchang'
+        ? computeMonthlyPanchang(monthYear, monthNum, baseInput, settings)
+        : [],
+    [subTab, monthYear, monthNum, baseInput, settings]
+  );
+
   const formatOffsetLabel = (sec: number) => {
     const sign = sec >= 0 ? '+' : '-';
     const abs = Math.abs(sec);
@@ -250,6 +298,27 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
             onClick={() => setSubTab('calendar')}
           >
             <Calendar size={13} /> {t.toolsTabs.calendar}
+          </button>
+          <button
+            type="button"
+            className={`subtab-btn ${subTab === 'do_ghati' ? 'is-active' : ''}`}
+            onClick={() => setSubTab('do_ghati')}
+          >
+            <Clock size={13} /> {lang === 'hi' ? 'दो-घटी मुहूर्त (30)' : 'Do Ghati Muhurat'}
+          </button>
+          <button
+            type="button"
+            className={`subtab-btn ${subTab === 'hora_24' ? 'is-active' : ''}`}
+            onClick={() => setSubTab('hora_24')}
+          >
+            <Clock size={13} /> {lang === 'hi' ? '24 घंटे होरा कैलकुलेटर' : 'Hora Calculator (24h)'}
+          </button>
+          <button
+            type="button"
+            className={`subtab-btn ${subTab === 'monthly_panchang' ? 'is-active' : ''}`}
+            onClick={() => setSubTab('monthly_panchang')}
+          >
+            <Calendar size={13} /> {lang === 'hi' ? 'मासिक पंचांग' : 'Monthly Panchang'}
           </button>
         </div>
       </div>
@@ -1061,6 +1130,174 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
             </div>
           </section>
         </div>
+      )}
+
+      {/* 7. DO GHATI MUHURAT (30 SLOTS) */}
+      {subTab === 'do_ghati' && (
+        <section className="panel">
+          <div className="panel-header">
+            <h3>
+              <Clock size={15} />{' '}
+              {lang === 'hi'
+                ? `दो-घटी मुहूर्त (30 दैनिक मुहूर्त व अभिजित — ${formatDateDmy(pakshiDate)})`
+                : `Do Ghati Muhurat (30 Classical Day & Night Segments — ${formatDateDmy(pakshiDate)})`}
+            </h3>
+            <DateDmyInput
+              compact
+              className="select-compact mono"
+              value={pakshiDate}
+              ariaLabel="Do Ghati Date"
+              onChange={setPakshiDate}
+            />
+          </div>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{lang === 'hi' ? 'काल' : 'Period'}</th>
+                  <th>{lang === 'hi' ? 'मुहूर्त नाम' : 'Muhurat'}</th>
+                  <th>{lang === 'hi' ? 'समय' : 'Time Window'}</th>
+                  <th>{lang === 'hi' ? 'शुभत्व' : 'Quality'}</th>
+                  <th>{lang === 'hi' ? 'विवरण' : 'Guidance'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {doGhatiSlots.map((slot) => (
+                  <tr key={slot.index}>
+                    <td className="mono">{slot.index}</td>
+                    <td>{slot.period === 'day' ? (lang === 'hi' ? 'दिन' : 'Day') : (lang === 'hi' ? 'रात्रि' : 'Night')}</td>
+                    <td>
+                      <strong>{lang === 'hi' ? slot.nameHi : slot.nameEn}</strong>
+                      {slot.isAbhijit && <span className="tag tag-varg" style={{ marginLeft: 6 }}>Abhijit</span>}
+                    </td>
+                    <td className="mono">{slot.startTime} – {slot.endTime}</td>
+                    <td>
+                      <span className={`badge ${slot.quality === 'Auspicious' ? 'badge-ok' : slot.quality === 'Avoid' ? 'badge-bad' : 'badge-warn'}`}>
+                        {slot.quality}
+                      </span>
+                    </td>
+                    <td className="small-cell">{lang === 'hi' ? slot.noteHi : slot.noteEn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* 8. 24-HOUR PLANETARY HORA CALCULATOR */}
+      {subTab === 'hora_24' && (
+        <section className="panel">
+          <div className="panel-header">
+            <h3>
+              <Clock size={15} />{' '}
+              {lang === 'hi'
+                ? `24 घंटे ग्रह होरा कैलकुलेटर (${formatDateDmy(pakshiDate)})`
+                : `24-Hour Planetary Hora Table (${formatDateDmy(pakshiDate)})`}
+            </h3>
+            <DateDmyInput
+              compact
+              className="select-compact mono"
+              value={pakshiDate}
+              ariaLabel="Hora Date"
+              onChange={setPakshiDate}
+            />
+          </div>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>{lang === 'hi' ? 'होरा' : 'Hora #'}</th>
+                  <th>{lang === 'hi' ? 'काल' : 'Period'}</th>
+                  <th>{lang === 'hi' ? 'होरा स्वामी' : 'Hora Ruler'}</th>
+                  <th>{lang === 'hi' ? 'समय' : 'Local Time'}</th>
+                  <th>{lang === 'hi' ? 'उपयुक्त कार्य' : 'Recommended Activities'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hora24Slots.map((h) => (
+                  <tr key={h.index}>
+                    <td className="mono">{h.index}</td>
+                    <td>{h.period === 'day' ? (lang === 'hi' ? 'दिन' : 'Day') : (lang === 'hi' ? 'रात्रि' : 'Night')}</td>
+                    <td><strong>{trPlanet(h.planet, lang)}</strong></td>
+                    <td className="mono">{h.startTime} – {h.endTime}</td>
+                    <td className="small-cell">{lang === 'hi' ? h.suitabilityHi : h.suitabilityEn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* 9. MONTHLY PANCHANG */}
+      {subTab === 'monthly_panchang' && (
+        <section className="panel">
+          <div className="panel-header">
+            <h3>
+              <Calendar size={15} />{' '}
+              {lang === 'hi' ? `मासिक पंचांग (${monthNum}/${monthYear})` : `Monthly Panchang (${monthNum}/${monthYear})`}
+            </h3>
+            <div className="toolbar-group">
+              <select
+                className="select-compact"
+                value={monthNum}
+                onChange={(e) => setMonthNum(parseInt(e.target.value, 10))}
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                  <option key={m} value={m}>
+                    {new Date(Date.UTC(2026, m - 1, 1)).toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="select-compact mono"
+                value={monthYear}
+                onChange={(e) => setMonthYear(parseInt(e.target.value, 10))}
+              >
+                {[2025, 2026, 2027, 2028].map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>{t.common.date}</th>
+                  <th>{lang === 'hi' ? 'वार' : 'Day'}</th>
+                  <th>{lang === 'hi' ? 'तिथि' : 'Tithi'}</th>
+                  <th>{lang === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</th>
+                  <th>{lang === 'hi' ? 'योग' : 'Yoga'}</th>
+                  <th>{lang === 'hi' ? 'सूर्योदय / अस्त' : 'Rise / Set'}</th>
+                  <th>{lang === 'hi' ? 'राहुकाल' : 'Rahu Kaal'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthlyPanchangRows.map((row) => (
+                  <tr key={row.isoDate}>
+                    <td className="mono">
+                      <strong>{row.dmyDate}</strong>
+                      {row.highlightTagEn && (
+                        <div>
+                          <span className="tag tag-varg">{lang === 'hi' ? row.highlightTagHi : row.highlightTagEn}</span>
+                        </div>
+                      )}
+                    </td>
+                    <td>{row.weekday}</td>
+                    <td>{row.tithi}</td>
+                    <td>{row.nakshatra}</td>
+                    <td>{row.yoga}</td>
+                    <td className="mono">{row.sunrise} / {row.sunset}</td>
+                    <td className="mono">{row.rahuKalam}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
     </div>
   );

@@ -9,6 +9,14 @@ import {
 import { computeAvasthasAndUpagrahas } from '../avasthasUpagrahas';
 import { computeBtrSnapshot } from '../btr';
 import { calculateChart } from '../calculator';
+import {
+  computeBasicDetailsSheet,
+  computeHigherDivisionalCharts,
+  computeMicroSensitivityShift,
+  getNadiamsaTitle,
+  HIGHER_VARGA_META,
+  resolveHigherVargaPosition,
+} from '../higherVargas';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
@@ -24,6 +32,19 @@ import {
   findBabyNames,
 } from '../rashifalBabyRudraksha';
 import { computeVarshaphala } from '../varshaphala';
+import { computeSouthIndianPorutham } from '../porutham';
+import {
+  compute24HourHoraTable,
+  computeChineseHoroscope,
+  computeDoGhatiMuhurta,
+  computeShivaSwarodaya,
+} from '../vedicUtilities';
+import {
+  computeChartHealingReport,
+  RAMSHALAKA_CELLS,
+  resolveHanumanPrashna,
+  resolveRamshalaka,
+} from '../mysticAndHealing';
 import {
   localizeDashaDetailHi,
   localizeMatchResultHi,
@@ -900,5 +921,98 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const upa = computeAvasthasAndUpagrahas(tagore);
     expect(upa.upagrahas.length).toBe(9);
     expect(upa.upagrahas.every((u) => Number.isFinite(u.longitude) && u.longitude >= 0 && u.longitude < 360)).toBe(true);
+  });
+
+  it('computes 10-Porutham, Do Ghati (30 Muhurtas), 24h Hora, Swarodaya, Chinese 2027, Healing & Prashnavalis', () => {
+    const bride = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const groom = calculateChart(SAMPLE_CHARTS[4], DEFAULT_SETTINGS);
+    const porutham = computeSouthIndianPorutham(bride, groom);
+    expect(porutham.locked).toBe(false);
+    expect(porutham.items.length).toBe(10);
+    expect(porutham.totalScore).toBeGreaterThanOrEqual(0);
+    expect(porutham.totalScore).toBeLessThanOrEqual(10);
+
+    // Paramayus > 120 lock applies to 10-Porutham too
+    const lockedOld = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    expect(computeSouthIndianPorutham(lockedOld, groom).locked).toBe(true);
+
+    // Do Ghati (30 slots with Abhijit at index 8) & 24h Hora
+    const doGhati = computeDoGhatiMuhurta('2026-11-11', 28.6139, 77.209, 330);
+    expect(doGhati.length).toBe(30);
+    expect(doGhati.some((s) => s.isAbhijit)).toBe(true);
+    const horas = compute24HourHoraTable('2026-11-11', 28.6139, 77.209, 330);
+    expect(horas.length).toBe(24);
+
+    // Swarodaya & Chinese 2027
+    const swara = computeShivaSwarodaya('2026-11-11', '09:30:00', SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    expect(swara.activeNostril).toMatch(/Ida|Pingala/);
+    expect(swara.tattvaHi).toMatch(/[\u0900-\u097F]/);
+
+    const cn = computeChineseHoroscope(2000, 2027);
+    expect(cn.animalEn).toBe('Dragon');
+    expect(cn.targetYearAnimalEn).toBe('Goat');
+
+    // Healing 9 modalities & Ramshalaka 15x15 + Hanuman 49
+    const healing = computeChartHealingReport(bride);
+    expect(healing.items.length).toBe(9);
+    expect(RAMSHALAKA_CELLS.length).toBe(225);
+    expect(resolveRamshalaka(0).chaupai.length).toBeGreaterThan(10);
+    expect(resolveHanumanPrashna(21).meaningHi).toMatch(/[\u0900-\u097F]/);
+
+    // Tomorrow & Weekly Love Rashifal
+    const rashiList = computeRashifalReport(bride, '2026-11-11');
+    expect(rashiList[0].tomorrowHi).toMatch(/[\u0900-\u097F]/);
+    expect(rashiList[0].weeklyLoveEn.length).toBeGreaterThan(10);
+  });
+
+  it('computes Basic Details 4-table sheet & Higher Micro/Nadi Vargas (D64, D72, D81, D108, D144, D150, D300, D360)', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const higher = computeHigherDivisionalCharts(chart);
+    const ids = HIGHER_VARGA_META.map((m) => m.id);
+    expect(ids).toEqual(['D64', 'D72', 'D81', 'D108', 'D144', 'D150', 'D300', 'D360']);
+
+    for (const meta of HIGHER_VARGA_META) {
+      const hc = higher[meta.id];
+      expect(hc).toBeDefined();
+      expect(hc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
+      expect(hc.lagnaSignIndex).toBeLessThan(12);
+      expect(hc.lagnaAmsaNumber).toBeGreaterThanOrEqual(1);
+      expect(hc.lagnaAmsaNumber).toBeLessThanOrEqual(meta.division);
+      expect(hc.placements.length).toBe(10);
+      for (const p of hc.placements) {
+        expect(p.vargaSignIndex).toBeGreaterThanOrEqual(0);
+        expect(p.vargaSignIndex).toBeLessThan(12);
+        expect(p.houseFromVargaLagna).toBeGreaterThanOrEqual(1);
+        expect(p.houseFromVargaLagna).toBeLessThanOrEqual(12);
+      }
+    }
+
+    // D108 Ashtottaramsa spot check (0°10' Aries -> 1st D9 part * 1st D12 part -> Aries)
+    expect(resolveHigherVargaPosition(0.1, 'D108').signIndex).toBe(0);
+    // D150 Nadiamsa names & reverse fixed ordering check
+    expect(getNadiamsaTitle(1).en).toContain('Vasudha');
+    expect(resolveHigherVargaPosition(30.1, 'D150').amsaNumber).toBe(150);
+
+    // Seconds sensitivity across -60s..+60s for D360
+    const sens = computeMicroSensitivityShift(chart, 'D360');
+    expect(sens.length).toBe(9);
+    expect(sens.some((r) => r.deltaSeconds === 0 && !r.lagnaShiftedFromZero)).toBe(true);
+    expect(sens.some((r) => r.lagnaShiftedFromZero)).toBe(true);
+
+    // Basic Details 4-table sheet
+    const sheet = computeBasicDetailsSheet(chart);
+    expect(sheet.personDetails.length).toBe(22);
+    expect(sheet.avakhadaDetails.length).toBe(20);
+    expect(sheet.favourablePoints.length).toBe(10);
+    expect(sheet.ghatakMalefics.length).toBe(10);
+    expect(sheet.personDetails.find((r) => r.key === 'dob')!.valueEn).toMatch(/^\d{2}-\d{2}-\d{4}$/);
+    expect(sheet.personDetails.find((r) => r.key === 'isht')!.valueEn).toMatch(/^\d{2,}:\d{2}:\d{2}$/);
+    expect(sheet.paramayusLocked).toBe(false);
+
+    // >120yr chart locks Good Years milestone output on Basic Details
+    const oldChart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const oldSheet = computeBasicDetailsSheet(oldChart);
+    expect(oldSheet.paramayusLocked).toBe(true);
+    expect(oldSheet.favourablePoints.find((r) => r.key === 'good_years')!.valueEn).toContain('Locked');
   });
 });

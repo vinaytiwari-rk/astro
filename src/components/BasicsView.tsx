@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, CheckCircle2, FileText, Layers } from 'lucide-react';
 import {
   computeAvakahadaChakra,
   computeBhavaChalitPlacements,
   computeGhatakChakra,
 } from '../astro/avakahadaChalit';
 import { DIVISIONAL_META } from '../astro/constants';
+import {
+  computeBasicDetailsSheet,
+  type BasicDetailRow,
+} from '../astro/higherVargas';
 import { formatDms, formatOffsetString } from '../astro/time';
 import type { ChartData, ChartStyle, DivisionalChartId } from '../astro/types';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -16,12 +21,15 @@ import {
   trVarga,
   type AppLanguage,
 } from '../i18n/translations';
+import type { MainTab } from '../nav';
 import { VedicChartSvg, type ChartBadgeItem } from './VedicChartSvg';
 
 interface BasicsViewProps {
   chart: ChartData;
   chartStyle: ChartStyle;
   requestedSubTab?: { id?: string; nonce: number };
+  onNavigate?: (tab: MainTab, subTab?: string, nested?: string) => void;
+  onOpenBooklet?: () => void;
 }
 
 function buildD1Badges(chart: ChartData, includeSpecial: boolean, lang: AppLanguage): ChartBadgeItem[] {
@@ -66,9 +74,12 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
   chart,
   chartStyle,
   requestedSubTab,
+  onNavigate,
+  onOpenBooklet,
 }) => {
   const { lang, t } = useLanguage();
   const isHi = lang === 'hi';
+  const [viewMode, setViewMode] = useState<'basic_details' | 'charts'>('basic_details');
   const [rightVarga, setRightVarga] = useState<DivisionalChartId | 'CHALIT'>('CHALIT');
   const [showSpecialInChart, setShowSpecialInChart] = useState(false);
   const [showSavInChart, setShowSavInChart] = useState(false);
@@ -76,17 +87,22 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
 
   useEffect(() => {
     const id = requestedSubTab?.id;
-    if (
+    if (id === 'basic_details') {
+      setViewMode('basic_details');
+    } else if (
       id === 'planets' ||
       id === 'cusps' ||
       id === 'avakahada' ||
       id === 'chalit' ||
       id === 'special'
     ) {
+      setViewMode('charts');
       setSubTab(id);
       if (id === 'chalit') setRightVarga('CHALIT');
     }
   }, [requestedSubTab?.nonce, requestedSubTab?.id]);
+
+  const basicSheet = useMemo(() => computeBasicDetailsSheet(chart), [chart]);
 
   const d1Items = useMemo(
     () => buildD1Badges(chart, showSpecialInChart, lang),
@@ -138,10 +154,257 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
 
   const allBodies = [chart.ascendant, ...chart.planets];
 
+  const renderDetailValue = (row: BasicDetailRow) => {
+    const raw = isHi ? row.valueHi : row.valueEn;
+    if (isHi && row.valueHi === row.valueEn && !row.mono) {
+      return trTerm(raw, lang);
+    }
+    return raw;
+  };
+
+  const renderDetailTable = (titleEn: string, titleHi: string, rows: BasicDetailRow[]) => (
+    <section className="panel basic-sheet-card">
+      <div className="panel-header basic-sheet-head">
+        <h3>{isHi ? titleHi : titleEn}</h3>
+        <span className="muted small-text">{rows.length} {isHi ? 'बिंदु' : 'fields'}</span>
+      </div>
+      <div className="table-scroll">
+        <table className="data-table basic-kv-table">
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.key}>
+                <td className="basic-kv-key">{isHi ? row.labelHi : row.labelEn}</td>
+                <td
+                  className={`basic-kv-val ${row.mono ? 'mono' : ''} ${
+                    row.tone ? `tone-${row.tone}` : ''
+                  }`}
+                >
+                  {renderDetailValue(row)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+
+  const quickReportLinks: Array<{ labelEn: string; labelHi: string; onClick: () => void }> = [
+    {
+      labelEn: 'Lagna & Chandra Charts (D1 / Chalit)',
+      labelHi: 'लग्न एवं चंद्र / भाव चलित कुंडली',
+      onClick: () => {
+        setViewMode('charts');
+        setSubTab('planets');
+      },
+    },
+    {
+      labelEn: 'Whole Table & Bhava Cusps',
+      labelHi: 'पूर्ण ग्रह अंश एवं भाव संधि तालिका',
+      onClick: () => {
+        setViewMode('charts');
+        setSubTab('cusps');
+      },
+    },
+    {
+      labelEn: 'Higher Micro & Nadi Vargas (D64, D72, D81, D108, D144, D150, D300, D360)',
+      labelHi: 'उच्च सूक्ष्म एवं नाड़ी वर्ग कुंडलियाँ (D64–D360 / D108 / D150)',
+      onClick: () => onNavigate?.('vargas', 'D108'),
+    },
+    {
+      labelEn: 'Shodashavarga Charts (D1–D60)',
+      labelHi: 'षोडशवर्ग कुंडलियाँ (D1–D60)',
+      onClick: () => onNavigate?.('vargas', 'D9'),
+    },
+    {
+      labelEn: 'Prastarashtakavarga Table',
+      labelHi: 'प्रस्ताराष्टकवर्ग तालिका (Prastara)',
+      onClick: () => onNavigate?.('ashtakavarga', 'prastara'),
+    },
+    {
+      labelEn: 'Ashtakavarga Table (SAV / BAV)',
+      labelHi: 'अष्टकवर्ग (SAV / BAV) तालिका',
+      onClick: () => onNavigate?.('ashtakavarga', 'raw'),
+    },
+    {
+      labelEn: 'Aspects On Bhav Madhya & KP Cusps',
+      labelHi: 'भाव मध्य दृष्टि एवं KP भाव उप-स्वामी',
+      onClick: () => onNavigate?.('predictions', 'branchesNumerology', 'kp'),
+    },
+    {
+      labelEn: 'Shadbala & Panchadha Friendship Table',
+      labelHi: 'षड्बल एवं पंचधा मैत्री चक्र',
+      onClick: () => onNavigate?.('strength'),
+    },
+    {
+      labelEn: 'Vimshottari Dasha (5 Levels)',
+      labelHi: 'विंशोत्तरी दशा (5 स्तर तक)',
+      onClick: () => onNavigate?.('dasha', 'vimshottari'),
+    },
+    {
+      labelEn: 'Ashtottari, Yogini & Narayana Dasha',
+      labelHi: 'अष्टोत्तरी, योगिनी व नारायण दशा',
+      onClick: () => onNavigate?.('dasha', 'narayana'),
+    },
+    {
+      labelEn: '1000+ Empirical Techniques & SA MEP',
+      labelHi: '1000+ फलादेश सूत्र एवं सिस्टम MEP',
+      onClick: () => onNavigate?.('predictions', 'advancedTechniques'),
+    },
+    {
+      labelEn: 'Lal Kitab Chart & Tajika Varshaphal',
+      labelHi: 'लाल किताब टेवा एवं ताजिक वर्षफल',
+      onClick: () => onNavigate?.('predictions', 'branchesNumerology', 'lal_kitab'),
+    },
+    {
+      labelEn: 'Sarvatobhadra Chakra',
+      labelHi: 'सर्वतोभद्र चक्र (SBC)',
+      onClick: () => onNavigate?.('tools', 'sarvatobhadra'),
+    },
+    {
+      labelEn: 'Transit Today (Gochar & Kakshas)',
+      labelHi: 'आज का गोचर एवं कक्ष्या (3°45′)',
+      onClick: () => onNavigate?.('transits'),
+    },
+  ];
+
   return (
     <div className="view-stack">
-      {/* Top Dual Charts + Chart Options */}
-      <div className="charts-toolbar">
+      {/* Workflow Step Switcher: 1. Basic Details -> 2. Charts -> 3. Higher Vargas */}
+      <div className="subtab-bar basic-step-bar">
+        <button
+          type="button"
+          className={`subtab-btn ${viewMode === 'basic_details' ? 'is-active' : ''}`}
+          onClick={() => setViewMode('basic_details')}
+        >
+          {isHi ? '1. मूल जन्म विवरण (Basic Details)' : '1. Basic Details'}
+        </button>
+        <button
+          type="button"
+          className={`subtab-btn ${viewMode === 'charts' ? 'is-active' : ''}`}
+          onClick={() => setViewMode('charts')}
+        >
+          {isHi ? '2. कुंडली चार्ट एवं ग्रह तालिका (Charts)' : '2. Birth Charts & Planetary Tables'}
+        </button>
+        {onNavigate && (
+          <button
+            type="button"
+            className="subtab-btn"
+            onClick={() => onNavigate('vargas', 'D108')}
+          >
+            <Layers size={13} style={{ marginRight: 5, verticalAlign: 'middle' }} />
+            <span>
+              {isHi
+                ? 'उच्च सूक्ष्म वर्ग (D64–D360 / D108)'
+                : 'Higher Vargas (D64, D72, D81, D108, D144, D150, D300, D360)'}
+            </span>
+          </button>
+        )}
+      </div>
+
+      {viewMode === 'basic_details' && (
+        <div className="view-stack">
+          <section className="panel basic-banner-bar">
+            <div>
+              <h2 className="basic-main-title">
+                {isHi ? 'मूल जन्म विवरण (Basic Details)' : 'Basic Details'} — {chart.input.name}
+              </h2>
+              <p className="muted small-text" style={{ margin: 0 }}>
+                {isHi
+                  ? 'पूर्ण व्यक्तिगत व पंचांग विवरण, इष्टकाल (घटी-पल-विपल), स्थानीय व युद्ध समय संशोधन, अवकहड़ा चक्र, शुभ बिंदु एवं घातक चक्र।'
+                  : 'Complete birth parameters, Ishtkaal (Ghati-Pal-Vipal), LMT/War-time corrections, Avakhada Chakra, Favourable Points & Ghatak Malefics.'}
+              </p>
+            </div>
+            <div className="basic-banner-actions">
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => setViewMode('charts')}
+              >
+                <span>{isHi ? 'कुंडली चार्ट देखें (D1 / D9 / चलित)' : 'View Birth Charts (D1 / D9 / Chalit)'}</span>
+                <ArrowRight size={14} />
+              </button>
+              {onNavigate && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onNavigate('vargas', 'D108')}
+                >
+                  <Layers size={13} />
+                  <span>{isHi ? 'D64–D360 / D108 चार्ट' : 'D64–D360 / D108 Charts'}</span>
+                </button>
+              )}
+              {onOpenBooklet && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={onOpenBooklet}
+                >
+                  <FileText size={13} />
+                  <span>{isHi ? 'PDF कुंडली' : 'Print PDF'}</span>
+                </button>
+              )}
+            </div>
+          </section>
+
+          <div className="basic-details-2x2-grid">
+            {renderDetailTable('Person Details', 'व्यक्तिगत एवं जन्म पंचांग विवरण', basicSheet.personDetails)}
+            {renderDetailTable('Avakhada Chakra', 'अवकहड़ा चक्र एवं खगोलीय गणना', basicSheet.avakhadaDetails)}
+            {renderDetailTable('Favourable Points', 'अनुकूल एवं भाग्यशाली बिंदु', basicSheet.favourablePoints)}
+            {renderDetailTable('Ghatak (Malefics)', 'घातक चक्र (अनिष्ट व अकारक)', basicSheet.ghatakMalefics)}
+          </div>
+
+          <section className="panel">
+            <div className="panel-header">
+              <h3>
+                {isHi
+                  ? 'प्रत्यक्ष कुंडली चार्ट एवं गणना लिंक'
+                  : 'Direct Charts, Micro-Vargas & Calculations Index'}
+              </h3>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => setViewMode('charts')}
+              >
+                <span>{isHi ? 'अगला: जन्म कुंडली चार्ट' : 'Proceed to Charts'}</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+            <div className="basic-links-grid">
+              {quickReportLinks.map((lnk, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="basic-quick-link-btn"
+                  onClick={lnk.onClick}
+                >
+                  <CheckCircle2 size={15} className="basic-link-check" />
+                  <span>{isHi ? lnk.labelHi : lnk.labelEn}</span>
+                </button>
+              ))}
+              {onOpenBooklet && (
+                <button
+                  type="button"
+                  className="basic-quick-link-btn"
+                  onClick={onOpenBooklet}
+                >
+                  <CheckCircle2 size={15} className="basic-link-check" />
+                  <span>
+                    {isHi
+                      ? 'विस्तृत कुंडली व सभी रिपोर्ट्स प्रिंट (PDF)'
+                      : 'Print Detailed Kundali & All Reports (PDF)'}
+                  </span>
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {viewMode === 'charts' && (
+        <>
+          {/* Top Dual Charts + Chart Options */}
+          <div className="charts-toolbar">
         <div className="toolbar-group">
           <label className="checkbox-inline">
             <input
@@ -529,6 +792,8 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
           </div>
         </section>
       </div>
+        </>
+      )}
     </div>
   );
 };

@@ -39,6 +39,8 @@ import { DashaView } from './components/DashaView';
 import { HomeDashboardView } from './components/HomeDashboardView';
 import { KundaliBookletModal } from './components/KundaliBookletModal';
 import { MatchMakingView } from './components/MatchMakingView';
+import { PortalHubViews } from './components/PortalHubViews';
+import { PortalMegaNav } from './components/PortalMegaNav';
 import { PrashnaView } from './components/PrashnaView';
 import { PredictionsView } from './components/PredictionsView';
 import { SettingsModal } from './components/SettingsModal';
@@ -126,6 +128,15 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookletOpen, setBookletOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [requestedMatchPair, setRequestedMatchPair] = useState<
+    | {
+        brideId?: string;
+        groomId?: string;
+        subTab?: 'overview' | 'porutham' | 'sphuta' | 'vivaha' | 'pooja' | 'house_sign';
+        nonce: number;
+      }
+    | undefined
+  >(undefined);
   const importRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -186,6 +197,39 @@ export function App() {
     } else {
       setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
     }
+  };
+
+  const handleQuickGenerateKundali = (input: BirthInput) => {
+    setProfiles((prev) => (prev.some((p) => p.id === input.id) ? prev : [input, ...prev]));
+    setActiveId(input.id);
+    navigateTo('basics', 'basic_details');
+  };
+
+  const handleQuickMatchKundali = (groom: BirthInput, bride: BirthInput) => {
+    const resolvedGroom =
+      groom.id && profiles.some((p) => p.id === groom.id)
+        ? groom
+        : { ...groom, id: `match-boy-${Date.now()}` };
+    const resolvedBride =
+      bride.id && profiles.some((p) => p.id === bride.id)
+        ? bride
+        : { ...bride, id: `match-girl-${Date.now() + 1}` };
+
+    setProfiles((prev) => {
+      let next = prev;
+      if (!next.some((p) => p.id === resolvedGroom.id)) next = [resolvedGroom, ...next];
+      else next = next.map((p) => (p.id === resolvedGroom.id ? resolvedGroom : p));
+      if (!next.some((p) => p.id === resolvedBride.id)) next = [resolvedBride, ...next];
+      else next = next.map((p) => (p.id === resolvedBride.id ? resolvedBride : p));
+      return next;
+    });
+
+    setRequestedMatchPair({
+      brideId: resolvedBride.id,
+      groomId: resolvedGroom.id,
+      nonce: Date.now(),
+    });
+    navigateTo('match');
   };
 
   const handleNewPrashna = () => {
@@ -269,9 +313,11 @@ export function App() {
       labelHi: 'कुंडली एवं गणना',
       icon: <Sparkles size={15} />,
       children: [
+        { labelEn: 'Basic Details (Person / Avakhada)', labelHi: 'मूल विवरण (अवकहड़ा व घातक)', tab: 'basics', subTab: 'basic_details' },
         { labelEn: 'Birth Chart & Degrees', labelHi: 'जन्म कुंडली व ग्रह अंश', tab: 'basics', subTab: 'planets' },
         { labelEn: 'Chalit & Avakahada', labelHi: 'चलित व अवकहड़ा चक्र', tab: 'basics', subTab: 'chalit' },
         { labelEn: 'Shodashvarga (D1–D60)', labelHi: 'षोडशवर्ग कुंडली (D1–D60)', tab: 'vargas', subTab: 'D9' },
+        { labelEn: 'Higher Micro Vargas (D64–D360 / D108)', labelHi: 'उच्च सूक्ष्म वर्ग (D64–D360 / D108)', tab: 'vargas', subTab: 'D108' },
         { labelEn: 'Shadbala & Yogas', labelHi: 'षड्बल, मांगलिक व योग', tab: 'strength' },
         { labelEn: 'Ashtakavarga & Prastara', labelHi: 'अष्टकवर्ग व प्रस्तार', tab: 'ashtakavarga', subTab: 'raw' },
       ],
@@ -348,7 +394,22 @@ export function App() {
         { labelEn: 'Samvatsara · Shoola/Vaasa', labelHi: 'संवत्सर, दिशाशूल, वास व मुहूर्त', tab: 'tools', subTab: 'deep_panchang' },
         { labelEn: 'Daily Rashifal', labelHi: 'दैनिक राशिफल व ताराबल', tab: 'astro_tools', subTab: 'rashifal' },
         { labelEn: 'Birth Time Rectification', labelHi: 'जन्म समय संशोधन (BTR)', tab: 'tools', subTab: 'btr' },
+        { labelEn: 'Do Ghati · Hora · Monthly', labelHi: 'दो-घटी · होरा · मासिक पंचांग', tab: 'tools', subTab: 'do_ghati' },
         { labelEn: 'Muhurta & 10-Yr Calendar', labelHi: 'शुभ मुहूर्त व 10-वर्ष पंचांग', tab: 'tools', subTab: 'muhurta' },
+      ],
+    },
+    {
+      id: 'occult_healing',
+      labelEn: 'Occult, Healing & Oracles',
+      labelHi: 'गूढ़ विद्या, आरोग्य व प्रश्नावली',
+      icon: <Compass size={15} />,
+      children: [
+        { labelEn: 'Calculators (Rasi / Lagna / Ayan)', labelHi: 'राशि, लग्न व अयनांश कैलकुलेटर', tab: 'hub', subTab: 'calculators', nested: 'signs' },
+        { labelEn: 'Healing & Ayurveda (9 Therapies)', labelHi: 'आयुर्वेद, योग व 9 आरोग्य चिकित्सा', tab: 'hub', subTab: 'healing' },
+        { labelEn: 'Shiva Swarodaya & Chinese', labelHi: 'शिव स्वरोदय व चाइनीज राशिफल', tab: 'hub', subTab: 'swarodaya' },
+        { labelEn: 'Mantra, Chalisa & Aarti', labelHi: 'मंत्र, चालीसा, आरती व धर्म', tab: 'hub', subTab: 'prayers' },
+        { labelEn: 'Ramshalaka & Hanuman Prashna', labelHi: 'रामशलाका व हनुमान प्रश्नावली', tab: 'hub', subTab: 'prashnavali' },
+        { labelEn: 'Palmistry & Learn Jyotish', labelHi: 'सामुद्रिक हस्तरेखा व ज्योतिष सीखें', tab: 'hub', subTab: 'palmistry' },
       ],
     },
   ];
@@ -367,6 +428,7 @@ export function App() {
     tools: t.tabs.tools,
     astro_tools: t.tabs.astroTools,
     match: t.tabs.match,
+    hub: isHi ? 'कैलकुलेटर, गूढ़ विद्या, आरोग्य व प्रश्नावली' : 'Calculators, Occult, Healing & Oracles',
   };
 
   return (
@@ -538,6 +600,18 @@ export function App() {
           </div>
         </header>
 
+        {/* Clean 2-Tier Portal Mega Navigation Bar */}
+        <PortalMegaNav
+          activeTab={activeTab}
+          onNavigate={navigateTo}
+          onOpenMatchSubTab={(sub) => {
+            setRequestedMatchPair({ subTab: sub, nonce: Date.now() });
+            navigateTo('match');
+          }}
+          onOpenEditor={() => setEditorOpen(true)}
+          onOpenBooklet={() => setBookletOpen(true)}
+        />
+
         {/* Mobile Drawer Backdrop */}
         {drawerOpen && (
           <div
@@ -547,8 +621,8 @@ export function App() {
           />
         )}
 
-        {/* Two-Column Clean Studio Workspace */}
-        <div className="workspace-shell">
+        {/* Two-Column Studio Workspace (Clean Single-Column Portal on Home) */}
+        <div className={`workspace-shell ${activeTab === 'home' ? 'is-home-portal' : ''}`}>
           <aside
             className={`side-rail no-print ${drawerOpen ? 'is-mobile-open' : ''}`}
             aria-label="Astrology Sidebar Menu"
@@ -722,9 +796,15 @@ export function App() {
               {activeTab === 'home' && (
                 <HomeDashboardView
                   chart={chart}
+                  activeInput={activeInput}
+                  profiles={profiles}
+                  settings={settings}
+                  onSelectProfile={(id) => setActiveId(id)}
                   onNavigate={navigateTo}
                   onOpenEditor={() => setEditorOpen(true)}
                   onOpenBooklet={() => setBookletOpen(true)}
+                  onQuickGenerateKundali={handleQuickGenerateKundali}
+                  onQuickMatchKundali={handleQuickMatchKundali}
                   canDeleteProfile={profiles.length > 1}
                   onDeleteProfile={() => handleDeleteProfile()}
                 />
@@ -738,6 +818,8 @@ export function App() {
                       ? { id: routeRequest.subTab, nonce: routeRequest.nonce }
                       : undefined
                   }
+                  onNavigate={navigateTo}
+                  onOpenBooklet={() => setBookletOpen(true)}
                 />
               )}
               {activeTab === 'predictions' && (
@@ -842,6 +924,21 @@ export function App() {
                   activeProfileId={activeInput.id}
                   settings={settings}
                   chartStyle={settings.chartStyle}
+                  requestedPair={requestedMatchPair}
+                />
+              )}
+              {activeTab === 'hub' && (
+                <PortalHubViews
+                  chart={chart}
+                  baseInput={activeInput}
+                  profiles={profiles}
+                  settings={settings}
+                  onNavigate={navigateTo}
+                  requestedMode={
+                    routeRequest?.tab === 'hub'
+                      ? { subTab: routeRequest.subTab, nested: routeRequest.nested, nonce: routeRequest.nonce }
+                      : undefined
+                  }
                 />
               )}
             </main>
