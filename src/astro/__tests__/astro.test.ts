@@ -74,6 +74,7 @@ import { computePatrikaBookData } from '../predictions/patrikaBook';
 import { inspectHypotheticalNakshatra } from '../predictions/planetInNakshatra';
 import { inspectHypotheticalPlanetInSign } from '../predictions/planetInSign';
 import { inspectCustomYuti } from '../predictions/yutiPredictions';
+import { computeTwelvePlanetsPredictions } from '../predictions/twelvePlanetsPredictions';
 import { buildSpecializedAstrologySuite } from '../predictions/specialized';
 import {
   computeGocharaKakshas,
@@ -1100,5 +1101,34 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const nov2026 = computeMonthlyPanchang(2026, 11, { ...chart2026.input, latitude: 28.6139, longitude: 77.209 }, DEFAULT_SETTINGS);
     expect(nov2026.find((d) => d.isoDate === '2026-11-08')?.highlightTagEn).toContain('Diwali');
     expect(nov2026.find((d) => d.isoDate === '2026-11-11')?.highlightTagEn).toContain('Bhai Dooj');
+
+    // 6. 12-Planets Comprehensive Event Prediction Engine (9 Vedic Grahas + 3 Outer Planets)
+    const twelveReport = computeTwelvePlanetsPredictions(chart2026);
+    expect(twelveReport.planets.length).toBe(12);
+
+    const expectedIds = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Uranus', 'Neptune', 'Pluto'];
+    expect(twelveReport.planets.map((p) => p.id)).toEqual(expectedIds);
+
+    for (const p of twelveReport.planets) {
+      expect(p.positiveEventsEn.length).toBeGreaterThan(0);
+      expect(p.positiveEventsHi.length).toBeGreaterThan(0);
+      expect(p.negativeEventsEn.length).toBeGreaterThan(0);
+      expect(p.negativeEventsHi.length).toBeGreaterThan(0);
+      expect(p.timingTriggersEn.length).toBeGreaterThan(5);
+      expect(p.timingTriggersHi.length).toBeGreaterThan(5);
+      expect(p.remediesEn.length).toBeGreaterThan(0);
+      expect(p.remediesHi.length).toBeGreaterThan(0);
+      expect(p.houseNumber).toBeGreaterThanOrEqual(1);
+      expect(p.houseNumber).toBeLessThanOrEqual(12);
+    }
+
+    // Outer planets correctly identified
+    expect(twelveReport.planets.find((p) => p.id === 'Uranus')?.isOuterPlanet).toBe(true);
+    expect(twelveReport.planets.find((p) => p.id === 'Neptune')?.isOuterPlanet).toBe(true);
+    expect(twelveReport.planets.find((p) => p.id === 'Pluto')?.isOuterPlanet).toBe(true);
+    expect(twelveReport.planets.find((p) => p.id === 'Sun')?.isOuterPlanet).toBe(false);
+
+    expect(twelveReport.activeConjunctionsSummaryEn.length).toBeGreaterThan(5);
+    expect(twelveReport.activeConjunctionsSummaryHi.length).toBeGreaterThan(5);
   });
 });

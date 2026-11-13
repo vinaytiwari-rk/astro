@@ -79,6 +79,7 @@ export type WorkstationConsoleTool =
   | 'western'
   | 'transits'
   | 'varshaphala'
+  | 'twelve_planets'
   | 'deep_predictions'
   | 'yogas'
   | 'timeline'
@@ -633,10 +634,11 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
               </optgroup>
 
               <optgroup label={isHi ? '🔮 विस्तृत एवं अचूक फलादेश (Predictions)' : '🔮 Comprehensive In-Depth Predictions & Phala'}>
-                <option value="deep_predictions">🌟 {isHi ? 'विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, करियर, विवाह)' : 'Comprehensive Detailed Life Predictions (All Spheres)'}</option>
-                <option value="yogas">📜 {isHi ? '300+ शास्त्रीय वैदिक राजयोग एवं सक्रियता' : '300+ Classical Vedic Yogas (Active & Corpus)'}</option>
+                <option value="twelve_planets">🌟 {isHi ? 'द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)' : '12 Planets Detailed Event Predictions (Sun to Pluto)'}</option>
+                <option value="yogas">📜 {isHi ? 'सक्रिय राजयोग व ग्रह युति फल (2-7 ग्रह युति व 300+ योग)' : 'Active Yogas & Conjunctions (2-7 Planet Stelliums)'}</option>
+                <option value="deep_predictions">🏛️ {isHi ? 'विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, करियर, विवाह)' : 'Comprehensive Detailed Life Predictions (All Spheres)'}</option>
                 <option value="timeline">⏳ {isHi ? '120-वर्षीय जीवन घटनाक्रम रेखा व आयु मील के पत्थर' : '120-Year Complete Life Events Timeline & Milestones'}</option>
-                <option value="bhavas">🏛️ {isHi ? 'द्वादश भाव संपूर्ण विस्तृत फलादेश (H1 से H12)' : '12 Bhavas Comprehensive Analysis'}</option>
+                <option value="bhavas">🏠 {isHi ? 'द्वादश भाव संपूर्ण विस्तृत फलादेश (H1 से H12)' : '12 Bhavas Comprehensive Analysis'}</option>
                 <option value="bnn">✨ {isHi ? 'भृगु नंदी नाड़ी व BSP (29 आयु नियम व दिशा त्रिकोण)' : 'Bhrigu Nandi Nadi & BSP Age Rules'}</option>
                 <option value="yuti">⚡ {isHi ? 'ग्रह युति फल (2 से 7 ग्रह) व पारस्परिक दृष्टियां' : 'Planetary Conjunctions (2–7 Grahas) & Mutual Drishti'}</option>
                 <option value="past_life">🔄 {isHi ? 'पूर्व जन्म कर्म (D60) व आगामी जन्म गति' : 'Past Life Karma (D60) & Future Incarnation'}</option>
@@ -869,6 +871,15 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
             chart={chart}
             chartStyle={chartStyle}
             requestedBranch={{ id: 'varshaphala', nonce: Date.now() }}
+          />
+        )}
+
+        {/* TOOL: 12 Planets Detailed Event Predictions (9 Vedic + 3 Outer) */}
+        {consoleTool === 'twelve_planets' && (
+          <PredictionsView
+            chart={chart}
+            chartStyle={chartStyle}
+            requestedRoute={{ subTab: 'twelve_planets', nonce: Date.now() }}
           />
         )}
 
