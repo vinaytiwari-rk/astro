@@ -76,8 +76,8 @@ export function App() {
   });
 
   // Master Navigation States
-  const [activeTab, setActiveTab] = useState<MainTab>('home');
-  const [activeSubTab, setActiveSubTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<MainTab>('kundli');
+  const [activeSubTab, setActiveSubTab] = useState<string>('charts');
 
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
   const [language, setLanguage] = useState<AppLanguage>(() => {
@@ -384,54 +384,17 @@ export function App() {
               />
             )}
 
-            {/* 2. Vedic Kundli & Core Charts */}
+            {/* 2. Unified Horoscope Workstation (Dual Charts, Dasha Strip & Console Tools) */}
             {normalizedPrimaryTab === 'kundli' && (
-              <>
-                {activeSubTab === 'overview' && (
-                  <BasicsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedSubTab={{ id: 'basic_details', nonce: routeRequest?.nonce ?? 0 }}
-                    onNavigate={navigateTo}
-                    onOpenBooklet={() => setBookletOpen(true)}
-                  />
-                )}
-                {activeSubTab === 'charts' && (
-                  <BasicsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedSubTab={{ id: 'planets', nonce: routeRequest?.nonce ?? 0 }}
-                    onNavigate={navigateTo}
-                    onOpenBooklet={() => setBookletOpen(true)}
-                  />
-                )}
-                {activeSubTab === 'planets' && (
-                  <BasicsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedSubTab={{ id: 'planets', nonce: routeRequest?.nonce ?? 0 }}
-                    onNavigate={navigateTo}
-                    onOpenBooklet={() => setBookletOpen(true)}
-                  />
-                )}
-                {activeSubTab === 'vargas' && (
-                  <VargasView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedVarga={{ id: 'D108', nonce: routeRequest?.nonce ?? 0 }}
-                  />
-                )}
-                {activeSubTab === 'strength' && (
-                  <StrengthYogasView chart={chart} />
-                )}
-                {activeSubTab === 'ashtakavarga' && (
-                  <AshtakavargaView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedMode={{ id: 'raw', nonce: routeRequest?.nonce ?? 0 }}
-                  />
-                )}
-              </>
+              <BasicsView
+                chart={chart}
+                chartStyle={settings.chartStyle}
+                settings={settings}
+                requestedSubTab={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onOpenEditor={() => setEditorOpen(true)}
+              />
             )}
 
             {/* 3. In-Depth Accurate Predictions */}

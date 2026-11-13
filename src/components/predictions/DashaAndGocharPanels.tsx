@@ -313,7 +313,7 @@ export const GocharWisePanel: React.FC<{
               ? `गोचर फलादेश तालिका: राशि, D9/D10, कक्ष्या बिंदु व वेध (${formatDateDmy(report.deepGochar.targetDate)})`
               : `Gochar Transit Matrix: Rasi, D9/D10, Kakshya Bindu & Vedha (${formatDateDmy(report.deepGochar.targetDate)})`}
           </h3>
-          <span className="tag">{report.transitForecast.sources.join(' · ')}</span>
+          <span className="tag">{isHi ? 'गोचर फलदीपिका व वेध सिद्धांत' : 'Classical Gochar & Vedha Matrix'}</span>
         </div>
 
         <div className="table-scroll">

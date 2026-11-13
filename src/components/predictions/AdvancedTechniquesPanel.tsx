@@ -162,7 +162,7 @@ export const AdvancedTechniquesPanel: React.FC<{ report: AdvancedPredictiveRepor
                   <tr>
                     <th>{isHi ? 'ग्रह' : 'Planet'}</th>
                     <th>{isHi ? 'सिस्टम भूमिका' : 'SA Role'}</th>
-                    <th>{isHi ? 'पराशरी भूमिका' : 'Parashari'}</th>
+                    <th>{isHi ? 'शास्त्रीय भूमिका' : 'Classical Role'}</th>
                     <th>{isHi ? 'भाव / अंश' : 'House / Deg'}</th>
                     <th>{isHi ? 'कार्यशील बल' : 'Op. Strength'}</th>
                     <th>{isHi ? 'उपाय सिद्धांत व विधि' : 'Targeted Remedial Protocol'}</th>

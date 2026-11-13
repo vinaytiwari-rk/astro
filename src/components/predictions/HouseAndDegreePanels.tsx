@@ -22,10 +22,10 @@ export const PlanetInHousePanel: React.FC<{ report: PredictionReport }> = ({ rep
         <h3>
           <BookOpen size={15} />{' '}
           {isHi
-            ? 'विभिन्न भावों में 9 ग्रह फल (Planets in Different Houses — BPHS / फलदीपिका)'
+            ? 'विभिन्न भावों में 9 ग्रह फल (Planets in Different Houses)'
             : 'Planets in Different Houses (1st–12th Bhava Phala)'}
         </h3>
-        <span className="muted small-text">BPHS · Phaladeepika · Saravali</span>
+        <span className="muted small-text">{isHi ? 'शास्त्रीय फलादेश सूत्र' : 'Classical Shastra Matrix'}</span>
       </div>
 
       <div className="placement-cards">
@@ -44,7 +44,7 @@ export const PlanetInHousePanel: React.FC<{ report: PredictionReport }> = ({ rep
             </div>
             <p className="yoga-desc">{p.classicalReading}</p>
             <div className="muted small-text">
-              {p.dignityModifier} · {t.common.house} {p.house} ({p.sources.join(', ')})
+              {p.dignityModifier} · {t.common.house} {p.house}
             </div>
           </article>
         ))}
@@ -196,7 +196,7 @@ export const HouseWisePanel: React.FC<{
 
                 <p className="domain-summary">{isHi ? h.synthesisHi : h.synthesisEn}</p>
                 <p className="yoga-desc">
-                  <strong>{isHi ? 'भावेश फल (BPHS):' : 'House Lord Placement:'}</strong>{' '}
+                  <strong>{isHi ? 'भावेश फल:' : 'House Lord Placement:'}</strong>{' '}
                   {isHi ? h.lordReadingHi : h.lordReadingEn}
                 </p>
 
@@ -265,7 +265,7 @@ export const DegreeWisePanel: React.FC<{ items: DegreePredictionItem[] }> = ({ i
               ? 'अंश-वार फलादेश (Degree-wise Predictions — बलादि अवस्था, पुष्कर व गंडांत जांच)'
               : 'Degree-wise Predictions (0°–30° Baladi Avastha, Pushkara & Critical Degrees)'}
           </h3>
-          <span className="muted small-text">BPHS Avasthadhyaya · Jataka Parijata</span>
+          <span className="muted small-text">{isHi ? 'ग्रह अवस्था विश्लेषण' : 'Planetary Avasthas & States'}</span>
         </div>
 
         <div className="table-scroll">

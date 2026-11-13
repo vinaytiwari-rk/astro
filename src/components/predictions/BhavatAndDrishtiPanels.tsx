@@ -38,7 +38,7 @@ export const BhavatBhavamPanel: React.FC<{
               ? 'भावात् भावम् फलादेश (भाव से भाव का सिद्धांत — H1 से H12)'
               : 'Bhavat Bhavam Predictions (House-from-House Mirror Principle)'}
           </h3>
-          <span className="muted small-text">BPHS · Phaladeepika (2H − 1 Rule)</span>
+          <span className="muted small-text">{isHi ? 'शास्त्रीय वैदिक सिद्धांत (2H − 1 नियम)' : 'Classical Mirror Principle (2H − 1 Rule)'}</span>
         </div>
         <div className="two-col-split-pad">
           <div className="gochar-banner is-info">
@@ -196,9 +196,9 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
             <Eye size={15} />{' '}
             {isHi
               ? 'ग्रह दृष्टि फल (Aspects / Graha Drishti Predictions — 7वीं व विशेष दृष्टियाँ)'
-              : 'Aspects / Drishti-Wise Predictions (Parashari Full & Special Aspects)'}
+              : 'Aspects / Drishti-Wise Predictions (Classical Full & Special Aspects)'}
           </h3>
-          <span className="muted small-text">BPHS Drishti Adhyaya · Virupas</span>
+          <span className="muted small-text">{isHi ? 'दृष्टि वीरुपा मूल्यांकन' : 'Drishti Virupas Evaluation'}</span>
         </div>
         <div className="two-col-split-pad">
           <div className="gochar-banner is-info">{isHi ? report.summaryHi : report.summaryEn}</div>

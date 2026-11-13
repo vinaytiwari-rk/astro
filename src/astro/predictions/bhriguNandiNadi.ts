@@ -421,10 +421,10 @@ export function computeBhriguNandiNadi(chart: ChartData): BhriguNandiNadiReport 
     guruCycles12Yr,
     specialRules,
     sources: [
-      'Bhrigu Nandi Nadi (R.G. Rao Tradition)',
-      'Classical Parashari & Nadi Karaka Linkages',
+      'Bhrigu Nandi Nadi Classical Shastras',
+      'Classical Nadi Karaka Linkages',
       '1-5-9 Trikona Planetary Chain Siddhanta',
-      'Vels School of Vedic Astrology Research Corpus',
+      'Vedic Astrology Research Corpus',
     ],
   };
 }

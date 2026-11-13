@@ -412,7 +412,7 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
             </div>
 
             <div className={`gochar-banner ${btr.pranapadaAligned || btr.kundaAligned ? 'is-clear' : 'is-info'}`}>
-              <strong>{lang === 'hi' ? 'BPHS संशोधन टिप्पणी:' : 'BPHS Rectification Note:'}</strong> {btr.alignmentNote}
+              <strong>{lang === 'hi' ? 'शास्त्रीय संशोधन टिप्पणी:' : 'Classical Rectification Note:'}</strong> {btr.alignmentNote}
             </div>
           </div>
         </section>

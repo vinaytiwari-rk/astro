@@ -132,7 +132,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange({ ...settings, karakaCount: Number(e.target.value) as 7 | 8 })
                 }
               >
-                <option value={7}>{lang === 'hi' ? '7 कारक (सूर्य से शनि पाराशरी)' : '7 Karakas (Parashari Sun–Saturn)'}</option>
+                <option value={7}>{lang === 'hi' ? '7 कारक (सूर्य से शनि मानक)' : '7 Karakas (Sun–Saturn Standard)'}</option>
                 <option value={8}>{lang === 'hi' ? '8 कारक (राहु सहित)' : '8 Karakas (incl. Rahu as PiK)'}</option>
               </select>
             </label>
@@ -149,8 +149,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   })
                 }
               >
-                <option value="parashara">{lang === 'hi' ? 'पाराशरी (कर्क / सिंह)' : 'Parashari (Cancer / Leo)'}</option>
-                <option value="samasaptama">{lang === 'hi' ? 'जगन्नाथ / समसप्तम' : 'Jagannatha / Samasaptama'}</option>
+                <option value="parashara">{lang === 'hi' ? 'शास्त्रीय (कर्क / सिंह)' : 'Classical (Cancer / Leo)'}</option>
+                <option value="samasaptama">{lang === 'hi' ? 'समसप्तम (Samasaptama)' : 'Samasaptama (Even/Odd Signs)'}</option>
               </select>
             </label>
           </div>

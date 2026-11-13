@@ -177,7 +177,7 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
                       <h4 style={{ margin: 0 }}>{isHi ? y.nameHi : y.name}</h4>
                     </div>
                     <div className="muted small-text" style={{ marginTop: 2 }}>
-                      {y.category} · {y.source}
+                      {y.category}
                     </div>
                   </div>
                   <div className="toolbar-group">

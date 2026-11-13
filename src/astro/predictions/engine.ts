@@ -272,7 +272,7 @@ function buildLifeDomains(chart: ChartData): LifeDomainPrediction[] {
         `SAV House 1: ${savAtHouse(1)} bindus`,
         `Moon: ${moon.signName} (${moon.nakshatraName})`,
       ],
-      sources: ['Brihat Parashara Hora Shastra', 'Brihat Jataka'],
+      sources: ['Classical Vedic Jyotish Shastra'],
     },
     {
       id: 'wealth',
@@ -1120,7 +1120,7 @@ export function generatePredictionReport(chart: ChartData, targetDate?: string):
       luckyGem: lagnaExt.luckyGem,
       strengths: lagnaKb.strengths,
       cautions: lagnaKb.cautions,
-      sources: ['BPHS Ch. 34', 'Brihat Jataka', 'Saravali', 'Laghu Parashari'],
+      sources: ['Classical Vedic Shastras'],
     },
     nakshatraProfile: {
       name: nakDef.name,

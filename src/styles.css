@@ -4260,23 +4260,9 @@ body {
 }
 
 /* ========================================================
-   MINDSUTRA SOFTWARE PREMIUM THEME & WORKSTATION STYLES
+   ACTIVE DASHA STRIP & WORKSTATION STYLES
    ======================================================== */
-.mindsutra-badge {
-  display: inline-block;
-  padding: 1.5px 6px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #fff;
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  border-radius: 4px;
-  margin-left: 6px;
-  vertical-align: middle;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.mindsutra-status-strip {
+.dasha-ephemeris-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4291,27 +4277,27 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.mindsutra-status-item {
+.dasha-status-item {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.mindsutra-status-label {
+.dasha-status-label {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
 }
 
-.mindsutra-dasha-pills {
+.dasha-badge-pills {
   display: flex;
   align-items: center;
   gap: 5px;
   flex-wrap: wrap;
 }
 
-.mindsutra-dasha-pill {
+.dasha-badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -4323,34 +4309,34 @@ body {
   color: var(--text);
 }
 
-.mindsutra-dasha-pill.is-maha {
+.dasha-badge-pill.is-maha {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent);
   font-weight: 700;
 }
 
-.mindsutra-dasha-pill.is-antar {
+.dasha-badge-pill.is-antar {
   border-color: var(--accent);
   font-weight: 600;
 }
 
-.mindsutra-dasha-pill.is-prat {
+.dasha-badge-pill.is-prat {
   font-weight: 500;
 }
 
-.mindsutra-dasha-pill.is-sookshma {
+.dasha-badge-pill.is-sookshma {
   color: var(--text-muted);
 }
 
-.mindsutra-status-item-right {
+.dasha-status-item-right {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.mindsutra-meta-pill {
+.dasha-meta-pill {
   font-size: 11px;
   padding: 3px 7px;
   background: var(--bg-subtle);

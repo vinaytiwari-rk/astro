@@ -60,7 +60,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
 
-  // Master Primary Modules Definition (MindSutra Software Suite Layout)
+  // Master Primary Modules Definition
   const primaryModules: Array<{
     id: MainTab;
     labelEn: string;
@@ -69,8 +69,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   }> = [
     {
       id: 'kundli',
-      labelEn: 'E-Kundali: Core Horoscopy (Lagna, Navamsha, Vargas, Shadbala)',
-      labelHi: '1. ई-कुंडली: मूल होरोस्कोप (लग्न, नवांश, षोडशवर्ग, षड्बल व अष्टकवर्ग)',
+      labelEn: 'Horoscope Workstation (Dual Charts, Dasha, Ashtakavarga, Shadbala, KP, Predictions)',
+      labelHi: '1. जन्म कुंडली वर्कस्टेशन (लग्न, नवांश, दशा, अष्टकवर्ग, षड्बल, के.पी., फलादेश)',
       emoji: '📜',
     },
     {
@@ -117,9 +117,9 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     },
     {
       id: 'home',
-      labelEn: 'Workstation Hub (Quick Kundali, Match & Daily Panchang)',
-      labelHi: '9. मुख्य वर्कस्टेशन (त्वरित कुंडली, मिलान व पंचांग पोर्टल)',
-      emoji: '🏠',
+      labelEn: 'Quick Entry Form (Create New Kundali, Match & Panchang)',
+      labelHi: '9. त्वरित प्रविष्टि पोर्टल (नया विवरण, मिलान व पंचांग फॉर्म)',
+      emoji: '📝',
     },
   ];
 
@@ -221,19 +221,18 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         <button
           type="button"
           className="dropdown-brand-btn"
-          onClick={() => onSelectPrimaryTab('home')}
-          title={isHi ? 'मुख्य डैशबोर्ड' : 'Go to Home'}
+          onClick={() => onSelectPrimaryTab('kundli')}
+          title={isHi ? 'मुख्य वर्कस्टेशन' : 'Go to Horoscope Workstation'}
         >
           <span className="dropdown-brand-om" aria-hidden="true">
             ॐ
           </span>
           <div className="dropdown-brand-text">
             <span className="dropdown-brand-name">
-              {isHi ? 'माइण्डसूत्र ज्योतिष स्टूडियो' : 'MindSutra Jyotish Studio'}{' '}
-              <span className="mindsutra-badge">PREMIUM</span>
+              {isHi ? 'ज्योतिष होरा' : 'Jyotish Hora'}
             </span>
             <span className="dropdown-brand-tag">
-              {isHi ? 'ई-कुंडली प्रीमियम · वैदिक, केपी व लाल किताब संस्थान' : 'E-Kundali Premium · Vedic, KP, Lal Kitab & Western Studio'}
+              {isHi ? 'व्यावसायिक वैदिक, केपी व पाश्चात्य ज्योतिष संस्थान' : 'Professional Vedic, KP & Western Astrology Studio'}
             </span>
           </div>
         </button>

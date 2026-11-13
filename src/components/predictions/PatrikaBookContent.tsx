@@ -1407,7 +1407,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                     <div className="domain-top">
                       <div>
                         <h4>{isHi ? y.nameHi : y.name}</h4>
-                        <div className="muted small-text">{y.category} · {y.source}</div>
+                        <div className="muted small-text">{y.category}</div>
                       </div>
                       <span className="tag tag-varg">{y.strength}</span>
                     </div>
@@ -1486,8 +1486,8 @@ export const PatrikaBookFullPrintEdition: React.FC<{
         <div className="pred-card-body small-text muted">
           <strong>{isHi ? 'वैदिक ज्योतिषीय सूचना (अस्वीकरण):' : 'Astrological Note & Ethical Disclaimer:'}</strong>{' '}
           {isHi
-            ? `यह बृहत् जन्म पत्रिका पारंपरिक वैदिक ज्योतिष ग्रंथों (बृहत् पाराशर होरा शास्त्र, फलदीपिका, सारावली एवं जैमिनी सूत्र) के शुद्ध खगोलीय गणनाओं पर आधारित है। ज्योतिष जीवन के अवसरों व सावधानियों का मार्गदर्शन करता है; कर्म, विवेक, स्वास्थ्य व महत्वपूर्ण निर्णयों में सचेत प्रयास सदैव सर्वोपरि रहते हैं। (${formatDateDmy(formatLocalDateTimeFromUtc(Date.now(), chart.offsetMinutesUsed).slice(0, 10))})`
-            : `This Vedic Janmakundali report is prepared from high-precision Sidereal planetary ephemeris and classical Parashari / Jaimini / Ashtakavarga principles. Astrology illuminates tendencies, timing windows, and strengths to support mindful action; it is not a substitute for professional medical, legal, or financial counsel.`}
+            ? `यह बृहत् जन्म पत्रिका शास्त्रीय वैदिक ज्योतिष परंपरा, उच्च-सटीक निरयन खगोलीय गणनाओं एवं अष्टकवर्ग/दशा सिद्धांतों पर आधारित है। ज्योतिष जीवन के अवसरों व संभावनाओं का मार्गदर्शन करता है; कर्म, विवेक, स्वास्थ्य व महत्वपूर्ण निर्णयों में सचेत प्रयास सदैव सर्वोपरि रहते हैं। (${formatDateDmy(formatLocalDateTimeFromUtc(Date.now(), chart.offsetMinutesUsed).slice(0, 10))})`
+            : `This Vedic Janmakundali report is prepared from high-precision Sidereal planetary ephemeris and classical Vedic / Jaimini / Ashtakavarga principles. Astrology illuminates tendencies, timing windows, and strengths to support mindful action; it is not a substitute for professional medical, legal, or financial counsel.`}
         </div>
       </section>
     </div>

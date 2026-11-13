@@ -20,7 +20,7 @@ export const BhriguNadiPanel: React.FC<{ report: BhriguNandiNadiReport }> = ({ r
               ? 'भृगु नंदी नाड़ी ज्योतिष (Bhrigu Nandi Nadi — कारकाधारित एवं 1-5-9 त्रिकोण पद्धति)'
               : 'Bhrigu Nandi Nadi (BNN) — Karaka & 1-5-9 Directional Chain System'}
           </h3>
-          <span className="muted small-text">{report.sources.join(' · ')}</span>
+          <span className="muted small-text">{isHi ? 'त्रिकोण दिशा सूत्र एवं कारक संबंध' : 'Directional Trines & Karaka Linkages'}</span>
         </div>
 
         <div className="domains-grid">
