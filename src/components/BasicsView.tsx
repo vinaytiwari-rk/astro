@@ -152,7 +152,7 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
   const safeSettings: CalcSettings = settings ?? chart.settings;
 
   // Workstation View State
-  const [rightVarga, setRightVarga] = useState<DivisionalChartId | 'CHALIT'>('D9');
+  const [rightVarga, setRightVarga] = useState<DivisionalChartId | 'CHALIT' | 'CHANDRA'>('D9');
   const [showSpecialInChart, setShowSpecialInChart] = useState(false);
   const [showSavInChart, setShowSavInChart] = useState(false);
   const [consoleTool, setConsoleTool] = useState<WorkstationConsoleTool>('planets');
@@ -212,8 +212,16 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
     [avakahada.moonSignIndex]
   );
 
-  const rightChart = rightVarga === 'CHALIT' ? null : chart.divisionalCharts[rightVarga];
-  const rightMeta = rightChart
+  const moonSignIndex = chart.planets.find((p) => p.id === 'Moon')?.signIndex ?? 0;
+  const isChandra = rightVarga === 'CHANDRA';
+  const isChalit = rightVarga === 'CHALIT';
+  const rightChart = isChandra || isChalit ? null : chart.divisionalCharts[rightVarga];
+  const rightMeta = isChandra
+    ? {
+        name: isHi ? 'चंद्र कुंडली (Chandra Kundali)' : 'Moon Chart (Chandra Kundali)',
+        sig: `${isHi ? 'चंद्र लग्न' : 'Moon as Lagna'}: ${trSign(moonSignIndex, lang)}`,
+      }
+    : rightChart
     ? trVarga(rightChart.id, rightChart.name, rightChart.signification, lang)
     : {
         name: isHi ? 'भाव चलित (श्रीपति)' : 'Bhava Chalit (Sripati)',
@@ -223,6 +231,34 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
       };
 
   const rightItems: ChartBadgeItem[] = useMemo(() => {
+    if (rightVarga === 'CHANDRA') {
+      const moonSign = chart.planets.find((p) => p.id === 'Moon')?.signIndex ?? 0;
+      return [
+        {
+          id: 'Moon',
+          label: trPlanetShort('Moon', lang),
+          signIndex: moonSign,
+          houseNumber: 1,
+          isLagna: true,
+          tooltip: `${trPlanet('Moon', lang)} (${isHi ? 'चंद्र लग्न' : 'Moon Lagna'}): ${trSign(moonSign, lang)}`,
+        },
+        ...chart.planets
+          .filter((p) => p.id !== 'Moon')
+          .map((p) => {
+            const hNum = ((p.signIndex - moonSign + 12) % 12) + 1;
+            return {
+              id: p.id,
+              label: trPlanetShort(p.id, lang),
+              signIndex: p.signIndex,
+              houseNumber: hNum,
+              isRetrograde: p.isRetrograde,
+              isCombust: p.isCombust,
+              dignity: p.dignity,
+              tooltip: `${trPlanet(p.id, lang)}: ${trSign(p.signIndex, lang)} (H${hNum} ${isHi ? 'चंद्र से' : 'from Moon'}) | ${trTerm(p.dignity, lang)}`,
+            };
+          }),
+      ];
+    }
     if (rightVarga === 'CHALIT') {
       return chalitData.placements.map((pl) => ({
         id: pl.id,
@@ -246,7 +282,7 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
       dignity: pl.dignity,
       tooltip: `${trPlanet(pl.id, lang)}: ${trSign(pl.signIndex, lang)} (${t.common.house}${pl.houseFromVargaLagna}) | ${trTerm(pl.dignity, lang)}`,
     }));
-  }, [rightVarga, chalitData, rightChart, lang, t.common.house]);
+  }, [rightVarga, chalitData, rightChart, chart.planets, lang, isHi, t.common.house]);
 
   const allBodies = [chart.ascendant, ...chart.planets];
 
@@ -435,6 +471,9 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
               <option value="D9">
                 {isHi ? 'D9 — नवांश कुंडली (Navamsha — धर्म व जीवनसाथी)' : 'D9 — Navamsha (Dharma & Spouse)'}
               </option>
+              <option value="CHANDRA">
+                {isHi ? 'CHANDRA — चंद्र कुंडली (Chandra Kundali — मन व राशि लग्न)' : 'CHANDRA — Moon Chart (Chandra Kundali)'}
+              </option>
               <option value="CHALIT">
                 {isHi ? 'CHALIT — भाव चलित कुंडली (श्रीपति भाव संधि)' : 'CHALIT — Bhava Chalit (Sripati House Shifts)'}
               </option>
@@ -499,16 +538,24 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
             centerLabel={isHi ? 'राशि (D1)' : 'RASI (D1)'}
           />
           <VedicChartSvg
-            title={rightChart ? `${rightMeta.name} (${rightChart.id})` : rightMeta.name}
-            subtitle={rightChart ? rightMeta.sig : `${chalitData.shiftedBodies.length} ${isHi ? 'ग्रह चलित भाव परिवर्तन' : 'shifted bodies'}`}
+            title={rightMeta.name}
+            subtitle={rightMeta.sig}
             style={chartStyle}
             lagnaSignIndex={
-              rightVarga === 'CHALIT'
+              rightVarga === 'CHANDRA'
+                ? moonSignIndex
+                : rightVarga === 'CHALIT'
                 ? chart.ascendant.signIndex
                 : rightChart!.placements.find((p) => p.id === 'Asc')?.signIndex ?? 0
             }
             items={rightItems}
-            centerLabel={rightVarga === 'CHALIT' ? (isHi ? 'चलित' : 'CHALIT') : rightChart!.id}
+            centerLabel={
+              rightVarga === 'CHANDRA'
+                ? (isHi ? 'चंद्र' : 'MOON')
+                : rightVarga === 'CHALIT'
+                ? (isHi ? 'चलित' : 'CHALIT')
+                : rightChart!.id
+            }
           />
         </div>
 
