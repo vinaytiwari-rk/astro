@@ -421,7 +421,7 @@ export async function searchPlacesOnline(
   signal?: AbortSignal
 ): Promise<CityEntry[]> {
   const raw = query.trim();
-  if (raw.length < 3) return [];
+  if (raw.length < 2) return [];
 
   const commaParts = raw
     .split(',')

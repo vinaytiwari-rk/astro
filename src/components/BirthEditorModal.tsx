@@ -7,10 +7,10 @@ import {
   preloadExpandedAtlas,
   type CityEntry,
 } from '../data/cities';
-import { useCitySearch } from '../hooks/useCitySearch';
 import { useLanguage } from '../i18n/LanguageContext';
 import { CitySearchModal } from './CitySearchModal';
 import { DateDmyInput } from './DateDmyInput';
+import { InlineCityAutocomplete } from './InlineCityAutocomplete';
 
 interface BirthEditorModalProps {
   open: boolean;
@@ -34,8 +34,6 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
   const { lang, t } = useLanguage();
   const [form, setForm] = useState<BirthInput>(initial);
   const [cityModalOpen, setCityModalOpen] = useState(false);
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const [highlightIdx, setHighlightIdx] = useState(0);
   const [manualTz, setManualTz] = useState(initial.timezone === 'MANUAL');
   const [offsetText, setOffsetText] = useState(() =>
     initial.timezone === 'MANUAL'
@@ -46,8 +44,6 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
   useEffect(() => {
     if (open) {
       setForm(initial);
-      setSuggestOpen(false);
-      setHighlightIdx(0);
       void preloadExpandedAtlas();
       const isManual = initial.timezone === 'MANUAL';
       setManualTz(isManual);
@@ -58,18 +54,6 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
       );
     }
   }, [open, initial]);
-
-  const { results: citySuggestions, isSearchingOnline } = useCitySearch({
-    query: form.city,
-    lang,
-    active: open && suggestOpen,
-    minChars: 3,
-    limit: 25,
-  });
-
-  useEffect(() => {
-    setHighlightIdx(0);
-  }, [citySuggestions.length, form.city]);
 
   if (!open) return null;
 
@@ -83,7 +67,6 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
       timezone: c.timezone,
     };
     setForm(updated);
-    setSuggestOpen(false);
     setManualTz(false);
     setOffsetText(formatOffsetString(getIanaOffsetMinutes(updated.date, updated.time, c.timezone)));
   };
@@ -93,24 +76,6 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
     setForm((prev) => ({ ...prev, timezone: detected }));
     setManualTz(false);
     setOffsetText(formatOffsetString(getIanaOffsetMinutes(form.date, form.time, detected)));
-  };
-
-  const handlePlaceKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!suggestOpen || citySuggestions.length === 0) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setHighlightIdx((i) => (i + 1) % citySuggestions.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlightIdx((i) => (i - 1 + citySuggestions.length) % citySuggestions.length);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const picked = citySuggestions[highlightIdx] || citySuggestions[0];
-      if (picked) handleCitySelect(picked);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      setSuggestOpen(false);
-    }
   };
 
   const handleSubmit = (saveAsNew: boolean) => {
@@ -203,9 +168,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
             <div className="field span-2">
               <div className="tz-header-row">
                 <span>
-                  {lang === 'hi'
-                    ? 'जन्म स्थान (3 अक्षर लिखते ही सुझाव दिखेंगे)'
-                    : 'Place of Birth (type 3+ letters for instant suggestions)'}
+                  {lang === 'hi' ? 'जन्म स्थान' : 'Place of Birth'}
                 </span>
                 {form.country && (
                   <span className="hint-text">
@@ -214,120 +177,26 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 )}
               </div>
               <div className="inline-row">
-                <div className="place-autocomplete-wrap">
-                  <div className="place-input-shell">
-                    <Search size={14} className="place-input-icon" />
-                    <input
-                      type="text"
-                      className="text-input place-input-with-icon"
-                      value={form.city}
-                      autoComplete="off"
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setForm({ ...form, city: val });
-                        setSuggestOpen(val.trim().length > 0);
-                      }}
-                      onKeyDown={handlePlaceKeyDown}
-                      onBlur={() => {
-                        window.setTimeout(() => setSuggestOpen(false), 160);
-                      }}
-                      placeholder={
-                        lang === 'hi'
-                          ? 'कम से कम 3 अक्षर लिखें (जैसे Var, Mat, Vrind, Lon, Dub)...'
-                          : 'Type 3+ characters (e.g. Var, Mat, Vrind, Lon, Dub)...'
-                      }
-                    />
-                    {isSearchingOnline && (
-                      <Loader2 size={14} className="place-input-spinner spin-icon" />
-                    )}
-                  </div>
-
-                  {suggestOpen && form.city.trim().length > 0 && form.city.trim().length < 3 && (
-                    <div className="place-min-hint">
-                      {lang === 'hi'
-                        ? 'सुझाव देखने के लिए कम से कम 3 अक्षर टाइप करें...'
-                        : 'Type at least 3 characters to see global city suggestions...'}
-                    </div>
-                  )}
-
-                  {suggestOpen && form.city.trim().length >= 3 && (
-                    <div
-                      className="place-suggest-dropdown"
-                      role="listbox"
-                      aria-label={lang === 'hi' ? 'स्थान सुझाव' : 'Place Suggestions'}
-                    >
-                      <div className="place-suggest-header">
-                        <span>
-                          {lang === 'hi'
-                            ? `${citySuggestions.length} स्थान मिले (विश्व एटलस + ऑनलाइन)`
-                            : `${citySuggestions.length} places found (Global Atlas + Online)`}
-                        </span>
-                        {isSearchingOnline && (
-                          <span className="hint-text">
-                            {lang === 'hi' ? 'अधिक स्थान खोज रहे हैं...' : 'Fetching global places...'}
-                          </span>
-                        )}
-                      </div>
-
-                      {citySuggestions.length === 0 ? (
-                        <div className="place-suggest-empty">
-                          {isSearchingOnline
-                            ? lang === 'hi'
-                              ? 'विश्व डेटाबेस में खोज जारी है...'
-                              : 'Searching worldwide places...'
-                            : lang === 'hi'
-                              ? 'कोई सीधा परिणाम नहीं मिला — "शहर एटलस" खोलें या अक्षांश/देशांतर स्वयं भरें।'
-                              : 'No direct match yet — try "Browse Atlas" or enter coordinates manually.'}
-                        </div>
-                      ) : (
-                        citySuggestions.map((c, idx) => (
-                          <button
-                            key={`${c.city}-${c.country}-${c.lat}-${c.lng}-${idx}`}
-                            type="button"
-                            role="option"
-                            aria-selected={idx === highlightIdx}
-                            className={`place-suggest-item ${idx === highlightIdx ? 'is-active' : ''}`}
-                            onMouseEnter={() => setHighlightIdx(idx)}
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleCitySelect(c);
-                            }}
-                          >
-                            <div className="place-suggest-main">
-                              <div className="place-suggest-title">
-                                <strong>{c.city}</strong>
-                                {c.province ? <span className="city-meta"> · {c.province}</span> : null}
-                              </div>
-                              <div className="city-country">
-                                {c.country}
-                                {c.source === 'online' && (
-                                  <span className="source-pill">
-                                    {lang === 'hi' ? 'ऑनलाइन' : 'Global'}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="city-coords">
-                              <span>
-                                {Math.abs(c.lat).toFixed(2)}°{c.lat >= 0 ? 'N' : 'S'},{' '}
-                                {Math.abs(c.lng).toFixed(2)}°{c.lng >= 0 ? 'E' : 'W'}
-                              </span>
-                              <span className="tz-pill">{c.timezone}</span>
-                            </div>
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-
+                <InlineCityAutocomplete
+                  value={form.city}
+                  country={form.country}
+                  lang={lang}
+                  placeholder={
+                    lang === 'hi'
+                      ? 'शहर का नाम लिखें (जैसे Delhi, Mumbai, Varanasi)...'
+                      : 'Type city name (e.g. Delhi, Mumbai, Varanasi)...'
+                  }
+                  onChangeText={(val) => setForm({ ...form, city: val })}
+                  onSelectCity={handleCitySelect}
+                />
                 <button
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => setCityModalOpen(true)}
+                  title={lang === 'hi' ? 'शहर एटलस से चुनें' : 'Browse Atlas'}
                 >
                   <MapPin size={15} />
-                  {lang === 'hi' ? 'शहर एटलस' : 'Browse Atlas'}
+                  <span>{lang === 'hi' ? 'एटलस' : 'Atlas'}</span>
                 </button>
               </div>
             </div>

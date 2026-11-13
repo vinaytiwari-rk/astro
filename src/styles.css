@@ -1805,14 +1805,19 @@ body {
 /* Inline Place Autocomplete & Global Atlas Status */
 .place-autocomplete-wrap {
   position: relative;
-  flex: 1 1 220px;
+  width: 100%;
   min-width: 0;
+}
+
+.inline-row .place-autocomplete-wrap {
+  flex: 1 1 220px;
 }
 
 .place-input-shell {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .place-input-icon {
@@ -1820,18 +1825,47 @@ body {
   left: 10px;
   color: var(--text-muted);
   pointer-events: none;
+  z-index: 2;
 }
 
 .place-input-with-icon {
   width: 100%;
   padding-left: 30px;
-  padding-right: 30px;
+  padding-right: 64px;
+}
+
+.place-gps-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.15s ease;
+}
+
+.place-gps-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
 }
 
 .place-input-spinner {
   position: absolute;
-  right: 10px;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--accent);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .spin-icon {
@@ -1859,13 +1893,19 @@ body {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 220;
-  max-height: 260px;
+  z-index: 9999;
+  max-height: 280px;
   overflow-y: auto;
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.place-suggest-dropdown.is-upward {
+  top: auto;
+  bottom: calc(100% + 4px);
+  box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.28);
 }
 
 .place-suggest-header {

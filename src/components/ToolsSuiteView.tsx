@@ -261,84 +261,53 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
 
   return (
     <div className="view-stack">
-      <div className="tools-grouped-bar">
-        <div className="tools-group-row">
-          <span className="tools-group-label">
-            {lang === 'hi' ? 'कुंडली एवं सूक्ष्म काल' : 'Natal & Subtle Timing'}
-          </span>
-          <div className="tools-group-pills">
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'btr' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('btr')}
+      {/* Top Dropdown Control Toolbar for Tools & Muhurta */}
+      <div className="card" style={{ padding: '12px 16px', background: 'var(--bg-elevated)', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 340px', minWidth: '260px' }}>
+            <span style={{ fontWeight: 700, fontSize: '13.5px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Compass size={16} style={{ color: 'var(--accent)' }} />
+              <span>{lang === 'hi' ? 'टूल व मुहूर्त चुनें:' : 'Select Jyotish Tool / Muhurta:'}</span>
+            </span>
+            <select
+              aria-label="Select Jyotish Tool"
+              className="select-compact"
+              value={subTab}
+              onChange={(e) => setSubTab(e.target.value as ToolSubTab)}
+              style={{ flex: 1, fontWeight: 600, borderColor: 'var(--accent)', minHeight: '38px', fontSize: '13px' }}
             >
-              <Clock size={13} /> {t.toolsTabs.btr}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'avasthas' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('avasthas')}
-            >
-              <Flame size={13} /> {t.toolsTabs.avasthas}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'panchapakshi' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('panchapakshi')}
-            >
-              <Feather size={13} /> {lang === 'hi' ? 'पंच पक्षी शास्त्र' : 'Pancha Pakshi (5-Bird)'}
-            </button>
-          </div>
-        </div>
-
-        <div className="tools-group-row">
-          <span className="tools-group-label">
-            {lang === 'hi' ? 'पंचांग, होरा व मुहूर्त' : 'Panchang, Hora & Calendars'}
-          </span>
-          <div className="tools-group-pills">
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'deep_panchang' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('deep_panchang')}
-            >
-              <ShieldCheck size={13} />{' '}
-              {lang === 'hi' ? 'संवत्सर, शूल व वास' : 'Samvatsara · Shoola/Vaasa'}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'do_ghati' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('do_ghati')}
-            >
-              <Clock size={13} /> {lang === 'hi' ? 'दो-घटी मुहूर्त (30)' : 'Do Ghati Muhurat'}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'hora_24' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('hora_24')}
-            >
-              <Clock size={13} /> {lang === 'hi' ? '24 घंटे होरा' : '24h Hora'}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'monthly_panchang' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('monthly_panchang')}
-            >
-              <Calendar size={13} /> {lang === 'hi' ? 'मासिक पंचांग' : 'Monthly Panchang'}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'muhurta' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('muhurta')}
-            >
-              <Search size={13} /> {t.toolsTabs.muhurta}
-            </button>
-            <button
-              type="button"
-              className={`subtab-btn ${subTab === 'calendar' ? 'is-active' : ''}`}
-              onClick={() => setSubTab('calendar')}
-            >
-              <Calendar size={13} /> {t.toolsTabs.calendar}
-            </button>
+              <optgroup label={lang === 'hi' ? 'कुंडली एवं सूक्ष्म काल' : 'Natal & Subtle Timing'}>
+                <option value="btr">
+                  {lang === 'hi' ? '🧭 जन्म समय संशोधन (BTR — D9, D10, D60, KP व प्राणपद)' : '🧭 Birth Time Rectification (BTR — D9, D10, D60, KP & Pranapada)'}
+                </option>
+                <option value="avasthas">
+                  {lang === 'hi' ? '🔥 ग्रहावस्था, ग्रह युद्ध व उपग्रह (10 अवस्थाएं)' : '🔥 Planetary Avasthas, Graha Yuddha & Upagrahas'}
+                </option>
+                <option value="panchapakshi">
+                  {lang === 'hi' ? '🪶 पंच पक्षी शास्त्र (5-Bird System व दिशा बल)' : '🪶 Pancha Pakshi Shastra (5-Bird System)'}
+                </option>
+              </optgroup>
+              <optgroup label={lang === 'hi' ? 'पंचांग, होरा व मुहूर्त' : 'Panchang, Hora & Calendars'}>
+                <option value="deep_panchang">
+                  {lang === 'hi' ? '🛡️ संवत्सर, शूल, वास व अशुभ योग (दैनिक)' : '🛡️ Samvatsara, Shoola/Vaasa & Inauspicious Muhurta'}
+                </option>
+                <option value="do_ghati">
+                  {lang === 'hi' ? '⏰ दो-घटी मुहूर्त (30 दैनिक मुहूर्त — 48 मिनट काल)' : '⏰ Do Ghati Muhurat (30 Daily Muhurtas — 48m each)'}
+                </option>
+                <option value="hora_24">
+                  {lang === 'hi' ? '⏳ 24-घंटे दैनिक होरा चक्र (सटीक सूर्योदय आधारित)' : '⏳ 24-Hour Hora Calculator (Sunrise-based)'}
+                </option>
+                <option value="monthly_panchang">
+                  {lang === 'hi' ? '📅 मासिक दृक पंचांग (तिथि, नक्षत्र, योग, करण)' : '📅 Monthly Drik Panchang Calendar'}
+                </option>
+                <option value="muhurta">
+                  {lang === 'hi' ? '✨ शुभ मुहूर्त चयन (विवाह, गृह प्रवेश, वाहन, व्यापार)' : '✨ Shubh Muhurta Date Finder (Marriage, Griha, Vehicle)'}
+                </option>
+                <option value="calendar">
+                  {lang === 'hi' ? '🪐 10-वर्षीय गोचर व ग्रहण पंचांग' : '🪐 10-Year Planetary Transit & Eclipse Calendar'}
+                </option>
+              </optgroup>
+            </select>
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ export function useCitySearch({
   query,
   lang,
   active,
-  minChars = 3,
+  minChars = 1,
   limit = 30,
 }: UseCitySearchOptions): {
   results: CityEntry[];
@@ -61,7 +61,7 @@ export function useCitySearch({
       });
     });
 
-    if (trimmedQuery.length < 3) {
+    if (trimmedQuery.length < 2) {
       setIsSearchingOnline(false);
       return () => {
         cancelled = true;
