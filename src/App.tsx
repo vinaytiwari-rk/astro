@@ -191,7 +191,7 @@ export function App() {
     } else {
       // Pick sensible defaults
       if (targetTab === 'kundli') setActiveSubTab('overview');
-      else if (targetTab === 'predictions') setActiveSubTab('deep_life');
+      else if (targetTab === 'predictions') setActiveSubTab('twelve_planets');
       else if (targetTab === 'dasha_transits') setActiveSubTab('vimshottari');
       else if (targetTab === 'branches') setActiveSubTab('kp_4step');
       else if (targetTab === 'western') setActiveSubTab('wheel_chart');
@@ -402,6 +402,15 @@ export function App() {
               <PredictionsView
                 chart={chart}
                 chartStyle={settings.chartStyle}
+                activeSubTab={activeSubTab}
+                onSelectSubTab={(sub) => {
+                  setActiveSubTab(sub);
+                  setRouteRequest((prev) => ({
+                    tab: 'predictions',
+                    subTab: sub,
+                    nonce: (prev?.nonce ?? 0) + 1,
+                  }));
+                }}
                 requestedRoute={{
                   subTab: activeSubTab,
                   nonce: routeRequest?.nonce ?? 0,

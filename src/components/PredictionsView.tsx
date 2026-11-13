@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Calendar,
   Sparkles,
@@ -33,7 +33,6 @@ import {
   PlanetInSignPanel,
 } from './predictions/PlanetSignNakshatraPanels';
 import { AdvancedTechniquesPanel } from './predictions/AdvancedTechniquesPanel';
-import { PredictionsPatrikaFrame } from './predictions/PatrikaBookContent';
 import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { ActiveYogasAndYutiPanel } from './predictions/ActiveYogasAndYutiPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
@@ -43,6 +42,8 @@ import { ParamayusLockBanner } from './ParamayusLockBanner';
 interface PredictionsViewProps {
   chart: ChartData;
   chartStyle: ChartStyle;
+  activeSubTab?: string;
+  onSelectSubTab?: (subTab: string) => void;
   requestedRoute?: { subTab?: string; nested?: string; nonce: number };
 }
 
@@ -50,12 +51,11 @@ export type PredSubTab =
   | 'twelve_planets'
   | 'active_yogas_yuti'
   | 'deep_life'
-  | 'classicalYogas'
   | 'eventsLedger'
-  | 'bhavas12'
+  | 'houseWise'
   | 'bhriguNadi'
-  | 'yuti'
   | 'pastFuture'
+  | 'branchesNumerology'
   | 'advancedTechniques'
   | 'bhavesha144'
   | 'bhavatBhavam'
@@ -63,34 +63,80 @@ export type PredSubTab =
   | 'planetInSign'
   | 'planetInNakshatra'
   | 'planetInHouse'
-  | 'houseWise'
   | 'degreeWise'
   | 'dashaWise'
   | 'gocharWise'
-  | 'divisional'
-  | 'branchesNumerology';
+  | 'divisional';
+
+function normalizeSubTab(id?: string): PredSubTab {
+  if (!id) return 'twelve_planets';
+  if (id === 'twelve_planets') return 'twelve_planets';
+  if (
+    id === 'active_yogas_yuti' ||
+    id === 'classical_yogas' ||
+    id === 'classicalYogas' ||
+    id === 'yuti' ||
+    id === 'yuti_aspects'
+  ) {
+    return 'active_yogas_yuti';
+  }
+  if (id === 'deep_life') return 'deep_life';
+  if (id === 'eventsLedger' || id === 'timeline_120yr' || id === 'timeline') return 'eventsLedger';
+  if (id === 'houseWise' || id === 'bhavas_12' || id === 'bhavas12' || id === 'bhavas') return 'houseWise';
+  if (id === 'bhriguNadi' || id === 'bnn_bsp' || id === 'bnn') return 'bhriguNadi';
+  if (id === 'pastFuture' || id === 'past_future' || id === 'past_life') return 'pastFuture';
+  if (
+    id === 'branchesNumerology' ||
+    id === 'kp_4step_pred' ||
+    id === 'lal_kitab_pred' ||
+    id === 'bhavartha_pred' ||
+    id === 'kp' ||
+    id === 'lalkitab' ||
+    id === 'numerology'
+  ) {
+    return 'branchesNumerology';
+  }
+  if (id === 'advancedTechniques') return 'advancedTechniques';
+  if (id === 'bhavesha144') return 'bhavesha144';
+  if (id === 'bhavatBhavam') return 'bhavatBhavam';
+  if (id === 'drishtiWise') return 'drishtiWise';
+  if (id === 'planetInSign') return 'planetInSign';
+  if (id === 'planetInNakshatra') return 'planetInNakshatra';
+  if (id === 'planetInHouse') return 'planetInHouse';
+  if (id === 'degreeWise') return 'degreeWise';
+  if (id === 'dashaWise') return 'dashaWise';
+  if (id === 'gocharWise' || id === 'transits') return 'gocharWise';
+  if (id === 'divisional') return 'divisional';
+  return 'twelve_planets';
+}
 
 export const PredictionsView: React.FC<PredictionsViewProps> = ({
   chart,
   chartStyle,
+  activeSubTab,
+  onSelectSubTab,
   requestedRoute,
 }) => {
   const { lang, t } = useLanguage();
   const isHi = lang === 'hi';
   const [targetDate, setTargetDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [subTab, setSubTab] = useState<PredSubTab>('twelve_planets');
   const [gocharRef, setGocharRef] = useState<'moon' | 'lagna'>('moon');
 
-  useEffect(() => {
-    const id = requestedRoute?.subTab as PredSubTab | undefined;
-    if (id) {
-      if (id === 'classicalYogas' || id === 'yuti') {
-        setSubTab('active_yogas_yuti');
-      } else {
-        setSubTab(id);
-      }
+  // Internal fallback state if onSelectSubTab not provided
+  const [localSubTab, setLocalSubTab] = useState<PredSubTab>('twelve_planets');
+
+  // Master Resolved Active SubTab (100% in sync with top header)
+  const currentTab = useMemo(() => {
+    const raw = activeSubTab || requestedRoute?.subTab;
+    return raw ? normalizeSubTab(raw) : localSubTab;
+  }, [activeSubTab, requestedRoute?.subTab, localSubTab]);
+
+  const handleTabChange = (newTab: PredSubTab) => {
+    setLocalSubTab(newTab);
+    if (onSelectSubTab) {
+      onSelectSubTab(newTab);
     }
-  }, [requestedRoute?.nonce, requestedRoute?.subTab]);
+  };
 
   const rawReport = useMemo(
     () => generatePredictionReport(chart, targetDate),
@@ -101,190 +147,163 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     [rawReport, lang, chart]
   );
 
-  // Clean, Unified Event-Driven Prediction Systems
-  const predictionOptions: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
+  // Core Prediction Systems (Synchronized Navigation Pills)
+  const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string; icon: string }> = [
     {
       id: 'twelve_planets',
-      labelEn: '🌟 12 Planets Detailed Event Predictions (9 Vedic + Uranus, Neptune, Pluto)',
-      labelHi: '🌟 द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक ग्रह + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)',
+      labelEn: '🌟 12 Planets Event Predictions',
+      labelHi: '🌟 द्वादश ग्रह घटना फलादेश',
+      icon: '🌟',
     },
     {
       id: 'active_yogas_yuti',
-      labelEn: '📜 Active Yogas & Planetary Conjunctions (2-7 Grahas Stellium & 300+ Yogas)',
-      labelHi: '📜 सक्रिय राजयोग व ग्रह युति फल (2 से 7 ग्रह युति, राजयोग, धनयोग व 300+ योग)',
+      labelEn: '📜 Active Yogas & Conjunctions',
+      labelHi: '📜 सक्रिय राजयोग व ग्रह युति',
+      icon: '📜',
     },
     {
       id: 'deep_life',
-      labelEn: '🏛 In-Depth Comprehensive Life Predictions (6 Core Spheres)',
-      labelHi: '🏛 विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, विद्या, करियर, दांपत्य, स्वास्थ्य)',
+      labelEn: '🏛️ 6-Domain Life Predictions',
+      labelHi: '🏛️ समग्र जीवन फलादेश',
+      icon: '🏛️',
     },
     {
       id: 'eventsLedger',
-      labelEn: '⏳ 120-Year Complete Life Events Timeline & Milestones',
-      labelHi: '⏳ 120-वर्षीय विंशोत्तरी जीवन घटनाक्रम व दुर्घटना जांच',
+      labelEn: '⏳ 120-Year Timeline',
+      labelHi: '⏳ 120-वर्षीय कालचक्र',
+      icon: '⏳',
     },
     {
       id: 'houseWise',
-      labelEn: '🏠 12 Bhavas Comprehensive Analysis (1st to 12th House)',
-      labelHi: '🏠 द्वादश भाव विस्तृत फलादेश (तनु से मोक्ष तक)',
+      labelEn: '🏠 12 Bhavas Domains',
+      labelHi: '🏠 द्वादश भाव फल',
+      icon: '🏠',
     },
     {
       id: 'bhriguNadi',
-      labelEn: '✨ Bhrigu Nandi Nadi & BSP (29 Classical Age Rules)',
-      labelHi: '✨ भृगु नंदी नाड़ी व BSP (29 नियम, कर्म फल, राहु-केतु अक्ष)',
+      labelEn: '✨ Bhrigu Nandi Nadi',
+      labelHi: '✨ भृगु नंदी नाड़ी व BSP',
+      icon: '✨',
     },
     {
       id: 'pastFuture',
-      labelEn: '🔄 Past Life Karma (D60/D12/D20) & Future Incarnation',
-      labelHi: '🔄 पूर्व जन्म (D60 षष्ट्यंश) व आगामी जन्म गति',
-    },
-    {
-      id: 'advancedTechniques',
-      labelEn: '🎯 1000+ Empirical Rules & Systems Approach MEP',
-      labelHi: '🎯 1000+ उन्नत नियम व सिस्टम MEP',
-    },
-    {
-      id: 'bhavesha144',
-      labelEn: '🔢 144 Bhavesha Placement Matrix',
-      labelHi: '🔢 144 भावेश स्थिति तालिका',
-    },
-    {
-      id: 'bhavatBhavam',
-      labelEn: '🔍 Bhavat Bhavam & Mutual Planetary Aspects',
-      labelHi: '🔍 भावात् भावम् व दृष्टि फल',
-    },
-    {
-      id: 'degreeWise',
-      labelEn: '📐 Degree-Wise Ansha & Avastha Report',
-      labelHi: '📐 अंश बल व अवस्था फल',
-    },
-    {
-      id: 'planetInSign',
-      labelEn: '🪐 Planets in Signs (Rashi Phala)',
-      labelHi: '🪐 राशियों में ग्रह फल',
-    },
-    {
-      id: 'planetInNakshatra',
-      labelEn: '⭐ Planets in Nakshatras & Padas',
-      labelHi: '⭐ नक्षत्रों व चरणों में ग्रह फल',
-    },
-    {
-      id: 'planetInHouse',
-      labelEn: '🏠 Planets in Houses (Bhava Phala)',
-      labelHi: '🏠 भावों में ग्रह फल',
-    },
-    {
-      id: 'dashaWise',
-      labelEn: '📊 Active Dasha Period Forecast',
-      labelHi: '📊 सक्रिय दशा फलादेश',
-    },
-    {
-      id: 'gocharWise',
-      labelEn: '🌌 Current Planetary Transit Analysis',
-      labelHi: '🌌 वर्तमान गोचर फलादेश',
+      labelEn: '🔄 Past Life Karma D60',
+      labelHi: '🔄 पूर्व जन्म D60',
+      icon: '🔄',
     },
     {
       id: 'branchesNumerology',
-      labelEn: '🌿 KP 4-Step, Lal Kitab, Numerology & Remedies',
-      labelHi: '🌿 KP 4-स्टेप, लाल किताब, अंक ज्योतिष व उपाय',
+      labelEn: '🌿 KP & Lal Kitab',
+      labelHi: '🌿 KP व लाल किताब',
+      icon: '🌿',
     },
   ];
 
   return (
     <div className="view-stack">
-      {/* Top Dropdown Control Toolbar for Predictions (Dropdown First, No Persona) */}
-      <div className="card" style={{ padding: '12px 16px', background: 'var(--bg-elevated)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          {/* Main Prediction Selector Dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 360px', minWidth: '280px' }}>
-            <span style={{ fontWeight: 700, fontSize: '13.5px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Sparkles size={16} style={{ color: 'var(--accent)' }} />
-              <span>{isHi ? 'फलादेश प्रणाली चुनें:' : 'Select Prediction System:'}</span>
-            </span>
-            <select
-              aria-label="Select Prediction System"
-              className="select-compact"
-              value={subTab}
-              onChange={(e) => setSubTab(e.target.value as PredSubTab)}
-              style={{ flex: 1, fontWeight: 600, borderColor: 'var(--accent)', minHeight: '38px', fontSize: '13px' }}
-            >
-              {predictionOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                  {isHi ? opt.labelHi : opt.labelEn}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Sleek Subtab Pill Strip & Forecast Date (NO 3RD DROPDOWN! 100% IN SYNC WITH TOP HEADER) */}
+      <div
+        className="card"
+        style={{
+          padding: '8px 14px',
+          background: 'var(--bg-elevated)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '10px',
+        }}
+      >
+        {/* Horizontal Navigation Pills */}
+        <div
+          role="tablist"
+          aria-label={isHi ? 'फलादेश अनुभाग' : 'Prediction Sections'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            flexWrap: 'wrap',
+            flex: '1 1 auto',
+          }}
+        >
+          {predictionPills.map((pill) => {
+            const isActive = currentTab === pill.id;
+            return (
+              <button
+                key={pill.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`btn btn-sm ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleTabChange(pill.id)}
+                style={{
+                  fontWeight: isActive ? 700 : 500,
+                  fontSize: '12.5px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isHi ? pill.labelHi : pill.labelEn}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Forecast Date Picker */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={15} className="muted" />
-            <span className="muted small-text">{t.common.forecastDate}:</span>
-            <DateDmyInput
-              compact
-              className="select-compact mono"
-              value={targetDate}
-              ariaLabel={t.common.forecastDate}
-              onChange={setTargetDate}
-            />
-          </div>
+        {/* Forecast Date Picker */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+          <Calendar size={14} className="muted" />
+          <span className="muted small-text" style={{ whiteSpace: 'nowrap' }}>
+            {t.common.forecastDate}:
+          </span>
+          <DateDmyInput
+            compact
+            className="select-compact mono"
+            value={targetDate}
+            ariaLabel={t.common.forecastDate}
+            onChange={setTargetDate}
+          />
         </div>
       </div>
 
-      {/* Paramayus Check or Content */}
+      {/* Direct Content Render (NO PATRIKA BOOK HIJACK! DIRECT PREDICTION DISPLAY) */}
       {report.paramayus.exceeded ? (
         <ParamayusLockBanner status={report.paramayus} />
       ) : (
-        <PredictionsPatrikaFrame chart={chart} report={report}>
-          {subTab === 'twelve_planets' && (
+        <div className="view-stack">
+          {currentTab === 'twelve_planets' && (
             <TwelvePlanetsPanel chart={chart} />
           )}
-          {(subTab === 'active_yogas_yuti' || subTab === 'classicalYogas' || subTab === 'yuti') && (
+
+          {currentTab === 'active_yogas_yuti' && (
             <ActiveYogasAndYutiPanel
               chart={chart}
               yutiReport={report.yutiReport}
               detectedYogas={report.classicalYogas}
             />
           )}
-          {subTab === 'deep_life' && (
+
+          {currentTab === 'deep_life' && (
             <DeepLifePredictionsPanel chart={chart} />
           )}
-          {subTab === 'eventsLedger' && <LifeEventsLedgerPanel ledger={report.lifeEventsLedger} />}
-          {subTab === 'pastFuture' && report.pastFutureLife && (
-            <PastLifeFuturePanel report={report.pastFutureLife} />
+
+          {currentTab === 'eventsLedger' && (
+            <LifeEventsLedgerPanel ledger={report.lifeEventsLedger} />
           )}
-          {subTab === 'advancedTechniques' && report.advancedTechniques && (
-            <AdvancedTechniquesPanel report={report.advancedTechniques} />
-          )}
-          {subTab === 'bhriguNadi' && <BhriguNadiPanel report={report.bhriguNandiNadi} />}
-          {subTab === 'bhavesha144' && <Bhavesha144Panel houseLordships={report.houseLordships} />}
-          {subTab === 'bhavatBhavam' && (
-            <BhavatBhavamPanel report={report.bhavatBhavamReport} chart={chart} />
-          )}
-          {subTab === 'drishtiWise' && <DrishtiWisePanel report={report.drishtiReport} />}
-          {subTab === 'planetInSign' && <PlanetInSignPanel items={report.planetInSigns} />}
-          {subTab === 'planetInNakshatra' && (
-            <PlanetInNakshatraPanel items={report.planetInNakshatras} />
-          )}
-          {subTab === 'planetInHouse' && <PlanetInHousePanel report={report} />}
-          {subTab === 'houseWise' && (
+
+          {currentTab === 'houseWise' && (
             <HouseWisePanel houses={report.houseWisePredictions} report={report} />
           )}
-          {subTab === 'degreeWise' && <DegreeWisePanel items={report.degreePredictions} />}
-          {subTab === 'dashaWise' && <DashaWisePanel chart={chart} report={report} />}
-          {subTab === 'gocharWise' && (
-            <GocharWisePanel
-              chart={chart}
-              chartStyle={chartStyle}
-              report={report}
-              gocharRef={gocharRef}
-              setGocharRef={setGocharRef}
-            />
+
+          {currentTab === 'bhriguNadi' && (
+            <BhriguNadiPanel report={report.bhriguNandiNadi} />
           )}
-          {subTab === 'divisional' && (
-            <DivisionalPredictionsPanel chart={chart} chartStyle={chartStyle} report={report} />
+
+          {currentTab === 'pastFuture' && report.pastFutureLife && (
+            <PastLifeFuturePanel report={report.pastFutureLife} />
           )}
-          {subTab === 'branchesNumerology' && (
+
+          {currentTab === 'branchesNumerology' && (
             <BranchesAndNumerologyPanel
               chart={chart}
               chartStyle={chartStyle}
@@ -296,7 +315,57 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
               }
             />
           )}
-        </PredictionsPatrikaFrame>
+
+          {currentTab === 'advancedTechniques' && report.advancedTechniques && (
+            <AdvancedTechniquesPanel report={report.advancedTechniques} />
+          )}
+
+          {currentTab === 'bhavesha144' && (
+            <Bhavesha144Panel houseLordships={report.houseLordships} />
+          )}
+
+          {currentTab === 'bhavatBhavam' && (
+            <BhavatBhavamPanel report={report.bhavatBhavamReport} chart={chart} />
+          )}
+
+          {currentTab === 'drishtiWise' && (
+            <DrishtiWisePanel report={report.drishtiReport} />
+          )}
+
+          {currentTab === 'planetInSign' && (
+            <PlanetInSignPanel items={report.planetInSigns} />
+          )}
+
+          {currentTab === 'planetInNakshatra' && (
+            <PlanetInNakshatraPanel items={report.planetInNakshatras} />
+          )}
+
+          {currentTab === 'planetInHouse' && (
+            <PlanetInHousePanel report={report} />
+          )}
+
+          {currentTab === 'degreeWise' && (
+            <DegreeWisePanel items={report.degreePredictions} />
+          )}
+
+          {currentTab === 'dashaWise' && (
+            <DashaWisePanel chart={chart} report={report} />
+          )}
+
+          {currentTab === 'gocharWise' && (
+            <GocharWisePanel
+              chart={chart}
+              chartStyle={chartStyle}
+              report={report}
+              gocharRef={gocharRef}
+              setGocharRef={setGocharRef}
+            />
+          )}
+
+          {currentTab === 'divisional' && (
+            <DivisionalPredictionsPanel chart={chart} chartStyle={chartStyle} report={report} />
+          )}
+        </div>
       )}
     </div>
   );

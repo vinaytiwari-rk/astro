@@ -892,12 +892,12 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
           />
         )}
 
-        {/* TOOL: 300+ Classical Vedic Yogas */}
+        {/* TOOL: 300+ Classical Vedic Yogas & Conjunctions */}
         {consoleTool === 'yogas' && (
           <PredictionsView
             chart={chart}
             chartStyle={chartStyle}
-            requestedRoute={{ subTab: 'classicalYogas', nonce: Date.now() }}
+            requestedRoute={{ subTab: 'active_yogas_yuti', nonce: Date.now() }}
           />
         )}
 
@@ -933,7 +933,7 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
           <PredictionsView
             chart={chart}
             chartStyle={chartStyle}
-            requestedRoute={{ subTab: 'yuti', nonce: Date.now() }}
+            requestedRoute={{ subTab: 'active_yogas_yuti', nonce: Date.now() }}
           />
         )}
 
