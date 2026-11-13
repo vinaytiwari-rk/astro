@@ -10,8 +10,8 @@ import {
   computeBasicDetailsSheet,
   type BasicDetailRow,
 } from '../astro/higherVargas';
-import { formatDms, formatOffsetString } from '../astro/time';
-import type { ChartData, ChartStyle, DivisionalChartId } from '../astro/types';
+import { formatDateDmy, formatDms, formatOffsetString } from '../astro/time';
+import type { ChartData, ChartStyle, DivisionalChartId, PlanetId } from '../astro/types';
 import { useLanguage } from '../i18n/LanguageContext';
 import {
   trPlanet,
@@ -79,11 +79,21 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
 }) => {
   const { lang, t } = useLanguage();
   const isHi = lang === 'hi';
-  const [viewMode, setViewMode] = useState<'basic_details' | 'charts'>('basic_details');
-  const [rightVarga, setRightVarga] = useState<DivisionalChartId | 'CHALIT'>('CHALIT');
+  const [viewMode, setViewMode] = useState<'basic_details' | 'charts'>('charts');
+  const [rightVarga, setRightVarga] = useState<DivisionalChartId | 'CHALIT'>('D9');
   const [showSpecialInChart, setShowSpecialInChart] = useState(false);
   const [showSavInChart, setShowSavInChart] = useState(false);
   const [subTab, setSubTab] = useState<'planets' | 'cusps' | 'avakahada' | 'chalit' | 'special'>('planets');
+
+  // MindSutra Active Dasha Banner calculations
+  const activeDashaSummary = useMemo(() => {
+    const nowMs = Date.now();
+    const maha = chart.vimshottari.find((m) => nowMs >= m.startMs && nowMs <= m.endMs);
+    const antar = maha?.children?.find((a) => nowMs >= a.startMs && nowMs <= a.endMs);
+    const pratyantar = antar?.children?.find((p) => nowMs >= p.startMs && nowMs <= p.endMs);
+    const sookshma = pratyantar?.children?.find((s) => nowMs >= s.startMs && nowMs <= s.endMs);
+    return { maha, antar, pratyantar, sookshma };
+  }, [chart.vimshottari]);
 
   useEffect(() => {
     const id = requestedSubTab?.id;
@@ -403,6 +413,56 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
 
       {viewMode === 'charts' && (
         <>
+          {/* MindSutra E-Kundali Premium Active Dasha & Ephemeris Strip */}
+          <div className="mindsutra-status-strip">
+            <div className="mindsutra-status-item">
+              <span className="mindsutra-status-label">
+                {isHi ? 'वर्तमान विंशोत्तरी दशा:' : 'Active Vimshottari Dasha:'}
+              </span>
+              <div className="mindsutra-dasha-pills">
+                {activeDashaSummary.maha && (
+                  <span className="mindsutra-dasha-pill is-maha" title={`End: ${formatDateDmy(new Date(activeDashaSummary.maha.endMs).toISOString().split('T')[0])}`}>
+                    <strong>MD:</strong> {trPlanet(activeDashaSummary.maha.lord as PlanetId, lang)}
+                  </span>
+                )}
+                {activeDashaSummary.antar && (
+                  <span className="mindsutra-dasha-pill is-antar" title={`End: ${formatDateDmy(new Date(activeDashaSummary.antar.endMs).toISOString().split('T')[0])}`}>
+                    <strong>AD:</strong> {trPlanet(activeDashaSummary.antar.lord as PlanetId, lang)}
+                  </span>
+                )}
+                {activeDashaSummary.pratyantar && (
+                  <span className="mindsutra-dasha-pill is-prat" title={`End: ${formatDateDmy(new Date(activeDashaSummary.pratyantar.endMs).toISOString().split('T')[0])}`}>
+                    <strong>PD:</strong> {trPlanet(activeDashaSummary.pratyantar.lord as PlanetId, lang)}
+                  </span>
+                )}
+                {activeDashaSummary.sookshma && (
+                  <span className="mindsutra-dasha-pill is-sookshma" title={`End: ${formatDateDmy(new Date(activeDashaSummary.sookshma.endMs).toISOString().split('T')[0])}`}>
+                    <strong>SD:</strong> {trPlanet(activeDashaSummary.sookshma.lord as PlanetId, lang)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="mindsutra-status-item-right">
+              <span className="mindsutra-meta-pill">
+                <strong>{chart.settings.ayanamsa.toUpperCase()}</strong> ({chart.ayanamsaDeg.toFixed(2)}°)
+              </span>
+              <span className="mindsutra-meta-pill">
+                <strong>{isHi ? 'लग्न:' : 'Asc:'}</strong> {trSign(chart.ascendant.signIndex, lang)} {chart.ascendant.dms}
+              </span>
+              {onNavigate && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => onNavigate('dasha')}
+                  style={{ fontSize: '11px', padding: '2px 8px' }}
+                >
+                  <span>{isHi ? 'पूर्ण दशा वृक्ष ➔' : 'Full Dasha Tree ➔'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Top Dual Charts + Chart Options */}
           <div className="charts-toolbar">
         <div className="toolbar-group">

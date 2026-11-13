@@ -60,7 +60,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
 
-  // Master Primary Modules Definition (Zero Author Names)
+  // Master Primary Modules Definition (MindSutra Software Suite Layout)
   const primaryModules: Array<{
     id: MainTab;
     labelEn: string;
@@ -69,56 +69,56 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   }> = [
     {
       id: 'kundli',
-      labelEn: 'Vedic Kundli & Core Charts',
-      labelHi: '1. जन्म कुंडली व मूल गणना (लग्न, नवांश, वर्ग)',
+      labelEn: 'E-Kundali: Core Horoscopy (Lagna, Navamsha, Vargas, Shadbala)',
+      labelHi: '1. ई-कुंडली: मूल होरोस्कोप (लग्न, नवांश, षोडशवर्ग, षड्बल व अष्टकवर्ग)',
       emoji: '📜',
     },
     {
       id: 'predictions',
-      labelEn: 'In-Depth Detailed Predictions',
-      labelHi: '2. सटीक विस्तृत फलादेश (300+ योग, 120-वर्ष, भाव)',
+      labelEn: 'In-Depth Predictions (300+ Yogas, 120-Yr Timeline, 12 Bhavas)',
+      labelHi: '2. विस्तृत फलादेश (300+ राजयोग, 120-वर्षीय जीवन रेखा, 12 भाव)',
       emoji: '🔮',
     },
     {
       id: 'dasha_transits',
-      labelEn: 'Dasha Systems & Live Gochar',
-      labelHi: '3. दशा प्रणाली व वर्तमान गोचर (विंशोत्तरी, साढ़े साती)',
+      labelEn: 'Dasha Systems & Gochar (Vimshottari, Yogini, Sade Sati)',
+      labelHi: '3. दशा प्रणाली व गोचर (विंशोत्तरी 5 स्तर, योगिनी, साढ़े साती)',
       emoji: '⏳',
     },
     {
       id: 'branches',
-      labelEn: 'Classical Systems & Branches',
-      labelHi: '4. शास्त्रीय पध्दतियाँ (KP 4-Step, लाल किताब 1952, भावार्थ)',
+      labelEn: 'Specialist Suites: KP Stellar, Traditional Tewa, Numerology & Gems',
+      labelHi: '4. विशिष्ट पद्धतियाँ: KP नक्षत्र, परंपरागत टेवा, अंक व रत्न/रुद्राक्ष',
       emoji: '🌟',
     },
     {
       id: 'western',
-      labelEn: 'Western Astrology & Tropical Wheel',
-      labelHi: '5. पाश्चात्य सायन ज्योतिष (Tropical Wheel & Aspects)',
+      labelEn: 'Western Tropical Astrology (360° Circular Wheel & Aspects)',
+      labelHi: '5. पाश्चात्य सायन ज्योतिष (360° सर्कुलर व्हील व ग्रह दृष्टियां)',
       emoji: '🪐',
     },
     {
       id: 'matchmaking',
-      labelEn: 'Kundali Matching (36 Guna)',
-      labelHi: '6. कुंडली मिलान (36 गुण, मांगलिक परिहार, पोरुथम)',
+      labelEn: 'Kundali Milan (36 Guna Ashtakoota, Manglik & Beeja Sphuta)',
+      labelHi: '6. कुंडली मिलान (36 गुण अष्टकूट, मांगलिक परिहार व बीज/क्षेत्र)',
       emoji: '💍',
     },
     {
       id: 'panchang_muhurta',
-      labelEn: 'Panchang, Calendar & Muhurta',
-      labelHi: '7. पंचांग, कैलेंडर व मुहूर्त (दैनिक दृक, 2026-27 पर्व)',
+      labelEn: 'Panchang & Muhurta Explorer (Drik, 24h Hora, Choghadiya, 30 Do Ghati)',
+      labelHi: '7. पंचांग व मुहूर्त (दैनिक दृक, 24h होरा, चौघड़िया, 30 दो-घटी)',
       emoji: '📅',
     },
     {
       id: 'patrika_booklet',
-      labelEn: '34-Chapter Janmakundali PDF',
-      labelHi: '8. 34-अध्यायी बृहत् जन्मपत्रिका (Print & PDF Book)',
+      labelEn: '34-Chapter Deluxe Janmakundali Book (Print & PDF Export)',
+      labelHi: '8. 34-अध्यायी बृहत् जन्मपत्रिका (प्रिंट व PDF एक्सपोर्ट)',
       emoji: '📖',
     },
     {
       id: 'home',
-      labelEn: 'Home & Quick Worksheet Hub',
-      labelHi: '9. मुख्य होम पोर्टल (त्वरित कुंडली व दैनिक राशिफल)',
+      labelEn: 'Workstation Hub (Quick Kundali, Match & Daily Panchang)',
+      labelHi: '9. मुख्य वर्कस्टेशन (त्वरित कुंडली, मिलान व पंचांग पोर्टल)',
       emoji: '🏠',
     },
   ];
@@ -142,8 +142,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       { id: 'yuti_aspects', labelEn: 'Planetary Conjunctions (2-7 Grahas) & Mutual Drishti', labelHi: 'ग्रह युति फल (2 से 7 ग्रह) व दृष्टि संबंध' },
       { id: 'past_future', labelEn: 'Past Life Karma (D60/D12/D20) & Future Incarnation', labelHi: 'पूर्व जन्म (D60 षष्ट्यंश) व आगामी जन्म गति' },
       { id: 'kp_4step_pred', labelEn: 'KP 4-Step Event Fructification (Marriage, Job, Wealth)', labelHi: 'KP 4-स्टेप घटना फलन (विवाह, पदोन्नति, धन, विदेश)' },
-      { id: 'lal_kitab_pred', labelEn: 'Lal Kitab 1952 Classic (Dharmi Teva & 6 Ancestral Debts)', labelHi: 'लाल किताब 1952 टेवा, 6 पितृ ऋण व सोये घर' },
-      { id: 'bhavartha_pred', labelEn: 'Bhavartha Ratnakara (Lagna-Specific Fortune Rules)', labelHi: 'भावार्थ रत्नाकर (12 लग्न विशिष्ट योगकारक सूत्र)' },
+      { id: 'lal_kitab_pred', labelEn: 'Ancestral Debts & Soya Ghar Diagnostics', labelHi: 'पितृ ऋण व सोये घर फलादेश' },
+      { id: 'bhavartha_pred', labelEn: '12 Lagnas Classical Prosperity Rules', labelHi: '12 लग्न विशिष्ट योगकारक सूत्र' },
     ],
     dasha_transits: [
       { id: 'vimshottari', labelEn: 'Vimshottari Dasha 5 Levels (Maha, Antar, Pratyantar, Sookshma, Pran)', labelHi: 'विंशोत्तरी दशा (5 स्तर: महा, अंतर, प्रत्यंतर, सूक्ष्म, प्राण)' },
@@ -154,8 +154,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     ],
     branches: [
       { id: 'kp_4step', labelEn: 'KP 4-Step Theory & 12 Cusp Sub-Lords', labelHi: 'KP पद्धति, 4-स्टेप थ्योरी व 12 भाव उप-स्वामी' },
-      { id: 'lal_kitab', labelEn: 'Lal Kitab 1952 Classic Heritage (Pakka Ghar, Soya Ghar & Upay)', labelHi: 'लाल किताब 1952 (पक्के घर, सोये घर जगाना व प्रमाणिक उपाय)' },
-      { id: 'bhavartha_ratnakara', labelEn: 'Bhavartha Ratnakara (12 Lagnas Rules)', labelHi: 'भावार्थ रत्नाकर (12 लग्नों के योगकारक व मारक सूत्र)' },
+      { id: 'lal_kitab', labelEn: 'Fixed Aries Tewa (Pakka Ghar, Soya Ghar & Upay)', labelHi: 'नियत मेष लग्न टेवा, सोये घर व सरल उपाय' },
+      { id: 'bhavartha_ratnakara', labelEn: '12 Lagnas Sign-Specific Functional Rules', labelHi: 'द्वादश लग्न कारक व मारक सूत्र' },
       { id: 'numerology', labelEn: 'Numerology & Lo Shu 3x3 Grid Analysis (Driver, Conductor, Kua)', labelHi: 'अंक ज्योतिष व लो शु ग्रिड (मूलांक, भाग्यांक, कुआ संख्या)' },
       { id: 'doshas_remedies', labelEn: 'Doshas: Manglik (10 Cancellations), Kaal Sarp & Gemstones', labelHi: 'मांगलिक (10 परिहार), कालसर्प, पितृ दोष व रत्न/रुद्राक्ष' },
       { id: 'life_specialized', labelEn: 'Specialized Jyotish: Career, Wealth, Medical & Intimacy', labelHi: 'विशिष्ट ज्योतिष: करियर, धन, चिकित्सा व दांपत्य' },
@@ -229,10 +229,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           </span>
           <div className="dropdown-brand-text">
             <span className="dropdown-brand-name">
-              {isHi ? 'ज्योतिष होरा' : 'Jyotish Hora'}
+              {isHi ? 'माइण्डसूत्र ज्योतिष स्टूडियो' : 'MindSutra Jyotish Studio'}{' '}
+              <span className="mindsutra-badge">PREMIUM</span>
             </span>
             <span className="dropdown-brand-tag">
-              {isHi ? 'ऑनलाइन वैदिक एवं पाश्चात्य ज्योतिष संस्थान' : 'Professional Vedic & Western Studio'}
+              {isHi ? 'ई-कुंडली प्रीमियम · वैदिक, केपी व लाल किताब संस्थान' : 'E-Kundali Premium · Vedic, KP, Lal Kitab & Western Studio'}
             </span>
           </div>
         </button>

@@ -4258,3 +4258,104 @@ body {
     display: none !important;
   }
 }
+
+/* ========================================================
+   MINDSUTRA SOFTWARE PREMIUM THEME & WORKSTATION STYLES
+   ======================================================== */
+.mindsutra-badge {
+  display: inline-block;
+  padding: 1.5px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.mindsutra-status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.mindsutra-status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mindsutra-status-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.mindsutra-dasha-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.mindsutra-dasha-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.mindsutra-dasha-pill.is-maha {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.mindsutra-dasha-pill.is-antar {
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.mindsutra-dasha-pill.is-prat {
+  font-weight: 500;
+}
+
+.mindsutra-dasha-pill.is-sookshma {
+  color: var(--text-muted);
+}
+
+.mindsutra-status-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mindsutra-meta-pill {
+  font-size: 11px;
+  padding: 3px 7px;
+  background: var(--bg-subtle);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+}
+
