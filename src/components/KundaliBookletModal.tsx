@@ -52,7 +52,7 @@ const DEFAULT_BRANDING: BrandingConfig = {
   kendraName: 'Jyotish Hora Vedic Studio',
   astrologerName: '',
   contactInfo: '',
-  footerNote: 'Prepared with Traditional Parashari, KP, Nadi & Lal Kitab Siddhanta',
+  footerNote: 'Prepared with Traditional Vedic, KP, Nadi & Lal Kitab Siddhanta',
 };
 
 function loadBranding(): BrandingConfig {

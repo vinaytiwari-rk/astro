@@ -673,7 +673,7 @@ export const PatrikaBookInteractivePanel: React.FC<{
                   ? `कुंडली में सक्रिय शास्त्रीय वैदिक योग (${book.classicalYogas.length} योग)`
                   : `Active Classical Vedic Yogas (${book.classicalYogas.length} Yogas)`}
               </h3>
-              <span className="tag tag-varg">Brihat Parashara Hora Shastra & Saravali</span>
+              <span className="tag tag-varg">{isHi ? 'शास्त्रीय वैदिक संहिता' : 'Classical Vedic Treatises'}</span>
             </div>
             <div className="domains-grid">
               {book.classicalYogas.map((y) => (
@@ -682,7 +682,7 @@ export const PatrikaBookInteractivePanel: React.FC<{
                     <div>
                       <h4>{isHi ? y.nameHi : y.name}</h4>
                       <div className="muted small-text">
-                        {y.category} · {y.source}
+                        {y.category} · {isHi ? 'वैदिक सिद्धांत' : 'Classical Siddhanta'}
                       </div>
                     </div>
                     <span className="tag tag-varg">{y.strength}</span>

@@ -1,42 +1,30 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Activity,
-  Award,
-  BookOpen,
   Briefcase,
   CheckCircle,
   Coins,
   Compass,
-  GraduationCap,
   Heart,
-  HelpCircle,
-  Info,
   Shield,
   Sparkles,
-  TrendingUp,
   User,
-  Zap,
 } from 'lucide-react';
 import {
   computeDeepLifePredictions,
-  type DeepDomainPrediction,
 } from '../../astro/predictions/deepLifePredictions';
 import type { ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 interface DeepLifePredictionsPanelProps {
   chart: ChartData;
-  personaMode?: 'professional' | 'learner' | 'simple';
 }
 
 export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> = ({
   chart,
-  personaMode = 'simple',
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
   const [selectedDomainId, setSelectedDomainId] = useState<string>('all');
-  const [activePersona, setActivePersona] = useState<'professional' | 'learner' | 'simple'>(personaMode);
 
   const report = useMemo(() => computeDeepLifePredictions(chart), [chart]);
 
@@ -56,7 +44,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
   return (
     <div className="view-stack">
-      {/* Top Banner with Life Score & Persona Switcher */}
+      {/* Top Banner with Life Score */}
       <div className="card" style={{ borderLeft: '4px solid var(--accent)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           <div>
@@ -71,31 +59,12 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Persona Dropdown */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <GraduationCap size={15} className="muted" />
-              <select
-                aria-label="Audience Persona"
-                className="select-compact"
-                value={activePersona}
-                onChange={(e) => setActivePersona(e.target.value as any)}
-                style={{ fontWeight: 600, borderColor: 'var(--accent)' }}
-              >
-                <option value="simple">{isHi ? '👤 सामान्य जातक (Simple)' : '👤 Non-Astrologer (Simple)'}</option>
-                <option value="learner">{isHi ? '📖 विद्यार्थी / शिक्षार्थी (Learner)' : '📖 Student / Learner'}</option>
-                <option value="professional">{isHi ? '🎓 ज्योतिषी / शोधकर्ता (Professional)' : '🎓 Professional Astrologer'}</option>
-              </select>
-            </div>
-
-            {/* Overall Score Badge */}
-            <div
-              className="badge badge-accent mono"
-              style={{ fontSize: '14px', padding: '6px 12px', fontWeight: 700 }}
-              title="Overall Life Auspiciousness Index"
-            >
-              ★ {report.overallLifeScore} / 100
-            </div>
+          <div
+            className="badge badge-accent mono"
+            style={{ fontSize: '14px', padding: '6px 12px', fontWeight: 700 }}
+            title="Overall Life Auspiciousness Index"
+          >
+            ★ {report.overallLifeScore} / 100
           </div>
         </div>
 
@@ -118,7 +87,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               className="select-compact"
               value={selectedDomainId}
               onChange={(e) => setSelectedDomainId(e.target.value)}
-              style={{ minWidth: '220px', fontWeight: 600 }}
+              style={{ minWidth: '240px', fontWeight: 600 }}
             >
               <option value="all">{isHi ? '🌟 सभी 6 जीवन क्षेत्र (View All)' : '🌟 All 6 Life Spheres'}</option>
               {report.domains.map((d) => (
@@ -130,15 +99,9 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
           </div>
 
           <div className="muted small-text">
-            {activePersona === 'simple' && (
-              <span>{isHi ? '💡 सरल भाषा में प्रत्यक्ष जीवन उत्तर' : '💡 Direct practical answers in plain language'}</span>
-            )}
-            {activePersona === 'learner' && (
-              <span>{isHi ? '📖 शास्त्रीय कारण एवं योग निर्माण का अध्ययन' : '📖 Astrological mechanics & why rules form'}</span>
-            )}
-            {activePersona === 'professional' && (
-              <span>{isHi ? '🎓 ग्रह कारक, भावेश एवं सूक्ष्म संबंध' : '🎓 Planet significators, house lords & micro factors'}</span>
-            )}
+            {isHi
+              ? 'प्रत्येक क्षेत्र में ग्रह कारक, फलित विश्लेषण, सावधानियां एवं शास्त्रीय उपाय सम्मिलित हैं।'
+              : 'Detailed planetary factors, strengths, watchouts and remedies for each sphere.'}
           </div>
         </div>
       </div>
@@ -202,18 +165,16 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </div>
             </div>
 
-            {/* Professional Astrologer & Learner Technical Details */}
-            {(activePersona === 'professional' || activePersona === 'learner') && (
-              <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--indigo)', fontWeight: 600, marginBottom: '2px' }}>
-                  <Compass size={13} />
-                  <span>{isHi ? 'शास्त्रीय ग्रह योग एवं कारक आधार (Astrological Factors):' : 'Astrological Mechanics & Significators:'}</span>
-                </div>
-                <div className="mono muted">
-                  {isHi ? domain.astrologicalFactorsHi : domain.astrologicalFactorsEn}
-                </div>
+            {/* Astrological Mechanics & Significators */}
+            <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--indigo)', fontWeight: 600, marginBottom: '2px' }}>
+                <Compass size={13} />
+                <span>{isHi ? 'शास्त्रीय ग्रह योग एवं कारक आधार (Astrological Factors):' : 'Astrological Mechanics & Significators:'}</span>
               </div>
-            )}
+              <div className="mono muted">
+                {isHi ? domain.astrologicalFactorsHi : domain.astrologicalFactorsEn}
+              </div>
+            </div>
 
             {/* Classical Vedic Remedy / Advice */}
             <div style={{ padding: '8px 12px', background: 'var(--accent-soft)', borderRadius: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -98,7 +98,7 @@ export const SecondarySubNav: React.FC<SecondarySubNavProps> = ({
         labelEn: '300+ Classical Yogas',
         labelHi: '300+ वैदिक योग',
         icon: <Award size={14} />,
-        badge: 'Parashara',
+        badge: '300 Yogas',
       },
       {
         id: 'timeline_120yr',

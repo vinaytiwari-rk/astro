@@ -37,7 +37,6 @@ const STORAGE_ACTIVE_KEY = 'jyotish_hora_active_v1';
 const STORAGE_SETTINGS_KEY = 'jyotish_hora_settings_v1';
 const STORAGE_THEME_KEY = 'jyotish_hora_theme_v1';
 const STORAGE_LANG_KEY = 'jyotish_hora_lang_v1';
-const STORAGE_PERSONA_KEY = 'jyotish_hora_persona_v1';
 
 function loadStoredProfiles(): BirthInput[] {
   try {
@@ -79,10 +78,6 @@ export function App() {
   // Master Navigation States
   const [activeTab, setActiveTab] = useState<MainTab>('home');
   const [activeSubTab, setActiveSubTab] = useState<string>('overview');
-  const [personaMode, setPersonaMode] = useState<'professional' | 'learner' | 'simple'>(() => {
-    const p = localStorage.getItem(STORAGE_PERSONA_KEY);
-    return p === 'simple' || p === 'learner' ? p : 'professional';
-  });
 
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
   const [language, setLanguage] = useState<AppLanguage>(() => {
@@ -121,14 +116,6 @@ export function App() {
       // ignore
     }
   }, [language]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_PERSONA_KEY, personaMode);
-    } catch {
-      // ignore
-    }
-  }, [personaMode]);
 
   useEffect(() => {
     try {
@@ -330,8 +317,6 @@ export function App() {
               nonce: (prev?.nonce ?? 0) + 1,
             }));
           }}
-          personaMode={personaMode}
-          onSelectPersonaMode={setPersonaMode}
           activeInput={activeInput}
           profiles={profiles}
           onSelectProfile={(id) => setActiveId(id)}
@@ -458,7 +443,6 @@ export function App() {
                   subTab: activeSubTab,
                   nonce: routeRequest?.nonce ?? 0,
                 }}
-                personaMode={personaMode}
               />
             )}
 
@@ -512,7 +496,6 @@ export function App() {
                       nested: 'kp',
                       nonce: routeRequest?.nonce ?? 0,
                     }}
-                    personaMode={personaMode}
                   />
                 )}
                 {activeSubTab === 'lal_kitab' && (
@@ -524,7 +507,6 @@ export function App() {
                       nested: 'lal_kitab',
                       nonce: routeRequest?.nonce ?? 0,
                     }}
-                    personaMode={personaMode}
                   />
                 )}
                 {activeSubTab === 'bhavartha_ratnakara' && (
@@ -536,7 +518,6 @@ export function App() {
                       nested: 'varshaphala_jaimini',
                       nonce: routeRequest?.nonce ?? 0,
                     }}
-                    personaMode={personaMode}
                   />
                 )}
                 {activeSubTab === 'numerology' && (

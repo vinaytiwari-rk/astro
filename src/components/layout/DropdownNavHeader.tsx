@@ -4,7 +4,6 @@ import {
   Edit3,
   FileText,
   Globe,
-  GraduationCap,
   Moon,
   Plus,
   Settings,
@@ -28,8 +27,6 @@ interface DropdownNavHeaderProps {
   activeSubTab: string;
   onSelectPrimaryTab: (tab: MainTab) => void;
   onSelectSubTab: (subTabId: string) => void;
-  personaMode: 'professional' | 'learner' | 'simple';
-  onSelectPersonaMode: (mode: 'professional' | 'learner' | 'simple') => void;
   activeInput: BirthInput;
   profiles: BirthInput[];
   onSelectProfile: (id: string) => void;
@@ -48,8 +45,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   activeSubTab,
   onSelectPrimaryTab,
   onSelectSubTab,
-  personaMode,
-  onSelectPersonaMode,
   activeInput,
   profiles,
   onSelectProfile,
@@ -65,7 +60,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
 
-  // Master Primary Modules Definition
+  // Master Primary Modules Definition (Zero Author Names)
   const primaryModules: Array<{
     id: MainTab;
     labelEn: string;
@@ -80,7 +75,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     },
     {
       id: 'predictions',
-      labelEn: 'In-Depth Accurate Predictions',
+      labelEn: 'In-Depth Detailed Predictions',
       labelHi: '2. सटीक विस्तृत फलादेश (300+ योग, 120-वर्ष, भाव)',
       emoji: '🔮',
     },
@@ -93,7 +88,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     {
       id: 'branches',
       labelEn: 'Classical Systems & Branches',
-      labelHi: '4. ज्योतिष पध्दतियाँ (KP 4-Step, लाल किताब 1952, भावार्थ)',
+      labelHi: '4. शास्त्रीय पध्दतियाँ (KP 4-Step, लाल किताब 1952, भावार्थ)',
       emoji: '🌟',
     },
     {
@@ -128,7 +123,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     },
   ];
 
-  // Map sub-views for each master module
+  // Map sub-views for each master module (Zero Author Names)
   const subViewsMap: Record<string, DropdownSubOption[]> = {
     kundli: [
       { id: 'overview', labelEn: 'Basic Details & Avakhada Chakra', labelHi: 'मूल विवरण, अवकहड़ा व घातक चक्र' },
@@ -140,10 +135,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     ],
     predictions: [
       { id: 'deep_life', labelEn: '🌟 In-Depth Comprehensive Life Predictions (All Domains)', labelHi: '🌟 विस्तृत समग्र जीवन फलादेश (करियर, धन, विवाह, स्वास्थ्य)' },
-      { id: 'classical_yogas', labelEn: '300+ Classical Yogas (Parashara, Saravali, BV Raman)', labelHi: '300+ वैदिक राजयोग व फल (पाराशरी, सारावली)' },
+      { id: 'classical_yogas', labelEn: '300+ Classical Vedic Yogas', labelHi: '300+ वैदिक राजयोग व फल' },
       { id: 'timeline_120yr', labelEn: '120-Year Complete Life Events Timeline & Milestones', labelHi: '120-वर्षीय विंशोत्तरी जीवन घटनाक्रम व दुर्घटना जांच' },
       { id: 'bhavas_12', labelEn: '12 Bhavas Comprehensive Analysis (1st to 12th House)', labelHi: 'द्वादश भाव विस्तृत फलादेश (तनु से मोक्ष तक)' },
-      { id: 'bnn_bsp', labelEn: 'Bhrigu Nandi Nadi & BSP (29 Classical Age Rules)', labelHi: 'भृगु नंदी नाड़ी व BSP (29 नियम, शनि कर्म, राहु-केतु अक्ष)' },
+      { id: 'bnn_bsp', labelEn: 'Bhrigu Nandi Nadi & BSP (29 Classical Age Rules)', labelHi: 'भृगु नंदी नाड़ी व BSP (29 नियम, कर्म फल, राहु-केतु अक्ष)' },
       { id: 'yuti_aspects', labelEn: 'Planetary Conjunctions (2-7 Grahas) & Mutual Drishti', labelHi: 'ग्रह युति फल (2 से 7 ग्रह) व दृष्टि संबंध' },
       { id: 'past_future', labelEn: 'Past Life Karma (D60/D12/D20) & Future Incarnation', labelHi: 'पूर्व जन्म (D60 षष्ट्यंश) व आगामी जन्म गति' },
       { id: 'kp_4step_pred', labelEn: 'KP 4-Step Event Fructification (Marriage, Job, Wealth)', labelHi: 'KP 4-स्टेप घटना फलन (विवाह, पदोन्नति, धन, विदेश)' },
@@ -158,9 +153,9 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       { id: 'varshaphala', labelEn: 'Annual Solar Return (Varshaphala / Tajika) Year Chart', labelHi: 'वार्षिक ताजिक वर्षफल कुंडली व मुद्धा दशा' },
     ],
     branches: [
-      { id: 'kp_4step', labelEn: "Sunil Gondhalekar's KP 4-Step Theory & 12 Cusp Sub-Lords", labelHi: 'KP पद्धति, 4-स्टेप थ्योरी व 12 भाव उप-स्वामी' },
+      { id: 'kp_4step', labelEn: 'KP 4-Step Theory & 12 Cusp Sub-Lords', labelHi: 'KP पद्धति, 4-स्टेप थ्योरी व 12 भाव उप-स्वामी' },
       { id: 'lal_kitab', labelEn: 'Lal Kitab 1952 Classic Heritage (Pakka Ghar, Soya Ghar & Upay)', labelHi: 'लाल किताब 1952 (पक्के घर, सोये घर जगाना व प्रमाणिक उपाय)' },
-      { id: 'bhavartha_ratnakara', labelEn: "Sri Ramanuja's Bhavartha Ratnakara (12 Lagnas Rules)", labelHi: 'भावार्थ रत्नाकर (12 लग्नों के योगकारक व मारक सूत्र)' },
+      { id: 'bhavartha_ratnakara', labelEn: 'Bhavartha Ratnakara (12 Lagnas Rules)', labelHi: 'भावार्थ रत्नाकर (12 लग्नों के योगकारक व मारक सूत्र)' },
       { id: 'numerology', labelEn: 'Numerology & Lo Shu 3x3 Grid Analysis (Driver, Conductor, Kua)', labelHi: 'अंक ज्योतिष व लो शु ग्रिड (मूलांक, भाग्यांक, कुआ संख्या)' },
       { id: 'doshas_remedies', labelEn: 'Doshas: Manglik (10 Cancellations), Kaal Sarp & Gemstones', labelHi: 'मांगलिक (10 परिहार), कालसर्प, पितृ दोष व रत्न/रुद्राक्ष' },
       { id: 'life_specialized', labelEn: 'Specialized Jyotish: Career, Wealth, Medical & Intimacy', labelHi: 'विशिष्ट ज्योतिष: करियर, धन, चिकित्सा व दांपत्य' },
@@ -187,11 +182,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     ],
     patrika_booklet: [
       { id: 'full_edition', labelEn: 'Complete 34-Chapter Janmakundali Deluxe Edition', labelHi: 'संपूर्ण 34-अध्यायी बृहत् जन्मपत्रिका' },
-      { id: 'branding_options', labelEn: 'Astrologer Kendra Name & Custom Header Branding', labelHi: 'ज्योतिषी नाम व केंद्र ब्रांडिंग सेटिंग' },
+      { id: 'branding_options', labelEn: 'Custom Header & Print Layout Options', labelHi: 'कस्टम हेडर व प्रिंट लेआउट सेटिंग' },
     ],
   };
 
-  // Resolve normalized primary tab
   const getPrimaryTabKey = (tab: MainTab): string => {
     switch (tab) {
       case 'basics':
@@ -345,7 +339,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         </div>
       </div>
 
-      {/* Row 2: Master Dual Dropdowns (System Selector + Feature Selector + Persona Mode) */}
+      {/* Row 2: Master Dual Dropdowns (System Selector + Feature Selector) - Clean, Uncluttered */}
       <div className="dropdown-nav-control-bar">
         <div className="dropdown-control-wrapper">
           {/* 1. Master System / Module Dropdown */}
@@ -389,30 +383,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </select>
             </div>
           )}
-
-          {/* 3. Audience Persona Dropdown */}
-          <div className="dropdown-field-item persona-item">
-            <label className="dropdown-field-label">
-              <GraduationCap size={13} />
-              <span>{isHi ? 'उपयोगकर्ता स्तर (Audience Mode):' : 'Audience Persona Mode:'}</span>
-            </label>
-            <select
-              aria-label="Select Audience Persona"
-              className="dropdown-persona-select"
-              value={personaMode}
-              onChange={(e) => onSelectPersonaMode(e.target.value as any)}
-            >
-              <option value="professional">
-                {isHi ? '🎓 ज्योतिषी / शोधकर्ता (Professional)' : '🎓 Professional Astrologer'}
-              </option>
-              <option value="learner">
-                {isHi ? '📖 विद्यार्थी / शिक्षार्थी (Learner / Student)' : '📖 Student / Learner'}
-              </option>
-              <option value="simple">
-                {isHi ? '👤 सामान्य जातक / सरल (Non-Astrologer)' : '👤 Non-Astrologer (Simple)'}
-              </option>
-            </select>
-          </div>
         </div>
       </div>
     </header>

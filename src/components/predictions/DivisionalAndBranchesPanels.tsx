@@ -379,8 +379,8 @@ export const BranchesAndNumerologyPanel: React.FC<{
                     <h3>
                       <Award size={15} />{' '}
                       {isHi
-                        ? 'के.पी. 4-चरणीय सिद्धांत (Sunil Gondhalekar 4-Step Theory)'
-                        : 'KP 4-Step Theory (Sunil Gondhalekar System)'}
+                        ? 'के.पी. 4-चरणीय सिद्धांत (4-Step Event Fructification Theory)'
+                        : 'KP 4-Step Event Fructification Theory'}
                     </h3>
                     <p className="muted small-text">
                       {isHi
@@ -860,8 +860,8 @@ export const BranchesAndNumerologyPanel: React.FC<{
                   <h3>
                     <BookOpen size={15} />{' '}
                     {isHi
-                      ? `भावार्थ रत्नाकर — ${report.bhavarthaRatnakaraReport.lagnaNameHi} लग्न विशेष फलित सूत्र (श्री रामानुजाचार्य)`
-                      : `Bhavartha Ratnakara — ${report.bhavarthaRatnakaraReport.lagnaNameEn} Ascendant Rules (Sri Ramanuja)`}
+                      ? `भावार्थ रत्नाकर — ${report.bhavarthaRatnakaraReport.lagnaNameHi} लग्न विशेष फलित सूत्र`
+                      : `Bhavartha Ratnakara — ${report.bhavarthaRatnakaraReport.lagnaNameEn} Ascendant Rules`}
                   </h3>
                   <p className="muted small-text">
                     {isHi
