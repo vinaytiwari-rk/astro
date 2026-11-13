@@ -1,9 +1,15 @@
 export type MainTab =
   | 'home'
-  | 'basics'
+  | 'kundli'
   | 'predictions'
+  | 'dasha_transits'
   | 'branches'
-  | 'prashna'
+  | 'western'
+  | 'matchmaking'
+  | 'panchang_muhurta'
+  | 'patrika_booklet'
+  // Backward-compatibility aliases:
+  | 'basics'
   | 'vargas'
   | 'dasha'
   | 'ashtakavarga'
@@ -12,7 +18,8 @@ export type MainTab =
   | 'tools'
   | 'astro_tools'
   | 'match'
-  | 'hub';
+  | 'hub'
+  | 'prashna';
 
 export interface RouteRequest {
   tab: MainTab;
