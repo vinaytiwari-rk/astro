@@ -35,6 +35,11 @@ import { evaluateParamayusStatus, type ParamayusStatus } from './paramayus';
 import { computeAdvancedPredictiveTechniques } from './advancedTechniques';
 import { computePastFutureLifeReading } from './pastFutureLife';
 import { computeChartYutiReport } from './yutiPredictions';
+import { detectClassicalYogas } from './classicalYogasKb';
+import { computeBhriguSaralPaddhati } from './bhriguSaralPaddhati';
+import { computeKpFourStepReport } from './kpFourStepEngine';
+import { computeLalKitabSystemReport } from './lalKitabSystem';
+import { computeBhavarthaRatnakaraReport } from './bhavarthaRatnakara';
 import type {
   DashaPrediction,
   DivisionalPredictionItem,
@@ -988,12 +993,17 @@ function buildParamayusLockedReport(
       jivaWealthHi: '',
       marriageNadiEn: '',
       marriageNadiHi: '',
+      rahuKetuAxisEn: '',
+      rahuKetuAxisHi: '',
+      flankingKarmaEn: '',
+      flankingKarmaHi: '',
       retrogradeShiftsEn: '',
       retrogradeShiftsHi: '',
       exchangesEn: '',
       exchangesHi: '',
       diseaseAlerts: [],
       guruCycles12Yr: [],
+      specialRules: [],
       sources: [],
     },
   };
@@ -1080,6 +1090,11 @@ export function generatePredictionReport(chart: ChartData, targetDate?: string):
   const bhriguNandiNadi = computeBhriguNandiNadi(chart);
   const pastFutureLife = computePastFutureLifeReading(chart);
   const advancedTechniques = computeAdvancedPredictiveTechniques(chart, dateStr);
+  const classicalYogas = detectClassicalYogas(chart);
+  const bhriguSaralPaddhati = computeBhriguSaralPaddhati(chart);
+  const kpFourStepReport = computeKpFourStepReport(chart);
+  const lalKitabSystemReport = computeLalKitabSystemReport(chart);
+  const bhavarthaRatnakaraReport = computeBhavarthaRatnakaraReport(chart);
 
   return {
     paramayus,
@@ -1147,5 +1162,10 @@ export function generatePredictionReport(chart: ChartData, targetDate?: string):
     bhavatBhavamReport,
     drishtiReport,
     bhriguNandiNadi,
+    classicalYogas,
+    bhriguSaralPaddhati,
+    kpFourStepReport,
+    lalKitabSystemReport,
+    bhavarthaRatnakaraReport,
   };
 }

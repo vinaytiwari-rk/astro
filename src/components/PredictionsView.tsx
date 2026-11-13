@@ -36,6 +36,7 @@ import { AdvancedTechniquesPanel } from './predictions/AdvancedTechniquesPanel';
 import { PredictionsPatrikaFrame } from './predictions/PatrikaBookContent';
 import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { YutiPanel } from './predictions/YutiPanel';
+import { ClassicalYogasPanel } from './predictions/ClassicalYogasPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
 interface PredictionsViewProps {
@@ -47,6 +48,7 @@ interface PredictionsViewProps {
 type PredSubTab =
   | 'eventsLedger'
   | 'pastFuture'
+  | 'classicalYogas'
   | 'advancedTechniques'
   | 'bhriguNadi'
   | 'bhavesha144'
@@ -301,6 +303,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
       label: isHi ? '1. 120-वर्ष घटनाएँ, पूर्व-भविष्य व नाड़ी' : '1. 120-Yr Events, Past/Future & BNN',
       tabs: [
         { id: 'eventsLedger', label: t.predictionsTabs.eventsLedger },
+        { id: 'classicalYogas', label: isHi ? '300+ वैदिक योग' : '300+ Classical Yogas' },
         { id: 'pastFuture', label: t.predictionsTabs.pastFuture },
         { id: 'advancedTechniques', label: t.predictionsTabs.advancedTechniques },
         { id: 'bhriguNadi', label: t.predictionsTabs.bhriguNadi },
@@ -397,6 +400,9 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
       ) : (
         <PredictionsPatrikaFrame chart={chart} report={report}>
           {subTab === 'eventsLedger' && <LifeEventsLedgerPanel ledger={report.lifeEventsLedger} />}
+          {subTab === 'classicalYogas' && (
+            <ClassicalYogasPanel chart={chart} detectedYogas={report.classicalYogas} />
+          )}
           {subTab === 'pastFuture' && report.pastFutureLife && (
             <PastLifeFuturePanel report={report.pastFutureLife} />
           )}

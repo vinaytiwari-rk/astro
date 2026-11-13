@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { BookOpen, Compass, FileText, Gem, Layers, Printer, ShieldAlert, Sparkles } from 'lucide-react';
+import { Award, BookOpen, Clock, Compass, FileText, Gem, Layers, Printer, ShieldAlert, Sparkles, Star } from 'lucide-react';
 import { SEVEN_PLANETS } from '../../astro/constants';
 import { computePatrikaBookData, SHODASHA_VARGAS_LIST, type PatrikaBookData } from '../../astro/predictions/patrikaBook';
 import type { PredictionReport } from '../../astro/predictions/types';
@@ -9,7 +9,13 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trPlanetShort, trSign } from '../../i18n/translations';
 import { VedicChartSvg } from '../VedicChartSvg';
 
-type PatrikaSectionTab = 'lagna_panchang' | 'houses_12' | 'avastha_dasha' | 'vargas_sav_purpose' | 'dosha_gems_gochar';
+type PatrikaSectionTab =
+  | 'lagna_panchang'
+  | 'houses_12'
+  | 'avastha_dasha'
+  | 'vargas_sav_purpose'
+  | 'dosha_gems_gochar'
+  | 'classical_branches';
 
 function signTxt(idx: number, lang: 'en' | 'hi') {
   return trSign(idx, lang);
@@ -53,6 +59,7 @@ export const PatrikaBookInteractivePanel: React.FC<{
     { id: 'avastha_dasha', labelEn: '3. Avasthas & Dasha Support Index', labelHi: '3. अवस्था एवं दशा सपोर्ट इंडेक्स', icon: <Sparkles size={13} /> },
     { id: 'vargas_sav_purpose', labelEn: '4. Vaiseshikamsha, SAV & Purpose', labelHi: '4. षोडशवर्ग, SAV शोधन व जीवन उद्देश्य', icon: <Layers size={13} /> },
     { id: 'dosha_gems_gochar', labelEn: '5. Doshas, Gems, Nakshatra & 10Y Gochar', labelHi: '5. दोष, रत्न, नक्षत्र व 10-वर्षीय गोचर', icon: <Gem size={13} /> },
+    { id: 'classical_branches', labelEn: '6. Yogas, Bhrigu, KP & Lal Kitab', labelHi: '6. 300+ योग, भृगु, केपी व लाल किताब', icon: <Award size={13} /> },
   ];
 
   const chHouses =
@@ -653,6 +660,146 @@ export const PatrikaBookInteractivePanel: React.FC<{
           </section>
         </div>
       )}
+
+      {/* SECTION 6: 300+ Classical Yogas, Bhrigu Saral Paddhati, KP 4-Step & Lal Kitab */}
+      {tab === 'classical_branches' && (
+        <div className="view-stack">
+          {/* Classical Yogas */}
+          <section className="panel">
+            <div className="panel-header">
+              <h3>
+                <Sparkles size={15} />{' '}
+                {isHi
+                  ? `कुंडली में सक्रिय शास्त्रीय वैदिक योग (${book.classicalYogas.length} योग)`
+                  : `Active Classical Vedic Yogas (${book.classicalYogas.length} Yogas)`}
+              </h3>
+              <span className="tag tag-varg">Brihat Parashara Hora Shastra & Saravali</span>
+            </div>
+            <div className="domains-grid">
+              {book.classicalYogas.map((y) => (
+                <article key={y.id} className="domain-card">
+                  <div className="domain-top">
+                    <div>
+                      <h4>{isHi ? y.nameHi : y.name}</h4>
+                      <div className="muted small-text">
+                        {y.category} · {y.source}
+                      </div>
+                    </div>
+                    <span className="tag tag-varg">{y.strength}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 6 }}>
+                    <div>
+                      <strong>{isHi ? 'शास्त्रीय नियम:' : 'Rule:'}</strong>{' '}
+                      <span className="muted">{y.conditionEn}</span>
+                    </div>
+                    <p className="lead-text" style={{ fontSize: '0.86rem', marginTop: 4 }}>
+                      {isHi ? y.resultHi : y.resultEn}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* Bhrigu Saral Paddhati (BSP) */}
+          <section className="panel">
+            <div className="panel-header">
+              <h3>
+                <Clock size={15} />{' '}
+                {isHi
+                  ? `भृगु सरल पद्धति (BSP — वर्तमान आयु ${book.bhriguSaralPaddhati.currentAge} वर्ष)`
+                  : `Bhrigu Saral Paddhati (BSP — Running Age ${book.bhriguSaralPaddhati.currentAge} Yrs)`}
+              </h3>
+              <span className="tag tag-karaka">
+                {isHi
+                  ? `12-वर्षीय सक्रिय भाव: ${book.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}`
+                  : `Active Cycle House: H${book.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}`}
+              </span>
+            </div>
+            <div className="gochar-banner is-info">
+              {isHi
+                ? book.bhriguSaralPaddhati.cyclical12YearReading.synthesisHi
+                : book.bhriguSaralPaddhati.cyclical12YearReading.synthesisEn}
+            </div>
+            <div className="panel-subblock">
+              <h4>{isHi ? 'सक्रिय भृगु फलित सूत्र:' : 'Active Bhrigu Predictive Rules:'}</h4>
+              <div className="domains-grid">
+                {book.bhriguSaralPaddhati.activeSpecificTriggers.map((trig) => (
+                  <article key={`${trig.age}-${trig.ruleCode}`} className="domain-card">
+                    <div className="domain-top">
+                      <h4>{trig.ruleCode} · {isHi ? trig.triggerThemeHi : trig.triggerThemeEn}</h4>
+                      <span className="tag tag-karaka">{trig.age} Yrs</span>
+                    </div>
+                    <p className="lead-text" style={{ fontSize: '0.85rem', marginTop: 4 }}>
+                      {isHi ? trig.readingHi : trig.readingEn}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* KP 4-Step Event Fructification */}
+          <section className="panel">
+            <div className="panel-header">
+              <h3>
+                <Award size={15} />{' '}
+                {isHi
+                  ? 'के.पी. 4-चरणीय सिद्धांत द्वारा 8 प्रमुख जीवन घटनाओं की फल सिद्धि'
+                  : 'KP 4-Step Theory — 8 Core Life Events Fructification Audit'}
+              </h3>
+            </div>
+            <div className="domains-grid">
+              {book.kpFourStep.eventPromises.map((ev) => (
+                <article key={ev.relevantCusp} className="domain-card">
+                  <div className="domain-top">
+                    <div>
+                      <h4>{isHi ? ev.eventNameHi : ev.eventNameEn}</h4>
+                      <div className="muted small-text">
+                        {isHi ? `भाव ${ev.relevantCusp} उप-स्वामी:` : `Cusp ${ev.relevantCusp} Sub Lord:`} <strong>{ev.cuspSubLord}</strong>
+                      </div>
+                    </div>
+                    <span className={`tag ${ev.fructificationPromise === 'Highly Favorable' ? 'tag-varg' : 'tag-karaka'}`}>
+                      {isHi ? ev.fructificationPromiseHi : ev.fructificationPromise}
+                    </span>
+                  </div>
+                  <p className="lead-text" style={{ fontSize: '0.84rem', marginTop: 4 }}>
+                    {isHi ? ev.analysisHi : ev.analysisEn}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* Lal Kitab 1952 Authentic Karmic Debts */}
+          <section className="panel">
+            <div className="panel-header">
+              <h3>
+                <ShieldAlert size={15} />{' '}
+                {isHi
+                  ? 'लाल किताब 6 प्राचीन कर्मिक ऋण (Karmic Debts / Rin) एवं अचूक उपाय'
+                  : 'Lal Kitab 6 Ancient Karmic Debts (Rin) & Remedial Measures'}
+              </h3>
+            </div>
+            <div className="domains-grid">
+              {book.lalKitab.karmicDebts.map((deb) => (
+                <article key={deb.debtType} className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? deb.debtTypeHi : deb.debtType}</h4>
+                    <span className={`tag ${deb.isTriggered ? 'tag-combust' : 'tag-varg'}`}>
+                      {deb.isTriggered ? (isHi ? 'सक्रिय' : 'Active') : (isHi ? 'मुक्त' : 'Clear')}
+                    </span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'कारण:' : 'Cause:'}</strong> {isHi ? deb.classicalCauseHi : deb.classicalCauseEn}</div>
+                    <div><strong>{isHi ? 'उपाय:' : 'Upay:'}</strong> {isHi ? deb.remedialProtocolHi : deb.remedialProtocolEn}</div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 };
@@ -1239,6 +1386,96 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                   </div>
                 </>
               )}
+            </div>
+          </section>
+
+          {/* CH 34: 300+ CLASSICAL YOGAS, BHRIGU SARAL PADDHATI, KP 4-STEP & LAL KITAB */}
+          <div className="print-page-break" />
+          <section className="panel">
+            <div className="panel-header patrika-chapter-head">
+              <h3>{isHi ? 'अध्याय 34: शास्त्रीय वैदिक योग (300+), भृगु सरल पद्धति, केपी 4-चरण व लाल किताब ऋण' : 'Ch 34: 300+ Classical Yogas, Bhrigu Saral Paddhati, KP 4-Step & Lal Kitab Heritage'}</h3>
+            </div>
+            <div className="pred-card-body">
+              <h4 style={{ marginBottom: 6 }}>
+                {isHi
+                  ? `कुंडली में सक्रिय प्रमुख शास्त्रीय योग (${book.classicalYogas.length} योग सक्रिय):`
+                  : `Active Classical Yogas in Native's Chart (${book.classicalYogas.length} Active Yogas):`}
+              </h4>
+              <div className="domains-grid">
+                {book.classicalYogas.map((y) => (
+                  <article key={y.id} className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                    <div className="domain-top">
+                      <div>
+                        <h4>{isHi ? y.nameHi : y.name}</h4>
+                        <div className="muted small-text">{y.category} · {y.source}</div>
+                      </div>
+                      <span className="tag tag-varg">{y.strength}</span>
+                    </div>
+                    <div className="pred-bullets" style={{ marginTop: 4 }}>
+                      <div><strong>{isHi ? 'नियम:' : 'Rule:'}</strong> {y.conditionEn}</div>
+                      <p className="lead-text" style={{ fontSize: '0.84rem' }}>{isHi ? y.resultHi : y.resultEn}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>
+                {isHi
+                  ? `भृगु सरल पद्धति (आयु ${book.bhriguSaralPaddhati.currentAge} वर्ष, 12-वर्षीय चक्र भाव ${book.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}):`
+                  : `Bhrigu Saral Paddhati (Running Age ${book.bhriguSaralPaddhati.currentAge} Yrs, Cycle House H${book.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}):`}
+              </h4>
+              <p className="lead-text">{isHi ? book.bhriguSaralPaddhati.cyclical12YearReading.synthesisHi : book.bhriguSaralPaddhati.cyclical12YearReading.synthesisEn}</p>
+              <div className="domains-grid" style={{ marginTop: 8 }}>
+                {book.bhriguSaralPaddhati.activeSpecificTriggers.map((trig) => (
+                  <article key={`${trig.age}-${trig.ruleCode}`} className="domain-card">
+                    <div className="domain-top">
+                      <h4>{trig.ruleCode} · {isHi ? trig.triggerThemeHi : trig.triggerThemeEn}</h4>
+                      <span className="tag tag-karaka">{trig.age} Yrs</span>
+                    </div>
+                    <p className="lead-text" style={{ fontSize: '0.84rem' }}>{isHi ? trig.readingHi : trig.readingEn}</p>
+                  </article>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>
+                {isHi ? 'के.पी. 4-चरणीय सिद्धांत द्वारा 8 प्रमुख जीवन घटनाओं की फल सिद्धि:' : 'KP 4-Step Theory — 8 Core Life Events Fructification Audit:'}
+              </h4>
+              <div className="domains-grid">
+                {book.kpFourStep.eventPromises.map((ev) => (
+                  <article key={ev.relevantCusp} className="domain-card">
+                    <div className="domain-top">
+                      <div>
+                        <h4>{isHi ? ev.eventNameHi : ev.eventNameEn}</h4>
+                        <div className="muted small-text">{isHi ? `भाव ${ev.relevantCusp} उप-स्वामी: ${ev.cuspSubLord}` : `Cusp ${ev.relevantCusp} Sub: ${ev.cuspSubLord}`}</div>
+                      </div>
+                      <span className={`tag ${ev.fructificationPromise === 'Highly Favorable' ? 'tag-varg' : 'tag-karaka'}`}>
+                        {isHi ? ev.fructificationPromiseHi : ev.fructificationPromise}
+                      </span>
+                    </div>
+                    <p className="lead-text" style={{ fontSize: '0.84rem', marginTop: 4 }}>{isHi ? ev.analysisHi : ev.analysisEn}</p>
+                  </article>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>
+                {isHi ? 'लाल किताब 6 प्राचीन कर्मिक ऋण (Rin) एवं शास्त्रोक्त उपाय:' : 'Lal Kitab 6 Ancient Karmic Debts (Rin) & Remedial Measures:'}
+              </h4>
+              <div className="domains-grid">
+                {book.lalKitab.karmicDebts.map((deb) => (
+                  <article key={deb.debtType} className="domain-card">
+                    <div className="domain-top">
+                      <h4>{isHi ? deb.debtTypeHi : deb.debtType}</h4>
+                      <span className={`tag ${deb.isTriggered ? 'tag-combust' : 'tag-varg'}`}>
+                        {deb.isTriggered ? (isHi ? 'सक्रिय' : 'Active') : (isHi ? 'मुक्त' : 'Clear')}
+                      </span>
+                    </div>
+                    <div className="pred-bullets" style={{ marginTop: 4 }}>
+                      <div><strong>{isHi ? 'कारण:' : 'Cause:'}</strong> {isHi ? deb.classicalCauseHi : deb.classicalCauseEn}</div>
+                      <div><strong>{isHi ? 'उपाय:' : 'Upay:'}</strong> {isHi ? deb.remedialProtocolHi : deb.remedialProtocolEn}</div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </section>
         </>

@@ -193,4 +193,9 @@ export interface PredictionReport {
   bhavatBhavamReport: BhavatBhavamReport;
   drishtiReport: DrishtiReport;
   bhriguNandiNadi: BhriguNandiNadiReport;
+  classicalYogas?: import('./classicalYogasKb').DetectedClassicalYoga[];
+  bhriguSaralPaddhati?: import('./bhriguSaralPaddhati').BhriguSaralPaddhatiReport;
+  kpFourStepReport?: import('./kpFourStepEngine').KpFourStepReport;
+  lalKitabSystemReport?: import('./lalKitabSystem').LalKitabFullSystemReport;
+  bhavarthaRatnakaraReport?: import('./bhavarthaRatnakara').BhavarthaRatnakaraReport;
 }

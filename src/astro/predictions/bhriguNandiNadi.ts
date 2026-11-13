@@ -34,6 +34,15 @@ export interface BnnDiseaseAlert {
   readingHi: string;
 }
 
+export interface BnnSpecialRuleResult {
+  ruleCode: string;
+  titleEn: string;
+  titleHi: string;
+  verdictEn: string;
+  verdictHi: string;
+  isTriggered: boolean;
+}
+
 export interface BhriguNandiNadiReport {
   directionLines: NadiDirectionLine[];
   karmaCareerEn: string;
@@ -42,12 +51,17 @@ export interface BhriguNandiNadiReport {
   jivaWealthHi: string;
   marriageNadiEn: string;
   marriageNadiHi: string;
+  rahuKetuAxisEn: string;
+  rahuKetuAxisHi: string;
+  flankingKarmaEn: string;
+  flankingKarmaHi: string;
   retrogradeShiftsEn: string;
   retrogradeShiftsHi: string;
   exchangesEn: string;
   exchangesHi: string;
   diseaseAlerts: BnnDiseaseAlert[];
   guruCycles12Yr: BnnCyclePhase[];
+  specialRules: BnnSpecialRuleResult[];
   sources: string[];
 }
 
@@ -60,6 +74,10 @@ const SIGN_HI = [
   'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
   'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
 ];
+
+function houseBetween(fromSign: number, toSign: number): number {
+  return ((toSign - fromSign + 12) % 12) + 1;
+}
 
 const BNN_KARAKA_MEANING: Record<NineGrahaId, { en: string; hi: string }> = {
   Sun: { en: 'Soul, Government, Father, Authority', hi: 'आत्मा, सरकार, पिता, अधिकार' },
@@ -343,6 +361,46 @@ export function computeBhriguNandiNadi(chart: ChartData): BhriguNandiNadiReport 
     { ageRange: '60–72+ Yrs', cycleNameEn: 'Cycle 6: Dharma, Inner Peace & Spiritual Liberation', cycleNameHi: 'चक्र 6 (60–72+ वर्ष): धर्म, शांति व आध्यात्मिक परिपक्वता', themeEn: 'Ketu/Jupiter harvest: pilgrimage, detachment, charitable wisdom and serene retirement.', themeHi: 'छठा चक्र — तीर्थ, परोपकार, ध्यान व आत्मिक संतोष।' },
   ];
 
+  // 8. BNN Rule 10: Rahu-Ketu Karmic Axis Hemispheric Division
+  const rSign = rahu.signIndex;
+  const kSign = ketu.signIndex;
+  const eastHemiPlanets: NineGrahaId[] = [];
+  const westHemiPlanets: NineGrahaId[] = [];
+  for (const p of grahas) {
+    if (p.id === 'Rahu' || p.id === 'Ketu') continue;
+    const diff = (p.signIndex - rSign + 12) % 12;
+    if (diff > 0 && diff < 6) eastHemiPlanets.push(p.id as NineGrahaId);
+    else westHemiPlanets.push(p.id as NineGrahaId);
+  }
+  const rahuKetuAxisEn = `Rahu-Ketu Axis Hemispheric Division: Eastern arc (Rahu to Ketu) holds [${eastHemiPlanets.join(', ')}]; Western arc holds [${westHemiPlanets.join(', ')}]. ${eastHemiPlanets.length > westHemiPlanets.length ? 'Heavier placement towards Rahu arc indicates strong outward material ambitions and overseas or unconventional opportunities.' : 'Balanced distribution between domestic roots and external karmic evolution.'}`;
+  const rahuKetuAxisHi = `राहु-केतु कर्मिक अक्ष विभाजन: राहु से केतु की दिशा में [${eastHemiPlanets.map(p => PLANET_HI[p]).join(', ')}] तथा केतु से राहु की दिशा में [${westHemiPlanets.map(p => PLANET_HI[p]).join(', ')}] स्थित हैं। ${eastHemiPlanets.length > westHemiPlanets.length ? 'राहु की ओर ग्रहों का अधिक झुकाव जातक में तीव्र भौतिक महत्वाकांक्षा, विदेश संपर्क व आधुनिक क्षेत्रों में अप्रत्याशित प्रगति देता है।' : 'घरेलू प्रतिष्ठा और बाह्य कर्मिक विस्तार में संतुलित समन्वय रहता है।'}`;
+
+  // 9. BNN Rule 4: Flanking Karma around Saturn (Karma) & Jupiter (Jiva)
+  const p2ndFromSat = grahas.filter(p => p.id !== 'Saturn' && houseBetween(saturn.signIndex, p.signIndex) === 2);
+  const p12thFromSat = grahas.filter(p => p.id !== 'Saturn' && houseBetween(saturn.signIndex, p.signIndex) === 12);
+  const flankingKarmaEn = `Saturn (Karma Karaka) Flanking: 2nd house from Saturn holds [${p2ndFromSat.map(p => p.id).join(', ') || 'None'}]; 12th house holds [${p12thFromSat.map(p => p.id).join(', ') || 'None'}]. ${p2ndFromSat.some(p => ['Jupiter', 'Venus', 'Mercury'].includes(p.id)) ? 'Benefic in 2nd from Saturn ensures steady professional income and respect.' : 'Neutral professional progression with self-made effort.'}`;
+  const flankingKarmaHi = `शनि (कर्म कारक) के द्वितीय भाव में [${p2ndFromSat.map(p => PLANET_HI[p.id as NineGrahaId]).join(', ') || 'कोई नहीं'}] तथा द्वादश भाव में [${p12thFromSat.map(p => PLANET_HI[p.id as NineGrahaId]).join(', ') || 'कोई नहीं'}] स्थित हैं। ${p2ndFromSat.some(p => ['Jupiter', 'Venus', 'Mercury'].includes(p.id)) ? 'शनि से द्वितीय में शुभ ग्रह का होना कार्यक्षेत्र में निरंतर आय और उच्च सम्मान सुनिश्चित करता है।' : 'व्यक्तिगत स्वावलंबन और सतत परिश्रम से करियर का उत्थान होता है।'}`;
+
+  // 10. Special BNN Rules from Classical Vels/RG Rao Corpus
+  const specialRules: BnnSpecialRuleResult[] = [
+    {
+      ruleCode: 'BNN-R3',
+      titleEn: '7th Sign Direct Aspect Impact',
+      titleHi: 'सप्तम दृष्टि का प्रत्यक्ष नाड़ी प्रभाव',
+      isTriggered: true,
+      verdictEn: `Planets in 7th from each other exchange full mutual energy. Jupiter 7th from Moon brings travel yoga & mother's longevity. Mars 7th from Saturn requires cautious safety.`,
+      verdictHi: `एक-दूसरे से सातवें भाव में स्थित ग्रह पूर्ण नाड़ी ऊर्जा का आदान-प्रदान करते हैं। चंद्र से सातवें गुरु मातृ-दीर्घायु व यात्रा योग देता है।`,
+    },
+    {
+      ruleCode: 'BNN-R9',
+      titleEn: 'Nadi Neechabhanga / Debilitation Cancellation',
+      titleHi: 'नाड़ी नीचभंग / निर्बलता परिहार',
+      isTriggered: grahas.some(p => p.dignity === 'Debilitated'),
+      verdictEn: `In BNN, if a debilitated planet has friendly planets in its 2nd, 12th, 7th, 5th, or 9th signs, its debility is transmuted into exceptional practical competence.`,
+      verdictHi: `नाड़ी ज्योतिष में यदि नीच ग्रह के 2, 12, 7, 5 या 9वें भाव में मित्र ग्रह हों, तो उसकी निर्बलता समाप्त होकर विशेष व्यावहारिक दक्षता में बदल जाती है।`,
+    },
+  ];
+
   return {
     directionLines,
     karmaCareerEn,
@@ -351,16 +409,22 @@ export function computeBhriguNandiNadi(chart: ChartData): BhriguNandiNadiReport 
     jivaWealthHi,
     marriageNadiEn,
     marriageNadiHi,
+    rahuKetuAxisEn,
+    rahuKetuAxisHi,
+    flankingKarmaEn,
+    flankingKarmaHi,
     retrogradeShiftsEn,
     retrogradeShiftsHi,
     exchangesEn: exchanges.length ? `Active Nadi Sign Exchanges (Parivartana): ${exchanges.join(', ')}.` : 'No direct planetary sign exchange (Parivartana).',
     exchangesHi: exchangesHiList.length ? `प्रमुख नाड़ी राशि परिवर्तन (Parivartana): ${exchangesHiList.join(', ')}।` : 'कोई प्रत्यक्ष ग्रह-राशि परिवर्तन नहीं है।',
     diseaseAlerts,
     guruCycles12Yr,
+    specialRules,
     sources: [
       'Bhrigu Nandi Nadi (R.G. Rao Tradition)',
       'Classical Parashari & Nadi Karaka Linkages',
       '1-5-9 Trikona Planetary Chain Siddhanta',
+      'Vels School of Vedic Astrology Research Corpus',
     ],
   };
 }

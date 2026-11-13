@@ -1,13 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
+  Award,
+  BookOpen,
+  Clock,
   Compass,
   Flame,
   Gem,
   Grid3x3,
+  HelpCircle,
   Layers,
   RefreshCw,
   ShieldCheck,
+  Sparkles,
   Star,
 } from 'lucide-react';
 import { computeLiveKpRulingPlanets, type KpRulingPlanets } from '../../astro/kp';
@@ -365,6 +370,154 @@ export const BranchesAndNumerologyPanel: React.FC<{
               </div>
             </section>
           </div>
+
+          {report.kpFourStepReport && (
+            <div className="view-stack" style={{ marginTop: 12 }}>
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <h3>
+                      <Award size={15} />{' '}
+                      {isHi
+                        ? 'के.पी. 4-चरणीय सिद्धांत (Sunil Gondhalekar 4-Step Theory)'
+                        : 'KP 4-Step Theory (Sunil Gondhalekar System)'}
+                    </h3>
+                    <p className="muted small-text">
+                      {isHi
+                        ? 'ग्रह (चरण 1) → नक्षत्रेश (चरण 2) → उप-स्वामी (चरण 3) → उप के नक्षत्रेश (चरण 4) द्वारा सूक्ष्म घटना समय व फल सिद्धि।'
+                        : 'Planet (Step 1) → Star Lord (Step 2) → Sub Lord (Step 3) → Star Lord of Sub (Step 4) event fructification.'}
+                    </p>
+                  </div>
+                  <span className="tag tag-varg">
+                    {isHi
+                      ? `दशा स्वामी: ${report.kpFourStepReport.activeDashaEvaluation.dashaLord}`
+                      : `Active Dasha: ${report.kpFourStepReport.activeDashaEvaluation.dashaLord}`}
+                  </span>
+                </div>
+
+                <div className="gochar-banner is-info">
+                  <strong>{isHi ? 'दशा फल संकेत:' : 'Active Dasha Verdict:'}</strong>{' '}
+                  {isHi
+                    ? report.kpFourStepReport.activeDashaEvaluation.verdictHi
+                    : report.kpFourStepReport.activeDashaEvaluation.verdictEn}
+                </div>
+
+                <div className="panel-subblock">
+                  <h4>
+                    {isHi
+                      ? 'प्रमुख 8 जीवन घटनाओं की फल सिद्धि संभावना (Event Fructification Audit):'
+                      : '8 Core Life Events Fructification Audit (4-Step Sub-Lord Verdicts):'}
+                  </h4>
+                  <div className="domains-grid">
+                    {report.kpFourStepReport.eventPromises.map((ev) => (
+                      <article key={ev.relevantCusp} className="domain-card">
+                        <div className="domain-top">
+                          <div>
+                            <h4>{isHi ? ev.eventNameHi : ev.eventNameEn}</h4>
+                            <div className="muted small-text">
+                              {isHi ? `भाव ${ev.relevantCusp} उप-स्वामी:` : `Cusp ${ev.relevantCusp} Sub Lord:`}{' '}
+                              <strong>{trPlanet(ev.cuspSubLord, lang)}</strong>
+                            </div>
+                          </div>
+                          <span
+                            className={`tag ${
+                              ev.fructificationPromise === 'Highly Favorable'
+                                ? 'tag-varg'
+                                : ev.fructificationPromise === 'Favorable / Supported'
+                                  ? 'tag-karaka'
+                                  : ev.fructificationPromise === 'Delayed / Challenging'
+                                    ? 'tag-retro'
+                                    : 'tag-combust'
+                            }`}
+                          >
+                            {isHi ? ev.fructificationPromiseHi : ev.fructificationPromise}
+                          </span>
+                        </div>
+                        <div className="pred-bullets" style={{ marginTop: 6 }}>
+                          <div>
+                            <strong>{isHi ? 'मुख्य भाव:' : 'Primary Houses:'}</strong>{' '}
+                            <span className="mono">[{ev.primaryHouses.join(', ')}]</span> ·{' '}
+                            <strong>{isHi ? 'सहयोगी:' : 'Support:'}</strong>{' '}
+                            <span className="mono">[{ev.supportingHouses.join(', ')}]</span> ·{' '}
+                            <strong>{isHi ? 'बाधक:' : 'Negate:'}</strong>{' '}
+                            <span className="mono">[{ev.negatingHouses.join(', ')}]</span>
+                          </div>
+                          <p className="lead-text" style={{ fontSize: '0.85rem' }}>
+                            {isHi ? ev.analysisHi : ev.analysisEn}
+                          </p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="panel-subblock">
+                  <h4>
+                    {isHi
+                      ? 'समस्त 9 ग्रहों की 4-चरणीय संयुक्त कारकता सारणी (4-Step Significators Table):'
+                      : 'All 9 Grahas 4-Step Composite Significators Table:'}
+                  </h4>
+                  <div className="table-scroll">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>{t.common.planet}</th>
+                          <th>{isHi ? 'चरण 1 (ग्रह)' : 'Step 1 (Planet)'}</th>
+                          <th>{isHi ? 'चरण 2 (नक्षत्रेश)' : 'Step 2 (Star Lord)'}</th>
+                          <th>{isHi ? 'चरण 3 (उप-स्वामी)' : 'Step 3 (Sub Lord)'}</th>
+                          <th>{isHi ? 'चरण 4 (उप नक्षत्रेश)' : 'Step 4 (Sub Star)'}</th>
+                          <th>{isHi ? 'संयुक्त भाव' : 'Composite Houses'}</th>
+                          <th>{isHi ? 'कारकता स्थिति' : 'Significator Status'}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {report.kpFourStepReport.planetSignifications.map((row) => (
+                          <tr key={row.planet}>
+                            <td>
+                              <strong>{trPlanetShort(row.planet, lang)}</strong>
+                            </td>
+                            <td>
+                              {t.common.house}{row.step1Planet.residingHouse}{' '}
+                              <span className="mono muted">
+                                {row.step1Planet.ownedHouses.length > 0
+                                  ? `(स्वा: ${row.step1Planet.ownedHouses.join(',')})`
+                                  : ''}
+                              </span>
+                            </td>
+                            <td>
+                              {trPlanetShort(row.step2StarLord.starLord, lang)}{' '}
+                              <span className="mono">H{row.step2StarLord.residingHouse}</span>{' '}
+                              <span className="mono muted">[{row.step2StarLord.ownedHouses.join(',')}]</span>
+                            </td>
+                            <td>
+                              <span className="tag tag-karaka">
+                                {trPlanetShort(row.step3SubLord.subLord, lang)}
+                              </span>{' '}
+                              <span className="mono">H{row.step3SubLord.residingHouse}</span>
+                            </td>
+                            <td>
+                              {trPlanetShort(row.step4SubStarLord.subStarLord, lang)}{' '}
+                              <span className="mono">H{row.step4SubStarLord.residingHouse}</span>
+                            </td>
+                            <td>
+                              <strong className="mono">[{row.compositeSignifications.join(', ')}]</strong>
+                            </td>
+                            <td>
+                              <span className={`tag ${row.isStrongSignificator ? 'tag-varg' : 'tag-retro'}`}>
+                                {row.isStrongSignificator
+                                  ? isHi ? 'प्रबल सूचक (Strong)' : 'Strong'
+                                  : isHi ? 'गौण सूचक (Secondary)' : 'Secondary'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
         </>
       )}
 
@@ -482,6 +635,89 @@ export const BranchesAndNumerologyPanel: React.FC<{
               </tbody>
             </table>
           </div>
+
+          {report.lalKitabSystemReport && (
+            <div className="view-stack" style={{ marginTop: 14 }}>
+              <div className={`gochar-banner ${report.lalKitabSystemReport.isDharmiTeva ? 'is-clear' : 'is-info'}`}>
+                <strong>{isHi ? 'लाल किताब तेवा स्वरूप:' : 'Lal Kitab Teva Status:'}</strong>{' '}
+                {isHi ? report.lalKitabSystemReport.dharmiTevaNoteHi : report.lalKitabSystemReport.dharmiTevaNoteEn}
+              </div>
+
+              <div className="panel-subblock">
+                <h4>
+                  {isHi
+                    ? 'लाल किताब 6 प्राचीन कर्मिक ऋण (Karmic Debts / Rin Audit):'
+                    : 'Lal Kitab 6 Ancient Karmic Debts (Rin) Audit:'}
+                </h4>
+                <div className="domains-grid">
+                  {report.lalKitabSystemReport.karmicDebts.map((deb) => (
+                    <article key={deb.debtType} className="domain-card" style={{ borderLeft: deb.isTriggered ? '4px solid #ef4444' : '3px solid var(--border)' }}>
+                      <div className="domain-top">
+                        <h4>{isHi ? deb.debtTypeHi : deb.debtType}</h4>
+                        <span className={`tag ${deb.isTriggered ? 'tag-combust' : 'tag-varg'}`}>
+                          {deb.isTriggered ? (isHi ? 'सक्रिय ऋण (Active)' : 'Active Debt') : (isHi ? 'दोष मुक्त (Clear)' : 'Clear')}
+                        </span>
+                      </div>
+                      <div className="pred-bullets" style={{ marginTop: 6 }}>
+                        <div>
+                          <strong>{isHi ? 'पौराणिक/कर्मिक कारण:' : 'Classical Ancestral Cause:'}</strong>{' '}
+                          <span className="muted">{isHi ? deb.classicalCauseHi : deb.classicalCauseEn}</span>
+                        </div>
+                        <div>
+                          <strong>{isHi ? 'शास्त्रोक्त अचूक उपाय:' : 'Authentic Remedial Protocol:'}</strong>{' '}
+                          <span style={{ color: deb.isTriggered ? 'var(--accent)' : undefined }}>
+                            {isHi ? deb.remedialProtocolHi : deb.remedialProtocolEn}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div className="panel-subblock">
+                <h4>
+                  {isHi
+                    ? '12 पक्के घर एवं सोये हुए भावों को जगाने के नियम (Awakening Dormant Houses):'
+                    : '12 Pakka Ghars & Awakening Rules for Dormant Houses:'}
+                </h4>
+                <div className="table-scroll">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>{t.common.house}</th>
+                        <th>{isHi ? 'पक्का स्वामी (Pakka Ruler)' : 'Pakka Ruler'}</th>
+                        <th>{isHi ? 'भाव स्थिति' : 'House State'}</th>
+                        <th>{isHi ? 'स्थित ग्रह' : 'Occupants'}</th>
+                        <th>{isHi ? 'जगाने की विधि व उपाय' : 'Awakening Protocol'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {report.lalKitabSystemReport.sleepingHouses.map((sh) => (
+                        <tr key={sh.houseNumber}>
+                          <td className="mono"><strong>{t.common.house}{sh.houseNumber}</strong></td>
+                          <td>{isHi ? sh.pakkaGharRulerHi : sh.pakkaGharRuler}</td>
+                          <td>
+                            <span className={`tag ${sh.isSleeping ? 'tag-retro' : 'tag-varg'}`}>
+                              {sh.isSleeping ? (isHi ? 'सोया हुआ (Dormant)' : 'Dormant') : (isHi ? 'जागृत (Awake)' : 'Awake')}
+                            </span>
+                          </td>
+                          <td>
+                            {sh.occupants.length > 0 ? (
+                              sh.occupants.map((o) => trPlanetShort(o, lang)).join(', ')
+                            ) : (
+                              <span className="muted">—</span>
+                            )}
+                          </td>
+                          <td className="wrap-cell">{isHi ? sh.awakeningMethodHi : sh.awakeningMethodEn}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -553,6 +789,129 @@ export const BranchesAndNumerologyPanel: React.FC<{
               </table>
             </div>
           </section>
+
+          {/* BHRIGU SARAL PADDHATI (BSP) */}
+          {report.bhriguSaralPaddhati && (
+            <section className="panel" style={{ marginTop: 14 }}>
+              <div className="panel-header">
+                <div>
+                  <h3>
+                    <Clock size={15} />{' '}
+                    {isHi
+                      ? `भृगु सरल पद्धति (BSP — आयु चक्र व विशिष्ट सक्रिय बिंदु)`
+                      : `Bhrigu Saral Paddhati (BSP — Age Triggers & House Cycles)`}
+                  </h3>
+                  <p className="muted small-text">
+                    {isHi
+                      ? `वर्तमान आयु ${report.bhriguSaralPaddhati.currentAge} वर्ष पर महर्षि भृगु के 29 अचूक फलित सूत्र।`
+                      : `Sage Bhrigu's 29 Canonical Predictive Rules for running age ${report.bhriguSaralPaddhati.currentAge}.`}
+                  </p>
+                </div>
+                <span className="tag tag-varg">
+                  {isHi
+                    ? `12-वर्षीय चक्र: भाव ${report.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}`
+                    : `Cycle House: H${report.bhriguSaralPaddhati.cyclical12YearReading.cyclicalHouse}`}
+                </span>
+              </div>
+
+              <div className="gochar-banner is-info">
+                <strong>{isHi ? '12-वर्षीय चक्रीय फल:' : '12-Year Cyclical Reading:'}</strong>{' '}
+                {isHi
+                  ? report.bhriguSaralPaddhati.cyclical12YearReading.synthesisHi
+                  : report.bhriguSaralPaddhati.cyclical12YearReading.synthesisEn}
+              </div>
+
+              <div className="panel-subblock">
+                <h4>
+                  {isHi
+                    ? 'वर्तमान व निकटवर्ती आयु में सक्रिय भृगु बिंदु (Active Age Triggers):'
+                    : 'Active Age Triggers for Current Life Phase:'}
+                </h4>
+                <div className="domains-grid">
+                  {report.bhriguSaralPaddhati.activeSpecificTriggers.map((trig) => (
+                    <article key={`${trig.age}-${trig.ruleCode}`} className="domain-card">
+                      <div className="domain-top">
+                        <div>
+                          <h4>{trig.ruleCode} · {isHi ? trig.triggerThemeHi : trig.triggerThemeEn}</h4>
+                          <div className="muted small-text">
+                            {isHi ? `आयु: ${trig.age} वर्ष` : `Running Age: ${trig.age} Yrs`} ·{' '}
+                            {isHi ? `भाव ${trig.triggeredHouse} (${trig.triggeredSignName})` : `House ${trig.triggeredHouse} (${trig.triggeredSignName})`}
+                          </div>
+                        </div>
+                        <span className="tag tag-karaka">
+                          {trPlanet(trig.sourcePlanet, lang)} + {trig.offsetHouse}H
+                        </span>
+                      </div>
+                      <p className="lead-text" style={{ fontSize: '0.86rem', marginTop: 6 }}>
+                        {isHi ? trig.readingHi : trig.readingEn}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* BHAVARTHA RATNAKARA LAGNA RULES */}
+          {report.bhavarthaRatnakaraReport && (
+            <section className="panel" style={{ marginTop: 14 }}>
+              <div className="panel-header">
+                <div>
+                  <h3>
+                    <BookOpen size={15} />{' '}
+                    {isHi
+                      ? `भावार्थ रत्नाकर — ${report.bhavarthaRatnakaraReport.lagnaNameHi} लग्न विशेष फलित सूत्र (श्री रामानुजाचार्य)`
+                      : `Bhavartha Ratnakara — ${report.bhavarthaRatnakaraReport.lagnaNameEn} Ascendant Rules (Sri Ramanuja)`}
+                  </h3>
+                  <p className="muted small-text">
+                    {isHi
+                      ? `परम योगकारक: ${report.bhavarthaRatnakaraReport.primaryYogakaraka} · मुख्य धनकारक: ${report.bhavarthaRatnakaraReport.primaryDhanaKaraka} · बाधक/मारक: ${report.bhavarthaRatnakaraReport.functionalMalefics.join(', ')}`
+                      : `Primary Yogakaraka: ${report.bhavarthaRatnakaraReport.primaryYogakaraka} · Wealth Karaka: ${report.bhavarthaRatnakaraReport.primaryDhanaKaraka} · Functional Malefics: ${report.bhavarthaRatnakaraReport.functionalMalefics.join(', ')}`}
+                  </p>
+                </div>
+                <span className="tag tag-varg">
+                  {isHi
+                    ? `${report.bhavarthaRatnakaraReport.triggeredCount} सूत्र सक्रिय`
+                    : `${report.bhavarthaRatnakaraReport.triggeredCount} Rules Active`}
+                </span>
+              </div>
+
+              <div className="domains-grid">
+                {report.bhavarthaRatnakaraReport.rulesEvaluated.map((br) => (
+                  <article
+                    key={br.ruleCode}
+                    className="domain-card"
+                    style={{
+                      borderLeft: br.isTriggered ? '4px solid var(--accent)' : '3px solid var(--border)',
+                      background: br.isTriggered ? 'rgba(217, 119, 6, 0.04)' : undefined,
+                    }}
+                  >
+                    <div className="domain-top">
+                      <div>
+                        <h4>{br.ruleCode}</h4>
+                        <div className="muted small-text">
+                          {br.targetPlanets.map((p) => trPlanet(p, lang)).join(' + ')}
+                        </div>
+                      </div>
+                      <span className={`tag ${br.isTriggered ? 'tag-varg' : 'tag-retro'}`}>
+                        {br.isTriggered ? (isHi ? 'कुंडली में घटित (Formed)' : 'Formed') : (isHi ? 'अघटित' : 'Inactive')}
+                      </span>
+                    </div>
+                    <div className="pred-bullets" style={{ marginTop: 6 }}>
+                      <div>
+                        <strong>{isHi ? 'शास्त्रीय सूत्र:' : 'Classical Sutra:'}</strong>{' '}
+                        <span>{isHi ? br.classicalSutraHi : br.classicalSutraEn}</span>
+                      </div>
+                      <div>
+                        <strong>{isHi ? 'फलित प्रभाव:' : 'Predictive Meaning:'}</strong>{' '}
+                        <span className="muted">{isHi ? br.predictiveApplicationHi : br.predictiveApplicationEn}</span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
 

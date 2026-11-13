@@ -11,6 +11,11 @@ import type { BodyPosition, ChartData, DivisionalChartId, NineGrahaId, SevenPlan
 import { buildSignPlacement } from '../vargas';
 import { evaluateParamayusStatus } from './paramayus';
 import type { PredictionReport } from './types';
+import { detectClassicalYogas, type DetectedClassicalYoga } from './classicalYogasKb';
+import { computeBhriguSaralPaddhati, type BhriguSaralPaddhatiReport } from './bhriguSaralPaddhati';
+import { computeKpFourStepReport, type KpFourStepReport } from './kpFourStepEngine';
+import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './lalKitabSystem';
+import { computeBhavarthaRatnakaraReport, type BhavarthaRatnakaraReport } from './bhavarthaRatnakara';
 
 const SIGN_HI = [
   'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
@@ -354,6 +359,11 @@ export interface PatrikaBookData {
       readingHi: string;
     }>;
   };
+  classicalYogas: DetectedClassicalYoga[];
+  bhriguSaralPaddhati: BhriguSaralPaddhatiReport;
+  kpFourStep: KpFourStepReport;
+  lalKitab: LalKitabFullSystemReport;
+  bhavarthaRatnakara: BhavarthaRatnakaraReport;
 }
 
 const HOUSE_TOPIC_LABELS: Array<{ en: string; hi: string }> = [
@@ -1257,5 +1267,10 @@ export function computePatrikaBookData(
       rahuKetuNakshatra,
       gochar10Years,
     },
+    classicalYogas: report.classicalYogas ?? detectClassicalYogas(chart),
+    bhriguSaralPaddhati: report.bhriguSaralPaddhati ?? computeBhriguSaralPaddhati(chart),
+    kpFourStep: report.kpFourStepReport ?? computeKpFourStepReport(chart),
+    lalKitab: report.lalKitabSystemReport ?? computeLalKitabSystemReport(chart),
+    bhavarthaRatnakara: report.bhavarthaRatnakaraReport ?? computeBhavarthaRatnakaraReport(chart),
   };
 }

@@ -51,6 +51,17 @@ export const BhriguNadiPanel: React.FC<{ report: BhriguNandiNadiReport }> = ({ r
             </article>
           ))}
         </div>
+
+        <div className="two-col-split-pad" style={{ marginTop: 10 }}>
+          <div className="gochar-banner is-info">
+            <strong>{isHi ? 'राहु-केतु कर्मिक अक्ष (Rule 10):' : 'Rahu-Ketu Karmic Axis (Rule 10):'}</strong>{' '}
+            {isHi ? report.rahuKetuAxisHi : report.rahuKetuAxisEn}
+          </div>
+          <div className="gochar-banner is-clear">
+            <strong>{isHi ? 'शनि कर्म पार्श्व-प्रभाव (Rule 4):' : 'Saturn Flanking Karma (Rule 4):'}</strong>{' '}
+            {isHi ? report.flankingKarmaHi : report.flankingKarmaEn}
+          </div>
+        </div>
       </section>
 
       {/* Core BNN Engines: Saturn Karma, Jupiter Jiva, Marriage & Retrograde */}
