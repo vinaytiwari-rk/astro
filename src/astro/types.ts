@@ -231,6 +231,13 @@ export interface DashaPeriod {
   children?: DashaPeriod[];
 }
 
+export interface ShodhyaPindaRow {
+  planet: SevenPlanetId;
+  rasiPinda: number;
+  grahaPinda: number;
+  shodhyaPinda: number;
+}
+
 export interface AshtakavargaData {
   bhinna: Record<SevenPlanetId | 'Asc', number[]>; // 12 values (Aries..Pisces)
   prastara: Record<SevenPlanetId | 'Asc', Record<SevenPlanetId | 'Asc', number[]>>; // contributor x sign (0|1)
@@ -238,6 +245,7 @@ export interface AshtakavargaData {
   totalBindus: number;
   trikonaShodhana: Record<SevenPlanetId, number[]>;
   ekadhipatyaShodhana: Record<SevenPlanetId, number[]>;
+  shodhyaPinda?: Record<SevenPlanetId, ShodhyaPindaRow>;
 }
 
 export interface ShadbalaRow {

@@ -65,6 +65,7 @@ import { WesternAstrologyView } from './WesternAstrologyView';
 import { TransitsView } from './TransitsView';
 import { PredictionsView, type PredSubTab } from './PredictionsView';
 import { AstroSageToolsView } from './AstroSageToolsView';
+import { SpecialSensitivitiesView } from './SpecialSensitivitiesView';
 
 export type WorkstationConsoleTool =
   | 'planets'
@@ -89,7 +90,11 @@ export type WorkstationConsoleTool =
   | 'past_life'
   | 'avakahada'
   | 'chalit'
-  | 'special';
+  | 'special'
+  | 'mrityu'
+  | 'pushkara'
+  | 'navatara'
+  | 'shodhya_pinda';
 
 interface BasicsViewProps {
   chart: ChartData;
@@ -620,7 +625,11 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
                 <option value="shadbala">⚖️ {isHi ? 'षड्बल सामर्थ्य (6 बल, रूपा व इष्ट/कष्ट फल)' : 'Shadbala Strength Assessment (6 Balas & Rupas)'}</option>
                 <option value="avakahada">📋 {isHi ? 'अवकहड़ा चक्र, पाया, गण, नाड़ी व घातक चक्र' : 'Avakahada Chakra, Paya & Ghatak Malefics'}</option>
                 <option value="chalit">🔄 {isHi ? 'भाव चलित (श्रीपति) भाव परिवर्तन तालिका' : 'Bhava Chalit Sripati Shifts & Table'}</option>
-                <option value="special">🌟 {isHi ? 'विशेष लग्न, उपग्रह व आरूढ़ पद (A1–A12)' : 'Special Lagnas, Arudhas & Upa-Grahas'}</option>
+                <option value="special">🌟 {isHi ? 'विशेष लग्न, उपग्रह, आरूढ़ पद (AL-UL) व कर्म बिंदु' : 'Special Lagnas, Arudhas (AL–UL) & Sensitive Points'}</option>
+                <option value="mrityu">⚡ {isHi ? 'मृत्यु भाग (Mrityu Bhaga — घातक अंश व परिहार)' : 'Mrityu Bhaga (Fatal Degrees & Danger Age Triggers)'}</option>
+                <option value="pushkara">✨ {isHi ? 'पुष्कर भाग व पुष्कर नवांश (Pushkara Rejuvenation)' : 'Pushkara Bhaga & Pushkara Navamsha'}</option>
+                <option value="navatara">⭐ {isHi ? 'नवतारा चक्र (Navatara Chakra — 9 तारा व 27 नक्षत्र)' : 'Navatara Chakra (9 Taras & Planetary Occupancy)'}</option>
+                <option value="shodhya_pinda">📊 {isHi ? 'अष्टकवर्ग शोध्य पिंड (Shodhya Pinda — राशि/ग्रह पिंड)' : 'Ashtakavarga Shodhya Pinda (Rasi & Graha Pinda)'}</option>
               </optgroup>
 
               <optgroup label={isHi ? '🎯 विशिष्ट एवं पाश्चात्य पद्धतियाँ' : '🎯 Advanced & Specialized Astrology Systems'}>
@@ -1002,38 +1011,26 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
           </section>
         )}
 
-        {/* TOOL: Special Lagnas & Upa-Grahas */}
-        {consoleTool === 'special' && (
-          <section className="panel">
-            <div className="panel-header">
-              <h3>{t.basics.specialLagnas} &amp; {isHi ? 'उपग्रह' : 'Upa-Grahas'}</h3>
-              <span className="muted small-text">{chart.specialPoints.length} {isHi ? 'बिंदु' : 'points'}</span>
-            </div>
-            <div className="table-scroll">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>{isHi ? 'नाम' : 'Name'}</th>
-                    <th>{t.common.sign}</th>
-                    <th>{t.common.degree}</th>
-                    <th>{t.common.house}</th>
-                    <th>{t.common.nakshatra}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {chart.specialPoints.map((sp) => (
-                    <tr key={sp.id}>
-                      <td><strong>{sp.label}</strong> <span className="muted mono">({sp.shortLabel})</span></td>
-                      <td>{trSign(sp.signIndex, lang)}</td>
-                      <td className="mono">{sp.dms}</td>
-                      <td className="mono">{sp.houseNumber}</td>
-                      <td>{trTerm(sp.nakshatraName, lang)} <span className="muted">{lang === 'hi' ? 'च' : 'P'}{sp.pada}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+        {/* TOOL: Special Sensitivities (Special Lagnas, Arudhas, Sensitive Points, Mrityu Bhaga, Pushkara, Navatara, Shodhya Pinda) */}
+        {(consoleTool === 'special' ||
+          consoleTool === 'mrityu' ||
+          consoleTool === 'pushkara' ||
+          consoleTool === 'navatara' ||
+          consoleTool === 'shodhya_pinda') && (
+          <SpecialSensitivitiesView
+            chart={chart}
+            initialTab={
+              consoleTool === 'mrityu'
+                ? 'mrityu'
+                : consoleTool === 'pushkara'
+                  ? 'pushkara'
+                  : consoleTool === 'navatara'
+                    ? 'navatara'
+                    : consoleTool === 'shodhya_pinda'
+                      ? 'shodhya_pinda'
+                      : 'lagnas_arudhas'
+            }
+          />
         )}
       </div>
     </div>

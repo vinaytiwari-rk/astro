@@ -296,7 +296,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
           )}
 
           {currentTab === 'bhriguNadi' && (
-            <BhriguNadiPanel report={report.bhriguNandiNadi} />
+            <BhriguNadiPanel report={report.bhriguNandiNadi} chart={chart} />
           )}
 
           {currentTab === 'pastFuture' && report.pastFutureLife && (

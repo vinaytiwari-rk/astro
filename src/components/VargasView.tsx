@@ -123,29 +123,51 @@ export const VargasView: React.FC<VargasViewProps> = ({ chart, chartStyle, reque
                   <thead>
                     <tr>
                       <th>{t.common.body}</th>
-                      <th>{isHi ? 'वर्ग राशि' : 'Varga Sign'}</th>
+                      <th>{t.common.sign}</th>
+                      <th>{t.common.degree}</th>
+                      <th>{t.common.nakshatra}</th>
+                      <th>{t.common.lords}</th>
                       <th>{t.common.house}</th>
-                      <th>{isHi ? 'राशि स्वामी' : 'Sign Lord'}</th>
+                      <th>{t.common.karaka}</th>
                       <th>{t.common.dignity}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedChart.placements.map((p) => (
-                      <tr key={p.id}>
-                        <td>
-                          <strong>{trPlanet(p.id, lang)}</strong>
-                          {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
-                        </td>
-                        <td>{trSign(p.signIndex, lang)}</td>
-                        <td className="mono">{isHi ? `भाव ${p.houseFromVargaLagna}` : `H${p.houseFromVargaLagna}`}</td>
-                        <td>{trPlanet(p.signLord, lang)}</td>
-                        <td>
-                          <span className={`dignity-pill dig-${p.dignity.toLowerCase().replace(/\s+/g, '-')}`}>
-                            {trTerm(p.dignity, lang)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    {selectedChart.placements.map((p) => {
+                      const natalBody =
+                        chart.ascendant.id === p.id
+                          ? chart.ascendant
+                          : chart.planets.find((x) => x.id === p.id);
+                      const charaKaraka = natalBody?.charaKaraka;
+
+                      return (
+                        <tr key={p.id}>
+                          <td>
+                            <strong>{trPlanet(p.id, lang)}</strong>
+                            {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
+                            {p.isCombust && <span className="tag tag-combust" style={{ marginLeft: 4 }}>{isHi ? 'अ' : 'C'}</span>}
+                          </td>
+                          <td>{trSign(p.signIndex, lang)}</td>
+                          <td className="mono">{p.dms}</td>
+                          <td>
+                            {trTerm(p.nakshatraName, lang)}{' '}
+                            <span className="muted">{lang === 'hi' ? 'च' : 'P'}{p.pada}</span>
+                          </td>
+                          <td className="mono small-cell">
+                            {trPlanetShort(p.signLord, lang)} / {trPlanetShort(p.nakshatraLord, lang)} / {trPlanetShort(p.subLord, lang)}
+                          </td>
+                          <td className="mono">{isHi ? `भाव ${p.houseFromVargaLagna}` : `H${p.houseFromVargaLagna}`}</td>
+                          <td>
+                            {charaKaraka ? <span className="tag tag-karaka">{charaKaraka}</span> : '—'}
+                          </td>
+                          <td>
+                            <span className={`dignity-pill dig-${p.dignity.toLowerCase().replace(/\s+/g, '-')}`}>
+                              {trTerm(p.dignity, lang)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -357,58 +379,74 @@ export const VargasView: React.FC<VargasViewProps> = ({ chart, chartStyle, reque
                   <thead>
                     <tr>
                       <th>{t.common.body}</th>
-                      <th>{isHi ? 'D1 राशि' : 'D1 Rasi'}</th>
-                      <th>
-                        {selectedHigherId === 'D150'
-                          ? isHi
-                            ? 'नाड़ीअंश (1–150)'
-                            : 'Nadiamsa (1–150)'
-                          : isHi
-                            ? `अंश # (1–${focusedHigher.meta.division})`
-                            : `Amsa # (1–${focusedHigher.meta.division})`}
-                      </th>
-                      <th>{isHi ? 'वर्ग राशि व अंश' : 'Varga Sign & Deg'}</th>
+                      <th>{t.common.sign}</th>
+                      <th>{t.common.degree}</th>
+                      <th>{t.common.nakshatra}</th>
+                      <th>{t.common.lords}</th>
                       <th>{t.common.house}</th>
-                      <th>{isHi ? 'स्वामी / बल' : 'Lord & Dignity'}</th>
-                      <th>{isHi ? 'संयोग' : 'Resonance'}</th>
+                      <th>{t.common.karaka}</th>
+                      <th>{t.common.dignity}</th>
+                      <th>{isHi ? 'अंश / सूक्ष्म संयोग' : 'Amsa & Resonance'}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {focusedHigher.placements.map((p) => (
-                      <tr key={p.id}>
-                        <td>
-                          <strong>{trPlanet(p.id, lang)}</strong>
-                          {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
-                        </td>
-                        <td>{trSign(p.rasiSignIndex, lang)}</td>
-                        <td className="mono">
-                          <strong>#{p.amsaNumber}</strong>
-                          {selectedHigherId === 'D150' && (
-                            <span className="muted small-text" style={{ display: 'block' }}>
-                              {isHi ? getNadiamsaTitle(p.amsaNumber).hi : getNadiamsaTitle(p.amsaNumber).en}
+                    {focusedHigher.placements.map((p) => {
+                      const natalBody =
+                        chart.ascendant.id === p.id
+                          ? chart.ascendant
+                          : chart.planets.find((x) => x.id === p.id);
+                      const charaKaraka = natalBody?.charaKaraka;
+
+                      return (
+                        <tr key={p.id}>
+                          <td>
+                            <strong>{trPlanet(p.id, lang)}</strong>
+                            {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
+                            {p.isCombust && <span className="tag tag-combust" style={{ marginLeft: 4 }}>{isHi ? 'अ' : 'C'}</span>}
+                          </td>
+                          <td>{trSign(p.vargaSignIndex, lang)}</td>
+                          <td className="mono">{p.vargaDms}</td>
+                          <td>
+                            {natalBody ? (
+                              <>
+                                {trTerm(natalBody.nakshatraName, lang)}{' '}
+                                <span className="muted">{lang === 'hi' ? 'च' : 'P'}{natalBody.pada}</span>
+                              </>
+                            ) : (
+                              '—'
+                            )}
+                          </td>
+                          <td className="mono small-cell">
+                            {natalBody
+                              ? `${trPlanetShort(natalBody.signLord, lang)} / ${trPlanetShort(natalBody.nakshatraLord, lang)} / ${trPlanetShort(natalBody.subLord, lang)}`
+                              : trPlanetShort(p.signLord, lang)}
+                          </td>
+                          <td className="mono">{isHi ? `भाव ${p.houseFromVargaLagna}` : `H${p.houseFromVargaLagna}`}</td>
+                          <td>
+                            {charaKaraka ? <span className="tag tag-karaka">{charaKaraka}</span> : '—'}
+                          </td>
+                          <td>
+                            <span className={`dignity-pill dig-${p.dignity.toLowerCase().replace(/\s+/g, '-')}`}>
+                              {trTerm(p.dignity, lang)}
                             </span>
-                          )}
-                        </td>
-                        <td>
-                          <strong>{trSign(p.vargaSignIndex, lang)}</strong>{' '}
-                          <span className="mono muted small-text">{p.vargaDms}</span>
-                        </td>
-                        <td className="mono">{isHi ? `भाव ${p.houseFromVargaLagna}` : `H${p.houseFromVargaLagna}`}</td>
-                        <td>
-                          {trPlanet(p.signLord, lang)}{' '}
-                          <span className={`dignity-pill dig-${p.dignity.toLowerCase().replace(/\s+/g, '-')}`}>
-                            {trTerm(p.dignity, lang)}
-                          </span>
-                        </td>
-                        <td>
-                          {p.isMicroVargottama && (
-                            <span className="tag tag-varg">{isHi ? 'सूक्ष्म वर्गोत्तम (D1)' : '= D1'}</span>
-                          )}{' '}
-                          {p.d9Match && <span className="tag tag-karaka">{isHi ? '= D9' : '= D9'}</span>}
-                          {!p.isMicroVargottama && !p.d9Match && <span className="muted">—</span>}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>
+                            <strong className="mono">#{p.amsaNumber}</strong>
+                            {selectedHigherId === 'D150' && (
+                              <span className="muted small-text" style={{ display: 'block' }}>
+                                {isHi ? getNadiamsaTitle(p.amsaNumber).hi : getNadiamsaTitle(p.amsaNumber).en}
+                              </span>
+                            )}
+                            {p.isMicroVargottama && (
+                              <span className="tag tag-varg" style={{ marginLeft: 4 }}>{isHi ? '= D1' : '= D1'}</span>
+                            )}
+                            {p.d9Match && (
+                              <span className="tag tag-karaka" style={{ marginLeft: 4 }}>{isHi ? '= D9' : '= D9'}</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

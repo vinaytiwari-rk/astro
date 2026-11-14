@@ -33,6 +33,184 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
             <strong>{isHi ? pastLife.headlineHi : pastLife.headlineEn}</strong>
           </div>
 
+          {/* Core Classical Past Life Identity Dossier (8 Concrete Attributes) */}
+          <div
+            style={{
+              marginTop: 12,
+              marginBottom: 16,
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border)',
+              borderRadius: 8,
+              padding: 14,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 10,
+                borderBottom: '1px solid var(--border)',
+                paddingBottom: 6,
+              }}
+            >
+              <History size={16} style={{ color: 'var(--accent)' }} />
+              <strong style={{ fontSize: '14px' }}>
+                {isHi
+                  ? 'शास्त्रीय पूर्व जन्म परिचय (लिंग, योनि, जन्म स्थान, व्यवसाय, चरित्र, दांपत्य, संतान व निर्वाण)'
+                  : 'Classical Past Life Identity Dossier (Gender, Life Type, Birthplace, Profession, Character, Marriage, Children & Passing)'}
+              </strong>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: 12,
+              }}
+            >
+              {/* 1. Gender */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  👤 {isHi ? 'पूर्व जन्म लिंग (Gender)' : 'Past Life Gender'}
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
+                  {isHi ? pastLife.genderHi : pastLife.genderEn}
+                </div>
+              </div>
+
+              {/* 2. Life Type */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  🧬 {isHi ? 'योनि / जीवन प्रकार (Life Type)' : 'Life Type (Yoni)'}
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
+                  {isHi ? pastLife.lifeTypeHi : pastLife.lifeTypeEn}
+                </div>
+              </div>
+
+              {/* 3. Birth Region / Country */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                  gridColumn: '1 / -1',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  🌍 {isHi ? 'जन्म स्थान / देश व सभ्यता (Birthplace / Civilization)' : 'Birthplace / Country & Historical Region'}
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 600, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.birthPlaceOrCountryHi : pastLife.birthPlaceOrCountryEn}
+                </div>
+              </div>
+
+              {/* 4. Profession */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                  gridColumn: '1 / -1',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  ⚒️ {isHi ? 'पूर्व जन्म कार्य व व्यवसाय (Profession / Vocation)' : 'Past Life Profession / Craft'}
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 600, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.professionHi : pastLife.professionEn}
+                </div>
+              </div>
+
+              {/* 5. Character & Temperament */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                  gridColumn: '1 / -1',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  ⚖️ {isHi ? 'चरित्र व मूल स्वभाव (Character & Temperament)' : 'Character & Temperament'}
+                </div>
+                <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.characterHi : pastLife.characterEn}
+                </div>
+              </div>
+
+              {/* 6. Marital Status */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  💍 {isHi ? 'विवाह व दांपत्य स्थिति (Marital Status)' : 'Marital Status'}
+                </div>
+                <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.maritalStatusHi : pastLife.maritalStatusEn}
+                </div>
+              </div>
+
+              {/* 7. Children */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  👶 {isHi ? 'संतान सुख (Children)' : 'Children & Progeny'}
+                </div>
+                <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.childrenHi : pastLife.childrenEn}
+                </div>
+              </div>
+
+              {/* 8. How Died */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  padding: 10,
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                  gridColumn: '1 / -1',
+                }}
+              >
+                <div className="muted small-text" style={{ fontWeight: 600 }}>
+                  🕊️ {isHi ? 'मृत्यु की स्थिति व अंतिम निर्वाण (How Died / Manner of Exit)' : 'Manner of Exit / Passing'}
+                </div>
+                <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
+                  {isHi ? pastLife.howDiedHi : pastLife.howDiedEn}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="domains-grid">
             <article className="domain-card">
               <div className="domain-top">
@@ -147,6 +325,85 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 {isHi
                   ? `भविष्य जीवन-लक्ष्य रूप: ${futureBecoming.archetypeHi}`
                   : `Future Life Archetype: ${futureBecoming.archetypeEn}`}
+              </div>
+            </div>
+          </div>
+
+          {/* Future Incarnation Metrics Bar */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 12,
+              marginTop: 12,
+              marginBottom: 16,
+            }}
+          >
+            <div
+              style={{
+                background: 'var(--bg-subtle)',
+                padding: '10px 14px',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+              }}
+            >
+              <div className="muted small-text" style={{ fontWeight: 600 }}>
+                🌌 {isHi ? 'आगामी गति व लोक (Future Destination)' : 'Next Realm / Gati'}
+              </div>
+              <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
+                {isHi ? futureBecoming.futureGatiHi : futureBecoming.futureGatiEn}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: 'var(--bg-subtle)',
+                padding: '10px 14px',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+              }}
+            >
+              <div className="muted small-text" style={{ fontWeight: 600 }}>
+                ☸️ {isHi ? 'मोक्ष / मुक्ति संभावना (Moksha Likelihood)' : 'Moksha / Liberation Likelihood'}
+              </div>
+              <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: '#10b981' }}>
+                {isHi ? futureBecoming.mokshaLikelihoodHi : futureBecoming.mokshaLikelihoodEn}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: 'var(--bg-subtle)',
+                padding: '10px 14px',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+              }}
+            >
+              <div className="muted small-text" style={{ fontWeight: 600 }}>
+                📊 {isHi ? 'आत्मिक विकास सूचकांक (Spiritual Evolution Index)' : 'Spiritual Evolution Index'}
+              </div>
+              <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <strong style={{ fontSize: '15px', color: 'var(--accent)' }}>
+                  {futureBecoming.spiritualEvolutionIndex}%
+                </strong>
+                <div
+                  style={{
+                    flex: 1,
+                    height: 8,
+                    background: 'var(--border)',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${futureBecoming.spiritualEvolutionIndex}%`,
+                      height: '100%',
+                      background: 'var(--accent)',
+                      borderRadius: 4,
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

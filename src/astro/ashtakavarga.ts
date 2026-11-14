@@ -1,5 +1,5 @@
 import { SEVEN_PLANETS } from './constants';
-import type { AshtakavargaData, SevenPlanetId } from './types';
+import type { AshtakavargaData, SevenPlanetId, ShodhyaPindaRow } from './types';
 
 type Contributor = SevenPlanetId | 'Asc';
 
@@ -192,10 +192,39 @@ export function computeAshtakavarga(
 
   const trikonaShodhana = {} as Record<SevenPlanetId, number[]>;
   const ekadhipatyaShodhana = {} as Record<SevenPlanetId, number[]>;
+  const shodhyaPinda = {} as Record<SevenPlanetId, ShodhyaPindaRow>;
+
+  // Classical Rasi Multipliers (Aries to Pisces)
+  const RASI_GUNAKAS = [7, 10, 8, 4, 10, 5, 7, 8, 9, 5, 11, 12];
+  // Classical Graha Multipliers
+  const GRAHA_GUNAKAS: Record<SevenPlanetId, number> = {
+    Sun: 5, Moon: 5, Mars: 8, Mercury: 5, Jupiter: 10, Venus: 7, Saturn: 5,
+  };
 
   for (const p of SEVEN_PLANETS) {
     trikonaShodhana[p] = applyTrikonaShodhana(bhinna[p]);
     ekadhipatyaShodhana[p] = applyEkadhipatyaShodhana(trikonaShodhana[p], occupiedBySeven);
+
+    // Compute Shodhya Pindas
+    const reduced = ekadhipatyaShodhana[p];
+    let rPinda = 0;
+    for (let s = 0; s < 12; s++) {
+      rPinda += reduced[s] * RASI_GUNAKAS[s];
+    }
+    let gPinda = 0;
+    for (const occupant of SEVEN_PLANETS) {
+      const occSign = signByContributor[occupant];
+      if (occSign !== undefined && occSign >= 0 && occSign < 12) {
+        gPinda += reduced[occSign] * GRAHA_GUNAKAS[occupant];
+      }
+    }
+
+    shodhyaPinda[p] = {
+      planet: p,
+      rasiPinda: rPinda,
+      grahaPinda: gPinda,
+      shodhyaPinda: rPinda + gPinda,
+    };
   }
 
   return {
@@ -205,5 +234,6 @@ export function computeAshtakavarga(
     totalBindus: sarva.reduce((a, b) => a + b, 0),
     trikonaShodhana,
     ekadhipatyaShodhana,
+    shodhyaPinda,
   };
 }

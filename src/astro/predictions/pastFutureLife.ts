@@ -24,6 +24,26 @@ export interface PastFutureChartFactor {
 export interface PastLifeReading {
   headlineEn: string;
   headlineHi: string;
+
+  // Exact Classical Profile Fields
+  genderEn: string;
+  genderHi: string;
+  lifeTypeEn: 'Human (Manushya Yoni)' | 'Divine / Celestial (Deva Yoni)' | 'Animal (Tiryak / Pashu Yoni)' | 'Bird (Khaga / Pakshi Yoni)';
+  lifeTypeHi: 'मनुष्य योनि' | 'देव / दिव्य योनि' | 'पशु / तिर्यक योनि' | 'पक्षी / खग योनि';
+  birthPlaceOrCountryEn: string;
+  birthPlaceOrCountryHi: string;
+  professionEn: string;
+  professionHi: string;
+  characterEn: string;
+  characterHi: string;
+  maritalStatusEn: string;
+  maritalStatusHi: string;
+  childrenEn: string;
+  childrenHi: string;
+  howDiedEn: string;
+  howDiedHi: string;
+
+  // Deep Shashtiamsa & Classical Indicators
   shashtiamsaDeityEn: string;
   shashtiamsaDeityHi: string;
   shashtiamsaNature: 'Benefic' | 'Karmic';
@@ -49,6 +69,14 @@ export interface FutureBecomingReading {
   thisLifeMaturityHi: string;
   careerAndLegacyApexEn: string;
   careerAndLegacyApexHi: string;
+
+  // Future Incarnation Metrics
+  futureGatiEn: string;
+  futureGatiHi: string;
+  spiritualEvolutionIndex: number; // 0..100
+  mokshaLikelihoodEn: 'High (Mukti Pathway)' | 'Moderate (Progressive Spiritual Birth)' | 'Continuous Evolution (Earthly Karmayoga)';
+  mokshaLikelihoodHi: 'उच्च (मुक्ति / मोक्ष मार्ग)' | 'मध्यम (उच्च कुलीन धार्मिक जन्म)' | 'सतत विकास (कर्मयोग पुनर्जन्म)';
+
   nextBirthGatiTier: 'High Spiritual / Liberation Focus' | 'Noble & Scholarly Progression' | 'Dharmic Leadership / Builder Return' | 'Active Karmic Mastery';
   nextBirthLokaEn: string;
   nextBirthLokaHi: string;
@@ -360,6 +388,116 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
   const ketuDispId = SIGNS[ketu.signIndex].lord;
   const ketuDisp = chart.planets.find((p) => p.id === ketuDispId)!;
 
+  // 1a. Past Life Gender
+  // Classical odd/even sign balance of D60 Lagna, Ketu, and 9th House
+  const d60LagnaIsOdd = d60.lagnaSignIndex % 2 === 0; // Aries=0 (odd sign in astrology)
+  const ketuSignIsOdd = ketu.signIndex % 2 === 0;
+  const h9SignIsOdd = ((ascSign + 8) % 12) % 2 === 0;
+  const maleScore = (d60LagnaIsOdd ? 1 : 0) + (ketuSignIsOdd ? 1 : 0) + (h9SignIsOdd ? 1 : 0) + (['Sun', 'Mars', 'Jupiter'].includes(l9.id) ? 1 : 0);
+  const isPastMale = maleScore >= 2;
+  const genderEn = isPastMale ? 'Male (Purusha)' : 'Female (Stree)';
+  const genderHi = isPastMale ? 'पुरुष (पुरुष शरीर)' : 'स्त्री (स्त्री शरीर)';
+
+  // 1b. Past Life Type (Yoni)
+  let lifeTypeEn: PastLifeReading['lifeTypeEn'] = 'Human (Manushya Yoni)';
+  let lifeTypeHi: PastLifeReading['lifeTypeHi'] = 'मनुष्य योनि';
+  const isDevaDeity = ['Deva', 'Kubera', 'Kinnara', 'Amrita', 'Sudha', 'Indra'].some((d) => d60LagnaDeity.nameEn.includes(d));
+  if (isDevaDeity && (l9.dignity === 'Exalted' || l9.dignity === 'Own Sign' || [9, 12].includes(l12.rasiHouseNumber))) {
+    lifeTypeEn = 'Divine / Celestial (Deva Yoni)';
+    lifeTypeHi = 'देव / दिव्य योनि';
+  } else if ([0, 1, 4].includes(ketu.signIndex) && d60LagnaDeity.nature === 'Karmic' && retros.length >= 3) {
+    lifeTypeEn = 'Animal (Tiryak / Pashu Yoni)';
+    lifeTypeHi = 'पशु / तिर्यक योनि';
+  } else {
+    lifeTypeEn = 'Human (Manushya Yoni)';
+    lifeTypeHi = 'मनुष्य योनि';
+  }
+
+  // 1c. Past Life Birth Place / Country
+  let birthPlaceOrCountryEn = '';
+  let birthPlaceOrCountryHi = '';
+  const ketuElem = SIGNS[ketu.signIndex].element;
+  if (ketuElem === 'Water') {
+    birthPlaceOrCountryEn = 'Coastal Maritime Realm & Sacred River Basin (Ancient Gangetic Plains, Kalinga, Southern Indian Coast or Maritime Island Kingdom)';
+    birthPlaceOrCountryHi = 'समुद्रतटीय अथवा पवित्र नदी घाटी प्रदेश (प्राचीन गंगा तट, कलिंग, दक्षिण भारत का समृद्ध बंदरगाह अथवा द्वीप राज्य)';
+  } else if (ketuElem === 'Earth') {
+    birthPlaceOrCountryEn = 'Fertile Agrarian Plains & Central Civilization (Magadha, Avadh, Malwa Plateau or Historical Central Heartland)';
+    birthPlaceOrCountryHi = 'उर्वर कृषि क्षेत्र अथवा केंद्रीय ऐतिहासिक नगर (मगध, अवध, मालवा का पठार अथवा मध्यदेशीय समृद्ध नगर)';
+  } else if (ketuElem === 'Fire') {
+    birthPlaceOrCountryEn = 'Sunlit Mountain Fortress & Royal Foothills (Rajasthan, Ujjayini, Gandhara, Takshashila or Northwestern Chieftain Realm)';
+    birthPlaceOrCountryHi = 'पर्वतीय दुर्ग, शौर्य भूमि अथवा पश्चिमोत्तर राज्य (राजस्थान, उज्जयिनी, तक्षशिला, सौराष्ट्र अथवा गांधार)';
+  } else {
+    birthPlaceOrCountryEn = 'Bustling Scholarly Trade Metropolis (Varanasi, Kanchipuram, Pataliputra, Silk Road Commercial Hub or Mediterranean City)';
+    birthPlaceOrCountryHi = 'प्रसिद्ध व्यापारिक व शैक्षणिक महानगर (काशी, कांचीपुरम, पाटलिपुत्र अथवा प्राचीन व्यापारिक मार्ग का ज्ञान केंद्र)';
+  }
+
+  // 1d. Past Life Profession
+  let professionEn = '';
+  let professionHi = '';
+  if ([1, 9, 10].includes(ketu.rasiHouseNumber) || ketuDispId === 'Sun' || ketuDispId === 'Jupiter') {
+    professionEn = 'Royal Counselor, Dharmic Preceptor, Vedic Scholar or Administrative Magistrate';
+    professionHi = 'राजकीय परामर्शदाता, कुलगुरु, वेदाचार्य अथवा प्रशासनिक धर्माधिकारी';
+  } else if ([2, 11].includes(ketu.rasiHouseNumber) || ketuDispId === 'Mercury' || ketuDispId === 'Venus') {
+    professionEn = 'Wealth Custodian, Gem Merchant, Ayurvedic Apothecary or Commercial Guild Leader';
+    professionHi = 'कोषाध्यक्ष, रत्न-व्यापारी, आयुर्वेद वैद्य अथवा समृद्ध श्रेष्ठिवर्ग प्रमुख';
+  } else if ([3, 6].includes(ketu.rasiHouseNumber) || ketuDispId === 'Mars') {
+    professionEn = 'Military Commander, Fortress Architect, Weapon Master or Land Estate Overseer';
+    professionHi = 'सेनानायक, दुर्ग-शिल्पी, शस्त्र विशेषज्ञ अथवा भूमि संपदा प्रबंधक';
+  } else if ([4, 5].includes(ketu.rasiHouseNumber) || ketuDispId === 'Moon') {
+    professionEn = 'Educator, Landholder, Temple Architect, Classical Artisan or Manuscript Scribe';
+    professionHi = 'गुरुकुल शिक्षक, भू-स्वामी, मंदिर वास्तुशिल्पी अथवा पांडुलिपि लेखक';
+  } else {
+    professionEn = 'Hermitage Scholar, Traditional Healer, Astrologer or Meditative Seeker';
+    professionHi = 'तपोवन साधक, पारंपरिक चिकित्सक, ज्योतिषी अथवा ध्यानस्थ दार्शनिक';
+  }
+
+  // 1e. Past Life Character
+  let characterEn = '';
+  let characterHi = '';
+  if (d60LagnaDeity.nature === 'Benefic') {
+    characterEn = 'Righteous, compassionate, highly charitable, dedicated to spiritual integrity and respected for profound ethical wisdom.';
+    characterHi = 'सत्यनिष्ठ, उदारमना, परोपकारी, ज्ञान व मर्यादा का आदर करने वाले परम सात्विक व सम्मानित स्वभाव के धनी।';
+  } else {
+    characterEn = 'Fiercely determined, deeply ambitious, protective of clan honor, disciplined warrior temperament learning inner patience.';
+    characterHi = 'अत्यंत दृढ़-निश्चयी, स्वाभिमानी, अनुशासनप्रिय तथा कुल-मर्यादा की रक्षा हेतु तत्पर कर्मठ व तेजस्वी व्यक्तित्व।';
+  }
+
+  // 1f. Past Life Marital Status
+  let maritalStatusEn = '';
+  let maritalStatusHi = '';
+  if ([7, 12, 8].includes(ketu.rasiHouseNumber) && retros.length >= 2) {
+    maritalStatusEn = 'Renunciate Vow / Solo Hermit Phase (Ascetic dedication transcending conventional marriage)';
+    maritalStatusHi = 'वैराग्य भाव / एकाकी साधना (सांसारिक वैवाहिक बंधनों से परे तपस्वी जीवन)';
+  } else {
+    maritalStatusEn = 'Devout Householder (Grhastha life with a pious, supportive and mutually committed partner)';
+    maritalStatusHi = 'सदाचारी गृहस्थ — निष्ठावान, धार्मिक व सहयोगी जीवनसाथी के साथ सुखी दांपत्य जीवन';
+  }
+
+  // 1g. Past Life Children
+  let childrenEn = '';
+  let childrenHi = '';
+  if (['Exalted', 'Own Sign', 'Moolatrikona'].includes(l5.dignity) || [1, 4, 5, 9, 11].includes(l5.rasiHouseNumber)) {
+    childrenEn = 'Blessed with dutiful sons and daughters who honored family tradition and preserved spiritual heritage.';
+    childrenHi = 'सत्पुत्र व सुयोग्य संतानों का सुख, जिन्होंने कुल-परंपरा व विद्या का विस्तार कर यश बढ़ाया।';
+  } else {
+    childrenEn = 'Few offspring; channeled parental affection into spiritual disciples, extended clan and students.';
+    childrenHi = 'सीमित संतति; सांसारिक संतान के साथ शिष्यों व विद्यार्थियों को मानस-संतान मानकर विद्या दान दिया।';
+  }
+
+  // 1h. Past Life How Died
+  let howDiedEn = '';
+  let howDiedHi = '';
+  if ([9, 12].includes(l12.rasiHouseNumber) || d60LagnaDeity.nature === 'Benefic') {
+    howDiedEn = 'Peaceful passing in mature age during prayer, sacred pilgrimage, or tranquil contemplation free from violent trauma.';
+    howDiedHi = 'वृद्धावस्था में शांत व स्वाभाविक देहत्याग — तीर्थ यात्रा, ईश्वर स्मरण व पवित्र मंत्रोच्चार के मध्य कष्ट-मुक्त शांति।';
+  } else if ([6, 8].includes(l12.rasiHouseNumber) || retros.some((r) => r.id === 'Mars')) {
+    howDiedEn = 'Died following battlefield defense, sudden acute seasonal fever, or valorous protection of community.';
+    howDiedHi = 'शौर्यपूर्ण रक्षा, आकस्मिक तीव्र ज्वर अथवा मातृभूमि/कुल की रक्षा करते हुए वीरगति के उपरांत मोक्ष द्वार प्रस्थान।';
+  } else {
+    howDiedEn = 'Natural transition in old age surrounded by loved ones, completing worldly obligations with calm dignity.';
+    howDiedHi = 'परिजनों के सान्निध्य में वृद्धावस्था पूर्ण कर स्वाभाविक व सम्मानजनक शांति के साथ जीवन का समापन।';
+  }
+
   const headlineEn = `Purva Janma Root: ${d60LagnaDeity.nameEn} Shashtiamsa · Ketu in ${ketu.signName} (H${ketu.rasiHouseNumber})`;
   const headlineHi = `पूर्व जन्म सूत्र: ${d60LagnaDeity.nameHi} षष्ट्यंश · केतु ${SIGN_HI[ketu.signIndex]} (${ketu.rasiHouseNumber}वें भाव)`;
 
@@ -565,6 +703,22 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
     pastLife: {
       headlineEn,
       headlineHi,
+      genderEn,
+      genderHi,
+      lifeTypeEn,
+      lifeTypeHi,
+      birthPlaceOrCountryEn,
+      birthPlaceOrCountryHi,
+      professionEn,
+      professionHi,
+      characterEn,
+      characterHi,
+      maritalStatusEn,
+      maritalStatusHi,
+      childrenEn,
+      childrenHi,
+      howDiedEn,
+      howDiedHi,
       shashtiamsaDeityEn: `${d60LagnaDeity.nameEn} Shashtiamsa (#${d60LagnaDeity.index}/60 · ${d60LagnaDeity.nature})`,
       shashtiamsaDeityHi: `${d60LagnaDeity.nameHi} षष्ट्यंश (#${d60LagnaDeity.index}/60 · ${d60LagnaDeity.nature === 'Benefic' ? 'शुभ देव-भाग' : 'कर्म-परीक्षा भाग'})`,
       shashtiamsaNature: d60LagnaDeity.nature,
@@ -589,6 +743,19 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
       thisLifeMaturityHi,
       careerAndLegacyApexEn,
       careerAndLegacyApexHi,
+      futureGatiEn: nextLokaEn,
+      futureGatiHi: nextLokaHi,
+      spiritualEvolutionIndex: strongJupiterOrKetuGati ? 92 : (beneficD12th ? 84 : 76),
+      mokshaLikelihoodEn: strongJupiterOrKetuGati
+        ? 'High (Mukti Pathway)'
+        : beneficD12th
+          ? 'Moderate (Progressive Spiritual Birth)'
+          : 'Continuous Evolution (Earthly Karmayoga)',
+      mokshaLikelihoodHi: strongJupiterOrKetuGati
+        ? 'उच्च (मुक्ति / मोक्ष मार्ग)'
+        : beneficD12th
+          ? 'मध्यम (उच्च कुलीन धार्मिक जन्म)'
+          : 'सतत विकास (कर्मयोग पुनर्जन्म)',
       nextBirthGatiTier: nextTier,
       nextBirthLokaEn: nextLokaEn,
       nextBirthLokaHi: nextLokaHi,

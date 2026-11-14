@@ -17,6 +17,7 @@ import {
   type ClassicalYogaQuality,
   type DetectedClassicalYoga,
 } from '../../astro/predictions/classicalYogasKb';
+import { computeDivisionalYogas, type DivisionalYogaItem } from '../../astro/divisionalYogas';
 import {
   inspectCustomYuti,
   type ChartYutiGroup,
@@ -41,10 +42,16 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'all'>('yuti');
+  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'divisional' | 'all'>('yuti');
+  const [selectedVargaForYogas, setSelectedVargaForYogas] = useState<string>('D9');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
+
+  const divisionalYogas = useMemo(
+    () => computeDivisionalYogas(chart, selectedVargaForYogas),
+    [chart, selectedVargaForYogas]
+  );
 
   const detectedMap = useMemo(() => {
     const map = new Map<number, DetectedClassicalYoga>();
@@ -146,6 +153,14 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
             >
               <CheckCircle size={13} />{' '}
               {isHi ? `सक्रिय राजयोग (${detectedYogas.length})` : `Active Yogas (${detectedYogas.length})`}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${activeTab === 'divisional' ? 'btn-primary' : ''}`}
+              onClick={() => setActiveTab('divisional')}
+            >
+              <Award size={13} />{' '}
+              {isHi ? 'वर्ग कुंडली योग (D1–D360)' : 'Divisional Yogas (D1–D360)'}
             </button>
             <button
               type="button"
@@ -524,9 +539,146 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
                   </div>
                 </article>
               );
-            })
-            )}
+            }))}
           </div>
+        </div>
+      )}
+
+      {/* --- TAB 4: DIVISIONAL YOGAS (D1 TO D360) --- */}
+      {activeTab === 'divisional' && (
+        <div className="view-stack" style={{ gap: '14px' }}>
+          <div
+            className="card"
+            style={{
+              padding: '12px 16px',
+              background: 'var(--bg-elevated)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Award size={18} style={{ color: 'var(--accent)' }} />
+              <strong>{isHi ? 'वर्ग कुंडली चयन करें (D1 से D360):' : 'Select Divisional Chart (D1 to D360):'}</strong>
+            </div>
+
+            <select
+              aria-label="Select Divisional Chart"
+              className="select-compact"
+              value={selectedVargaForYogas}
+              onChange={(e) => setSelectedVargaForYogas(e.target.value)}
+              style={{ fontWeight: 700, minWidth: '220px', borderColor: 'var(--accent)' }}
+            >
+              <optgroup label={isHi ? 'मुख्य षोडशवर्ग' : 'Standard Shodashavarga'}>
+                <option value="D9">D9 — नवांश (Navamsha)</option>
+                <option value="D10">D10 — दशमांश (Dashamsha / Career)</option>
+                <option value="D1">D1 — लग्न (Rasi Duplicate)</option>
+                <option value="D2">D2 — होरा (Hora / Wealth)</option>
+                <option value="D3">D3 — द्रेष्काण (Drekkana / Siblings)</option>
+                <option value="D4">D4 — चतुर्थांश (Chaturthamsha / Property)</option>
+                <option value="D7">D7 — सप्तांश (Saptamsha / Progeny)</option>
+                <option value="D12">D12 — द्वादशांश (Dwadashamsha / Parents)</option>
+                <option value="D16">D16 — षोडशांश (Vehicles & Happiness)</option>
+                <option value="D20">D20 — विंशांश (Spiritual Practice)</option>
+                <option value="D24">D24 — चतुर्विंशांश (Higher Education)</option>
+                <option value="D27">D27 — भ Ret (Strengths & Physical Prowess)</option>
+                <option value="D30">D30 — त्रिंशांश (Trimshamsha / Misfortunes)</option>
+                <option value="D40">D40 — खवेदांश (Khavedamsha / Auspiciousness)</option>
+                <option value="D45">D45 — अक्षवेदांश (General Well-being)</option>
+                <option value="D60">D60 — षष्ट्यंश (Past Karma Root)</option>
+              </optgroup>
+              <optgroup label={isHi ? 'उच्च सूक्ष्म व नाड़ी वर्ग' : 'Higher Micro & Nadi Vargas'}>
+                <option value="D64">D64 — सूक्ष्म वर्ग (Chara / Sthira Amsa)</option>
+                <option value="D72">D72 — अष्टनवांश (Karma Mastery)</option>
+                <option value="D81">D81 — नव-नवांश (Pure Astral Soul)</option>
+                <option value="D108">D108 — अष्टोत्तर शत (Dharma & Punya)</option>
+                <option value="D144">D144 — द्विसप्तति द्वय (Lineage Secrets)</option>
+                <option value="D150">D150 — नाड़ीअंश (Chandra Kala Nadiamsa)</option>
+                <option value="D300">D300 — त्रिंशच्छत (Micro Destiny)</option>
+                <option value="D360">D360 — षष्ट्यधिक शत (Master Micro Amsa)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          {divisionalYogas.length === 0 ? (
+            <div className="card" style={{ padding: '24px', textAlign: 'center' }}>
+              <div className="muted" style={{ marginBottom: '6px' }}>
+                {isHi
+                  ? `${selectedVargaForYogas} में कोई विशेष अरिष्ट या दुर्योग सक्रिय नहीं है। सामान्य ग्रहीय बल प्रभावी है।`
+                  : `No critical afflictions or special yogas triggered in ${selectedVargaForYogas}. Standard planetary strengths apply.`}
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                gap: '12px',
+              }}
+            >
+              {divisionalYogas.map((y) => (
+                <article
+                  key={y.id}
+                  className="card"
+                  style={{
+                    padding: '14px',
+                    borderLeft: `4px solid ${
+                      y.nature.includes('Benefic')
+                        ? '#16a34a'
+                        : y.nature.includes('Malefic')
+                          ? '#ef4444'
+                          : '#eab308'
+                    }`,
+                    background: 'var(--bg-card)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <strong style={{ fontSize: '15px' }}>{isHi ? y.nameHi : y.nameEn}</strong>
+                    <span
+                      className={`tag ${
+                        y.nature.includes('Benefic')
+                          ? 'tag-varg'
+                          : y.nature.includes('Malefic')
+                            ? 'tag-karaka'
+                            : ''
+                      }`}
+                    >
+                      {isHi ? y.natureHi : y.nature}
+                    </span>
+                  </div>
+
+                  <div className="muted small-text" style={{ marginBottom: '8px' }}>
+                    <strong>{isHi ? 'शास्त्रीय सूत्र: ' : 'Classical Rule: '}</strong>
+                    {isHi ? y.ruleHi : y.ruleEn}
+                  </div>
+
+                  <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '8px' }}>
+                    <strong>{isHi ? 'फल प्रभाव: ' : 'Manifestation: '}</strong>
+                    {isHi ? y.impactHi : y.impactEn}
+                  </div>
+
+                  {y.participatingPlanets.length > 0 && (
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                      {y.participatingPlanets.map((p) => (
+                        <span key={p} className="tag tag-varg mono small-text">
+                          {trPlanet(p, lang)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
