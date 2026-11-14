@@ -13,6 +13,7 @@ import {
   computeRelationalMatrix,
   computeAddictionsAndShadow,
   computeLitigationAndAffairs,
+  computeComprehensiveVedicRemedies,
 } from './lifeDossierHelpers';
 
 export interface ChapterSection {
@@ -666,32 +667,62 @@ export function computeLifeDossierReport(
     (venus.rasiHouseNumber === ketu.rasiHouseNumber) ||
     [venus.rasiHouseNumber, ketu.rasiHouseNumber].includes(12);
 
+  const h7LordPlanet = chart.planets.find((p) => p.id === h7Lord);
+  const isMarriageDenial = Boolean(
+    h7LordPlanet &&
+    [6, 8, 12].includes(h7LordPlanet.rasiHouseNumber) &&
+    (h7LordPlanet.dignity === 'Debilitated' || h7LordPlanet.isCombust || [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(h7LordPlanet.rasiHouseNumber)) &&
+    ([saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(venus.rasiHouseNumber) || venus.dignity === 'Debilitated' || [6, 8, 12].includes(venus.rasiHouseNumber))
+  );
+
   chapters.push({
     chapterNumber: 6,
     id: 'chapter6_marriage_sexuality',
     titleEn: 'Chapter 6: Marriage Reality, Intimacy & The Sexuality Spectrum',
     titleHi: 'अध्याय 6: दांपत्य, प्रेम, काम-प्रकृति व पारिवारिक संबंध',
-    subtitleEn: 'Spouse Persona, Delay Roots, Marital Friction, Bed Pleasures & Classical Sexuality Diagnostics',
-    subtitleHi: 'जीवनसाथी का यथार्थ स्वरूप, विवाह विलंब के कारण, वैवाहिक कलह की जड़ें, शय्या सुख व काम-प्रकृति का सत्य',
+    subtitleEn: 'Spouse Persona, Celibacy/Singlehood Diagnostics, Delay Roots, Bed Pleasures & Classical Sexuality Diagnostics',
+    subtitleHi: 'जीवनसाथी का यथार्थ स्वरूप, विवाह हीनता/एकल जीवन योग, विलंब के कारण, शय्या सुख व काम-प्रकृति का सत्य',
     icon: 'heart',
     summaryQuoteEn: 'Marital destiny is not determined by fairy tales of eternal harmony, but by the courage to honor another sovereign soul while holding space for your own truth.',
     summaryQuoteHi: 'दांपत्य का सत्य किसी काल्पनिक परीकथा में नहीं, बल्कि दूसरे के आत्म-सम्मान की रक्षा करते हुए अपने सत्य को निष्कपटता से जीने में है।',
     sections: [
       {
-        titleEn: 'Spouse Persona, Temperament & Roots of Marital Friction',
-        titleHi: 'जीवनसाथी का वास्तविक स्वरूप, स्वभाव एवं वैवाहिक कलह की जड़ें',
-        leadEn: 'The real psychological and social profile of your life partner and where clashes arise.',
-        leadHi: 'आपके जीवनसाथी का यथार्थ व्यक्तित्व, पारिवारिक पृष्ठभूमि और आपसी मतभेद के मुख्य बिंदु।',
-        paragraphsEn: [
-          `Your 7th house falls in ${SIGNS[h7Sign].name} (governed by ${h7Lord}), with your Darakaraka (spouse indicator) being ${dk.id}. Your spouse is not a passive mirror of your desires; they possess a distinct, firm, and stubborn individuality. They come from a background of self-respect, possess sharp analytical instincts, and cannot be intimidated by emotional outbursts.`,
-          `The primary root of marital friction in your chart is not lack of love, but misaligned communication styles and unmet expectations of validation. You tend to internalize your complaints until you explode over trivial matters, while your spouse demands immediate clarity and transparency. If either party attempts to enforce authoritarian control, the bedroom grows cold and passive-aggressive silence replaces warmth.`,
-        ],
-        paragraphsHi: [
-          `आपकी कुंडली में सप्तम भाव '${SIGN_HI[h7Sign]}' राशि में है जिसके स्वामी '${PLANET_HI[h7Lord] || h7Lord}' हैं, और आपके दाराकारक (जीवनसाथी के सूचक ग्रह) '${PLANET_HI[dk.id] || dk.id}' हैं। आपका जीवनसाथी कोई दब्बू या आपकी हर बात में हां मिलाने वाला व्यक्ति नहीं होगा; उनका अपना एक स्वतंत्र, स्वाभिमानी और दृढ़ व्यक्तित्व होगा। वे तार्किक बुद्धि वाले, अपने आत्मसम्मान के प्रति अत्यंत सजग, और व्यवस्थाप्रिय होंगे।`,
-          `वैवाहिक जीवन में कलह की असली जड़ प्रेम की कमी नहीं, बल्कि 'संवाद की शैली और अपेक्षाओं का अंतर' है। आप अपनी नाराजगी को मन ही मन दबाते हैं और फिर किसी छोटी सी बात पर अचानक फट पड़ते हैं, जबकि आपका साथी तुरंत स्पष्टीकरण और तार्किक उत्तर चाहता है। जब दोनों में से कोई भी एक-दूसरे पर आधिपत्य जमाने की चेष्टा करता है, तो घर में मौन तनाव और शीत-युद्ध की स्थिति उत्पन्न हो जाती है।`,
-        ],
-        astrologicalCauseEn: `7th house in ${SIGNS[h7Sign].name} ruled by ${h7Lord}, with Darakaraka ${dk.id} influencing D9 Navamsha 7th house. Upapada Lagna in ${ulPoint?.signNameEn || 'Auspicious sign'} requires mutual patience during transits of Saturn or Rahu.`,
-        astrologicalCauseHi: `शास्त्रीय कारण: सप्तमेश '${PLANET_HI[h7Lord] || h7Lord}' एवं दाराकारक '${PLANET_HI[dk.id] || dk.id}' की स्थिति तथा उपपद लग्न (${ulPoint?.signNameHi || 'शुभ राशि'}) पर गोचर का प्रभाव वैवाहिक संबंधों में समय-समय पर अहंकार के टकराव का संकेत देता है।`,
+        titleEn: isMarriageDenial
+          ? 'Spouse Persona, Lifelong Bachelorhood / Celibacy Yogas & Root Causes of Delay'
+          : 'Spouse Persona, Temperament & Roots of Marital Friction',
+        titleHi: isMarriageDenial
+          ? 'जीवनसाथी का स्वरूप, विवाह हीनता / नैष्ठिक ब्रह्मचर्य योग एवं विलंब के मूल कारण'
+          : 'जीवनसाथी का वास्तविक स्वरूप, स्वभाव एवं वैवाहिक कलह की जड़ें',
+        leadEn: isMarriageDenial
+          ? 'Classical assessment of voluntary or karmic singlehood, celibacy, and intense delay.'
+          : 'The real psychological and social profile of your life partner and where clashes arise.',
+        leadHi: isMarriageDenial
+          ? 'महर्षि पाराशर व जैमिनि सम्मत विवाह-हीनता, नैष्ठिक ब्रह्मचर्य अथवा अत्यधिक विलंब का विश्लेषण।'
+          : 'आपके जीवनसाथी का यथार्थ व्यक्तित्व, पारिवारिक पृष्ठभूमि और आपसी मतभेद के मुख्य बिंदु।',
+        paragraphsEn: isMarriageDenial
+          ? [
+              `Classical Jyotish Formulations for Singlehood / Celibacy (नैष्ठिक ब्रह्मचर्य / विवाह हीन योग): Your 7th Lord (${h7Lord}) in House ${h7LordPlanet?.rasiHouseNumber || 1} combined with ascetic influences on Venus and Upapada Lagna form strong signatures of voluntary bachelorhood, lifelong singlehood, or late renunciation of domestic expectations. You are wired for intellectual, creative, or spiritual autonomy rather than submissive domestic compromise.`,
+              `If forced into matrimony by societal expectations: Serious marital friction, emotional detachment, or formal dissolution (divorce/separation) will occur unless your partner completely respects your non-negotiable personal space. If you choose marriage in mature years, expect a partner who is similarly detached, unconventional, and intellectually self-sufficient.`,
+            ]
+          : [
+              `Your 7th house falls in ${SIGNS[h7Sign].name} (governed by ${h7Lord}), with your Darakaraka (spouse indicator) being ${dk.id}. Your spouse is not a passive mirror of your desires; they possess a distinct, firm, and stubborn individuality. They come from a background of self-respect, possess sharp analytical instincts, and cannot be intimidated by emotional outbursts.`,
+              `The primary root of marital friction in your chart is not lack of love, but misaligned communication styles and unmet expectations of validation. You tend to internalize your complaints until you explode over trivial matters, while your spouse demands immediate clarity and transparency. If either party attempts to enforce authoritarian control, the bedroom grows cold and passive-aggressive silence replaces warmth.`,
+            ],
+        paragraphsHi: isMarriageDenial
+          ? [
+              `शास्त्रीय विवाह हीनता एवं नैष्ठिक ब्रह्मचर्य योग: महर्षि पाराशर व जैमिनि के अनुसार सप्तमेश '${PLANET_HI[h7Lord] || h7Lord}' की भाव ${h7LordPlanet?.rasiHouseNumber || 1} में स्थिति तथा शुक्र व उपपद लग्न पर शनि-केतु के वैराग्यकारी प्रभाव से जातक के आजीवन अविवाहित/एकल (Bachelor / Single) रहने, नैष्ठिक ब्रह्मचर्य, अथवा पारंपरिक दांपत्य से पूर्ण विरक्ति का योग बनता है। जातक की आत्मा किसी के अधीन होकर समझौता करने के स्थान पर अपनी बौद्धिक, आध्यात्मिक व स्वतंत्र सत्ता में रमना चाहती है।`,
+              `सामाजिक दबाव में विवाह की स्थिति: यदि पारिवारिक दबाव में विवाह कर भी लिया जाए, तो दांपत्य में अत्यधिक शीत-युद्ध, भावनात्मक विच्छेद, अथवा अंततः अलगाव/तलाक का जोखिम रहता है, जब तक कि जीवनसाथी पूर्णतः परिपक्व और आपकी निजता का सम्मान करने वाला न हो। परिपक्व आयु में विवाह होने पर जीवनसाथी भी अत्यधिक स्वतंत्र, तार्किक व सांसारिक मोह से परे होगा।`,
+            ]
+          : [
+              `आपकी कुंडली में सप्तम भाव '${SIGN_HI[h7Sign]}' राशि में है जिसके स्वामी '${PLANET_HI[h7Lord] || h7Lord}' हैं, और आपके दाराकारक (जीवनसाथी के सूचक ग्रह) '${PLANET_HI[dk.id] || dk.id}' हैं। आपका जीवनसाथी कोई दब्बू या आपकी हर बात में हां मिलाने वाला व्यक्ति नहीं होगा; उनका अपना एक स्वतंत्र, स्वाभिमानी और दृढ़ व्यक्तित्व होगा। वे तार्किक बुद्धि वाले, अपने आत्मसम्मान के प्रति अत्यंत सजग, और व्यवस्थाप्रिय होंगे।`,
+              `वैवाहिक जीवन में कलह की असली जड़ प्रेम की कमी नहीं, बल्कि 'संवाद की शैली और अपेक्षाओं का अंतर' है। आप अपनी नाराजगी को मन ही मन दबाते हैं और फिर किसी छोटी सी बात पर अचानक फट पड़ते हैं, जबकि आपका साथी तुरंत स्पष्टीकरण और तार्किक उत्तर चाहता है। जब दोनों में से कोई भी एक-दूसरे पर आधिपत्य जमाने की चेष्टा करता है, तो घर में मौन तनाव और शीत-युद्ध की स्थिति उत्पन्न हो जाती है।`,
+            ],
+        astrologicalCauseEn: isMarriageDenial
+          ? `7th Lord ${h7Lord} afflicted in House ${h7LordPlanet?.rasiHouseNumber || 1} combined with Saturn/Ketu influence over Venus and Upapada Lagna.`
+          : `7th house in ${SIGNS[h7Sign].name} ruled by ${h7Lord}, with Darakaraka ${dk.id} influencing D9 Navamsha 7th house. Upapada Lagna in ${ulPoint?.signNameEn || 'Auspicious sign'} requires mutual patience during transits of Saturn or Rahu.`,
+        astrologicalCauseHi: isMarriageDenial
+          ? `शास्त्रीय कारण: सप्तमेश '${PLANET_HI[h7Lord] || h7Lord}' की स्थिति, शुक्र पर क्रूर दृष्टि तथा उपपद लग्न पर विरक्ति कारक शनि-केतु का प्रभाव (विवाह हीन / नैष्ठिक योग)।`
+          : `शास्त्रीय कारण: सप्तमेश '${PLANET_HI[h7Lord] || h7Lord}' एवं दाराकारक '${PLANET_HI[dk.id] || dk.id}' की स्थिति तथा उपपद लग्न (${ulPoint?.signNameHi || 'शुभ राशि'}) पर गोचर का प्रभाव वैवाहिक संबंधों में समय-समय पर अहंकार के टकराव का संकेत देता है।`,
       },
       {
         titleEn: 'Bed Pleasures, Intimacy Dynamics & The Sexuality Spectrum',
@@ -1086,77 +1117,35 @@ export function computeLifeDossierReport(
   });
 
   // =========================================================================
-  // CHAPTER 10: लाल किताब टेवा, प्रारब्ध ऋण व अचूक आचरण-सुधार उपाय
+  // CHAPTER 10: वैदिक नवग्रह शांति, नक्षत्र व गोचर विधान, वर्तमान दशा निवारण एवं लाल किताब आचरण संहिता
   // =========================================================================
   const sleepingHouses = lalKitab?.sleepingHouses.filter((h) => h.isSleeping) ?? [];
   const activeDebts = lalKitab?.karmicDebts.filter((d) => d.isTriggered) ?? [];
+  const vedicRemedies = computeComprehensiveVedicRemedies(chart, lalKitab);
 
   chapters.push({
     chapterNumber: 10,
-    id: 'chapter10_lalkitab_remedies',
-    titleEn: 'Chapter 10: Lal Kitab Tewa, Ancestral Debts & Actionable Conduct Remedies',
-    titleHi: 'अध्याय 10: लाल किताब टेवा, प्रारब्ध ऋण व अचूक आचरण-सुधार उपाय',
-    subtitleEn: 'Aries-Fixed Kundali Placements, Sleeping Houses & Awakening Rituals, Ancestral Debts (Rin) & Ethical Daily Remedies',
-    subtitleHi: 'मेष लग्न के स्थायी भावों में ग्रहों का फल, सोए हुए घर व उन्हें जगाने की विधि, पैतृक ऋण निदान व आचरण सुधार उपाय',
+    id: 'chapter10_vedic_remedies',
+    titleEn: 'Chapter 10: Vedic Shastric Remedies, Planetary Shanti, Nakshatra Snana, Gochar & Lal Kitab Conduct',
+    titleHi: 'अध्याय 10: वैदिक नवग्रह शांति, नक्षत्र व गोचर विधान, वर्तमान दशा निवारण एवं लाल किताब आचरण संहिता',
+    subtitleEn: 'Tantrik Seed Mantras, Classical Dana, 6-8-12 House Cleansing, Janma Nakshatra Herbal Bath, Active Sade Sati Shield, Current Dasha Protocol & Lal Kitab Sleeping Houses',
+    subtitleHi: 'सिद्ध तांत्रिक बीज मंत्र, शास्त्रीय दान, त्रिक भाव शुद्धि, नक्षत्र औषधि स्नान, शनि साढ़ेसाती रक्षा, सक्रिय दशा-अंतर्दशा उपाय व सोए घर जगाना',
     icon: 'book-open',
-    summaryQuoteEn: 'True remedy is never a gemstone purchased with coins; it is the radical correction of one’s daily conduct toward the living creation.',
-    summaryQuoteHi: 'सच्चा उपाय कभी धन से खरीदा गया रत्न नहीं होता; सच्चा उपाय तो ईश्वर की सजीव सृष्टि और अपनों के प्रति अपने आचरण का निर्मल सुधार है।',
+    summaryQuoteEn: 'True remedy is never a gemstone purchased with coins; it is the alignment of sacred mantras, astral herbal baths, real-time transit shields, and pure ethical conduct toward the living creation.',
+    summaryQuoteHi: 'सच्चा उपाय कभी धन से खरीदा गया रत्न नहीं होता; सच्चा उपाय तो वैदिक बीज मंत्रों की ध्वनि, नक्षत्र औषधि स्नान, गोचर रक्षा और ईश्वर की सजीव सृष्टि के प्रति आचरण का निर्मल सुधार है।',
     sections: [
-      {
-        titleEn: 'Lal Kitab Tewa: Sleeping Houses & Awakening Protocols',
-        titleHi: 'लाल किताब टेवा: सोए हुए घर एवं उन्हें जगाने की अचूक विधि',
-        leadEn: 'Understanding dormant houses in the fixed Aries matrix and how to activate their dormant luck.',
-        leadHi: 'लाल किताब के अनुसार कौन से भाव निष्क्रिय (सोए हुए) हैं और उन्हें सक्रिय करने का शास्त्रीय नियम क्या है।',
-        paragraphsEn: [
-          `In the Lal Kitab tradition, the zodiac is mapped permanently with Aries in House 1, Taurus in House 2, continuing to Pisces in House 12. A house containing no planet and receiving no direct planetary gaze is classified as a 'Soya Ghar' (Dormant/Sleeping House). Its blessings remain frozen until awakened through specific ethical conduct.`,
-          `In your Lal Kitab Tewa, the primary sleeping houses are: ${sleepingHouses.map((h) => `House ${h.houseNumber} (Ruler: ${h.pakkaGharRuler})`).join(', ') || 'House 2 and House 9'}. To awaken a sleeping house, classical Lal Kitab mandates introducing the element of the ruling lord through lifestyle habits. For instance, sleeping House 2 is awakened by respecting elders and eating with family; sleeping House 9 is awakened by visiting ancestral shrines and honoring traditional preceptors; sleeping House 10 is awakened by fair dealings with daily-wage laborers.`,
-        ],
-        paragraphsHi: [
-          `लाल किताब की विद्या में संपूर्ण जन्म चक्र को मेष लग्न (प्रथम भाव = मेष, द्वितीय = वृषभ... द्वादश = मीन) के अनुसार स्थायी भाव मानकर देखा जाता है। जिस भाव में कोई ग्रह न बैठा हो और न ही उस पर किसी ग्रह की दृष्टि हो, उसे 'सोया हुआ घर' (Dormant House) कहा जाता है। ऐसे भाव का शुभ फल तब तक रुका रहता है जब तक कि उसे शास्त्रीय विधि से जगाया न जाए।`,
-          `आपके लाल किताब टेवे में मुख्य सोए हुए घर: ${sleepingHouses.map((h) => `भाव संख्या ${h.houseNumber} (पक्का स्वामी: ${h.pakkaGharRulerHi})`).join(', ') || 'भाव 2 (धन) व भाव 9 (भाग्य)'} हैं। सोए हुए घर को जगाने का नियम यह है कि उस भाव के स्वामी ग्रह के कारक तत्वों को आचरण में लाया जाए। उदाहरणार्थ: भाव 2 को जगाने हेतु परिवार के साथ प्रेमपूर्वक भोजन करना व कुल बड़ों का सम्मान करना; भाव 9 को जगाने हेतु कुल-देवता के स्थान पर शीश झुकाना व ब्राह्मणों/गुरुओं का आदर करना; भाव 10 को जगाने हेतु श्रमिकों व सहायकों को उनका पारिश्रमिक समय पर बिना विवाद देना।`,
-        ],
-        astrologicalCauseEn: `Computed via Lal Kitab fixed-house rules (Aries Ascendant base) and vacant house inspection.`,
-        astrologicalCauseHi: `शास्त्रीय कारण: लाल किताब के स्थायी मेष चक्र में रिक्त व दृष्टिहीन भावों की अवस्थिति द्वारा प्रमाणित।`,
-      },
-      {
-        titleEn: 'Ancestral Karmic Debts (Lal Kitab Rin Diagnostics) & Symptoms',
-        titleHi: 'पैतृक ऋण निदान (Pitru, Matru, Stri, Swa Rin) एवं जीवन में उनके लक्षण',
-        leadEn: 'Diagnosing hereditary karmic encumbrances carried across paternal and maternal lineages.',
-        leadHi: 'पूर्वजों द्वारा अनजाने में किए गए अपराधों का ऋण जो वर्तमान जीवन में अकारण बाधाएं उत्पन्न करता है।',
-        paragraphsEn: [
-          `Lal Kitab identifies deep ancestral debts (Rin) that afflict individuals without their direct fault. Based on planetary afflictions in your chart: ${activeDebts.length > 0 ? activeDebts.map((d) => `${d.debtType} (${d.classicalCauseEn})`).join('; ') : 'No heavy ancestral debt is active; your chart enjoys clean ancestral blessings with minor Swa-Rin (Self-Debt) requiring spiritual discipline'}.`,
-          `Symptoms of these subtle debts in daily life include: unexplained delays at the final stage of negotiations, sudden mechanical or electrical failures in the home right before celebrations, recurring disputes with maternal uncles or elder brothers, and feelings of exhaustion inside certain rooms of your dwelling.`,
-        ],
-        paragraphsHi: [
-          `लाल किताब में पैतृक ऋणों का अत्यंत सूक्ष्म विवेचन है। यह वे ऋण हैं जो पूर्वजों द्वारा किसी के साथ किए गए अन्याय, वादे के उल्लंघन अथवा अनादर के कारण वंशजों के जीवन में अप्रत्याशित अवरोध लाते हैं। आपकी कुंडली के अनुसार: ${activeDebts.length > 0 ? activeDebts.map((d) => `'${d.debtTypeHi}' (${d.classicalCauseHi}) सक्रिय दिखाई देता है`).join('; ') : 'कुंडली में कोई भारी पितृ या मातृ ऋण नहीं है; आपके कुल का आशीर्वाद आपके साथ है, केवल स्व-ऋण (आलस्य व वचन टालना) के निवारण हेतु संकल्पबद्धता आवश्यक है'}।`,
-          `इन ऋणों के जीवन में प्रकट लक्षण: शुभ कार्यों के ठीक पहले घर में अचानक तनाव या क्लेश उत्पन्न होना, बनते हुए काम का अंतिम क्षण में अटक जाना, घर के किसी कोने में सीलन या अंधकार का अनुभव होना, और बिना कारण मन पर एक अज्ञात उदासी का छा जाना।`,
-        ],
-        astrologicalCauseEn: `Afflictions between Jupiter/Sun (Pitru Rin), Moon/4th house (Matru Rin), Venus (Stri Rin), and Mars/Saturn (Bhai/Zalim Rin).`,
-        astrologicalCauseHi: `शास्त्रीय कारण: सूर्य-गुरु (पितृ ऋण), चंद्र-चतुर्थ भाव (मातृ ऋण), शुक्र (स्त्री ऋण) तथा शनि-मंगल (निर्दयी/बंधु ऋण) के शास्त्रीय योग।`,
-      },
-      {
-        titleEn: 'Actionable Lifestyle & Conduct Remedies (No Costly Gemstones)',
-        titleHi: 'अचूक आचरण-सुधार एवं व्यावहारिक उपाय (किसी महंगे रत्न या आडंबर के बिना)',
-        leadEn: 'Profound, ethical, and behavior-based corrections that directly dissolve karmic blockages.',
-        leadHi: 'दैनिक जीवन में छोटे-छोटे आचरण परिवर्तन जो बिना एक रुपया खर्च किए ग्रहों के विष को अमृत में बदल देते हैं।',
-        paragraphsEn: [
-          `1. Water Sanctity (Purifying Moon): Never waste drinking water. Always finish the water poured in your glass, offer fresh water to guests immediately upon arrival, and ensure no taps leak in your home. This directly stabilizes your emotional core and finances.`,
-          `2. Elder Respect (Activating Sun & Jupiter): Touch the feet of your parents or elder family members before setting out for critical endeavors. Speak to them with reverence; their genuine blessing acts as an impenetrable shield against career setbacks.`,
-          `3. Speech & Truth (Soothing Mercury & Rahu): Strictly abstain from false promises, exaggerated boasts, or sarcastic mockery of the vulnerable. Feed green grass or soaked whole moong dal to cows or street cattle on Wednesdays.`,
-          `4. Compassion to Laborers & Animals (Pleasing Saturn & Ketu): Treat domestic helpers, security guards, and daily-wage workers with dignity; pay them fairly and offer tea/sweets on Saturdays. Feed street dogs with fresh roti or milk; dogs are the living vehicle of Lord Bhairava and absorb severe malefic currents.`,
-          `5. Sanctity of Character (Elevating Venus): Respect all women in thought, word, and deed. Maintain impeccable personal hygiene, wear clean and lightly fragranced attire, and avoid clutter or broken glass inside your living space.`,
-        ],
-        paragraphsHi: [
-          `1. जल की पवित्रता (चंद्र देव की शुद्धि): घर में पीने के पानी का कभी अपव्यय न करें। गिलास में जितना जल लें उतना पूरा पिएं, घर आए अतिथि को सर्वप्रथम शीतल जल दें, और घर का कोई भी नल टपकता न रहे। इससे मन की शांति और संचित धन का रिसाव तुरंत थमता है।`,
-          `2. बड़ों का चरण स्पर्श (सूर्य व गुरु का जागरण): घर से किसी भी महत्वपूर्ण कार्य के लिए निकलते समय माता-पिता अथवा घर के वरिष्ठजनों के चरण स्पर्श कर आशीर्वाद लें। उनकी प्रसन्नता से करियर के बड़े-बड़े अवरोध स्वतः समाप्त हो जाते हैं।`,
-          `3. वाणी का संयम व सत्य (बुध व राहु का संतुलन): किसी से झूठा वादा न करें, पीठ पीछे किसी की निंदा न करें, और असहाय व्यक्ति का उपहास न उड़ाएं। बुधवार के दिन गाय को हरा चारा अथवा भीगी हुई मूंग की दाल खिलाएं।`,
-          `4. श्रमिकों व जीवों पर दया (शनि व केतु की शांति): घर के सफाईकर्मियों, चौकीदारों और मजदूरों को कभी दुत्कारें नहीं; उन्हें समय पर उनका हक दें और शनिवार को कुछ मीठा या चाय पिलाएं। गली के काले अथवा भूरे कुत्तों को नित्य मीठी रोटी या दूध दें; कुत्ते काल भैरव के वाहन हैं जो आपके संकटों को स्वयं पर ले लेते हैं।`,
-          `5. चरित्र की शुद्धि (शुक्र देव का आशीर्वाद): पराई स्त्री/पुरुष के प्रति मन में पूर्ण पवित्रता रखें। घर को सुगंधित रखें, फटे-पुराने या गंदे वस्त्र न पहनें, और घर में कभी कबाड़ या टूटे हुए कांच-बर्तन एकत्र न होने दें।`,
-        ],
-        astrologicalCauseEn: `Lal Kitab ethical conduct protocols designed to pacify the 9 planetary vibrations through natural service to nature and humanity.`,
-        astrologicalCauseHi: `शास्त्रीय कारण: लाल किताब के मौलिक सिद्धांत जो प्रकृति, जीव-जंतुओं और मानवीय संबंधों के सुधार द्वारा नवग्रहों की क्रूर रश्मियों को शांत करते हैं।`,
-      },
+      vedicRemedies.planetaryRemediesSection,
+      vedicRemedies.houseCleansingSection,
+      vedicRemedies.nakshatraSnanaSection,
+      vedicRemedies.gocharSadeSatiSection,
+      vedicRemedies.activeDashaSection,
+      vedicRemedies.lalKitabConductSection,
     ],
+    specialData: {
+      vedicRemediesSummary: vedicRemedies.summaryHighlights,
+      sleepingHouses,
+      activeDebts,
+    },
   });
 
   return {

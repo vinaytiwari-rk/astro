@@ -149,12 +149,35 @@ describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
     expect(futureSec?.paragraphsEn.some((p) => p.includes('Future Incarnation Global Continent'))).toBe(true);
   });
 
-  it('verifies Chapter 10 contains Lal Kitab Sleeping Houses, Debts and lifestyle remedies without costly gems', () => {
+  it('verifies Chapter 10 contains comprehensive 6-tier Vedic Shastric Remedies, Gochar shield, Nakshatra snana, active dasha and Lal Kitab conduct', () => {
     const ch10 = report.chapters.find((c) => c.chapterNumber === 10);
     expect(ch10).toBeDefined();
-    expect(ch10?.sections.length).toBe(3);
-    const remediesSec = ch10?.sections[2];
-    expect(remediesSec?.titleEn).toContain('No Costly Gemstones');
-    expect(remediesSec?.paragraphsEn.length).toBeGreaterThanOrEqual(4);
+    expect(ch10?.sections.length).toBe(6);
+    expect(ch10?.sections[0].titleEn).toContain('Vedic Planetary Shanti');
+    expect(ch10?.sections[1].titleEn).toContain('Dusthana Cleansing');
+    expect(ch10?.sections[2].titleEn).toContain('Nakshatra Deity');
+    expect(ch10?.sections[3].titleEn).toContain('Active Gochar');
+    expect(ch10?.sections[4].titleEn).toContain('Active Running Dasha Prescription');
+    expect(ch10?.sections[5].titleEn).toContain('Lal Kitab Conduct Rules');
+  });
+
+  it('verifies dynamic relational contingencies and denial yogas are handled', () => {
+    const ch6 = report.chapters.find((c) => c.chapterNumber === 6);
+    expect(ch6).toBeDefined();
+    const matrix = ch6?.specialData?.relationalMatrix as Array<{ id: string; relationEn: string; bondStatusHi: string; bondStatusEn: string }>;
+    expect(matrix).toBeDefined();
+    expect(matrix.length).toBe(13);
+    const father = matrix.find((m) => m.id === 'father');
+    const mother = matrix.find((m) => m.id === 'mother');
+    const brothers = matrix.find((m) => m.id === 'brothers');
+    const sisters = matrix.find((m) => m.id === 'sisters');
+    const children = matrix.find((m) => m.id === 'children');
+    const inlaws = matrix.find((m) => m.id === 'inlaws');
+    expect(father).toBeDefined();
+    expect(mother).toBeDefined();
+    expect(brothers).toBeDefined();
+    expect(sisters).toBeDefined();
+    expect(children).toBeDefined();
+    expect(inlaws).toBeDefined();
   });
 });

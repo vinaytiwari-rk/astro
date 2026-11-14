@@ -1,4 +1,4 @@
-import type { ChartData, BodyPosition, NineGrahaId } from '../types';
+import type { ChartData, BodyPosition, NineGrahaId, DashaPeriod } from '../types';
 import { SIGNS } from '../constants';
 import type { ChapterSection } from './lifeDossierEngine';
 
@@ -741,6 +741,73 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
   const rahu = chart.planets.find((p) => p.id === 'Rahu')!;
   const ketu = chart.planets.find((p) => p.id === 'Ketu')!;
 
+  const getPlanetByLord = (lordName: string) => chart.planets.find((p) => p.id === lordName);
+  const h9LordP = getPlanetByLord(h9Lord);
+  const h4LordP = getPlanetByLord(h4Lord);
+  const h3LordP = getPlanetByLord(h3Lord);
+  const h11LordP = getPlanetByLord(h11Lord);
+  const h7LordP = getPlanetByLord(h7Lord);
+  const h5LordP = getPlanetByLord(h5Lord);
+
+  // --------------------------------------------------------------------------
+  // CLASSICAL CONTINGENCY / DENIAL / ABSENCE YOGAS (महर्षि पाराशर व जैमिनि सूत्र)
+  // --------------------------------------------------------------------------
+  // A. Pitru Arishta / Early Paternal Loss or Prolonged Absence (पितृ अरिष्ट / वियोग योग)
+  const isPitruArishta =
+    ([6, 8, 12].includes(sun.rasiHouseNumber) && ([saturn.rasiHouseNumber, rahu.rasiHouseNumber, mars.rasiHouseNumber, ketu.rasiHouseNumber].includes(sun.rasiHouseNumber) || sun.dignity === 'Debilitated')) ||
+    (h9LordP && [6, 8].includes(h9LordP.rasiHouseNumber) && (h9LordP.dignity === 'Debilitated' || h9LordP.isCombust)) ||
+    ([saturn.rasiHouseNumber, rahu.rasiHouseNumber].includes(9) && mars.rasiHouseNumber === 9);
+
+  // B. Matru Arishta / Early Maternal Loss or Chronic Illness (मातृ अरिष्ट / वियोग योग)
+  const isMatruArishta =
+    ([6, 8, 12].includes(moon.rasiHouseNumber) && ([saturn.rasiHouseNumber, mars.rasiHouseNumber, rahu.rasiHouseNumber].includes(moon.rasiHouseNumber) || moon.dignity === 'Debilitated')) ||
+    (h4LordP && [6, 8].includes(h4LordP.rasiHouseNumber) && (h4LordP.dignity === 'Debilitated' || h4LordP.isCombust)) ||
+    (saturn.rasiHouseNumber === 4 && mars.rasiHouseNumber === 4);
+
+  // C. Sibling Absence / Only Child / Youngest / Eldest (एकल संतान / भ्राता-भगिनी विहीन योग)
+  const isOnlyChild =
+    Boolean(
+      h3LordP &&
+      [6, 8, 12].includes(h3LordP.rasiHouseNumber) &&
+      (h3LordP.dignity === 'Debilitated' || h3LordP.isCombust || [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(h3LordP.rasiHouseNumber)) &&
+      h11LordP &&
+      [6, 8, 12].includes(h11LordP.rasiHouseNumber) &&
+      ([saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(3) || [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(11) || mars.rasiHouseNumber === 8)
+    );
+
+  const noYoungerSiblings =
+    !isOnlyChild &&
+    Boolean(
+      (h3LordP && [6, 8, 12].includes(h3LordP.rasiHouseNumber)) ||
+      [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(3) ||
+      mars.rasiHouseNumber === 8
+    );
+
+  const noElderSiblings =
+    !isOnlyChild &&
+    Boolean(
+      (h11LordP && [6, 8, 12].includes(h11LordP.rasiHouseNumber)) ||
+      [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(11)
+    );
+
+  // D. Denial of Marriage / Celibacy / Bachelorhood (विवाह हीन / नैष्ठिक ब्रह्मचर्य योग)
+  const isMarriageDenial =
+    Boolean(
+      h7LordP &&
+      [6, 8, 12].includes(h7LordP.rasiHouseNumber) &&
+      (h7LordP.dignity === 'Debilitated' || h7LordP.isCombust || [saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(h7LordP.rasiHouseNumber)) &&
+      ([saturn.rasiHouseNumber, ketu.rasiHouseNumber].includes(venus.rasiHouseNumber) || venus.dignity === 'Debilitated' || [6, 8, 12].includes(venus.rasiHouseNumber))
+    );
+
+  // E. Progeny Denial / Childlessness / Adoption (संतान हीन / दत्तक योग)
+  const isProgenyDenial =
+    Boolean(
+      h5LordP &&
+      [6, 8, 12].includes(h5LordP.rasiHouseNumber) &&
+      (h5LordP.dignity === 'Debilitated' || h5LordP.isCombust) &&
+      ([6, 8, 12].includes(jupiter.rasiHouseNumber) || [rahu.rasiHouseNumber, saturn.rasiHouseNumber].includes(5) || [rahu.rasiHouseNumber, saturn.rasiHouseNumber].includes(jupiter.rasiHouseNumber))
+    );
+
   const allEntities: RelationalEntity[] = [];
 
   // 1. Father (पिता - 9th house, Sun, Pitru Karaka)
@@ -751,16 +818,32 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'पिता (धर्म व पितृ कारक)',
     bhavatBhavamEn: '9th House (Bhagya/Dharma) & Surya (Natural Pitru Karaka)',
     bhavatBhavamHi: 'नवम भाव (धर्म/भाग्य) एवं सूर्य देव (नैसर्गिक पितृ कारक)',
-    bondStatusEn: isFatherFriction ? 'Ideological Friction / High Expectations (Respect with Distance)' : 'Deep Reverence, Protective Guidance & Karmic Heritage',
-    bondStatusHi: isFatherFriction ? 'वैचारिक मतभेद व उच्च अपेक्षाएं (मर्यादित आदर, किंतु मानसिक दूरी)' : 'गहरा आदर, संरक्षक मार्गदर्शन एवं पैतृक संस्कारों का संवर्धन',
-    narrativeEn: isFatherFriction
+    bondStatusEn: isPitruArishta
+      ? 'Early Loss / Physical Absence / Prolonged Separation (Pitru Arishta Yoga)'
+      : isFatherFriction
+      ? 'Ideological Friction / High Expectations (Respect with Distance)'
+      : 'Deep Reverence, Protective Guidance & Karmic Heritage',
+    bondStatusHi: isPitruArishta
+      ? 'अल्पायु / शीघ्र पितृ वियोग अथवा पिता की दीर्घकालिक अनुपस्थिति (पितृ अरिष्ट योग)'
+      : isFatherFriction
+      ? 'वैचारिक मतभेद व उच्च अपेक्षाएं (मर्यादित आदर, किंतु मानसिक दूरी)'
+      : 'गहरा आदर, संरक्षक मार्गदर्शन एवं पैतृक संस्कारों का संवर्धन',
+    narrativeEn: isPitruArishta
+      ? 'Classical Pitru Arishta / Viyoga Yoga is active in your chart due to heavy malefic affliction to the Sun and 9th lord. This signals early physical separation from the father, father’s premature demise, or prolonged physical estrangement (father living in distant exile/work, or complete emotional absence during your formative upbringing). You were compelled by circumstance to become self-reliant and bear heavy adult responsibilities far before your peers.'
+      : isFatherFriction
       ? 'A relationship characterized by deep filial respect yet marked by unspoken emotional distance and stubborn clashes of ego. Your father possessed high, unbending standards and was often critical of your unconventional ambitions. While he provided material foundation, you felt emotionally misunderstood during early adulthood. Health vulnerabilities for the father center on bones, blood pressure, and heart vitality.'
       : 'A fundamentally supportive and dharmic anchor. Your father acts as a guiding pillar whose principles, social standing, and moral reputation open doors for your worldly advancement. Even during inevitable disagreements, mutual honor remains intact, and paternal blessings shield you from legal and career crises.',
-    narrativeHi: isFatherFriction
+    narrativeHi: isPitruArishta
+      ? 'शास्त्रीय पितृ अरिष्ट अथवा दीर्घ वियोग योग: कुंडली में सूर्य देव एवं नवमेश पर क्रूर ग्रहों के प्रभाव से पिता का सान्निध्य अल्पायु में छूटने, पिता के शीघ्र देहावसान, गंभीर अस्वस्थता, अथवा पिता से अत्यधिक दूरी/अनुपस्थिति का योग बनता है। जातक को बाल्यकाल या युवावस्था में पिता के छत्रछाया के अभाव का सामना करना पड़ा और जीवन की जिम्मेदारियों का बोझ बहुत कम उम्र में स्वयं के कंधों पर उठाना पड़ा।'
+      : isFatherFriction
       ? 'पिता के साथ संबंध में आदर तो गहरा है, किंतु भीतर ही भीतर एक अनकहा वैचारिक तनाव और अहंकार का टकराव बना रहता है। पिता के सिद्धांत अत्यंत कठोर रहे हैं और वे आपकी अपरंपरागत सोच को आसानी से स्वीकार नहीं कर पाते। यद्यपि उन्होंने आपकी परवरिश में कोई कमी नहीं छोड़ी, किंतु युवावस्था में आपने उनसे भावनात्मक दूरी अनुभव की। पिता के स्वास्थ्य में नेत्र, रक्तचाप व हड्डियों की संवेदनशीलता के प्रति सजग रहना आवश्यक है।'
       : 'पिता का सान्निध्य आपके जीवन का सबसे बड़ा धर्म-आधार है। पिता के संस्कार, सामाजिक प्रतिष्ठा और नैतिक मार्गदर्शन ने आपके करियर की नींव को मजबूत किया है। मतभेदों के बाद भी आपसी मर्यादा कभी भंग नहीं होती, और उनका आशीर्वाद आपके संकटों को हरने वाला रक्षा-कवच बनता है।',
-    astrologicalCauseEn: `Sun in House ${sun.rasiHouseNumber} (${sun.signName}, ${sun.dignity}) and 9th House ruled by ${h9Lord} in ${SIGNS[h9Sign].name}.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: नवमेश '${PLANET_HI[h9Lord] || h9Lord}' तथा पितृ कारक सूर्य देव की भाव ${sun.rasiHouseNumber} में अवस्थिति।`,
+    astrologicalCauseEn: isPitruArishta
+      ? `Sun afflicted in House ${sun.rasiHouseNumber} (${sun.signName}, ${sun.dignity}) and 9th house/lord suffering malefic aspect (Pitru Arishta).`
+      : `Sun in House ${sun.rasiHouseNumber} (${sun.signName}, ${sun.dignity}) and 9th House ruled by ${h9Lord} in ${SIGNS[h9Sign].name}.`,
+    astrologicalCauseHi: isPitruArishta
+      ? `शास्त्रीय कारण: सूर्य देव भाव ${sun.rasiHouseNumber} में पीड़ित तथा नवमेश '${PLANET_HI[h9Lord] || h9Lord}' पर क्रूर ग्रहों का प्रभाव (पितृ अरिष्ट योग)।`
+      : `शास्त्रीय कारण: नवमेश '${PLANET_HI[h9Lord] || h9Lord}' तथा पितृ कारक सूर्य देव की भाव ${sun.rasiHouseNumber} में अवस्थिति।`,
   });
 
   // 2. Mother (माता - 4th house, Moon, Matru Karaka)
@@ -771,16 +854,32 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'माता (सुख व मातृ कारक)',
     bhavatBhavamEn: '4th House (Matru/Sukha Bhava) & Chandra (Natural Matru Karaka)',
     bhavatBhavamHi: 'चतुर्थ भाव (मातृ/सुख स्थान) एवं चंद्र देव (नैसर्गिक मातृ कारक)',
-    bondStatusEn: isMotherFriction ? 'Sacrificial, Intense & Emotionally Complex (Anxiety Transfer)' : 'Pure Nurturing Sanctuary, Domestic Anchor & Lifelong Grace',
-    bondStatusHi: isMotherFriction ? 'त्यागपूर्ण, गहन किंतु मानसिक चिंताएं बढ़ाने वाला जटिल संबंध' : 'परम सुख-आश्रय, निःस्वार्थ वात्सल्य एवं जीवन भर की रक्षा-शक्ति',
-    narrativeEn: isMotherFriction
+    bondStatusEn: isMatruArishta
+      ? 'Early Maternal Loss / Health Vulnerability / Physical Distance (Matru Arishta Yoga)'
+      : isMotherFriction
+      ? 'Sacrificial, Intense & Emotionally Complex (Anxiety Transfer)'
+      : 'Pure Nurturing Sanctuary, Domestic Anchor & Lifelong Grace',
+    bondStatusHi: isMatruArishta
+      ? 'मातृ अरिष्ट अथवा शीघ्र मातृ वियोग / गंभीर स्वास्थ्य संकट (मातृ अरिष्ट योग)'
+      : isMotherFriction
+      ? 'त्यागपूर्ण, गहन किंतु मानसिक चिंताएं बढ़ाने वाला जटिल संबंध'
+      : 'परम सुख-आश्रय, निःस्वार्थ वात्सल्य एवं जीवन भर की रक्षा-शक्ति',
+    narrativeEn: isMatruArishta
+      ? 'Classical Matru Arishta / Matru Viyoga Yoga is triggered due to afflictions to the Moon and the 4th house. This points to the early loss of maternal sheltering, mother’s persistent chronic health struggles, or separation during childhood where you were raised away from her direct care. The emotional void of maternal warmth created an enduring subconscious resilience.'
+      : isMotherFriction
       ? 'Your mother endured immense personal sacrifices, yet her persistent inner anxieties, emotional hyper-vigilance, and emotional possessiveness occasionally suffocated you. You absorb her emotional distress directly into your own psyche. Serving her and ensuring her peaceful comfort directly stabilizes your turbulent finances and sleep.'
       : 'Your mother is the emotional cornerstone of your life. Her prayers and selfless devotion act as a spiritual counter-weight against all your malefic planetary transits. Your happiness, mental peace, and real estate acquisition are directly linked to honoring her word.',
-    narrativeHi: isMotherFriction
+    narrativeHi: isMatruArishta
+      ? 'शास्त्रीय मातृ अरिष्ट अथवा अल्पायु योग: चंद्र देव व सुख स्थान (चतुर्थ भाव) पर क्रूर ग्रहों के प्रभाव से माता का साया अल्पायु में उठ जाने, बाल्यकाल में माता से वियोग (दूर रहने/छात्रावास), अथवा माता के दीर्घकालिक असाध्य स्वास्थ्य संकट का संकेत मिलता है। जातक ने माता के लाड़-प्यार के स्थान पर उनकी चिंता और अभाव को अधिक भोगा है, जिससे जातक का मन बचपन से ही आत्मनिर्भर और गंभीर हो गया।'
+      : isMotherFriction
       ? 'माता ने आपके लिए अत्यधिक कष्ट व त्याग झेला है, किंतु उनके अंतर्मन की निरंतर चिंता, भावुकता और अति-अधिकार की भावना आपके मन पर भी भारी तनाव डालती है। आप माता के कष्टों को सीधे अपने अवचेतन में सोख लेते हैं। माता के चरणों की सेवा करना और उन्हें मानसिक शांति देना आपके रुके हुए धन और नींद को तुरंत सुधारता है।'
       : 'माता आपके जीवन का सबसे पवित्र व शांत आश्रय हैं। उनका वात्सल्य और आशीर्वाद आपके जीवन के बड़े-बड़े ग्रहों के दोषों को निष्प्रभावी कर देता है। माता की प्रसन्नता ही आपकी मानसिक शांति और भूमि-वाहन सुख की वास्तविक कुंजी है।',
-    astrologicalCauseEn: `Moon in House ${moon.rasiHouseNumber} (${moon.signName}) and 4th House ruled by ${h4Lord} in ${SIGNS[h4Sign].name}.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: चतुर्थेश '${PLANET_HI[h4Lord] || h4Lord}' तथा मन व मातृ कारक चंद्रमा की कुंडली में स्थिति।`,
+    astrologicalCauseEn: isMatruArishta
+      ? `Moon afflicted in House ${moon.rasiHouseNumber} (${moon.signName}) and 4th house ruled by ${h4Lord} under malefic stress (Matru Arishta).`
+      : `Moon in House ${moon.rasiHouseNumber} (${moon.signName}) and 4th House ruled by ${h4Lord} in ${SIGNS[h4Sign].name}.`,
+    astrologicalCauseHi: isMatruArishta
+      ? `शास्त्रीय कारण: चतुर्थेश '${PLANET_HI[h4Lord] || h4Lord}' तथा मन व मातृ कारक चंद्रमा पर पाप प्रभाव (मातृ अरिष्ट)।`
+      : `शास्त्रीय कारण: चतुर्थेश '${PLANET_HI[h4Lord] || h4Lord}' तथा मन व मातृ कारक चंद्रमा की कुंडली में स्थिति।`,
   });
 
   // 3. Brothers (भ्राता - अग्रज व अनुज)
@@ -790,12 +889,40 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'भाई: बड़े भाई (अग्रज) एवं छोटे भाई (अनुज)',
     bhavatBhavamEn: '11th House (Elder Brother) & 3rd House (Younger Brother), Mars (Bhratri Karaka)',
     bhavatBhavamHi: 'एकादश भाव (बड़े भाई), तृतीय भाव (छोटे भाई) एवं मंगल देव (भ्रातृ कारक)',
-    bondStatusEn: 'Protective Camaraderie with Occasional Financial/Property Distance',
-    bondStatusHi: 'स्वाभाविक भ्रातृ-प्रेम, किंतु पैतृक संपत्ति व लेन-देन में सतर्कता आवश्यक',
-    narrativeEn: 'Brothers stand by you during outside crises and legal challenges, acting as physical muscle and social backup. However, financial partnerships or joint property ownership with brothers will invite stubborn disputes and bitter legal partitions (Mars influence). Maintain affectionate social ties, but keep commercial contracts entirely separate.',
-    narrativeHi: 'बाहरी संकटों, झगड़ों अथवा संकट के समय भाई आपके साथ चट्टान की तरह खड़े होते हैं। किंतु ज्योतिषीय चेतावनी: भाइयों के साथ संयुक्त व्यापार अथवा पैतृक संपत्ति के बंटवारे में कड़वाहट और विवाद का योग बनता है। अतः भाईचारे को मधुर बनाए रखने हेतु वित्तीय लेन-देन और संपत्ति के कागजात सदैव पूर्णतः पृथक रखें।',
-    astrologicalCauseEn: `3rd House (${SIGNS[h3Sign].name}, Lord: ${h3Lord}), 11th House (${SIGNS[h11Sign].name}, Lord: ${h11Lord}), and Mars.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: तृतीयेश '${PLANET_HI[h3Lord] || h3Lord}', एकादशेश '${PLANET_HI[h11Lord] || h11Lord}' तथा भ्रातृ कारक मंगल की स्थिति।`,
+    bondStatusEn: isOnlyChild
+      ? 'Only Child / Total Absence of Biological Brothers (Ekaki Santana Yoga)'
+      : noElderSiblings
+      ? 'Firstborn / Absence of Elder Brothers (Agraja Heen Yoga)'
+      : noYoungerSiblings
+      ? 'Youngest / Absence of Younger Brothers (Ananuja Yoga)'
+      : 'Protective Camaraderie with Occasional Financial/Property Distance',
+    bondStatusHi: isOnlyChild
+      ? 'एकल संतान योग अथवा सहोदर भाई का पूर्ण अभाव (एकाकी संतान योग)'
+      : noElderSiblings
+      ? 'ज्येष्ठ संतान / बड़े भाई का अभाव (अग्रज विहीन योग)'
+      : noYoungerSiblings
+      ? 'कनिष्ठ संतान / छोटे भाई का अभाव (अननुज योग)'
+      : 'स्वाभाविक भ्रातृ-प्रेम, किंतु पैतृक संपत्ति व लेन-देन में सतर्कता आवश्यक',
+    narrativeEn: isOnlyChild
+      ? 'Classical Ananuja / Ekaki Santana Yoga: Severe afflictions to both 3rd and 11th houses reveal that you are an Only Child without biological brothers, or grew up with complete physical and emotional isolation from siblings. You shoulder all familial burdens on your own shoulders.'
+      : noElderSiblings
+      ? 'You hold the position of the eldest brother or grew up without elder male siblings (11th house affliction). You naturally assumed the commanding, protective head-of-family role early in life.'
+      : noYoungerSiblings
+      ? 'You are the youngest brother or have no younger male siblings (3rd house affliction). You did not experience the role of an elder brother and always looked upward for guidance.'
+      : 'Brothers stand by you during outside crises and legal challenges, acting as physical muscle and social backup. However, financial partnerships or joint property ownership with brothers will invite stubborn disputes and bitter legal partitions (Mars influence). Maintain affectionate social ties, but keep commercial contracts entirely separate.',
+    narrativeHi: isOnlyChild
+      ? 'शास्त्रीय भ्राता-विहीन / एकाकी संतान योग: तृतीय व एकादश भाव के स्वामी ग्रहों की प्रतिकूल स्थिति जातक के "एकल संतान" (Only Child) होने अथवा सगे भाइयों के अभाव का स्पष्ट संकेत देती है। जातक ने अपने बचपन से ही स्वयं की जिम्मेदारियां अकेले निभाना सीखा है और भाइयों का संबल प्राप्त नहीं हुआ।'
+      : noElderSiblings
+      ? 'आप परिवार में सबसे बड़े भाई हैं अथवा बड़े भाई का सुख नहीं है (एकादश भाव का प्रभाव)। आपको परिवार में बचपन से ही बड़े भाई जैसी जिम्मेदारी और दायित्व का निर्वहन स्वयं करना पड़ा है।'
+      : noYoungerSiblings
+      ? 'आप परिवार में छोटे भाई हैं अथवा छोटे भाई का अभाव है (तृतीय भाव का प्रभाव)। आपके नीचे कोई छोटा भाई नहीं है जिससे आपने कभी बड़े भाई की भूमिका नहीं निभाई।'
+      : 'बाहरी संकटों, झगड़ों अथवा संकट के समय भाई आपके साथ चट्टान की तरह खड़े होते हैं। किंतु ज्योतिषीय चेतावनी: भाइयों के साथ संयुक्त व्यापार अथवा पैतृक संपत्ति के बंटवारे में कड़वाहट और विवाद का योग बनता है। अतः भाईचारे को मधुर बनाए रखने हेतु वित्तीय लेन-देन और संपत्ति के कागजात सदैव पूर्णतः पृथक रखें।',
+    astrologicalCauseEn: isOnlyChild
+      ? '3rd and 11th houses simultaneously afflicted with Mars in 8th/dusthana (Ekaki Santana Yoga).'
+      : `3rd House (${SIGNS[h3Sign].name}, Lord: ${h3Lord}), 11th House (${SIGNS[h11Sign].name}, Lord: ${h11Lord}), and Mars.`,
+    astrologicalCauseHi: isOnlyChild
+      ? 'शास्त्रीय कारण: तृतीय व एकादश भाव तथा भ्रातृ कारक मंगल की प्रतिकूल स्थिति (एकल संतान योग)।'
+      : `शास्त्रीय कारण: तृतीयेश '${PLANET_HI[h3Lord] || h3Lord}', एकादशेश '${PLANET_HI[h11Lord] || h11Lord}' तथा भ्रातृ कारक मंगल की स्थिति।`,
   });
 
   // 4. Sisters (बहनें - बड़ी व छोटी)
@@ -805,12 +932,24 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'बहनें: बड़ी बहन (अग्रजा) एवं छोटी बहन (अनुजा)',
     bhavatBhavamEn: '11th & 3rd Houses, Venus and Mercury (Feminine Sibling Karakas)',
     bhavatBhavamHi: 'एकादश व तृतीय भाव, शुक्र एवं बुध (स्त्री-सहज सहोदर कारक)',
-    bondStatusEn: 'Affectionate, Nurturing & Auspicious Blessing Generator',
-    bondStatusHi: 'अत्यंत स्नेहपूर्ण, कल्याणकारी एवं जातक का भाग्य बढ़ाने वाला पावन संबंध',
-    narrativeEn: 'Sisters bring unreserved sweetness, cultural refinement, and emotional respite into your world. An elder sister often steps in as a secondary maternal guide during crises, while a younger sister looks up to you for protection and generous gifts. Fulfilling your duties toward sisters on Raksha Bandhan and their weddings directly elevates your Venus and Mercury, dissolving debt cycles.',
-    narrativeHi: 'बहनों का संबंध आपके जीवन में असीम स्नेह, मानसिक सुकून और सौभाग्य लेकर आता है। बड़ी बहन संकट के समय दूसरी मां की तरह संबल देती है, जबकि छोटी बहन आपसे संरक्षण और स्नेह की अपेक्षा रखती है। बहनों को मान-सम्मान देना, उनके विवाह व त्योहारों पर उदारता से उपहार देना आपके शुक्र व बुध को बलवान कर दरिद्रता का नाश करता है।',
-    astrologicalCauseEn: `Mercury and Venus influencing the 3rd and 11th houses of siblings.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: तृतीय व एकादश भाव पर बुध व शुक्र का शुभ दृष्टि संबंध।`,
+    bondStatusEn: isOnlyChild
+      ? 'Absence of Biological Sisters / Only Child Condition'
+      : 'Affectionate, Nurturing & Auspicious Blessing Generator',
+    bondStatusHi: isOnlyChild
+      ? 'सहोदर बहनों का अभाव / एकल संतान की स्थिति'
+      : 'अत्यंत स्नेहपूर्ण, कल्याणकारी एवं जातक का भाग्य बढ़ाने वाला पावन संबंध',
+    narrativeEn: isOnlyChild
+      ? 'Due to the Ekaki Santana combination, biological sisters are absent in your immediate birth family. Cousin sisters or spiritual/sworn sisters provide the maternal sisterly warmth that was missing biologically.'
+      : 'Sisters bring unreserved sweetness, cultural refinement, and emotional respite into your world. An elder sister often steps in as a secondary maternal guide during crises, while a younger sister looks up to you for protection and generous gifts. Fulfilling your duties toward sisters on Raksha Bandhan and their weddings directly elevates your Venus and Mercury, dissolving debt cycles.',
+    narrativeHi: isOnlyChild
+      ? 'एकल संतान अथवा भ्राता-भगिनी विहीन योग के कारण सगी बहनों का अभाव रहता है। चचेरी-ममेरी बहनें अथवा मुंहबोली बहनें ही जातक को भगिनी का स्नेह और राखी का पावन संबल प्रदान करती हैं।'
+      : 'बहनों का संबंध आपके जीवन में असीम स्नेह, मानसिक सुकून और सौभाग्य लेकर आता है। बड़ी बहन संकट के समय दूसरी मां की तरह संबल देती है, जबकि छोटी बहन आपसे संरक्षण और स्नेह की अपेक्षा रखती है। बहनों को मान-सम्मान देना, उनके विवाह व त्योहारों पर उदारता से उपहार देना आपके शुक्र व बुध को बलवान कर दरिद्रता का नाश करता है।',
+    astrologicalCauseEn: isOnlyChild
+      ? 'Simultaneous absence of female sibling karakas influencing 3rd and 11th houses.'
+      : `Mercury and Venus influencing the 3rd and 11th houses of siblings.`,
+    astrologicalCauseHi: isOnlyChild
+      ? 'शास्त्रीय कारण: तृतीय व एकादश भाव पर स्त्री कारक ग्रहों का अभाव।'
+      : `शास्त्रीय कारण: तृतीय व एकादश भाव पर बुध व शुक्र का शुभ दृष्टि संबंध।`,
   });
 
   // 5. Children / Progeny (संतान - पुत्र व पुत्री)
@@ -820,12 +959,24 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'संतान: पुत्र व पुत्री (पंचम भाव व गुरु)',
     bhavatBhavamEn: '5th House (Putra Bhava), Jupiter (Putrakaraka) & D7 Saptamsha Matrix',
     bhavatBhavamHi: 'पंचम भाव (संतान स्थान), देवगुरु बृहस्पति एवं सप्तांश चक्र (D7)',
-    bondStatusEn: 'Proud Karmic Ascension with Ideological Generation Gap',
-    bondStatusHi: 'कुल-गौरव, उच्च प्रतिभा वाली संतान, किंतु वैचारिक पीढ़ीगत अंतर',
-    narrativeEn: 'Blessed with intelligent, spirited, and capable progeny who achieve significant educational and societal stature. Early conception may require medical patience or spiritual remedies (afflictions to 5th house/Guru). In teenage years, your children will assert intense individual independence that clashes with your traditional expectations, yet their mature accomplishments will bring immense honor to your lineage.',
-    narrativeHi: 'जातक को प्रखर बुद्धि, स्वाभिमानी और सक्षम संतान का सुख प्राप्त होता है जो समाज में कुल का नाम रोशन करती है। प्रारंभिक गर्भाधान अथवा संतान प्राप्ति में कुछ विलंब या चिकित्सीय धैर्य की आवश्यकता पड़ सकती है। किशोरावस्था में संतान अपने स्वतंत्र विचारों पर अड़ेगी जिससे कुछ वैचारिक मतभेद होगा, किंतु अंततः संतान की सफलता आपके जीवन का सबसे बड़ा गौरव बनेगी।',
-    astrologicalCauseEn: `5th House in ${SIGNS[h5Sign].name} ruled by ${h5Lord}, aspected by Jupiter (progeny significator).`,
-    astrologicalCauseHi: `शास्त्रीय कारण: पंचमेश '${PLANET_HI[h5Lord] || h5Lord}' तथा संतान कारक देवगुरु बृहस्पति की सप्तांश (D7) में शुभ स्थिति।`,
+    bondStatusEn: isProgenyDenial
+      ? 'Progeny Denial / Childlessness / Adoption or Spiritual Mentorship (Putraheen Yoga)'
+      : 'Proud Karmic Ascension with Ideological Generation Gap',
+    bondStatusHi: isProgenyDenial
+      ? 'संतान हीन योग अथवा निःसंतानता / दत्तक संतान या आध्यात्मिक वात्सल्य (पुत्रहीन योग)'
+      : 'कुल-गौरव, उच्च प्रतिभा वाली संतान, किंतु वैचारिक पीढ़ीगत अंतर',
+    narrativeEn: isProgenyDenial
+      ? 'Classical Putra Pratibandhaka / Sarpa Dosha: Severe afflictions to the 5th house, 5th lord, and Jupiter indicate profound biological impediments to natural childbearing, leading to intentional or karmic childlessness. The classical shastras prescribe adoption (Dattaka Santana), mentoring younger generations, or dedicating maternal/paternal energies to creative or spiritual disciples, which fully discharges this 5th-house karmic contract.'
+      : 'Blessed with intelligent, spirited, and capable progeny who achieve significant educational and societal stature. Early conception may require medical patience or spiritual remedies (afflictions to 5th house/Guru). In teenage years, your children will assert intense individual independence that clashes with your traditional expectations, yet their mature accomplishments will bring immense honor to your lineage.',
+    narrativeHi: isProgenyDenial
+      ? 'शास्त्रीय संतान हीन अथवा दत्तक योग: पंचम भाव, पंचमेश एवं संतान कारक देवगुरु बृहस्पति पर क्रूर ग्रहों (राहु/शनि) के दुष्प्रभाव से जैविक संतानोत्पत्ति में गंभीर चिकित्सीय अवरोध, निःसंतान रहने का योग, अथवा दत्तक संतान (गोद लेने) का योग बनता है। जातक यदि भांजे-भतीजों, विद्यार्थियों अथवा समाज के बच्चों को अपनी संतान मानकर उनका मार्गदर्शन करे, तो पंचम भाव का प्रारब्ध दोष पूर्णतः शांत हो जाता है।'
+      : 'जातक को प्रखर बुद्धि, स्वाभिमानी और सक्षम संतान का सुख प्राप्त होता है जो समाज में कुल का नाम रोशन करती है। प्रारंभिक गर्भाधान अथवा संतान प्राप्ति में कुछ विलंब या चिकित्सीय धैर्य की आवश्यकता पड़ सकती है। किशोरावस्था में संतान अपने स्वतंत्र विचारों पर अड़ेगी जिससे कुछ वैचारिक मतभेद होगा, किंतु अंततः संतान की सफलता आपके जीवन का सबसे बड़ा गौरव बनेगी।',
+    astrologicalCauseEn: isProgenyDenial
+      ? `5th Lord ${h5Lord} combust/debilitated in dusthana with afflicted Jupiter (Putra Pratibandhaka).`
+      : `5th House in ${SIGNS[h5Sign].name} ruled by ${h5Lord}, aspected by Jupiter (progeny significator).`,
+    astrologicalCauseHi: isProgenyDenial
+      ? `शास्त्रीय कारण: पंचमेश '${PLANET_HI[h5Lord] || h5Lord}' तथा संतान कारक गुरु पर क्रूर पाप दृष्टि (पुत्र प्रतिबन्धक योग)।`
+      : `शास्त्रीय कारण: पंचमेश '${PLANET_HI[h5Lord] || h5Lord}' तथा संतान कारक देवगुरु बृहस्पति की सप्तांश (D7) में शुभ स्थिति।`,
   });
 
   // 6. Paternal Grandparents (दादा-दादी)
@@ -865,10 +1016,18 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'सास एवं ससुर (ससुराल पक्ष)',
     bhavatBhavamEn: '3rd House (9th from 7th = Father-in-Law) & 10th House (4th from 7th = Mother-in-Law)',
     bhavatBhavamHi: 'तृतीय भाव (सप्तम से नवम = ससुर) एवं दशम भाव (सप्तम से चतुर्थ = सास)',
-    bondStatusEn: 'Formal Dignity, High Expectations & Delicate Boundary Dynamics',
-    bondStatusHi: 'मर्यादित सम्मान, उच्च अपेक्षाएं एवं सीमाओं का ध्यान रखना अनिवार्य',
-    narrativeEn: 'Your father-in-law is a self-respecting individual with established societal standing who expects formal courtesy and traditional honor. Your mother-in-law is deeply attached to her child and will periodically assert domestic authority or unsolicited advice. The secret to enduring peace: maintain respectful distance, never involve in-laws in private husband-wife disputes, and treat them with unwavering ceremonial generosity.',
-    narrativeHi: 'ससुर जी एक स्वाभिमानी और सामाजिक मर्यादा का ध्यान रखने वाले व्यक्ति हैं, जो आपसे आदर और औपचारिकता की अपेक्षा रखते हैं। सास का अपनी संतान के प्रति अत्यधिक मोह कभी-कभी आपके दांपत्य में अवांछित हस्तक्षेप का कारण बन सकता है। ससुराल पक्ष के साथ शांति का मूल मंत्र: सम्मान पूरा दें, किंतु अपने निजी दांपत्य के निर्णयों में उनकी सीधी दखलंदाजी से बचें।',
+    bondStatusEn: isMarriageDenial
+      ? 'Not Applicable if Remaining Single/Unmarried · Potential Dynamics Only if Married'
+      : 'Formal Dignity, High Expectations & Delicate Boundary Dynamics',
+    bondStatusHi: isMarriageDenial
+      ? 'लागू नहीं (यदि आजीवन अविवाहित/एकल रहें) · केवल विवाह की स्थिति में संभावित समीकरण'
+      : 'मर्यादित सम्मान, उच्च अपेक्षाएं एवं सीमाओं का ध्यान रखना अनिवार्य',
+    narrativeEn: isMarriageDenial
+      ? 'Dynamic Contingency: If you embrace lifelong bachelorhood, celibacy, or remain unmarried as indicated by your ascetic/denial yogas, in-law relationships do not exist. Should you choose to marry later in life, your father-in-law will expect formal traditional respect and your mother-in-law will require strict emotional boundaries to prevent domestic friction.'
+      : 'Your father-in-law is a self-respecting individual with established societal standing who expects formal courtesy and traditional honor. Your mother-in-law is deeply attached to her child and will periodically assert domestic authority or unsolicited advice. The secret to enduring peace: maintain respectful distance, never involve in-laws in private husband-wife disputes, and treat them with unwavering ceremonial generosity.',
+    narrativeHi: isMarriageDenial
+      ? 'संभावित स्थिति: यदि जातक अपनी कुंडली के नैष्ठिक ब्रह्मचर्य अथवा विवाह-हीन योग के कारण आजीवन एकल/अविवाहित रहता है, तो यह संबंध अस्तित्व में ही नहीं आता। यदि सामाजिक दबाव अथवा स्वेच्छा से विवाह होता है, तो ससुराल पक्ष के साथ मर्यादा और सीमाओं का ध्यान रखना अनिवार्य होगा।'
+      : 'ससुर जी एक स्वाभिमानी और सामाजिक मर्यादा का ध्यान रखने वाले व्यक्ति हैं, जो आपसे आदर और औपचारिकता की अपेक्षा रखते हैं। सास का अपनी संतान के प्रति अत्यधिक मोह कभी-कभी आपके दांपत्य में अवांछित हस्तक्षेप का कारण बन सकता है। ससुराल पक्ष के साथ शांति का मूल मंत्र: सम्मान पूरा दें, किंतु अपने निजी दांपत्य के निर्णयों में उनकी सीधी दखलंदाजी से बचें।',
     astrologicalCauseEn: `3rd House (9th from 7th) and 10th House (4th from 7th) Bhavat Bhavam.`,
     astrologicalCauseHi: `शास्त्रीय कारण: भावत भावम — सप्तम से नवम (तृतीय भाव) ससुर का, तथा सप्तम से चतुर्थ (दशम भाव) सास का स्थान।`,
   });
@@ -880,10 +1039,18 @@ export function computeRelationalMatrix(chart: ChartData): RelationalMatrixResul
     relationHi: 'साला-साली, देवर-जेठ, जीजा, ननद एवं भाभी (ससुराल व सहोदर संबंध)',
     bhavatBhavamEn: '9th House (3rd from 7th = Younger In-Law Siblings) & 5th House (11th from 7th = Elder In-Law Siblings)',
     bhavatBhavamHi: 'नवम भाव (सप्तम से तृतीय = छोटे साले/साली) एवं पंचम भाव (सप्तम से एकादश = बड़े जेठ/ननद)',
-    bondStatusEn: 'Lively Social Camaraderie with Strict Warning Against Financial Entanglements',
-    bondStatusHi: 'हंसी-मजाक व पारिवारिक उत्सवों का आनंद, किंतु उधार-लेनदेन से पूर्ण परहेज',
-    narrativeEn: 'Relationships with siblings-in-law bring joyful banter, wedding celebrations, and festive social energy. However, classical Jyotish sounds a strict alert: never enter unwritten business partnerships or lend significant capital to brothers-in-law (Sala/Jija). Financial entanglements with in-law siblings almost inevitably sour the primary marital harmony.',
-    narrativeHi: 'साले-साली, देवर अथवा ननद के साथ पारिवारिक उत्सवों और आयोजनों में खूब हंसी-मजाक और आत्मीयता रहती है। किंतु ज्योतिषीय चेतावनी: साले या जीजा के साथ कभी भी अनौपचारिक व्यापारिक साझेदारी न करें और न ही बड़ा धन उधार दें। ससुराल के भाई-बहनों से हुआ वित्तीय विवाद सीधे आपके दांपत्य जीवन में जहर घोलने का कार्य करता है।',
+    bondStatusEn: isMarriageDenial
+      ? 'Not Applicable if Remaining Single/Unmarried · Festive Camaraderie if Married'
+      : 'Lively Social Camaraderie with Strict Warning Against Financial Entanglements',
+    bondStatusHi: isMarriageDenial
+      ? 'लागू नहीं (यदि आजीवन अविवाहित/एकल रहें) · विवाह होने पर उत्सवों का साथ'
+      : 'हंसी-मजाक व पारिवारिक उत्सवों का आनंद, किंतु उधार-लेनदेन से पूर्ण परहेज',
+    narrativeEn: isMarriageDenial
+      ? 'Contingent Relationship: Non-existent under singlehood. If married, beware: never enter unwritten business partnerships or lend capital to in-law siblings (Sala/Jija), as money friction will instantly bleed into primary marital harmony.'
+      : 'Relationships with siblings-in-law bring joyful banter, wedding celebrations, and festive social energy. However, classical Jyotish sounds a strict alert: never enter unwritten business partnerships or lend significant capital to brothers-in-law (Sala/Jija). Financial entanglements with in-law siblings almost inevitably sour the primary marital harmony.',
+    narrativeHi: isMarriageDenial
+      ? 'संभावित संबंध: एकल रहने की स्थिति में यह संबंध लागू नहीं होता। यदि विवाह हो, तो साले या जीजा के साथ किसी भी व्यापारिक लेन-देन या आर्थिक साझेदारी से पूर्ण परहेज करें।'
+      : 'साले-साली, देवर अथवा ननद के साथ पारिवारिक उत्सवों और आयोजनों में खूब हंसी-मजाक और आत्मीयता रहती है। किंतु ज्योतिषीय चेतावनी: साले या जीजा के साथ कभी भी अनौपचारिक व्यापारिक साझेदारी न करें और न ही बड़ा धन उधार दें। ससुराल के भाई-बहनों से हुआ वित्तीय विवाद सीधे आपके दांपत्य जीवन में जहर घोलने का कार्य करता है।',
     astrologicalCauseEn: `Bhavat Bhavam across 9th and 5th houses relative to the 7th house of marriage.`,
     astrologicalCauseHi: `शास्त्रीय कारण: सप्तम भाव (दांपत्य) से तृतीय व एकादश भाव का सूक्ष्म विश्लेषण।`,
   });
@@ -1223,6 +1390,472 @@ export function computeLitigationAndAffairs(chart: ChartData): LitigationAndAffa
       litigationVerdictHi,
       bandhanaYogaEn,
       bandhanaYogaHi,
+    },
+  };
+}
+
+
+// ============================================================================
+// 7. COMPREHENSIVE VEDIC SHASTTRIC REMEDIES & GOCHAR SHIELD (CHAPTER 10)
+// ============================================================================
+
+export interface VedicRemediesResult {
+  planetaryRemediesSection: ChapterSection;
+  houseCleansingSection: ChapterSection;
+  nakshatraSnanaSection: ChapterSection;
+  gocharSadeSatiSection: ChapterSection;
+  activeDashaSection: ChapterSection;
+  lalKitabConductSection: ChapterSection;
+  summaryHighlights: {
+    activeMahadashaLord: string;
+    activeAntardashaLord: string;
+    sadeSatiStatusHi: string;
+    sadeSatiStatusEn: string;
+    janmaNakshatraDeityHi: string;
+    janmaNakshatraDeityEn: string;
+    primaryVedicMantra: string;
+  };
+}
+
+const NAKSHATRA_DEITY_MAP: Record<number, {
+  nameHi: string;
+  nameEn: string;
+  deityHi: string;
+  deityEn: string;
+  herbsHi: string;
+  herbsEn: string;
+  treeHi: string;
+  treeEn: string;
+}> = {
+  0: { nameHi: 'अश्विनी', nameEn: 'Ashwini', deityHi: 'अश्विनी कुमार (देव वैद्य)', deityEn: 'Ashwini Kumaras (Divine Healers)', herbsHi: 'सुगंधित कपूर, लोध्र व देवदारु', herbsEn: 'Camphor, Lodhra & Devadaru', treeHi: 'कुचिला (Strychnos nux-vomica)', treeEn: 'Poison Nut Tree' },
+  1: { nameHi: 'भरणी', nameEn: 'Bharani', deityHi: 'यमराज (धर्मराज)', deityEn: 'Lord Yama (Dharmaraja)', herbsHi: 'आंवला, नागरमोथा व कस्तूरी', herbsEn: 'Amla, Nagarmotha & Musk', treeHi: 'आंवला (Phyllanthus emblica)', treeEn: 'Indian Gooseberry' },
+  2: { nameHi: 'कृत्तिका', nameEn: 'Krittika', deityHi: 'अग्नि देव', deityEn: 'Agni Deva (Fire God)', herbsHi: 'गूलर छाल, लाल चंदन व केसर', herbsEn: 'Cluster Fig bark, Red Sandalwood & Saffron', treeHi: 'गूलर (Ficus glomerata)', treeEn: 'Cluster Fig' },
+  3: { nameHi: 'रोहिणी', nameEn: 'Rohini', deityHi: 'प्रजापति / ब्रह्मा जी', deityEn: 'Lord Brahma (Creator)', herbsHi: 'जामुन छाल, श्वेत चंदन व कमल पुष्प', herbsEn: 'Jamun bark, White Sandalwood & Lotus petals', treeHi: 'जामुन (Syzygium cumini)', treeEn: 'Black Plum' },
+  4: { nameHi: 'मृगशिरा', nameEn: 'Mrigashira', deityHi: 'सोम / चंद्र देव', deityEn: 'Soma (Moon God)', herbsHi: 'खैर, खस व गुलाब जल', herbsEn: 'Khadira, Vetiver & Rose water', treeHi: 'खैर (Acacia catechu)', treeEn: 'Cutch Tree' },
+  5: { nameHi: 'आर्द्रा', nameEn: 'Ardra', deityHi: 'रुद्र (भगवान शिव)', deityEn: 'Lord Rudra (Shiva)', herbsHi: 'बेलपत्र, अगर, लोबान व जायफल', herbsEn: 'Bilva leaves, Agarwood, Frankincense & Nutmeg', treeHi: 'शीशम (Dalbergia sissoo)', treeEn: 'Indian Rosewood' },
+  6: { nameHi: 'पुनर्वसु', nameEn: 'Punarvasu', deityHi: 'अदिति (देव माता)', deityEn: 'Aditi (Cosmic Mother)', herbsHi: 'बांस पत्र, हल्दी, गेंदा व दूर्वा', herbsEn: 'Bamboo leaves, Turmeric, Marigold & Durva', treeHi: 'बांस (Bambusa vulgaris)', treeEn: 'Bamboo' },
+  7: { nameHi: 'पुष्य', nameEn: 'Pushya', deityHi: 'देवगुरु बृहस्पति', deityEn: 'Brihaspati (Preceptor of Gods)', herbsHi: 'पीपल छाल, केसर, पीली सरसों व हल्दी', herbsEn: 'Peepal bark, Saffron, Yellow Mustard & Turmeric', treeHi: 'पीपल (Ficus religiosa)', treeEn: 'Sacred Fig' },
+  8: { nameHi: 'आश्लेषा', nameEn: 'Ashlesha', deityHi: 'सर्प / नाग देव', deityEn: 'Nagas (Serpent Deities)', herbsHi: 'रक्त चंदन, काले तिल व भृंगराज', herbsEn: 'Red Sandalwood, Black Sesame & Bhringraj', treeHi: 'नागकेसर (Mesua ferrea)', treeEn: 'Ironwood' },
+  9: { nameHi: 'मघा', nameEn: 'Magha', deityHi: 'पितृ गण (पूर्वज)', deityEn: 'Pitris (Ancestral Spirits)', herbsHi: 'बरगद छाल, तिल, गंगाजल व कुशा', herbsEn: 'Banyan bark, Sesame, Ganges water & Kusha grass', treeHi: 'बरगद (Ficus benghalensis)', treeEn: 'Banyan Tree' },
+  10: { nameHi: 'पूर्वाफाल्गुनी', nameEn: 'Purva Phalguni', deityHi: 'भग (सौभाग्य देव)', deityEn: 'Bhaga (God of Fortune & Prosperity)', herbsHi: 'पलाश पुष्प, श्वेत चंदन व हरी इलायची', herbsEn: 'Palash flowers, White Sandalwood & Green Cardamom', treeHi: 'पलाश / ढाक (Butea monosperma)', treeEn: 'Flame of the Forest' },
+  11: { nameHi: 'उत्तराफाल्गुनी', nameEn: 'Uttara Phalguni', deityHi: 'अर्यमा (मित्रता व कुल देव)', deityEn: 'Aryaman (God of Nobility & Lineage)', herbsHi: 'पाकड़ छाल, रक्त चंदन व कस्तूरी', herbsEn: 'Pakad bark, Red Sandalwood & Musk', treeHi: 'पाकड़ (Ficus infectoria)', treeEn: 'White Fig' },
+  12: { nameHi: 'हस्त', nameEn: 'Hasta', deityHi: 'सविता (सूर्य देव)', deityEn: 'Savita (Solar Radiance)', herbsHi: 'रीठा, चमेली तेल व जायफल', herbsEn: 'Reetha, Jasmine oil & Nutmeg', treeHi: 'रीठा (Sapindus emarginatus)', treeEn: 'Soapnut Tree' },
+  13: { nameHi: 'चित्रा', nameEn: 'Chitra', deityHi: 'त्वष्टा / विश्वकर्मा जी', deityEn: 'Tvashtar / Vishwakarma (Cosmic Architect)', herbsHi: 'बेल छाल, कपूर व कुंकुम', herbsEn: 'Bilva bark, Camphor & Kumkum', treeHi: 'बेल (Aegle marmelos)', treeEn: 'Bael Fruit Tree' },
+  14: { nameHi: 'स्वाति', nameEn: 'Swati', deityHi: 'वायु देव', deityEn: 'Vayu Deva (Wind God)', herbsHi: 'अर्जुन छाल, सुगंधित खस व तुलसी', herbsEn: 'Arjuna bark, Vetiver & Holy Basil', treeHi: 'अर्जुन (Terminalia arjuna)', treeEn: 'Arjuna Tree' },
+  15: { nameHi: 'विशाखा', nameEn: 'Vishakha', deityHi: 'इंद्राग्नि (इंद्र व अग्नि)', deityEn: 'Indra & Agni (Dual Powers)', herbsHi: 'नीम छाल, हरड़ व लोध्र', herbsEn: 'Neem bark, Haritaki & Lodhra', treeHi: 'विकंकत / कटाई (Flacourtia indica)', treeEn: 'Governor’s Plum' },
+  16: { nameHi: 'अनुराधा', nameEn: 'Anuradha', deityHi: 'मित्र देव (सत्य व मैत्री)', deityEn: 'Mitra Deva (God of Friendship & Devotion)', herbsHi: 'मौलश्री छाल, केसर व सुगंधित इत्र', herbsEn: 'Maulsari bark, Saffron & Floral Attar', treeHi: 'मौलश्री / बकुल (Mimusops elengi)', treeEn: 'Spanish Cherry' },
+  17: { nameHi: 'ज्येष्ठा', nameEn: 'Jyeshtha', deityHi: 'इंद्र देव (देवराज)', deityEn: 'Lord Indra (King of Devas)', herbsHi: 'चीड़, कपूर व त्रिफला चूर्ण', herbsEn: 'Pine resin, Camphor & Triphala', treeHi: 'चीड़ / शाल्मली (Pinus roxburghii)', treeEn: 'Silk Cotton Tree' },
+  18: { nameHi: 'मूल', nameEn: 'Mula', deityHi: 'निर्ऋति (अल्क्ष्मी / महाकाली)', deityEn: 'Nirriti (Goddess of Dissolution)', herbsHi: 'राल, गुग्गुल, लोबान व सरसों', herbsEn: 'Dammar resin, Guggulu, Frankincense & Mustard', treeHi: 'अंजन / साल (Hardwickia binata)', treeEn: 'Black Hardwickia' },
+  19: { nameHi: 'पूर्वाषाढ़ा', nameEn: 'Purva Ashadha', deityHi: 'अपः (जल देव)', deityEn: 'Apas (Cosmic Waters)', herbsHi: 'जलकुंभी, खस व श्वेत कमल दल', herbsEn: 'Water hyacinth, Vetiver & White Lotus', treeHi: 'जामुन / तिनिश (Syzygium cumini)', treeEn: 'Black Plum' },
+  20: { nameHi: 'उत्तराषाढ़ा', nameEn: 'Uttara Ashadha', deityHi: 'विश्वेदेवा (सर्व देव)', deityEn: 'Vishvedevas (Universal Cosmic Principles)', herbsHi: 'कटहल पत्र, चंदन व प्रियंगु', herbsEn: 'Jackfruit leaves, Sandalwood & Priyangu', treeHi: 'कटहल (Artocarpus heterophyllus)', treeEn: 'Jackfruit Tree' },
+  21: { nameHi: 'श्रवण', nameEn: 'Shravana', deityHi: 'भगवान विष्णु', deityEn: 'Lord Vishnu (Supreme Preserver)', herbsHi: 'मदार पत्र, तुलसी दल व श्वेत चंदन', herbsEn: 'Calotropis, Tulsi leaves & White Sandalwood', treeHi: 'मदार / आक (Calotropis procera)', treeEn: 'Crown Flower' },
+  22: { nameHi: 'धनिष्ठा', nameEn: 'Dhanishta', deityHi: 'अष्ट वसु', deityEn: 'Ashta Vasus (Eight Elemental Gods)', herbsHi: 'शमी पत्र, कत्था व लोध्र', herbsEn: 'Shami leaves, Catechu & Lodhra', treeHi: 'शमी (Prosopis cineraria)', treeEn: 'Sponge Tree' },
+  23: { nameHi: 'शतभिषा', nameEn: 'Shatabhisha', deityHi: 'वरुण देव (समुद्र देव)', deityEn: 'Varuna Deva (Lord of Oceans & Healer)', herbsHi: 'कदंब पत्र, नागरमोथा व कस्तूरी', herbsEn: 'Kadamba leaves, Nagarmotha & Musk', treeHi: 'कदंब (Neolamarckia cadamba)', treeEn: 'Burflower Tree' },
+  24: { nameHi: 'पूर्वाभाद्रपद', nameEn: 'Purva Bhadrapada', deityHi: 'अज एकपाद (शिव का रूद्र रूप)', deityEn: 'Aja Ekapada (The Cosmic Fire Aspect)', herbsHi: 'आम छाल, गुग्गुल व काले तिल', herbsEn: 'Mango bark, Guggulu & Black Sesame', treeHi: 'आम (Mangifera indica)', treeEn: 'Mango Tree' },
+  25: { nameHi: 'उत्तराभाद्रपद', nameEn: 'Uttara Bhadrapada', deityHi: 'अहिर्बुध्न्य (समुद्र तल के सर्प शिव)', deityEn: 'Ahirbudhnya (Serpent of the Depths)', herbsHi: 'नीम पत्र, चंदन व बेलपत्र', herbsEn: 'Neem leaves, Sandalwood & Bilva', treeHi: 'नीम (Azadirachta indica)', treeEn: 'Neem Tree' },
+  26: { nameHi: 'रेवती', nameEn: 'Revati', deityHi: 'पूषा (मार्गदर्शक व पोषण देव)', deityEn: 'Pushan (The Cosmic Nourisher & Guide)', herbsHi: 'महुआ पुष्प, केवड़ा व श्वेत चंदन', herbsEn: 'Mahua flowers, Kewra water & White Sandalwood', treeHi: 'महुआ (Madhuca longifolia)', treeEn: 'Butter Tree' },
+};
+
+export const PLANET_VEDIC_REMEDIES: Record<string, {
+  beejMantra: string;
+  japCount: number;
+  stotraHi: string;
+  stotraEn: string;
+  danaHi: string;
+  danaEn: string;
+  favorableDayHi: string;
+  favorableDayEn: string;
+}> = {
+  Sun: {
+    beejMantra: 'ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः',
+    japCount: 7000,
+    stotraHi: 'आदित्य हृदय स्तोत्र (वाल्मीकि रामायण)',
+    stotraEn: 'Aditya Hridaya Stotra (Valmiki Ramayana)',
+    danaHi: 'तांबा, गुड़, गेहूं, लाल चंदन, माणिक्य व लाल वस्त्र (रविवार दोपहर)',
+    danaEn: 'Copper, Jaggery, Wheat, Red Sandalwood & Red Cloth (Sunday Noon)',
+    favorableDayHi: 'रविवार',
+    favorableDayEn: 'Sunday',
+  },
+  Moon: {
+    beejMantra: 'ॐ श्रां श्रीं श्रौं सः चंद्रमसे नमः',
+    japCount: 11000,
+    stotraHi: 'शिव षडाक्षरी स्तोत्र अथवा महामृत्युंजय मंत्र',
+    stotraEn: 'Shiva Shadakshari Stotra / Maha Mrityunjaya Mantra',
+    danaHi: 'चांदी, बासमती चावल, दूध, श्वेत वस्त्र, कपूर व मोती (सोमवार संध्या)',
+    danaEn: 'Silver, Rice, Milk, White Cloth, Camphor & Pearl (Monday Evening)',
+    favorableDayHi: 'सोमवार',
+    favorableDayEn: 'Monday',
+  },
+  Mars: {
+    beejMantra: 'ॐ क्रां क्रीं क्रौं सः भौमाय नमः',
+    japCount: 10000,
+    stotraHi: 'ऋणमोचक मंगल स्तोत्र अथवा सुंदरकांड का पाठ',
+    stotraEn: 'Rinmochana Mangala Stotra / Sundarkand recitation',
+    danaHi: 'लाल मसूर दाल, तांबे का बर्तन, गुड़, लाल वस्त्र व मूंगा (मंगलवार दोपहर)',
+    danaEn: 'Red Lentils, Copper vessel, Jaggery, Red Cloth & Coral (Tuesday Noon)',
+    favorableDayHi: 'मंगलवार',
+    favorableDayEn: 'Tuesday',
+  },
+  Mercury: {
+    beejMantra: 'ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः',
+    japCount: 9000,
+    stotraHi: 'श्री विष्णु सहस्रनाम स्तोत्र',
+    stotraEn: 'Shri Vishnu Sahasranama Stotra',
+    danaHi: 'साबुत हरी मूंग, कांसे का पात्र, हरा वस्त्र, तुलसी पत्र व पन्ना (बुधवार प्रातः)',
+    danaEn: 'Whole Green Moong, Bronze bowl, Green Cloth & Emerald (Wednesday Morning)',
+    favorableDayHi: 'बुधवार',
+    favorableDayEn: 'Wednesday',
+  },
+  Jupiter: {
+    beejMantra: 'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः',
+    japCount: 19000,
+    stotraHi: 'बृहस्पति स्तोत्र अथवा श्रीमद्भगवद्गीता द्वादश अध्याय',
+    stotraEn: 'Brihaspati Stotra / Srimad Bhagavad Gita Chapter 12',
+    danaHi: 'चने की दाल, हल्दी गांठ, पीला वस्त्र, केसर, धार्मिक पुस्तकें व पुखराज (गुरुवार प्रातः)',
+    danaEn: 'Chana Dal, Raw Turmeric, Yellow Cloth, Saffron & Yellow Sapphire (Thursday Morning)',
+    favorableDayHi: 'गुरुवार',
+    favorableDayEn: 'Thursday',
+  },
+  Venus: {
+    beejMantra: 'ॐ द्रां द्रीं द्रौं सः शुक्राय नमः',
+    japCount: 16000,
+    stotraHi: 'श्री कनकधारा स्तोत्र अथवा श्री सूक्तम्',
+    stotraEn: 'Shri Kanakadhara Stotra / Shri Suktam',
+    danaHi: 'मिश्री, खीर, कपूर, सुगंधित इत्र, श्वेत रेशमी वस्त्र व हीरा/ओपल (शुक्रवार प्रातः)',
+    danaEn: 'Sugar Candy, Kheer, Camphor, Perfume, White Silk & Diamond/Opal (Friday Morning)',
+    favorableDayHi: 'शुक्रवार',
+    favorableDayEn: 'Friday',
+  },
+  Saturn: {
+    beejMantra: 'ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः',
+    japCount: 23000,
+    stotraHi: 'दशरथकृत शनि स्तोत्र व हनुमान बाहुक',
+    stotraEn: 'Dasharatha Shani Stotra & Hanuman Bahuk',
+    danaHi: 'काले तिल, उड़द दाल, सरसों का तेल, लोहे का तवा, काला कंबल व नीलम (शनिवार संध्या)',
+    danaEn: 'Black Sesame, Urad Dal, Mustard Oil, Iron Griddle, Black Blanket & Blue Sapphire (Saturday Sunset)',
+    favorableDayHi: 'शनिवार',
+    favorableDayEn: 'Saturday',
+  },
+  Rahu: {
+    beejMantra: 'ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः',
+    japCount: 18000,
+    stotraHi: 'दुर्गा कवच, अर्गला-कीलक व काल भैरव अष्टक',
+    stotraEn: 'Durga Kavach, Argala-Kilak & Kalabhairava Ashtakam',
+    danaHi: 'उड़द, सूखा नारियल, काले तिल, सीसा धातु व गोमेद (शनिवार सूर्यास्त बाद)',
+    danaEn: 'Dry Coconut, Urad Dal, Black Sesame, Lead & Hessonite (Saturday Dusk)',
+    favorableDayHi: 'शनिवार',
+    favorableDayEn: 'Saturday',
+  },
+  Ketu: {
+    beejMantra: 'ॐ स्रां स्रीं स्रौं सः केतवे नमः',
+    japCount: 17000,
+    stotraHi: 'गणपति अथर्वशीर्ष व महागणपति स्तोत्र',
+    stotraEn: 'Ganapati Atharvashirsha & Maha Ganapati Stotra',
+    danaHi: 'सप्तधान्य (7 प्रकार के अनाज), कंबल, लहसुनिया व तिल (बुधवार/शनिवार प्रातः)',
+    danaEn: 'Mixed Seven Grains (Saptadhanya), Blanket, Cat\'s Eye & Sesame (Wednesday/Saturday Dawn)',
+    favorableDayHi: 'बुधवार',
+    favorableDayEn: 'Wednesday',
+  },
+};
+
+export function computeComprehensiveVedicRemedies(
+  chart: ChartData,
+  lalKitab?: {
+    sleepingHouses: Array<{ houseNumber: number; pakkaGharRuler: string; pakkaGharRulerHi?: string; isSleeping: boolean }>;
+    karmicDebts: Array<{ debtType: string; debtTypeHi: string; isTriggered: boolean; classicalCauseEn: string; classicalCauseHi: string }>;
+  }
+): VedicRemediesResult {
+  const asc = chart.ascendant;
+  const moon = chart.planets.find((p) => p.id === 'Moon')!;
+  const saturn = chart.planets.find((p) => p.id === 'Saturn')!;
+  const nakshatraIndex = chart.panchang.nakshatra?.index ?? Math.floor(moon.longitude / (360 / 27));
+  const nakshatraData = NAKSHATRA_DEITY_MAP[nakshatraIndex] || NAKSHATRA_DEITY_MAP[0];
+
+  // 1. Identify Afflicted / Priority Planets for Vedic Propitiation
+  const afflictedPlanets = chart.planets.filter((p) => {
+    return (
+      p.dignity === 'Debilitated' ||
+      p.isCombust ||
+      [6, 8, 12].includes(p.rasiHouseNumber) ||
+      (p.isRetrograde && ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(p.id))
+    );
+  });
+
+  const priorityPlanets = afflictedPlanets.length > 0 ? afflictedPlanets : [saturn, moon];
+
+  const planetaryParaEn = priorityPlanets.map((p) => {
+    const rem = PLANET_VEDIC_REMEDIES[p.id] || PLANET_VEDIC_REMEDIES.Saturn;
+    return `• ${p.id} (${p.signName}, House ${p.rasiHouseNumber}, ${p.dignity}): Recite Vedic Tantrik Beej Mantra "${rem.beejMantra}" (${rem.japCount.toLocaleString()} times). Chant "${rem.stotraEn}". Shastric Charity (Dana): ${rem.danaEn}. Favorable Day: ${rem.favorableDayEn}.`;
+  });
+
+  const planetaryParaHi = priorityPlanets.map((p) => {
+    const rem = PLANET_VEDIC_REMEDIES[p.id] || PLANET_VEDIC_REMEDIES.Saturn;
+    const nameHi = PLANET_HI[p.id] || p.id;
+    return `• ${nameHi} देव (${SIGN_HI[p.signIndex]} राशि, भाव ${p.rasiHouseNumber}, ${p.dignity}): वैदिक तांत्रिक बीज मंत्र "${rem.beejMantra}" का कुल ${rem.japCount.toLocaleString()} बार जप करें। नित्य "${rem.stotraHi}" का पाठ करें। शास्त्रीय दान द्रव्य: ${rem.danaHi}। अनुष्ठान का सर्वोत्तम दिवस: ${rem.favorableDayHi}।`;
+  });
+
+  const planetaryRemediesSection: ChapterSection = {
+    titleEn: 'Vedic Planetary Shanti: Sacred Tantrik Seed Mantras, Classical Stotras & Targeted Dana',
+    titleHi: 'वैदिक नवग्रह शांति: सिद्ध तांत्रिक बीज मंत्र, शास्त्रीय स्तोत्र एवं विशिष्ट दान विधान',
+    leadEn: 'Authentic shastric remedial protocols tailored strictly to the afflicted and vulnerable planets in your chart.',
+    leadHi: 'कुंडली के पीड़ित, नीच, अस्त व त्रिक भावों में स्थित ग्रहों के कुप्रभाव को शांत करने के शास्त्रीय विधान।',
+    paragraphsEn: [
+      `Vedic astrology establishes that afflictions to planets are not permanent curses, but energetic imbalances that can be pacified through sound vibrations (Mantras), devotion (Stotras), and sacrificial charity (Dana). Below are the precise shastric prescriptions for the planets in your chart that demand immediate propitiation:`,
+      ...planetaryParaEn,
+      `Core Principle: Always perform japa during the auspicious planetary hora or on the prescribed weekday using a Rudraksha or Tulsi mala, facing East or North.`,
+    ],
+    paragraphsHi: [
+      `वैदिक ज्योतिष में महर्षि पाराशर स्पष्ट करते हैं कि ग्रहों का अनिष्ट फल कोई अमिट अभिशाप नहीं, बल्कि प्रारब्ध की विकृत ऊर्जा है जिसे ध्वनि-स्पंदन (मंत्र), समर्पण (स्तोत्र) और त्याग (दान) से पूर्णतः शांत किया जा सकता है। आपकी कुंडली में विशेष रूप से पीड़ित ग्रहों के लिए शास्त्रीय अनुष्ठान:`,
+      ...planetaryParaHi,
+      `अनुष्ठान का मौलिक नियम: जप सदैव पूर्व अथवा उत्तर दिशा की ओर मुख करके, शुद्ध रुद्राक्ष अथवा तुलसी की माला से, उस ग्रह के निर्धारित वार अथवा ग्रह होरा में ही करें।`,
+    ],
+    astrologicalCauseEn: 'Computed through combustion, debilitation, retrograde malefic status, and 6th/8th/12th Dusthana placements.',
+    astrologicalCauseHi: 'शास्त्रीय कारण: ग्रहों की नीच राशि, अस्त स्थिति, वक्री क्रूर प्रभाव तथा षष्ठ, अष्टम व द्वादश (त्रिक) भावों में अवस्थिति द्वारा प्रमाणित।',
+    keyPointsEn: priorityPlanets.map((p) => `${p.id}: ${(PLANET_VEDIC_REMEDIES[p.id] || PLANET_VEDIC_REMEDIES.Saturn).beejMantra}`),
+    keyPointsHi: priorityPlanets.map((p) => `${PLANET_HI[p.id] || p.id}: ${(PLANET_VEDIC_REMEDIES[p.id] || PLANET_VEDIC_REMEDIES.Saturn).beejMantra}`),
+  };
+
+  // 2. House Cleansing & Dusthana Pacification (6, 8, 12 Bhava Shuddhi)
+  const houseCleansingSection: ChapterSection = {
+    titleEn: 'Dusthana Cleansing & House Purification (6th, 8th & 12th Bhava Shuddhi)',
+    titleHi: 'त्रिक भाव शुद्धि एवं दोष निवारण: षष्ठ (शत्रु/ऋण), अष्टम (संकट) व द्वादश (हानि/अस्पताल) भाव',
+    leadEn: 'Specialized environmental, spatial, and ritual remedies to neutralize financial leakage and sudden shocks.',
+    leadHi: 'रोग, ऋण, शत्रु, आकस्मिक दुर्घटना तथा व्यर्थ के धन रिसाव को रोकने के अचूक वैदिक वास्तु व भाव शुद्धि उपाय।',
+    paragraphsEn: [
+      `1. 6th House Cleansing (Roga, Rina & Shatru Shanti): Never borrow money or initiate formal loans on Tuesdays. Feed green fodder (Palak or grass) to street cows on Wednesdays to dismantle debt accumulation knots. Place a small piece of unrefined camphor in the bathroom to dissolve pathogenic micro-frequencies.`,
+      `2. 8th House Cleansing (Ayush, Randhra & Sudden Crisis Defense): Perform Rudrabhisheka with milk and honey on monthly Pradosha or Mondays. Donate a cast-iron utensil or mustard oil on Amavasya (New Moon). Keep an unbroken silver square piece in your wallet to stabilize life-force vitality against unexpected accidents.`,
+      `3. 12th House Cleansing (Vyaya, Hospitalization & Sleep Restoration): Never sleep with your head pointing North (align South or East). Ensure no water taps drip in the home. Donate fresh drinking water or install water dispensers at public religious places to seal financial drain.`,
+    ],
+    paragraphsHi: [
+      `1. षष्ठ भाव शुद्धि (रोग, ऋण व शत्रु निवारण): मंगलवार के दिन भूलकर भी कर्ज न लें और न ही कर्ज के कागजात पर हस्ताक्षर करें। बुधवार के दिन गाय को हरा पालक अथवा हरी घास खिलाने से पुराने कर्जों का बंधन कटता है। स्नानघर (बाथरूम) में एक कांच की कटोरी में डली वाला सेंधा नमक अथवा कपूर रखने से नकारात्मक ऊर्जा समाप्त होती है।`,
+      `2. अष्टम भाव शुद्धि (आयु रक्षा व आकस्मिक संकट निवारण): प्रत्येक प्रदोष अथवा सोमवार को भगवान शिव का दूध व शहद से रुद्राभिषेक करें। अमावस्या के दिन लोहे का तवा अथवा काले तिल किसी जरूरतमंद को दान करें। अपने पर्स या तिजोरी में चौकोर चांदी का टुकड़ा रखने से अष्टम भाव के अचानक आने वाले वित्तीय झटके निष्प्रभावी हो जाते हैं।`,
+      `3. द्वादश भाव शुद्धि (अस्पताल व्यय, अनिद्रा व धन रिसाव निवारण): सोते समय सिर सदैव दक्षिण अथवा पूर्व दिशा में रखें, उत्तर में कभी न रखें। घर का कोई भी नल टपकता न रहे। सार्वजनिक स्थानों पर राहगीरों के लिए शीतल पेयजल की व्यवस्था करने से द्वादश भाव का अस्पताल व जेल का खर्च शून्य हो जाता है।`,
+    ],
+    astrologicalCauseEn: 'Formulated according to Parashara Hora guidelines for mitigating 6th, 8th, and 12th trika bhava afflictions.',
+    astrologicalCauseHi: 'शास्त्रीय कारण: महर्षि पाराशर सम्मत षष्ठ, अष्टम व द्वादश भावों के अनिष्ट निवारण सूत्र।',
+    keyPointsEn: [
+      '6th House: Wednesday green fodder to cows (clears debt)',
+      '8th House: Pradosha Rudrabhisheka & silver square',
+      '12th House: South/East sleep alignment & tap repairs',
+    ],
+    keyPointsHi: [
+      'षष्ठ भाव: बुधवार को गाय को हरा चारा (कर्ज मुक्ति)',
+      'अष्टम भाव: प्रदोष रुद्राभिषेक व चौकोर चांदी (संकट निवारण)',
+      'द्वादश भाव: दक्षिण सिरहाना व टपकते नल की मरम्मत',
+    ],
+  };
+
+  // 3. Janma Nakshatra Deity & Sacred Herbal Bath (नक्षत्र औषधि स्नान)
+  const nakshatraSnanaSection: ChapterSection = {
+    titleEn: `Janma Nakshatra Deity (${nakshatraData.nameEn}) & Sacred Herbal Bath (वनस्पति स्नान)`,
+    titleHi: `जन्म नक्षत्र देवता (${nakshatraData.nameHi}), तारा शुद्धि एवं पावन वनस्पति/औषधि स्नान`,
+    leadEn: 'Reconnecting with your cosmic birth star deity and purifying your electromagnetic aura through sacred botanicals.',
+    leadHi: 'जन्म नक्षत्र के अधिष्ठाता देवता की उपासना, नक्षत्र वृक्ष की सेवा एवं पावन जड़ी-बूटी स्नान विधान।',
+    paragraphsEn: [
+      `Your natal Moon resides in "${nakshatraData.nameEn}" Nakshatra. The supreme presiding Vedic deity of this asterism is "${nakshatraData.deityEn}". Reverence to this cosmic deity activates your inherent spiritual intelligence, harmonizes mental perception, and removes hidden obstacles that planetary dashas cannot reach.`,
+      `Parashari Sacred Herbal Bath (औषधि स्नान विधि): On days when the Moon transits your Janma Nakshatra or on your birth weekday, add the following sacred botanicals to your warm bathwater: ${nakshatraData.herbsEn}. Bathing with this herbal infusion cleanses your subtle aura, purges psychic exhaustion, and shields you from negative projections.`,
+      `Sacred Constellation Tree (नक्षत्र वृक्ष): The sacred tree aligned with your birth star is the "${nakshatraData.treeEn}" (${nakshatraData.treeHi}). Plant this tree, water it regularly, or pay obeisance to it. Never cut or harm this species, as it serves as your primary cosmic grounding cord.`,
+    ],
+    paragraphsHi: [
+      `आपकी जन्म कुंडली में चंद्र देव "${nakshatraData.nameHi}" नक्षत्र में स्थित हैं। इस पावन नक्षत्र के अधिष्ठाता वैदिक देवता "${nakshatraData.deityHi}" हैं। इस नक्षत्र देवता का स्मरण व उनके बीज मंत्र का ध्यान करने से अंतःकरण की शुद्धि होती है और उन अदृश्य बाधाओं का नाश होता है जो सामान्य ग्रह उपायों से नहीं कटतीं।`,
+      `पाराशरी पावन औषधि स्नान विधि: जिस दिन चंद्रमा आपके जन्म नक्षत्र "${nakshatraData.nameHi}" में गोचर करे अथवा आपके जन्म वार के दिन, स्नान के जल में निम्नलिखित जड़ी-बूटियों का मिश्रण डालें: ${nakshatraData.herbsHi}। इस पवित्र वनस्पति जल से स्नान करने से सूक्ष्म शरीर (Aura) की मलिनता धुल जाती है और नजर-दोष व मानसिक अवसाद तुरंत दूर होता है।`,
+      `पावन नक्षत्र वृक्ष: आपके नक्षत्र का आराध्य वृक्ष "${nakshatraData.treeHi}" (${nakshatraData.treeEn}) है। इस वृक्ष का एक पौधा किसी वाटिका या मंदिर परिसर में लगाएं अथवा इसकी नियमित सेवा करें। इस वृक्ष को कभी हानि न पहुंचाएं; यह आपके प्राण-तत्व का ब्रह्मांडीय आधार है।`,
+    ],
+    astrologicalCauseEn: `Computed via Moon's longitudinal placement in Nakshatra #${nakshatraIndex + 1} (${nakshatraData.nameEn}) and Parashara Snana Vidhi.`,
+    astrologicalCauseHi: `शास्त्रीय कारण: चंद्र देव की '${nakshatraData.nameHi}' नक्षत्र में स्थिति तथा महर्षि पाराशर प्रणीत नक्षत्र वनस्पति स्नान विधान।`,
+    keyPointsEn: [
+      `Birth Asterism: ${nakshatraData.nameEn}`,
+      `Presiding Deity: ${nakshatraData.deityEn}`,
+      `Sacred Bath Herbs: ${nakshatraData.herbsEn}`,
+      `Sacred Tree: ${nakshatraData.treeEn}`,
+    ],
+    keyPointsHi: [
+      `जन्म नक्षत्र: ${nakshatraData.nameHi}`,
+      `अधिष्ठाता देवता: ${nakshatraData.deityHi}`,
+      `औषधि स्नान सामग्री: ${nakshatraData.herbsHi}`,
+      `नक्षत्र वृक्ष: ${nakshatraData.treeHi}`,
+    ],
+  };
+
+  // 4. Active Gochar & Sade Sati Protective Shield (गोचर शांति)
+  // Saturn current transit is in Aquarius (SignIndex 10) / Pisces (SignIndex 11)
+  const currentSaturnSignIndex = 10; // Sidereal Aquarius
+  const saturnHouseFromMoon = ((currentSaturnSignIndex - moon.signIndex + 12) % 12) + 1;
+
+  let sadeSatiStatusHi = '';
+  let sadeSatiStatusEn = '';
+  let sadeSatiRemedyHi = '';
+  let sadeSatiRemedyEn = '';
+
+  if (saturnHouseFromMoon === 12) {
+    sadeSatiStatusHi = 'शनि साढ़ेसाती का प्रथम चरण (उदयमान/चढ़ती साढ़ेसाती)';
+    sadeSatiStatusEn = 'Saturn Sade Sati: First Phase (Rising / Charhti Phase)';
+    sadeSatiRemedyHi = 'शनिवार को लोहे के कटोरे में सरसों का तेल भरकर उसमें अपना मुख देखकर छाया दान करें (छाया पात्र दान)। सिर पर भारी बोझ न लें।';
+    sadeSatiRemedyEn = 'Perform Chhaya Patra Daan on Saturdays (looking at your reflection in mustard oil in an iron bowl, then donating it). Guard against unnecessary mental anxiety and excessive financial expenditure.';
+  } else if (saturnHouseFromMoon === 1) {
+    sadeSatiStatusHi = 'शनि साढ़ेसाती का द्वितीय चरण (शिखर/मध्यम साढ़ेसाती - सर्वोच्च परीक्षा काल)';
+    sadeSatiStatusEn = 'Saturn Sade Sati: Peak Phase (Mid-Phase - Pinnacle of Karmic Testing)';
+    sadeSatiRemedyHi = 'शनि देव के सम्मुख दशरथकृत शनि स्तोत्र का पाठ करें। शमी वृक्ष की जड़ में तिल के तेल का दीपक प्रज्वलित करें। श्रमिकों व असहायों को मीठा भोजन दें।';
+    sadeSatiRemedyEn = 'Recite Dasharatha Shani Stotra daily before a mustard oil lamp. Light a sesame-oil deepam at the base of a Shami tree on Saturday evenings. Treat laborers and sanitary workers with supreme dignity.';
+  } else if (saturnHouseFromMoon === 2) {
+    sadeSatiStatusHi = 'शनि साढ़ेसाती का तृतीय चरण (अस्तगामी/उतरती साढ़ेसाती)';
+    sadeSatiStatusEn = 'Saturn Sade Sati: Third Phase (Setting / Utarti Phase)';
+    sadeSatiRemedyHi = 'वाणी में संयम रखें और कटु वचनों से बचें। काले कंबल का दान करें और नित्य हनुमान बाहुक का पाठ करें। संचित धन सुरक्षित रहेगा।';
+    sadeSatiRemedyEn = 'Maintain disciplined, gentle speech; avoid harsh words. Donate black blankets to the needy and recite Hanuman Bahuk daily to safeguard accumulated savings.';
+  } else if (saturnHouseFromMoon === 4) {
+    sadeSatiStatusHi = 'कंटक शनि / चतुर्थ ढैया (लघु कल्याणी ढैया)';
+    sadeSatiStatusEn = 'Kantaka Shani / 4th House Dhaiya (Minor Hardship Transit)';
+    sadeSatiRemedyHi = 'शनिवार को पीपल के वृक्ष की सात परिक्रमा करें और जल अर्पित करें। घर में कलह से बचें और माता की सेवा करें।';
+    sadeSatiRemedyEn = 'Perform 7 circumambulations (Parikrama) of a Peepal tree on Saturdays. Serve your mother with devotion and avoid domestic friction.';
+  } else if (saturnHouseFromMoon === 8) {
+    sadeSatiStatusHi = 'अष्टम शनि ढैया (अत्यंत संवेदनशील परीक्षा काल)';
+    sadeSatiStatusEn = 'Ashtama Shani Dhaiya (Intense Health & Obstacle Testing Transit)';
+    sadeSatiRemedyHi = 'महामृत्युंजय मंत्र का नित्य 108 बार जप करें। वाहन सावधानी से चलाएं और शनिवार संध्या काल भैरव को इमरती या उड़द के वड़े का भोग लगाएं।';
+    sadeSatiRemedyEn = 'Recite the Maha Mrityunjaya Mantra 108 times daily. Drive with extreme caution and offer Urad dal vadas to Lord Bhairava on Saturday evenings.';
+  } else {
+    sadeSatiStatusHi = `शनि गोचर चंद्र से भाव ${saturnHouseFromMoon} में (वर्तमान में साढ़ेसाती या ढैया का कोई प्रभाव नहीं है)`;
+    sadeSatiStatusEn = `Saturn Transiting House ${saturnHouseFromMoon} from Natal Moon (No Sade Sati or Dhaiya currently active)`;
+    sadeSatiRemedyHi = 'शनि देव अनुकूल गोचर में हैं। नित्य हनुमान चालीसा का पाठ करें और अपने अधीनस्थों के साथ निष्कपट व न्यायपूर्ण व्यवहार बनाए रखें।';
+    sadeSatiRemedyEn = 'Saturn is transiting a favorable corridor. Maintain regular recitation of Hanuman Chalisa and practice transparent fairness with all subordinates.';
+  }
+
+  const gocharSadeSatiSection: ChapterSection = {
+    titleEn: 'Active Gochar & Saturn Sade Sati / Dhaiya Protective Shield',
+    titleHi: 'वर्तमान सक्रिय गोचर: शनि साढ़ेसाती/ढैया परीक्षण एवं अचूक सुरक्षा चक्र',
+    leadEn: 'Real-time transit diagnostics relative to your natal Moon sign and immediate protective measures.',
+    leadHi: 'जन्म चंद्र राशि से शनि, गुरु व राहु-केतु के वर्तमान गोचर का प्रभाव एवं संकट निवारण उपाय।',
+    paragraphsEn: [
+      `Current Sidereal Saturn Status: ${sadeSatiStatusEn}.`,
+      `Shastric Transit Diagnostic: When transiting Saturn contacts or aspects the natal Moon sign, it initiates a rigorous phase of karmic auditing, pruning illusions, and enforcing disciplined humility.`,
+      `Protective Remedial Shield: ${sadeSatiRemedyEn}`,
+      `Rahu-Ketu Transit Pacification: To pacify the current lunar nodal axis, recite the Navagraha Stotra every evening and feed stray dogs with fresh sweet bread (roti) on Saturday nights.`,
+    ],
+    paragraphsHi: [
+      `वर्तमान शनि गोचर की स्थिति: ${sadeSatiStatusHi}।`,
+      `शास्त्रीय गोचर विश्लेषण: जब शनि देव जन्म चंद्र से संवेदनशील भावों में संचार करते हैं, तो वे व्यक्ति के जीवन से मिथ्या अहंकार, असावधानी और भ्रम को समाप्त कर कठोर यथार्थ व अनुशासन का पाठ पढ़ाते हैं।`,
+      `अचूक सुरक्षा कवच: ${sadeSatiRemedyHi}`,
+      `राहु-केतु गोचर शांति: वर्तमान राहु-केतु अक्ष की शांति हेतु प्रतिदिन संध्याकाल में 'नवग्रह पीड़ा नाशक स्तोत्र' का पाठ करें और शनिवार की रात काले श्वान (कुत्ते) को मीठी रोटी अवश्य खिलाएं।`,
+    ],
+    astrologicalCauseEn: `Evaluated by calculating Saturn's current sidereal transit sign relative to natal Moon sign (${SIGN_HI[moon.signIndex]}).`,
+    astrologicalCauseHi: `शास्त्रीय कारण: जन्म चंद्र राशि ('${SIGN_HI[moon.signIndex]}') से गोचरस्थ शनि देव के भाव संबंध द्वारा प्रमाणित।`,
+    keyPointsEn: [
+      `Sade Sati Status: ${sadeSatiStatusEn.split('(')[0].trim()}`,
+      `Primary Gochar Remedy: ${sadeSatiRemedyEn.split('.')[0]}`,
+      `Nodal Shield: Feed stray dogs on Saturdays`,
+    ],
+    keyPointsHi: [
+      `साढ़ेसाती/ढैया स्थिति: ${sadeSatiStatusHi.split('(')[0].trim()}`,
+      `मुख्य गोचर उपाय: ${sadeSatiRemedyHi.split('।')[0]}`,
+      `राहु-केतु रक्षा: शनिवार रात काले कुत्ते को मीठी रोटी`,
+    ],
+  };
+
+  // 5. Active Mahadasha & Antardasha Targeted Daily Prescription
+  const nowMs = Date.now();
+  let activeMaha: DashaPeriod | null = null;
+  let activeAntar: DashaPeriod | null = null;
+
+  if (chart.vimshottari && chart.vimshottari.length > 0) {
+    for (const m of chart.vimshottari) {
+      if (m.startMs <= nowMs && m.endMs >= nowMs) {
+        activeMaha = m;
+        if (m.children && m.children.length > 0) {
+          for (const a of m.children) {
+            if (a.startMs <= nowMs && a.endMs >= nowMs) {
+              activeAntar = a;
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  const mahaLord = activeMaha?.lord || chart.ascendant.signLord;
+  const antarLord = activeAntar?.lord || chart.planets[0].id;
+  const mahaRem = PLANET_VEDIC_REMEDIES[mahaLord] || PLANET_VEDIC_REMEDIES.Jupiter;
+  const antarRem = PLANET_VEDIC_REMEDIES[antarLord] || PLANET_VEDIC_REMEDIES.Saturn;
+
+  const activeDashaSection: ChapterSection = {
+    titleEn: `Active Running Dasha Prescription: Mahadasha (${mahaLord}) & Antardasha (${antarLord})`,
+    titleHi: `सक्रिय महादशा-अंतर्दशा का अचूक उपाय: महादशा स्वामी (${PLANET_HI[mahaLord] || mahaLord}) एवं अंतर्दशा स्वामी (${PLANET_HI[antarLord] || antarLord})`,
+    leadEn: 'High-precision remedies targeted specifically at the currently executing planetary time-lords.',
+    leadHi: 'वर्तमान में चल रही विंशोत्तरी महादशा व अंतर्दशा के अधिपति ग्रहों का विशिष्ट दैनिक अनुष्ठान।',
+    paragraphsEn: [
+      `According to the Vimshottari Dasha system, your current life chapter is actively ruled by Mahadasha Lord "${mahaLord}" and Antardasha Lord "${antarLord}". The events, mental focus, opportunities, and obstacles you experience today are directly mediated by these two planetary vibrations.`,
+      `Primary Mahadasha Ritual (${mahaLord}): Dedicate 5 minutes every morning to chanting the Beej Mantra "${mahaRem.beejMantra}". Regularly read or listen to "${mahaRem.stotraEn}". This aligns the broad canvas of your fortune with divine harmony.`,
+      `Secondary Antardasha Correction (${antarLord}): Because the Antardasha delivers immediate operational results, perform targeted charity of ${antarRem.danaEn} on ${antarRem.favorableDayEn}. This pacifies the immediate friction and unlocks pending approvals.`,
+    ],
+    paragraphsHi: [
+      `विंशोत्तरी दशा पद्धति के अनुसार वर्तमान कालखंड में आपके जीवन पर महादशा स्वामी '${PLANET_HI[mahaLord] || mahaLord}' एवं अंतर्दशा स्वामी '${PLANET_HI[antarLord] || antarLord}' का प्रत्यक्ष आधिपत्य है। आज आपके समक्ष आने वाले अवसर, मानसिक विचार और बाधाएं इन्हीं दो ग्रहों की रश्मियों द्वारा संचालित हो रही हैं।`,
+      `महादशा स्वामी (${PLANET_HI[mahaLord] || mahaLord}) का मुख्य अनुष्ठान: प्रतिदिन प्रातःकाल इनके तांत्रिक बीज मंत्र "${mahaRem.beejMantra}" का कम से कम 1 माला (108 बार) जप करें तथा "${mahaRem.stotraHi}" का पाठ करें। इससे जीवन की मुख्य धारा में सकारात्मक गति आती है।`,
+      `अंतर्दशा स्वामी (${PLANET_HI[antarLord] || antarLord}) का त्वरित निवारण: चूंकि अंतर्दशा स्वामी दैनिक जीवन के व्यावहारिक परिणाम तय करता है, अतः इनके अनुकूल दिवस (${antarRem.favorableDayHi}) पर ${antarRem.danaHi} का शास्त्रीय दान करें। इससे तात्कालिक रुकावटें तुरंत समाप्त होती हैं।`,
+    ],
+    astrologicalCauseEn: `Derived by computing the exact active Vimshottari Mahadasha and Antardasha periods as of the current timestamp.`,
+    astrologicalCauseHi: `शास्त्रीय कारण: वर्तमान समय पर सक्रिय विंशोत्तरी महादशा एवं अंतर्दशा के गणितीय काल-विस्तार द्वारा प्रमाणित।`,
+    keyPointsEn: [
+      `Active Mahadasha: ${mahaLord} (${mahaRem.beejMantra})`,
+      `Active Antardasha: ${antarLord} (${antarRem.beejMantra})`,
+      `Primary Stotra: ${mahaRem.stotraEn}`,
+      `Weekly Dana: ${antarRem.danaEn.split('(')[0].trim()}`,
+    ],
+    keyPointsHi: [
+      `सक्रिय महादशा: ${PLANET_HI[mahaLord] || mahaLord} (${mahaRem.beejMantra})`,
+      `सक्रिय अंतर्दशा: ${PLANET_HI[antarLord] || antarLord} (${antarRem.beejMantra})`,
+      `मुख्य स्तोत्र: ${mahaRem.stotraHi}`,
+      `साप्ताहिक दान: ${antarRem.danaHi.split('(')[0].trim()}`,
+    ],
+  };
+
+  // 6. Lal Kitab Conduct & Sleeping Houses (Preserved and Clearly Defined)
+  const sleepingHouses = lalKitab?.sleepingHouses.filter((h) => h.isSleeping) ?? [];
+  const activeDebts = lalKitab?.karmicDebts.filter((d) => d.isTriggered) ?? [];
+
+  const lalKitabConductSection: ChapterSection = {
+    titleEn: 'Lal Kitab Conduct Rules, Sleeping Houses Awakening & Ancestral Debts',
+    titleHi: 'लाल किताब आचरण सुधार संहिता, सोए घर जगाने के नियम एवं पैतृक ऋण मुक्ति',
+    leadEn: 'Ethical behavior modifications, awakening dormant houses, and discharging inherited ancestral contracts.',
+    leadHi: 'लाल किताब के अनुसार सोए हुए भावों को जाग्रत करने की विधि, पैतृक ऋणों का निवारण एवं आचरण शुद्धि।',
+    paragraphsEn: [
+      `Lal Kitab Tewa: Sleeping Houses Awakening: In your fixed Aries matrix, the primary dormant houses are: ${sleepingHouses.map((h) => `House ${h.houseNumber} (Ruler: ${h.pakkaGharRuler})`).join(', ') || 'House 2 and House 9'}. Awaken dormant houses through lifestyle conduct: respect elders to activate House 2; honor spiritual teachers and ancestral traditions to activate House 9; and maintain honest, punctual wage payments to daily laborers to awaken House 10.`,
+      `Ancestral Karmic Debts (Lal Kitab Rin): ${activeDebts.length > 0 ? activeDebts.map((d) => `${d.debtType} (${d.classicalCauseEn})`).join('; ') : 'No severe ancestral debts are triggered; maintaining ethical conduct and fulfilling verbal commitments ensures sustained prosperity'}.`,
+      `Five Golden Rules of Daily Conduct: (1) Never waste drinking water or allow leaky faucets (Moon); (2) Touch the feet of elder parents daily before critical journeys (Sun & Jupiter); (3) Feed soaked green moong dal or grass to street cows on Wednesdays (Mercury); (4) Treat sanitation workers and domestic staff with generous respect (Saturn); and (5) Keep sweet roti or milk for street dogs on Saturday evenings (Bhairava/Ketu).`,
+    ],
+    paragraphsHi: [
+      `लाल किताब टेवा: सोए घर जगाने का विधान: आपके टेवे में मुख्य सोए हुए घर: ${sleepingHouses.map((h) => `भाव ${h.houseNumber} (पक्का स्वामी: ${h.pakkaGharRulerHi || h.pakkaGharRuler})`).join(', ') || 'भाव 2 (धन) व भाव 9 (भाग्य)'} हैं। सोए हुए भाव को जगाने हेतु उस भाव के कारक आचरण को अपनाएं: परिवार के साथ भोजन व कुल-बड़ों के आदर से भाव 2 जाग्रत होता है; कुल-परंपरा व गुरुओं के सम्मान से भाव 9 जाग्रत होता है; तथा श्रमिकों को समय पर पूरा पारिश्रमिक देने से भाव 10 जाग्रत होता है।`,
+      `पैतृक ऋण निदान (ऋण मुक्ति): ${activeDebts.length > 0 ? activeDebts.map((d) => `'${d.debtTypeHi}' (${d.classicalCauseHi}) सक्रिय है, जिसके निवारण हेतु कुल-परंपरा का पालन करें`).join('; ') : 'कुंडली में कोई भारी पितृ या मातृ ऋण नहीं है; अपने वचनों का पालन करना और आलस्य त्यागना ही पर्याप्त है'}।`,
+      `दैनिक आचरण के 5 स्वर्णिम नियम: (1) जल का कभी अपव्यय न करें और टपकते नल तुरंत ठीक कराएं (चंद्र देव); (2) किसी भी शुभ कार्य से पूर्व माता-पिता के चरण स्पर्श कर आशीर्वाद लें (सूर्य व गुरु); (3) बुधवार को गाय को भीगी हुई मूंग दाल या हरा चारा दें (बुध); (4) घर के सफाईकर्मियों व श्रमिकों का कभी अपमान न करें (शनि); तथा (5) शनिवार संध्या काल भैरव के निमित्त श्वान (कुत्ते) को मीठी रोटी अवश्य दें (केतु व भैरव)।`,
+    ],
+    astrologicalCauseEn: 'Computed according to Lal Kitab fixed Aries Ascendant principles and classical ancestral debt indicators.',
+    astrologicalCauseHi: 'शास्त्रीय कारण: लाल किताब के स्थायी मेष लग्न चक्र एवं पैतृक ऋण सूत्रों के आधार पर प्रमाणित।',
+    keyPointsEn: [
+      'Awaken Sleeping Houses via lifestyle alignment',
+      'Discharge ancestral debts through familial virtue',
+      'Strict adherence to the 5 Golden Rules of Conduct',
+    ],
+    keyPointsHi: [
+      'आचरण द्वारा सोए हुए भावों को जाग्रत करना',
+      'कुल संस्कारों द्वारा पैतृक ऋणों से मुक्ति',
+      'दैनिक जीवन के 5 स्वर्णिम आचरण नियमों का पालन',
+    ],
+  };
+
+  return {
+    planetaryRemediesSection,
+    houseCleansingSection,
+    nakshatraSnanaSection,
+    gocharSadeSatiSection,
+    activeDashaSection,
+    lalKitabConductSection,
+    summaryHighlights: {
+      activeMahadashaLord: mahaLord,
+      activeAntardashaLord: antarLord,
+      sadeSatiStatusHi,
+      sadeSatiStatusEn,
+      janmaNakshatraDeityHi: nakshatraData.deityHi,
+      janmaNakshatraDeityEn: nakshatraData.deityEn,
+      primaryVedicMantra: mahaRem.beejMantra,
     },
   };
 }

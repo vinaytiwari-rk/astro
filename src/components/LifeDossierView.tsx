@@ -60,6 +60,10 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
   const [activeChartType, setActiveChartType] = useState<ActiveChartType>('D1');
   const [collapsedChapters, setCollapsedChapters] = useState<Record<number, boolean>>({});
   const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
+  const [mobileTab, setMobileTab] = useState<'dossier' | 'charts' | 'planets'>('dossier');
+  const [isChartModalOpen, setIsChartModalOpen] = useState(false);
+  const [isChapterDrawerOpen, setIsChapterDrawerOpen] = useState(false);
+  const [currentChapter, setCurrentChapter] = useState(1);
 
   // Generate 10-Chapter Master Life Dossier
   const dossier = useMemo<LifeDossierReport>(() => {
@@ -183,6 +187,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
   };
 
   const scrollToChapter = (chNum: number) => {
+    setCurrentChapter(chNum);
     const el = document.getElementById(`dossier-chapter-${chNum}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -201,6 +206,243 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
   };
 
   const topIdentity = dossier.topIdentity;
+
+  // --------------------------------------------------------------------------
+  // RENDER HELPERS: CHART & PLANETARY CARDS (Reusable on Mobile & Desktop)
+  // --------------------------------------------------------------------------
+  const renderChartCard = () => (
+    <div className="dossier-chart-card card">
+      {/* Quick Chart Toggle Pills */}
+      <div className="dossier-chart-nav-pills">
+        <button
+          className={`chart-pill-btn ${activeChartType === 'D1' ? 'active' : ''}`}
+          onClick={() => setActiveChartType('D1')}
+        >
+          {isHi ? 'D1 लग्न' : 'D1 Lagna'}
+        </button>
+        <button
+          className={`chart-pill-btn ${activeChartType === 'D9' ? 'active' : ''}`}
+          onClick={() => setActiveChartType('D9')}
+        >
+          {isHi ? 'D9 नवांश' : 'D9 Navamsha'}
+        </button>
+        <button
+          className={`chart-pill-btn ${activeChartType === 'Chalit' ? 'active' : ''}`}
+          onClick={() => setActiveChartType('Chalit')}
+        >
+          {isHi ? 'भाव चलित' : 'Chalit'}
+        </button>
+        <button
+          className={`chart-pill-btn ${activeChartType === 'Moon' ? 'active' : ''}`}
+          onClick={() => setActiveChartType('Moon')}
+        >
+          {isHi ? 'चंद्र कुंडली' : 'Moon Chart'}
+        </button>
+        <button
+          className={`chart-pill-btn ${activeChartType === 'LalKitab' ? 'active' : ''}`}
+          onClick={() => setActiveChartType('LalKitab')}
+        >
+          {isHi ? 'लाल किताब टेवा' : 'Lal Kitab'}
+        </button>
+      </div>
+
+      {/* Interactive SVG Chart */}
+      <div className="dossier-svg-wrapper">
+        <VedicChartSvg
+          title={chartTitle}
+          subtitle={chartSubtitle}
+          style={chartStyle}
+          lagnaSignIndex={lagnaSignIndex}
+          items={chartBadges}
+          savBindus={chart.ashtakavarga?.sarva}
+          showDownload={false}
+        />
+      </div>
+
+      {/* Chart Style Selector */}
+      {onChangeChartStyle && (
+        <div className="dossier-chart-style-bar">
+          <span className="text-muted small">{isHi ? 'शैली:' : 'Style:'}</span>
+          <button
+            className={`btn-tag ${chartStyle === 'north' ? 'active' : ''}`}
+            onClick={() => onChangeChartStyle('north')}
+          >
+            {isHi ? 'उत्तर भारतीय' : 'North'}
+          </button>
+          <button
+            className={`btn-tag ${chartStyle === 'south' ? 'active' : ''}`}
+            onClick={() => onChangeChartStyle('south')}
+          >
+            {isHi ? 'दक्षिण भारतीय' : 'South'}
+          </button>
+          <button
+            className={`btn-tag ${chartStyle === 'east' ? 'active' : ''}`}
+            onClick={() => onChangeChartStyle('east')}
+          >
+            {isHi ? 'पूर्वी भारतीय' : 'East'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPlanetsCard = () => (
+    <div className="dossier-planets-card card">
+      <div className="card-header-compact">
+        <h3 className="section-title-sm">
+          📊 {isHi ? 'ग्रह स्थिति सारणी (अंश, नक्षत्र, पद व कारक)' : 'Planetary Matrix (Degrees, Nakshatra & Karakas)'}
+        </h3>
+      </div>
+
+      {/* Mobile Touch Cards Deck (Visible on small screens) */}
+      <div className="mobile-planet-cards-deck">
+        <div className="mobile-planet-card ascendant-card">
+          <div className="mp-card-top">
+            <span className="planet-tag ascendant-tag">{isHi ? 'लग्न (Lagna / Ascendant)' : 'Ascendant (Lagna)'}</span>
+            <span className="mono font-bold">{isHi ? 'प्रथम भाव' : '1st House'}</span>
+          </div>
+          <div className="mp-card-grid">
+            <div><span className="text-muted small">{isHi ? 'राशि:' : 'Sign:'}</span> <strong>{isHi ? trSign(chart.ascendant.signIndex, lang) : chart.ascendant.signName}</strong></div>
+            <div><span className="text-muted small">{isHi ? 'अंश:' : 'Deg:'}</span> <span className="mono">{chart.ascendant.shortDms}</span></div>
+            <div><span className="text-muted small">{isHi ? 'नक्षत्र:' : 'Star:'}</span> {chart.ascendant.nakshatraName} ({chart.ascendant.pada})</div>
+            <div><span className="text-muted small">{isHi ? 'स्वामी:' : 'Lords:'}</span> <span className="mono small">{trPlanetShort(chart.ascendant.signLord, lang)}/{trPlanetShort(chart.ascendant.nakshatraLord, lang)}/{trPlanetShort(chart.ascendant.subLord, lang)}</span></div>
+          </div>
+        </div>
+
+        {chart.planets.map((p) => {
+          const isSelected = selectedPlanetId === p.id;
+          return (
+            <div
+              key={p.id}
+              className={`mobile-planet-card ${isSelected ? 'row-selected' : ''}`}
+              onClick={() => setSelectedPlanetId(isSelected ? null : p.id)}
+            >
+              <div className="mp-card-top">
+                <span className={`planet-tag ${p.id.toLowerCase()}-tag`}>
+                  {trPlanet(p.id, lang)}
+                  {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
+                  {p.isCombust ? '*' : ''}
+                </span>
+                <span className={`dignity-badge ${
+                  p.dignity === 'Exalted'
+                    ? 'badge-good'
+                    : p.dignity === 'Debilitated'
+                    ? 'badge-bad'
+                    : p.dignity === 'Own Sign' || p.dignity === 'Moolatrikona'
+                    ? 'badge-blue'
+                    : 'badge-neutral'
+                }`}>
+                  {p.dignity || '—'}
+                </span>
+              </div>
+              <div className="mp-card-grid">
+                <div><span className="text-muted small">{isHi ? 'भाव:' : 'House:'}</span> <strong className="mono font-bold">भाव {p.rasiHouseNumber}</strong></div>
+                <div><span className="text-muted small">{isHi ? 'राशि:' : 'Sign:'}</span> {isHi ? trSign(p.signIndex, lang) : p.signName}</div>
+                <div><span className="text-muted small">{isHi ? 'अंश:' : 'Deg:'}</span> <span className="mono">{p.shortDms}</span></div>
+                <div><span className="text-muted small">{isHi ? 'नक्षत्र:' : 'Star:'}</span> {p.nakshatraName} ({p.pada})</div>
+                {p.charaKaraka && (
+                  <div><span className="text-muted small">{isHi ? 'कारक:' : 'Karaka:'}</span> <span className="badge badge-subtle">{p.charaKaraka}</span></div>
+                )}
+                <div><span className="text-muted small">{isHi ? 'रा/न/उप:' : 'S/N/Sub:'}</span> <span className="mono small">{trPlanetShort(p.signLord, lang)}/{trPlanetShort(p.nakshatraLord, lang)}/{trPlanetShort(p.subLord, lang)}</span></div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Traditional Table for Desktop */}
+      <div className="table-responsive desktop-only-table">
+        <table className="table table-sm dossier-table">
+          <thead>
+            <tr>
+              <th>{isHi ? 'ग्रह' : 'Body'}</th>
+              <th>{isHi ? 'राशि' : 'Sign'}</th>
+              <th>{isHi ? 'अंश' : 'Degree'}</th>
+              <th>{isHi ? 'नक्षत्र (पद)' : 'Nakshatra (Pada)'}</th>
+              <th>{isHi ? 'रा/न/उप' : 'S/N/Sub'}</th>
+              <th>{isHi ? 'भाव' : 'H'}</th>
+              <th>{isHi ? 'कारक' : 'Karaka'}</th>
+              <th>{isHi ? 'अवस्था' : 'Dignity'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="ascendant-row">
+              <td>
+                <span className="planet-tag ascendant-tag">{isHi ? 'लग्न' : 'Asc'}</span>
+              </td>
+              <td>{isHi ? trSign(chart.ascendant.signIndex, lang) : chart.ascendant.signName}</td>
+              <td className="mono small">{chart.ascendant.shortDms}</td>
+              <td className="small">
+                {chart.ascendant.nakshatraName} ({chart.ascendant.pada})
+              </td>
+              <td className="mono small">
+                {trPlanetShort(chart.ascendant.signLord, lang)}/{trPlanetShort(chart.ascendant.nakshatraLord, lang)}/{trPlanetShort(chart.ascendant.subLord, lang)}
+              </td>
+              <td className="mono font-bold">1</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+
+            {chart.planets.map((p) => {
+              const isSelected = selectedPlanetId === p.id;
+              return (
+                <tr
+                  key={p.id}
+                  className={`planet-row ${isSelected ? 'row-selected' : ''}`}
+                  onClick={() => setSelectedPlanetId(isSelected ? null : p.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>
+                    <span className={`planet-tag ${p.id.toLowerCase()}-tag`}>
+                      {trPlanet(p.id, lang)}
+                      {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
+                      {p.isCombust ? '*' : ''}
+                    </span>
+                  </td>
+                  <td>{isHi ? trSign(p.signIndex, lang) : p.signName}</td>
+                  <td className="mono small">{p.shortDms}</td>
+                  <td className="small">
+                    {p.nakshatraName} ({p.pada})
+                  </td>
+                  <td className="mono small">
+                    {trPlanetShort(p.signLord, lang)}/{trPlanetShort(p.nakshatraLord, lang)}/{trPlanetShort(p.subLord, lang)}
+                  </td>
+                  <td className="mono font-bold">{p.rasiHouseNumber}</td>
+                  <td>
+                    {p.charaKaraka ? (
+                      <span className="badge badge-subtle">{p.charaKaraka}</span>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td>
+                    <span
+                      className={`dignity-badge ${
+                        p.dignity === 'Exalted'
+                          ? 'badge-good'
+                          : p.dignity === 'Debilitated'
+                          ? 'badge-bad'
+                          : p.dignity === 'Own Sign' || p.dignity === 'Moolatrikona'
+                          ? 'badge-blue'
+                          : 'badge-neutral'
+                      }`}
+                    >
+                      {p.dignity || '—'}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="table-legend-footer">
+        <span className="small text-muted">
+          *(C): अस्त (Combust) · (R): वक्री (Retrograde) · S/N/Sub: राशि-नक्षत्र-उप स्वामी
+        </span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="dossier-studio-container">
@@ -245,199 +487,66 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         </div>
       </header>
 
+      {/* Mobile App Navigation Bar (< 992px) */}
+      <div className="dossier-mobile-tabs-bar">
+        <button
+          className={`dossier-m-tab-btn ${mobileTab === 'dossier' ? 'active' : ''}`}
+          onClick={() => setMobileTab('dossier')}
+        >
+          📖 {isHi ? 'जीवन आलेख' : 'Dossier'}
+        </button>
+        <button
+          className={`dossier-m-tab-btn ${mobileTab === 'charts' ? 'active' : ''}`}
+          onClick={() => setMobileTab('charts')}
+        >
+          🗺️ {isHi ? 'जन्म चक्र' : 'Charts'}
+        </button>
+        <button
+          className={`dossier-m-tab-btn ${mobileTab === 'planets' ? 'active' : ''}`}
+          onClick={() => setMobileTab('planets')}
+        >
+          🪐 {isHi ? 'ग्रह स्थिति' : 'Planets'}
+        </button>
+      </div>
+
       {/* Main Two-Column Split Layout */}
       <div className="dossier-split-layout">
         {/* =========================================================================
-            LEFT COLUMN (36-38%): STICKY INTERACTIVE KUNDALI & 8-COLUMN TABLE
+            LEFT COLUMN (36-38%): STICKY INTERACTIVE KUNDALI & PLANETARY TABLE
            ========================================================================= */}
-        <aside className="dossier-left-pane">
-          <div className="dossier-chart-card card">
-            {/* Quick Chart Toggle Pills */}
-            <div className="dossier-chart-nav-pills">
-              <button
-                className={`chart-pill-btn ${activeChartType === 'D1' ? 'active' : ''}`}
-                onClick={() => setActiveChartType('D1')}
-              >
-                {isHi ? 'D1 लग्न' : 'D1 Lagna'}
-              </button>
-              <button
-                className={`chart-pill-btn ${activeChartType === 'D9' ? 'active' : ''}`}
-                onClick={() => setActiveChartType('D9')}
-              >
-                {isHi ? 'D9 नवांश' : 'D9 Navamsha'}
-              </button>
-              <button
-                className={`chart-pill-btn ${activeChartType === 'Chalit' ? 'active' : ''}`}
-                onClick={() => setActiveChartType('Chalit')}
-              >
-                {isHi ? 'भाव चलित' : 'Chalit'}
-              </button>
-              <button
-                className={`chart-pill-btn ${activeChartType === 'Moon' ? 'active' : ''}`}
-                onClick={() => setActiveChartType('Moon')}
-              >
-                {isHi ? 'चंद्र कुंडली' : 'Moon Chart'}
-              </button>
-              <button
-                className={`chart-pill-btn ${activeChartType === 'LalKitab' ? 'active' : ''}`}
-                onClick={() => setActiveChartType('LalKitab')}
-              >
-                {isHi ? 'लाल किताब टेवा' : 'Lal Kitab'}
-              </button>
-            </div>
+        <aside
+          className={`dossier-left-pane ${
+            mobileTab === 'dossier' ? 'mobile-hidden' : ''
+          }`}
+        >
+          {/* On mobile: show chart card if mobileTab === 'charts' */}
+          {mobileTab === 'charts' && renderChartCard()}
 
-            {/* Interactive SVG Chart */}
-            <div className="dossier-svg-wrapper">
-              <VedicChartSvg
-                title={chartTitle}
-                subtitle={chartSubtitle}
-                style={chartStyle}
-                lagnaSignIndex={lagnaSignIndex}
-                items={chartBadges}
-                savBindus={chart.ashtakavarga?.sarva}
-                showDownload={false}
-              />
-            </div>
+          {/* On mobile: show planets card if mobileTab === 'planets' */}
+          {mobileTab === 'planets' && renderPlanetsCard()}
 
-            {/* Chart Style Selector */}
-            {onChangeChartStyle && (
-              <div className="dossier-chart-style-bar">
-                <span className="text-muted small">{isHi ? 'शैली:' : 'Style:'}</span>
-                <button
-                  className={`btn-tag ${chartStyle === 'north' ? 'active' : ''}`}
-                  onClick={() => onChangeChartStyle('north')}
-                >
-                  {isHi ? 'उत्तर भारतीय' : 'North'}
-                </button>
-                <button
-                  className={`btn-tag ${chartStyle === 'south' ? 'active' : ''}`}
-                  onClick={() => onChangeChartStyle('south')}
-                >
-                  {isHi ? 'दक्षिण भारतीय' : 'South'}
-                </button>
-                <button
-                  className={`btn-tag ${chartStyle === 'east' ? 'active' : ''}`}
-                  onClick={() => onChangeChartStyle('east')}
-                >
-                  {isHi ? 'पूर्वी भारतीय' : 'East'}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* 8-Column Planetary Matrix Table */}
-          <div className="dossier-planets-card card">
-            <div className="card-header-compact">
-              <h3 className="section-title-sm">
-                📊 {isHi ? 'ग्रह स्थिति सारणी (अंश, नक्षत्र, पद व कारक)' : 'Planetary Matrix (Degrees, Nakshatra & Karakas)'}
-              </h3>
-            </div>
-            <div className="table-responsive">
-              <table className="table table-sm dossier-table">
-                <thead>
-                  <tr>
-                    <th>{isHi ? 'ग्रह' : 'Body'}</th>
-                    <th>{isHi ? 'राशि' : 'Sign'}</th>
-                    <th>{isHi ? 'अंश' : 'Degree'}</th>
-                    <th>{isHi ? 'नक्षत्र (पद)' : 'Nakshatra (Pada)'}</th>
-                    <th>{isHi ? 'रा/न/उप' : 'S/N/Sub'}</th>
-                    <th>{isHi ? 'भाव' : 'H'}</th>
-                    <th>{isHi ? 'कारक' : 'Karaka'}</th>
-                    <th>{isHi ? 'अवस्था' : 'Dignity'}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Ascendant Row */}
-                  <tr className="ascendant-row">
-                    <td>
-                      <span className="planet-tag ascendant-tag">{isHi ? 'लग्न' : 'Asc'}</span>
-                    </td>
-                    <td>{isHi ? trSign(chart.ascendant.signIndex, lang) : chart.ascendant.signName}</td>
-                    <td className="mono small">{chart.ascendant.shortDms}</td>
-                    <td className="small">
-                      {chart.ascendant.nakshatraName} ({chart.ascendant.pada})
-                    </td>
-                    <td className="mono small">
-                      {trPlanetShort(chart.ascendant.signLord, lang)}/{trPlanetShort(chart.ascendant.nakshatraLord, lang)}/{trPlanetShort(chart.ascendant.subLord, lang)}
-                    </td>
-                    <td className="mono font-bold">1</td>
-                    <td>—</td>
-                    <td>—</td>
-                  </tr>
-
-                  {/* 9 Grahas Rows */}
-                  {chart.planets.map((p) => {
-                    const isSelected = selectedPlanetId === p.id;
-                    return (
-                      <tr
-                        key={p.id}
-                        className={`planet-row ${isSelected ? 'row-selected' : ''}`}
-                        onClick={() => setSelectedPlanetId(isSelected ? null : p.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <td>
-                          <span className={`planet-tag ${p.id.toLowerCase()}-tag`}>
-                            {trPlanet(p.id, lang)}
-                            {p.isRetrograde && p.id !== 'Rahu' && p.id !== 'Ketu' ? (isHi ? ' (व)' : ' (R)') : ''}
-                            {p.isCombust ? '*' : ''}
-                          </span>
-                        </td>
-                        <td>{isHi ? trSign(p.signIndex, lang) : p.signName}</td>
-                        <td className="mono small">{p.shortDms}</td>
-                        <td className="small">
-                          {p.nakshatraName} ({p.pada})
-                        </td>
-                        <td className="mono small">
-                          {trPlanetShort(p.signLord, lang)}/{trPlanetShort(p.nakshatraLord, lang)}/{trPlanetShort(p.subLord, lang)}
-                        </td>
-                        <td className="mono font-bold">{p.rasiHouseNumber}</td>
-                        <td>
-                          {p.charaKaraka ? (
-                            <span className="badge badge-subtle">{p.charaKaraka}</span>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                        <td>
-                          <span
-                            className={`dignity-badge ${
-                              p.dignity === 'Exalted'
-                                ? 'badge-good'
-                                : p.dignity === 'Debilitated'
-                                ? 'badge-bad'
-                                : p.dignity === 'Own Sign' || p.dignity === 'Moolatrikona'
-                                ? 'badge-blue'
-                                : 'badge-neutral'
-                            }`}
-                          >
-                            {p.dignity || '—'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <div className="table-legend-footer">
-              <span className="small text-muted">
-                *(C): अस्त (Combust) · (R): वक्री (Retrograde) · S/N/Sub: राशि-नक्षत्र-उप स्वामी
-              </span>
-            </div>
+          {/* On desktop: show both side-by-side */}
+          <div className="desktop-only-left-content">
+            {renderChartCard()}
+            {renderPlanetsCard()}
           </div>
         </aside>
 
         {/* =========================================================================
             RIGHT COLUMN (62-64%): 10-CHAPTER MASTER LIFE DOSSIER
            ========================================================================= */}
-        <main className="dossier-right-pane">
+        <main
+          className={`dossier-right-pane ${
+            mobileTab !== 'dossier' ? 'mobile-hidden' : ''
+          }`}
+        >
           {/* Sticky Chapter Navigation Bar */}
           <nav className="dossier-chapter-nav-sticky">
             <div className="dossier-nav-scrollable">
               {dossier.chapters.map((ch) => (
                 <button
                   key={ch.chapterNumber}
-                  className="chapter-nav-chip"
+                  className={`chapter-nav-chip ${currentChapter === ch.chapterNumber ? 'active' : ''}`}
                   onClick={() => scrollToChapter(ch.chapterNumber)}
                 >
                   <span className="chip-num">{ch.chapterNumber}</span>
@@ -460,7 +569,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                       ? isHi ? 'कालचक्र' : 'Timeline'
                       : ch.chapterNumber === 9
                       ? isHi ? 'पूर्व जन्म' : 'Past Life'
-                      : isHi ? 'लाल किताब' : 'Lal Kitab'}
+                      : isHi ? 'वैदिक उपाय' : 'Vedic Remedies'}
                   </span>
                 </button>
               ))}
@@ -795,6 +904,104 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
           </div>
         </main>
       </div>
+
+      {/* Mobile Floating Action Button to View Chart Sheet */}
+      <button
+        className="dossier-floating-chart-btn"
+        onClick={() => setIsChartModalOpen(true)}
+        title={isHi ? 'कुंडली चक्र देखें' : 'View Charts'}
+      >
+        <Compass size={18} />
+        <span>{isHi ? 'कुंडली चक्र' : 'View Chart'}</span>
+      </button>
+
+      {/* Mobile Bottom App Navigation Bar (< 768px) */}
+      <div className="dossier-mobile-bottom-bar">
+        <button
+          className="mbb-btn"
+          onClick={() => {
+            const prev = Math.max(1, currentChapter - 1);
+            setCurrentChapter(prev);
+            scrollToChapter(prev);
+          }}
+          disabled={currentChapter <= 1}
+        >
+          ⬅️ {isHi ? 'पिछला' : 'Prev'}
+        </button>
+        <button
+          className="mbb-btn mbb-chapter-btn"
+          onClick={() => setIsChapterDrawerOpen(true)}
+        >
+          📖 {isHi ? `अध्याय ${currentChapter}/10` : `Ch ${currentChapter}/10`}
+        </button>
+        <button
+          className="mbb-btn"
+          onClick={() => {
+            const next = Math.min(10, currentChapter + 1);
+            setCurrentChapter(next);
+            scrollToChapter(next);
+          }}
+          disabled={currentChapter >= 10}
+        >
+          {isHi ? 'अगला' : 'Next'} ➡️
+        </button>
+        <button
+          className="mbb-btn mbb-chart-btn"
+          onClick={() => setIsChartModalOpen(true)}
+        >
+          🗺️ {isHi ? 'चक्र' : 'Chart'}
+        </button>
+        <button
+          className="mbb-btn"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title={isHi ? 'ऊपर जाएं' : 'Scroll Top'}
+        >
+          🔝
+        </button>
+      </div>
+
+      {/* Mobile Bottom Sheet Modal for Chart Inspection */}
+      {isChartModalOpen && (
+        <div className="dossier-modal-backdrop" onClick={() => setIsChartModalOpen(false)}>
+          <div className="dossier-modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-sheet-header">
+              <h3 className="modal-sheet-title">🗺️ {isHi ? 'जन्म कुंडली व वर्ग चक्र' : 'Natal & Divisional Charts'}</h3>
+              <button className="btn-close-sheet" onClick={() => setIsChartModalOpen(false)}>✕</button>
+            </div>
+            <div className="modal-sheet-body">
+              {renderChartCard()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Chapter Picker Drawer */}
+      {isChapterDrawerOpen && (
+        <div className="dossier-modal-backdrop" onClick={() => setIsChapterDrawerOpen(false)}>
+          <div className="dossier-modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-sheet-header">
+              <h3 className="modal-sheet-title">📖 {isHi ? 'अध्याय सूची (1 से 10)' : 'Select Chapter (1 to 10)'}</h3>
+              <button className="btn-close-sheet" onClick={() => setIsChapterDrawerOpen(false)}>✕</button>
+            </div>
+            <div className="modal-sheet-body chapter-picker-list">
+              {dossier.chapters.map((ch) => (
+                <button
+                  key={ch.chapterNumber}
+                  className={`chapter-picker-item ${currentChapter === ch.chapterNumber ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentChapter(ch.chapterNumber);
+                    scrollToChapter(ch.chapterNumber);
+                    setIsChapterDrawerOpen(false);
+                  }}
+                >
+                  <span className="cp-num">{ch.chapterNumber}</span>
+                  <span className="cp-title">{isHi ? ch.titleHi : ch.titleEn}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
