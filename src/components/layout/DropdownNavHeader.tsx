@@ -60,7 +60,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
 
-  // Master Primary Modules Definition
+  // Master Primary Modules Definition (Flagship Split-Studio Life Dossier is #1)
   const primaryModules: Array<{
     id: MainTab;
     labelEn: string;
@@ -68,63 +68,75 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     emoji: string;
   }> = [
     {
-      id: 'kundli',
-      labelEn: 'Horoscope Workstation (Dual Charts, Dasha, Ashtakavarga, Shadbala, KP, Predictions)',
-      labelHi: '1. जन्म कुंडली वर्कस्टेशन (लग्न, नवांश, दशा, अष्टकवर्ग, षड्बल, के.पी., फलादेश)',
+      id: 'dossier',
+      labelEn: '🌟 Split-Studio Life Dossier (10 Deep Chapters & Interactive Kundali)',
+      labelHi: '🌟 1. गोपनीय जीवन आलेख (स्प्लिट-स्टूडियो 10 अध्याय व जन्म कुंडली)',
       emoji: '📜',
     },
     {
-      id: 'predictions',
-      labelEn: 'In-Depth Predictions (300+ Yogas, 120-Yr Timeline, 12 Bhavas)',
-      labelHi: '2. विस्तृत फलादेश (300+ राजयोग, 120-वर्षीय जीवन रेखा, 12 भाव)',
-      emoji: '🔮',
-    },
-    {
-      id: 'dasha_transits',
-      labelEn: 'Dasha Systems & Gochar (Vimshottari, Yogini, Sade Sati)',
-      labelHi: '3. दशा प्रणाली व गोचर (विंशोत्तरी 5 स्तर, योगिनी, साढ़े साती)',
-      emoji: '⏳',
-    },
-    {
-      id: 'branches',
-      labelEn: 'Specialist Suites: KP Stellar, Traditional Tewa, Numerology & Gems',
-      labelHi: '4. विशिष्ट पद्धतियाँ: KP नक्षत्र, परंपरागत टेवा, अंक व रत्न/रुद्राक्ष',
-      emoji: '🌟',
-    },
-    {
-      id: 'western',
-      labelEn: 'Western Tropical Astrology (360° Circular Wheel & Aspects)',
-      labelHi: '5. पाश्चात्य सायन ज्योतिष (360° सर्कुलर व्हील व ग्रह दृष्टियां)',
-      emoji: '🪐',
-    },
-    {
       id: 'matchmaking',
-      labelEn: 'Kundali Milan (36 Guna Ashtakoota, Manglik & Beeja Sphuta)',
-      labelHi: '6. कुंडली मिलान (36 गुण अष्टकूट, मांगलिक परिहार व बीज/क्षेत्र)',
+      labelEn: '💍 Kundali Milan & Match Making (36 Guna Ashtakoota & Manglik)',
+      labelHi: '💍 2. कुंडली मिलान (36 गुण अष्टकूट, मांगलिक परिहार व बीज/क्षेत्र)',
       emoji: '💍',
     },
     {
       id: 'panchang_muhurta',
-      labelEn: 'Panchang & Muhurta Explorer (Drik, 24h Hora, Choghadiya, 30 Do Ghati)',
-      labelHi: '7. पंचांग व मुहूर्त (दैनिक दृक, 24h होरा, चौघड़िया, 30 दो-घटी)',
+      labelEn: '📅 Panchang & Muhurta Explorer (Drik, 24h Hora, Choghadiya, 30 Do Ghati)',
+      labelHi: '📅 3. पंचांग व मुहूर्त (दैनिक दृक, 24h होरा, चौघड़िया, 30 दो-घटी)',
       emoji: '📅',
     },
     {
+      id: 'kundli',
+      labelEn: '🔬 Higher Vargas (D1–D360), Shadbala & Mathematical Workstation',
+      labelHi: '🔬 4. सूक्ष्म वर्ग चक्र (D1–D360), षड्बल व गणित वर्कस्टेशन',
+      emoji: '🔬',
+    },
+    {
+      id: 'dasha_transits',
+      labelEn: '⏳ Dasha Systems & Live Gochar (Vimshottari 5 Levels, Yogini, Sade Sati)',
+      labelHi: '⏳ 5. दशा प्रणाली व गोचर (विंशोत्तरी 5 स्तर, योगिनी, साढ़े साती)',
+      emoji: '⏳',
+    },
+    {
+      id: 'branches',
+      labelEn: '🌿 Specialist Vedic Suites: KP Stellar & Traditional Lal Kitab Tewa',
+      labelHi: '🌿 6. विशिष्ट पद्धतियाँ: KP नक्षत्र व परंपरागत लाल किताब टेवा',
+      emoji: '🌿',
+    },
+    {
+      id: 'western',
+      labelEn: '🪐 Western Tropical Astrology (360° Circular Wheel & Aspects)',
+      labelHi: '🪐 7. पाश्चात्य सायन ज्योतिष (360° सर्कुलर व्हील व ग्रह दृष्टियां)',
+      emoji: '🪐',
+    },
+    {
       id: 'patrika_booklet',
-      labelEn: '34-Chapter Deluxe Janmakundali Book (Print & PDF Export)',
-      labelHi: '8. 34-अध्यायी बृहत् जन्मपत्रिका (प्रिंट व PDF एक्सपोर्ट)',
+      labelEn: '📖 34-Chapter Deluxe Janmakundali Book (Print & PDF Export)',
+      labelHi: '📖 8. 34-अध्यायी बृहत् जन्मपत्रिका (प्रिंट व PDF एक्सपोर्ट)',
       emoji: '📖',
     },
     {
       id: 'home',
-      labelEn: 'Quick Entry Form (Create New Kundali, Match & Panchang)',
-      labelHi: '9. त्वरित प्रविष्टि पोर्टल (नया विवरण, मिलान व पंचांग फॉर्म)',
+      labelEn: '📝 Quick Entry Portal (New Native & Quick Forms)',
+      labelHi: '📝 9. त्वरित प्रविष्टि पोर्टल (नया विवरण फॉर्म)',
       emoji: '📝',
     },
   ];
 
-  // Map sub-views for each master module (Zero Author Names)
+  // Map sub-views for each master module (Numerology Completely Purged)
   const subViewsMap: Record<string, DropdownSubOption[]> = {
+    dossier: [
+      { id: 'ch1', labelEn: 'Ch 1: Seed Impressions & Spiritual Identity (Ishta, Syllable, Paya)', labelHi: 'अध्याय 1: बीज संस्कार, मूल पहचान (इष्ट, नामाक्षर, पाया)' },
+      { id: 'ch2', labelEn: 'Ch 2: Raw Psychology & Hidden Turmoil (Persona vs. Midnight)', labelHi: 'अध्याय 2: स्वभाव का नग्न सच, आंतरिक द्वंद्व व मनोविश्लेषण' },
+      { id: 'ch3', labelEn: 'Ch 3: Active Life Phase — What Is Happening Right Now?', labelHi: 'अध्याय 3: वर्तमान जीवन अवस्था का एक्स-रे (अभी क्या घट रहा है?)' },
+      { id: 'ch4', labelEn: 'Ch 4: Career, Livelihood & Professional Zenith (Ages 20–45)', labelHi: 'अध्याय 4: कर्म, कार्यक्षेत्र व आजीविका का यथार्थ (Zenith Age)' },
+      { id: 'ch5', labelEn: 'Ch 5: Wealth Accumulation & Financial Leakage Traps', labelHi: 'अध्याय 5: धन, संचित कोष व वित्तीय रिसाव के गुप्त छिद्र' },
+      { id: 'ch6', labelEn: 'Ch 6: Marriage Reality, Intimacy & Sexuality Spectrum', labelHi: 'अध्याय 6: दांपत्य, प्रेम, काम-प्रकृति व पारिवारिक संबंध' },
+      { id: 'ch7', labelEn: 'Ch 7: Health Vulnerabilities, Impairment & Longevity', labelHi: 'अध्याय 7: देह संवेदनशीलता, अंग-दोष, स्वास्थ्य व आयु मर्यादा' },
+      { id: 'ch8', labelEn: 'Ch 8: 15 to 75 Years Epoch Chronology (12 Epochs)', labelHi: 'अध्याय 8: 15 से 75 वर्ष का कालक्रम घटना चक्र (12 पड़ाव)' },
+      { id: 'ch9', labelEn: 'Ch 9: Past Life Records & Future Incarnation Becoming', labelHi: 'अध्याय 9: पूर्व जन्म का पूर्ण वृत्तांत व आगामी गति' },
+      { id: 'ch10', labelEn: 'Ch 10: Lal Kitab Tewa, Ancestral Debts & Conduct Remedies', labelHi: 'अध्याय 10: लाल किताब टेवा, पैतृक ऋण व आचरण उपाय' },
+    ],
     kundli: [
       { id: 'overview', labelEn: 'Basic Details & Avakhada Chakra', labelHi: 'मूल विवरण, अवकहड़ा व घातक चक्र' },
       { id: 'charts', labelEn: 'Interactive Charts (D1 Lagna, D9 Navamsha, Chalit)', labelHi: 'जन्म चक्र (D1 लग्न, D9 नवांश, चलित व चंद्र)' },
@@ -141,7 +153,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       { id: 'houseWise', labelEn: '🏠 12 Bhavas Comprehensive Analysis (1st to 12th House)', labelHi: '🏠 द्वादश भाव विस्तृत फलादेश (तनु से मोक्ष तक)' },
       { id: 'bhriguNadi', labelEn: '✨ Bhrigu Nandi Nadi & BSP (29 Classical Age Rules)', labelHi: '✨ भृगु नंदी नाड़ी व BSP (29 नियम, कर्म फल व कालचक्र)' },
       { id: 'pastFuture', labelEn: '🔄 Past Life Karma (D60) & Future Incarnation', labelHi: '🔄 पूर्व जन्म (D60 षष्ट्यंश) व आगामी जन्म गति' },
-      { id: 'branchesNumerology', labelEn: '🌿 KP 4-Step, Lal Kitab, Numerology & Remedies', labelHi: '🌿 KP 4-स्टेप, लाल किताब, अंक ज्योतिष व उपाय' },
+      { id: 'kpLalKitabRemedies', labelEn: '🌿 KP 4-Step, Lal Kitab & Practical Remedies', labelHi: '🌿 KP 4-स्टेप, लाल किताब व आचरण उपाय' },
     ],
     dasha_transits: [
       { id: 'vimshottari', labelEn: 'Vimshottari Dasha 5 Levels (Maha, Antar, Pratyantar, Sookshma, Pran)', labelHi: 'विंशोत्तरी दशा (5 स्तर: महा, अंतर, प्रत्यंतर, सूक्ष्म, प्राण)' },
@@ -154,7 +166,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       { id: 'kp_4step', labelEn: 'KP 4-Step Theory & 12 Cusp Sub-Lords', labelHi: 'KP पद्धति, 4-स्टेप थ्योरी व 12 भाव उप-स्वामी' },
       { id: 'lal_kitab', labelEn: 'Fixed Aries Tewa (Pakka Ghar, Soya Ghar & Upay)', labelHi: 'नियत मेष लग्न टेवा, सोये घर व सरल उपाय' },
       { id: 'bhavartha_ratnakara', labelEn: '12 Lagnas Sign-Specific Functional Rules', labelHi: 'द्वादश लग्न कारक व मारक सूत्र' },
-      { id: 'numerology', labelEn: 'Numerology & Lo Shu 3x3 Grid Analysis (Driver, Conductor, Kua)', labelHi: 'अंक ज्योतिष व लो शु ग्रिड (मूलांक, भाग्यांक, कुआ संख्या)' },
       { id: 'doshas_remedies', labelEn: 'Doshas: Manglik (10 Cancellations), Kaal Sarp & Gemstones', labelHi: 'मांगलिक (10 परिहार), कालसर्प, पितृ दोष व रत्न/रुद्राक्ष' },
       { id: 'life_specialized', labelEn: 'Specialized Jyotish: Career, Wealth, Medical & Intimacy', labelHi: 'विशिष्ट ज्योतिष: करियर, धन, चिकित्सा व दांपत्य' },
     ],

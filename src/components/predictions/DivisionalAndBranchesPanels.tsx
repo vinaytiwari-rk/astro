@@ -125,10 +125,9 @@ export const DivisionalPredictionsPanel: React.FC<{
 };
 
 type BranchMode =
-  | 'numerology'
-  | 'life_branches'
   | 'kp'
   | 'lal_kitab'
+  | 'life_branches'
   | 'varshaphala_jaimini'
   | 'doshas_remedies';
 
@@ -140,12 +139,11 @@ export const BranchesAndNumerologyPanel: React.FC<{
 }> = ({ chart, chartStyle, report, requestedMode }) => {
   const { lang, t } = useLanguage();
   const isHi = lang === 'hi';
-  const [branchMode, setBranchMode] = useState<BranchMode>('numerology');
+  const [branchMode, setBranchMode] = useState<BranchMode>('kp');
 
   useEffect(() => {
     const id = requestedMode?.id;
     if (
-      id === 'numerology' ||
       id === 'life_branches' ||
       id === 'kp' ||
       id === 'lal_kitab' ||
@@ -181,22 +179,6 @@ export const BranchesAndNumerologyPanel: React.FC<{
       <div className="branch-grid-bar" role="tablist" aria-label="Astrology Branch Sections">
         <button
           type="button"
-          className={`branch-grid-btn ${branchMode === 'numerology' ? 'is-active' : ''}`}
-          onClick={() => setBranchMode('numerology')}
-        >
-          <Grid3x3 size={14} />
-          <span>{isHi ? 'अंक ज्योतिष व लो शु' : 'Numerology & Lo Shu'}</span>
-        </button>
-        <button
-          type="button"
-          className={`branch-grid-btn ${branchMode === 'life_branches' ? 'is-active' : ''}`}
-          onClick={() => setBranchMode('life_branches')}
-        >
-          <Compass size={14} />
-          <span>{isHi ? 'जीवन शाखाएँ (वित्त/रोग)' : 'Vedic Life Branches'}</span>
-        </button>
-        <button
-          type="button"
           className={`branch-grid-btn ${branchMode === 'kp' ? 'is-active' : ''}`}
           onClick={() => setBranchMode('kp')}
         >
@@ -210,6 +192,14 @@ export const BranchesAndNumerologyPanel: React.FC<{
         >
           <Flame size={14} />
           <span>{isHi ? 'लाल किताब (टेवा/उपाय)' : 'Lal Kitab System'}</span>
+        </button>
+        <button
+          type="button"
+          className={`branch-grid-btn ${branchMode === 'life_branches' ? 'is-active' : ''}`}
+          onClick={() => setBranchMode('life_branches')}
+        >
+          <Compass size={14} />
+          <span>{isHi ? 'जीवन शाखाएँ (वित्त/रोग)' : 'Vedic Life Branches'}</span>
         </button>
         <button
           type="button"
@@ -233,15 +223,12 @@ export const BranchesAndNumerologyPanel: React.FC<{
         </button>
       </div>
 
-      {/* 1. NUMEROLOGY & LO SHU GRID */}
-      {branchMode === 'numerology' && <NumerologyPanel chart={chart} />}
-
-      {/* 2. SPECIALIZED VEDIC LIFE BRANCHES */}
+      {/* 1. SPECIALIZED VEDIC LIFE BRANCHES */}
       {branchMode === 'life_branches' && (
         <SpecializedAstrologyView chart={chart} chartStyle={chartStyle} />
       )}
 
-      {/* 3. KP SYSTEM */}
+      {/* 2. KP SYSTEM */}
       {branchMode === 'kp' && (
         <>
           <section className="panel">

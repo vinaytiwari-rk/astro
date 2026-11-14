@@ -10,6 +10,7 @@ import { BirthEditorModal } from './components/BirthEditorModal';
 import { DashaView } from './components/DashaView';
 import { HomeDashboardView } from './components/HomeDashboardView';
 import { KundaliBookletModal } from './components/KundaliBookletModal';
+import { LifeDossierView } from './components/LifeDossierView';
 import { MatchMakingView } from './components/MatchMakingView';
 import { PrashnaView } from './components/PrashnaView';
 import { PredictionsView } from './components/PredictionsView';
@@ -75,9 +76,9 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation States
-  const [activeTab, setActiveTab] = useState<MainTab>('kundli');
-  const [activeSubTab, setActiveSubTab] = useState<string>('charts');
+  // Master Navigation States (Flagship: Split-Studio Life Dossier)
+  const [activeTab, setActiveTab] = useState<MainTab>('dossier');
+  const [activeSubTab, setActiveSubTab] = useState<string>('ch1');
 
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
   const [language, setLanguage] = useState<AppLanguage>(() => {
@@ -156,7 +157,10 @@ export function App() {
     let targetTab: MainTab = tab;
     let targetSub = subTab;
 
-    if (tab === 'basics') {
+    if (tab === 'dossier') {
+      targetTab = 'dossier';
+      targetSub = subTab || 'ch1';
+    } else if (tab === 'basics') {
       targetTab = 'kundli';
       targetSub = subTab === 'basic_details' ? 'overview' : 'charts';
     } else if (tab === 'vargas') {
@@ -182,7 +186,7 @@ export function App() {
       targetSub = subTab || 'daily_panchang';
     } else if (tab === 'astro_tools') {
       targetTab = 'branches';
-      targetSub = subTab || 'numerology';
+      targetSub = subTab || 'kp_4step';
     }
 
     setActiveTab(targetTab);
@@ -190,7 +194,8 @@ export function App() {
       setActiveSubTab(targetSub);
     } else {
       // Pick sensible defaults
-      if (targetTab === 'kundli') setActiveSubTab('overview');
+      if (targetTab === 'dossier') setActiveSubTab('ch1');
+      else if (targetTab === 'kundli') setActiveSubTab('overview');
       else if (targetTab === 'predictions') setActiveSubTab('twelve_planets');
       else if (targetTab === 'dasha_transits') setActiveSubTab('vimshottari');
       else if (targetTab === 'branches') setActiveSubTab('kp_4step');
@@ -221,7 +226,7 @@ export function App() {
   const handleQuickGenerateKundali = (input: BirthInput) => {
     setProfiles((prev) => (prev.some((p) => p.id === input.id) ? prev : [input, ...prev]));
     setActiveId(input.id);
-    navigateTo('kundli', 'overview');
+    navigateTo('dossier', 'ch1');
   };
 
   const handleQuickMatchKundali = (groom: BirthInput, bride: BirthInput) => {
@@ -366,6 +371,18 @@ export function App() {
         {/* Full-Width Workspace Shell */}
         <div className="workspace-shell">
           <main className="main-content">
+            {/* 0. Flagship Split-Studio Life Dossier */}
+            {normalizedPrimaryTab === 'dossier' && (
+              <LifeDossierView
+                chart={chart}
+                chartStyle={settings.chartStyle}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                onOpenMatchMaking={() => navigateTo('matchmaking')}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onOpenEditor={() => setEditorOpen(true)}
+              />
+            )}
+
             {/* 1. Home Dashboard */}
             {normalizedPrimaryTab === 'home' && (
               <HomeDashboardView
@@ -490,12 +507,6 @@ export function App() {
                       nested: 'varshaphala_jaimini',
                       nonce: routeRequest?.nonce ?? 0,
                     }}
-                  />
-                )}
-                {activeSubTab === 'numerology' && (
-                  <AstroSageToolsView
-                    chart={chart}
-                    requestedMode={{ id: 'numerology', nonce: routeRequest?.nonce ?? 0 }}
                   />
                 )}
                 {activeSubTab === 'doshas_remedies' && (

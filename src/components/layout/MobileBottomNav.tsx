@@ -33,11 +33,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     <nav className="pro-mobile-bottom-bar no-print" aria-label="Mobile Navigation">
       <button
         type="button"
-        className={`pro-mob-btn ${activeTab === 'home' ? 'is-active' : ''}`}
-        onClick={() => onNavigate('home')}
+        className={`pro-mob-btn ${activeTab === 'dossier' ? 'is-active' : ''}`}
+        onClick={() => onNavigate('dossier')}
       >
-        <Home size={19} />
-        <span className="pro-mob-label">{isHi ? 'होम' : 'Home'}</span>
+        <Sparkles size={19} />
+        <span className="pro-mob-label">{isHi ? 'जीवन आलेख' : 'Dossier'}</span>
       </button>
 
       <button

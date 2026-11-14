@@ -22,16 +22,16 @@ interface AstroSageToolsViewProps {
   requestedMode?: { id?: string; nonce: number };
 }
 
-type ToolMode = 'numerology' | 'rashifal' | 'baby_names' | 'gems_rudraksha';
+type ToolMode = 'rashifal' | 'baby_names' | 'gems_rudraksha';
 
 export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, requestedMode }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
-  const [mode, setMode] = useState<ToolMode>('numerology');
+  const [mode, setMode] = useState<ToolMode>('rashifal');
 
   useEffect(() => {
     const id = requestedMode?.id;
-    if (id === 'numerology' || id === 'rashifal' || id === 'baby_names' || id === 'gems_rudraksha') {
+    if (id === 'rashifal' || id === 'baby_names' || id === 'gems_rudraksha') {
       setMode(id);
     } else if (id === 'rashifal_tomorrow') {
       setMode('rashifal');
@@ -93,14 +93,6 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
         <div className="subtab-bar">
           <button
             type="button"
-            className={`subtab-btn branch-btn ${mode === 'numerology' ? 'is-active' : ''}`}
-            onClick={() => setMode('numerology')}
-          >
-            <Grid3x3 size={14} />
-            <span>{isHi ? 'अंक ज्योतिष व लो शू ग्रिड' : 'Numerology & Lo Shu Grid'}</span>
-          </button>
-          <button
-            type="button"
             className={`subtab-btn branch-btn ${mode === 'rashifal' ? 'is-active' : ''}`}
             onClick={() => setMode('rashifal')}
           >
@@ -130,10 +122,7 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
         <ParamayusLockBanner status={paramayus} />
       ) : (
         <>
-      {/* 1. NUMEROLOGY & LO SHU GRID */}
-      {mode === 'numerology' && <NumerologyPanel chart={chart} />}
-
-      {/* 2. RASHIFAL (DAILY / WEEKLY / MONTHLY / YEARLY) */}
+      {/* 1. RASHIFAL (DAILY / WEEKLY / MONTHLY / YEARLY) */}
       {mode === 'rashifal' && (
         <div className="view-stack">
           <section className="panel">

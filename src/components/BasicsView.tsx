@@ -75,7 +75,6 @@ export type WorkstationConsoleTool =
   | 'shadbala'
   | 'kp'
   | 'lalkitab'
-  | 'numerology'
   | 'remedies'
   | 'western'
   | 'transits'
@@ -635,7 +634,6 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
               <optgroup label={isHi ? '🎯 विशिष्ट एवं पाश्चात्य पद्धतियाँ' : '🎯 Advanced & Specialized Astrology Systems'}>
                 <option value="kp">🎯 {isHi ? 'के.पी. नक्षत्र पद्धति (12 भाव उप-स्वामी व 4-स्टेप)' : 'KP System (12 Cusp Sub-Lords & 4-Step Theory)'}</option>
                 <option value="lalkitab">📕 {isHi ? 'लाल किताब नियत मेष टेवा (सोये घर, ऋण व उपाय)' : 'Traditional Fixed Aries Tewa (Lal Kitab Soya Ghar & Upays)'}</option>
-                <option value="numerology">🔢 {isHi ? 'अंक ज्योतिष व लो शु 3×3 मैजिक ग्रिड (मूलांक/भाग्यांक)' : 'Numerology & Lo Shu 3×3 Grid (Driver, Conductor, Kua)'}</option>
                 <option value="remedies">💎 {isHi ? 'रत्न, रुद्राक्ष, मंत्र व दोष परिहार (मांगलिक, कालसर्प)' : 'Gemstones, Rudraksha, Mantras & Dosha Remedies'}</option>
                 <option value="western">🌌 {isHi ? 'पाश्चात्य सायन 360° सर्कुलर व्हील व दृष्टियां' : 'Western Tropical 360° Circular Wheel & Aspect Grid'}</option>
                 <option value="transits">🔄 {isHi ? 'वर्तमान गोचर व शनि साढ़े साती कालचक्र' : 'Live Planetary Transits (Gochar & Sade Sati)'}</option>
@@ -845,14 +843,6 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
             chart={chart}
             chartStyle={chartStyle}
             requestedRoute={{ subTab: 'branchesNumerology', nested: 'lal_kitab', nonce: Date.now() }}
-          />
-        )}
-
-        {/* TOOL: Numerology & Lo Shu 3×3 Grid */}
-        {consoleTool === 'numerology' && (
-          <AstroSageToolsView
-            chart={chart}
-            requestedMode={{ id: 'numerology', nonce: Date.now() }}
           />
         )}
 

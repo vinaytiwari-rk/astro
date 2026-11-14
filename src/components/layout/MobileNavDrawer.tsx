@@ -82,6 +82,19 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
+      titleEn: 'Flagship Life Dossier (10 Chapters)',
+      titleHi: 'गोपनीय जीवन आलेख (स्प्लिट-स्टूडियो)',
+      items: [
+        {
+          tab: 'dossier' as MainTab,
+          subTab: 'ch1',
+          labelEn: '🌟 Master Life Dossier & Split Kundali',
+          labelHi: '🌟 10-अध्यायी गोपनीय जीवन आलेख व कुंडली',
+          icon: <Sparkles size={16} />,
+        },
+      ],
+    },
+    {
       titleEn: 'Birth Chart & Calculations',
       titleHi: 'जन्म कुंडली व मूल गणना',
       items: [
@@ -242,13 +255,6 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
           labelEn: 'Bhavartha Ratnakara (12 Lagnas)',
           labelHi: 'भावार्थ रत्नाकर (12 लग्न सूत्र)',
           icon: <Scroll size={16} />,
-        },
-        {
-          tab: 'branches' as MainTab,
-          subTab: 'numerology',
-          labelEn: 'Numerology & Lo Shu Grid',
-          labelHi: 'अंक ज्योतिष व लो शु ग्रिड',
-          icon: <Grid size={16} />,
         },
         {
           tab: 'branches' as MainTab,

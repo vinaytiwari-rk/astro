@@ -1,4 +1,5 @@
 export type MainTab =
+  | 'dossier'
   | 'home'
   | 'kundli'
   | 'predictions'

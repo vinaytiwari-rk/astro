@@ -43,6 +43,14 @@ export interface PastLifeReading {
   howDiedEn: string;
   howDiedHi: string;
 
+  // Global Historical Civilization & Era
+  civilizationEn?: string;
+  civilizationHi?: string;
+  historicalEraEn?: string;
+  historicalEraHi?: string;
+  landscapeEn?: string;
+  landscapeHi?: string;
+
   // Deep Shashtiamsa & Classical Indicators
   shashtiamsaDeityEn: string;
   shashtiamsaDeityHi: string;
@@ -82,6 +90,14 @@ export interface FutureBecomingReading {
   nextBirthLokaHi: string;
   futureIncarnationProfileEn: string;
   futureIncarnationProfileHi: string;
+  futureContinentEn?: string;
+  futureContinentHi?: string;
+  futureCountryEn?: string;
+  futureCountryHi?: string;
+  futureMissionEn?: string;
+  futureMissionHi?: string;
+  futureYoniEn?: string;
+  futureYoniHi?: string;
   sadhanaToElevateEn: string;
   sadhanaToElevateHi: string;
   chartFactors: PastFutureChartFactor[];
@@ -413,22 +429,100 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
     lifeTypeHi = 'मनुष्य योनि';
   }
 
-  // 1c. Past Life Birth Place / Country
+  // 1c. Past Life Global Civilization & Geography (Across World Civilizations)
   let birthPlaceOrCountryEn = '';
   let birthPlaceOrCountryHi = '';
+  let civilizationEn = '';
+  let civilizationHi = '';
+  let historicalEraEn = '';
+  let historicalEraHi = '';
+  let landscapeEn = '';
+  let landscapeHi = '';
+
   const ketuElem = SIGNS[ketu.signIndex].element;
-  if (ketuElem === 'Water') {
-    birthPlaceOrCountryEn = 'Coastal Maritime Realm & Sacred River Basin (Ancient Gangetic Plains, Kalinga, Southern Indian Coast or Maritime Island Kingdom)';
-    birthPlaceOrCountryHi = 'समुद्रतटीय अथवा पवित्र नदी घाटी प्रदेश (प्राचीन गंगा तट, कलिंग, दक्षिण भारत का समृद्ध बंदरगाह अथवा द्वीप राज्य)';
+  const isBeneficDeity = d60LagnaDeity.nature === 'Benefic';
+
+  if (ketuElem === 'Fire') {
+    if (isBeneficDeity) {
+      civilizationEn = 'Classical Greco-Roman & Mediterranean Citadel Realm';
+      civilizationHi = 'शास्त्रीय ग्रीक-रोमन एवं भूमध्यसागरीय नगर सभ्यता';
+      birthPlaceOrCountryEn = 'Ancient Athens, Rome, Alexandria, or Magna Graecia (Sicily/Southern Italy)';
+      birthPlaceOrCountryHi = 'प्राचीन एथेंस, रोम, अलेक्जेंड्रिया अथवा मैग्ना ग्रेसिया (सिसिली व दक्षिण इटली)';
+      historicalEraEn = 'Classical Antiquity (c. 4th Century BCE – 2nd Century CE)';
+      historicalEraHi = 'शास्त्रीय प्राचीन कालखंड (लगभग 4थी शताब्दी ईसा पूर्व से 2री शताब्दी ईस्वी)';
+      landscapeEn = 'Sunlit Mediterranean coastal hills, marble temples, olive terraces & fortified stone citadels';
+      landscapeHi = 'भूमध्यसागरीय संगमरमरी नगर, जैतून के उपवन, धूप से चमकते समुद्री तट व पाषाण दुर्ग';
+    } else {
+      civilizationEn = 'Ancient Persian & Mesopotamian Imperial Realm';
+      civilizationHi = 'प्राचीन फारसी एवं मेसोपोटामियाई साम्राज्य';
+      birthPlaceOrCountryEn = 'Persepolis, Babylon, Susa, or Silk Road Citadel (Ancient Persia/Mesopotamia)';
+      birthPlaceOrCountryHi = 'पर्सेपोलिस, बेबीलोन, सूसा अथवा प्राचीन रेशम मार्ग दुर्ग (प्राचीन फारस/मेसोपोटामिया)';
+      historicalEraEn = 'Achaemenid & Classical Persian Era (c. 550 BCE – 220 CE)';
+      historicalEraHi = 'हख़ामनी एवं शास्त्रीय फारसी कालखंड (लगभग 550 ईसा पूर्व से 220 ईस्वी)';
+      landscapeEn = 'High mountain plateaus, oasis riverbanks, walled palace complexes & trade crossroads';
+      landscapeHi = 'विशाल पठार, मरुद्यान, प्राचीर युक्त भव्य राजप्रासाद एवं ऐतिहासिक व्यापारिक मार्ग';
+    }
   } else if (ketuElem === 'Earth') {
-    birthPlaceOrCountryEn = 'Fertile Agrarian Plains & Central Civilization (Magadha, Avadh, Malwa Plateau or Historical Central Heartland)';
-    birthPlaceOrCountryHi = 'उर्वर कृषि क्षेत्र अथवा केंद्रीय ऐतिहासिक नगर (मगध, अवध, मालवा का पठार अथवा मध्यदेशीय समृद्ध नगर)';
-  } else if (ketuElem === 'Fire') {
-    birthPlaceOrCountryEn = 'Sunlit Mountain Fortress & Royal Foothills (Rajasthan, Ujjayini, Gandhara, Takshashila or Northwestern Chieftain Realm)';
-    birthPlaceOrCountryHi = 'पर्वतीय दुर्ग, शौर्य भूमि अथवा पश्चिमोत्तर राज्य (राजस्थान, उज्जयिनी, तक्षशिला, सौराष्ट्र अथवा गांधार)';
+    if (isBeneficDeity) {
+      civilizationEn = 'Dynastic Imperial East Asian Civilization';
+      civilizationHi = 'शास्त्रीय पूर्वी एशियाई साम्राज्य (प्राचीन चीन/जापान)';
+      birthPlaceOrCountryEn = 'Imperial China (Han/Tang Dynasty, Chang’an) or Classical Japan (Heian Kyoto / Nara)';
+      birthPlaceOrCountryHi = 'प्राचीन चीन (हान अथवा तांग राजवंश, चांगआन) अथवा शास्त्रीय जापान (हेइयन क्योटो / नारा)';
+      historicalEraEn = 'Imperial Golden Epoch (c. 6th Century – 11th Century CE)';
+      historicalEraHi = 'स्वर्णिम राजवंशीय कालखंड (लगभग 6ठी से 11वीं शताब्दी ईस्वी)';
+      landscapeEn = 'Misty terraced river valleys, tranquil pagoda sanctuaries, bamboo forests & stone pavilions';
+      landscapeHi = 'धुंध भरी सीढ़ीदार घाटियां, शांत पगोडा परिसर, बांस के वन एवं कलात्मक प्रस्तर मंडप';
+    } else {
+      civilizationEn = 'Ancient Egyptian Nile Delta & Mediterranean Levant';
+      civilizationHi = 'प्राचीन मिस्र का नील डेल्टा एवं लेवांत सभ्यता';
+      birthPlaceOrCountryEn = 'Thebes, Memphis, Alexandria (Ancient Egypt) or Phoenician Maritime Coast (Byblos)';
+      birthPlaceOrCountryHi = 'थीब्स, मेम्फिस, अलेक्जेंड्रिया (प्राचीन मिस्र) अथवा फोनिशियन समुद्री तट (बिब्लोस)';
+      historicalEraEn = 'New Kingdom & Ptolemaic Dynastic Era (c. 1200 BCE – 100 BCE)';
+      historicalEraHi = 'नवीन साम्राज्य एवं टॉलेमी राजवंश काल (लगभग 1200 ईसा पूर्व से 100 ईसा पूर्व)';
+      landscapeEn = 'Fertile Nile silt basins, towering sandstone temple pylons & papyrus waterways';
+      landscapeHi = 'उर्वर नील नदी तट, बलुआ पत्थर के विशाल मंदिर एवं जलमार्ग';
+    }
+  } else if (ketuElem === 'Air') {
+    if (isBeneficDeity) {
+      civilizationEn = 'Medieval & Renaissance European Republic';
+      civilizationHi = 'मध्यकालीन एवं पुनर्जागरण यूरोपीय गणतंत्र';
+      birthPlaceOrCountryEn = 'Florence, Venice, Prague, or Free Guild Republic of Central Europe';
+      birthPlaceOrCountryHi = 'फ्लोरेंस, वेनिस, प्राग अथवा मध्य यूरोप के स्वतंत्र शिल्प व व्यापारिक नगर';
+      historicalEraEn = 'Late Medieval & High Renaissance (c. 13th Century – 16th Century CE)';
+      historicalEraHi = 'उत्तर मध्यकाल एवं पुनर्जागरण का स्वर्णिम युग (लगभग 13वीं से 16वीं शताब्दी ईस्वी)';
+      landscapeEn = 'Water canals, cobbled stone plazas, cathedral libraries, universities & artisan workshops';
+      landscapeHi = 'जलमार्ग, पत्थरों से पटे चौराहे, भव्य गिरजाघर, विश्वविद्यालय एवं उत्कृष्ट शिल्पशालाएं';
+    } else {
+      civilizationEn = 'Moorish Andalusia & Silk Road Metropolises';
+      civilizationHi = 'मूरिश अंदालुसिया अथवा रेशम मार्ग महानगर';
+      birthPlaceOrCountryEn = 'Cordoba, Granada (Moorish Spain), Samarkand or Damascus';
+      birthPlaceOrCountryHi = 'कॉर्डोबा, ग्रेनाडा (मूरिश स्पेन), समरकंद अथवा दमिश्क ज्ञान केंद्र';
+      historicalEraEn = 'Golden Age of Medieval Scholarly Trade (c. 8th Century – 13th Century CE)';
+      historicalEraHi = 'अंतरमहाद्वीपीय ज्ञान व व्यापार का स्वर्णिम युग (लगभग 8वीं से 13वीं शताब्दी ईस्वी)';
+      landscapeEn = 'Fountain courtyards, ceramic arcades, astronomical observatories & bustling bazaars';
+      landscapeHi = 'फव्वारों से सुसज्जित प्रांगण, वेधशालाएं, ज्ञान पुस्तकालय एवं मसाला बाजार';
+    }
   } else {
-    birthPlaceOrCountryEn = 'Bustling Scholarly Trade Metropolis (Varanasi, Kanchipuram, Pataliputra, Silk Road Commercial Hub or Mediterranean City)';
-    birthPlaceOrCountryHi = 'प्रसिद्ध व्यापारिक व शैक्षणिक महानगर (काशी, कांचीपुरम, पाटलिपुत्र अथवा प्राचीन व्यापारिक मार्ग का ज्ञान केंद्र)';
+    // Water Element
+    if (isBeneficDeity) {
+      civilizationEn = 'Sacred Himalayan & Gangetic Aryavarta Realm';
+      civilizationHi = 'पावन हिमालयी एवं आर्यावर्त तीर्थ क्षेत्र';
+      birthPlaceOrCountryEn = 'Kashi (Varanasi), Takshashila, Nalanda, or Sacred Himalayan Hermitage Valley';
+      birthPlaceOrCountryHi = 'काशी, प्रयागराज, तक्षशिला, नालंदा अथवा हिमालय की पावन तपोवन घाटी';
+      historicalEraEn = 'Classical Vedic & Upanishadic Golden Epoch';
+      historicalEraHi = 'शास्त्रीय वैदिक एवं उपनिषद कालीन स्वर्णिम काल';
+      landscapeEn = 'Sacred river ghats, tranquil tapovan forest hermitages, Vedic gurukuls & temple groves';
+      landscapeHi = 'पवित्र नदी तट, शांत तपोवन, गुरुकुल एवं प्राचीन ज्ञान-साधना केंद्र';
+    } else {
+      civilizationEn = 'Ancient Celtic Mystical Coastlines / Pre-Columbian Highlands';
+      civilizationHi = 'प्राचीन सेल्टिक समुद्रतटीय प्रदेश अथवा पूर्व-कोलंबियाई एंडीज साम्राज्य';
+      birthPlaceOrCountryEn = 'Incan Sacred Valley (Cuzco, Andes) or Ancient Celtic Isle of Britain/Ireland';
+      birthPlaceOrCountryHi = 'इंका साम्राज्य की पवित्र घाटी (कुज्को, एंडीज) अथवा प्राचीन सेल्टिक/आयरिश तटीय मठ';
+      historicalEraEn = 'Pre-Columbian / Early Medieval Era (c. 7th Century – 14th Century CE)';
+      historicalEraHi = 'पूर्व-कोलंबियाई एवं प्रारंभिक मध्ययुगीन कालखंड (लगभग 7वीं से 14वीं शताब्दी ईस्वी)';
+      landscapeEn = 'Misty ocean cliffs, stone megalith circles, cloud forests & mountain terraces';
+      landscapeHi = 'धुंध भरे समुद्री शिखर, पाषाण वृत्त, पर्वतीय सीढ़ीदार खेत एवं देवदार वन';
+    }
   }
 
   // 1d. Past Life Profession
@@ -699,6 +793,35 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
     },
   ];
 
+  let futureContinentEn = 'Northern Europe / Scandinavia';
+  let futureContinentHi = 'उत्तरी यूरोप (स्कैंडिनेविया / जर्मनी / स्विट्जरलैंड)';
+  let futureCountryEn = 'Sweden, Norway, or Switzerland (High Ethical, Cultured & Nature-Harmonious Realm)';
+  let futureCountryHi = 'स्वीडन, नॉर्वे अथवा स्विट्जरलैंड (शांतिपूर्ण, उन्नत एवं प्रकृति-सम्मत परिवेश)';
+  let futureYoniEn = 'Higher Human Intellectual & Spiritual Mentor';
+  let futureYoniHi = 'उच्च कुलीन विद्वान, मार्गदर्शक अथवा दार्शनिक मानव योनि';
+  let futureMissionEn = 'Advancing scientific philosophy, ecological balance & humanitarian ethics without material bondage';
+  let futureMissionHi = 'भौतिक बंधनों से मुक्त होकर वैज्ञानिक दर्शन, पर्यावरण संरक्षण व मानवतावादी मूल्यों का संवर्धन';
+
+  if (nextTier === 'High Spiritual / Liberation Focus') {
+    futureContinentEn = 'Celestial Subtle Loka / Sacred Himalayan Sanctuary';
+    futureContinentHi = 'दिव्य सूक्ष्म लोक अथवा पावन हिमालयी तपोभूमि';
+    futureCountryEn = 'Higher Subtle Plane (Siddhaloka / Tapoloka) or Sacred Himalayan Hermitage';
+    futureCountryHi = 'उच्च सूक्ष्म देवलोक (सिद्धलोक / तपोलोक) अथवा हिमालयी गुप्त आश्रम';
+    futureYoniEn = 'Illuminated Soul / Seva Bodhisattva / Jivanmukta';
+    futureYoniHi = 'मुक्त आत्मा / सेवा-परायण प्रबुद्ध साधक';
+    futureMissionEn = 'Guiding seeking souls toward supreme liberation and preserving primordial wisdom';
+    futureMissionHi = 'मुमुक्षु आत्माओं को मोक्ष का मार्ग दिखाना एवं सनातन विद्या का संरक्षण';
+  } else if (nextTier === 'Dharmic Leadership / Builder Return') {
+    futureContinentEn = 'North America or East Asia';
+    futureContinentHi = 'उत्तरी अमेरिका अथवा पूर्वी एशिया (जापान/दक्षिण कोरिया)';
+    futureCountryEn = 'Innovative Global Tech & Governance Hub (Pacific Rim / Northern America)';
+    futureCountryHi = 'उन्नत वैश्विक तकनीक व नीति-निर्माण केंद्र (प्रशांत तट अथवा उत्तर अमेरिका)';
+    futureYoniEn = 'Visionary Institutional Builder & Ethical Statesman';
+    futureYoniHi = 'दूरदर्शी संस्थान-निर्माता एवं लोक-कल्याणकारी नीति-निर्धारक';
+    futureMissionEn = 'Constructing enduring civic structures, ethical technology and collective prosperity';
+    futureMissionHi = 'लोक-कल्याणकारी संस्थाओं, नैतिक तकनीक व सामूहिक समृद्धि का निर्माण';
+  }
+
   return {
     pastLife: {
       headlineEn,
@@ -709,6 +832,12 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
       lifeTypeHi,
       birthPlaceOrCountryEn,
       birthPlaceOrCountryHi,
+      civilizationEn,
+      civilizationHi,
+      historicalEraEn,
+      historicalEraHi,
+      landscapeEn,
+      landscapeHi,
       professionEn,
       professionHi,
       characterEn,
@@ -761,6 +890,14 @@ export function computePastFutureLifeReading(chart: ChartData): PastFutureLifeRe
       nextBirthLokaHi: nextLokaHi,
       futureIncarnationProfileEn: futureIncEn,
       futureIncarnationProfileHi: futureIncHi,
+      futureContinentEn,
+      futureContinentHi,
+      futureCountryEn,
+      futureCountryHi,
+      futureMissionEn,
+      futureMissionHi,
+      futureYoniEn,
+      futureYoniHi,
       sadhanaToElevateEn,
       sadhanaToElevateHi,
       chartFactors: futureFactors,

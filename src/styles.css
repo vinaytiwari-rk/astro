@@ -4345,3 +4345,800 @@ body {
   font-family: var(--font-mono, monospace);
 }
 
+
+/* ==========================================================================
+   SPLIT-STUDIO LIFE DOSSIER STYLES (स्प्लिट-स्टूडियो गोपनीय जीवन आलेख)
+   ========================================================================== */
+.dossier-studio-container {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 12px 16px 40px;
+}
+
+.dossier-hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dossier-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.dossier-hero-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.dossier-hero-subtitle {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dossier-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Two-Column Split Layout */
+.dossier-split-layout {
+  display: grid;
+  grid-template-columns: 38% 62%;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .dossier-split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left Sticky Pane */
+.dossier-left-pane {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 4px;
+}
+
+@media (max-width: 1080px) {
+  .dossier-left-pane {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+.dossier-chart-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.dossier-chart-nav-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chart-pill-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.chart-pill-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.chart-pill-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.dossier-svg-wrapper {
+  margin: 0 auto;
+  max-width: 440px;
+}
+
+.dossier-chart-style-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.btn-tag {
+  padding: 3px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-tag.active {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* Left Table */
+.dossier-planets-card {
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.dossier-table {
+  font-size: 12px;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.dossier-table th {
+  padding: 6px 8px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+.dossier-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.planet-row:hover {
+  background: var(--bg-hover);
+}
+
+.row-selected {
+  background: var(--accent-soft) !important;
+}
+
+.ascendant-row {
+  background: var(--bg-subtle);
+  font-weight: 600;
+}
+
+.dignity-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.badge-good { background: var(--good-soft); color: var(--good); }
+.badge-bad { background: var(--bad-soft); color: var(--bad); }
+.badge-blue { background: var(--indigo-soft); color: var(--indigo); }
+.badge-neutral { background: var(--bg-subtle); color: var(--text-muted); }
+
+.table-legend-footer {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-size: 10.5px;
+}
+
+/* Right Pane: 10-Chapter Master Life Dossier */
+.dossier-right-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Sticky Chapter Navigation Bar */
+.dossier-chapter-nav-sticky {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.dossier-nav-scrollable {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+
+.dossier-nav-scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.chapter-nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 16px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.chapter-nav-chip:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.chapter-nav-chip .chip-num {
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--border);
+  color: var(--text);
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.dossier-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-icon-sm {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-sm:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* Chapters Wrapper */
+.dossier-chapters-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dossier-chapter-card {
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  scroll-margin-top: 72px;
+  transition: border-color 0.2s ease;
+}
+
+.dossier-chapter-card:hover {
+  border-color: var(--border-strong);
+}
+
+.chapter-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  user-select: none;
+}
+
+.chapter-index-pill {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Dignified, Light & Balanced Headings (User Request) */
+.chapter-main-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 6px 0;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.chapter-main-subtitle {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.chapter-header-action {
+  color: var(--text-muted);
+  padding: 4px;
+}
+
+.chapter-summary-quote {
+  margin: 16px 0 20px 0;
+  padding: 12px 18px;
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* ==========================================================================
+   CHAPTER 1: TOP SACRED SPIRITUAL IDENTITY CARD
+   ========================================================================== */
+.chapter-top-identity-block {
+  margin: 20px 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.identity-triad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 840px) {
+  .identity-triad-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.identity-card {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.identity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.identity-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+}
+
+.identity-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.identity-main-val {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.identity-mantra-box {
+  background: var(--bg-subtle);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border-left: 2px solid var(--accent);
+}
+
+.identity-mantra {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.identity-syllable-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.large-glyph {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.large-glyph-en {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.paya-silver { border-color: #94a3b8; }
+.paya-gold { border-color: #eab308; }
+.paya-copper { border-color: #b45309; }
+.paya-iron { border-color: #64748b; }
+
+.avakahada-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-subtle);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .avakahada-spec-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.spec-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Chapter Body Sections */
+.chapter-body-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.chapter-section-card {
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+
+.chapter-section-card:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.section-sub-heading {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.section-lead-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.section-paragraphs-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dossier-paragraph {
+  font-size: 14.5px;
+  line-height: 1.72;
+  color: var(--text);
+  margin: 0;
+  text-align: justify;
+}
+
+/* Classical Cause Callout Box */
+.astrological-cause-callout {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+}
+
+.cause-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.cause-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cause-text {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+
+.section-keypoints-list {
+  margin: 12px 0 0 0;
+  padding-left: 20px;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Career Verdicts, Relational Grid & Global Odyssey Widgets */
+.dossier-career-verdicts-box,
+.dossier-relational-matrix-box,
+.dossier-vulnerabilities-box,
+.dossier-global-odyssey-box {
+  margin: 18px 0 24px 0;
+  padding: 16px 20px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.career-verdicts-grid,
+.odyssey-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .career-verdicts-grid,
+  .odyssey-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.verdict-metric-card,
+.odyssey-card {
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-header,
+.odyssey-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metric-title,
+.odyssey-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.metric-large-pct {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.metric-sub-pct {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.chip-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--text);
+}
+
+/* 360° Relational Matrix Cards Grid */
+.box-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.relational-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.relational-pill-card {
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.1s ease;
+}
+
+.relational-pill-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.pill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.relation-name {
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+.pill-status {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+/* Vulnerability Strip */
+.vulnerability-strip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.vuln-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vuln-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Print Overrides */
+@media print {
+  .app-shell > header,
+  .dossier-hero-actions,
+  .dossier-chapter-nav-sticky,
+  .dossier-chart-nav-pills,
+  .dossier-chart-style-bar {
+    display: none !important;
+  }
+
+  .dossier-split-layout {
+    display: block !important;
+  }
+
+  .dossier-left-pane {
+    position: static !important;
+    max-height: none !important;
+    page-break-after: always;
+  }
+
+  .dossier-chapter-card {
+    page-break-inside: avoid;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    margin-bottom: 20px !important;
+  }
+}
