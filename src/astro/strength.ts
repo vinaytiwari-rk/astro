@@ -27,6 +27,15 @@ const NAISARGIKA_BALA: Record<SevenPlanetId, number> = {
   Saturn: 8.57,
 };
 
+/** Convert ecliptic longitude/latitude to geocentric ecliptic-of-date declination. */
+export function computeEclipticDeclinationDeg(longitudeDeg: number, latitudeDeg: number, obliquityDeg: number): number {
+  const lambda = (longitudeDeg * Math.PI) / 180;
+  const beta = (latitudeDeg * Math.PI) / 180;
+  const epsilon = (obliquityDeg * Math.PI) / 180;
+  const sinDeclination = Math.sin(beta) * Math.cos(epsilon) + Math.cos(beta) * Math.sin(epsilon) * Math.sin(lambda);
+  return (Math.asin(Math.max(-1, Math.min(1, sinDeclination))) * 180) / Math.PI;
+}
+
 const REQUIRED_RUPAS: Record<SevenPlanetId, number> = {
   Sun: 6.5,
   Moon: 6.0,
@@ -254,10 +263,9 @@ export function computeShadbala(params: {
 
     const varaHoraBala = (varaLord === pId ? 45 : 0) + (horaLord === pId ? 60 : 0);
 
-    // Ayana Bala from tropical declination approximation: sin(dec) = sin(obliq)*sin(tropLon)
-    const tropRad = (p.tropicalLongitude * Math.PI) / 180;
-    const oblRad = (obliquityDeg * Math.PI) / 180;
-    const declDeg = (Math.asin(Math.sin(oblRad) * Math.sin(tropRad)) * 180) / Math.PI;
+    // Ayana Bala uses the full ecliptic-to-equatorial declination transform,
+    // including the planet's ecliptic latitude (not just longitude).
+    const declDeg = computeEclipticDeclinationDeg(p.tropicalLongitude, p.latitude, obliquityDeg);
     const northFavored = pId === 'Sun' || pId === 'Mars' || pId === 'Jupiter' || pId === 'Venus';
     const southFavored = pId === 'Moon' || pId === 'Saturn';
     const ayanaBala =
