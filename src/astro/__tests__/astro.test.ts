@@ -83,9 +83,10 @@ import {
   getBirthBird,
 } from '../panchaPakshiAndKaksha';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
-import { DIVISIONAL_META, SEVEN_PLANETS } from '../constants';
+import { DIVISIONAL_META, SEVEN_PLANETS, SIGNS } from '../constants';
 import { formatDateDmy, parseDateInputToIso } from '../time';
 import { getDivisionalSignIndex } from '../vargas';
+import { computeEclipticDeclinationDeg } from '../strength';
 import {
   DEFAULT_SETTINGS,
   SAMPLE_CHARTS,
@@ -96,6 +97,24 @@ import {
 import * as Astronomy from 'astronomy-engine';
 
 describe('Jyotish Hora Astronomical & Vedic Engine', () => {
+  it('uses ecliptic latitude in declination and reports rashi varna separately from nakshatra yoni', () => {
+    const obliquity = 23.4393;
+    const lon = 120;
+    const beta = 5;
+    const actual = computeEclipticDeclinationDeg(lon, beta, obliquity);
+    const lambda = (lon * Math.PI) / 180;
+    const b = (beta * Math.PI) / 180;
+    const eps = (obliquity * Math.PI) / 180;
+    const expected = Math.asin(Math.sin(b) * Math.cos(eps) + Math.cos(b) * Math.sin(eps) * Math.sin(lambda)) * 180 / Math.PI;
+    expect(actual).toBeCloseTo(expected, 10);
+    expect(actual).not.toBeCloseTo(Math.asin(Math.sin(eps) * Math.sin(lambda)) * 180 / Math.PI, 3);
+
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const moon = chart.planets.find((p) => p.id === 'Moon')!;
+    expect(chart.panchang.nakshatra.varna).toBe(SIGNS[moon.signIndex].varna);
+    expect(chart.panchang.nakshatra.varna).not.toContain('(');
+  });
+
   it('computes accurate benchmark chart for Swami Vivekananda (1863-01-12)', () => {
     const vivek = SAMPLE_CHARTS[0];
     const chart = calculateChart(vivek, DEFAULT_SETTINGS);
