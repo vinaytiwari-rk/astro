@@ -74,8 +74,8 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
-      titleEn: 'Workstation Divisions (1 to 11)',
-      titleHi: 'वैदिक ज्योतिष वर्कस्टेशन (भाग 1 से 11)',
+      titleEn: 'Workstation Divisions (1 to 12)',
+      titleHi: 'वैदिक ज्योतिष वर्कस्टेशन (भाग 1 से 12)',
       items: WORKSTATION_DIVISIONS.map((div) => ({
         tab: 'workstation' as MainTab,
         subTab: String(div.divisionNumber),

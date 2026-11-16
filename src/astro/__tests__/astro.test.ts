@@ -75,6 +75,7 @@ import { inspectHypotheticalNakshatra } from '../predictions/planetInNakshatra';
 import { inspectHypotheticalPlanetInSign } from '../predictions/planetInSign';
 import { inspectCustomYuti } from '../predictions/yutiPredictions';
 import { computeTwelvePlanetsPredictions } from '../predictions/twelvePlanetsPredictions';
+import { computeSambhavitFalkathan } from '../predictions/sambhavitFalkathan';
 import { buildSpecializedAstrologySuite } from '../predictions/specialized';
 import {
   computeGocharaKakshas,
@@ -1141,5 +1142,67 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
 
     expect(twelveReport.activeConjunctionsSummaryEn.length).toBeGreaterThan(5);
     expect(twelveReport.activeConjunctionsSummaryHi.length).toBeGreaterThan(5);
+  });
+
+  it('computes Division 12 Sambhavit Falkathan holistic predictions across all 25 specific life dimensions', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const pred = computeSambhavitFalkathan(chart);
+
+    // 1. Naam Akshar
+    expect(pred.namakshar.primaryEn.length).toBeGreaterThan(0);
+    expect(pred.namakshar.primaryHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.namakshar.allPadasEn.length).toBe(4);
+
+    // 2. Ishta Devata & 3. Mukhya Graha
+    expect(pred.ishtaDevata.nameEn.length).toBeGreaterThan(3);
+    expect(pred.ishtaDevata.nameHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.ishtaDevata.mantra).toContain('ॐ');
+    expect(pred.mukhyaGraha.planetEn.length).toBeGreaterThan(2);
+
+    // 4. Father & 5. Mother
+    expect(pred.father.temperamentHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.father.professionEn.length).toBeGreaterThan(5);
+    expect(pred.mother.temperamentHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.mother.relationshipHi).toMatch(/[\u0900-\u097F]/);
+
+    // 6. Siblings
+    expect(pred.siblings.countProjectionEn.length).toBeGreaterThan(5);
+    expect(pred.siblings.birthOrderHi).toMatch(/[\u0900-\u097F]/);
+
+    // 7. Marriage & Spouse
+    expect(pred.marriage.timingAgeWindowEn.length).toBeGreaterThan(5);
+    expect(pred.marriage.spouseNatureHi).toMatch(/[\u0900-\u097F]/);
+
+    // 8. Children
+    expect(pred.children.conceptionModeEn.length).toBeGreaterThan(5);
+    expect(pred.children.progenyCountHi).toMatch(/[\u0900-\u097F]/);
+
+    // 9. Education & 10. Career
+    expect(pred.education.attainmentLevelEn.length).toBeGreaterThan(5);
+    expect(pred.education.suitableStreamsEn.length).toBeGreaterThan(0);
+    expect(pred.career.jobVsBusinessEn.length).toBeGreaterThan(5);
+    expect(pred.career.foreignTravelHi).toMatch(/[\u0900-\u097F]/);
+
+    // 11. Longevity, 12. Bandhana Yoga, 13. Surgery Yoga
+    expect(pred.longevity.categoryHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.bandhanaYoga.verdictEn.length).toBeGreaterThan(3);
+    expect(pred.surgeryYoga.riskLevelHi).toMatch(/[\u0900-\u097F]/);
+
+    // 14. Physical Marks, 15. Addictions, 16. Bed Pleasure
+    expect(pred.physicalMarks.locationsEn.length).toBeGreaterThan(0);
+    expect(pred.bedPleasure.shayanaSukhaHi).toMatch(/[\u0900-\u097F]/);
+
+    // 17. Friends, 18. Cautions, 19. Crisis Strategy, 20. Sports
+    expect(pred.friends.natureHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.cautions.hazardsEn.length).toBeGreaterThan(2);
+    expect(pred.crisisStrategy.rescueMantra).toContain('ॐ');
+    expect(pred.sports.preferencesHi.length).toBeGreaterThan(1);
+
+    // 21. Temperament, 22. Love Life, 23. Mental Health, 24. Health, 25. Wealth
+    expect(pred.temperament.traitSummaryHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.loveLife.romanceHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.mentalHealth.conditionHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.health.constitutionHi).toMatch(/[\u0900-\u097F]/);
+    expect(pred.wealth.statusHi).toMatch(/[\u0900-\u097F]/);
   });
 });

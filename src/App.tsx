@@ -59,7 +59,7 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation State - Exclusively Vedic Master Workstation (Divisions 1 to 11)
+  // Master Navigation State - Exclusively Vedic Master Workstation (Divisions 1 to 12)
   const [activeTab, setActiveTab] = useState<MainTab>('workstation');
   const [activeSubTab, setActiveSubTab] = useState<string>('1');
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
@@ -123,13 +123,13 @@ export function App() {
     [activeInput, settings]
   );
 
-  // Central Navigation Dispatcher - All routes map to Vedic Workstation Divisions 1 to 11
+  // Central Navigation Dispatcher - All routes map to Vedic Workstation Divisions 1 to 12
   const navigateTo = (tab: MainTab | string, subTab?: string, nested?: string) => {
     let target = subTab || tab;
 
-    // Check if target is already a division number 1..11
+    // Check if target is already a division number 1..12
     const targetNum = parseInt(target, 10);
-    if (!isNaN(targetNum) && targetNum >= 1 && targetNum <= 11) {
+    if (!isNaN(targetNum) && targetNum >= 1 && targetNum <= 12) {
       target = String(targetNum);
     } else if (
       target === 'home' ||
@@ -238,6 +238,14 @@ export function App() {
       target === 'div_11_panchang_rashifal'
     ) {
       target = '11';
+    } else if (
+      target === 'sambhavit_falkathan' ||
+      target === 'falkathan' ||
+      target === 'probable_predictions' ||
+      target === 'falan' ||
+      target === 'div_12_sambhavit_falkathan'
+    ) {
+      target = '12';
     }
 
     setActiveTab('workstation');

@@ -178,7 +178,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           <div className="dropdown-field-item" style={{ width: '100%' }}>
             <label className="dropdown-field-label">
               <Compass size={14} />
-              <span>{isHi ? 'वर्कस्टेशन भाग चुनें (भाग 1 से 11):' : 'Select Workstation Division (1 to 11):'}</span>
+              <span>{isHi ? 'वर्कस्टेशन भाग चुनें (भाग 1 से 12):' : 'Select Workstation Division (1 to 12):'}</span>
             </label>
             <select
               aria-label="Select Workstation Division"
