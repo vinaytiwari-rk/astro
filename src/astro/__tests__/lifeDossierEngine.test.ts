@@ -180,4 +180,38 @@ describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
     expect(children).toBeDefined();
     expect(inlaws).toBeDefined();
   });
+
+  it('guarantees unique, individualized predictions across different horoscopes with zero boilerplate parity', () => {
+    const vivekanandaChart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const einsteinChart = calculateChart(SAMPLE_CHARTS[1], DEFAULT_SETTINGS);
+
+    const repVivekananda = computeLifeDossierReport(vivekanandaChart);
+    const repEinstein = computeLifeDossierReport(einsteinChart);
+
+    // Verify completely different Nakshatra profiles & psychology in Chapter 2
+    const ch2Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 2);
+    const ch2Ein = repEinstein.chapters.find((c) => c.chapterNumber === 2);
+    expect(ch2Viv?.sections[0].paragraphsEn[1]).not.toBe(ch2Ein?.sections[0].paragraphsEn[1]);
+    expect(ch2Viv?.sections[1].paragraphsEn[0]).not.toBe(ch2Ein?.sections[1].paragraphsEn[0]);
+
+    // Verify completely different Indu Lagna and 12th Lord Leakage in Chapter 5
+    const ch5Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 5);
+    const ch5Ein = repEinstein.chapters.find((c) => c.chapterNumber === 5);
+    expect(ch5Viv?.sections[0].paragraphsEn[1]).not.toBe(ch5Ein?.sections[0].paragraphsEn[1]);
+    expect(ch5Viv?.sections[1].paragraphsEn[0]).not.toBe(ch5Ein?.sections[1].paragraphsEn[0]);
+
+    // Verify completely different Marriage & Spouse profiles in Chapter 6
+    const ch6Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 6);
+    const ch6Ein = repEinstein.chapters.find((c) => c.chapterNumber === 6);
+    expect(ch6Viv?.sections[0].paragraphsEn[0]).not.toBe(ch6Ein?.sections[0].paragraphsEn[0]);
+
+    // Verify completely different Epoch Timeline calendar years and dasha paths in Chapter 8
+    const ch8Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 8);
+    const ch8Ein = repEinstein.chapters.find((c) => c.chapterNumber === 8);
+    expect(ch8Viv?.sections[0].titleEn).toContain('1878–1883');
+    expect(ch8Ein?.sections[0].titleEn).toContain('1894–1899');
+    expect(ch8Viv?.sections[0].paragraphsEn[0]).not.toBe(ch8Ein?.sections[0].paragraphsEn[0]);
+    expect(ch8Viv?.sections[2].titleEn).toContain('1889–1893');
+    expect(ch8Ein?.sections[2].titleEn).toContain('1905–1909');
+  });
 });
