@@ -178,7 +178,7 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
               style={{ flex: 1, minHeight: '34px', fontWeight: 600 }}
             >
               <option value="all">
-                {isHi ? '🌟 सभी 12 ग्रह विहंगावलोकन (All 12 Planets Overview)' : '🌟 All 12 Planets Overview'}
+                {isHi ? 'सभी 12 ग्रह विहंगावलोकन (All 12 Planets Overview)' : 'All 12 Planets Overview'}
               </option>
               <optgroup label={isHi ? '९ वैदिक ग्रह (9 Vedic Grahas)' : '9 Vedic Grahas'}>
                 {report.planets

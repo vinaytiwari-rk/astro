@@ -13,7 +13,7 @@ import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
-import { WORKSTATION_PAGES } from '../VedicMasterWorkstation';
+import { WORKSTATION_DIVISIONS } from '../VedicMasterWorkstation';
 
 interface DropdownNavHeaderProps {
   activeTab: MainTab;
@@ -172,24 +172,24 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         </div>
       </div>
 
-      {/* Row 2: Workstation Menu Dropdown */}
+      {/* Row 2: Workstation Division Dropdown (No Emojis) */}
       <div className="dropdown-nav-control-bar">
-        <div className="dropdown-control-wrapper" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+        <div className="dropdown-control-wrapper" style={{ width: '100%', maxWidth: '850px', margin: '0 auto' }}>
           <div className="dropdown-field-item" style={{ width: '100%' }}>
             <label className="dropdown-field-label">
               <Compass size={14} />
-              <span>{isHi ? 'वर्कस्टेशन पेज चुनें (1 से 38 तक):' : 'Select Workstation Page (1 to 38):'}</span>
+              <span>{isHi ? 'वर्कस्टेशन भाग चुनें (भाग 1 से 11):' : 'Select Workstation Division (1 to 11):'}</span>
             </label>
             <select
-              aria-label="Select Workstation Page"
+              aria-label="Select Workstation Division"
               className="dropdown-master-select"
               value={activeSubTab || '1'}
               onChange={(e) => onSelectSubTab(e.target.value)}
               style={{ fontSize: '13.5px', fontWeight: 600 }}
             >
-              {WORKSTATION_PAGES.map((pg) => (
-                <option key={pg.pageNumber} value={String(pg.pageNumber)}>
-                  {pg.icon} {isHi ? pg.labelHi : pg.labelEn}
+              {WORKSTATION_DIVISIONS.map((div) => (
+                <option key={div.divisionNumber} value={String(div.divisionNumber)}>
+                  {isHi ? div.labelHi : div.labelEn}
                 </option>
               ))}
             </select>

@@ -367,14 +367,14 @@ export const BhriguNadiPanel: React.FC<BhriguNadiPanelProps> = ({ report, chart 
               }}
             >
               <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div className="muted small-text">🔱 {isHi ? 'अनुशंसित ज्योतिर्लिंग तीर्थ' : 'Recommended Jyotirlinga Sanctuary'}</div>
+                <div className="muted small-text">{isHi ? 'अनुशंसित ज्योतिर्लिंग तीर्थ' : 'Recommended Jyotirlinga Sanctuary'}</div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '14px', color: 'var(--accent)' }}>
                   {isHi ? fullNadi.shivaNadi.recommendedJyotirlingaHi : fullNadi.shivaNadi.recommendedJyotirlingaEn}
                 </div>
               </div>
 
               <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div className="muted small-text">🌿 {isHi ? 'शिव नाड़ी परिहार व सेवा' : 'Shiva Nadi Karmic Remediation'}</div>
+                <div className="muted small-text">{isHi ? 'शिव नाड़ी परिहार व सेवा' : 'Shiva Nadi Karmic Remediation'}</div>
                 <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? fullNadi.shivaNadi.shivaPariharaHi : fullNadi.shivaNadi.shivaPariharaEn}
                 </div>
@@ -409,21 +409,21 @@ export const BhriguNadiPanel: React.FC<BhriguNadiPanelProps> = ({ report, chart 
               }}
             >
               <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div className="muted small-text">🌱 {isHi ? 'जीव कारक (गुरु)' : 'Jeeva Karaka (Jupiter)'}</div>
+                <div className="muted small-text">{isHi ? 'जीव कारक (गुरु)' : 'Jeeva Karaka (Jupiter)'}</div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                   {isHi ? fullNadi.jeevaSynthesis.jeevaPlacementHi : fullNadi.jeevaSynthesis.jeevaPlacementEn}
                 </div>
               </div>
 
               <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div className="muted small-text">⚖️ {isHi ? 'कर्म कारक (शनि)' : 'Karma Karaka (Saturn)'}</div>
+                <div className="muted small-text">{isHi ? 'कर्म कारक (शनि)' : 'Karma Karaka (Saturn)'}</div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                   {isHi ? fullNadi.jeevaSynthesis.karmaPlacementHi : fullNadi.jeevaSynthesis.karmaPlacementEn}
                 </div>
               </div>
 
               <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div className="muted small-text">🎯 {isHi ? 'भृगु बिंदु (Bhrigu Bindu)' : 'Bhrigu Bindu (Destiny Focus)'}</div>
+                <div className="muted small-text">{isHi ? 'भृगु बिंदु (Bhrigu Bindu)' : 'Bhrigu Bindu (Destiny Focus)'}</div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: '#10b981' }}>
                   {isHi ? fullNadi.bhriguBinduSignHi : fullNadi.bhriguBinduSignEn} ({fullNadi.bhriguBinduDegree}°)
                 </div>

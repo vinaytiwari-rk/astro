@@ -175,7 +175,7 @@ export const SpecialSensitivitiesView: React.FC<SpecialSensitivitiesViewProps> =
             }}
           >
             <div style={{ background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)' }}>
-              <div className="muted small-text">🌟 {isHi ? 'योगी ग्रह (Yogi Graha)' : 'Yogi Planet'}</div>
+              <div className="muted small-text">{isHi ? 'योगी ग्रह (Yogi Graha)' : 'Yogi Planet'}</div>
               <strong style={{ fontSize: '14px', color: 'var(--accent)' }}>{trPlanet(sensitiveReport.yogiPlanetEn, lang)}</strong>
               <div className="muted small-text">
                 {isHi ? 'सहयोगी:' : 'Saha Yogi:'} <strong>{trPlanet(sensitiveReport.sahaYogiPlanetEn, lang)}</strong>
@@ -183,25 +183,25 @@ export const SpecialSensitivitiesView: React.FC<SpecialSensitivitiesViewProps> =
             </div>
 
             <div style={{ background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)' }}>
-              <div className="muted small-text">⚠️ {isHi ? 'अवयोगी ग्रह (Ava Yogi)' : 'Ava Yogi Planet'}</div>
+              <div className="muted small-text">{isHi ? 'अवयोगी ग्रह (Ava Yogi)' : 'Ava Yogi Planet'}</div>
               <strong style={{ fontSize: '14px', color: '#ef4444' }}>{trPlanet(sensitiveReport.avaYogiPlanetEn, lang)}</strong>
               <div className="muted small-text">{isHi ? 'बाधा कारक' : 'Obstacle catalyst'}</div>
             </div>
 
             <div style={{ background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)' }}>
-              <div className="muted small-text">⚔️ {isHi ? '22वां द्रेष्काण स्वामी (ख्रेश)' : '22nd Drekkana Lord (Kharesh)'}</div>
+              <div className="muted small-text">{isHi ? '22वां द्रेष्काण स्वामी (ख्रेश)' : '22nd Drekkana Lord (Kharesh)'}</div>
               <strong style={{ fontSize: '14px' }}>{trPlanet(sensitiveReport.twentySecondDrekkanaLordEn, lang)}</strong>
               <div className="muted small-text">{sensitiveReport.twentySecondDrekkanaNature}</div>
             </div>
 
             <div style={{ background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)' }}>
-              <div className="muted small-text">🎯 {isHi ? '64वां नवांश स्वामी (ख्रेश)' : '64th Navamsha Lord (Kharesh)'}</div>
+              <div className="muted small-text">{isHi ? '64वां नवांश स्वामी (ख्रेश)' : '64th Navamsha Lord (Kharesh)'}</div>
               <strong style={{ fontSize: '14px' }}>{trPlanet(sensitiveReport.sixtyFourthNavamshaLordEn, lang)}</strong>
               <div className="muted small-text">{isHi ? 'चंद्र नवांश से चतुर्थ' : '4th in D9 from Moon'}</div>
             </div>
 
             <div style={{ background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)' }}>
-              <div className="muted small-text">🔥 {isHi ? 'दग्ध राशियाँ (Zero Signs)' : 'Dagdha Rashis (Zero Signs)'}</div>
+              <div className="muted small-text">{isHi ? 'दग्ध राशियाँ (Zero Signs)' : 'Dagdha Rashis (Zero Signs)'}</div>
               <strong style={{ fontSize: '14px' }}>
                 {sensitiveReport.dagdhaRashisEn.length > 0
                   ? isHi

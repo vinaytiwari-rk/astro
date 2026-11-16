@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { computeAyanamsaDeg } from '../ephemeris';
-import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
+import { computeTribhagiDasha, expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
 import { computeFullLalKitabReport, getLalKitabVarshaHouse } from '../lalKitabExtended';
 import { computeAshtakoota } from '../matchmaking';
@@ -177,6 +177,17 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(activeAtBirth.length).toBe(3);
     expect(activeAtBirth[0].startMs).toBeLessThanOrEqual(chart.utcMs);
     expect(activeAtBirth[0].endMs).toBeGreaterThan(chart.utcMs);
+
+    // Parashari Tribhagi Dasha (80-year cycle with 2/3 ratio)
+    const moonLon = chart.planets.find((p) => p.id === 'Moon')!.longitude;
+    const tb = computeTribhagiDasha(moonLon, chart.utcMs);
+    expect(tb.length).toBe(9);
+    for (let i = 0; i < tb.length - 1; i++) {
+      expect(Math.abs(tb[i].endMs - tb[i + 1].startMs)).toBeLessThan(2);
+    }
+    expect(tb[0].children?.length).toBe(9);
+    const tbTotalYears = tb.reduce((acc, p) => acc + p.durationDays, 0) / 365.25;
+    expect(tbTotalYears).toBeCloseTo(80, 1);
 
     // Ashtakavarga exact Parashari bindu sums
     expect(chart.ashtakavarga.totalBindus).toBe(337);

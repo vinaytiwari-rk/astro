@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Compass, FileText, Menu, Scroll } from 'lucide-react';
+import { Calendar, Clock, Compass, FileText, Menu, Scroll, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
 
@@ -19,9 +19,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   const isHi = lang === 'hi';
 
   const isBasics = !activeSubTab || activeSubTab === '1' || activeSubTab === 'sarini';
-  const isD1 = activeSubTab === '2' || activeSubTab === 'd1' || activeSubTab === 'charts_tables';
-  const isDasha = activeSubTab === '31' || activeSubTab === 'dasha';
-  const isGochar = activeSubTab === '30' || activeSubTab === 'gochar';
+  const isCore = activeSubTab === '2' || activeSubTab === 'd1' || activeSubTab === 'charts_tables';
+  const isDasha = activeSubTab === '6' || activeSubTab === 'dasha';
+  const isPred = activeSubTab === '8' || activeSubTab === 'predictions';
 
   return (
     <nav className="pro-mobile-bottom-bar no-print" aria-label="Mobile Navigation">
@@ -36,29 +36,29 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
       <button
         type="button"
-        className={`pro-mob-btn ${isD1 ? 'is-active' : ''}`}
+        className={`pro-mob-btn ${isCore ? 'is-active' : ''}`}
         onClick={() => onNavigate('workstation', '2')}
       >
         <Scroll size={18} />
-        <span className="pro-mob-label">{isHi ? 'D-1 लग्न' : 'D-1 Lagna'}</span>
+        <span className="pro-mob-label">{isHi ? 'मुख्य चक्र' : 'Core Charts'}</span>
       </button>
 
       <button
         type="button"
         className={`pro-mob-btn ${isDasha ? 'is-active' : ''}`}
-        onClick={() => onNavigate('workstation', '31')}
+        onClick={() => onNavigate('workstation', '6')}
       >
         <Clock size={18} />
-        <span className="pro-mob-label">{isHi ? 'दशा' : 'Dasha'}</span>
+        <span className="pro-mob-label">{isHi ? 'दशा' : 'Dashas'}</span>
       </button>
 
       <button
         type="button"
-        className={`pro-mob-btn ${isGochar ? 'is-active' : ''}`}
-        onClick={() => onNavigate('workstation', '30')}
+        className={`pro-mob-btn ${isPred ? 'is-active' : ''}`}
+        onClick={() => onNavigate('workstation', '8')}
       >
-        <Compass size={18} />
-        <span className="pro-mob-label">{isHi ? 'गोचर' : 'Gochar'}</span>
+        <Sparkles size={18} />
+        <span className="pro-mob-label">{isHi ? 'फलकथन' : 'Predictions'}</span>
       </button>
 
       <button
@@ -68,7 +68,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         aria-label="Open Full Menu"
       >
         <Menu size={18} />
-        <span className="pro-mob-label">{isHi ? '38 पेज' : '38 Pages'}</span>
+        <span className="pro-mob-label">{isHi ? '11 भाग' : '11 Parts'}</span>
       </button>
     </nav>
   );

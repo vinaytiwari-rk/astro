@@ -301,7 +301,7 @@ export const InlineCityAutocomplete: React.FC<InlineCityAutocompleteProps> = ({
                     : 'Searching worldwide database...'
                   : lang === 'hi'
                     ? 'कोई परिणाम नहीं मिला — नाम की स्पेलिंग जांचें या जीपीएस दबाएँ'
-                    : 'No direct match — check spelling or tap 📍 GPS'}
+                    : 'No direct match — check spelling or tap GPS'}
               </div>
             ) : (
               results.map((c, idx) => (

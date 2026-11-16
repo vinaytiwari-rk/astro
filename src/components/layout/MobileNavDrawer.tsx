@@ -25,7 +25,7 @@ import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
-import { WORKSTATION_PAGES } from '../VedicMasterWorkstation';
+import { WORKSTATION_DIVISIONS } from '../VedicMasterWorkstation';
 
 interface MobileNavDrawerProps {
   open: boolean;
@@ -74,69 +74,14 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
-      titleEn: '📋 Basic Details',
-      titleHi: '📋 मूल विवरण व ज्योतिष सारिणी',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'basics').map((p) => ({
+      titleEn: 'Workstation Divisions (1 to 11)',
+      titleHi: 'वैदिक ज्योतिष वर्कस्टेशन (भाग 1 से 11)',
+      items: WORKSTATION_DIVISIONS.map((div) => ({
         tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
-      })),
-    },
-    {
-      titleEn: '🏛️ Kundali & All Vargas (D1 to D360 Placement + Predictions)',
-      titleHi: '🏛️ लग्न व समस्त वर्ग चक्र (D1 से D360 गणना व फलकथन)',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'vargas').map((p) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
-      })),
-    },
-    {
-      titleEn: '⏳ Dasha, Gochar & Vedic Chakras',
-      titleHi: '⏳ दशा, गोचर व वैदिक चक्र (गणना व फल)',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'gochar' || p.category === 'dasha' || p.category === 'chakras').map((p) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
-      })),
-    },
-    {
-      titleEn: '☀️ Varshphal, KP & Lal Kitab',
-      titleHi: '☀️ वर्षफल, के.पी. व लाल किताब प्रणाली',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'annual' || p.category === 'systems').map((p) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
-      })),
-    },
-    {
-      titleEn: '💍 Match Making & Shastric Remedies',
-      titleHi: '💍 कुंडली मिलान व सम्पूर्ण वैदिक उपाय',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'matchmaking' || p.category === 'remedies').map((p) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
-      })),
-    },
-    {
-      titleEn: '📅 Daily Drik Panchang & Muhurta',
-      titleHi: '📅 दैनिक पंचांग व मुहूर्त (अंतिम भाग)',
-      items: WORKSTATION_PAGES.filter((p) => p.category === 'panchang').map((p) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(p.pageNumber),
-        labelEn: p.labelEn,
-        labelHi: p.labelHi,
-        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+        subTab: String(div.divisionNumber),
+        labelEn: div.labelEn,
+        labelHi: div.labelHi,
+        icon: <span style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)' }}>#{div.divisionNumber}</span>,
       })),
     },
   ];

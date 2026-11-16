@@ -59,9 +59,9 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation State - Exclusively Vedic Master Workstation
+  // Master Navigation State - Exclusively Vedic Master Workstation (Divisions 1 to 11)
   const [activeTab, setActiveTab] = useState<MainTab>('workstation');
-  const [activeSubTab, setActiveSubTab] = useState<string>('sarini');
+  const [activeSubTab, setActiveSubTab] = useState<string>('1');
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
 
   const [language, setLanguage] = useState<'en' | 'hi'>(() => {
@@ -123,85 +123,129 @@ export function App() {
     [activeInput, settings]
   );
 
-  // Central Navigation Dispatcher - All routes map to Vedic Workstation Menus
+  // Central Navigation Dispatcher - All routes map to Vedic Workstation Divisions 1 to 11
   const navigateTo = (tab: MainTab | string, subTab?: string, nested?: string) => {
-    let targetMenu = subTab || tab;
+    let target = subTab || tab;
 
-    // Normalize legacy tabs to corresponding workstation menus
-    if (
-      targetMenu === 'home' ||
-      targetMenu === 'overview' ||
-      targetMenu === 'basics' ||
-      targetMenu === 'sarini'
-    ) {
-      targetMenu = 'sarini';
+    // Check if target is already a division number 1..11
+    const targetNum = parseInt(target, 10);
+    if (!isNaN(targetNum) && targetNum >= 1 && targetNum <= 11) {
+      target = String(targetNum);
     } else if (
-      targetMenu === 'kundli' ||
-      targetMenu === 'vargas' ||
-      targetMenu === 'strength' ||
-      targetMenu === 'ashtakavarga' ||
-      targetMenu === 'charts' ||
-      targetMenu === 'charts_tables'
+      target === 'home' ||
+      target === 'overview' ||
+      target === 'basics' ||
+      target === 'sarini' ||
+      target === 'div_1_basics'
     ) {
-      targetMenu = 'charts_tables';
+      target = '1';
     } else if (
-      targetMenu === 'dasha' ||
-      targetMenu === 'dasha_transits' ||
-      targetMenu === 'transits' ||
-      targetMenu === 'live_transits' ||
-      targetMenu === 'vimshottari' ||
-      targetMenu === 'yogini'
+      target === 'core_charts' ||
+      target === 'd1' ||
+      target === 'chalit' ||
+      target === 'chandra' ||
+      target === 'calculations' ||
+      target === 'div_2_core_charts'
     ) {
-      targetMenu = 'dasha';
-    } else if (targetMenu === 'varshphal' || targetMenu === 'varshaphala') {
-      targetMenu = 'varshphal';
+      target = '2';
     } else if (
-      targetMenu === 'chakras' ||
-      targetMenu === 'sudarshan' ||
-      targetMenu === 'sarvatobhadra' ||
-      targetMenu === 'kota' ||
-      targetMenu === 'kurma'
+      target === 'vargas' ||
+      target === 'all_kundalis' ||
+      target === 'all_vargas' ||
+      target === 'd9' ||
+      target === 'd60' ||
+      target === 'upagrahas' ||
+      target === 'div_3_all_vargas_sensitive'
     ) {
-      targetMenu = 'chakras';
-    } else if (targetMenu === 'yogas' || targetMenu === 'doshas' || targetMenu === 'yogas_doshas') {
-      targetMenu = 'yogas_doshas';
-    } else if (targetMenu === 'navamsha' || targetMenu === 'd9') {
-      targetMenu = 'navamsha';
-    } else if (targetMenu === 'kp' || targetMenu === 'kp_system' || targetMenu === 'branches') {
-      targetMenu = 'kp_system';
-    } else if (targetMenu === 'lal_kitab') {
-      targetMenu = 'lal_kitab';
+      target = '3';
     } else if (
-      targetMenu === 'predictions' ||
-      targetMenu === 'dossier' ||
-      targetMenu === 'twelve_planets'
+      target === 'strength' ||
+      target === 'shadbala' ||
+      target === 'sav' ||
+      target === 'bav' ||
+      target === 'grahbala' ||
+      target === 'div_4_strengths_balas'
     ) {
-      targetMenu = 'predictions';
-    } else if (targetMenu === 'past_future' || targetMenu === 'd60') {
-      targetMenu = 'past_future';
-    } else if (targetMenu === 'match' || targetMenu === 'matchmaking' || targetMenu === 'ashtakoota') {
-      targetMenu = 'matchmaking';
+      target = '4';
     } else if (
-      targetMenu === 'remedies' ||
-      targetMenu === 'doshas_remedies' ||
-      targetMenu === 'gems'
+      target === 'chakras' ||
+      target === 'sudarshan' ||
+      target === 'sarvatobhadra' ||
+      target === 'kota' ||
+      target === 'kurma' ||
+      target === 'tables' ||
+      target === 'div_5_special_chakras_tables'
     ) {
-      targetMenu = 'remedies';
+      target = '5';
     } else if (
-      targetMenu === 'tools' ||
-      targetMenu === 'panchang' ||
-      targetMenu === 'panchang_muhurta' ||
-      targetMenu === 'daily_panchang'
+      target === 'dasha' ||
+      target === 'dasha_transits' ||
+      target === 'vimshottari' ||
+      target === 'tribhagi' ||
+      target === 'yogini' ||
+      target === 'char' ||
+      target === 'div_6_all_dashas'
     ) {
-      targetMenu = 'panchang';
+      target = '6';
+    } else if (
+      target === 'gochar' ||
+      target === 'transits' ||
+      target === 'live_transits' ||
+      target === 'sade_sati' ||
+      target === 'div_7_gochar_transits'
+    ) {
+      target = '7';
+    } else if (
+      target === 'predictions' ||
+      target === 'dossier' ||
+      target === 'remedies' ||
+      target === 'doshas' ||
+      target === 'yuti' ||
+      target === 'house_wise' ||
+      target === 'planet_wise' ||
+      target === 'bhavesha' ||
+      target === 'bhavat_bhavam' ||
+      target === 'div_8_deep_predictions_remedies'
+    ) {
+      target = '8';
+    } else if (
+      target === 'kp_system' ||
+      target === 'kp' ||
+      target === 'lal_kitab' ||
+      target === 'western' ||
+      target === 'nadi' ||
+      target === 'branches' ||
+      target === 'div_9_multi_system_astrology'
+    ) {
+      target = '9';
+    } else if (
+      target === 'match' ||
+      target === 'matchmaking' ||
+      target === 'ashtakoota' ||
+      target === 'marriage' ||
+      target === 'div_10_marriage_matching'
+    ) {
+      target = '10';
+    } else if (
+      target === 'tools' ||
+      target === 'panchang' ||
+      target === 'panchang_muhurta' ||
+      target === 'daily_panchang' ||
+      target === 'rashifal' ||
+      target === 'festivals' ||
+      target === 'choghadiya' ||
+      target === 'muhurta' ||
+      target === 'div_11_panchang_rashifal'
+    ) {
+      target = '11';
     }
 
     setActiveTab('workstation');
-    setActiveSubTab(targetMenu);
+    setActiveSubTab(target);
     setDrawerOpen(false);
     setRouteRequest((prev) => ({
       tab: 'workstation',
-      subTab: targetMenu,
+      subTab: target,
       nested,
       nonce: (prev?.nonce ?? 0) + 1,
     }));

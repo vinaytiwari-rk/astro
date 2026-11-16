@@ -9,14 +9,15 @@ import type { DashaPeriod, DashaYearType } from './types';
 
 const MS_PER_DAY = 86_400_000;
 
-export function getDaysPerYear(yearType: DashaYearType): number {
+export function getDaysPerYear(yearType?: DashaYearType): number {
   switch (yearType) {
-    case 'tropical':
-      return 365.2425;
     case 'sidereal':
       return 365.256363;
     case 'savana':
       return 360.0;
+    case 'tropical':
+    default:
+      return 365.2425;
   }
 }
 
@@ -110,6 +111,78 @@ export function expandSookshmaDasha(pratyantardasha: DashaPeriod): DashaPeriod[]
     4,
     4
   );
+}
+
+/**
+ * Tribhagi Dasha (विंशोत्तरी त्रिभागी दशा) - 80-year total lifespan cycle (2/3 of 120 yrs).
+ * Each nakshatra of 13°20' is divided into 3 equal segments of 4°26'40" (4.444444°).
+ * Tribhaga 1 (0° - 4°26'40"): ruled by Nakshatra lord.
+ * Tribhaga 2 (4°26'40" - 8°53'20"): ruled by the next planet in Vimshottari order.
+ * Tribhaga 3 (8°53'20" - 13°20'00"): ruled by the third planet in Vimshottari order.
+ * Each planet's full period = Vimshottari years * (2/3).
+ */
+export function computeTribhagiDasha(
+  moonSiderealLon: number,
+  birthUtcMs: number,
+  yearType: DashaYearType = 'tropical'
+): DashaPeriod[] {
+  const daysPerYear = getDaysPerYear(yearType);
+  const nakSpan = 360 / 27; // 13.333333°
+  const tribhagaSpan = nakSpan / 3; // 4.444444°
+  const lon = normalizeDeg(moonSiderealLon);
+  const nakIdx = Math.floor(lon / nakSpan) % 27;
+  const lonInNak = lon - nakIdx * nakSpan;
+
+  const tribhagaIdx = Math.min(2, Math.floor(lonInNak / tribhagaSpan)); // 0, 1, or 2
+  const elapsedFrac = (lonInNak - tribhagaIdx * tribhagaSpan) / tribhagaSpan;
+
+  const baseNakLord = NAKSHATRAS[nakIdx].lord;
+  const baseLordIdx = VIMSHOTTARI_ORDER.indexOf(baseNakLord);
+  const startLordIdx = (baseLordIdx + tribhagaIdx) % 9;
+  const startLord = VIMSHOTTARI_ORDER[startLordIdx];
+
+  const tribhagiYears = (VIMSHOTTARI_YEARS[startLord] * 2) / 3;
+  const firstFullMs = tribhagiYears * daysPerYear * MS_PER_DAY;
+  const theoreticalStartMs = birthUtcMs - elapsedFrac * firstFullMs;
+
+  const mahadashas: DashaPeriod[] = [];
+  let cursor = theoreticalStartMs;
+
+  for (let i = 0; i < 9; i++) {
+    const idx = (startLordIdx + i) % 9;
+    const lord = VIMSHOTTARI_ORDER[idx];
+    const lordYears = (VIMSHOTTARI_YEARS[lord] * 2) / 3;
+    const fullMs = lordYears * daysPerYear * MS_PER_DAY;
+    const endMs = cursor + fullMs;
+
+    const children: DashaPeriod[] = [];
+    let subCursor = cursor;
+    for (let j = 0; j < 9; j++) {
+      const subIdx = (idx + j) % 9;
+      const subLord = VIMSHOTTARI_ORDER[subIdx];
+      const subMs = fullMs * (VIMSHOTTARI_YEARS[subLord] / 120);
+      const subEndMs = subCursor + subMs;
+      children.push({
+        lord: subLord,
+        level: 2,
+        startMs: subCursor,
+        endMs: subEndMs,
+        durationDays: subMs / MS_PER_DAY,
+      });
+      subCursor = subEndMs;
+    }
+
+    mahadashas.push({
+      lord,
+      level: 1,
+      startMs: cursor,
+      endMs,
+      durationDays: fullMs / MS_PER_DAY,
+      children,
+    });
+    cursor = endMs;
+  }
+  return mahadashas;
 }
 
 /**

@@ -79,7 +79,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  👤 {isHi ? 'पूर्व जन्म लिंग (Gender)' : 'Past Life Gender'}
+                  {isHi ? 'पूर्व जन्म लिंग (Gender)' : 'Past Life Gender'}
                 </div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                   {isHi ? pastLife.genderHi : pastLife.genderEn}
@@ -96,7 +96,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  🧬 {isHi ? 'योनि / जीवन प्रकार (Life Type)' : 'Life Type (Yoni)'}
+                  {isHi ? 'योनि / जीवन प्रकार (Life Type)' : 'Life Type (Yoni)'}
                 </div>
                 <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                   {isHi ? pastLife.lifeTypeHi : pastLife.lifeTypeEn}
@@ -114,7 +114,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  🌍 {isHi ? 'जन्म स्थान / देश व सभ्यता (Birthplace / Civilization)' : 'Birthplace / Country & Historical Region'}
+                  {isHi ? 'जन्म स्थान / देश व सभ्यता (Birthplace / Civilization)' : 'Birthplace / Country & Historical Region'}
                 </div>
                 <div style={{ marginTop: 4, fontWeight: 600, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.birthPlaceOrCountryHi : pastLife.birthPlaceOrCountryEn}
@@ -132,7 +132,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  ⚒️ {isHi ? 'पूर्व जन्म कार्य व व्यवसाय (Profession / Vocation)' : 'Past Life Profession / Craft'}
+                  {isHi ? 'पूर्व जन्म कार्य व व्यवसाय (Profession / Vocation)' : 'Past Life Profession / Craft'}
                 </div>
                 <div style={{ marginTop: 4, fontWeight: 600, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.professionHi : pastLife.professionEn}
@@ -150,7 +150,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  ⚖️ {isHi ? 'चरित्र व मूल स्वभाव (Character & Temperament)' : 'Character & Temperament'}
+                  {isHi ? 'चरित्र व मूल स्वभाव (Character & Temperament)' : 'Character & Temperament'}
                 </div>
                 <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.characterHi : pastLife.characterEn}
@@ -167,7 +167,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  💍 {isHi ? 'विवाह व दांपत्य स्थिति (Marital Status)' : 'Marital Status'}
+                  {isHi ? 'विवाह व दांपत्य स्थिति (Marital Status)' : 'Marital Status'}
                 </div>
                 <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.maritalStatusHi : pastLife.maritalStatusEn}
@@ -184,7 +184,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  👶 {isHi ? 'संतान सुख (Children)' : 'Children & Progeny'}
+                  {isHi ? 'संतान सुख (Children)' : 'Children & Progeny'}
                 </div>
                 <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.childrenHi : pastLife.childrenEn}
@@ -202,7 +202,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
                 }}
               >
                 <div className="muted small-text" style={{ fontWeight: 600 }}>
-                  🕊️ {isHi ? 'मृत्यु की स्थिति व अंतिम निर्वाण (How Died / Manner of Exit)' : 'Manner of Exit / Passing'}
+                  {isHi ? 'मृत्यु की स्थिति व अंतिम निर्वाण (How Died / Manner of Exit)' : 'Manner of Exit / Passing'}
                 </div>
                 <div style={{ marginTop: 4, fontSize: '13px', lineHeight: 1.4 }}>
                   {isHi ? pastLife.howDiedHi : pastLife.howDiedEn}
@@ -348,7 +348,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
               }}
             >
               <div className="muted small-text" style={{ fontWeight: 600 }}>
-                🌌 {isHi ? 'आगामी गति व लोक (Future Destination)' : 'Next Realm / Gati'}
+                {isHi ? 'आगामी गति व लोक (Future Destination)' : 'Next Realm / Gati'}
               </div>
               <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                 {isHi ? futureBecoming.futureGatiHi : futureBecoming.futureGatiEn}
@@ -364,7 +364,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
               }}
             >
               <div className="muted small-text" style={{ fontWeight: 600 }}>
-                ☸️ {isHi ? 'मोक्ष / मुक्ति संभावना (Moksha Likelihood)' : 'Moksha / Liberation Likelihood'}
+                {isHi ? 'मोक्ष / मुक्ति संभावना (Moksha Likelihood)' : 'Moksha / Liberation Likelihood'}
               </div>
               <div style={{ marginTop: 4, fontWeight: 700, fontSize: '13.5px', color: '#10b981' }}>
                 {isHi ? futureBecoming.mokshaLikelihoodHi : futureBecoming.mokshaLikelihoodEn}
@@ -380,7 +380,7 @@ export const PastLifeFuturePanel: React.FC<{ report: PastFutureLifeReport }> = (
               }}
             >
               <div className="muted small-text" style={{ fontWeight: 600 }}>
-                📊 {isHi ? 'आत्मिक विकास सूचकांक (Spiritual Evolution Index)' : 'Spiritual Evolution Index'}
+                {isHi ? 'आत्मिक विकास सूचकांक (Spiritual Evolution Index)' : 'Spiritual Evolution Index'}
               </div>
               <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <strong style={{ fontSize: '15px', color: 'var(--accent)' }}>

@@ -89,7 +89,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               onChange={(e) => setSelectedDomainId(e.target.value)}
               style={{ minWidth: '240px', fontWeight: 600 }}
             >
-              <option value="all">{isHi ? '🌟 सभी 6 जीवन क्षेत्र (View All)' : '🌟 All 6 Life Spheres'}</option>
+              <option value="all">{isHi ? 'सभी 6 जीवन क्षेत्र (View All)' : 'All 6 Life Spheres'}</option>
               {report.domains.map((d) => (
                 <option key={d.id} value={d.id}>
                   {isHi ? d.titleHi : d.titleEn} ({d.score}%)

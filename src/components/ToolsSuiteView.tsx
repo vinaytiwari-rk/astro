@@ -278,33 +278,33 @@ export const ToolsSuiteView: React.FC<ToolsSuiteViewProps> = ({
             >
               <optgroup label={lang === 'hi' ? 'कुंडली एवं सूक्ष्म काल' : 'Natal & Subtle Timing'}>
                 <option value="btr">
-                  {lang === 'hi' ? '🧭 जन्म समय संशोधन (BTR — D9, D10, D60, KP व प्राणपद)' : '🧭 Birth Time Rectification (BTR — D9, D10, D60, KP & Pranapada)'}
+                  {lang === 'hi' ? 'जन्म समय संशोधन (BTR — D9, D10, D60, KP व प्राणपद)' : 'Birth Time Rectification (BTR — D9, D10, D60, KP & Pranapada)'}
                 </option>
                 <option value="avasthas">
-                  {lang === 'hi' ? '🔥 ग्रहावस्था, ग्रह युद्ध व उपग्रह (10 अवस्थाएं)' : '🔥 Planetary Avasthas, Graha Yuddha & Upagrahas'}
+                  {lang === 'hi' ? 'ग्रहावस्था, ग्रह युद्ध व उपग्रह (10 अवस्थाएं)' : 'Planetary Avasthas, Graha Yuddha & Upagrahas'}
                 </option>
                 <option value="panchapakshi">
-                  {lang === 'hi' ? '🪶 पंच पक्षी शास्त्र (5-Bird System व दिशा बल)' : '🪶 Pancha Pakshi Shastra (5-Bird System)'}
+                  {lang === 'hi' ? 'पंच पक्षी शास्त्र (5-Bird System व दिशा बल)' : 'Pancha Pakshi Shastra (5-Bird System)'}
                 </option>
               </optgroup>
               <optgroup label={lang === 'hi' ? 'पंचांग, होरा व मुहूर्त' : 'Panchang, Hora & Calendars'}>
                 <option value="deep_panchang">
-                  {lang === 'hi' ? '🛡️ संवत्सर, शूल, वास व अशुभ योग (दैनिक)' : '🛡️ Samvatsara, Shoola/Vaasa & Inauspicious Muhurta'}
+                  {lang === 'hi' ? 'संवत्सर, शूल, वास व अशुभ योग (दैनिक)' : 'Samvatsara, Shoola/Vaasa & Inauspicious Muhurta'}
                 </option>
                 <option value="do_ghati">
-                  {lang === 'hi' ? '⏰ दो-घटी मुहूर्त (30 दैनिक मुहूर्त — 48 मिनट काल)' : '⏰ Do Ghati Muhurat (30 Daily Muhurtas — 48m each)'}
+                  {lang === 'hi' ? 'दो-घटी मुहूर्त (30 दैनिक मुहूर्त — 48 मिनट काल)' : 'Do Ghati Muhurat (30 Daily Muhurtas — 48m each)'}
                 </option>
                 <option value="hora_24">
-                  {lang === 'hi' ? '⏳ 24-घंटे दैनिक होरा चक्र (सटीक सूर्योदय आधारित)' : '⏳ 24-Hour Hora Calculator (Sunrise-based)'}
+                  {lang === 'hi' ? '24-घंटे दैनिक होरा चक्र (सटीक सूर्योदय आधारित)' : '24-Hour Hora Calculator (Sunrise-based)'}
                 </option>
                 <option value="monthly_panchang">
-                  {lang === 'hi' ? '📅 मासिक दृक पंचांग (तिथि, नक्षत्र, योग, करण)' : '📅 Monthly Drik Panchang Calendar'}
+                  {lang === 'hi' ? 'मासिक दृक पंचांग (तिथि, नक्षत्र, योग, करण)' : 'Monthly Drik Panchang Calendar'}
                 </option>
                 <option value="muhurta">
-                  {lang === 'hi' ? '✨ शुभ मुहूर्त चयन (विवाह, गृह प्रवेश, वाहन, व्यापार)' : '✨ Shubh Muhurta Date Finder (Marriage, Griha, Vehicle)'}
+                  {lang === 'hi' ? 'शुभ मुहूर्त चयन (विवाह, गृह प्रवेश, वाहन, व्यापार)' : 'Shubh Muhurta Date Finder (Marriage, Griha, Vehicle)'}
                 </option>
                 <option value="calendar">
-                  {lang === 'hi' ? '🪐 10-वर्षीय गोचर व ग्रहण पंचांग' : '🪐 10-Year Planetary Transit & Eclipse Calendar'}
+                  {lang === 'hi' ? '10-वर्षीय गोचर व ग्रहण पंचांग' : '10-Year Planetary Transit & Eclipse Calendar'}
                 </option>
               </optgroup>
             </select>
