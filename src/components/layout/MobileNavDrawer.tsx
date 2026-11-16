@@ -25,6 +25,7 @@ import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
+import { WORKSTATION_PAGES } from '../VedicMasterWorkstation';
 
 interface MobileNavDrawerProps {
   open: boolean;
@@ -73,108 +74,70 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
-      titleEn: '🏛️ Vedic Astrology Workstation',
-      titleHi: '🏛️ वैदिक ज्योतिष वर्कस्टेशन',
-      items: [
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'sarini',
-          labelEn: '1. Basic Details & Avakhada Sheet',
-          labelHi: '1. ज्योतिष सारिणी व मूल विवरण',
-          icon: <UserCheck size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'charts_tables',
-          labelEn: '2. All Vargas D1–D60, SAV & Tables',
-          labelHi: '2. कुंडली व वर्ग चक्र / तालिकायें (D1–D60)',
-          icon: <Grid size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'dasha',
-          labelEn: '3. Multi-Dasha Systems (Vimshottari/Yogini)',
-          labelHi: '3. दशा प्रणाली (विंशोत्तरी 5 स्तर, योगिनी)',
-          icon: <Clock size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'varshphal',
-          labelEn: '4. Annual Varshphal & Tajika Sahams',
-          labelHi: '4. वर्षफल / ताजिक वार्षिक (मुन्था, वर्षेश, सहम)',
-          icon: <Sun size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'chakras',
-          labelEn: '5. Special Chakras (Sudarshan/Kota/Kurma)',
-          labelHi: '5. विविध वैदिक चक्र (सुदर्शन, सर्वतोभद्र, कोटा, कूर्म)',
-          icon: <Compass size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'yogas_doshas',
-          labelEn: '6. Classical Yogas, Doshas & Conjunctions',
-          labelHi: '6. योग, दोष एवं युति विश्लेषण (राजयोग, मांगलिक, कालसर्प)',
-          icon: <Award size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'navamsha',
-          labelEn: '7. Navamsha D9 Deep Reading & Pushkara',
-          labelHi: '7. नवांश कुंडली विशेष विवेचन (कारकांश व पुष्कर भाग)',
-          icon: <Sparkles size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'kp_system',
-          labelEn: '8. KP Krishnamurti Paddhati (Sub-Lords)',
-          labelHi: '8. के.पी. (KP) ज्योतिष प्रणाली (कस्प व 4-चरण कारक)',
-          icon: <Star size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'lal_kitab',
-          labelEn: '9. Lal Kitab System (Debts & Upay)',
-          labelHi: '9. लाल किताब प्रणाली (टेवा, सोये भाव व ऋण)',
-          icon: <Flame size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'predictions',
-          labelEn: '10. Deep Predictions: Career, Appearance & Family',
-          labelHi: '10. सटीक जीवन फलकथन (करियर, रूप-रंग व पारिवारिक यथार्थ)',
-          icon: <BookOpen size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'past_future',
-          labelEn: '11. Past Life D60 & Future Rebirth',
-          labelHi: '11. पूर्व जन्म व भावी गति (D60 सभ्यता व योनि)',
-          icon: <RotateCcw size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'matchmaking',
-          labelEn: '12. Kundali Match Making (36 Gunas)',
-          labelHi: '12. कुंडली मिलान (36 गुण अष्टकूट व दोष साम्य)',
-          icon: <Heart size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'remedies',
-          labelEn: '13. Comprehensive Shastric Remedies',
-          labelHi: '13. सम्पूर्ण शास्त्रीय उपाय (मंत्र, दान, स्नान व रत्न)',
-          icon: <ShieldAlert size={16} />,
-        },
-        {
-          tab: 'workstation' as MainTab,
-          subTab: 'panchang',
-          labelEn: '14. Daily Drik Panchang & Muhurta',
-          labelHi: '14. दैनिक पंचांग व मुहूर्त (चोघड़िया, होरा व पर्व)',
-          icon: <Calendar size={16} />,
-        },
-      ],
+      titleEn: '📋 Basic Details',
+      titleHi: '📋 मूल विवरण व ज्योतिष सारिणी',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'basics').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
+    },
+    {
+      titleEn: '🏛️ Kundali & All Vargas (D1 to D360 Placement + Predictions)',
+      titleHi: '🏛️ लग्न व समस्त वर्ग चक्र (D1 से D360 गणना व फलकथन)',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'vargas').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
+    },
+    {
+      titleEn: '⏳ Dasha, Gochar & Vedic Chakras',
+      titleHi: '⏳ दशा, गोचर व वैदिक चक्र (गणना व फल)',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'gochar' || p.category === 'dasha' || p.category === 'chakras').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
+    },
+    {
+      titleEn: '☀️ Varshphal, KP & Lal Kitab',
+      titleHi: '☀️ वर्षफल, के.पी. व लाल किताब प्रणाली',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'annual' || p.category === 'systems').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
+    },
+    {
+      titleEn: '💍 Match Making & Shastric Remedies',
+      titleHi: '💍 कुंडली मिलान व सम्पूर्ण वैदिक उपाय',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'matchmaking' || p.category === 'remedies').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
+    },
+    {
+      titleEn: '📅 Daily Drik Panchang & Muhurta',
+      titleHi: '📅 दैनिक पंचांग व मुहूर्त (अंतिम भाग)',
+      items: WORKSTATION_PAGES.filter((p) => p.category === 'panchang').map((p) => ({
+        tab: 'workstation' as MainTab,
+        subTab: String(p.pageNumber),
+        labelEn: p.labelEn,
+        labelHi: p.labelHi,
+        icon: <span style={{ fontSize: '15px' }}>{p.icon}</span>,
+      })),
     },
   ];
 

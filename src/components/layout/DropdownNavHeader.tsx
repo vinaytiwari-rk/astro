@@ -13,6 +13,7 @@ import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
+import { WORKSTATION_PAGES } from '../VedicMasterWorkstation';
 
 interface DropdownNavHeaderProps {
   activeTab: MainTab;
@@ -49,29 +50,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 }) => {
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
-
-  const workstationMenus: Array<{
-    id: string;
-    labelEn: string;
-    labelHi: string;
-    icon: string;
-    badge?: string;
-  }> = [
-    { id: 'sarini', labelEn: '1. Basic Details & Avakhada Sheet', labelHi: '1. ज्योतिष सारिणी व मूल विवरण', icon: '📋' },
-    { id: 'charts_tables', labelEn: '2. All Vargas D1–D60, SAV & Tables', labelHi: '2. कुंडली व वर्ग चक्र / तालिकायें (D1–D60)', icon: '📊' },
-    { id: 'dasha', labelEn: '3. Multi-Dasha Systems (Vimshottari/Yogini)', labelHi: '3. दशा प्रणाली (विंशोत्तरी 5 स्तर, योगिनी)', icon: '⏳' },
-    { id: 'varshphal', labelEn: '4. Annual Varshphal & Tajika Sahams', labelHi: '4. वर्षफल / ताजिक वार्षिक (मुन्था, वर्षेश, सहम)', icon: '☀️' },
-    { id: 'chakras', labelEn: '5. Special Chakras (Sudarshan/Kota/Kurma)', labelHi: '5. विविध वैदिक चक्र (सुदर्शन, सर्वतोभद्र, कोटा, कूर्म)', icon: '☸️' },
-    { id: 'yogas_doshas', labelEn: '6. Classical Yogas, Doshas & Conjunctions', labelHi: '6. योग, दोष एवं युति विश्लेषण (राजयोग, मांगलिक, कालसर्प)', icon: '⚡' },
-    { id: 'navamsha', labelEn: '7. Navamsha D9 Deep Reading & Pushkara', labelHi: '7. नवांश कुंडली विशेष विवेचन (कारकांश व पुष्कर भाग)', icon: '🌟' },
-    { id: 'kp_system', labelEn: '8. KP Krishnamurti Paddhati (Sub-Lords)', labelHi: '8. के.पी. (KP) ज्योतिष प्रणाली (कस्प व 4-चरण कारक)', icon: '🎯', badge: 'KP' },
-    { id: 'lal_kitab', labelEn: '9. Lal Kitab System (Debts & Upay)', labelHi: '9. लाल किताब प्रणाली (टेवा, सोये भाव व ऋण)', icon: '📕', badge: 'LK' },
-    { id: 'predictions', labelEn: '10. Deep Predictions: Career, Appearance & Family', labelHi: '10. सटीक जीवन फलकथन (करियर, रूप-रंग व पारिवारिक यथार्थ)', icon: '🔮' },
-    { id: 'past_future', labelEn: '11. Past Life D60 & Future Rebirth', labelHi: '11. पूर्व जन्म व भावी गति (D60 सभ्यता व योनि)', icon: '🌌' },
-    { id: 'matchmaking', labelEn: '12. Kundali Match Making (36 Gunas)', labelHi: '12. कुंडली मिलान (36 गुण अष्टकूट व दोष साम्य)', icon: '💍' },
-    { id: 'remedies', labelEn: '13. Comprehensive Shastric Remedies', labelHi: '13. सम्पूर्ण शास्त्रीय उपाय (मंत्र, दान, स्नान व रत्न)', icon: '🕉️' },
-    { id: 'panchang', labelEn: '14. Daily Drik Panchang & Muhurta', labelHi: '14. दैनिक पंचांग व मुहूर्त (चोघड़िया, होरा व पर्व)', icon: '📅' },
-  ];
 
   return (
     <header className="dropdown-nav-header no-print">
@@ -200,18 +178,18 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           <div className="dropdown-field-item" style={{ width: '100%' }}>
             <label className="dropdown-field-label">
               <Compass size={14} />
-              <span>{isHi ? 'वर्कस्टेशन मुख्य विषय / मेन्यू चुनें:' : 'Workstation Main Module / Feature:'}</span>
+              <span>{isHi ? 'वर्कस्टेशन पेज चुनें (1 से 38 तक):' : 'Select Workstation Page (1 to 38):'}</span>
             </label>
             <select
-              aria-label="Select Workstation Module"
+              aria-label="Select Workstation Page"
               className="dropdown-master-select"
-              value={activeSubTab || 'sarini'}
+              value={activeSubTab || '1'}
               onChange={(e) => onSelectSubTab(e.target.value)}
               style={{ fontSize: '13.5px', fontWeight: 600 }}
             >
-              {workstationMenus.map((mod) => (
-                <option key={mod.id} value={mod.id}>
-                  {mod.icon} {isHi ? mod.labelHi : mod.labelEn} {mod.badge ? `[${mod.badge}]` : ''}
+              {WORKSTATION_PAGES.map((pg) => (
+                <option key={pg.pageNumber} value={String(pg.pageNumber)}>
+                  {pg.icon} {isHi ? pg.labelHi : pg.labelEn}
                 </option>
               ))}
             </select>

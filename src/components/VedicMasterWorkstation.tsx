@@ -1,37 +1,38 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  AlertTriangle,
   Award,
   BookOpen,
-  Briefcase,
   Calendar,
-  CheckCircle2,
-  ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Clock,
   Compass,
   Edit3,
+  ExternalLink,
   Eye,
   FileText,
   Flame,
-  Gem,
-  GraduationCap,
-  Grid3x3,
+  Grid,
   Heart,
   HelpCircle,
-  IndianRupee,
   Layers,
+  MapPin,
+  Maximize2,
+  Minimize2,
   Moon,
   RefreshCw,
   RotateCcw,
+  Scroll,
   Search,
+  Share2,
+  Shield,
   ShieldAlert,
-  ShieldCheck,
   Sparkles,
   Star,
   Sun,
-  Target,
+  TrendingUp,
   User,
+  UserCheck,
   Users,
   Zap,
 } from 'lucide-react';
@@ -39,22 +40,12 @@ import {
 import { computeAvakahadaChakra, computeBhavaChalitPlacements, computeGhatakChakra } from '../astro/avakahadaChalit';
 import { computeAvasthasAndUpagrahas } from '../astro/avasthasUpagrahas';
 import { calculateChart } from '../astro/calculator';
-import { DIVISIONAL_META, NAKSHATRAS, NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../astro/constants';
+import { DIVISIONAL_META, NAKSHATRAS, NINE_GRAHAS, PLANET_SANSKRIT, SEVEN_PLANETS, SIGNS } from '../astro/constants';
 import { computeBasicDetailsSheet, HIGHER_VARGA_META, type BasicDetailRow } from '../astro/higherVargas';
 import { computeKpReport, computeLiveKpRulingPlanets, type KpRulingPlanets } from '../astro/kp';
-import { computeFullLalKitabReport } from '../astro/lalKitabExtended';
 import { computeLalKitabSystemReport } from '../astro/predictions/lalKitabSystem';
 import { computeKundaliDoshas } from '../astro/predictions/familyDoshas';
 import { computePastFutureLifeReading } from '../astro/predictions/pastFutureLife';
-import { computeDeepLifePredictions } from '../astro/predictions/deepLifePredictions';
-import {
-  computeDynamic12Epochs,
-  computeDynamicCareerZenithSections,
-  computeDynamicWealthInduLagnaSections,
-  computeDynamicMarriageAndIntimacySections,
-  computeDynamicHealthSections,
-} from '../astro/predictions/dynamicDossierChapters';
-import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from '../astro/predictions/classicalYogasKb';
 import { computeChartYutiReport } from '../astro/predictions/yutiPredictions';
 import { computeGemstoneAndRudraksha } from '../astro/rashifalBabyRudraksha';
 import {
@@ -77,30 +68,20 @@ import type {
 } from '../astro/types';
 import { computeVarshaphala } from '../astro/varshaphala';
 import { useLanguage } from '../i18n/LanguageContext';
-import { trPlanet, trPlanetShort, trSign, trTerm, trVarga, type AppLanguage } from '../i18n/translations';
+import { trPlanet, trPlanetShort, trSign, trTerm, type AppLanguage } from '../i18n/translations';
 import { DEFAULT_SETTINGS } from '../data/cities';
-import { computeMasterIndividualPredictions, type PredictiveDomainDetail } from '../astro/predictions/masterIndividualPredictions';
+import {
+  ALL_VARGA_PAGE_IDS,
+  computeCompleteVargaPageData,
+  type CompleteVargaPageData,
+} from '../astro/predictions/vargaPredictionsEngine';
+import { computeDeepGochar, type DeepGocharReport } from '../astro/predictions/gocharDeep';
+import { predictDashaDetail } from '../astro/predictions/dashaPrashna';
 import { AshtakavargaView } from './AshtakavargaView';
 import { DashaView } from './DashaView';
 import { MatchMakingView } from './MatchMakingView';
 import { ToolsSuiteView } from './ToolsSuiteView';
 import { VedicChartSvg, type ChartBadgeItem } from './VedicChartSvg';
-
-export type WorkstationMenuId =
-  | 'sarini'
-  | 'charts_tables'
-  | 'dasha'
-  | 'varshphal'
-  | 'chakras'
-  | 'yogas_doshas'
-  | 'navamsha'
-  | 'kp_system'
-  | 'lal_kitab'
-  | 'predictions'
-  | 'past_future'
-  | 'matchmaking'
-  | 'remedies'
-  | 'panchang';
 
 export interface VedicMasterWorkstationProps {
   chart: ChartData;
@@ -125,6 +106,58 @@ function nowDateAndTime(): { date: string; time: string } {
   };
 }
 
+export interface WorkstationPageDefinition {
+  pageNumber: number;
+  id: string;
+  vargaId?: string;
+  labelEn: string;
+  labelHi: string;
+  icon: string;
+  badge?: string;
+  category: 'basics' | 'vargas' | 'gochar' | 'dasha' | 'chakras' | 'annual' | 'systems' | 'matchmaking' | 'remedies' | 'panchang';
+}
+
+export const WORKSTATION_PAGES: WorkstationPageDefinition[] = [
+  { pageNumber: 1, id: 'sarini', labelEn: '1. Basic Details & Avakhada Sheet', labelHi: '1. ज्योतिष सारिणी व मूल विवरण', icon: '📋', category: 'basics' },
+  { pageNumber: 2, id: 'd1', vargaId: 'D1', labelEn: '2. D-1 Lagna (Lagna + Strength + Yuti + Yoga + Dasha + Gochar + Predictions)', labelHi: '2. D-1 लग्न कुंडली (लग्न + बल + युति + योग + दशा + गोचर + फलकथन)', icon: '🏛️', category: 'vargas', badge: 'D1' },
+  { pageNumber: 3, id: 'd2', vargaId: 'D2', labelEn: '3. D-2 Hora (Wealth & Sustenance)', labelHi: '3. D-2 होरा (धन, संचित कोष व भरण-पोषण)', icon: '💰', category: 'vargas', badge: 'D2' },
+  { pageNumber: 4, id: 'd3', vargaId: 'D3', labelEn: '4. D-3 Drekkana (Siblings, Courage & Only Child)', labelHi: '4. D-3 द्रेष्काण (भाई-बहन, पराक्रम व एकल संतान परीक्षा)', icon: '🛡️', category: 'vargas', badge: 'D3' },
+  { pageNumber: 5, id: 'd4', vargaId: 'D4', labelEn: '5. D-4 Chaturthamsha (Property, Home & Fortune)', labelHi: '5. D-4 चतुर्मांश (भूमि, भवन, अचल संपत्ति व भाग्य)', icon: '🏡', category: 'vargas', badge: 'D4' },
+  { pageNumber: 6, id: 'd5', vargaId: 'D5', labelEn: '6. D-5 Panchamsha (Fame, Authority & Merit)', labelHi: '6. D-5 पंचमांश (ख्याति, अधिकार, सत्ता व पूर्व-पुण्य)', icon: '👑', category: 'vargas', badge: 'D5' },
+  { pageNumber: 7, id: 'd6', vargaId: 'D6', labelEn: '7. D-6 Shashthamsha (Health, Enemies & Litigation)', labelHi: '7. D-6 षष्ठांश (स्वास्थ्य, रोग, शत्रु-विनाश व मुकदमेबाजी)', icon: '⚔️', category: 'vargas', badge: 'D6' },
+  { pageNumber: 8, id: 'd7', vargaId: 'D7', labelEn: '8. D-7 Saptamsha (Children, Progeny vs Childless)', labelHi: '8. D-7 सप्तमांश (संतान, कुल वृद्धि व निःसंतानता विश्लेषण)', icon: '👶', category: 'vargas', badge: 'D7' },
+  { pageNumber: 9, id: 'd8', vargaId: 'D8', labelEn: '9. D-8 Ashtamsha (Longevity, Transformations & Crises)', labelHi: '9. D-8 अष्टमांश (आयु, आकस्मिक परिवर्तन व गूढ़ संकट)', icon: '⏳', category: 'vargas', badge: 'D8' },
+  { pageNumber: 10, id: 'd9', vargaId: 'D9', labelEn: '10. D-9 Navamsha (Spouse, Marriage, Dharma & Bhagya)', labelHi: '10. D-9 नवांश (जीवनसाथी, विवाह बनाम ब्रह्मचर्य, धर्म व भाग्य)', icon: '💍', category: 'vargas', badge: 'D9' },
+  { pageNumber: 11, id: 'd10', vargaId: 'D10', labelEn: '11. D-10 Dashamsha (Career, Govt Job vs Business & Status)', labelHi: '11. D-10 दशमांश (करियर, सरकारी नौकरी बनाम व्यापार व प्रतिष्ठा)', icon: '💼', category: 'vargas', badge: 'D10' },
+  { pageNumber: 12, id: 'd11', vargaId: 'D11', labelEn: '12. D-11 Rudramsha (Wealth Influx & Overcoming Rivals)', labelHi: '12. D-11 एकादशांश (धन लाभ, सम्मान व प्रतिद्वंद्वियों पर विजय)', icon: '💎', category: 'vargas', badge: 'D11' },
+  { pageNumber: 13, id: 'd12', vargaId: 'D12', labelEn: '13. D-12 Dwadashamsha (Parents, Paternal Lineage & Roots)', labelHi: '13. D-12 द्वादशांश (माता-पिता, पैतृक संस्कार व कुल ऋण)', icon: '👨‍👩‍👧', category: 'vargas', badge: 'D12' },
+  { pageNumber: 14, id: 'd16', vargaId: 'D16', labelEn: '14. D-16 Shodashamsha (Vehicles, Luxuries & Happiness)', labelHi: '14. D-16 षोडशांश (वाहन, सुख-साधन, सड़क सुरक्षा व शांति)', icon: '🚗', category: 'vargas', badge: 'D16' },
+  { pageNumber: 15, id: 'd20', vargaId: 'D20', labelEn: '15. D-20 Vimshamsha (Spiritual Sadhana, Devotion & Moksha)', labelHi: '15. D-20 विंशांश (उपासना, इष्ट देव, मंत्र साधना व मोक्ष)', icon: '🧘', category: 'vargas', badge: 'D20' },
+  { pageNumber: 16, id: 'd24', vargaId: 'D24', labelEn: '16. D-24 Siddhamsa (Higher Learning, Education & Intellect)', labelHi: '16. D-24 चतुर्विंशांश (उच्च शिक्षा, विद्या, बौद्धिक दक्षता व शोध)', icon: '📚', category: 'vargas', badge: 'D24' },
+  { pageNumber: 17, id: 'd27', vargaId: 'D27', labelEn: '17. D-27 Bhamsa (Physical Stamina & Vital Endurance)', labelHi: '17. D-27 सप्तविंशांश (शारीरिक बल, सहनशक्ति व गुप्त दुर्बलताएं)', icon: '⚡', category: 'vargas', badge: 'D27' },
+  { pageNumber: 18, id: 'd30', vargaId: 'D30', labelEn: '18. D-30 Trimshamsha (Arishta, Misfortunes & Evils)', labelHi: '18. D-30 त्रिंशांश (अरिष्ट, पाप कर्म, व्यसन व संकट निवारण)', icon: '⚠️', category: 'vargas', badge: 'D30' },
+  { pageNumber: 19, id: 'd40', vargaId: 'D40', labelEn: '19. D-40 Khavedamsha (Maternal Heritage & Auspicious Karma)', labelHi: '19. D-40 खवेदांश (मातृ कुल, सुसंस्कार व अंतर्मन शुद्धि)', icon: '🌸', category: 'vargas', badge: 'D40' },
+  { pageNumber: 20, id: 'd45', vargaId: 'D45', labelEn: '20. D-45 Akshavedamsha (Paternal Lineage & Moral Ethics)', labelHi: '20. D-45 अक्षवेदांश (पितृ कुल, आचरण व नैतिक चरित्र)', icon: '⚖️', category: 'vargas', badge: 'D45' },
+  { pageNumber: 21, id: 'd60', vargaId: 'D60', labelEn: '21. D-60 Shashtiamsha (Past-Life Karma & Root Destiny)', labelHi: '21. D-60 षष्ट्यंश (संचित पूर्व जन्म कर्म व प्रारब्ध)', icon: '🌌', category: 'vargas', badge: 'D60' },
+  { pageNumber: 22, id: 'd64', vargaId: 'D64', labelEn: '22. D-64 Chatushshashtiamsha (64th Khara Navamsha & Crises)', labelHi: '22. D-64 चतुःषष्ट्यंश (64वां खर नवांश व आयुष्य संकट)', icon: '🛡️', category: 'vargas', badge: 'D64' },
+  { pageNumber: 23, id: 'd72', vargaId: 'D72', labelEn: '23. D-72 Ashta-Navamsha (Crisis Endurance & Transformation)', labelHi: '23. D-72 अष्ट-नवांश (आकस्मिक परिवर्तन व सहनशक्ति)', icon: '🔄', category: 'vargas', badge: 'D72' },
+  { pageNumber: 24, id: 'd81', vargaId: 'D81', labelEn: '24. D-81 Nava-Navamsha (Subtlest Dharma & Marital Soul-Bond)', labelHi: '24. D-81 नव-नवांश (सूक्ष्म धर्म व आत्मिक दांपत्य)', icon: '🌟', category: 'vargas', badge: 'D81' },
+  { pageNumber: 25, id: 'd108', vargaId: 'D108', labelEn: '25. D-108 Ashtottaramsha (108 Padas Total Soul Blueprint)', labelHi: '25. D-108 अष्टोत्तरांश (108 पाद संपूर्ण आत्मिक प्रारब्ध)', icon: '📜', category: 'vargas', badge: 'D108' },
+  { pageNumber: 26, id: 'd144', vargaId: 'D144', labelEn: '26. D-144 Dwadasa-Dwadasamsha (Deepest Pitra Lineage)', labelHi: '26. D-144 द्वादश-द्वादशांश (अति-गहन पितृ-वंश कुल कर्म)', icon: '🌿', category: 'vargas', badge: 'D144' },
+  { pageNumber: 27, id: 'd150', vargaId: 'D150', labelEn: '27. D-150 Chandra-Kala Nadiamsha (Twin Destiny Blueprint)', labelHi: '27. D-150 चंद्रकला नाड़ीअंश (सूक्ष्मतम नाड़ीअंश प्रारब्ध)', icon: '🧬', category: 'vargas', badge: 'D150' },
+  { pageNumber: 28, id: 'd300', vargaId: 'D300', labelEn: '28. D-300 Ardha-Nadiamsha (Hyper-fine BTR & Split ~24s)', labelHi: '28. D-300 अर्ध-नाड़ीअंश (अति-सूक्ष्म जन्म समय संशोधन)', icon: '⏱️', category: 'vargas', badge: 'D300' },
+  { pageNumber: 29, id: 'd360', vargaId: 'D360', labelEn: '29. D-360 Bhagamsha-Kala (4,320 Micro Segments ~20s)', labelHi: '29. D-360 भागांश-कला (4,320 सूक्ष्म चक्र भाग परम प्रारब्ध)', icon: '☸️', category: 'vargas', badge: 'D360' },
+  { pageNumber: 30, id: 'gochar', labelEn: '30. Live Gochar Calculation & Predictions', labelHi: '30. गोचर गणना व संपूर्ण फलकथन (साढ़ेसाती व ग्रह गोचर)', icon: '🪐', category: 'gochar' },
+  { pageNumber: 31, id: 'dasha', labelEn: '31. Multi-Level Dasha Calculation & Predictions', labelHi: '31. दशा 4-स्तरीय गणना व फलकथन (विंशोत्तरी 4 स्तर व योगिनी)', icon: '⏳', category: 'dasha' },
+  { pageNumber: 32, id: 'chakras', labelEn: '32. Vedic Chakras Calculation & Predictions', labelHi: '32. विविध वैदिक चक्र व फलकथन (सुदर्शन, कोटा, कूर्म, सर्वतोभद्र)', icon: '☸️', category: 'chakras' },
+  { pageNumber: 33, id: 'varshphal', labelEn: '33. Annual Varshphal & Tajika Sahams', labelHi: '33. वर्षफल / ताजिक वार्षिक (मुन्था, वर्षेश, सहम व फलकथन)', icon: '☀️', category: 'annual' },
+  { pageNumber: 34, id: 'kp_system', labelEn: '34. KP Krishnamurti Paddhati (Sub-Lords)', labelHi: '34. के.पी. (KP) ज्योतिष प्रणाली (कस्प व 4-चरण कारक)', icon: '🎯', category: 'systems', badge: 'KP' },
+  { pageNumber: 35, id: 'lal_kitab', labelEn: '35. Lal Kitab System (Debts & Upay)', labelHi: '35. लाल किताब प्रणाली (टेवा, सोये भाव व ऋण उपाय)', icon: '📕', category: 'systems', badge: 'LK' },
+  { pageNumber: 36, id: 'matchmaking', labelEn: '36. Kundali Match Making (36 Gunas)', labelHi: '36. कुंडली मिलान (36 गुण अष्टकूट व दोष साम्य निर्णय)', icon: '💍', category: 'matchmaking' },
+  { pageNumber: 37, id: 'remedies', labelEn: '37. Comprehensive Shastric Remedies', labelHi: '37. सम्पूर्ण शास्त्रीय उपाय (मंत्र, दान, स्नान व रत्न)', icon: '🕉️', category: 'remedies' },
+  { pageNumber: 38, id: 'panchang', labelEn: '38. Daily Drik Panchang & Muhurta', labelHi: '38. दैनिक पंचांग व मुहूर्त (चोघड़िया, होरा, संवत्सर व पर्व)', icon: '📅', category: 'panchang' },
+];
+
 export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   chart,
   chartStyle,
@@ -142,52 +175,57 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const isHi = lang === 'hi';
   const safeSettings = settings ?? chart.settings;
 
-  // Active Menu State (Default to 'sarini')
-  const [activeMenu, setActiveMenu] = useState<WorkstationMenuId>('sarini');
+  // Active Page State (Default to Page 1: Basic Details)
+  const [activePage, setActivePage] = useState<number>(1);
 
-  // Left Column Chart Fast-Toggle State ('D1' | 'CHALIT' | 'D9' | 'GOCHAR')
-  const [leftChartType, setLeftChartType] = useState<'D1' | 'CHALIT' | 'D9' | 'GOCHAR'>('D1');
-  const [showSpecialPoints, setShowSpecialPoints] = useState(false);
-  const [showSavPoints, setShowSavPoints] = useState(false);
-
-  // Sub-tab States for internal tabs
-  const [chartsSubTab, setChartsSubTab] = useState<'vargas' | 'ashtakavarga' | 'chalit' | 'shadbala'>('vargas');
-  const [selectedVargaId, setSelectedVargaId] = useState<DivisionalChartId>('D9');
+  // Sub-tab States for internal special pages
   const [chakrasSubTab, setChakrasSubTab] = useState<'sudarshan' | 'sarvatobhadra' | 'kota' | 'kurma'>('sudarshan');
-  const [yogasSubTab, setYogasSubTab] = useState<'classical' | 'doshas' | 'yuti'>('classical');
-  const [predCategoryFilter, setPredCategoryFilter] = useState<'individual' | 'family' | 'epochs'>('individual');
-
-  // Varshphal target year
-  const birthYear = parseInt(chart.input.date.split('-')[0], 10);
-  const currentYear = new Date().getFullYear();
-  const [varshYear, setVarshYear] = useState<number>(() => Math.max(birthYear, currentYear));
-
-  // Live Ruling Planets for KP
+  const [varshYear, setVarshYear] = useState<number>(() => {
+    const birthYear = parseInt(chart.input.date.split('-')[0], 10);
+    const curYear = new Date().getFullYear();
+    return Math.max(birthYear, curYear);
+  });
   const [liveRp, setLiveRp] = useState<KpRulingPlanets | null>(null);
 
   // External routing listener
   useEffect(() => {
     const id = requestedMenu?.id;
     if (!id) return;
-    const validMenus: WorkstationMenuId[] = [
-      'sarini',
-      'charts_tables',
-      'dasha',
-      'varshphal',
-      'chakras',
-      'yogas_doshas',
-      'navamsha',
-      'kp_system',
-      'lal_kitab',
-      'predictions',
-      'past_future',
-      'matchmaking',
-      'remedies',
-      'panchang',
-    ];
-    if (validMenus.includes(id as WorkstationMenuId)) {
-      setActiveMenu(id as WorkstationMenuId);
+
+    // Check if id is a page number or page alias
+    const pageNum = parseInt(id, 10);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= 38) {
+      setActivePage(pageNum);
+      return;
     }
+
+    const found = WORKSTATION_PAGES.find((p) => p.id === id || p.vargaId?.toLowerCase() === id.toLowerCase());
+    if (found) {
+      setActivePage(found.pageNumber);
+      return;
+    }
+
+    // Map legacy names
+    if (id === 'sarini' || id === 'basics' || id === 'home') setActivePage(1);
+    else if (id === 'd1' || id === 'charts_tables') setActivePage(2);
+    else if (id === 'd2') setActivePage(3);
+    else if (id === 'd3') setActivePage(4);
+    else if (id === 'd4') setActivePage(5);
+    else if (id === 'd7') setActivePage(8);
+    else if (id === 'd9' || id === 'navamsha') setActivePage(10);
+    else if (id === 'd10') setActivePage(11);
+    else if (id === 'd12') setActivePage(13);
+    else if (id === 'd60' || id === 'past_future') setActivePage(21);
+    else if (id === 'gochar' || id === 'transits') setActivePage(30);
+    else if (id === 'dasha' || id === 'dasha_transits') setActivePage(31);
+    else if (id === 'chakras') setActivePage(32);
+    else if (id === 'varshphal') setActivePage(33);
+    else if (id === 'kp_system' || id === 'kp') setActivePage(34);
+    else if (id === 'lal_kitab') setActivePage(35);
+    else if (id === 'matchmaking' || id === 'match') setActivePage(36);
+    else if (id === 'remedies') setActivePage(37);
+    else if (id === 'panchang' || id === 'tools') setActivePage(38);
+    else if (id === 'predictions') setActivePage(2); // D1 predictions
   }, [requestedMenu?.nonce, requestedMenu?.id]);
 
   // Live Gochar Chart Computation
@@ -196,45 +234,15 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
     return calculateChart({ ...chart.input, date: now.date, time: now.time }, safeSettings);
   }, [chart.input, safeSettings]);
 
-  // Chalit & Avakhada computations
-  const chalitData = useMemo(() => computeBhavaChalitPlacements(chart), [chart]);
+  // Deep Gochar Report
+  const deepGochar = useMemo(() => {
+    const now = nowDateAndTime();
+    return computeDeepGochar(chart, now.date);
+  }, [chart]);
+
+  // Basic Sheet, Avakhada & Ghatak computations
   const basicSheet = useMemo(() => computeBasicDetailsSheet(chart), [chart]);
-  const avasthasData = useMemo(() => computeAvasthasAndUpagrahas(chart), [chart]);
-
-  // Special Chakras
-  const sudarshanData = useMemo(() => computeSudarshanChakra(chart, varshYear), [chart, varshYear]);
-  const sarvatobhadraData = useMemo(() => computeSarvatobhadraChakra(chart), [chart]);
-  const kotaData = useMemo(() => computeKotaChakra(chart), [chart]);
-  const kurmaData = useMemo(() => computeKurmaChakra(chart), [chart]);
-
-  // Yogas & Doshas
-  const classicalYogas = useMemo(() => detectClassicalYogas(chart), [chart]);
-  const doshasData = useMemo(() => computeKundaliDoshas(chart), [chart]);
-  const yutiReport = useMemo(() => computeChartYutiReport(chart), [chart]);
-
-  // Navamsha & Special Sensitivities
-  const pushkaraData = useMemo(() => computePushkaraAnalysis(chart), [chart]);
-
-  // KP & Lal Kitab
-  const kpReport = useMemo(() => computeKpReport(chart), [chart]);
-  const lalKitabReport = useMemo(() => computeLalKitabSystemReport(chart), [chart]);
-  const lalKitabExtended = useMemo(() => computeFullLalKitabReport(chart, varshYear), [chart, varshYear]);
-
-  // Varshaphala
-  const varshaphalaReport = useMemo(() => computeVarshaphala(chart, varshYear), [chart, varshYear]);
-
-  // Deep Predictions & Past/Future Life
-  const masterPredictions = useMemo(() => computeMasterIndividualPredictions(chart), [chart]);
-  const deepPredictions = useMemo(() => computeDeepLifePredictions(chart), [chart]);
-  const pastFutureLife = useMemo(() => computePastFutureLifeReading(chart), [chart]);
-  const dynamicEpochs = useMemo(() => computeDynamic12Epochs(chart, false), [chart]);
-  const careerSections = useMemo(() => computeDynamicCareerZenithSections(chart), [chart]);
-  const wealthSections = useMemo(() => computeDynamicWealthInduLagnaSections(chart), [chart]);
-  const marriageSections = useMemo(() => computeDynamicMarriageAndIntimacySections(chart, false), [chart]);
-  const healthSections = useMemo(() => computeDynamicHealthSections(chart), [chart]);
-
-  // Remedies
-  const gemstoneData = useMemo(() => computeGemstoneAndRudraksha(chart), [chart]);
+  const chalitData = useMemo(() => computeBhavaChalitPlacements(chart), [chart]);
 
   // Active Vimshottari Dasha Hierarchy
   const activeDashaSummary = useMemo(() => {
@@ -246,194 +254,390 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
     return { maha, antar, pratyantar, sookshma };
   }, [chart.vimshottari]);
 
-  // Build Left Chart Badges
-  const leftChartBadges: ChartBadgeItem[] = useMemo(() => {
-    if (leftChartType === 'CHALIT') {
-      return chalitData.placements.map((pl) => ({
-        id: pl.id,
-        label: trPlanetShort(pl.id, lang),
-        signIndex: pl.chalitDisplaySignIndex,
-        houseNumber: pl.chalitHouse,
-        isLagna: pl.id === 'Asc',
-        isRetrograde: pl.isRetrograde,
-        isCombust: pl.isCombust,
-        dignity: pl.dignity,
-        tooltip: `${trPlanet(pl.id, lang)}: Rasi H${pl.rasiHouse} → Chalit H${pl.chalitHouse} (${pl.dms})`,
-      }));
-    }
+  // Special Chakras
+  const sudarshanData = useMemo(() => computeSudarshanChakra(chart, varshYear), [chart, varshYear]);
+  const sarvatobhadraData = useMemo(() => computeSarvatobhadraChakra(chart), [chart]);
+  const kotaData = useMemo(() => computeKotaChakra(chart), [chart]);
+  const kurmaData = useMemo(() => computeKurmaChakra(chart), [chart]);
 
-    if (leftChartType === 'D9') {
-      const d9 = chart.divisionalCharts['D9'];
-      return d9.placements.map((pl) => ({
-        id: pl.id,
-        label: trPlanetShort(pl.id, lang),
-        signIndex: pl.signIndex,
-        isLagna: pl.id === 'Asc',
-        isRetrograde: pl.isRetrograde,
-        isCombust: pl.isCombust,
-        dignity: pl.dignity,
-        tooltip: `${trPlanet(pl.id, lang)}: ${trSign(pl.signIndex, lang)} (H${pl.houseFromVargaLagna}) | ${trTerm(pl.dignity, lang)}`,
-      }));
-    }
+  // KP & Lal Kitab
+  const kpReport = useMemo(() => computeKpReport(chart), [chart]);
+  const lalKitabReport = useMemo(() => computeLalKitabSystemReport(chart), [chart]);
 
-    if (leftChartType === 'GOCHAR') {
-      const gLagnaSign = gocharChart.ascendant.signIndex;
-      return [
-        {
-          id: 'Asc',
-          label: trPlanetShort('Asc', lang),
-          signIndex: gLagnaSign,
-          houseNumber: 1,
-          isLagna: true,
-          tooltip: `${trPlanet('Asc', lang)} (Gochar): ${trSign(gLagnaSign, lang)}`,
-        },
-        ...gocharChart.planets.map((p) => ({
-          id: p.id,
-          label: trPlanetShort(p.id, lang),
-          signIndex: p.signIndex,
-          houseNumber: p.houseNumber,
-          isRetrograde: p.isRetrograde,
-          isCombust: p.isCombust,
-          dignity: p.dignity,
-          tooltip: `Gochar ${trPlanet(p.id, lang)}: ${trSign(p.signIndex, lang)} H${p.houseNumber}`,
-        })),
-      ];
-    }
+  // Remedies & Gems
+  const gemstoneData = useMemo(() => computeGemstoneAndRudraksha(chart), [chart]);
 
-    // Default D1 Lagna
-    const items: ChartBadgeItem[] = [
+  // Active page definition
+  const currentPageDef = useMemo(() => {
+    return WORKSTATION_PAGES.find((p) => p.pageNumber === activePage) || WORKSTATION_PAGES[0];
+  }, [activePage]);
+
+  // Active Varga Data (if on pages 2..29)
+  const currentVargaData = useMemo(() => {
+    if (activePage >= 2 && activePage <= 29 && currentPageDef.vargaId) {
+      return computeCompleteVargaPageData(chart, currentPageDef.vargaId, gocharChart);
+    }
+    return null;
+  }, [activePage, currentPageDef.vargaId, chart, gocharChart]);
+
+  const handlePrevPage = () => {
+    if (activePage > 1) setActivePage(activePage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (activePage < 38) setActivePage(activePage + 1);
+  };
+
+  // Render Varga Page View (Pages 2 through 29)
+  const renderVargaView = (data: CompleteVargaPageData) => {
+    const chartBadges: ChartBadgeItem[] = [
       {
         id: 'Asc',
         label: trPlanetShort('Asc', lang),
-        signIndex: chart.ascendant.signIndex,
+        signIndex: data.lagnaSignIndex,
         houseNumber: 1,
         isLagna: true,
-        isVargottama: chart.ascendant.isVargottama,
-        tooltip: `${trPlanet('Asc', lang)}: ${trSign(chart.ascendant.signIndex, lang)} ${chart.ascendant.dms}`,
+        tooltip: `${trPlanet('Asc', lang)}: ${trSign(data.lagnaSignIndex, lang)}`,
       },
-      ...chart.planets.map((p) => ({
-        id: p.id,
-        label: trPlanetShort(p.id, lang),
-        signIndex: p.signIndex,
-        houseNumber: p.houseNumber,
-        isRetrograde: p.isRetrograde,
-        isCombust: p.isCombust,
-        isVargottama: p.isVargottama,
-        dignity: p.dignity,
-        tooltip: `${trPlanet(p.id, lang)}: ${trSign(p.signIndex, lang)} ${p.dms} | ${trTerm(p.dignity, lang)}`,
-      })),
+      ...data.placements
+        .filter((p) => p.id !== 'Asc')
+        .map((p) => ({
+          id: p.id,
+          label: trPlanetShort(p.id, lang),
+          signIndex: p.signIndex,
+          houseNumber: p.houseFromLagna,
+          isRetrograde: p.isRetrograde,
+          isCombust: p.isCombust,
+          isVargottama: p.isVargottama,
+          dignity: p.dignity,
+          tooltip: `${trPlanet(p.id, lang)}: ${trSign(p.signIndex, lang)} H${p.houseFromLagna} | ${trTerm(p.dignity, lang)}`,
+        })),
     ];
 
-    if (showSpecialPoints) {
-      for (const sp of chart.specialPoints) {
-        items.push({
-          id: sp.id,
-          label: trPlanetShort(sp.shortLabel, lang),
-          signIndex: sp.signIndex,
-          houseNumber: sp.houseNumber,
-          tooltip: `${sp.label}: ${trSign(sp.signIndex, lang)} ${sp.dms}`,
-        });
-      }
-    }
-
-    return items;
-  }, [leftChartType, chalitData, chart, gocharChart, lang, showSpecialPoints]);
-
-  const leftLagnaSignIndex = useMemo(() => {
-    if (leftChartType === 'CHALIT') return chart.ascendant.signIndex;
-    if (leftChartType === 'D9') return chart.divisionalCharts['D9'].lagnaSignIndex;
-    if (leftChartType === 'GOCHAR') return gocharChart.ascendant.signIndex;
-    return chart.ascendant.signIndex;
-  }, [leftChartType, chart, gocharChart]);
-
-  const leftChartTitle = useMemo(() => {
-    if (leftChartType === 'D1') return isHi ? 'लग्न कुंडली (D-1 Rasi)' : 'Lagna Chart (D-1 Rasi)';
-    if (leftChartType === 'CHALIT') return isHi ? 'भाव चलित (श्रीपति)' : 'Bhava Chalit (Sripati)';
-    if (leftChartType === 'D9') return isHi ? 'नवांश कुंडली (D-9)' : 'Navamsha Chart (D-9)';
-    return isHi ? 'गोचर कुंडली (Live Transit)' : 'Live Transit (Gochar)';
-  }, [leftChartType, isHi]);
-
-  const renderPredictiveDomainCard = (dom: PredictiveDomainDetail) => (
-    <article key={dom.id} className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
-      <div className="domain-top">
-        <div>
-          <h4>{isHi ? dom.titleHi : dom.titleEn}</h4>
-          <span className="tag tag-strong mono">{dom.score}% {isHi ? 'सामर्थ्य' : 'Score'}</span>
-        </div>
-      </div>
-
-      <div className="gochar-banner is-info" style={{ marginTop: 8, padding: '6px 10px', fontSize: '11.5px' }}>
-        <strong>📜 {isHi ? 'शास्त्रीय प्रमाण:' : 'Classical Shastra:'}</strong> {dom.classicalSource}
-        {dom.shlokaRef && <div className="mono small-text" style={{ marginTop: 2, color: 'var(--accent)' }}>{dom.shlokaRef}</div>}
-      </div>
-
-      <div style={{ marginTop: 10, padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
-        🎯 {isHi ? dom.verdictHi : dom.verdictEn}
-      </div>
-
-      <div style={{ marginTop: 10 }}>
-        <strong style={{ fontSize: '12px', color: 'var(--good)' }}>{isHi ? 'विस्तृत शास्त्रीय विवेचन:' : 'Detailed Shastric Analysis:'}</strong>
-        <ul style={{ margin: '6px 0 0 16px', padding: 0, fontSize: '12px', lineHeight: 1.6 }}>
-          {(isHi ? dom.detailedAnalysisHi : dom.detailedAnalysisEn).map((pt, i) => (
-            <li key={i}>{pt}</li>
-          ))}
-        </ul>
-      </div>
-
-      {dom.conditionalBranchesHi && dom.conditionalBranchesHi.length > 0 && (
-        <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.25)', borderRadius: '6px' }}>
-          <strong style={{ fontSize: '12px', color: 'var(--warn)' }}>⚖️ {isHi ? 'यथार्थवादी परिस्थितियां एवं जीवन शाखाएं:' : 'Realistic Conditional Scenarios:'}</strong>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-            {(isHi ? dom.conditionalBranchesHi : dom.conditionalBranchesEn).map((br, i) => (
-              <div key={i} style={{ fontSize: '11.5px', lineHeight: 1.5 }}>
-                <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>• {br.condition}:</span>{' '}
-                <span className="muted">{br.outcome}</span>
-              </div>
-            ))}
+    return (
+      <div className="varga-page-container view-stack" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Banner with Varga Title & Shastric Significance */}
+        <div
+          className="card"
+          style={{
+            padding: '14px 18px',
+            background: 'var(--bg-elevated)',
+            borderLeft: '4px solid var(--accent)',
+            borderRadius: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+                {currentPageDef.icon} {isHi ? data.nameHi : data.nameEn}
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
+                🎯 {isHi ? data.significationHi : data.significationEn}
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="tag tag-strong mono">{data.strength.score}% {isHi ? 'सामर्थ्य' : 'Score'}</span>
+              <span className="tag tag-accent">{data.sanskritName}</span>
+            </div>
           </div>
         </div>
-      )}
 
-      {dom.remediesHi && dom.remediesHi.length > 0 && (
-        <div style={{ marginTop: 10 }}>
-          <strong style={{ fontSize: '12px', color: 'var(--accent)' }}>🕉️ {isHi ? 'सटीक शास्त्रीय उपाय:' : 'Tailored Vedic Remedies:'}</strong>
-          <ul style={{ margin: '4px 0 0 16px', padding: 0, fontSize: '11.5px', color: 'var(--muted)' }}>
-            {(isHi ? dom.remediesHi : dom.remediesEn).map((rem, i) => (
-              <li key={i}>{rem}</li>
-            ))}
-          </ul>
+        {/* Two-Column Grid: Left Column = Chart Placement & Table; Right Column = Strength, Yuti, Yoga, Dasha, Gochar */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: '20px',
+            alignItems: 'start',
+          }}
+        >
+          {/* Column A: Kundali Placement Chart SVG + Placements Table */}
+          <div className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '15px' }}>
+                🏛️ {isHi ? 'कुंडली चक्र स्थिति (Placement)' : 'Kundali Chart Placement'}
+              </h3>
+              {onChangeChartStyle && (
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${chartStyle === 'north' ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => onChangeChartStyle('north')}
+                    style={{ fontSize: '11px', padding: '2px 8px' }}
+                  >
+                    {isHi ? 'उत्तर' : 'North'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${chartStyle === 'south' ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => onChangeChartStyle('south')}
+                    style={{ fontSize: '11px', padding: '2px 8px' }}
+                  >
+                    {isHi ? 'दक्षिण' : 'South'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${chartStyle === 'east' ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => onChangeChartStyle('east')}
+                    style={{ fontSize: '11px', padding: '2px 8px' }}
+                  >
+                    {isHi ? 'पूर्व' : 'East'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <VedicChartSvg
+                title={`${isHi ? data.nameHi : data.nameEn}`}
+                style={chartStyle}
+                lagnaSignIndex={data.lagnaSignIndex}
+                items={chartBadges}
+              />
+            </div>
+
+            {/* Placements Table */}
+            <div style={{ overflowX: 'auto', marginTop: '6px' }}>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <thead>
+                  <tr>
+                    <th>{isHi ? 'ग्रह' : 'Body'}</th>
+                    <th>{isHi ? 'राशि' : 'Sign'}</th>
+                    <th>{isHi ? 'भाव' : 'House'}</th>
+                    <th>{isHi ? 'अवस्था' : 'Dignity'}</th>
+                    <th>{isHi ? 'विशेष' : 'Special'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.placements.map((p) => (
+                    <tr key={p.id}>
+                      <td style={{ fontWeight: 600 }}>{isHi ? p.nameHi : p.nameEn}</td>
+                      <td>{isHi ? p.signNameHi : p.signNameEn}</td>
+                      <td>H{p.houseFromLagna}</td>
+                      <td>
+                        <span
+                          className={`tag ${
+                            p.dignity === 'Exalted' || p.dignity === 'Own Sign'
+                              ? 'tag-good'
+                              : p.dignity === 'Debilitated'
+                              ? 'tag-bad'
+                              : 'tag-subtle'
+                          }`}
+                        >
+                          {trTerm(p.dignity, lang)}
+                        </span>
+                      </td>
+                      <td>
+                        {p.isVargottama && <span className="tag tag-accent mono">वर्गोत्तम</span>}
+                        {p.isRetrograde && <span className="tag tag-warn mono">व</span>}
+                        {p.isCombust && <span className="tag tag-bad mono">अस्त</span>}
+                        {p.specialBadge && <span className="tag tag-subtle mono">{p.specialBadge}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Column B: Strength, Yuti, Yoga, Dasha & Gochar */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* 1. Strength & Varga-Bala */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                ⚡ {isHi ? 'वर्ग सामर्थ्य व बल विश्लेषण (Strength)' : 'Varga Strength & Bala Analysis'}
+              </h3>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                <span className="tag tag-good">केंद्र में ग्रह: {data.strength.kendraCount}</span>
+                <span className="tag tag-accent">त्रिकोण में ग्रह: {data.strength.trikonaCount}</span>
+                {data.strength.vargottamaCount > 0 && (
+                  <span className="tag tag-strong">वर्गोत्तम: {data.strength.vargottamaCount}</span>
+                )}
+                {data.strength.exaltedCount > 0 && (
+                  <span className="tag tag-good">उच्च ग्रह: {data.strength.exaltedCount}</span>
+                )}
+                {data.strength.dusthanaCount > 0 && (
+                  <span className="tag tag-subtle">त्रिक (6/8/12): {data.strength.dusthanaCount}</span>
+                )}
+              </div>
+              <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {isHi ? data.strength.verdictHi : data.strength.verdictEn}
+              </div>
+            </div>
+
+            {/* 2. Conjunctions (Yuti) */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                🔗 {isHi ? 'इस वर्ग में बनने वाली युति (Conjunctions)' : 'Conjunctions in this Varga (Yuti)'}
+              </h3>
+              {data.yutis.length === 0 ? (
+                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                  {isHi ? 'इस वर्ग में कोई बहु-ग्रह युति नहीं है।' : 'No major multi-planet conjunctions in this varga.'}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {data.yutis.map((y, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        padding: '8px 12px',
+                        background: 'var(--bg-subtle)',
+                        borderRadius: '6px',
+                        borderLeft: `3px solid ${y.isBenefic ? 'var(--good)' : 'var(--warn)'}`,
+                        fontSize: '12px',
+                      }}
+                    >
+                      <strong style={{ color: 'var(--text-primary)' }}>{isHi ? y.nameHi : y.nameEn}</strong> (भाव {y.house})
+                      <div style={{ marginTop: '2px', color: 'var(--muted)' }}>{isHi ? y.impactHi : y.impactEn}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 3. Divisional Yogas */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                👑 {isHi ? 'इस वर्ग के शास्त्रीय राजयोग (Varga Yogas)' : 'Classical Yogas in this Varga'}
+              </h3>
+              {data.yogas.length === 0 ? (
+                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                  {isHi ? 'इस वर्ग में सामान्य योग सक्रिय हैं।' : 'Standard planetary dispositions active.'}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {data.yogas.map((yo) => (
+                    <div
+                      key={yo.id}
+                      style={{
+                        padding: '8px 12px',
+                        background: 'var(--bg-subtle)',
+                        borderRadius: '6px',
+                        borderLeft: '3px solid var(--accent)',
+                        fontSize: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <strong style={{ color: 'var(--accent)' }}>{isHi ? yo.nameHi : yo.nameEn}</strong>
+                        <span className="tag tag-good" style={{ fontSize: '10.5px' }}>{isHi ? yo.natureHi : yo.nature}</span>
+                      </div>
+                      <div style={{ marginTop: '3px', color: 'var(--text-primary)' }}>{isHi ? yo.impactHi : yo.impactEn}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 4. Active Dasha Alignment */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 8px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                ⏳ {isHi ? 'वर्तमान दशा सक्रियता (Current Dasha Alignment)' : 'Current Dasha Alignment in this Varga'}
+              </h3>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                {isHi ? data.dashaAlignment.alignmentEffectHi : data.dashaAlignment.alignmentEffectEn}
+              </div>
+            </div>
+
+            {/* 5. Live Gochar Alignment */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 8px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                🪐 {isHi ? 'वर्तमान गोचर संचरण (Live Gochar Alignment)' : 'Live Gochar Alignment in this Varga'}
+              </h3>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                {isHi ? data.gocharAlignment.gocharVerdictHi : data.gocharAlignment.gocharVerdictEn}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-    </article>
-  );
 
-  // Master Menus Definition
-  const masterMenus: Array<{
-    id: WorkstationMenuId;
-    labelHi: string;
-    labelEn: string;
-    icon: string;
-    badge?: string;
-  }> = [
-    { id: 'sarini', labelHi: 'ज्योतिष सारिणी व विवरण', labelEn: 'Basic & Avakhada Sheet', icon: '📋' },
-    { id: 'charts_tables', labelHi: 'वर्ग चक्र व तालिकायें', labelEn: 'Charts & Tables (D1–D60)', icon: '📊' },
-    { id: 'dasha', labelHi: 'दशा प्रणाली (विंशोत्तरी/योगिनी)', labelEn: 'Dasha Systems (5 Levels)', icon: '⏳' },
-    { id: 'varshphal', labelHi: 'वर्षफल / ताजिक वार्षिक', labelEn: 'Varshphal / Tajika Solar', icon: '☀️' },
-    { id: 'chakras', labelHi: 'विविध वैदिक चक्र (सुदर्शन/कोट)', labelEn: 'Vedic Chakras (Kota/Kurma)', icon: '☸️' },
-    { id: 'yogas_doshas', labelHi: 'योग, दोष एवं युति', labelEn: 'Yogas, Doshas & Yuti', icon: '⚡' },
-    { id: 'navamsha', labelHi: 'नवांश विशेष विवेचन (D9)', labelEn: 'Navamsha D9 Deep Reading', icon: '🌟' },
-    { id: 'kp_system', labelHi: 'के.पी. (KP) ज्योतिष प्रणाली', labelEn: 'KP System & Sub-Lords', icon: '🎯', badge: 'KP' },
-    { id: 'lal_kitab', labelHi: 'लाल किताब (टेवा व उपाय)', labelEn: 'Lal Kitab System & Debts', icon: '📕', badge: 'LK' },
-    { id: 'predictions', labelHi: 'सटीक जीवन फलकथन', labelEn: 'Deep Predictive Analysis', icon: '🔮' },
-    { id: 'past_future', labelHi: 'पूर्व जन्म व भावी गति (D60)', labelEn: 'Past Life & Future Rebirth', icon: '🌌' },
-    { id: 'matchmaking', labelHi: 'कुंडली मिलान (अष्टकूट)', labelEn: 'Kundali Match Making (36)', icon: '💍' },
-    { id: 'remedies', labelHi: 'सम्पूर्ण शास्त्रीय उपाय', labelEn: 'Comprehensive Remedies', icon: '🕉️' },
-    { id: 'panchang', labelHi: 'दैनिक पंचांग व मुहूर्त', labelEn: 'Daily Panchang & Muhurta', icon: '📅' },
-  ];
+        {/* Bottom Full-Width Section: Complete Shastric Predictions for this Varga */}
+        <div className="card" style={{ padding: '20px', borderLeft: '4px solid var(--good)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: 'var(--good)' }}>
+              🔮 {isHi ? `${data.nameHi} का संपूर्ण फलकथन (Shastric Predictions)` : `Complete Predictive Reading for ${data.nameEn}`}
+            </h3>
+            <span className="tag tag-accent">{data.prediction.classicalSource}</span>
+          </div>
+
+          {data.prediction.shlokaRef && (
+            <div className="mono small-text" style={{ marginTop: '8px', color: 'var(--accent)', fontStyle: 'italic' }}>
+              📜 {data.prediction.shlokaRef}
+            </div>
+          )}
+
+          {/* Verdict */}
+          <div
+            style={{
+              marginTop: '12px',
+              padding: '10px 14px',
+              background: 'var(--bg-subtle)',
+              borderRadius: '6px',
+              fontSize: '13.5px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+            }}
+          >
+            🎯 {isHi ? data.prediction.verdictHi : data.prediction.verdictEn}
+          </div>
+
+          {/* Detailed Shastric Analysis */}
+          <div style={{ marginTop: '14px' }}>
+            <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
+              {isHi ? 'विस्तृत शास्त्रीय विवेचन:' : 'Detailed Shastric Analysis:'}
+            </strong>
+            <ul style={{ margin: '8px 0 0 20px', padding: 0, fontSize: '12.5px', lineHeight: 1.6 }}>
+              {(isHi ? data.prediction.detailedAnalysisHi : data.prediction.detailedAnalysisEn).map((pt, i) => (
+                <li key={i} style={{ marginBottom: '4px' }}>{pt}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Realistic Conditional Scenarios */}
+          {data.prediction.conditionalBranchesHi.length > 0 && (
+            <div
+              style={{
+                marginTop: '14px',
+                padding: '10px 14px',
+                background: 'rgba(234, 179, 8, 0.08)',
+                border: '1px solid rgba(234, 179, 8, 0.25)',
+                borderRadius: '6px',
+              }}
+            >
+              <strong style={{ fontSize: '12.5px', color: 'var(--warn)' }}>
+                ⚖️ {isHi ? 'यथार्थवादी परिस्थितियां व जीवन शाखाएं:' : 'Realistic Conditional Scenarios:'}
+              </strong>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
+                {(isHi ? data.prediction.conditionalBranchesHi : data.prediction.conditionalBranchesEn).map((br, i) => (
+                  <div key={i} style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>• {br.condition}:</span>{' '}
+                    <span className="muted">{br.outcome}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tailored Vedic Remedies */}
+          {data.prediction.remediesHi.length > 0 && (
+            <div style={{ marginTop: '14px' }}>
+              <strong style={{ fontSize: '12.5px', color: 'var(--accent)' }}>
+                🕉️ {isHi ? 'सटीक शास्त्रीय उपाय:' : 'Tailored Vedic Remedies:'}
+              </strong>
+              <ul style={{ margin: '6px 0 0 20px', padding: 0, fontSize: '12px', color: 'var(--muted)' }}>
+                {(isHi ? data.prediction.remediesHi : data.prediction.remediesEn).map((rem, i) => (
+                  <li key={i} style={{ marginBottom: '3px' }}>{rem}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="vedic-master-workstation view-stack" style={{ width: '100%', maxWidth: '100%' }}>
-      {/* 1. TOP NATIVE CONSOLE BANNER */}
+    <div className="vedic-master-workstation view-stack" style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* 1. MASTER WORKSTATION PAGE NAVIGATOR BAR */}
       <div
         className="card"
         style={{
@@ -443,1784 +647,638 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '12px 20px',
+          gap: '12px',
           borderLeft: '4px solid var(--accent)',
           borderRadius: '10px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <User size={20} style={{ color: 'var(--accent)' }} />
-            <div>
-              <span style={{ fontWeight: 800, fontSize: '16px' }}>{chart.input.name}</span>
-              <span className="muted small-text" style={{ marginLeft: 8 }}>
-                ({chart.input.gender ? (isHi ? (chart.input.gender === 'male' ? 'पुरुष' : 'महिला') : chart.input.gender.toUpperCase()) : ''})
-              </span>
-            </div>
-          </div>
-          <div className="muted small-text" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <span>📅 {formatDateDmy(chart.input.date)} {chart.input.time}</span>
-            <span>📍 {chart.input.city}, {chart.input.country}</span>
-            <span className="mono">({Math.abs(chart.input.latitude).toFixed(2)}°{chart.input.latitude >= 0 ? 'N' : 'S'}, {Math.abs(chart.input.longitude).toFixed(2)}°{chart.input.longitude >= 0 ? 'E' : 'W'})</span>
-            <span className="tag tag-varg mono">{chart.settings.ayanamsa.toUpperCase()}</span>
-          </div>
+        {/* Left: Previous / Next & Page Dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={handlePrevPage}
+            disabled={activePage <= 1}
+            title={isHi ? 'पिछला पेज' : 'Previous Page'}
+            style={{ fontWeight: 600 }}
+          >
+            <ChevronLeft size={16} />
+            <span>{isHi ? 'पिछला पेज' : 'Prev'}</span>
+          </button>
+
+          {/* Master Page Dropdown Selector */}
+          <select
+            aria-label="Select Workstation Page"
+            className="dropdown-master-select"
+            value={activePage}
+            onChange={(e) => setActivePage(parseInt(e.target.value, 10))}
+            style={{ fontSize: '13px', fontWeight: 600, padding: '6px 12px', minWidth: '260px' }}
+          >
+            {WORKSTATION_PAGES.map((pg) => (
+              <option key={pg.pageNumber} value={pg.pageNumber}>
+                {pg.icon} {isHi ? pg.labelHi : pg.labelEn}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={handleNextPage}
+            disabled={activePage >= 38}
+            title={isHi ? 'अगला पेज' : 'Next Page'}
+            style={{ fontWeight: 600 }}
+          >
+            <span>{isHi ? 'अगला पेज' : 'Next'}</span>
+            <ChevronRight size={16} />
+          </button>
         </div>
 
-        {/* Profile Switcher & Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          {profiles.length > 1 && (
-            <select
-              className="select-input"
-              value={activeProfileId}
-              onChange={(e) => onSelectProfile(e.target.value)}
-              style={{ padding: '4px 8px', fontSize: '12px', height: '32px' }}
-              title={isHi ? 'कुंडली बदलें' : 'Switch Native Profile'}
-            >
-              {profiles.map((p) => (
-                <option key={p.id} value={p.id}>
-                  👤 {p.name} ({p.date})
-                </option>
-              ))}
-            </select>
-          )}
+        {/* Right: Native Identity & Utility Badges */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span className="mono" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent)' }}>
+            {isHi ? `पेज ${activePage} / 38` : `Page ${activePage} of 38`}
+          </span>
+
+          <span className="tag tag-accent mono">
+            {chart.input.name} ({chart.input.date})
+          </span>
 
           {onOpenEditor && (
             <button
               type="button"
               className="btn btn-secondary btn-sm"
               onClick={onOpenEditor}
-              title={isHi ? 'जन्म विवरण संशोधित करें' : 'Edit Birth Details'}
+              style={{ fontSize: '11px', padding: '4px 8px' }}
             >
               <Edit3 size={13} />
-              <span>{isHi ? 'विवरण बदलें' : 'Edit Data'}</span>
+              <span>{isHi ? 'जन्म विवरण बदलें' : 'Edit Data'}</span>
             </button>
-          )}
-
-          {onOpenBooklet && (
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              onClick={onOpenBooklet}
-              title={isHi ? '34-अध्यायी बृहत् पत्रिका PDF' : 'Patrika PDF'}
-            >
-              <FileText size={13} />
-              <span>{isHi ? 'पत्रिका PDF' : 'Patrika PDF'}</span>
-            </button>
-          )}
-
-          {onChangeChartStyle && (
-            <div style={{ display: 'flex', gap: '3px' }}>
-              <button
-                type="button"
-                className={`btn btn-sm ${chartStyle === 'north' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => onChangeChartStyle('north')}
-                style={{ padding: '3px 7px', fontSize: '11px' }}
-                title="North Indian"
-              >
-                {isHi ? 'उत्तर' : 'North'}
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${chartStyle === 'south' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => onChangeChartStyle('south')}
-                style={{ padding: '3px 7px', fontSize: '11px' }}
-                title="South Indian"
-              >
-                {isHi ? 'दक्षिण' : 'South'}
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${chartStyle === 'east' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => onChangeChartStyle('east')}
-                style={{ padding: '3px 7px', fontSize: '11px' }}
-                title="East Indian"
-              >
-                {isHi ? 'पूर्व' : 'East'}
-              </button>
-            </div>
           )}
         </div>
       </div>
 
-      {/* 2. MAIN SPLIT WORKSPACE: LEFT PERSISTENT PANE + RIGHT MODULAR TABS */}
-      <div className="workstation-split-layout">
-        {/* ========================================================= */}
-        {/* LEFT COLUMN: INTERACTIVE CHARTS, DASHA, STRENGTH & PLANETS */}
-        {/* ========================================================= */}
-        <aside className="workstation-left-pane">
-          {/* A. Fast Interactive Kundali Viewport */}
-          <section className="workstation-card">
-            <div className="dossier-chart-nav-pills">
-              <button
-                type="button"
-                className={`chart-pill-btn ${leftChartType === 'D1' ? 'active' : ''}`}
-                onClick={() => setLeftChartType('D1')}
-              >
-                🏛️ {isHi ? 'D-1 लग्न' : 'D-1 Lagna'}
-              </button>
-              <button
-                type="button"
-                className={`chart-pill-btn ${leftChartType === 'CHALIT' ? 'active' : ''}`}
-                onClick={() => setLeftChartType('CHALIT')}
-              >
-                ⚖️ {isHi ? 'भाव चलित' : 'Chalit'}
-              </button>
-              <button
-                type="button"
-                className={`chart-pill-btn ${leftChartType === 'D9' ? 'active' : ''}`}
-                onClick={() => setLeftChartType('D9')}
-              >
-                💎 {isHi ? 'D-9 नवांश' : 'D-9 Navamsha'}
-              </button>
-              <button
-                type="button"
-                className={`chart-pill-btn ${leftChartType === 'GOCHAR' ? 'active' : ''}`}
-                onClick={() => setLeftChartType('GOCHAR')}
-              >
-                🌌 {isHi ? 'गोचर' : 'Gochar'}
-              </button>
-            </div>
+      {/* 2. DYNAMIC PAGE RENDERER ACCORDING TO USER FLOW */}
 
-            <div className="dossier-svg-wrapper">
-              <VedicChartSvg
-                title={leftChartTitle}
-                style={chartStyle}
-                lagnaSignIndex={leftLagnaSignIndex}
-                items={leftChartBadges}
-                savBindus={showSavPoints ? chart.ashtakavarga?.sarva : undefined}
-                centerLabel={leftChartType}
-              />
-            </div>
+      {/* PAGE 1: EXCLUSIVELY BASIC DETAILS (मूल विवरण व ज्योतिष सारिणी) */}
+      {activePage === 1 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+              📋 {isHi ? 'पेज 1: मूल विवरण व ज्योतिष सारिणी (Basic & Avakhada Sheet)' : 'Page 1: Basic Details & Avakhada Sheet'}
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
+              {isHi
+                ? 'जातक जन्म विवरण, अवकहड़ा चक्र, घटक चक्र एवं शुभ-अशुभ अनुकूलता तालिकाएं (शुद्ध मूल विवरण)'
+                : 'Native birth specifics, Avakhada Chakra, Ghatak inauspicious factors & auspicious favorable points.'}
+            </p>
+          </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, fontSize: '11px', color: 'var(--text-muted)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={showSpecialPoints}
-                  onChange={(e) => setShowSpecialPoints(e.target.checked)}
-                />
-                <span>{isHi ? 'विशेष बिंदु (मांदि/गुलिक)' : 'Special Points'}</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={showSavPoints}
-                  onChange={(e) => setShowSavPoints(e.target.checked)}
-                />
-                <span>{isHi ? 'SAV बिंदु' : 'SAV Points'}</span>
-              </label>
-            </div>
-          </section>
-
-          {/* B. Active Running Dasha Card */}
-          <section className="workstation-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <div style={{ fontWeight: 700, fontSize: '13px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Clock size={15} style={{ color: 'var(--accent)' }} />
-                <span>{isHi ? 'सक्रिय विंशोत्तरी दशा' : 'Active Vimshottari Dasha'}</span>
-              </div>
-              <span className="tag tag-varg small-text">5-Level Live</span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', textAlign: 'center' }}>
-              {activeDashaSummary.maha && (
-                <div style={{ padding: '6px 4px', background: 'var(--bg-subtle)', borderRadius: '6px', border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>MD (महादशा)</div>
-                  <div style={{ fontWeight: 700, color: 'var(--accent)' }}>{trPlanet(activeDashaSummary.maha.lord as PlanetId, lang)}</div>
-                  <div style={{ fontSize: '9.5px', color: 'var(--text-muted)' }}>तक {formatDateDmy(new Date(activeDashaSummary.maha.endMs).toISOString().split('T')[0])}</div>
-                </div>
-              )}
-              {activeDashaSummary.antar && (
-                <div style={{ padding: '6px 4px', background: 'var(--bg-subtle)', borderRadius: '6px', border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>AD (अंतर्दशा)</div>
-                  <div style={{ fontWeight: 700, color: 'var(--good)' }}>{trPlanet(activeDashaSummary.antar.lord as PlanetId, lang)}</div>
-                  <div style={{ fontSize: '9.5px', color: 'var(--text-muted)' }}>तक {formatDateDmy(new Date(activeDashaSummary.antar.endMs).toISOString().split('T')[0])}</div>
-                </div>
-              )}
-              {activeDashaSummary.pratyantar && (
-                <div style={{ padding: '6px 4px', background: 'var(--bg-subtle)', borderRadius: '6px', border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PD (प्रत्यंतर)</div>
-                  <div style={{ fontWeight: 700, color: 'var(--indigo)' }}>{trPlanet(activeDashaSummary.pratyantar.lord as PlanetId, lang)}</div>
-                  <div style={{ fontSize: '9.5px', color: 'var(--text-muted)' }}>तक {formatDateDmy(new Date(activeDashaSummary.pratyantar.endMs).toISOString().split('T')[0])}</div>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* C. Strength & Telemetry Strip */}
-          <section className="workstation-card">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', fontSize: '11.5px' }}>
-              <div style={{ padding: '6px 8px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
-                <span className="muted">{isHi ? 'लग्न राशि:' : 'Asc Sign:'} </span>
-                <strong>{trSign(chart.ascendant.signIndex, lang)} ({chart.ascendant.dms})</strong>
-              </div>
-              <div style={{ padding: '6px 8px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
-                <span className="muted">{isHi ? 'चंद्र राशि:' : 'Moon Sign:'} </span>
-                <strong>{trSign(chart.planets.find(p => p.id === 'Moon')?.signIndex ?? 0, lang)}</strong>
-              </div>
-              <div style={{ padding: '6px 8px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
-                <span className="muted">{isHi ? 'नक्षत्र:' : 'Nakshatra:'} </span>
-                <strong>{trTerm(chart.planets.find(p => p.id === 'Moon')?.nakshatraName ?? '', lang)} (प{chart.planets.find(p => p.id === 'Moon')?.pada})</strong>
-              </div>
-              <div style={{ padding: '6px 8px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
-                <span className="muted">{isHi ? 'लग्न SAV:' : 'Lagna SAV:'} </span>
-                <strong className="mono">{chart.ashtakavarga?.sarva[chart.ascendant.signIndex] ?? 28} / 337</strong>
-              </div>
-            </div>
-          </section>
-
-          {/* D. Compact Grah Stithi (Planetary Positions Table) */}
-          <section className="workstation-card" style={{ padding: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontWeight: 700, fontSize: '12.5px' }}>
-                {isHi ? 'ग्रह स्थिति तालिका (Grah Stithi)' : 'Planetary Positions Table'}
-              </span>
-              <span className="muted small-text">{chart.planets.length + 1} {isHi ? 'ग्रह' : 'bodies'}</span>
-            </div>
-
-            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table className="data-table" style={{ fontSize: '11px', width: '100%', minWidth: '340px' }}>
-                <thead>
-                  <tr>
-                    <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                    <th>{isHi ? 'राशि' : 'Rasi'}</th>
-                    <th>{isHi ? 'अंश' : 'Deg'}</th>
-                    <th>{isHi ? 'नक्षत्र' : 'Nak'}</th>
-                    <th>{isHi ? 'स्थिति' : 'State'}</th>
-                    <th>{isHi ? 'गरिमा' : 'Dignity'}</th>
-                  </tr>
-                </thead>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '20px',
+            }}
+          >
+            {/* 1. Birth Info */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                👤 {isHi ? 'जातक जन्म विवरण' : 'Birth Particulars'}
+              </h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
                 <tbody>
-                  {/* Ascendant */}
-                  <tr style={{ background: 'var(--bg-subtle)', fontWeight: 600 }}>
-                    <td>{trPlanet('Asc', lang)}</td>
-                    <td>{trSign(chart.ascendant.signIndex, lang)}</td>
-                    <td className="mono">{chart.ascendant.dms}</td>
-                    <td>{trTerm(chart.ascendant.nakshatraName, lang).slice(0, 6)} {chart.ascendant.pada}</td>
-                    <td>-</td>
-                    <td><span className="dignity-badge badge-neutral">{isHi ? 'लग्न' : 'Lagna'}</span></td>
-                  </tr>
-
-                  {/* 9 Planets */}
-                  {chart.planets.map((p) => {
-                    const isExalted = p.dignity === 'Exalted';
-                    const isDebilitated = p.dignity === 'Debilitated';
-                    const isOwn = p.dignity === 'Own Sign';
-
-                    return (
-                      <tr key={p.id}>
-                        <td>
-                          <strong>{trPlanet(p.id, lang)}</strong>
-                          {p.isRetrograde && <span style={{ color: 'var(--bad)', marginLeft: 3 }} title="Retrograde">℞</span>}
-                          {p.isCombust && <span style={{ color: 'var(--warn)', marginLeft: 3 }} title="Combust">🔥</span>}
-                        </td>
-                        <td>{trSign(p.signIndex, lang)}</td>
-                        <td className="mono">{p.dms}</td>
-                        <td>{trTerm(p.nakshatraName, lang).slice(0, 6)} {p.pada}</td>
-                        <td>
-                          {p.isRetrograde ? (isHi ? 'व' : 'R') : (isHi ? 'मा' : 'D')}
-                          {p.isCombust ? (isHi ? '/अ' : '/C') : ''}
-                        </td>
-                        <td>
-                          <span className={`dignity-badge ${isExalted ? 'badge-good' : isDebilitated ? 'badge-bad' : isOwn ? 'badge-blue' : 'badge-neutral'}`}>
-                            {trTerm(p.dignity, lang)}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {basicSheet.personDetails.map((row: BasicDetailRow, idx: number) => (
+                    <tr key={idx}>
+                      <td className="muted" style={{ width: '45%' }}>{isHi ? row.labelHi : row.labelEn}</td>
+                      <td style={{ fontWeight: 600 }}>{isHi ? row.valueHi : row.valueEn}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-          </section>
-        </aside>
 
-        {/* ========================================================= */}
-        {/* RIGHT COLUMN: 13 DEDICATED MODULAR MENUS                   */}
-        {/* ========================================================= */}
-        <main className="workstation-main-pane">
-          {/* Horizontal Master Tab Bar (13 Menus) */}
-          <nav className="workstation-tab-bar" role="tablist" aria-label="Workstation Menus">
-            {masterMenus.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                className={`workstation-tab-btn ${activeMenu === m.id ? 'active' : ''}`}
-                onClick={() => setActiveMenu(m.id)}
-                role="tab"
-                aria-selected={activeMenu === m.id}
-              >
-                <span>{m.icon}</span>
-                <span>{isHi ? m.labelHi : m.labelEn}</span>
-                {m.badge && <span className="workstation-tab-badge">{m.badge}</span>}
-              </button>
-            ))}
-          </nav>
-
-          {/* ========================================================= */}
-          {/* MENU 1: ज्योतिष सारिणी व मूल विवरण (SARINI & BASICS)      */}
-          {/* ========================================================= */}
-          {activeMenu === 'sarini' && (
-            <div className="view-stack">
-              {/* 1. Basic Birth Details */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>
-                    <Layers size={16} />{' '}
-                    {isHi ? 'जन्म विवरण (Person Details)' : 'Birth & Person Details'}
-                  </h3>
-                  <span className="muted small-text">{chart.input.name}</span>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <tbody>
-                      {basicSheet.personDetails.map((row) => (
-                        <tr key={row.key}>
-                          <td style={{ width: '35%', fontWeight: 600 }}>{isHi ? row.labelHi : row.labelEn}</td>
-                          <td className={row.mono ? 'mono' : ''}>{isHi ? row.valueHi : row.valueEn}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* 2. Avakhada Chakra Table */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>
-                    <Star size={16} />{' '}
-                    {isHi ? 'अवकहड़ा चक्र (Avakhada Details)' : 'Avakhada Chakra Details'}
-                  </h3>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <tbody>
-                      {basicSheet.avakhadaDetails.map((row) => (
-                        <tr key={row.key}>
-                          <td style={{ width: '35%', fontWeight: 600 }}>{isHi ? row.labelHi : row.labelEn}</td>
-                          <td className={row.mono ? 'mono' : ''}>{isHi ? row.valueHi : row.valueEn}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* 3. Ghatak Chakra & 4. Favourable Points */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <ShieldAlert size={16} />{' '}
-                      {isHi ? 'घातक चक्र (Ghatak Chakra)' : 'Ghatak Inauspicious Periods'}
-                    </h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <tbody>
-                        {basicSheet.ghatakMalefics.map((row) => (
-                          <tr key={row.key}>
-                            <td style={{ fontWeight: 600 }}>{isHi ? row.labelHi : row.labelEn}</td>
-                            <td>{isHi ? row.valueHi : row.valueEn}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <Sparkles size={16} />{' '}
-                      {isHi ? 'शुभ तत्व व अनुकूलता (Favourable Points)' : 'Auspicious & Favourable Points'}
-                    </h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <tbody>
-                        {basicSheet.favourablePoints.map((row) => (
-                          <tr key={row.key}>
-                            <td style={{ fontWeight: 600 }}>{isHi ? row.labelHi : row.labelEn}</td>
-                            <td>{isHi ? row.valueHi : row.valueEn}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 2: कुंडली व वर्ग चक्र (CHARTS & TABLES D1-D60)       */}
-          {/* ========================================================= */}
-          {activeMenu === 'charts_tables' && (
-            <div className="view-stack">
-              <div className="subtab-bar" style={{ marginBottom: 12 }}>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chartsSubTab === 'vargas' ? 'is-active' : ''}`}
-                  onClick={() => setChartsSubTab('vargas')}
-                >
-                  <Grid3x3 size={14} /> {isHi ? 'षोडशवर्ग चक्र (D1-D60)' : 'Shodashavarga (D1-D60)'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chartsSubTab === 'ashtakavarga' ? 'is-active' : ''}`}
-                  onClick={() => setChartsSubTab('ashtakavarga')}
-                >
-                  <Star size={14} /> {isHi ? 'अष्टकवर्ग (SAV/BAV)' : 'Ashtakavarga'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chartsSubTab === 'chalit' ? 'is-active' : ''}`}
-                  onClick={() => setChartsSubTab('chalit')}
-                >
-                  <Compass size={14} /> {isHi ? 'श्रीपति भाव चलित' : 'Sripati Chalit'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chartsSubTab === 'shadbala' ? 'is-active' : ''}`}
-                  onClick={() => setChartsSubTab('shadbala')}
-                >
-                  <Zap size={14} /> {isHi ? 'षड्बल तालिका' : 'Shadbala Strengths'}
-                </button>
-              </div>
-
-              {chartsSubTab === 'vargas' && (
-                <div className="view-stack">
-                  {/* Divisional Selector Pills */}
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: 12 }}>
-                    {(Object.keys(chart.divisionalCharts) as DivisionalChartId[]).map((vid) => {
-                      const v = chart.divisionalCharts[vid];
-                      return (
-                        <button
-                          key={vid}
-                          type="button"
-                          className={`btn-tag ${selectedVargaId === vid ? 'active' : ''}`}
-                          onClick={() => setSelectedVargaId(vid)}
-                          style={{ padding: '6px 12px', fontSize: '12px' }}
-                        >
-                          <strong>{vid}</strong> · {isHi ? v.name : v.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* SVG & Placements View */}
-                  {chart.divisionalCharts[selectedVargaId] && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                      <div className="workstation-card" style={{ display: 'flex', justifyContent: 'center' }}>
-                        <VedicChartSvg
-                          title={`${selectedVargaId}: ${chart.divisionalCharts[selectedVargaId].name}`}
-                          subtitle={chart.divisionalCharts[selectedVargaId].signification}
-                          style={chartStyle}
-                          lagnaSignIndex={chart.divisionalCharts[selectedVargaId].lagnaSignIndex}
-                          centerLabel={selectedVargaId}
-                          items={chart.divisionalCharts[selectedVargaId].placements.map((p) => ({
-                            id: p.id,
-                            label: trPlanetShort(p.id, lang),
-                            signIndex: p.signIndex,
-                            isLagna: p.id === 'Asc',
-                            isRetrograde: p.isRetrograde,
-                            dignity: p.dignity,
-                          }))}
-                        />
-                      </div>
-
-                      <section className="panel">
-                        <div className="panel-header">
-                          <h3>{selectedVargaId} {isHi ? 'ग्रह स्थिति' : 'Placements'}</h3>
-                          <span className="tag tag-karaka">{chart.divisionalCharts[selectedVargaId].signification}</span>
-                        </div>
-                        <div className="table-scroll">
-                          <table className="data-table">
-                            <thead>
-                              <tr>
-                                <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                                <th>{isHi ? 'वर्ग राशि' : 'Sign'}</th>
-                                <th>{isHi ? 'भाव' : 'House'}</th>
-                                <th>{isHi ? 'गरिमा' : 'Dignity'}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {chart.divisionalCharts[selectedVargaId].placements.map((pl) => (
-                                <tr key={pl.id}>
-                                  <td><strong>{trPlanet(pl.id, lang)}</strong></td>
-                                  <td>{trSign(pl.signIndex, lang)}</td>
-                                  <td>{pl.houseFromVargaLagna}</td>
-                                  <td><span className="dignity-badge badge-neutral">{trTerm(pl.dignity, lang)}</span></td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </section>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {chartsSubTab === 'ashtakavarga' && (
-                <AshtakavargaView chart={chart} chartStyle={chartStyle} />
-              )}
-
-              {chartsSubTab === 'chalit' && (
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <Compass size={16} />{' '}
-                      {isHi ? 'श्रीपति भाव चलित तालिका (आरंभ, मध्य एवं संधि)' : 'Sripati Bhava Chalit Cusp Table'}
-                    </h3>
-                    <span className="tag tag-varg">
-                      {chalitData.shiftedBodies.length} {isHi ? 'ग्रह राशि से भाव परिवर्तित' : 'shifted from Rasi'}
-                    </span>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>{isHi ? 'ग्रह / बिंदु' : 'Body'}</th>
-                          <th>{isHi ? 'राशि भाव' : 'Rasi H'}</th>
-                          <th>{isHi ? 'चलित भाव' : 'Chalit H'}</th>
-                          <th>{isHi ? 'अंश (DMS)' : 'Degree'}</th>
-                          <th>{isHi ? 'भाव परिवर्तन' : 'Shift'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {chalitData.placements.map((p) => (
-                          <tr key={p.id}>
-                            <td><strong>{trPlanet(p.id, lang)}</strong></td>
-                            <td>{isHi ? `भाव ${p.rasiHouse}` : `H${p.rasiHouse}`}</td>
-                            <td style={{ fontWeight: 700, color: p.shifted ? 'var(--accent)' : undefined }}>
-                              {isHi ? `भाव ${p.chalitHouse}` : `H${p.chalitHouse}`}
-                            </td>
-                            <td className="mono">{p.dms}</td>
-                            <td>
-                              {p.shifted ? (
-                                <span className="tag tag-combust">
-                                  {isHi ? `भाव ${p.rasiHouse} → भाव ${p.chalitHouse}` : `Shifted ${p.rasiHouse} → ${p.chalitHouse}`}
-                                </span>
-                              ) : (
-                                <span className="muted">{isHi ? 'यथावत' : 'Same'}</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              )}
-
-              {chartsSubTab === 'shadbala' && (
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <Zap size={16} />{' '}
-                      {isHi ? 'षड्बल विस्तृत विश्लेषण (छह प्रकार के बल)' : 'Detailed Shadbala 6-Fold Strength Matrix'}
-                    </h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                          <th>{isHi ? 'स्थान' : 'Sthana'}</th>
-                          <th>{isHi ? 'दिग्' : 'Dig'}</th>
-                          <th>{isHi ? 'काल' : 'Kala'}</th>
-                          <th>{isHi ? 'चेष्टा' : 'Chesta'}</th>
-                          <th>{isHi ? 'नैसर्गिक' : 'Naisargika'}</th>
-                          <th>{isHi ? 'दृक्' : 'Drik'}</th>
-                          <th>{isHi ? 'कुल रूप' : 'Rupas'}</th>
-                          <th>{isHi ? 'आवश्यक' : 'Req.'}</th>
-                          <th>{isHi ? 'प्रतिशत' : 'Ratio'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {chart.shadbala.map((sb) => (
-                          <tr key={sb.planet}>
-                            <td><strong>{trPlanet(sb.planet, lang)}</strong></td>
-                            <td className="mono">{sb.sthanaBala.toFixed(1)}</td>
-                            <td className="mono">{sb.digBala.toFixed(1)}</td>
-                            <td className="mono">{sb.kalaBala.toFixed(1)}</td>
-                            <td className="mono">{sb.cheshtaBala.toFixed(1)}</td>
-                            <td className="mono">{sb.naisargikaBala.toFixed(1)}</td>
-                            <td className="mono">{sb.drikBala.toFixed(1)}</td>
-                            <td className="mono" style={{ fontWeight: 700, color: 'var(--accent)' }}>{sb.totalRupas.toFixed(2)}</td>
-                            <td className="mono">{sb.requiredRupas.toFixed(1)}</td>
-                            <td>
-                              <span className={`tag ${sb.ratio >= 1.0 ? 'tag-strong' : 'tag-combust'}`}>
-                                {(sb.ratio * 100).toFixed(0)}%
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              )}
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 3: दशा प्रणाली (DASHA SYSTEMS)                        */}
-          {/* ========================================================= */}
-          {activeMenu === 'dasha' && (
-            <DashaView chart={chart} />
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 4: वर्षफल / ताजिक (VARSHPHAL / TAJIKA SOLAR)         */}
-          {/* ========================================================= */}
-          {activeMenu === 'varshphal' && (
-            <div className="view-stack">
-              <div className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Sun size={20} style={{ color: 'var(--accent)' }} />
-                  <div>
-                    <span style={{ fontWeight: 700, fontSize: '15px' }}>
-                      {isHi ? `ताजिक वर्षफल — वर्ष ${varshYear} (आयु ${varshYear - birthYear} वर्ष)` : `Tajika Varshaphala — Year ${varshYear} (Age ${varshYear - birthYear})`}
-                    </span>
-                    <div className="muted small-text">
-                      {isHi ? 'सौर संक्रांति चक्र व वर्षेश विश्लेषण' : 'Exact Solar Return Longitude and Year Lord'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Target Year Selector */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span className="small-text">{isHi ? 'वर्ष चुनें:' : 'Select Year:'}</span>
-                  <select
-                    className="select-input"
-                    value={varshYear}
-                    onChange={(e) => setVarshYear(parseInt(e.target.value, 10))}
-                    style={{ padding: '5px 10px', fontSize: '13px' }}
-                  >
-                    {Array.from({ length: 90 }, (_, i) => birthYear + i).map((yr) => (
-                      <option key={yr} value={yr}>
-                        {yr} ({isHi ? `आयु ${yr - birthYear}` : `Age ${yr - birthYear}`})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Varshphal Metrics Strip */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                <div className="workstation-card">
-                  <div className="muted small-text">{isHi ? 'मुन्था (Muntha)' : 'Muntha Position'}</div>
-                  <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--accent)' }}>
-                    {trSign(varshaphalaReport.munthaSignIndex, lang)} ({isHi ? `भाव ${varshaphalaReport.munthaHouse}` : `H${varshaphalaReport.munthaHouse}`})
-                  </div>
-                  <div className="small-text muted">{isHi ? `मुन्था स्वामी: ${trPlanet(varshaphalaReport.panchadhikari.munthaLord, lang)}` : `Lord: ${varshaphalaReport.panchadhikari.munthaLord}`}</div>
-                </div>
-
-                <div className="workstation-card">
-                  <div className="muted small-text">{isHi ? 'वर्षेश (Lord of the Year)' : 'Varshesh (Year Lord)'}</div>
-                  <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--good)' }}>
-                    {trPlanet(varshaphalaReport.varshesh, lang)}
-                  </div>
-                  <div className="small-text muted">{varshaphalaReport.varsheshStrengthNote}</div>
-                </div>
-
-                <div className="workstation-card">
-                  <div className="muted small-text">{isHi ? 'वर्ष लग्न' : 'Varsha Lagna'}</div>
-                  <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--indigo)' }}>
-                    {trSign(varshaphalaReport.varshaChart.ascendant.signIndex, lang)} ({varshaphalaReport.varshaChart.ascendant.dms})
-                  </div>
-                  <div className="small-text muted">{isHi ? `लग्न स्वामी: ${trPlanet(varshaphalaReport.panchadhikari.varshaAscLord, lang)}` : `Lord: ${varshaphalaReport.panchadhikari.varshaAscLord}`}</div>
-                </div>
-              </div>
-
-              {/* Tajika Sahams & Mudda Dasha */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <Sparkles size={16} />{' '}
-                      {isHi ? 'महत्वपूर्ण ताजिक सहम (Tajika Sahams)' : 'Key Tajika Sahams'}
-                    </h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>{isHi ? 'सहम नाम' : 'Saham'}</th>
-                          <th>{isHi ? 'राशि' : 'Sign'}</th>
-                          <th>{isHi ? 'अंश' : 'Degree'}</th>
-                          <th>{isHi ? 'भाव' : 'House'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {varshaphalaReport.sahams.map((s) => (
-                          <tr key={s.nameEn}>
-                            <td><strong>{isHi ? s.nameHi : s.nameEn}</strong></td>
-                            <td>{trSign(s.signIndex, lang)}</td>
-                            <td className="mono">{s.dms}</td>
-                            <td>{s.house}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>
-                      <Clock size={16} />{' '}
-                      {isHi ? 'मुद्दा दशा (Mudda Dasha 365 Days)' : 'Mudda Annual Dasha'}
-                    </h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>{isHi ? 'दशा स्वामी' : 'Lord'}</th>
-                          <th>{isHi ? 'अवधि' : 'Days'}</th>
-                          <th>{isHi ? 'आरंभ' : 'Start'}</th>
-                          <th>{isHi ? 'समाप्ति' : 'End'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {varshaphalaReport.muddaDasha.map((m) => (
-                          <tr key={m.lord}>
-                            <td><strong>{trPlanet(m.lord, lang)}</strong></td>
-                            <td>{m.days} {isHi ? 'दिन' : 'days'}</td>
-                            <td className="mono">{formatDateDmy(m.startDate)}</td>
-                            <td className="mono">{formatDateDmy(m.endDate)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 5: विविध वैदिक चक्र (VEDIC CHAKRAS)                   */}
-          {/* ========================================================= */}
-          {activeMenu === 'chakras' && (
-            <div className="view-stack">
-              <div className="subtab-bar" style={{ marginBottom: 12 }}>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chakrasSubTab === 'sudarshan' ? 'is-active' : ''}`}
-                  onClick={() => setChakrasSubTab('sudarshan')}
-                >
-                  ☸️ {isHi ? 'सुदर्शन चक्र (त्रिवलय)' : 'Sudarshan Chakra'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chakrasSubTab === 'sarvatobhadra' ? 'is-active' : ''}`}
-                  onClick={() => setChakrasSubTab('sarvatobhadra')}
-                >
-                  🛡️ {isHi ? 'सर्वतोभद्र चक्र (वेध)' : 'Sarvatobhadra Chakra'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chakrasSubTab === 'kota' ? 'is-active' : ''}`}
-                  onClick={() => setChakrasSubTab('kota')}
-                >
-                  🏰 {isHi ? 'कोट चक्र (दुर्ग सुरक्षा)' : 'Kota Chakra'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${chakrasSubTab === 'kurma' ? 'is-active' : ''}`}
-                  onClick={() => setChakrasSubTab('kurma')}
-                >
-                  🐢 {isHi ? 'कूर्म चक्र (दिशा बल)' : 'Kurma Chakra'}
-                </button>
-              </div>
-
-              {chakrasSubTab === 'sudarshan' && (
-                <div className="view-stack">
-                  <div className="gochar-banner is-info">
-                    <strong>{isHi ? 'सुदर्शन चक्र वार्षिक फलादेश:' : 'Sudarshan Tripartite Annual Reading:'}</strong>{' '}
-                    {isHi ? sudarshanData.annualSynthesisHi : sudarshanData.annualSynthesisEn}
-                  </div>
-
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'सुदर्शन चक्र 12 भाव संरेखण तालिका' : 'Sudarshan Chakra 12 House Alignment Table'}</h3>
-                      <span className="tag tag-karaka">{isHi ? `सक्रिय भाव: ${sudarshanData.activeHouse}` : `Active House: ${sudarshanData.activeHouse}`}</span>
-                    </div>
-                    <div className="table-scroll">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>{isHi ? 'भाव' : 'House'}</th>
-                            <th>{isHi ? 'लग्न वलय (Lagna Wheel)' : 'Lagna Sign'}</th>
-                            <th>{isHi ? 'चंद्र वलय (Moon Wheel)' : 'Moon Sign'}</th>
-                            <th>{isHi ? 'सूर्य वलय (Sun Wheel)' : 'Sun Sign'}</th>
-                            <th>{isHi ? 'संयुक्त स्थिति' : 'Active Status'}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sudarshanData.houses.map((h) => {
-                            const isActive = h.houseNumber === sudarshanData.activeHouse;
-                            return (
-                              <tr key={h.houseNumber} style={{ background: isActive ? 'var(--accent-soft)' : undefined, fontWeight: isActive ? 600 : undefined }}>
-                                <td><strong>{isHi ? `भाव ${h.houseNumber}` : `H${h.houseNumber}`}</strong> {isActive && '⭐'}</td>
-                                <td>{trSign(h.lagnaSign, lang)} {h.lagnaOccupants.length > 0 && `(${h.lagnaOccupants.map(p => trPlanetShort(p, lang)).join(', ')})`}</td>
-                                <td>{trSign(h.moonSign, lang)} {h.moonOccupants.length > 0 && `(${h.moonOccupants.map(p => trPlanetShort(p, lang)).join(', ')})`}</td>
-                                <td>{trSign(h.sunSign, lang)} {h.sunOccupants.length > 0 && `(${h.sunOccupants.map(p => trPlanetShort(p, lang)).join(', ')})`}</td>
-                                <td>
-                                  {isActive ? (
-                                    <span className="tag tag-strong">{isHi ? 'चालू वर्ष सक्रिय' : 'Active Year'}</span>
-                                  ) : (
-                                    <span className="muted">{isHi ? 'सुषुप्त' : 'Dormant'}</span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {chakrasSubTab === 'sarvatobhadra' && (
-                <div className="view-stack">
-                  <div className="gochar-banner is-clear">
-                    <strong>{isHi ? 'सर्वतोभद्र वेध विश्लेषण:' : 'Sarvatobhadra Vedha Synthesis:'}</strong>{' '}
-                    {isHi ? sarvatobhadraData.summaryHi : sarvatobhadraData.summaryEn}
-                  </div>
-
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'संवेदनशील नक्षत्र बिंदु एवं वेध' : 'Sensitive Nakshatra Points & Cross Vedhas'}</h3>
-                      <span className="tag tag-varg mono">{sarvatobhadraData.specialPoints.length} {isHi ? 'बिंदु' : 'points'}</span>
-                    </div>
-                    <div className="table-scroll">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>{isHi ? 'संवेदनशील बिंदु' : 'Sensitive Point'}</th>
-                            <th>{isHi ? 'नक्षत्र' : 'Nakshatra'}</th>
-                            <th>{isHi ? 'स्थित ग्रह' : 'Occupants'}</th>
-                            <th>{isHi ? 'वेध करने वाले ग्रह' : 'Cross Vedha By'}</th>
-                            <th>{isHi ? 'फलादेश' : 'Status'}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sarvatobhadraData.specialPoints.map((sp) => (
-                            <tr key={sp.key}>
-                              <td><strong>{isHi ? sp.titleHi : sp.titleEn}</strong></td>
-                              <td>{sp.nakshatraName}</td>
-                              <td>{sp.occupants.length > 0 ? sp.occupants.map(p => trPlanet(p, lang)).join(', ') : '-'}</td>
-                              <td>
-                                {sp.vedhaBy.length > 0 ? (
-                                  sp.vedhaBy.map((v, i) => (
-                                    <span key={i} className={`tag ${v.isMalefic ? 'tag-combust' : 'tag-strong'}`} style={{ marginRight: 4 }}>
-                                      {trPlanet(v.planet, lang)} ({v.type})
-                                    </span>
-                                  ))
-                                ) : (
-                                  <span className="muted">{isHi ? 'वेध रहित' : 'No Vedha'}</span>
-                                )}
-                              </td>
-                              <td>{isHi ? sp.verdictHi : sp.verdictEn}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {chakrasSubTab === 'kota' && (
-                <div className="view-stack">
-                  <div className="gochar-banner is-alert">
-                    <strong>{isHi ? 'कोट चक्र दुर्ग विश्लेषण:' : 'Kota Chakra Fortress Analysis:'}</strong>{' '}
-                    {isHi ? kotaData.analysisHi : kotaData.analysisEn}
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>
-                    <div className="workstation-card">
-                      <div className="muted small-text">{isHi ? 'कोट स्वामी (Fortress Lord)' : 'Kota Swami'}</div>
-                      <div style={{ fontWeight: 800, fontSize: '18px', color: 'var(--accent)' }}>
-                        {trPlanet(kotaData.kotaSwami, lang)}
-                      </div>
-                      <div className="small-text muted">{isHi ? 'जन्म राशि का अधिपति' : 'Janma Rasi Lord'}</div>
-                    </div>
-
-                    <div className="workstation-card">
-                      <div className="muted small-text">{isHi ? 'कोट पाल (Fortress Guard)' : 'Kota Pala'}</div>
-                      <div style={{ fontWeight: 800, fontSize: '18px', color: 'var(--good)' }}>
-                        {trPlanet(kotaData.kotaPala, lang)}
-                      </div>
-                      <div className="small-text muted">{isHi ? 'दुर्ग प्राचीर रक्षक ग्रह' : 'Boundary Patrol Guard'}</div>
-                    </div>
-
-                    <div className="workstation-card">
-                      <div className="muted small-text">{isHi ? 'दुर्ग घेराबंदी जोखिम सूचकांक' : 'Siege Risk Index'}</div>
-                      <div style={{ fontWeight: 800, fontSize: '18px', color: kotaData.siegeRiskScore > 50 ? 'var(--bad)' : 'var(--good)' }}>
-                        {kotaData.siegeRiskScore}%
-                      </div>
-                      <div className="small-text muted">{isHi ? kotaData.defenseStrengthHi : kotaData.defenseStrengthEn}</div>
-                    </div>
-                  </div>
-
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'कोट प्राचीर में ग्रह स्थिति' : 'Planetary Distribution in Fortress Rings'}</h3>
-                    </div>
-                    <div className="table-scroll">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                            <th>{isHi ? 'दुर्ग प्राचीर (Zone)' : 'Fortress Ring'}</th>
-                            <th>{isHi ? 'नक्षत्र' : 'Nakshatra'}</th>
-                            <th>{isHi ? 'गति दिशा' : 'Entry/Exit Direction'}</th>
-                            <th>{isHi ? 'प्रकृति' : 'Nature'}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {kotaData.placements.map((pl) => (
-                            <tr key={pl.planet}>
-                              <td><strong>{trPlanet(pl.planet, lang)}</strong></td>
-                              <td>
-                                <span className={`tag ${pl.zone === 'stambha' ? 'tag-karaka' : pl.zone === 'madhya' ? 'tag-varg' : 'tag-neutral'}`}>
-                                  {pl.zone.toUpperCase()}
-                                </span>
-                              </td>
-                              <td>{pl.nakshatra}</td>
-                              <td>{pl.direction === 'inward' ? (isHi ? 'अंतर्मुखी (Arohi)' : 'Inward') : (isHi ? 'बहिर्मुखी (Avarohi)' : 'Outward')}</td>
-                              <td>{pl.isMalefic ? (isHi ? 'क्रूर/पाप' : 'Malefic') : (isHi ? 'सौम्य/शुभ' : 'Benefic')}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {chakrasSubTab === 'kurma' && (
-                <div className="view-stack">
-                  <div className="gochar-banner is-info">
-                    <strong>{isHi ? 'कूर्म चक्र दिशा निर्देश:' : 'Kurma Chakra Directional Guidance:'}</strong>{' '}
-                    {isHi ? kurmaData.guidanceHi : kurmaData.guidanceEn}
-                  </div>
-
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'नव दिशा कूर्म चक्र तालिका' : '9-Directional Kurma Zones & Afflictions'}</h3>
-                    </div>
-                    <div className="table-scroll">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>{isHi ? 'दिशा (Direction)' : 'Direction'}</th>
-                            <th>{isHi ? 'नक्षत्र' : 'Nakshatras'}</th>
-                            <th>{isHi ? 'स्थित ग्रह' : 'Planets'}</th>
-                            <th>{isHi ? 'स्थिति' : 'Status'}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {kurmaData.zones.map((z) => (
-                            <tr key={z.direction}>
-                              <td><strong>{isHi ? z.titleHi : z.titleEn}</strong></td>
-                              <td style={{ fontSize: '11px' }}>{z.nakshatras.join(', ')}</td>
-                              <td>{z.occupants.length > 0 ? z.occupants.map(p => trPlanet(p, lang)).join(', ') : '-'}</td>
-                              <td>
-                                <span className={`tag ${z.maleficScore > z.beneficScore ? 'tag-combust' : z.beneficScore > 0 ? 'tag-strong' : 'tag-neutral'}`}>
-                                  {isHi ? z.statusHi : z.statusEn}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 6: योग, दोष एवं युति (YOGAS, DOSHAS & YUTI)           */}
-          {/* ========================================================= */}
-          {activeMenu === 'yogas_doshas' && (
-            <div className="view-stack">
-              <div className="subtab-bar" style={{ marginBottom: 12 }}>
-                <button
-                  type="button"
-                  className={`subtab-btn ${yogasSubTab === 'classical' ? 'is-active' : ''}`}
-                  onClick={() => setYogasSubTab('classical')}
-                >
-                  <Award size={14} /> {isHi ? `शास्त्रीय योग (${classicalYogas.length})` : `Classical Yogas (${classicalYogas.length})`}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${yogasSubTab === 'doshas' ? 'is-active' : ''}`}
-                  onClick={() => setYogasSubTab('doshas')}
-                >
-                  <ShieldAlert size={14} /> {isHi ? `प्रमुख दोष (${doshasData.presentCount})` : `Major Doshas (${doshasData.presentCount})`}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${yogasSubTab === 'yuti' ? 'is-active' : ''}`}
-                  onClick={() => setYogasSubTab('yuti')}
-                >
-                  <Flame size={14} /> {isHi ? `ग्रह युति व युद्ध (${yutiReport.groups.length})` : `Conjunctions & War (${yutiReport.groups.length})`}
-                </button>
-              </div>
-
-              {yogasSubTab === 'classical' && (
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>{isHi ? 'कुंडली में सक्रिय वैदिक योग' : 'Active Classical Vedic Yogas'}</h3>
-                    <span className="tag tag-strong mono">{classicalYogas.length} {isHi ? 'सक्रिय' : 'Active'}</span>
-                  </div>
-                  <div className="domains-grid">
-                    {classicalYogas.map((y) => (
-                      <article key={y.id} className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
-                        <div className="domain-top">
-                          <div>
-                            <h4>{isHi ? y.nameHi : y.name}</h4>
-                            <div className="muted small-text">{y.category} · {y.source}</div>
-                          </div>
-                          <span className={`tag ${y.quality === 'Positive' ? 'tag-strong' : 'tag-combust'}`}>
-                            {y.quality}
-                          </span>
-                        </div>
-                        <p style={{ fontSize: '12.5px', marginTop: 8 }}>{y.conditionEn}</p>
-                        <div className="small-text muted" style={{ marginTop: 6, fontStyle: 'italic' }}>
-                          <strong>{isHi ? 'फल:' : 'Fruit:'}</strong> {isHi ? y.resultHi : y.resultEn}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {yogasSubTab === 'doshas' && (
-                <div className="view-stack">
-                  <div className="domains-grid">
-                    {doshasData.doshas.map((d, idx) => (
-                      <article key={idx} className="domain-card" style={{ borderLeft: `4px solid ${d.status === 'Present' ? 'var(--bad)' : 'var(--good)'}` }}>
-                        <div className="domain-top">
-                          <div>
-                            <h4>{d.name}</h4>
-                            <div className="muted small-text">{isHi ? `गंभीरता: ${d.severity}` : `Severity: ${d.severity}`}</div>
-                          </div>
-                          <span className={`tag ${d.status === 'Present' ? 'tag-combust' : 'tag-strong'}`}>
-                            {d.status}
-                          </span>
-                        </div>
-                        <p style={{ fontSize: '13px', marginTop: 8 }}>
-                          <strong>{isHi ? 'कारण:' : 'Trigger:'}</strong> {d.trigger}
-                        </p>
-                        <p style={{ fontSize: '13px' }}>
-                          <strong>{isHi ? 'प्रभाव:' : 'Effect:'}</strong> {d.effect}
-                        </p>
-                        {d.mitigation && (
-                          <div className="gochar-banner is-clear" style={{ marginTop: 6 }}>
-                            <strong>{isHi ? 'परिहार:' : 'Mitigation:'}</strong> {d.mitigation}
-                          </div>
-                        )}
-                        {d.remedy && (
-                          <div className="gochar-banner is-alert" style={{ marginTop: 6 }}>
-                            <strong>{isHi ? 'शास्त्रीय उपाय:' : 'Remedy:'}</strong> {d.remedy}
-                          </div>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {yogasSubTab === 'yuti' && (
-                <div className="view-stack">
-                  {yutiReport.groups.map((grp, idx) => (
-                    <article key={idx} className="panel" style={{ borderLeft: '3px solid var(--accent)' }}>
-                      <div className="panel-header">
-                        <div>
-                          <h3>{isHi ? grp.headlineHi : grp.headlineEn}</h3>
-                          <div className="muted small-text">{grp.planets.join(' + ')} · {isHi ? `अंश अंतर: ${grp.degreeSpanDeg}°` : `Orb: ${grp.degreeSpanDeg}°`}</div>
-                        </div>
-                        <span className="tag tag-karaka">{grp.count} {isHi ? 'ग्रह युति' : 'Planets'}</span>
-                      </div>
-                      <p style={{ fontSize: '13px' }}><strong>{isHi ? 'सकारात्मक प्रभाव:' : 'Positive:'}</strong> {isHi ? grp.positiveHi : grp.positiveEn}</p>
-                      <p style={{ fontSize: '13px' }}><strong>{isHi ? 'सावधानी:' : 'Watchout:'}</strong> {isHi ? grp.negativeHi : grp.negativeEn}</p>
-                    </article>
+            {/* 2. Avakhada Chakra */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                ☸️ {isHi ? 'अवकहड़ा चक्र विवरण' : 'Avakhada Chakra Sheet'}
+              </h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <tbody>
+                  {basicSheet.avakhadaDetails.map((row: BasicDetailRow, idx: number) => (
+                    <tr key={idx}>
+                      <td className="muted" style={{ width: '45%' }}>{isHi ? row.labelHi : row.labelEn}</td>
+                      <td style={{ fontWeight: 600 }}>{isHi ? row.valueHi : row.valueEn}</td>
+                    </tr>
                   ))}
-                </div>
-              )}
+                </tbody>
+              </table>
             </div>
-          )}
 
-          {/* ========================================================= */}
-          {/* MENU 7: नवांश विशेष विवेचन (NAVAMSHA D9 DEEP READING)     */}
-          {/* ========================================================= */}
-          {activeMenu === 'navamsha' && (
-            <div className="view-stack">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                <div className="workstation-card" style={{ display: 'flex', justifyContent: 'center' }}>
-                  <VedicChartSvg
-                    title={isHi ? 'नवांश कुंडली (D-9 Navamsha)' : 'Navamsha Chart (D-9)'}
-                    subtitle={isHi ? 'भाग्य, विवाह एवं आत्मिक सामर्थ्य' : 'Dharma, Marriage & Inner Potential'}
-                    style={chartStyle}
-                    lagnaSignIndex={chart.divisionalCharts['D9'].lagnaSignIndex}
-                    centerLabel="D9"
-                    items={chart.divisionalCharts['D9'].placements.map((p) => ({
-                      id: p.id,
-                      label: trPlanetShort(p.id, lang),
-                      signIndex: p.signIndex,
-                      isLagna: p.id === 'Asc',
-                      isRetrograde: p.isRetrograde,
-                      dignity: p.dignity,
-                    }))}
-                  />
-                </div>
-
-                <div className="view-stack">
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'कारकांश लग्न एवं स्वांश फल' : 'Karakamsa Lagna & Swamsha'}</h3>
-                      <span className="tag tag-karaka">Jaimini Sutas</span>
-                    </div>
-                    <div className="pred-card-body">
-                      <p style={{ fontSize: '13px', lineHeight: 1.6 }}>
-                        {isHi
-                          ? `आत्मकारक ग्रह नवांश चक्र में जिस राशि में स्थित होता है, वह कारकांश लग्न कहलाता है। आपकी कुंडली में आत्मकारक ग्रह नवांश में स्थिति अनुसार जातक के गूढ़ आध्यात्मिक ध्येय, अंतःकरण और स्वाभाविक प्रवृत्तियों को निर्धारित करता है।`
-                          : `The sign occupied by the Atmakaraka planet in the Navamsha (D9) chart is designated as the Karakamsa Lagna. It reveals the soul's prime incarnation trajectory, inherent inclinations, and supreme talent.`}
-                      </p>
-                    </div>
-                  </section>
-
-                  {/* Vargottama Planets */}
-                  <section className="panel">
-                    <div className="panel-header">
-                      <h3>{isHi ? 'वर्गोत्तम ग्रह (Vargottama Planets)' : 'Vargottama Planets'}</h3>
-                    </div>
-                    <div className="pred-card-body">
-                      {chart.planets.filter(p => p.isVargottama).length > 0 ? (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          {chart.planets.filter(p => p.isVargottama).map(p => (
-                            <span key={p.id} className="tag tag-strong">
-                              👑 {trPlanet(p.id, lang)} ({trSign(p.signIndex, lang)})
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="muted small-text">
-                          {isHi ? 'कोई ग्रह D1 व D9 में समान राशि में वर्गोत्तम नहीं है।' : 'No planets occupy identical signs in D1 and D9.'}
-                        </p>
-                      )}
-                    </div>
-                  </section>
-                </div>
-              </div>
-
-              {/* Pushkara Navamsha Table */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>
-                    <Sparkles size={16} />{' '}
-                    {isHi ? 'पुष्कर नवांश एवं पुष्कर भाग विश्लेषण' : 'Pushkara Navamsha & Pushkara Bhaga Analysis'}
-                  </h3>
-                  <span className="tag tag-varg">
-                    {pushkaraData.filter(p => p.isPushkaraNavamsha).length} {isHi ? 'ग्रह पुष्कर नवांश में' : 'in Pushkara Navamsha'}
-                  </span>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                        <th>{isHi ? 'नवांश राशि' : 'Navamsha Sign'}</th>
-                        <th>{isHi ? 'पुष्कर नवांश' : 'Pushkara Navamsha'}</th>
-                        <th>{isHi ? 'पुष्कर भाग' : 'Pushkara Bhaga'}</th>
-                        <th>{isHi ? 'कायाकल्प फल' : 'Rejuvenation Power'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pushkaraData.map((pk) => (
-                        <tr key={pk.planet}>
-                          <td><strong>{trPlanet(pk.planet as PlanetId, lang)}</strong></td>
-                          <td>{pk.pushkaraNavamshaSign}</td>
-                          <td>
-                            <span className={`tag ${pk.isPushkaraNavamsha ? 'tag-strong' : 'tag-neutral'}`}>
-                              {pk.isPushkaraNavamsha ? (isHi ? 'हाँ' : 'Yes') : (isHi ? 'नहीं' : 'No')}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`tag ${pk.isPushkaraBhaga ? 'tag-strong' : 'tag-neutral'}`}>
-                              {pk.isPushkaraBhaga ? (isHi ? 'हाँ' : 'Yes') : (isHi ? 'नहीं' : 'No')}
-                            </span>
-                          </td>
-                          <td style={{ fontSize: '11.5px' }}>{isHi ? pk.rejuvenationPowerHi : pk.rejuvenationPowerEn}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 8: KP ज्योतिष प्रणाली (INDEPENDENT KP SYSTEM TAB)    */}
-          {/* ========================================================= */}
-          {activeMenu === 'kp_system' && (
-            <div className="view-stack">
-              <div className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                <div>
-                  <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Target size={18} style={{ color: 'var(--accent)' }} />
-                    <span>{isHi ? 'के.पी. (KP) ज्योतिष प्रणाली — भाव एवं ग्रह उप-स्वामी' : 'Krishnamurti Paddhati (KP) System — Cuspal & Planetary Sub-Lords'}</span>
-                  </h3>
-                  <div className="muted small-text">{isHi ? `के.पी. अयनांश: ${kpReport.kpAyanamsaDms}` : `KP Ayanamsa: ${kpReport.kpAyanamsaDms}`}</div>
-                </div>
-
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setLiveRp(computeLiveKpRulingPlanets(Date.now(), chart.offsetMinutesUsed, chart.input.latitude, chart.input.longitude))}
-                >
-                  <RefreshCw size={13} />
-                  <span>{isHi ? 'लाइव रूलिंग प्लैनेट्स रिफ्रेश' : 'Refresh Live Ruling Planets'}</span>
-                </button>
-              </div>
-
-              {/* Ruling Planets Strip */}
-              <div className="gochar-banner is-info">
-                <strong>{isHi ? 'रूलिंग प्लैनेट्स (RP):' : 'KP Ruling Planets:'}</strong>{' '}
-                {isHi ? 'लग्न नक्षत्र स्वामी: ' : 'Asc Star Lord: '}<strong>{trPlanet((liveRp ?? kpReport.chartRulingPlanets).lagnaStarLord, lang)}</strong> |{' '}
-                {isHi ? 'लग्न राशि स्वामी: ' : 'Asc Sign Lord: '}<strong>{trPlanet((liveRp ?? kpReport.chartRulingPlanets).lagnaSignLord, lang)}</strong> |{' '}
-                {isHi ? 'चंद्र नक्षत्र स्वामी: ' : 'Moon Star Lord: '}<strong>{trPlanet((liveRp ?? kpReport.chartRulingPlanets).moonStarLord, lang)}</strong> |{' '}
-                {isHi ? 'चंद्र राशि स्वामी: ' : 'Moon Sign Lord: '}<strong>{trPlanet((liveRp ?? kpReport.chartRulingPlanets).moonSignLord, lang)}</strong> |{' '}
-                {isHi ? 'वार स्वामी: ' : 'Day Lord: '}<strong>{trPlanet((liveRp ?? kpReport.chartRulingPlanets).dayLord, lang)}</strong>
-              </div>
-
-              {/* KP Cusps Table */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>{isHi ? 'के.पी. 12 भाव कस्प तालिका (Placidus Cusps)' : 'KP 12 Cuspal Table (Placidus Cusps)'}</h3>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>{isHi ? 'भाव' : 'Cusp'}</th>
-                        <th>{isHi ? 'अंश' : 'Degree'}</th>
-                        <th>{isHi ? 'राशि' : 'Sign'}</th>
-                        <th>{isHi ? 'राशि स्वामी' : 'Sign Lord'}</th>
-                        <th>{isHi ? 'नक्षत्र स्वामी' : 'Star Lord'}</th>
-                        <th>{isHi ? 'उप-स्वामी' : 'Sub Lord'}</th>
-                        <th>{isHi ? 'उप-उप स्वामी' : 'Sub-Sub'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kpReport.cusps.map((c) => (
-                        <tr key={c.house}>
-                          <td><strong>{isHi ? `भाव ${c.house}` : `Cusp ${c.house}`}</strong></td>
-                          <td className="mono">{c.dms}</td>
-                          <td>{c.signName}</td>
-                          <td>{trPlanet(c.signLord, lang)}</td>
-                          <td>{trPlanet(c.starLord, lang)}</td>
-                          <td><strong style={{ color: 'var(--accent)' }}>{trPlanet(c.subLord, lang)}</strong></td>
-                          <td>{trPlanet(c.subSubLord, lang)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* KP Planets Table */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>{isHi ? 'के.पी. ग्रह तालिका (Sign, Star & Sub-Lords)' : 'KP Planets Table'}</h3>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                        <th>{isHi ? 'अंश' : 'Degree'}</th>
-                        <th>{isHi ? 'के.पी. भाव' : 'KP House'}</th>
-                        <th>{isHi ? 'राशि' : 'Sign'}</th>
-                        <th>{isHi ? 'नक्षत्र स्वामी' : 'Star Lord'}</th>
-                        <th>{isHi ? 'उप-स्वामी' : 'Sub Lord'}</th>
-                        <th>{isHi ? 'उप-उप स्वामी' : 'Sub-Sub'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kpReport.planets.map((p) => (
-                        <tr key={p.planet}>
-                          <td><strong>{trPlanet(p.planet, lang)}</strong></td>
-                          <td className="mono">{p.dms}</td>
-                          <td><strong>{p.kpHouse}</strong></td>
-                          <td>{p.signName}</td>
-                          <td>{trPlanet(p.starLord, lang)}</td>
-                          <td><strong style={{ color: 'var(--accent)' }}>{trPlanet(p.subLord, lang)}</strong></td>
-                          <td>{trPlanet(p.subSubLord, lang)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* 4-Step Significators Table */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>{isHi ? 'के.पी. 4-चरण कारक तालिका (4-Step Significators)' : 'KP 4-Step House Significators'}</h3>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>{isHi ? 'भाव' : 'House'}</th>
-                        <th>{isHi ? 'स्तर 1 (Level A: नक्षत्र स्थित)' : 'L1: In Star of Occupant'}</th>
-                        <th>{isHi ? 'स्तर 2 (Level B: भाव स्थित)' : 'L2: Occupants'}</th>
-                        <th>{isHi ? 'स्तर 3 (Level C: स्वामी के नक्षत्र)' : 'L3: In Star of Lord'}</th>
-                        <th>{isHi ? 'स्तर 4 (Level D: भाव स्वामी)' : 'L4: House Lord'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kpReport.houseSignificators.map((s) => (
-                        <tr key={s.house}>
-                          <td><strong>{isHi ? `भाव ${s.house}` : `House ${s.house}`}</strong></td>
-                          <td>{s.levelA.length > 0 ? s.levelA.map((p) => trPlanetShort(p, lang)).join(', ') : '-'}</td>
-                          <td>{s.levelB.length > 0 ? s.levelB.map((p) => trPlanetShort(p, lang)).join(', ') : '-'}</td>
-                          <td>{s.levelC.length > 0 ? s.levelC.map((p) => trPlanetShort(p, lang)).join(', ') : '-'}</td>
-                          <td><strong>{trPlanet(s.levelD[0], lang)}</strong></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 9: लाल किताब प्रणाली (INDEPENDENT LAL KITAB TAB)     */}
-          {/* ========================================================= */}
-          {activeMenu === 'lal_kitab' && (
-            <div className="view-stack">
-              <div className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                <div>
-                  <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Flame size={18} style={{ color: 'var(--accent)' }} />
-                    <span>{isHi ? 'लाल किताब प्रणाली — टेवा वर्गीकरण, सोये भाव व ऋण' : 'Lal Kitab System — Teva Classification, Sleeping Houses & Karmic Debts'}</span>
-                  </h3>
-                  <div className="muted small-text">{isHi ? 'स्थिर भाव कुंडली (मेष=1 से मीन=12)' : 'Fixed House System (Aries=H1 to Pisces=H12)'}</div>
-                </div>
-
-                <span className={`tag ${lalKitabReport.isDharmiTeva ? 'tag-strong' : 'tag-neutral'}`} style={{ fontSize: '13px' }}>
-                  {isHi ? (lalKitabReport.isDharmiTeva ? '✨ धर्मी टेवा (Dharmi Teva)' : 'सामान्य टेवा') : (lalKitabReport.isDharmiTeva ? 'Dharmi Teva' : 'Standard Teva')}
-                </span>
-              </div>
-
-              {/* Teva Note */}
-              <div className="gochar-banner is-info">
-                <strong>{isHi ? 'टेवा व्याख्या:' : 'Teva Assessment:'}</strong>{' '}
-                {isHi ? lalKitabReport.dharmiTevaNoteHi : lalKitabReport.dharmiTevaNoteEn}
-              </div>
-
-              {/* Karmic Debts (Rinas) */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>
-                    <AlertTriangle size={16} />{' '}
-                    {isHi ? 'लाल किताब ऋण (Karmic Debts)' : 'Lal Kitab Karmic Debts (Rinas)'}
-                  </h3>
-                  <span className="tag tag-varg">
-                    {lalKitabReport.karmicDebts.filter(d => d.isTriggered).length} {isHi ? 'ऋण सक्रिय' : 'Triggered'}
-                  </span>
-                </div>
-                <div className="domains-grid">
-                  {lalKitabReport.karmicDebts.map((d, i) => (
-                    <article key={i} className="domain-card" style={{ borderLeft: `3px solid ${d.isTriggered ? 'var(--bad)' : 'var(--good)'}` }}>
-                      <div className="domain-top">
-                        <h4>{isHi ? d.debtTypeHi : d.debtType}</h4>
-                        <span className={`tag ${d.isTriggered ? 'tag-combust' : 'tag-strong'}`}>
-                          {d.isTriggered ? (isHi ? 'सक्रिय ऋण' : 'Active Debt') : (isHi ? 'ऋण मुक्त' : 'Clear')}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '12.5px', marginTop: 6 }}>
-                        <strong>{isHi ? 'शास्त्रीय कारण:' : 'Classical Cause:'}</strong> {isHi ? d.classicalCauseHi : d.classicalCauseEn}
-                      </p>
-                      {d.isTriggered && (
-                        <div className="gochar-banner is-alert" style={{ marginTop: 8 }}>
-                          <strong>{isHi ? 'निवारण उपाय:' : 'Remedy:'}</strong> {isHi ? d.remedialProtocolHi : d.remedialProtocolEn}
-                        </div>
-                      )}
-                    </article>
+            {/* 3. Ghatak Chakra */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--warn)' }}>
+                ⚠️ {isHi ? 'घातक चक्र (अशुभ प्रभाव व सावधानियां)' : 'Ghatak Inauspicious Periods'}
+              </h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <tbody>
+                  {basicSheet.ghatakMalefics.map((row: BasicDetailRow, idx: number) => (
+                    <tr key={idx}>
+                      <td className="muted" style={{ width: '45%' }}>{isHi ? row.labelHi : row.labelEn}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--warn)' }}>{isHi ? row.valueHi : row.valueEn}</td>
+                    </tr>
                   ))}
-                </div>
-              </section>
+                </tbody>
+              </table>
+            </div>
 
-              {/* Sleeping Houses (Soya Hua Ghar) */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>{isHi ? 'सोये हुए भाव एवं जगाने के नियम' : 'Sleeping Houses & Awakening Methods'}</h3>
-                </div>
-                <div className="table-scroll">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>{isHi ? 'भाव' : 'House'}</th>
-                        <th>{isHi ? 'पक्का घर स्वामी' : 'Pakka Ruler'}</th>
-                        <th>{isHi ? 'स्थिति' : 'State'}</th>
-                        <th>{isHi ? 'स्थित ग्रह' : 'Occupants'}</th>
-                        <th>{isHi ? 'जगाने की शास्त्रीय विधि' : 'Awakening Protocol'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {lalKitabReport.sleepingHouses.map((h) => (
-                        <tr key={h.houseNumber}>
-                          <td><strong>{isHi ? `भाव ${h.houseNumber}` : `H${h.houseNumber}`}</strong></td>
-                          <td>{isHi ? h.pakkaGharRulerHi : h.pakkaGharRuler}</td>
-                          <td>
-                            <span className={`tag ${h.isSleeping ? 'tag-combust' : 'tag-strong'}`}>
-                              {h.isSleeping ? (isHi ? 'सोया हुआ' : 'Sleeping') : (isHi ? 'जागृत' : 'Awake')}
-                            </span>
-                          </td>
-                          <td>{h.occupants.length > 0 ? h.occupants.map(p => trPlanet(p, lang)).join(', ') : '-'}</td>
-                          <td style={{ fontSize: '11.5px' }}>{isHi ? h.awakeningMethodHi : h.awakeningMethodEn}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* Farman Remedies */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>{isHi ? 'लाल किताब विशिष्ट फरमान उपाय' : 'Specific Lal Kitab Farman Remedies'}</h3>
-                </div>
-                <div className="placement-cards">
-                  {lalKitabExtended.planets.map((p) => (
-                    <article key={p.planet} className="placement-card">
-                      <div className="placement-card-top">
-                        <strong>{trPlanet(p.planet, lang)} ({isHi ? `भाव ${p.natalHouse}` : `House ${p.natalHouse}`})</strong>
-                        <span className="tag tag-karaka">{isHi ? p.statusHi : p.statusEn}</span>
-                      </div>
-                      <p style={{ fontSize: '12px', marginTop: 6 }}>
-                        <strong>{isHi ? 'उपाय:' : 'Remedy:'}</strong> {isHi ? p.remedyHi : p.remedyEn}
-                      </p>
-                    </article>
+            {/* 4. Favourable Points */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--good)' }}>
+                🌟 {isHi ? 'शुभ-अशुभ व अनुकूल बिंदु' : 'Auspicious & Favourable Points'}
+              </h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <tbody>
+                  {basicSheet.favourablePoints.map((row: BasicDetailRow, idx: number) => (
+                    <tr key={idx}>
+                      <td className="muted" style={{ width: '45%' }}>{isHi ? row.labelHi : row.labelEn}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--good)' }}>{isHi ? row.valueHi : row.valueEn}</td>
+                    </tr>
                   ))}
-                </div>
-              </section>
+                </tbody>
+              </table>
             </div>
-          )}
+          </div>
 
-          {/* ========================================================= */}
-          {/* MENU 10: सटीक जीवन फलकथन (DEEP PREDICTIVE ANALYSIS)      */}
-          {/* ========================================================= */}
-          {activeMenu === 'predictions' && (
-            <div className="view-stack">
-              <div className="subtab-bar" style={{ marginBottom: 12 }}>
-                <button
-                  type="button"
-                  className={`subtab-btn ${predCategoryFilter === 'individual' ? 'is-active' : ''}`}
-                  onClick={() => setPredCategoryFilter('individual')}
-                >
-                  🌟 {isHi ? 'जीवन के मुख्य आयाम (रूप, विद्या, करियर, व्यसन, शत्रु, प्रेम)' : 'Core Dimensions (Appearance, Education, Career, Habits, Adversaries, Love)'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${predCategoryFilter === 'family' ? 'is-active' : ''}`}
-                  onClick={() => setPredCategoryFilter('family')}
-                >
-                  👨‍👩‍👧‍👦 {isHi ? 'सम्पूर्ण पारिवारिक यथार्थ (माता-पिता, एकल संतान, ब्रह्मचर्य/विवाह, निःसंतानता)' : 'Family Dynamics (Parents, Sibling/Only Child, Single/Marriage, Children/Childless)'}
-                </button>
-                <button
-                  type="button"
-                  className={`subtab-btn ${predCategoryFilter === 'epochs' ? 'is-active' : ''}`}
-                  onClick={() => setPredCategoryFilter('epochs')}
-                >
-                  ⏳ {isHi ? '12 पंचवर्षीय जीवन चक्र (0-60+ वर्ष)' : '12 5-Year Life Epochs (Ages 0-60+)'}
-                </button>
-              </div>
+          {/* Jump to Page 2 CTA */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setActivePage(2)}
+              style={{ fontWeight: 600 }}
+            >
+              <span>{isHi ? 'पेज 2: D-1 लग्न कुंडली व फलकथन पर जाएं' : 'Proceed to Page 2: D-1 Lagna & Predictions'}</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
-              {/* 1. Core Dimensions */}
-              {predCategoryFilter === 'individual' && (
-                <div className="domains-grid">
-                  {renderPredictiveDomainCard(masterPredictions.appearanceDomain)}
-                  {renderPredictiveDomainCard(masterPredictions.educationDomain)}
-                  {renderPredictiveDomainCard(masterPredictions.careerAuditDomain)}
-                  {renderPredictiveDomainCard(masterPredictions.vicesHabitsDomain)}
-                  {renderPredictiveDomainCard(masterPredictions.litigationDomain)}
-                  {renderPredictiveDomainCard(masterPredictions.romanceScandalsDomain)}
-                </div>
-              )}
+      {/* PAGES 2 THROUGH 29: VARGA CHARTS D-1 TO D-360 WITH PLACEMENT, STRENGTH, YUTI, YOGA, DASHA, GOCHAR & PREDICTIONS */}
+      {activePage >= 2 && activePage <= 29 && currentVargaData && (
+        renderVargaView(currentVargaData)
+      )}
 
-              {/* 2. Family Realities with Conditional Branches */}
-              {predCategoryFilter === 'family' && (
-                <div className="domains-grid">
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.father)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.mother)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.siblingsAndOnlyChild)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.marriageVsBachelorhood)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.childrenVsChildlessness)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.grandparents)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.inLaws)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.unclesAuntsCousins)}
-                  {renderPredictiveDomainCard(masterPredictions.familyDomains.friendsNeighbours)}
-                </div>
-              )}
+      {/* PAGE 30: LIVE GOCHAR CALCULATION + PREDICTIONS */}
+      {activePage === 30 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+              🪐 {isHi ? 'पेज 30: गोचर गणना व संपूर्ण फलकथन (Live Planetary Transits & Predictions)' : 'Page 30: Live Gochar Transits & Complete Predictions'}
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
+              {isHi
+                ? 'वर्तमान आकाशीय ग्रह स्थिति, जन्म चंद्र व लग्न से गोचर, कक्षी स्वामी, अष्टकवर्ग बिंदु, साढ़ेसाती, ढैय्या एवं ग्रह-वार विस्तृत फलकथन।'
+                : 'Live planetary transit positions, transit houses from Moon and Lagna, Kakshya lords, SAV bindus, Sade Sati phases, and comprehensive transit readings.'}
+            </p>
+          </div>
 
-              {/* 3. 12 Life Epochs */}
-              {predCategoryFilter === 'epochs' && (
-                <div className="view-stack">
-                  <div className="gochar-banner is-clear">
-                    <strong>{isHi ? '12 पंचवर्षीय जीवन कालखंड:' : '12 5-Year Life Epochs:'}</strong>{' '}
-                    {isHi
-                      ? 'यह कालखंड जातक की व्यक्तिगत दशा (विंशोत्तरी), शनि-गुरु के प्रमुख गोचर एवं लग्न-चंद्र की भाव सक्रियता पर आधारित है।'
-                      : 'These 12 epochs are synchronized with individual Vimshottari dasha transitions and major Saturn/Jupiter transits.'}
-                  </div>
-
-                  <div className="domains-grid">
-                    {dynamicEpochs.map((ep, idx) => (
-                      <article key={idx} className="domain-card" style={{ borderLeft: '3px solid var(--indigo)' }}>
-                        <div className="domain-top">
-                          <h4>{isHi ? ep.titleHi : ep.titleEn}</h4>
-                          <span className="tag tag-varg mono">Phase #{idx + 1}</span>
-                        </div>
-                        <p style={{ fontSize: '12.5px', lineHeight: 1.6, marginTop: 8 }}>
-                          {isHi ? (ep.paragraphsHi?.join(' ') || ep.leadHi) : (ep.paragraphsEn?.join(' ') || ep.leadEn)}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 11: पूर्व जन्म व भावी गति (PAST & FUTURE LIFE D60)   */}
-          {/* ========================================================= */}
-          {activeMenu === 'past_future' && pastFutureLife && (
-            <div className="view-stack">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                {/* Past Life */}
-                <section className="panel" style={{ borderLeft: '3px solid var(--accent)' }}>
-                  <div className="panel-header">
-                    <h3>
-                      <Sparkles size={16} />{' '}
-                      {isHi ? 'पूर्व जन्म विवरण (D-60 षष्ट्यंश विवेचन)' : 'Past Life Incarnation (D-60 Shashtiamsha)'}
-                    </h3>
-                  </div>
-                  <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div>
-                      <strong>{isHi ? 'पूर्व जन्म स्थान व सभ्यता:' : 'Birth Region & Civilization:'}</strong>{' '}
-                      {isHi ? pastFutureLife.pastLife.civilizationHi : pastFutureLife.pastLife.civilizationEn} (
-                      {isHi ? pastFutureLife.pastLife.birthPlaceOrCountryHi : pastFutureLife.pastLife.birthPlaceOrCountryEn})
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'पूर्व योनि व स्वरूप:' : 'Past Yoni & Archetype:'}</strong>{' '}
-                      {isHi ? pastFutureLife.pastLife.lifeTypeHi : pastFutureLife.pastLife.lifeTypeEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'षष्ट्यंश देवता:' : 'Shashtiamsha Deity:'}</strong>{' '}
-                      {isHi ? pastFutureLife.pastLife.shashtiamsaDeityHi : pastFutureLife.pastLife.shashtiamsaDeityEn} ({pastFutureLife.pastLife.shashtiamsaNature})
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'पूर्व जन्म व्यवसाय:' : 'Profession:'}</strong>{' '}
-                      {isHi ? pastFutureLife.pastLife.professionHi : pastFutureLife.pastLife.professionEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'असंचित कर्म ऋण:' : 'Unfinished Karma & Debts:'}</strong>{' '}
-                      {isHi ? pastFutureLife.pastLife.unfinishedKarmaAndDebtsHi : pastFutureLife.pastLife.unfinishedKarmaAndDebtsEn}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Future Becoming */}
-                <section className="panel" style={{ borderLeft: '3px solid var(--good)' }}>
-                  <div className="panel-header">
-                    <h3>
-                      <Compass size={16} />{' '}
-                      {isHi ? 'भावी गति व पुनर्जन्म (Future Becoming)' : 'Future Rebirth & Spiritual Trajectory'}
-                    </h3>
-                  </div>
-                  <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div>
-                      <strong>{isHi ? 'आगामी गति स्तर:' : 'Future Gati Tier:'}</strong>{' '}
-                      {isHi ? pastFutureLife.futureBecoming.futureGatiHi : pastFutureLife.futureBecoming.futureGatiEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'मोक्ष / मुक्ति संभावना:' : 'Moksha Probability:'}</strong>{' '}
-                      {isHi ? pastFutureLife.futureBecoming.mokshaLikelihoodHi : pastFutureLife.futureBecoming.mokshaLikelihoodEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'आगामी लोक:' : 'Next Realm / Loka:'}</strong>{' '}
-                      {isHi ? pastFutureLife.futureBecoming.nextBirthLokaHi : pastFutureLife.futureBecoming.nextBirthLokaEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'आगामी जन्म महाद्वीप / देश:' : 'Next Rebirth Continent:'}</strong>{' '}
-                      {isHi ? pastFutureLife.futureBecoming.futureContinentHi : pastFutureLife.futureBecoming.futureContinentEn}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'आध्यात्मिक विकास सूचकांक:' : 'Spiritual Evolution Index:'}</strong>{' '}
-                      <strong className="mono">{pastFutureLife.futureBecoming.spiritualEvolutionIndex} / 100</strong>
-                    </div>
-                  </div>
-                </section>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 12: कुंडली मिलान (KUNDALI MATCH MAKING)              */}
-          {/* ========================================================= */}
-          {activeMenu === 'matchmaking' && (
-            <MatchMakingView
-              profiles={profiles}
-              activeProfileId={activeProfileId}
-              settings={safeSettings}
-              chartStyle={chartStyle}
-            />
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 13: सम्पूर्ण शास्त्रीय उपाय (COMPREHENSIVE REMEDIES)  */}
-          {/* ========================================================= */}
-          {activeMenu === 'remedies' && (
-            <div className="view-stack">
-              {/* Gemstone Recommendations */}
-              <section className="panel">
-                <div className="panel-header">
-                  <h3>
-                    <Gem size={16} />{' '}
-                    {isHi ? 'रत्न एवं रुद्राक्ष शास्त्रीय संस्तुति' : 'Gemstones & Rudraksha Recommendations'}
-                  </h3>
-                </div>
-                <div className="domains-grid">
-                  <div className="workstation-card">
-                    <div className="muted small-text">{isHi ? 'जीवन रत्न (लग्न स्वामी)' : 'Life Stone (Lagna Lord)'}</div>
-                    <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--accent)' }}>
-                      {gemstoneData.lifeStone.stoneHi} ({gemstoneData.lifeStone.stoneEn})
-                    </div>
-                    <div className="small-text">{isHi ? `ग्रह: ${trPlanet(gemstoneData.lifeStone.planet, lang)}` : `Planet: ${gemstoneData.lifeStone.planet}`}</div>
-                    <p style={{ fontSize: '11.5px', marginTop: 4 }}>{isHi ? gemstoneData.lifeStone.reasonHi : gemstoneData.lifeStone.reasonEn}</p>
-                  </div>
-
-                  <div className="workstation-card">
-                    <div className="muted small-text">{isHi ? 'भाग्य रत्न (नवम स्वामी)' : 'Lucky Stone (9th Lord)'}</div>
-                    <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--good)' }}>
-                      {gemstoneData.luckyStone.stoneHi} ({gemstoneData.luckyStone.stoneEn})
-                    </div>
-                    <div className="small-text">{isHi ? `ग्रह: ${trPlanet(gemstoneData.luckyStone.planet, lang)}` : `Planet: ${gemstoneData.luckyStone.planet}`}</div>
-                    <p style={{ fontSize: '11.5px', marginTop: 4 }}>{isHi ? gemstoneData.luckyStone.reasonHi : gemstoneData.luckyStone.reasonEn}</p>
-                  </div>
-
-                  <div className="workstation-card">
-                    <div className="muted small-text">{isHi ? 'संस्तुत रुद्राक्ष' : 'Recommended Rudraksha'}</div>
-                    <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--indigo)' }}>
-                      {isHi ? gemstoneData.primaryRudraksha.titleHi : gemstoneData.primaryRudraksha.titleEn}
-                    </div>
-                    <div className="small-text">{isHi ? `अधिपति देव: ${gemstoneData.primaryRudraksha.deityHi}` : `Deity: ${gemstoneData.primaryRudraksha.deityEn}`}</div>
-                    <p style={{ fontSize: '11.5px', marginTop: 4 }}>{isHi ? gemstoneData.primaryRudraksha.benefitHi : gemstoneData.primaryRudraksha.benefitEn}</p>
-                  </div>
-                </div>
-
-                {gemstoneData.avoidStonesHi.length > 0 && (
-                  <div className="gochar-banner is-alert" style={{ marginTop: 12 }}>
-                    <strong>{isHi ? 'विशेष निषेध एवं चेतावनी (वर्जित रत्न):' : 'Caution Note (Avoid Stones):'}</strong>{' '}
-                    {isHi ? gemstoneData.avoidStonesHi.join(', ') : gemstoneData.avoidStonesEn.join(', ')}
-                  </div>
-                )}
-              </section>
-
-              {/* Vedic Mantras & Dana */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>{isHi ? 'वैदिक एवं तांत्रिक नवग्रह मंत्र' : 'Vedic & Tantrik Planetary Mantras'}</h3>
-                  </div>
-                  <div className="table-scroll">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>{isHi ? 'ग्रह' : 'Graha'}</th>
-                          <th>{isHi ? 'बीज मंत्र' : 'Beej Mantra'}</th>
-                          <th>{isHi ? 'जप संख्या' : 'Recitations'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td><strong>{isHi ? 'सूर्य' : 'Sun'}</strong></td><td className="mono">ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः</td><td>7,000</td></tr>
-                        <tr><td><strong>{isHi ? 'चंद्र' : 'Moon'}</strong></td><td className="mono">ॐ श्रां श्रीं श्रौं सः चंद्रमसे नमः</td><td>11,000</td></tr>
-                        <tr><td><strong>{isHi ? 'मंगल' : 'Mars'}</strong></td><td className="mono">ॐ क्रां क्रीं क्रौं सः भौमाय नमः</td><td>10,000</td></tr>
-                        <tr><td><strong>{isHi ? 'बुध' : 'Mercury'}</strong></td><td className="mono">ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः</td><td>9,000</td></tr>
-                        <tr><td><strong>{isHi ? 'बृहस्पति' : 'Jupiter'}</strong></td><td className="mono">ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः</td><td>19,000</td></tr>
-                        <tr><td><strong>{isHi ? 'शुक्र' : 'Venus'}</strong></td><td className="mono">ॐ द्रां द्रीं द्रौं सः शुक्राय नमः</td><td>16,000</td></tr>
-                        <tr><td><strong>{isHi ? 'शनि' : 'Saturn'}</strong></td><td className="mono">ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः</td><td>23,000</td></tr>
-                        <tr><td><strong>{isHi ? 'राहु' : 'Rahu'}</strong></td><td className="mono">ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः</td><td>18,000</td></tr>
-                        <tr><td><strong>{isHi ? 'केतु' : 'Ketu'}</strong></td><td className="mono">ॐ स्रां स्रीं स्रौं सः केतवे नमः</td><td>17,000</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                <section className="panel">
-                  <div className="panel-header">
-                    <h3>{isHi ? 'शास्त्रीय दान एवं नक्षत्र स्नान' : 'Classical Charity (Dana) & Herbal Baths'}</h3>
-                  </div>
-                  <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div>
-                      <strong>{isHi ? 'नक्षत्र स्नान (Herbal Bath):' : 'Nakshatra Herbal Bath:'}</strong>{' '}
-                      {isHi
-                        ? 'जन्म नक्षत्र या चंद्रमा के गोचर दिन में मुलेठी, श्वेत चंदन, सुगंधित खस अथवा कुशा का अर्क जल में डालकर स्नान करने से मानसिक शांति व आरोग्यता प्राप्त होती है।'
-                        : 'Herbal baths with white sandalwood, vetiver (khus), and sacred kusha roots on Moon nakshatra days rejuvenate the physical aura.'}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'अन्न एवं द्रव्य दान:' : 'Food & Material Charity:'}</strong>{' '}
-                      {isHi
-                        ? 'गुरुवार को चने की दाल व बेसन का दान, शनिवार को काले तिल व सरसों के तेल का दान, तथा बुधवार को हरी मूंग व पक्षियों को दाना डालना सर्व-दोष नाशक है।'
-                        : 'Donating split chickpeas on Thursdays, black sesame and mustard oil on Saturdays, and feeding birds on Wednesdays balances transiting malefic pressures.'}
-                    </div>
-                    <div>
-                      <strong>{isHi ? 'आचरण व कर्म शुद्धि:' : 'Conduct & Lifestyle Conduct:'}</strong>{' '}
-                      {isHi
-                        ? 'सत्य भाषण, माता-पिता की सेवा, वाणी में सौम्यता, और नित्य प्रातः सूर्य को तांबे के पात्र से अर्घ्य देना सबसे महान उपाय है।'
-                        : 'Respecting elders, truthfulness, soft speech, and offering morning water (Arghya) to the Sun in a copper vessel.'}
-                    </div>
-                  </div>
-                </section>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* MENU 14: दैनिक पंचांग व मुहूर्त (DAILY PANCHANG & MUHURTA)   */}
-          {/* ========================================================= */}
-          {activeMenu === 'panchang' && (
-            <div className="view-stack">
-              <ToolsSuiteView
-                chart={chart}
-                baseInput={chart.input}
-                settings={settings || DEFAULT_SETTINGS}
-                onApplyRectifiedTime={() => {}}
-                requestedSubTab={{ id: 'deep_panchang', nonce: Date.now() }}
+          {/* Gochar Chart SVG & Transit Summary */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+            <div className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '14.5px' }}>
+                🌌 {isHi ? 'वर्तमान गोचर चक्र (Live Transit Chart)' : 'Live Transit Chart'}
+              </h3>
+              <VedicChartSvg
+                title={isHi ? 'गोचर चक्र (Live)' : 'Gochar (Live)'}
+                style={chartStyle}
+                lagnaSignIndex={gocharChart.ascendant.signIndex}
+                items={[
+                  { id: 'Asc', label: trPlanetShort('Asc', lang), signIndex: gocharChart.ascendant.signIndex, houseNumber: 1, isLagna: true },
+                  ...gocharChart.planets.map((p) => ({
+                    id: p.id,
+                    label: trPlanetShort(p.id, lang),
+                    signIndex: p.signIndex,
+                    houseNumber: p.houseNumber,
+                    isRetrograde: p.isRetrograde,
+                    isCombust: p.isCombust,
+                    dignity: p.dignity,
+                  })),
+                ]}
               />
             </div>
+
+            {/* Double Transit Activation */}
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                ⚡ {isHi ? 'द्वि-गोचर सक्रियता (Double Transit: गुरु + शनि)' : 'Double Transit (Jupiter + Saturn Resonance)'}
+              </h3>
+              {deepGochar.doubleTransitHouses.length === 0 ? (
+                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                  {isHi ? 'वर्तमान में कोई प्रत्यक्ष द्वि-गोचर दृष्टि सक्रिय नहीं है।' : 'No direct double transit activation currently active.'}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {deepGochar.doubleTransitHouses.map((dt) => (
+                    <div key={dt.house} style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px' }}>
+                      <strong style={{ color: 'var(--accent)' }}>भाव {dt.house} ({dt.signName}):</strong> {dt.meaning}
+                      <div className="muted" style={{ fontSize: '11px', marginTop: '2px' }}>
+                        गुरु: {dt.jupiterLink} | शनि: {dt.saturnLink} | SAV: {dt.savBindus} बिंदु
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Planet-by-Planet Transit Predictions Table */}
+          <div className="card" style={{ padding: '16px' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '15px', color: 'var(--good)' }}>
+              📜 {isHi ? 'ग्रह-वार गोचर फलकथन (Planet-by-Planet Transit Readings)' : 'Planet-by-Planet Transit Predictions'}
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {deepGochar.items.map((it) => (
+                <div
+                  key={it.planet}
+                  style={{
+                    padding: '10px 14px',
+                    background: 'var(--bg-subtle)',
+                    borderRadius: '6px',
+                    borderLeft: `4px solid ${
+                      it.verdict === 'Strong & Auspicious' || it.verdict === 'Auspicious'
+                        ? 'var(--good)'
+                        : it.verdict === 'Obstructed (Vedha)'
+                        ? 'var(--warn)'
+                        : 'var(--accent)'
+                    }`,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
+                      {it.planet}: {it.transitSign} (चंद्र से H{it.houseFromMoon}, लग्न से H{it.houseFromLagna})
+                    </strong>
+                    <span className={`tag ${it.verdict.includes('Auspicious') ? 'tag-good' : 'tag-subtle'}`}>
+                      {it.verdict}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', marginTop: '4px', color: 'var(--muted)' }}>
+                    {it.reading}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PAGE 31: MULTI-LEVEL DASHA CALCULATION + PREDICTIONS */}
+      {activePage === 31 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+              ⏳ {isHi ? 'पेज 31: दशा 4-स्तरीय गणना व फलकथन (Dasha Systems & Predictions)' : 'Page 31: Dasha 4-Level Calculation & Predictions'}
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
+              {isHi
+                ? 'विंशोत्तरी महादशा, अंतर्दशा, प्रत्यंतर्दशा, सूक्ष्म दशा गणना एवं संयुक्त दशा फलकथन व योगिनी दशा।'
+                : 'Vimshottari 4-tier Mahadasha, Antardasha, Pratyantardasha, Sookshma dasha timelines & comprehensive multi-tier predictive reading.'}
+            </p>
+          </div>
+
+          {/* Active Dasha Card */}
+          <div
+            className="card"
+            style={{
+              padding: '16px',
+              background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.08), rgba(99, 102, 241, 0.08))',
+              border: '1px solid rgba(217, 119, 6, 0.25)',
+              borderRadius: '8px',
+            }}
+          >
+            <h3 style={{ margin: '0 0 10px', fontSize: '15px', color: 'var(--accent)' }}>
+              🎯 {isHi ? 'वर्तमान सक्रिय दशा काल (Active Dasha Timeline)' : 'Current Active Dasha Hierarchy'}
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+              <div style={{ padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                <div className="muted" style={{ fontSize: '11px' }}>{isHi ? 'महादशा (MD)' : 'Mahadasha'}</div>
+                <strong style={{ fontSize: '14px', color: 'var(--good)' }}>{activeDashaSummary.maha?.lord}</strong>
+              </div>
+              <div style={{ padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                <div className="muted" style={{ fontSize: '11px' }}>{isHi ? 'अंतर्दशा (AD)' : 'Antardasha'}</div>
+                <strong style={{ fontSize: '14px', color: 'var(--accent)' }}>{activeDashaSummary.antar?.lord}</strong>
+              </div>
+              <div style={{ padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                <div className="muted" style={{ fontSize: '11px' }}>{isHi ? 'प्रत्यंतर्दशा (PD)' : 'Pratyantardasha'}</div>
+                <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{activeDashaSummary.pratyantar?.lord}</strong>
+              </div>
+              <div style={{ padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                <div className="muted" style={{ fontSize: '11px' }}>{isHi ? 'सूक्ष्म दशा (SD)' : 'Sookshma Dasha'}</div>
+                <strong style={{ fontSize: '14px', color: 'var(--muted)' }}>{activeDashaSummary.sookshma?.lord}</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Dasha Suite View */}
+          <DashaView chart={chart} />
+        </div>
+      )}
+
+      {/* PAGE 32: VEDIC CHAKRAS CALCULATION + PREDICTIONS */}
+      {activePage === 32 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+              ☸️ {isHi ? 'पेज 32: विविध वैदिक चक्र व फलकथन (Special Vedic Chakras & Predictions)' : 'Page 32: Special Vedic Chakras & Predictions'}
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
+              {isHi
+                ? 'सुदर्शन चक्र (लग्न-सूर्य-चंद्र त्रिविध चक्र), सर्वतोभद्र चक्र (वेध विश्लेषण), कोटा चक्र (दुर्ग रक्षा) एवं कूर्म चक्र।'
+                : 'Sudarshan Triple Wheel, Sarvatobhadra 81-pada Vedha grid, Kota Fortress Chakra, and Kurma geographical direction chakra.'}
+            </p>
+          </div>
+
+          {/* Chakra Subtabs */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className={`btn btn-sm ${chakrasSubTab === 'sudarshan' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setChakrasSubTab('sudarshan')}
+            >
+              ☸️ {isHi ? 'सुदर्शन चक्र (Sudarshan)' : 'Sudarshan Chakra'}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${chakrasSubTab === 'sarvatobhadra' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setChakrasSubTab('sarvatobhadra')}
+            >
+              ✨ {isHi ? 'सर्वतोभद्र चक्र (Sarvatobhadra)' : 'Sarvatobhadra Chakra'}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${chakrasSubTab === 'kota' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setChakrasSubTab('kota')}
+            >
+              🏰 {isHi ? 'कोटा चक्र (Kota Chakra)' : 'Kota Chakra'}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${chakrasSubTab === 'kurma' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setChakrasSubTab('kurma')}
+            >
+              🐢 {isHi ? 'कूर्म चक्र (Kurma Chakra)' : 'Kurma Chakra'}
+            </button>
+          </div>
+
+          {/* Sudarshan Chakra Content */}
+          {chakrasSubTab === 'sudarshan' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 10px', fontSize: '15px' }}>
+                  ☸️ {isHi ? 'सुदर्शन चक्र त्रिविध तुलना (Lagna, Surya & Chandra Wheels)' : 'Sudarshan Chakra Analysis'}
+                </h3>
+                <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '10px' }}>
+                  {isHi
+                    ? `वर्तमान वर्षेश आयु वर्ष ${sudarshanData.ageYears}: सुदर्शन चक्र भाव ${sudarshanData.activeHouse} सक्रिय है (लग्न राशि ${sudarshanData.lagnaSign + 1}, चंद्र राशि ${sudarshanData.moonSign + 1}, सूर्य राशि ${sudarshanData.sunSign + 1})।`
+                    : `Active Sudarshan house for age ${sudarshanData.ageYears}: House ${sudarshanData.activeHouse} is energized across Lagna, Moon and Sun.`}
+                </div>
+                <div style={{ padding: '10px 14px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '13px', fontWeight: 600 }}>
+                  🎯 {isHi ? sudarshanData.annualSynthesisHi : sudarshanData.annualSynthesisEn}
+                </div>
+              </div>
+            </div>
           )}
-        </main>
-      </div>
+
+          {/* Kota Chakra Content */}
+          {chakrasSubTab === 'kota' && (
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '15px' }}>
+                🏰 {isHi ? 'कोटा चक्र दुर्ग रक्षा व घेराबंदी विश्लेषण (Kota Fortress Analysis)' : 'Kota Chakra Fortress Defense Analysis'}
+              </h3>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                <span className="tag tag-good">कोटा स्वामी: {kotaData.kotaSwami}</span>
+                <span className="tag tag-accent">कोटा पाल: {kotaData.kotaPala}</span>
+                <span className="tag tag-strong">दुर्ग स्थिति: {isHi ? kotaData.defenseStrengthHi : kotaData.defenseStrengthEn}</span>
+              </div>
+              <p style={{ fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                {isHi ? kotaData.analysisHi : kotaData.analysisEn}
+              </p>
+            </div>
+          )}
+
+          {/* Sarvatobhadra Chakra Content */}
+          {chakrasSubTab === 'sarvatobhadra' && (
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '15px' }}>
+                ✨ {isHi ? 'सर्वतोभद्र चक्र वेध विश्लेषण (Sarvatobhadra 81-Padas Grid)' : 'Sarvatobhadra Chakra 81-Padas Grid'}
+              </h3>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                <span className="tag tag-good">शुभ वेध: {sarvatobhadraData.beneficVedhaCount}</span>
+                <span className="tag tag-bad">अशुभ वेध: {sarvatobhadraData.maleficVedhaCount}</span>
+                <span className="tag tag-accent">जन्म नक्षत्र: {sarvatobhadraData.janmaNakshatra}</span>
+              </div>
+              <p style={{ fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                {isHi ? sarvatobhadraData.summaryHi : sarvatobhadraData.summaryEn}
+              </p>
+            </div>
+          )}
+
+          {/* Kurma Chakra Content */}
+          {chakrasSubTab === 'kurma' && (
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '15px' }}>
+                🐢 {isHi ? 'कूर्म चक्र भौगोलिक दिशा संवेदनशीलता (Kurma Chakra)' : 'Kurma Chakra Geographical Direction Sensitivity'}
+              </h3>
+              <p style={{ fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                {isHi ? kurmaData.guidanceHi : kurmaData.guidanceEn}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PAGE 33: ANNUAL VARSHPHAL / TAJIKA SOLAR */}
+      {activePage === 33 && (
+        <div className="card" style={{ padding: '20px' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: '18px', color: 'var(--text-primary)' }}>
+            ☀️ {isHi ? 'पेज 33: वर्षफल / ताजिक वार्षिक (Annual Varshphal & Tajika Sahams)' : 'Page 33: Annual Varshphal & Tajika Solar Return'}
+          </h2>
+          <ToolsSuiteView
+            chart={chart}
+            baseInput={chart.input}
+            settings={safeSettings}
+            onApplyRectifiedTime={() => {}}
+            requestedSubTab={{ id: 'varshaphala', nonce: Date.now() }}
+          />
+        </div>
+      )}
+
+      {/* PAGE 34: KP KRISHNAMURTI PADDHATI */}
+      {activePage === 34 && (
+        <div className="card" style={{ padding: '20px' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: '18px', color: 'var(--text-primary)' }}>
+            🎯 {isHi ? 'पेज 34: के.पी. (KP) ज्योतिष प्रणाली (KP Krishnamurti Paddhati)' : 'Page 34: KP Krishnamurti Paddhati (Sub-Lords)'}
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px' }}>{isHi ? '12 भाव कस्प व उप-स्वामी (Cuspal Sub-Lords)' : 'Cuspal Sub-Lords'}</h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <thead>
+                  <tr>
+                    <th>{isHi ? 'भाव' : 'Cusp'}</th>
+                    <th>{isHi ? 'राशि' : 'Sign'}</th>
+                    <th>{isHi ? 'स्वामी' : 'Lord'}</th>
+                    <th>{isHi ? 'नक्षत्र' : 'Star'}</th>
+                    <th>{isHi ? 'उप-स्वामी' : 'Sub'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kpReport.cusps.map((c) => (
+                    <tr key={c.house}>
+                      <td style={{ fontWeight: 600 }}>Cusp {c.house}</td>
+                      <td>{c.signName}</td>
+                      <td>{c.signLord}</td>
+                      <td>{c.starLord}</td>
+                      <td style={{ fontWeight: 700, color: 'var(--accent)' }}>{c.subLord}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px' }}>{isHi ? 'ग्रह स्थिति व उप-स्वामी (Planetary Sub-Lords)' : 'Planetary Sub-Lords'}</h3>
+              <table className="compact-table" style={{ width: '100%', fontSize: '12px' }}>
+                <thead>
+                  <tr>
+                    <th>{isHi ? 'ग्रह' : 'Planet'}</th>
+                    <th>{isHi ? 'राशि' : 'Sign'}</th>
+                    <th>{isHi ? 'नक्षत्र' : 'Star'}</th>
+                    <th>{isHi ? 'उप-स्वामी' : 'Sub'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kpReport.planets.map((p) => (
+                    <tr key={p.planet}>
+                      <td style={{ fontWeight: 600 }}>{isHi ? PLANET_SANSKRIT[p.planet] || p.planet : p.planet}</td>
+                      <td>{p.signName}</td>
+                      <td>{p.starLord}</td>
+                      <td style={{ fontWeight: 700, color: 'var(--accent)' }}>{p.subLord}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PAGE 35: LAL KITAB SYSTEM & UPAY */}
+      {activePage === 35 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+            📕 {isHi ? 'पेज 35: लाल किताब प्रणाली (Lal Kitab System & Debts)' : 'Page 35: Lal Kitab System & Debts'}
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px' }}>{isHi ? 'लाल किताब ऋण (Rina / Debts)' : 'Lal Kitab Karmic Debts'}</h3>
+              {lalKitabReport.karmicDebts.map((d, i) => (
+                <div key={i} style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', marginBottom: '8px', fontSize: '12px' }}>
+                  <strong style={{ color: d.isTriggered ? 'var(--warn)' : 'var(--good)' }}>{isHi ? d.debtTypeHi : d.debtType}</strong>
+                  <div className="muted">{isHi ? d.classicalCauseHi : d.classicalCauseEn}</div>
+                  <div style={{ marginTop: '4px', color: 'var(--accent)' }}>{isHi ? `उपाय: ${d.remedialProtocolHi}` : `Remedy: ${d.remedialProtocolEn}`}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px' }}>{isHi ? 'सोये भाव (Sleeping Houses)' : 'Sleeping Houses'}</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {lalKitabReport.sleepingHouses.map((h) => (
+                  <div key={h.houseNumber} style={{ padding: '6px 10px', background: 'var(--bg-subtle)', borderRadius: '4px', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <strong>भाव {h.houseNumber} ({h.pakkaGharRulerHi})</strong>
+                      <span className={`tag ${h.isSleeping ? 'tag-warn' : 'tag-good'}`}>
+                        {h.isSleeping ? (isHi ? 'सोया हुआ' : 'Sleeping') : (isHi ? 'जाग्रत' : 'Awake')}
+                      </span>
+                    </div>
+                    {h.isSleeping && (
+                      <div className="muted" style={{ marginTop: '4px' }}>
+                        {isHi ? `जगाने का उपाय: ${h.awakeningMethodHi}` : `Awakening: ${h.awakeningMethodEn}`}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PAGE 36: KUNDALI MATCH MAKING (36 GUNAS) */}
+      {activePage === 36 && (
+        <div className="card" style={{ padding: '20px' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: '18px', color: 'var(--text-primary)' }}>
+            💍 {isHi ? 'पेज 36: कुंडली मिलान (Kundali Match Making 36 Gunas)' : 'Page 36: Kundali Match Making (36 Gunas)'}
+          </h2>
+          <MatchMakingView
+            profiles={profiles}
+            activeProfileId={activeProfileId}
+            settings={safeSettings}
+            chartStyle={chartStyle}
+          />
+        </div>
+      )}
+
+      {/* PAGE 37: COMPREHENSIVE VEDIC REMEDIES */}
+      {activePage === 37 && (
+        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--text-primary)' }}>
+            🕉️ {isHi ? 'पेज 37: सम्पूर्ण शास्त्रीय उपाय (Comprehensive Vedic Remedies)' : 'Page 37: Comprehensive Shastric Remedies'}
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--accent)' }}>
+                💎 {isHi ? 'रत्न व रुद्राक्ष परामर्श (Gemstones & Rudraksha)' : 'Gemstones & Rudraksha'}
+              </h3>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.6 }}>
+                <strong>{isHi ? 'जीवन रत्न (Life Stone):' : 'Life Stone:'}</strong> {isHi ? gemstoneData.lifeStone.stoneHi : gemstoneData.lifeStone.stoneEn} ({isHi ? gemstoneData.lifeStone.fingerHi : gemstoneData.lifeStone.fingerEn})<br />
+                <strong>{isHi ? 'भाग्य रत्न (Lucky Stone):' : 'Lucky Stone:'}</strong> {isHi ? gemstoneData.luckyStone.stoneHi : gemstoneData.luckyStone.stoneEn} ({isHi ? gemstoneData.luckyStone.fingerHi : gemstoneData.luckyStone.fingerEn})<br />
+                <strong>{isHi ? 'कारक रत्न (Benefic Stone):' : 'Benefic Stone:'}</strong> {isHi ? gemstoneData.beneficStone.stoneHi : gemstoneData.beneficStone.stoneEn} ({isHi ? gemstoneData.beneficStone.fingerHi : gemstoneData.beneficStone.fingerEn})<br />
+                <strong>{isHi ? 'रुद्राक्ष (Rudraksha Mukhi):' : 'Recommended Rudraksha:'}</strong> {gemstoneData.primaryRudraksha.mukhi} मुखी रुद्राक्ष ({isHi ? gemstoneData.primaryRudraksha.deityHi : gemstoneData.primaryRudraksha.deityEn})
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: '16px' }}>
+              <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--good)' }}>
+                🪔 {isHi ? 'दैनिक वैदिक मंत्र व दान (Mantra & Daana)' : 'Vedic Mantras & Charity'}
+              </h3>
+              <div style={{ fontSize: '12px', lineHeight: 1.6 }}>
+                • <strong>गायत्री मंत्र:</strong> नित्य प्रातः 24 या 108 बार जप करें।<br />
+                • <strong>महामृत्युंजय मंत्र:</strong> स्वास्थ्य व दीर्घायु हेतु नित्य 11 बार जपें।<br />
+                • <strong>अन्न दान:</strong> प्रति शनिवार व अमावस्या को निर्धनों को भोजन कराएं।
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PAGE 38: DAILY DRIK PANCHANG & MUHURTA (AT THE VERY END!) */}
+      {activePage === 38 && (
+        <div className="card" style={{ padding: '20px' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: '18px', color: 'var(--text-primary)' }}>
+            📅 {isHi ? 'पेज 38: दैनिक पंचांग व मुहूर्त (Daily Drik Panchang & Muhurta)' : 'Page 38: Daily Drik Panchang & Muhurta'}
+          </h2>
+          <ToolsSuiteView
+            chart={chart}
+            baseInput={chart.input}
+            settings={safeSettings}
+            onApplyRectifiedTime={() => {}}
+            requestedSubTab={{ id: 'deep_panchang', nonce: Date.now() }}
+          />
+        </div>
+      )}
     </div>
   );
 };
