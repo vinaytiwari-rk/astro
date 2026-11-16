@@ -3,7 +3,6 @@ import {
   Compass,
   Edit3,
   FileText,
-  Globe,
   Moon,
   Plus,
   Settings,
@@ -15,18 +14,11 @@ import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import type { MainTab } from '../../nav';
 
-export interface DropdownSubOption {
-  id: string;
-  labelEn: string;
-  labelHi: string;
-  badge?: string;
-}
-
 interface DropdownNavHeaderProps {
   activeTab: MainTab;
   activeSubTab: string;
   onSelectPrimaryTab: (tab: MainTab) => void;
-  onSelectSubTab: (subTabId: string) => void;
+  onSelectSubTab: (subTab: string) => void;
   activeInput: BirthInput;
   profiles: BirthInput[];
   onSelectProfile: (id: string) => void;
@@ -41,9 +33,7 @@ interface DropdownNavHeaderProps {
 }
 
 export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
-  activeTab,
   activeSubTab,
-  onSelectPrimaryTab,
   onSelectSubTab,
   activeInput,
   profiles,
@@ -60,179 +50,35 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
 
-  // Master Primary Modules Definition (Flagship Split-Studio Life Dossier is #1)
-  const primaryModules: Array<{
-    id: MainTab;
+  const workstationMenus: Array<{
+    id: string;
     labelEn: string;
     labelHi: string;
-    emoji: string;
+    icon: string;
+    badge?: string;
   }> = [
-    {
-      id: 'dossier',
-      labelEn: '🌟 Split-Studio Life Dossier (10 Deep Chapters & Interactive Kundali)',
-      labelHi: '🌟 1. गोपनीय जीवन आलेख (स्प्लिट-स्टूडियो 10 अध्याय व जन्म कुंडली)',
-      emoji: '📜',
-    },
-    {
-      id: 'matchmaking',
-      labelEn: '💍 Kundali Milan & Match Making (36 Guna Ashtakoota & Manglik)',
-      labelHi: '💍 2. कुंडली मिलान (36 गुण अष्टकूट, मांगलिक परिहार व बीज/क्षेत्र)',
-      emoji: '💍',
-    },
-    {
-      id: 'panchang_muhurta',
-      labelEn: '📅 Panchang & Muhurta Explorer (Drik, 24h Hora, Choghadiya, 30 Do Ghati)',
-      labelHi: '📅 3. पंचांग व मुहूर्त (दैनिक दृक, 24h होरा, चौघड़िया, 30 दो-घटी)',
-      emoji: '📅',
-    },
-    {
-      id: 'kundli',
-      labelEn: '🔬 Higher Vargas (D1–D360), Shadbala & Mathematical Workstation',
-      labelHi: '🔬 4. सूक्ष्म वर्ग चक्र (D1–D360), षड्बल व गणित वर्कस्टेशन',
-      emoji: '🔬',
-    },
-    {
-      id: 'dasha_transits',
-      labelEn: '⏳ Dasha Systems & Live Gochar (Vimshottari 5 Levels, Yogini, Sade Sati)',
-      labelHi: '⏳ 5. दशा प्रणाली व गोचर (विंशोत्तरी 5 स्तर, योगिनी, साढ़े साती)',
-      emoji: '⏳',
-    },
-    {
-      id: 'branches',
-      labelEn: '🌿 Specialist Vedic Suites: KP Stellar & Traditional Lal Kitab Tewa',
-      labelHi: '🌿 6. विशिष्ट पद्धतियाँ: KP नक्षत्र व परंपरागत लाल किताब टेवा',
-      emoji: '🌿',
-    },
-    {
-      id: 'western',
-      labelEn: '🪐 Western Tropical Astrology (360° Circular Wheel & Aspects)',
-      labelHi: '🪐 7. पाश्चात्य सायन ज्योतिष (360° सर्कुलर व्हील व ग्रह दृष्टियां)',
-      emoji: '🪐',
-    },
-    {
-      id: 'patrika_booklet',
-      labelEn: '📖 34-Chapter Deluxe Janmakundali Book (Print & PDF Export)',
-      labelHi: '📖 8. 34-अध्यायी बृहत् जन्मपत्रिका (प्रिंट व PDF एक्सपोर्ट)',
-      emoji: '📖',
-    },
-    {
-      id: 'home',
-      labelEn: '📝 Quick Entry Portal (New Native & Quick Forms)',
-      labelHi: '📝 9. त्वरित प्रविष्टि पोर्टल (नया विवरण फॉर्म)',
-      emoji: '📝',
-    },
+    { id: 'sarini', labelEn: '1. Basic Details & Avakhada Sheet', labelHi: '1. ज्योतिष सारिणी व मूल विवरण', icon: '📋' },
+    { id: 'charts_tables', labelEn: '2. All Vargas D1–D60, SAV & Tables', labelHi: '2. कुंडली व वर्ग चक्र / तालिकायें (D1–D60)', icon: '📊' },
+    { id: 'dasha', labelEn: '3. Multi-Dasha Systems (Vimshottari/Yogini)', labelHi: '3. दशा प्रणाली (विंशोत्तरी 5 स्तर, योगिनी)', icon: '⏳' },
+    { id: 'varshphal', labelEn: '4. Annual Varshphal & Tajika Sahams', labelHi: '4. वर्षफल / ताजिक वार्षिक (मुन्था, वर्षेश, सहम)', icon: '☀️' },
+    { id: 'chakras', labelEn: '5. Special Chakras (Sudarshan/Kota/Kurma)', labelHi: '5. विविध वैदिक चक्र (सुदर्शन, सर्वतोभद्र, कोटा, कूर्म)', icon: '☸️' },
+    { id: 'yogas_doshas', labelEn: '6. Classical Yogas, Doshas & Conjunctions', labelHi: '6. योग, दोष एवं युति विश्लेषण (राजयोग, मांगलिक, कालसर्प)', icon: '⚡' },
+    { id: 'navamsha', labelEn: '7. Navamsha D9 Deep Reading & Pushkara', labelHi: '7. नवांश कुंडली विशेष विवेचन (कारकांश व पुष्कर भाग)', icon: '🌟' },
+    { id: 'kp_system', labelEn: '8. KP Krishnamurti Paddhati (Sub-Lords)', labelHi: '8. के.पी. (KP) ज्योतिष प्रणाली (कस्प व 4-चरण कारक)', icon: '🎯', badge: 'KP' },
+    { id: 'lal_kitab', labelEn: '9. Lal Kitab System (Debts & Upay)', labelHi: '9. लाल किताब प्रणाली (टेवा, सोये भाव व ऋण)', icon: '📕', badge: 'LK' },
+    { id: 'predictions', labelEn: '10. Deep Predictions: Career, Appearance & Family', labelHi: '10. सटीक जीवन फलकथन (करियर, रूप-रंग व पारिवारिक यथार्थ)', icon: '🔮' },
+    { id: 'past_future', labelEn: '11. Past Life D60 & Future Rebirth', labelHi: '11. पूर्व जन्म व भावी गति (D60 सभ्यता व योनि)', icon: '🌌' },
+    { id: 'matchmaking', labelEn: '12. Kundali Match Making (36 Gunas)', labelHi: '12. कुंडली मिलान (36 गुण अष्टकूट व दोष साम्य)', icon: '💍' },
+    { id: 'remedies', labelEn: '13. Comprehensive Shastric Remedies', labelHi: '13. सम्पूर्ण शास्त्रीय उपाय (मंत्र, दान, स्नान व रत्न)', icon: '🕉️' },
+    { id: 'panchang', labelEn: '14. Daily Drik Panchang & Muhurta', labelHi: '14. दैनिक पंचांग व मुहूर्त (चोघड़िया, होरा व पर्व)', icon: '📅' },
   ];
-
-  // Map sub-views for each master module (Numerology Completely Purged)
-  const subViewsMap: Record<string, DropdownSubOption[]> = {
-    dossier: [
-      { id: 'ch1', labelEn: 'Ch 1: Seed Impressions & Spiritual Identity (Ishta, Syllable, Paya)', labelHi: 'अध्याय 1: बीज संस्कार, मूल पहचान (इष्ट, नामाक्षर, पाया)' },
-      { id: 'ch2', labelEn: 'Ch 2: Raw Psychology & Hidden Turmoil (Persona vs. Midnight)', labelHi: 'अध्याय 2: स्वभाव का नग्न सच, आंतरिक द्वंद्व व मनोविश्लेषण' },
-      { id: 'ch3', labelEn: 'Ch 3: Active Life Phase — What Is Happening Right Now?', labelHi: 'अध्याय 3: वर्तमान जीवन अवस्था का एक्स-रे (अभी क्या घट रहा है?)' },
-      { id: 'ch4', labelEn: 'Ch 4: Career, Livelihood & Professional Zenith (Ages 20–45)', labelHi: 'अध्याय 4: कर्म, कार्यक्षेत्र व आजीविका का यथार्थ (Zenith Age)' },
-      { id: 'ch5', labelEn: 'Ch 5: Wealth Accumulation & Financial Leakage Traps', labelHi: 'अध्याय 5: धन, संचित कोष व वित्तीय रिसाव के गुप्त छिद्र' },
-      { id: 'ch6', labelEn: 'Ch 6: Marriage Reality, Intimacy & Sexuality Spectrum', labelHi: 'अध्याय 6: दांपत्य, प्रेम, काम-प्रकृति व पारिवारिक संबंध' },
-      { id: 'ch7', labelEn: 'Ch 7: Health Vulnerabilities, Impairment & Longevity', labelHi: 'अध्याय 7: देह संवेदनशीलता, अंग-दोष, स्वास्थ्य व आयु मर्यादा' },
-      { id: 'ch8', labelEn: 'Ch 8: 15 to 75 Years Epoch Chronology (12 Epochs)', labelHi: 'अध्याय 8: 15 से 75 वर्ष का कालक्रम घटना चक्र (12 पड़ाव)' },
-      { id: 'ch9', labelEn: 'Ch 9: Past Life Records & Future Incarnation Becoming', labelHi: 'अध्याय 9: पूर्व जन्म का पूर्ण वृत्तांत व आगामी गति' },
-      { id: 'ch10', labelEn: 'Ch 10: Lal Kitab Tewa, Ancestral Debts & Conduct Remedies', labelHi: 'अध्याय 10: लाल किताब टेवा, पैतृक ऋण व आचरण उपाय' },
-    ],
-    kundli: [
-      { id: 'overview', labelEn: 'Basic Details & Avakhada Chakra', labelHi: 'मूल विवरण, अवकहड़ा व घातक चक्र' },
-      { id: 'charts', labelEn: 'Interactive Charts (D1 Lagna, D9 Navamsha, Chalit)', labelHi: 'जन्म चक्र (D1 लग्न, D9 नवांश, चलित व चंद्र)' },
-      { id: 'planets', labelEn: 'Planetary Table, Degrees & Karakas', labelHi: 'ग्रह स्थिति, अंश, नक्षत्र व चर कारक' },
-      { id: 'vargas', labelEn: 'Shodashvarga (D1–D60) & Higher Micro Vargas (D108–D360)', labelHi: 'षोडशवर्ग (D1–D60) व सूक्ष्म वर्ग (D108, D150, D360)', badge: 'D1–D360' },
-      { id: 'strength', labelEn: 'Shadbala, Bhava Bala & Planetary Strengths', labelHi: 'षड्बल, भाव बल व ग्रह सामर्थ्य' },
-      { id: 'ashtakavarga', labelEn: 'Ashtakavarga, SAV Points & Prastara', labelHi: 'अष्टकवर्ग, सर्वाष्टक बिंदु व प्रस्तार' },
-    ],
-    predictions: [
-      { id: 'twelve_planets', labelEn: '🌟 12 Planets Detailed Event Predictions (Sun to Pluto)', labelHi: '🌟 द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक + 3 बाह्य ग्रह)' },
-      { id: 'active_yogas_yuti', labelEn: '📜 Active Yogas & Planetary Conjunctions (2-7 Grahas)', labelHi: '📜 सक्रिय राजयोग व ग्रह युति फल (2-7 ग्रह युति व 300+ योग)' },
-      { id: 'deep_life', labelEn: '🏛️ In-Depth Life Predictions (6 Core Domains)', labelHi: '🏛️ विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, करियर, विवाह)' },
-      { id: 'eventsLedger', labelEn: '⏳ 120-Year Life Events Timeline & Milestones', labelHi: '⏳ 120-वर्षीय विंशोत्तरी जीवन घटनाक्रम कालचक्र' },
-      { id: 'houseWise', labelEn: '🏠 12 Bhavas Comprehensive Analysis (1st to 12th House)', labelHi: '🏠 द्वादश भाव विस्तृत फलादेश (तनु से मोक्ष तक)' },
-      { id: 'bhriguNadi', labelEn: '✨ Bhrigu Nandi Nadi & BSP (29 Classical Age Rules)', labelHi: '✨ भृगु नंदी नाड़ी व BSP (29 नियम, कर्म फल व कालचक्र)' },
-      { id: 'pastFuture', labelEn: '🔄 Past Life Karma (D60) & Future Incarnation', labelHi: '🔄 पूर्व जन्म (D60 षष्ट्यंश) व आगामी जन्म गति' },
-      { id: 'kpLalKitabRemedies', labelEn: '🌿 KP 4-Step, Lal Kitab & Practical Remedies', labelHi: '🌿 KP 4-स्टेप, लाल किताब व आचरण उपाय' },
-    ],
-    dasha_transits: [
-      { id: 'vimshottari', labelEn: 'Vimshottari Dasha 5 Levels (Maha, Antar, Pratyantar, Sookshma, Pran)', labelHi: 'विंशोत्तरी दशा (5 स्तर: महा, अंतर, प्रत्यंतर, सूक्ष्म, प्राण)' },
-      { id: 'special_dashas', labelEn: 'Special Dashas: Yogini, Ashtottari, Narayana & Chara Dasha', labelHi: 'विशिष्ट दशाएं: योगिनी, अष्टोत्तरी, चर व नारायण दशा' },
-      { id: 'live_transits', labelEn: 'Live Planetary Transits (Gochar) vs Natal Chart', labelHi: 'वर्तमान गोचर स्थिति व वेध चक्र' },
-      { id: 'sade_sati', labelEn: 'Saturn Sade Sati & Dhaiya (Kantaka / Ashtama) Timeline', labelHi: 'शनि साढ़े साती व ढैय्या काल निर्धारण व उपाय' },
-      { id: 'varshaphala', labelEn: 'Annual Solar Return (Varshaphala / Tajika) Year Chart', labelHi: 'वार्षिक ताजिक वर्षफल कुंडली व मुद्धा दशा' },
-    ],
-    branches: [
-      { id: 'kp_4step', labelEn: 'KP 4-Step Theory & 12 Cusp Sub-Lords', labelHi: 'KP पद्धति, 4-स्टेप थ्योरी व 12 भाव उप-स्वामी' },
-      { id: 'lal_kitab', labelEn: 'Fixed Aries Tewa (Pakka Ghar, Soya Ghar & Upay)', labelHi: 'नियत मेष लग्न टेवा, सोये घर व सरल उपाय' },
-      { id: 'bhavartha_ratnakara', labelEn: '12 Lagnas Sign-Specific Functional Rules', labelHi: 'द्वादश लग्न कारक व मारक सूत्र' },
-      { id: 'doshas_remedies', labelEn: 'Doshas: Manglik (10 Cancellations), Kaal Sarp & Gemstones', labelHi: 'मांगलिक (10 परिहार), कालसर्प, पितृ दोष व रत्न/रुद्राक्ष' },
-      { id: 'life_specialized', labelEn: 'Specialized Jyotish: Career, Wealth, Medical & Intimacy', labelHi: 'विशिष्ट ज्योतिष: करियर, धन, चिकित्सा व दांपत्य' },
-    ],
-    western: [
-      { id: 'wheel_chart', labelEn: 'Western Circular Wheel Chart (360° Tropical SVG)', labelHi: 'पाश्चात्य सायन चक्र (360° Circular Wheel)' },
-      { id: 'aspects', labelEn: 'Planetary Aspects & Orbs (Conjunction, Trine, Square, Opposition)', labelHi: 'ग्रह दृष्टियां एवं अंश अंतर (Aspects & Orbs)' },
-      { id: 'big_three', labelEn: 'The Big Three: Sun Sign, Moon Sign & Rising Ascendant', labelHi: 'पाश्चात्य बिग थ्री: सूर्य, चंद्र व लग्न' },
-      { id: 'elements_modalities', labelEn: 'Elements (Fire/Earth/Air/Water) & Modalities Balance', labelHi: 'तत्व एवं स्वभाव संतुलन (Elements & Modalities)' },
-      { id: 'sidereal_vs_tropical', labelEn: 'Vedic (Sidereal) vs Western (Tropical) Comparison', labelHi: 'वैदिक निरयन बनाम पाश्चात्य सायन तुलना' },
-    ],
-    matchmaking: [
-      { id: 'ashtakoota', labelEn: 'Ashtakoota 36 Guna Milan with Detailed Points Breakdown', labelHi: 'अष्टकूट 36 गुण मिलान विस्तृत विवरण' },
-      { id: 'manglik_match', labelEn: 'Mutual Manglik Dosha Analysis & 10 Classical Cancellations', labelHi: 'पारस्परिक मांगलिक मिलान व 10 शास्त्रीय परिहार' },
-      { id: 'poruthams', labelEn: 'South Indian Poruthams (Dina, Gana, Yoni, Rasi, Nadi etc.)', labelHi: 'दक्षिण भारतीय पोरुथम (10/20 Poruthams)' },
-      { id: 'verdict', labelEn: 'Comprehensive Marriage Compatibility Verdict & Vivaha Muhurta', labelHi: 'विवाह निर्णय, सामंजस्य समीक्षा व विवाह मुहूर्त' },
-    ],
-    panchang_muhurta: [
-      { id: 'daily_panchang', labelEn: 'Daily Drik Panchang (Tithi, Vara, Nakshatra, Yoga, Karana, Rahu Kaal)', labelHi: 'दैनिक दृक पंचांग (तिथि, वार, नक्षत्र, योग, करण, राहु काल)' },
-      { id: 'calendar_festivals', labelEn: '2026–2027 Hindu Calendar & Drik Astronomical Festivals', labelHi: '2026–2027 हिन्दू कैलेंडर एवं पर्व तिथियां (अधिक मास, ऋतु)' },
-      { id: 'muhurta_finder', labelEn: 'Shubh Muhurta Finder (Marriage, Griha Pravesh, Vehicle, Business)', labelHi: 'शुभ मुहूर्त चयन (विवाह, गृह प्रवेश, वाहन, व्यापार)' },
-      { id: 'choghadiya_hora', labelEn: 'Day & Night Choghadiya & 24-Hour Hora Calculator', labelHi: 'दिन-रात चौघड़िया, 24-घंटे होरा व दो-घटी मुहूर्त' },
-      { id: 'btr_pakshi_tools', labelEn: 'Birth Time Rectification (BTR) & Pancha Pakshi Tools', labelHi: 'जन्म समय संशोधन (BTR) व पंच पक्षी शास्त्र' },
-    ],
-    patrika_booklet: [
-      { id: 'full_edition', labelEn: 'Complete 34-Chapter Janmakundali Deluxe Edition', labelHi: 'संपूर्ण 34-अध्यायी बृहत् जन्मपत्रिका' },
-      { id: 'branding_options', labelEn: 'Custom Header & Print Layout Options', labelHi: 'कस्टम हेडर व प्रिंट लेआउट सेटिंग' },
-    ],
-  };
-
-  const getPrimaryTabKey = (tab: MainTab): string => {
-    switch (tab) {
-      case 'basics':
-      case 'vargas':
-      case 'strength':
-      case 'ashtakavarga':
-        return 'kundli';
-      case 'dasha':
-      case 'transits':
-        return 'dasha_transits';
-      case 'branches':
-      case 'astro_tools':
-      case 'prashna':
-      case 'hub':
-        return 'branches';
-      case 'match':
-        return 'matchmaking';
-      case 'tools':
-        return 'panchang_muhurta';
-      default:
-        return tab;
-    }
-  };
-
-  const primaryKey = getPrimaryTabKey(activeTab);
-  const currentSubOptions = subViewsMap[primaryKey] || [];
 
   return (
     <header className="dropdown-nav-header no-print">
       {/* Row 1: Brand Logo, Native Selector, Language & Global Utilities */}
       <div className="dropdown-nav-top-row">
         {/* Brand */}
-        <button
-          type="button"
-          className="dropdown-brand-btn"
-          onClick={() => onSelectPrimaryTab('kundli')}
-          title={isHi ? 'मुख्य वर्कस्टेशन' : 'Go to Horoscope Workstation'}
-        >
+        <div className="dropdown-brand-btn" style={{ cursor: 'default' }}>
           <span className="dropdown-brand-om" aria-hidden="true">
             ॐ
           </span>
@@ -241,10 +87,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               {isHi ? 'ज्योतिष होरा' : 'Jyotish Hora'}
             </span>
             <span className="dropdown-brand-tag">
-              {isHi ? 'व्यावसायिक वैदिक, केपी व पाश्चात्य ज्योतिष संस्थान' : 'Professional Vedic, KP & Western Astrology Studio'}
+              {isHi ? 'वैदिक ज्योतिष वर्कस्टेशन' : 'Professional Vedic Astrology Workstation'}
             </span>
           </div>
-        </button>
+        </div>
 
         {/* Center: Active Profile Selector */}
         <div className="dropdown-profile-group">
@@ -320,7 +166,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenBooklet}
-            title={isHi ? '34-अध्यायी बृहत् पत्रिका PDF' : '34-Chapter Patrika PDF'}
+            title={isHi ? '34-अध्यायी बृहत पत्रिका PDF' : '34-Chapter Patrika PDF'}
           >
             <FileText size={14} />
             <span className="hide-on-mobile">{isHi ? 'पत्रिका PDF' : 'Patrika PDF'}</span>
@@ -348,50 +194,28 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         </div>
       </div>
 
-      {/* Row 2: Master Dual Dropdowns (System Selector + Feature Selector) - Clean, Uncluttered */}
+      {/* Row 2: Workstation Menu Dropdown */}
       <div className="dropdown-nav-control-bar">
-        <div className="dropdown-control-wrapper">
-          {/* 1. Master System / Module Dropdown */}
-          <div className="dropdown-field-item">
+        <div className="dropdown-control-wrapper" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+          <div className="dropdown-field-item" style={{ width: '100%' }}>
             <label className="dropdown-field-label">
-              <Compass size={13} />
-              <span>{isHi ? 'ज्योतिष शाखा / मुख्य विषय:' : 'Astrology System / Module:'}</span>
+              <Compass size={14} />
+              <span>{isHi ? 'वर्कस्टेशन मुख्य विषय / मेन्यू चुनें:' : 'Workstation Main Module / Feature:'}</span>
             </label>
             <select
-              aria-label="Select Astrology Module"
+              aria-label="Select Workstation Module"
               className="dropdown-master-select"
-              value={primaryKey}
-              onChange={(e) => onSelectPrimaryTab(e.target.value as MainTab)}
+              value={activeSubTab || 'sarini'}
+              onChange={(e) => onSelectSubTab(e.target.value)}
+              style={{ fontSize: '13.5px', fontWeight: 600 }}
             >
-              {primaryModules.map((mod) => (
+              {workstationMenus.map((mod) => (
                 <option key={mod.id} value={mod.id}>
-                  {mod.emoji} {isHi ? mod.labelHi : mod.labelEn}
+                  {mod.icon} {isHi ? mod.labelHi : mod.labelEn} {mod.badge ? `[${mod.badge}]` : ''}
                 </option>
               ))}
             </select>
           </div>
-
-          {/* 2. Specific Feature / Analysis Dropdown (If sub-options exist) */}
-          {currentSubOptions.length > 0 && (
-            <div className="dropdown-field-item">
-              <label className="dropdown-field-label">
-                <Globe size={13} />
-                <span>{isHi ? 'विशिष्ट गणना / फलादेश विषय:' : 'Specific View / Analysis:'}</span>
-              </label>
-              <select
-                aria-label="Select Specific Analysis"
-                className="dropdown-sub-select"
-                value={activeSubTab}
-                onChange={(e) => onSelectSubTab(e.target.value)}
-              >
-                {currentSubOptions.map((sub) => (
-                  <option key={sub.id} value={sub.id}>
-                    {isHi ? sub.labelHi : sub.labelEn} {sub.badge ? `[${sub.badge}]` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
       </div>
     </header>

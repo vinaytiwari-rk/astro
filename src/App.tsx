@@ -1,26 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { calculateChart } from './astro/calculator';
-import { AYANAMSA_META } from './astro/constants';
-import { formatDateDmy } from './astro/time';
-import type { AyanamsaId, BirthInput, CalcSettings, ChartStyle } from './astro/types';
-import { AshtakavargaView } from './components/AshtakavargaView';
-import { AstroSageToolsView } from './components/AstroSageToolsView';
-import { BasicsView } from './components/BasicsView';
+import type { BirthInput, CalcSettings, ChartStyle } from './astro/types';
 import { BirthEditorModal } from './components/BirthEditorModal';
-import { DashaView } from './components/DashaView';
-import { HomeDashboardView } from './components/HomeDashboardView';
 import { KundaliBookletModal } from './components/KundaliBookletModal';
-import { LifeDossierView } from './components/LifeDossierView';
-import { MatchMakingView } from './components/MatchMakingView';
-import { PrashnaView } from './components/PrashnaView';
-import { PredictionsView } from './components/PredictionsView';
 import { SettingsModal } from './components/SettingsModal';
-import { SpecializedAstrologyView } from './components/SpecializedAstrologyView';
-import { StrengthYogasView } from './components/StrengthYogasView';
-import { ToolsSuiteView } from './components/ToolsSuiteView';
-import { TransitsView } from './components/TransitsView';
-import { VargasView } from './components/VargasView';
-import { WesternAstrologyView } from './components/WesternAstrologyView';
+import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
@@ -30,7 +14,6 @@ import {
   SAMPLE_CHARTS,
 } from './data/cities';
 import { LanguageProvider } from './i18n/LanguageContext';
-import { UI_TEXT, type AppLanguage } from './i18n/translations';
 import type { MainTab, RouteRequest } from './nav';
 
 const STORAGE_PROFILES_KEY = 'jyotish_hora_profiles_v1';
@@ -76,12 +59,12 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation States (Flagship: Split-Studio Life Dossier)
-  const [activeTab, setActiveTab] = useState<MainTab>('dossier');
-  const [activeSubTab, setActiveSubTab] = useState<string>('ch1');
-
+  // Master Navigation State - Exclusively Vedic Master Workstation
+  const [activeTab, setActiveTab] = useState<MainTab>('workstation');
+  const [activeSubTab, setActiveSubTab] = useState<string>('sarini');
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
-  const [language, setLanguage] = useState<AppLanguage>(() => {
+
+  const [language, setLanguage] = useState<'en' | 'hi'>(() => {
     try {
       return localStorage.getItem(STORAGE_LANG_KEY) === 'hi' ? 'hi' : 'en';
     } catch {
@@ -93,17 +76,6 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookletOpen, setBookletOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [requestedMatchPair, setRequestedMatchPair] = useState<
-    | {
-        brideId?: string;
-        groomId?: string;
-        subTab?: 'overview' | 'porutham' | 'sphuta' | 'vivaha' | 'pooja' | 'house_sign';
-        nonce: number;
-      }
-    | undefined
-  >(undefined);
-
-  const importRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -151,64 +123,85 @@ export function App() {
     [activeInput, settings]
   );
 
-  // Central Navigation Dispatcher
-  const navigateTo = (tab: MainTab, subTab?: string, nested?: string) => {
-    // Normalize aliases
-    let targetTab: MainTab = tab;
-    let targetSub = subTab;
+  // Central Navigation Dispatcher - All routes map to Vedic Workstation Menus
+  const navigateTo = (tab: MainTab | string, subTab?: string, nested?: string) => {
+    let targetMenu = subTab || tab;
 
-    if (tab === 'dossier') {
-      targetTab = 'dossier';
-      targetSub = subTab || 'ch1';
-    } else if (tab === 'basics') {
-      targetTab = 'kundli';
-      targetSub = subTab === 'basic_details' ? 'overview' : 'charts';
-    } else if (tab === 'vargas') {
-      targetTab = 'kundli';
-      targetSub = 'vargas';
-    } else if (tab === 'strength') {
-      targetTab = 'kundli';
-      targetSub = 'strength';
-    } else if (tab === 'ashtakavarga') {
-      targetTab = 'kundli';
-      targetSub = 'ashtakavarga';
-    } else if (tab === 'dasha') {
-      targetTab = 'dasha_transits';
-      targetSub = subTab || 'vimshottari';
-    } else if (tab === 'transits') {
-      targetTab = 'dasha_transits';
-      targetSub = 'live_transits';
-    } else if (tab === 'match') {
-      targetTab = 'matchmaking';
-      targetSub = subTab || 'ashtakoota';
-    } else if (tab === 'tools') {
-      targetTab = 'panchang_muhurta';
-      targetSub = subTab || 'daily_panchang';
-    } else if (tab === 'astro_tools') {
-      targetTab = 'branches';
-      targetSub = subTab || 'kp_4step';
+    // Normalize legacy tabs to corresponding workstation menus
+    if (
+      targetMenu === 'home' ||
+      targetMenu === 'overview' ||
+      targetMenu === 'basics' ||
+      targetMenu === 'sarini'
+    ) {
+      targetMenu = 'sarini';
+    } else if (
+      targetMenu === 'kundli' ||
+      targetMenu === 'vargas' ||
+      targetMenu === 'strength' ||
+      targetMenu === 'ashtakavarga' ||
+      targetMenu === 'charts' ||
+      targetMenu === 'charts_tables'
+    ) {
+      targetMenu = 'charts_tables';
+    } else if (
+      targetMenu === 'dasha' ||
+      targetMenu === 'dasha_transits' ||
+      targetMenu === 'transits' ||
+      targetMenu === 'live_transits' ||
+      targetMenu === 'vimshottari' ||
+      targetMenu === 'yogini'
+    ) {
+      targetMenu = 'dasha';
+    } else if (targetMenu === 'varshphal' || targetMenu === 'varshaphala') {
+      targetMenu = 'varshphal';
+    } else if (
+      targetMenu === 'chakras' ||
+      targetMenu === 'sudarshan' ||
+      targetMenu === 'sarvatobhadra' ||
+      targetMenu === 'kota' ||
+      targetMenu === 'kurma'
+    ) {
+      targetMenu = 'chakras';
+    } else if (targetMenu === 'yogas' || targetMenu === 'doshas' || targetMenu === 'yogas_doshas') {
+      targetMenu = 'yogas_doshas';
+    } else if (targetMenu === 'navamsha' || targetMenu === 'd9') {
+      targetMenu = 'navamsha';
+    } else if (targetMenu === 'kp' || targetMenu === 'kp_system' || targetMenu === 'branches') {
+      targetMenu = 'kp_system';
+    } else if (targetMenu === 'lal_kitab') {
+      targetMenu = 'lal_kitab';
+    } else if (
+      targetMenu === 'predictions' ||
+      targetMenu === 'dossier' ||
+      targetMenu === 'twelve_planets'
+    ) {
+      targetMenu = 'predictions';
+    } else if (targetMenu === 'past_future' || targetMenu === 'd60') {
+      targetMenu = 'past_future';
+    } else if (targetMenu === 'match' || targetMenu === 'matchmaking' || targetMenu === 'ashtakoota') {
+      targetMenu = 'matchmaking';
+    } else if (
+      targetMenu === 'remedies' ||
+      targetMenu === 'doshas_remedies' ||
+      targetMenu === 'gems'
+    ) {
+      targetMenu = 'remedies';
+    } else if (
+      targetMenu === 'tools' ||
+      targetMenu === 'panchang' ||
+      targetMenu === 'panchang_muhurta' ||
+      targetMenu === 'daily_panchang'
+    ) {
+      targetMenu = 'panchang';
     }
 
-    setActiveTab(targetTab);
-    if (targetSub) {
-      setActiveSubTab(targetSub);
-    } else {
-      // Pick sensible defaults
-      if (targetTab === 'dossier') setActiveSubTab('ch1');
-      else if (targetTab === 'kundli') setActiveSubTab('overview');
-      else if (targetTab === 'predictions') setActiveSubTab('twelve_planets');
-      else if (targetTab === 'dasha_transits') setActiveSubTab('vimshottari');
-      else if (targetTab === 'branches') setActiveSubTab('kp_4step');
-      else if (targetTab === 'western') setActiveSubTab('wheel_chart');
-      else if (targetTab === 'matchmaking') setActiveSubTab('ashtakoota');
-      else if (targetTab === 'panchang_muhurta') setActiveSubTab('daily_panchang');
-      else if (targetTab === 'patrika_booklet') setActiveSubTab('full_edition');
-    }
-
+    setActiveTab('workstation');
+    setActiveSubTab(targetMenu);
     setDrawerOpen(false);
     setRouteRequest((prev) => ({
-      tab: targetTab,
-      subTab: targetSub,
+      tab: 'workstation',
+      subTab: targetMenu,
       nested,
       nonce: (prev?.nonce ?? 0) + 1,
     }));
@@ -223,47 +216,6 @@ export function App() {
     }
   };
 
-  const handleQuickGenerateKundali = (input: BirthInput) => {
-    setProfiles((prev) => (prev.some((p) => p.id === input.id) ? prev : [input, ...prev]));
-    setActiveId(input.id);
-    navigateTo('dossier', 'ch1');
-  };
-
-  const handleQuickMatchKundali = (groom: BirthInput, bride: BirthInput) => {
-    const resolvedGroom =
-      groom.id && profiles.some((p) => p.id === groom.id)
-        ? groom
-        : { ...groom, id: `match-boy-${Date.now()}` };
-    const resolvedBride =
-      bride.id && profiles.some((p) => p.id === bride.id)
-        ? bride
-        : { ...bride, id: `match-girl-${Date.now() + 1}` };
-
-    setProfiles((prev) => {
-      let next = prev;
-      if (!next.some((p) => p.id === resolvedGroom.id)) next = [resolvedGroom, ...next];
-      else next = next.map((p) => (p.id === resolvedGroom.id ? resolvedGroom : p));
-      if (!next.some((p) => p.id === resolvedBride.id)) next = [resolvedBride, ...next];
-      else next = next.map((p) => (p.id === resolvedBride.id ? resolvedBride : p));
-      return next;
-    });
-
-    setRequestedMatchPair({
-      brideId: resolvedBride.id,
-      groomId: resolvedGroom.id,
-      nonce: Date.now(),
-    });
-    navigateTo('matchmaking', 'ashtakoota');
-  };
-
-  const handleNewPrashna = () => {
-    const prashna = createNowPrashnaInput();
-    prashna.id = `prashna-${Date.now()}`;
-    setProfiles((prev) => [prashna, ...prev]);
-    setActiveId(prashna.id);
-    navigateTo('branches', 'kp_4step');
-  };
-
   const handleDeleteProfile = (targetId?: string) => {
     if (profiles.length <= 1) return;
     const idToDelete = targetId ?? activeInput.id;
@@ -275,49 +227,18 @@ export function App() {
     }
   };
 
-  const handleApplyRectifiedTime = (newDate: string, newTime: string) => {
-    setProfiles((prev) =>
-      prev.map((p) => (p.id === activeInput.id ? { ...p, date: newDate, time: newTime } : p))
-    );
-  };
-
-  // Resolve normalized primary tab for conditional main content rendering
-  const normalizedPrimaryTab = useMemo((): MainTab => {
-    switch (activeTab) {
-      case 'basics':
-      case 'vargas':
-      case 'strength':
-      case 'ashtakavarga':
-        return 'kundli';
-      case 'dasha':
-      case 'transits':
-        return 'dasha_transits';
-      case 'branches':
-      case 'astro_tools':
-      case 'prashna':
-      case 'hub':
-        return 'branches';
-      case 'match':
-        return 'matchmaking';
-      case 'tools':
-        return 'panchang_muhurta';
-      default:
-        return activeTab;
-    }
-  }, [activeTab]);
-
   return (
     <LanguageProvider lang={language} setLang={setLanguage}>
       <div className="app-shell">
         {/* Modern Unified Dropdown-First Header (Compatible with Web & Phone) */}
         <DropdownNavHeader
-          activeTab={normalizedPrimaryTab}
+          activeTab={activeTab}
           activeSubTab={activeSubTab}
           onSelectPrimaryTab={(tab) => navigateTo(tab)}
           onSelectSubTab={(sub) => {
             setActiveSubTab(sub);
             setRouteRequest((prev) => ({
-              tab: normalizedPrimaryTab,
+              tab: 'workstation',
               subTab: sub,
               nonce: (prev?.nonce ?? 0) + 1,
             }));
@@ -346,7 +267,7 @@ export function App() {
         <MobileNavDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          activeTab={normalizedPrimaryTab}
+          activeTab={activeTab}
           onNavigate={(tab, sub) => navigateTo(tab, sub)}
           activeInput={activeInput}
           profiles={profiles}
@@ -368,208 +289,30 @@ export function App() {
           onToggleTheme={() => setTheme((th) => (th === 'light' ? 'dark' : 'light'))}
         />
 
-        {/* Full-Width Workspace Shell */}
+        {/* Full-Width Workspace Shell - EXCLUSIVELY VEDIC MASTER WORKSTATION */}
         <div className="workspace-shell">
           <main className="main-content">
-            {/* 0. Flagship Split-Studio Life Dossier */}
-            {normalizedPrimaryTab === 'dossier' && (
-              <LifeDossierView
-                chart={chart}
-                chartStyle={settings.chartStyle}
-                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
-                onOpenMatchMaking={() => navigateTo('matchmaking')}
-                onOpenBooklet={() => setBookletOpen(true)}
-                onOpenEditor={() => setEditorOpen(true)}
-              />
-            )}
-
-            {/* 1. Home Dashboard */}
-            {normalizedPrimaryTab === 'home' && (
-              <HomeDashboardView
-                chart={chart}
-                activeInput={activeInput}
-                profiles={profiles}
-                settings={settings}
-                onSelectProfile={(id) => setActiveId(id)}
-                onNavigate={navigateTo}
-                onOpenEditor={() => setEditorOpen(true)}
-                onOpenBooklet={() => setBookletOpen(true)}
-                onQuickGenerateKundali={handleQuickGenerateKundali}
-                onQuickMatchKundali={handleQuickMatchKundali}
-                canDeleteProfile={profiles.length > 1}
-                onDeleteProfile={() => handleDeleteProfile()}
-              />
-            )}
-
-            {/* 2. Unified Horoscope Workstation (Dual Charts, Dasha Strip & Console Tools) */}
-            {normalizedPrimaryTab === 'kundli' && (
-              <BasicsView
-                chart={chart}
-                chartStyle={settings.chartStyle}
-                settings={settings}
-                requestedSubTab={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
-                onNavigate={navigateTo}
-                onOpenBooklet={() => setBookletOpen(true)}
-                onOpenEditor={() => setEditorOpen(true)}
-              />
-            )}
-
-            {/* 3. In-Depth Accurate Predictions */}
-            {normalizedPrimaryTab === 'predictions' && (
-              <PredictionsView
-                chart={chart}
-                chartStyle={settings.chartStyle}
-                activeSubTab={activeSubTab}
-                onSelectSubTab={(sub) => {
-                  setActiveSubTab(sub);
-                  setRouteRequest((prev) => ({
-                    tab: 'predictions',
-                    subTab: sub,
-                    nonce: (prev?.nonce ?? 0) + 1,
-                  }));
-                }}
-                requestedRoute={{
-                  subTab: activeSubTab,
-                  nonce: routeRequest?.nonce ?? 0,
-                }}
-              />
-            )}
-
-            {/* 4. Dasha Systems & Live Gochar */}
-            {normalizedPrimaryTab === 'dasha_transits' && (
-              <>
-                {activeSubTab === 'live_transits' && (
-                  <TransitsView
-                    natalChart={chart}
-                    settings={settings}
-                    chartStyle={settings.chartStyle}
-                  />
-                )}
-                {activeSubTab === 'sade_sati' && (
-                  <TransitsView
-                    natalChart={chart}
-                    settings={settings}
-                    chartStyle={settings.chartStyle}
-                  />
-                )}
-                {activeSubTab === 'varshaphala' && (
-                  <SpecializedAstrologyView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedBranch={{ id: 'varshaphala', nonce: routeRequest?.nonce ?? 0 }}
-                  />
-                )}
-                {activeSubTab !== 'live_transits' &&
-                  activeSubTab !== 'sade_sati' &&
-                  activeSubTab !== 'varshaphala' && (
-                    <DashaView
-                      chart={chart}
-                      requestedSystem={{
-                        id: activeSubTab === 'special_dashas' ? 'yogini' : 'vimshottari',
-                        nonce: routeRequest?.nonce ?? 0,
-                      }}
-                    />
-                  )}
-              </>
-            )}
-
-            {/* 5. Classical Systems & Branches */}
-            {normalizedPrimaryTab === 'branches' && (
-              <>
-                {activeSubTab === 'kp_4step' && (
-                  <PredictionsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedRoute={{
-                      subTab: 'branchesNumerology',
-                      nested: 'kp',
-                      nonce: routeRequest?.nonce ?? 0,
-                    }}
-                  />
-                )}
-                {activeSubTab === 'lal_kitab' && (
-                  <PredictionsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedRoute={{
-                      subTab: 'branchesNumerology',
-                      nested: 'lal_kitab',
-                      nonce: routeRequest?.nonce ?? 0,
-                    }}
-                  />
-                )}
-                {activeSubTab === 'bhavartha_ratnakara' && (
-                  <PredictionsView
-                    chart={chart}
-                    chartStyle={settings.chartStyle}
-                    requestedRoute={{
-                      subTab: 'branchesNumerology',
-                      nested: 'varshaphala_jaimini',
-                      nonce: routeRequest?.nonce ?? 0,
-                    }}
-                  />
-                )}
-                {activeSubTab === 'doshas_remedies' && (
-                  <AstroSageToolsView
-                    chart={chart}
-                    requestedMode={{ id: 'gems_rudraksha', nonce: routeRequest?.nonce ?? 0 }}
-                  />
-                )}
-                {activeSubTab === 'life_specialized' && (
-                  <SpecializedAstrologyView chart={chart} chartStyle={settings.chartStyle} />
-                )}
-              </>
-            )}
-
-            {/* 6. Western Astrology & Tropical Wheel */}
-            {normalizedPrimaryTab === 'western' && (
-              <WesternAstrologyView chart={chart} />
-            )}
-
-            {/* 7. Kundali Matching */}
-            {normalizedPrimaryTab === 'matchmaking' && (
-              <MatchMakingView
-                profiles={profiles}
-                activeProfileId={activeInput.id}
-                settings={settings}
-                chartStyle={settings.chartStyle}
-                requestedPair={requestedMatchPair}
-              />
-            )}
-
-            {/* 8. Panchang & Muhurta */}
-            {normalizedPrimaryTab === 'panchang_muhurta' && (
-              <ToolsSuiteView
-                chart={chart}
-                baseInput={activeInput}
-                settings={settings}
-                onApplyRectifiedTime={handleApplyRectifiedTime}
-                requestedSubTab={{
-                  id: activeSubTab === 'calendar_festivals' ? 'calendar_2027' : activeSubTab === 'muhurta_finder' ? 'muhurta' : activeSubTab === 'choghadiya_hora' ? 'do_ghati' : 'deep_panchang',
-                  nonce: routeRequest?.nonce ?? 0,
-                }}
-              />
-            )}
-
-            {/* 9. 34-Chapter Janmakundali Deluxe PDF */}
-            {normalizedPrimaryTab === 'patrika_booklet' && (
-              <div className="card" style={{ padding: '20px' }}>
-                <KundaliBookletModal
-                  open={true}
-                  onClose={() => navigateTo('home')}
-                  chart={chart}
-                  chartStyle={settings.chartStyle}
-                  language={language}
-                />
-              </div>
-            )}
+            <VedicMasterWorkstation
+              chart={chart}
+              chartStyle={settings.chartStyle}
+              onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+              settings={settings}
+              profiles={profiles}
+              activeProfileId={activeInput.id}
+              onSelectProfile={(id) => setActiveId(id)}
+              onOpenEditor={() => setEditorOpen(true)}
+              onOpenBooklet={() => setBookletOpen(true)}
+              onOpenMatchMaking={() => navigateTo('workstation', 'matchmaking')}
+              requestedMenu={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
+            />
           </main>
         </div>
 
         {/* Mobile Bottom Navigation Bar (Fixed 5 Thumb Actions) */}
         <MobileBottomNav
-          activeTab={normalizedPrimaryTab}
-          onNavigate={(tab) => navigateTo(tab)}
+          activeTab={activeTab}
+          activeSubTab={activeSubTab}
+          onNavigate={(tab, sub) => navigateTo(tab, sub)}
           onOpenDrawer={() => setDrawerOpen(true)}
         />
 

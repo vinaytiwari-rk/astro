@@ -1,25 +1,17 @@
 import React from 'react';
 import {
-  Activity,
   Award,
   BookOpen,
   Calendar,
-  CheckCircle,
   Clock,
   Compass,
   Edit3,
-  FileSpreadsheet,
-  FileText,
   Flame,
   Grid,
   Heart,
-  Home,
-  Layers,
   Moon,
-  Orbit,
   Plus,
   RotateCcw,
-  Scale,
   Scroll,
   Settings,
   ShieldAlert,
@@ -28,7 +20,6 @@ import {
   Sun,
   UserCheck,
   X,
-  Zap,
 } from 'lucide-react';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
@@ -82,268 +73,106 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
-      titleEn: 'Flagship Life Dossier (10 Chapters)',
-      titleHi: 'गोपनीय जीवन आलेख (स्प्लिट-स्टूडियो)',
+      titleEn: '🏛️ Vedic Astrology Workstation',
+      titleHi: '🏛️ वैदिक ज्योतिष वर्कस्टेशन',
       items: [
         {
-          tab: 'dossier' as MainTab,
-          subTab: 'ch1',
-          labelEn: '🌟 Master Life Dossier & Split Kundali',
-          labelHi: '🌟 10-अध्यायी गोपनीय जीवन आलेख व कुंडली',
-          icon: <Sparkles size={16} />,
-        },
-      ],
-    },
-    {
-      titleEn: 'Birth Chart & Calculations',
-      titleHi: 'जन्म कुंडली व मूल गणना',
-      items: [
-        {
-          tab: 'kundli' as MainTab,
-          subTab: 'overview',
-          labelEn: 'Basic Details & Avakhada',
-          labelHi: 'मूल विवरण व अवकहड़ा चक्र',
+          tab: 'workstation' as MainTab,
+          subTab: 'sarini',
+          labelEn: '1. Basic Details & Avakhada Sheet',
+          labelHi: '1. ज्योतिष सारिणी व मूल विवरण',
           icon: <UserCheck size={16} />,
         },
         {
-          tab: 'kundli' as MainTab,
-          subTab: 'charts',
-          labelEn: 'Charts (D1, D9, Chalit)',
-          labelHi: 'जन्म चक्र (D1, D9, चलित)',
-          icon: <Scroll size={16} />,
-        },
-        {
-          tab: 'kundli' as MainTab,
-          subTab: 'planets',
-          labelEn: 'Planetary Table & Degrees',
-          labelHi: 'ग्रह स्थिति व अंश तालिका',
-          icon: <FileSpreadsheet size={16} />,
-        },
-        {
-          tab: 'kundli' as MainTab,
-          subTab: 'vargas',
-          labelEn: 'Shodashvarga & D108 Charts',
-          labelHi: 'षोडशवर्ग व सूक्ष्म वर्ग (D108)',
+          tab: 'workstation' as MainTab,
+          subTab: 'charts_tables',
+          labelEn: '2. All Vargas D1–D60, SAV & Tables',
+          labelHi: '2. कुंडली व वर्ग चक्र / तालिकायें (D1–D60)',
           icon: <Grid size={16} />,
         },
         {
-          tab: 'kundli' as MainTab,
-          subTab: 'strength',
-          labelEn: 'Shadbala & Planetary Strengths',
-          labelHi: 'षड्बल व भाव बल',
-          icon: <Scale size={16} />,
+          tab: 'workstation' as MainTab,
+          subTab: 'dasha',
+          labelEn: '3. Multi-Dasha Systems (Vimshottari/Yogini)',
+          labelHi: '3. दशा प्रणाली (विंशोत्तरी 5 स्तर, योगिनी)',
+          icon: <Clock size={16} />,
         },
         {
-          tab: 'kundli' as MainTab,
-          subTab: 'ashtakavarga',
-          labelEn: 'Ashtakavarga & SAV Points',
-          labelHi: 'अष्टकवर्ग व सर्वाष्टक बिंदु',
-          icon: <Layers size={16} />,
+          tab: 'workstation' as MainTab,
+          subTab: 'varshphal',
+          labelEn: '4. Annual Varshphal & Tajika Sahams',
+          labelHi: '4. वर्षफल / ताजिक वार्षिक (मुन्था, वर्षेश, सहम)',
+          icon: <Sun size={16} />,
         },
-      ],
-    },
-    {
-      titleEn: 'Accurate Predictions & Life Events',
-      titleHi: 'सटीक फलादेश व जीवन घटनाक्रम',
-      items: [
         {
-          tab: 'predictions' as MainTab,
-          subTab: 'classical_yogas',
-          labelEn: '300+ Classical Yogas',
-          labelHi: '300+ वैदिक राजयोग व फल',
+          tab: 'workstation' as MainTab,
+          subTab: 'chakras',
+          labelEn: '5. Special Chakras (Sudarshan/Kota/Kurma)',
+          labelHi: '5. विविध वैदिक चक्र (सुदर्शन, सर्वतोभद्र, कोटा, कूर्म)',
+          icon: <Compass size={16} />,
+        },
+        {
+          tab: 'workstation' as MainTab,
+          subTab: 'yogas_doshas',
+          labelEn: '6. Classical Yogas, Doshas & Conjunctions',
+          labelHi: '6. योग, दोष एवं युति विश्लेषण (राजयोग, मांगलिक, कालसर्प)',
           icon: <Award size={16} />,
         },
         {
-          tab: 'predictions' as MainTab,
-          subTab: 'timeline_120yr',
-          labelEn: '120-Year Life Events Timeline',
-          labelHi: '120-वर्षीय जीवन घटनाक्रम',
-          icon: <Clock size={16} />,
-        },
-        {
-          tab: 'predictions' as MainTab,
-          subTab: 'bhavas_12',
-          labelEn: '12 Bhavas Deep Analysis',
-          labelHi: 'द्वादश भाव विस्तृत फलादेश',
-          icon: <BookOpen size={16} />,
-        },
-        {
-          tab: 'predictions' as MainTab,
-          subTab: 'bnn_bsp',
-          labelEn: 'Bhrigu Nandi Nadi & BSP Rules',
-          labelHi: 'भृगु नंदी नाड़ी व BSP (29 नियम)',
+          tab: 'workstation' as MainTab,
+          subTab: 'navamsha',
+          labelEn: '7. Navamsha D9 Deep Reading & Pushkara',
+          labelHi: '7. नवांश कुंडली विशेष विवेचन (कारकांश व पुष्कर भाग)',
           icon: <Sparkles size={16} />,
         },
         {
-          tab: 'predictions' as MainTab,
-          subTab: 'yuti_aspects',
-          labelEn: 'Conjunctions (2-7) & Drishti',
-          labelHi: 'ग्रह युति (2–7) व दृष्टि फल',
-          icon: <Zap size={16} />,
-        },
-        {
-          tab: 'predictions' as MainTab,
-          subTab: 'past_future',
-          labelEn: 'Past Life Karma & Future Gati',
-          labelHi: 'पूर्व जन्म व आगामी गति',
-          icon: <RotateCcw size={16} />,
-        },
-      ],
-    },
-    {
-      titleEn: 'Dasha Systems & Transits',
-      titleHi: 'दशा प्रणाली व गोचर',
-      items: [
-        {
-          tab: 'dasha_transits' as MainTab,
-          subTab: 'vimshottari',
-          labelEn: 'Vimshottari Dasha (5 Levels)',
-          labelHi: 'विंशोत्तरी दशा (5 स्तर)',
-          icon: <Clock size={16} />,
-        },
-        {
-          tab: 'dasha_transits' as MainTab,
-          subTab: 'special_dashas',
-          labelEn: 'Yogini, Char & Narayana Dasha',
-          labelHi: 'योगिनी, चर व नारायण दशा',
-          icon: <RotateCcw size={16} />,
-        },
-        {
-          tab: 'dasha_transits' as MainTab,
-          subTab: 'live_transits',
-          labelEn: 'Live Gochar (Transits) & Kaksha',
-          labelHi: 'वर्तमान गोचर स्थिति व वेध',
-          icon: <Orbit size={16} />,
-        },
-        {
-          tab: 'dasha_transits' as MainTab,
-          subTab: 'sade_sati',
-          labelEn: 'Saturn Sade Sati & Dhaiya',
-          labelHi: 'शनि साढ़े साती व ढैय्या',
-          icon: <ShieldAlert size={16} />,
-        },
-        {
-          tab: 'dasha_transits' as MainTab,
-          subTab: 'varshaphala',
-          labelEn: 'Annual Solar Return (Varshaphala)',
-          labelHi: 'वार्षिक ताजिक वर्षफल कुंडली',
-          icon: <Sun size={16} />,
-        },
-      ],
-    },
-    {
-      titleEn: 'Astrological Systems & Branches',
-      titleHi: 'ज्योतिष पध्दतियाँ व शाखाएँ',
-      items: [
-        {
-          tab: 'branches' as MainTab,
-          subTab: 'kp_4step',
-          labelEn: 'KP System & 4-Step Theory',
-          labelHi: 'KP पद्धति व 4-स्टेप थ्योरी',
+          tab: 'workstation' as MainTab,
+          subTab: 'kp_system',
+          labelEn: '8. KP Krishnamurti Paddhati (Sub-Lords)',
+          labelHi: '8. के.पी. (KP) ज्योतिष प्रणाली (कस्प व 4-चरण कारक)',
           icon: <Star size={16} />,
         },
         {
-          tab: 'branches' as MainTab,
+          tab: 'workstation' as MainTab,
           subTab: 'lal_kitab',
-          labelEn: 'Lal Kitab 1952 Classic Heritage',
-          labelHi: 'लाल किताब 1952 (ऋण व सोये घर)',
+          labelEn: '9. Lal Kitab System (Debts & Upay)',
+          labelHi: '9. लाल किताब प्रणाली (टेवा, सोये भाव व ऋण)',
           icon: <Flame size={16} />,
         },
         {
-          tab: 'branches' as MainTab,
-          subTab: 'bhavartha_ratnakara',
-          labelEn: 'Bhavartha Ratnakara (12 Lagnas)',
-          labelHi: 'भावार्थ रत्नाकर (12 लग्न सूत्र)',
-          icon: <Scroll size={16} />,
+          tab: 'workstation' as MainTab,
+          subTab: 'predictions',
+          labelEn: '10. Deep Predictions: Career, Appearance & Family',
+          labelHi: '10. सटीक जीवन फलकथन (करियर, रूप-रंग व पारिवारिक यथार्थ)',
+          icon: <BookOpen size={16} />,
         },
         {
-          tab: 'branches' as MainTab,
-          subTab: 'doshas_remedies',
-          labelEn: 'Manglik, Kaalsarp & Gemstones',
-          labelHi: 'मांगलिक, कालसर्प व रत्न परामर्श',
-          icon: <ShieldAlert size={16} />,
+          tab: 'workstation' as MainTab,
+          subTab: 'past_future',
+          labelEn: '11. Past Life D60 & Future Rebirth',
+          labelHi: '11. पूर्व जन्म व भावी गति (D60 सभ्यता व योनि)',
+          icon: <RotateCcw size={16} />,
         },
         {
-          tab: 'branches' as MainTab,
-          subTab: 'life_specialized',
-          labelEn: 'Career, Wealth & Medical Jyotish',
-          labelHi: 'करियर, धन व चिकित्सा ज्योतिष',
-          icon: <Activity size={16} />,
-        },
-      ],
-    },
-    {
-      titleEn: 'Matchmaking & Compatibility',
-      titleHi: 'कुंडली मिलान व विवाह परामर्श',
-      items: [
-        {
-          tab: 'matchmaking' as MainTab,
-          subTab: 'ashtakoota',
-          labelEn: '36 Guna Ashtakoota Milan',
-          labelHi: 'अष्टकूट 36 गुण मिलान',
+          tab: 'workstation' as MainTab,
+          subTab: 'matchmaking',
+          labelEn: '12. Kundali Match Making (36 Gunas)',
+          labelHi: '12. कुंडली मिलान (36 गुण अष्टकूट व दोष साम्य)',
           icon: <Heart size={16} />,
         },
         {
-          tab: 'matchmaking' as MainTab,
-          subTab: 'manglik_match',
-          labelEn: 'Mutual Manglik & Cancellations',
-          labelHi: 'मांगलिक मिलान व परिहार',
+          tab: 'workstation' as MainTab,
+          subTab: 'remedies',
+          labelEn: '13. Comprehensive Shastric Remedies',
+          labelHi: '13. सम्पूर्ण शास्त्रीय उपाय (मंत्र, दान, स्नान व रत्न)',
           icon: <ShieldAlert size={16} />,
         },
         {
-          tab: 'matchmaking' as MainTab,
-          subTab: 'poruthams',
-          labelEn: 'South Indian 10/20 Poruthams',
-          labelHi: 'दक्षिण भारतीय पोरुथम (10/20)',
-          icon: <CheckCircle size={16} />,
-        },
-        {
-          tab: 'matchmaking' as MainTab,
-          subTab: 'verdict',
-          labelEn: 'Comprehensive Marriage Verdict',
-          labelHi: 'विवाह निर्णय व शुभ मुहूर्त',
-          icon: <Sparkles size={16} />,
-        },
-      ],
-    },
-    {
-      titleEn: 'Panchang, Calendar & Muhurta',
-      titleHi: 'पंचांग, कैलेंडर व मुहूर्त',
-      items: [
-        {
-          tab: 'panchang_muhurta' as MainTab,
-          subTab: 'daily_panchang',
-          labelEn: 'Daily Drik Panchang',
-          labelHi: 'दैनिक दृक पंचांग',
+          tab: 'workstation' as MainTab,
+          subTab: 'panchang',
+          labelEn: '14. Daily Drik Panchang & Muhurta',
+          labelHi: '14. दैनिक पंचांग व मुहूर्त (चोघड़िया, होरा व पर्व)',
           icon: <Calendar size={16} />,
-        },
-        {
-          tab: 'panchang_muhurta' as MainTab,
-          subTab: 'calendar_festivals',
-          labelEn: '2026–2027 Hindu Calendar & Festivals',
-          labelHi: '2026–2027 हिन्दू पर्व व पंचांग',
-          icon: <Calendar size={16} />,
-        },
-        {
-          tab: 'panchang_muhurta' as MainTab,
-          subTab: 'muhurta_finder',
-          labelEn: 'Shubh Muhurta Finder',
-          labelHi: 'शुभ मुहूर्त चयन (विवाह/गृह/वाहन)',
-          icon: <Sparkles size={16} />,
-        },
-        {
-          tab: 'panchang_muhurta' as MainTab,
-          subTab: 'choghadiya_hora',
-          labelEn: 'Choghadiya & 24-Hour Hora',
-          labelHi: 'चौघड़िया व 24-घंटे होरा',
-          icon: <Clock size={16} />,
-        },
-        {
-          tab: 'panchang_muhurta' as MainTab,
-          subTab: 'btr_pakshi_tools',
-          labelEn: 'BTR & Pancha Pakshi Tools',
-          labelHi: 'BTR समय शुद्धि व पंच पक्षी',
-          icon: <Compass size={16} />,
         },
       ],
     },
@@ -428,29 +257,6 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
           </div>
         </div>
 
-        {/* Quick Direct Links (Home & Print Patrika) */}
-        <div className="pro-drawer-shortcuts">
-          <button
-            type="button"
-            className={`pro-drawer-shortcut-btn ${activeTab === 'home' ? 'is-active' : ''}`}
-            onClick={() => handleItemClick('home')}
-          >
-            <Home size={16} />
-            <span>{isHi ? 'होम डैशबोर्ड' : 'Home Dashboard'}</span>
-          </button>
-          <button
-            type="button"
-            className="pro-drawer-shortcut-btn pro-patrika-highlight"
-            onClick={() => {
-              onOpenBooklet();
-              onClose();
-            }}
-          >
-            <FileText size={16} />
-            <span>{isHi ? '34-अध्यायी बृहत् पत्रिका PDF' : '34-Chapter Patrika PDF'}</span>
-          </button>
-        </div>
-
         {/* Scrollable Navigation Categories */}
         <div className="pro-drawer-scroll-body">
           {menuSections.map((sec, sIdx) => (
@@ -498,26 +304,58 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
               </button>
             </div>
 
+            {/* Chart Style Toggle */}
+            <div className="pro-chart-style-toggle" role="group" aria-label="Chart Style">
+              <button
+                type="button"
+                className={`pro-chart-btn ${settings.chartStyle === 'north' ? 'is-active' : ''}`}
+                onClick={() => onChangeChartStyle('north')}
+                title={isHi ? 'उत्तर भारतीय' : 'North Indian'}
+              >
+                {isHi ? 'उत्तर' : 'North'}
+              </button>
+              <button
+                type="button"
+                className={`pro-chart-btn ${settings.chartStyle === 'south' ? 'is-active' : ''}`}
+                onClick={() => onChangeChartStyle('south')}
+                title={isHi ? 'दक्षिण भारतीय' : 'South Indian'}
+              >
+                {isHi ? 'दक्षिण' : 'South'}
+              </button>
+              <button
+                type="button"
+                className={`pro-chart-btn ${settings.chartStyle === 'east' ? 'is-active' : ''}`}
+                onClick={() => onChangeChartStyle('east')}
+                title={isHi ? 'पूर्वी भारतीय' : 'East Indian'}
+              >
+                {isHi ? 'पूर्व' : 'East'}
+              </button>
+            </div>
+          </div>
+
+          <div className="pro-drawer-footer-row pro-footer-secondary">
             {/* Theme Toggle */}
             <button
               type="button"
-              className="pro-icon-tool-btn"
+              className="pro-footer-action-btn"
               onClick={onToggleTheme}
-              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+              title={isHi ? 'थीम बदलें' : 'Toggle Theme'}
             >
-              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+              <span>{theme === 'dark' ? (isHi ? 'लाइट थीम' : 'Light') : (isHi ? 'डार्क थीम' : 'Dark')}</span>
             </button>
 
-            {/* Settings */}
+            {/* Settings Dialog Trigger */}
             <button
               type="button"
-              className="btn btn-secondary btn-sm"
+              className="pro-footer-action-btn"
               onClick={() => {
                 onOpenSettings();
                 onClose();
               }}
+              title={isHi ? 'सेटिंग्स' : 'Settings'}
             >
-              <Settings size={14} />
+              <Settings size={15} />
               <span>{isHi ? 'सेटिंग्स' : 'Settings'}</span>
             </button>
           </div>
