@@ -268,7 +268,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('sambhavit-falkathan')}>
-              {isHi ? 'संभावित फलकथन (101 आयाम)' : 'Probable Predictions (101 Dimensions)'}
+              {isHi ? 'संभावित फलकथन (51 आयाम)' : 'Probable Predictions (51 Dimensions)'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
@@ -624,14 +624,14 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
-                  {isHi ? '101 जीवन आयाम' : '101 Life Dimensions'}
+                  {isHi ? '51 जीवन आयाम' : '51 Life Dimensions'}
                 </span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'संभावित फलकथन (101 Probable Predictions)' : '101 Probable Predictions'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'संभावित फलकथन (51 Probable Predictions)' : '51 Probable Predictions'}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'समस्त 12 भावों एवं षोडशवर्गों का संश्लेषित प्रामाणिक फलादेश: देह, धन, पराक्रम, सुख, बुद्धि, रोग/ऋण, विवाह, आयु, धर्म, कर्म/आजीविका, लाभ एवं मोक्ष।'
-                  : 'Point-wise concrete life predictions across 101 vital dimensions covering all 12 houses: Identity, Wealth, Siblings, Sukha, Intellect, Career, Marriage, Longevity, Dharma, Karma, Gains, and Moksha.'}
+                  : 'Point-wise concrete life predictions across 51 vital dimensions covering all 12 houses: Identity, Wealth, Siblings, Sukha, Intellect, Career, Marriage, Longevity, Dharma, Karma, Gains, and Moksha.'}
               </p>
               <button
                 type="button"
@@ -1004,7 +1004,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
             </div>
             <div className="oj-popular-item" onClick={() => onNavigate('sambhavit')}>
-              <strong>{isHi ? 'संभावित फलकथन (101 आयाम)' : 'Sambhavit Falkathan (101 Dim)'}</strong>
+              <strong>{isHi ? 'संभावित फलकथन (51 आयाम)' : 'Sambhavit Falkathan (51 Dim)'}</strong>
             </div>
           </div>
         </div>
@@ -1111,7 +1111,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? 'संभावित फलकथन (101 आयाम)' : 'Probable Predictions (101 Dim)'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? 'संभावित फलकथन (51 आयाम)' : 'Probable Predictions (51 Dim)'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('ashtakavarga')}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('transit-today')}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>

@@ -312,7 +312,7 @@ export const SplitStudioWorkstationView: React.FC<SplitStudioWorkstationViewProp
                       <td>{trSign(tp.signIndex, lang)} ({tp.dms})</td>
                       <td>
                         <span className="oj-badge-accent">
-                          {houseFromLagna}वां भाव
+                          {isHi ? `${houseFromLagna}वां भाव` : `House ${houseFromLagna}`}
                         </span>
                       </td>
                       <td>

@@ -418,6 +418,7 @@ export function App() {
             {(currentView === 'kp-enterprise' || currentView === 'varshaphala') && (
               <KPEnterpriseView
                 chart={chart}
+                initialTab={currentView === 'varshaphala' ? 'varsha' : 'fourfold'}
               />
             )}
 

@@ -14,7 +14,7 @@ import type { ChartData, CalcSettings, BirthInput, DashaPeriod } from '../../ast
 import { computeYoginiDasha } from '../../astro/dasha';
 import { computeCharaDasha } from '../../astro/jaimini';
 import { computeAdvancedDashas } from '../../astro/advancedDashas';
-import { formatDateDmy } from '../../astro/time';
+import { formatDateDmy, resolveUtcFromBirth } from '../../astro/time';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign } from '../../i18n/translations';
 import { SIGNS } from '../../astro/constants';
@@ -33,7 +33,12 @@ export const MultiDashaMatrixView: React.FC<MultiDashaMatrixViewProps> = ({
   const isHi = lang === 'hi';
 
   const nowMs = Date.now();
-  const birthMs = new Date(chart.input.date + 'T' + chart.input.time + ':00Z').getTime();
+  const birthMs = resolveUtcFromBirth(
+    chart.input.date,
+    chart.input.time,
+    chart.input.timezone,
+    chart.input.utcOffsetMinutes
+  ).utcMs;
 
   // 1. Vimshottari Dasha
   const vimshottari = chart.vimshottari || [];

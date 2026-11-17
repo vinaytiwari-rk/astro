@@ -221,19 +221,56 @@ const CATEGORY_RULES: Record<PrashnaCategory, {
   },
 };
 
-export function computePrashnaKP(query: KPPrashnaQuery): KPPrashnaReport {
+export function computePrashnaKP(
+  queryOrChart: KPPrashnaQuery | any,
+  horaryNumberArg?: number,
+  categoryArg?: PrashnaCategory
+): KPPrashnaReport {
+  let query: KPPrashnaQuery;
+  if (queryOrChart && 'horaryNumber' in queryOrChart) {
+    query = queryOrChart;
+  } else if (queryOrChart && queryOrChart.input) {
+    query = {
+      horaryNumber: horaryNumberArg || 108,
+      category: categoryArg || 'job_career',
+      question: 'Horary Query',
+      questionDate: queryOrChart.input.date,
+      questionTime: queryOrChart.input.time,
+      latitude: queryOrChart.input.latitude,
+      longitude: queryOrChart.input.longitude,
+      timezone: queryOrChart.input.timezone,
+    };
+  } else {
+    query = {
+      horaryNumber: horaryNumberArg || 108,
+      category: categoryArg || 'job_career',
+      question: 'Horary Query',
+      questionDate: '2026-01-01',
+      questionTime: '12:00:00',
+      latitude: 28.6139,
+      longitude: 77.209,
+      timezone: 'Asia/Kolkata',
+    };
+  }
+
   const sub = getKPSubByNumber(query.horaryNumber);
   const rules = CATEGORY_RULES[query.category] || CATEGORY_RULES.job_career;
+
+  const qDate = query.questionDate || '2026-01-01';
+  const qTime = query.questionTime || '12:00:00';
+  const qTz = query.timezone || 'Asia/Kolkata';
+  const qLat = Number.isFinite(query.latitude) ? query.latitude : 28.6139;
+  const qLon = Number.isFinite(query.longitude) ? query.longitude : 77.209;
 
   // Compute chart at question time for current ruling planets
   const tempChart = calculateChart({
     id: `prashna-${query.horaryNumber}`,
     name: 'KP Prashna',
-    date: query.questionDate,
-    time: query.questionTime,
-    timezone: query.timezone,
-    latitude: query.latitude,
-    longitude: query.longitude,
+    date: qDate,
+    time: qTime,
+    timezone: qTz,
+    latitude: qLat,
+    longitude: qLon,
     city: 'Prashna Station',
   }, DEFAULT_SETTINGS);
 

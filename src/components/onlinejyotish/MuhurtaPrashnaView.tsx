@@ -138,13 +138,13 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 onChange={(e) => setPurpose(e.target.value as MuhurtaPurpose)}
                 style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
               >
-                <option value="marriage">Vivaha (Marriage / विवाह - त्रिबल शुद्धि)</option>
-                <option value="griha_pravesh">Griha Pravesh (House Warming / गृह प्रवेश)</option>
-                <option value="vehicle">Vehicle Purchase (वाहन क्रय)</option>
-                <option value="business">Business Launch (व्यापार प्रारंभ)</option>
-                <option value="property">Property / Land (भूमि क्रय व शिलान्यास)</option>
-                <option value="surgery">Surgery / Medical (शल्य क्रिया)</option>
-                <option value="travel">Travel / Journey (यात्रा)</option>
+                <option value="marriage">{isHi ? 'विवाह (त्रिबल शुद्धि)' : 'Marriage (Vivaha)'}</option>
+                <option value="griha_pravesh">{isHi ? 'गृह प्रवेश' : 'House Warming (Griha Pravesh)'}</option>
+                <option value="vehicle">{isHi ? 'वाहन क्रय' : 'Vehicle Purchase'}</option>
+                <option value="business">{isHi ? 'व्यापार प्रारंभ' : 'Business Launch'}</option>
+                <option value="property">{isHi ? 'भूमि क्रय व शिलान्यास' : 'Property / Land Acquisition'}</option>
+                <option value="surgery">{isHi ? 'शल्य क्रिया (सर्जरी)' : 'Surgery / Medical Procedure'}</option>
+                <option value="travel">{isHi ? 'यात्रा मुहूर्त' : 'Travel / Journey'}</option>
               </select>
             </div>
 
@@ -168,10 +168,10 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 onChange={(e) => setDaysCount(Number(e.target.value))}
                 style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
               >
-                <option value={15}>Next 15 Days</option>
-                <option value={30}>Next 30 Days (1 Month)</option>
-                <option value={60}>Next 60 Days (2 Months)</option>
-                <option value={90}>Next 90 Days (Quarter)</option>
+                <option value={15}>{isHi ? 'अगले 15 दिन' : 'Next 15 Days'}</option>
+                <option value={30}>{isHi ? 'अगले 30 दिन (1 माह)' : 'Next 30 Days (1 Month)'}</option>
+                <option value={60}>{isHi ? 'अगले 60 दिन (2 माह)' : 'Next 60 Days (2 Months)'}</option>
+                <option value={90}>{isHi ? 'अगले 90 दिन (त्रैमासिक)' : 'Next 90 Days (Quarter)'}</option>
               </select>
             </div>
           </div>
@@ -219,13 +219,13 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  Tithi: {w.tithiName} · Nakshatra: {w.nakshatraName} · Yoga: {w.yogaName}
+                  {isHi ? 'तिथि:' : 'Tithi:'} {w.tithiName} · {isHi ? 'नक्षत्र:' : 'Nakshatra:'} {w.nakshatraName} · {isHi ? 'योग:' : 'Yoga:'} {w.yogaName}
                 </div>
                 <div style={{ fontSize: '12.5px', color: '#059669', fontWeight: 600 }}>
-                  Abhijit: {w.abhijitMuhurta || 'N/A'} · Rahu Kalam: {w.rahuKalam || 'N/A'}
+                  {isHi ? 'अभिजित:' : 'Abhijit:'} {w.abhijitMuhurta || 'N/A'} · {isHi ? 'राहु काल:' : 'Rahu Kalam:'} {w.rahuKalam || 'N/A'}
                 </div>
                 <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
-                  {w.strengthsEn.join('; ')}
+                  {isHi && w.strengthsHi ? w.strengthsHi.join('; ') : w.strengthsEn.join('; ')}
                 </p>
               </div>
             ))}
@@ -257,13 +257,13 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 }}
                 style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
               >
-                <option value="career_job">Career / Job (आजीविका व नौकरी)</option>
-                <option value="marriage_partnership">Marriage & Spouse (विवाह व दांपत्य)</option>
-                <option value="wealth_finance">Wealth & Finance (धन संचय व लाभ)</option>
-                <option value="health_illness">Health & Recovery (रोग व स्वास्थ्य)</option>
-                <option value="property_vehicle">Property & Vehicles (भूमि व वाहन)</option>
-                <option value="children_education">Children & Intellect (संतान व विद्या)</option>
-                <option value="litigation_dispute">Litigation & Disputes (कोर्ट व विवाद)</option>
+                <option value="career_job">{isHi ? 'आजीविका व नौकरी' : 'Career / Job'}</option>
+                <option value="marriage_partnership">{isHi ? 'विवाह व दांपत्य' : 'Marriage & Spouse'}</option>
+                <option value="wealth_finance">{isHi ? 'धन संचय व लाभ' : 'Wealth & Finance'}</option>
+                <option value="health_illness">{isHi ? 'रोग व स्वास्थ्य' : 'Health & Recovery'}</option>
+                <option value="property_vehicle">{isHi ? 'भूमि व वाहन' : 'Property & Vehicles'}</option>
+                <option value="children_education">{isHi ? 'संतान व विद्या' : 'Children & Intellect'}</option>
+                <option value="litigation_dispute">{isHi ? 'कोर्ट व विवाद' : 'Litigation & Disputes'}</option>
               </select>
             </div>
 
@@ -346,13 +346,13 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
           {/* KP Prashna Sub-Lord Result */}
           <div style={{ padding: '18px 20px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
             <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>
-              KP Horary (Seed #{horaryNum}) — Cuspal Sub-Lord Verification
+              {isHi ? `केपी होरारी (बीज #${horaryNum}) — उप-स्वामी परीक्षण` : `KP Horary (Seed #${horaryNum}) — Cuspal Sub-Lord Verification`}
             </h3>
             <div style={{ fontSize: '14px', fontWeight: 600, color: prashnaReport.verdict.outcome.includes('Favorable') ? '#059669' : '#dc2626', marginBottom: '6px' }}>
               {isHi ? prashnaReport.verdict.outcomeHi : prashnaReport.verdict.outcome}
             </div>
             <p style={{ margin: 0, fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-muted)' }}>
-              Asc Star: {prashnaReport.ascendant.starLord} · Sub-Lord: {prashnaReport.ascendant.subLord} · Sign: {prashnaReport.ascendant.signName} {prashnaReport.ascendant.dms}
+              {isHi ? 'लग्न नक्षत्र स्वामी:' : 'Asc Star:'} {prashnaReport.ascendant.starLord} · {isHi ? 'उप-स्वामी:' : 'Sub-Lord:'} {prashnaReport.ascendant.subLord} · {isHi ? 'राशि:' : 'Sign:'} {prashnaReport.ascendant.signName} {prashnaReport.ascendant.dms}
             </p>
           </div>
         </div>
@@ -456,16 +456,17 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
           {/* Shiva Dialogue Decree Hero */}
           <div style={{ padding: '20px', borderRadius: '10px', background: 'rgba(180, 83, 9, 0.08)', border: '1.5px solid var(--accent)' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '6px' }}>
-              Shiva-Parvati Nadi Dialogue · {nadiReport.shivaNadi.karmaClassification} Karma ({nadiReport.shivaNadi.karmaClassificationHi})
+              {isHi
+                ? `शिव-पार्वती नाड़ी संवाद · ${nadiReport.shivaNadi.karmaClassificationHi} कर्म`
+                : `Shiva-Parvati Nadi Dialogue · ${nadiReport.shivaNadi.karmaClassification} Karma`}
             </div>
             <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--text)', marginBottom: '8px' }}>
-              "{nadiReport.shivaNadi.divineDecreeEn}"
-            </div>
-            <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '12px' }}>
-              "{nadiReport.shivaNadi.divineDecreeHi}"
+              "{isHi ? nadiReport.shivaNadi.divineDecreeHi : nadiReport.shivaNadi.divineDecreeEn}"
             </div>
             <div style={{ fontSize: '12.5px', color: '#059669', fontWeight: 600 }}>
-              Recommended Jyotirlinga Pilgrimage: {nadiReport.shivaNadi.recommendedJyotirlingaEn} ({nadiReport.shivaNadi.recommendedJyotirlingaHi})
+              {isHi
+                ? `अनुशंसित ज्योतिर्लिंग तीर्थ: ${nadiReport.shivaNadi.recommendedJyotirlingaHi}`
+                : `Recommended Jyotirlinga Pilgrimage: ${nadiReport.shivaNadi.recommendedJyotirlingaEn}`}
             </div>
           </div>
 
@@ -487,13 +488,17 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--text)' }}>
-                    Kandam {k.kandamNumber}: {k.nameEn}
+                    {isHi ? `काण्ड ${k.kandamNumber}: ${k.nameHi}` : `Kandam ${k.kandamNumber}: ${k.nameEn}`}
                   </span>
-                  <span style={{ fontSize: '11px', color: 'var(--accent)', fontWeight: 600 }}>{k.nameHi}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--accent)', fontWeight: 600 }}>
+                    {isHi ? k.nameEn : k.nameHi}
+                  </span>
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{k.themeEn}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  {isHi ? (k.themeHi || k.themeEn) : k.themeEn}
+                </div>
                 <div style={{ fontSize: '12.5px', color: 'var(--text)', lineHeight: 1.5, marginTop: '4px' }}>
-                  {k.verdictEn}
+                  {isHi ? (k.verdictHi || k.verdictEn) : k.verdictEn}
                 </div>
               </div>
             ))}

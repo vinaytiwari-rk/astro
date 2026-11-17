@@ -63,19 +63,19 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
   );
 
   const houses = useMemo(() => [
-    { num: 'all', titleEn: 'All 101 Dimensions', titleHi: 'समस्त 101 आयाम', count: 101 },
-    { num: 1, titleEn: 'H1: Tanu & Self', titleHi: 'भाव 1: तनु व देह', count: 10 },
-    { num: 2, titleEn: 'H2: Dhana & Speech', titleHi: 'भाव 2: धन व वाणी', count: 8 },
-    { num: 3, titleEn: 'H3: Sahaja & Valour', titleHi: 'भाव 3: सहज व पराक्रम', count: 8 },
-    { num: 4, titleEn: 'H4: Sukha & Mother', titleHi: 'भाव 4: सुख व मातृ', count: 9 },
-    { num: 5, titleEn: 'H5: Intellect & Progeny', titleHi: 'भाव 5: बुद्धि व संतान', count: 10 },
-    { num: 6, titleEn: 'H6: Disease & Debts', titleHi: 'भाव 6: रोग, ऋण व शत्रु', count: 9 },
-    { num: 7, titleEn: 'H7: Marriage & Trade', titleHi: 'भाव 7: विवाह व व्यापार', count: 10 },
-    { num: 8, titleEn: 'H8: Longevity & Mystery', titleHi: 'भाव 8: आयु व रंध्र', count: 9 },
-    { num: 9, titleEn: 'H9: Fortune & Dharma', titleHi: 'भाव 9: भाग्य व धर्म', count: 9 },
-    { num: 10, titleEn: 'H10: Karma & Vocation', titleHi: 'भाव 10: कर्म व पद', count: 9 },
-    { num: 11, titleEn: 'H11: Gains & Network', titleHi: 'भाव 11: लाभ व आय', count: 5 },
-    { num: 12, titleEn: 'H12: Moksha & Foreign', titleHi: 'भाव 12: व्यय व मोक्ष', count: 5 },
+    { num: 'all', titleEn: 'All 51 Dimensions', titleHi: 'समस्त 51 आयाम', count: 51 },
+    { num: 1, titleEn: 'H1: Tanu & Self', titleHi: 'भाव 1: तनु व देह', count: 4 },
+    { num: 2, titleEn: 'H2: Dhana & Speech', titleHi: 'भाव 2: धन व वाणी', count: 4 },
+    { num: 3, titleEn: 'H3: Sahaja & Valour', titleHi: 'भाव 3: सहज व पराक्रम', count: 4 },
+    { num: 4, titleEn: 'H4: Sukha & Mother', titleHi: 'भाव 4: सुख व मातृ', count: 4 },
+    { num: 5, titleEn: 'H5: Intellect & Progeny', titleHi: 'भाव 5: बुद्धि व संतान', count: 5 },
+    { num: 6, titleEn: 'H6: Disease & Debts', titleHi: 'भाव 6: रोग, ऋण व शत्रु', count: 4 },
+    { num: 7, titleEn: 'H7: Marriage & Trade', titleHi: 'भाव 7: विवाह व व्यापार', count: 5 },
+    { num: 8, titleEn: 'H8: Longevity & Mystery', titleHi: 'भाव 8: आयु व रंध्र', count: 4 },
+    { num: 9, titleEn: 'H9: Fortune & Dharma', titleHi: 'भाव 9: भाग्य व धर्म', count: 4 },
+    { num: 10, titleEn: 'H10: Karma & Vocation', titleHi: 'भाव 10: कर्म व पद', count: 5 },
+    { num: 11, titleEn: 'H11: Gains & Network', titleHi: 'भाव 11: लाभ व आय', count: 4 },
+    { num: 12, titleEn: 'H12: Moksha & Foreign', titleHi: 'भाव 12: व्यय व मोक्ष', count: 4 },
   ], []);
 
   const categories: { key: string; labelEn: string; labelHi: string; icon: React.ReactNode }[] = [
@@ -143,7 +143,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </a>
         <span className="oj-bc-sep">/</span>
         <span className="oj-bc-current">
-          {isHi ? 'संभावित फलकथन (101 जीवन आयाम)' : 'Sambhavit Falkathan (101 Life Dimensions)'}
+          {isHi ? 'संभावित फलकथन (51 जीवन आयाम)' : 'Sambhavit Falkathan (51 Life Dimensions)'}
         </span>
       </nav>
 
@@ -151,18 +151,18 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
       <div className="oj-page-header-card">
         <div className="oj-header-badge">
           {isHi
-            ? 'पाराशर, जैमिनी, वराहमिहिर, फलदीपिका, सारावली, लाल किताब व बी.वी. रमन मत संश्लेषित · 100% निःशुल्क'
-            : 'Multi-Author Classical Synthesis: BPHS, Jaimini, Phaladeepika, Saravali, Lal Kitab & B.V. Raman · 100% Free'}
+            ? 'पाराशर, जैमिनी, वराहमिहिर, फलदीपिका, सारावली, लाल किताब व केपी मत संश्लेषित · 1-सेकंड सूक्ष्म वेध'
+            : 'Multi-Author Classical Synthesis: BPHS, Jaimini, Phaladeepika, Saravali, Lal Kitab & KP · 1-Sec Precision'}
         </div>
         <h1 className="oj-page-title">
           {isHi
-            ? 'संभावित फलकथन — जीवन के 101 शास्त्रीय आयामों का प्रामाणिक व गतिशील महा-विश्लेषण'
-            : 'Sambhavit Falkathan — 101 Classical Life Dimensions Authentic Dossier'}
+            ? 'संभावित फलकथन — जीवन के 51 शास्त्रीय आयामों का प्रामाणिक व सूक्ष्म महा-विश्लेषण'
+            : 'Sambhavit Falkathan — 51 Master Life Dimensions Classical Dossier'}
         </h1>
         <p className="oj-page-subtitle">
           {isHi
-            ? 'समस्त 12 भावों, भावेश गरिमा, नवांश/दशमांश वर्ग पुष्टि, वक्री ग्रह चेष्टा बल एवं वर्तमान विंशोत्तरी महादशा-अंतर्दशा पर आधारित 101 बिंदुवार प्रामाणिक फलादेश।'
-            : 'Point-wise classical dossier covering all 12 houses, planetary dignities, D9/D10 divisional verifications, retrograde chesta bala calculations, and active Vimshottari dasha.'}
+            ? 'समस्त 12 भावों, भावेश गरिमा, षोडशवर्ग पुष्टि, वक्री ग्रह चेष्टा बल एवं 1-सेकंड सूक्ष्म वेध काल-मान पर आधारित 51 बिंदुवार प्रामाणिक फलादेश।'
+            : 'Point-wise classical dossier covering all 12 houses, Shodashvargas, retrograde chesta bala, and 1-second micro-temporal astronomical sensitivity.'}
         </p>
 
         {/* Action Buttons */}
@@ -173,7 +173,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           </button>
           <button type="button" className="oj-action-btn secondary" onClick={() => window.print()}>
             <Printer size={14} />
-            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 101 Dimensions Dossier'}</span>
+            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 51 Dimensions Dossier'}</span>
           </button>
         </div>
       </div>
@@ -246,8 +246,8 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 isHi
-                  ? '101 फलकथनों में खोजें (उदा: विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग, फलदीपिका, वक्री...)'
-                  : 'Search 101 dimensions (e.g. marriage, career, father, surgery, wealth, Phaladeepika, retrograde...)'
+                  ? '51 फलकथनों में खोजें (उदा: विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग, फलदीपिका, वक्री...)'
+                  : 'Search 51 dimensions (e.g. marriage, career, father, surgery, wealth, Phaladeepika, retrograde...)'
               }
               className="oj-search-input"
             />
@@ -264,7 +264,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           <div className="oj-results-count">
             {isHi
               ? `कुल ${filteredDimensions.length} आयाम प्रदर्शित`
-              : `Showing ${filteredDimensions.length} of 101 Dimensions`}
+              : `Showing ${filteredDimensions.length} of 51 Dimensions`}
           </div>
         </div>
 
@@ -448,7 +448,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
                 setSelectedCategory('all');
               }}
             >
-              {isHi ? 'सभी 101 आयाम दिखाएं' : 'Reset Filters & Show All 101'}
+              {isHi ? 'सभी 51 आयाम दिखाएं' : 'Reset Filters & Show All 51'}
             </button>
           </div>
         )}

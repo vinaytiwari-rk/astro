@@ -9,6 +9,7 @@ import {
   type KurmaChakraData,
 } from '../../astro/specialChakras';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { trPlanet } from '../../i18n/translations';
 import { Shield, Compass, Grid, AlertTriangle, CheckCircle, RefreshCw, Printer } from 'lucide-react';
 
 interface SarvatobhadraChakraViewProps {
@@ -233,14 +234,14 @@ export const SarvatobhadraChakraView: React.FC<SarvatobhadraChakraViewProps> = (
             <div className="oj-card" style={{ padding: '16px', textAlign: 'center' }}>
               <span className="oj-stat-label">{isHi ? 'शुभ वेध (संरक्षक प्रभाव)' : 'Benefic Vedhas'}</span>
               <strong style={{ display: 'block', fontSize: '18px', color: '#16a34a', marginTop: '4px' }}>
-                {sbcData.beneficVedhaCount} शुभ प्रभाव
+                {isHi ? `${sbcData.beneficVedhaCount} शुभ प्रभाव` : `${sbcData.beneficVedhaCount} Benefic Rays`}
               </strong>
             </div>
 
             <div className="oj-card" style={{ padding: '16px', textAlign: 'center' }}>
               <span className="oj-stat-label">{isHi ? 'पाप वेध (चुनौतियां)' : 'Malefic Vedhas'}</span>
               <strong style={{ display: 'block', fontSize: '18px', color: '#dc2626', marginTop: '4px' }}>
-                {sbcData.maleficVedhaCount} पाप वेध
+                {isHi ? `${sbcData.maleficVedhaCount} पाप वेध` : `${sbcData.maleficVedhaCount} Malefic Vedhas`}
               </strong>
             </div>
 
@@ -409,7 +410,7 @@ export const SarvatobhadraChakraView: React.FC<SarvatobhadraChakraViewProps> = (
                       ) : (
                         sp.occupants.map((occ) => (
                           <span key={occ} style={{ display: 'inline-block', margin: '1px 3px', padding: '1px 6px', background: 'rgba(180, 83, 9, 0.1)', color: '#b45309', borderRadius: '4px', fontWeight: 600, fontSize: '11px' }}>
-                            {occ}
+                            {trPlanet(occ, lang)}
                           </span>
                         ))
                       )}
@@ -432,7 +433,7 @@ export const SarvatobhadraChakraView: React.FC<SarvatobhadraChakraViewProps> = (
                               color: v.isMalefic ? '#dc2626' : '#16a34a',
                             }}
                           >
-                            {v.planet} ({v.type})
+                            {trPlanet(v.planet, lang)} ({isHi ? (v.type === 'direct' ? 'अग्र' : v.type === 'left' ? 'वाम' : v.type === 'right' ? 'दक्षिण' : v.type) : v.type})
                           </span>
                         ))
                       )}

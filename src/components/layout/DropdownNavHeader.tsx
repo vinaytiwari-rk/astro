@@ -364,7 +364,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('sambhavit-falkathan')}
               >
                 <BookOpen size={13} />
-                <span>{isHi ? '101 फलादेश' : '101 Predictions'}</span>
+                <span>{isHi ? '51 फलादेश' : '51 Predictions'}</span>
               </button>
             </li>
 

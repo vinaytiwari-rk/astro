@@ -112,8 +112,12 @@ export function resolveUtcFromBirth(
   timezone: string,
   manualOffsetMinutes?: number
 ): { utcMs: number; offsetMinutes: number } {
-  const [yStr, mStr, dStr] = dateStr.split('-');
-  const [hhStr = '12', mmStr = '00', ssStr = '00'] = timeStr.split(':');
+  const safeDateStr = dateStr && typeof dateStr === 'string' ? dateStr : '2000-01-01';
+  const safeTimeStr = timeStr && typeof timeStr === 'string' ? timeStr : '12:00:00';
+  const safeTimezone = timezone && typeof timezone === 'string' ? timezone : 'Asia/Kolkata';
+
+  const [yStr, mStr, dStr] = safeDateStr.split('-');
+  const [hhStr = '12', mmStr = '00', ssStr = '00'] = safeTimeStr.split(':');
   const year = parseInt(yStr, 10) || 2000;
   const month = parseInt(mStr, 10) || 1;
   const day = parseInt(dStr, 10) || 1;
@@ -123,7 +127,7 @@ export function resolveUtcFromBirth(
 
   const targetWallMs = makeUtcMs(year, month, day, hour, minute, second);
 
-  if (timezone === 'MANUAL' || !timezone) {
+  if (safeTimezone === 'MANUAL' || !safeTimezone) {
     const offsetMin = manualOffsetMinutes ?? 0;
     return { utcMs: targetWallMs - offsetMin * 60_000, offsetMinutes: offsetMin };
   }
@@ -131,7 +135,7 @@ export function resolveUtcFromBirth(
   // Two-pass fixed-point conversion handles DST and historical sub-minute LMT offsets cleanly
   let guessUtcMs = targetWallMs - (manualOffsetMinutes ?? 0) * 60_000;
   for (let i = 0; i < 3; i++) {
-    const wallAtGuess = getZonePartsMs(guessUtcMs, timezone);
+    const wallAtGuess = getZonePartsMs(guessUtcMs, safeTimezone);
     if (wallAtGuess === null) {
       const fallback = manualOffsetMinutes ?? 0;
       return { utcMs: targetWallMs - fallback * 60_000, offsetMinutes: fallback };

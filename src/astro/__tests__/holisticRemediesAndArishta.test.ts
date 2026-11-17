@@ -40,35 +40,35 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(report.prescriptionSlip.primaryRoot).toBeTruthy();
   });
 
-  it('computes Sambhavit Falkathan with age calibration and authentic Arishta logic', () => {
+  it('computes Sambhavit Falkathan 51 Master Dimensions with age calibration and authentic Arishta logic', () => {
     const report = computeSambhavitFalkathan(swamiChart);
 
-    expect(report.dimensions.length).toBe(101);
+    expect(report.dimensions.length).toBe(51);
 
-    // Dimension 10 (Mother's Lifespan)
-    const dim10 = report.dimensions.find((d) => d.id === 10);
-    expect(dim10).toBeDefined();
-    expect(dim10?.verdictHi).toBeTruthy();
+    // Dimension 14 (Mother's Lifespan)
+    const dim14 = report.dimensions.find((d) => d.id === 14);
+    expect(dim14).toBeDefined();
+    expect(dim14?.verdictHi).toBeTruthy();
 
-    // Dimension 12 (Siblings)
-    const dim12 = report.dimensions.find((d) => d.id === 12);
-    expect(dim12).toBeDefined();
-    expect(dim12?.verdictHi).toBeTruthy();
+    // Dimension 9 (Siblings)
+    const dim9 = report.dimensions.find((d) => d.id === 9);
+    expect(dim9).toBeDefined();
+    expect(dim9?.verdictHi).toBeTruthy();
 
-    // Dimension 15 (Marriage Timing)
-    const dim15 = report.dimensions.find((d) => d.id === 15);
-    expect(dim15).toBeDefined();
-    expect(dim15?.verdictHi).toBeTruthy();
+    // Dimension 26 (Marriage Timing)
+    const dim26 = report.dimensions.find((d) => d.id === 26);
+    expect(dim26).toBeDefined();
+    expect(dim26?.verdictHi).toBeTruthy();
 
-    // Dimension 20 (Children Conception)
+    // Dimension 19 (Children Conception)
+    const dim19 = report.dimensions.find((d) => d.id === 19);
+    expect(dim19).toBeDefined();
+    expect(dim19?.verdictHi).toBeTruthy();
+
+    // Dimension 20 (Children Challenges)
     const dim20 = report.dimensions.find((d) => d.id === 20);
     expect(dim20).toBeDefined();
     expect(dim20?.verdictHi).toBeTruthy();
-
-    // Dimension 21 (Children Count)
-    const dim21 = report.dimensions.find((d) => d.id === 21);
-    expect(dim21).toBeDefined();
-    expect(dim21?.verdictHi).toBeTruthy();
   });
 
   it('correctly handles chart with severe 7th house delay for adult native', () => {
@@ -79,9 +79,36 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     };
     const adultChart = calculateChart(adultInput, DEFAULT_SETTINGS);
     const report = computeSambhavitFalkathan(adultChart);
-    const dim15 = report.dimensions.find((d) => d.id === 15);
+    const dim26 = report.dimensions.find((d) => d.id === 26);
 
     // For a 40-year old adult, prediction must NOT predict 24 to 28 years!
-    expect(dim15?.verdictEn).not.toContain('24 to 28 years of age');
+    expect(dim26?.verdictEn).not.toContain('24 to 28 years of age');
+  });
+
+  it('proves 1-second precision sensitivity: changing birth time by even 1 second changes the prediction output', () => {
+    const chartTime1 = calculateChart({
+      ...SAMPLE_CHARTS[0],
+      time: '12:00:00',
+    }, DEFAULT_SETTINGS);
+
+    const chartTime2 = calculateChart({
+      ...SAMPLE_CHARTS[0],
+      time: '12:00:01', // Exactly 1 second later!
+    }, DEFAULT_SETTINGS);
+
+    // Astronomical longitudes MUST differ by ~15 arcseconds
+    expect(chartTime1.ascendant.longitude).not.toBe(chartTime2.ascendant.longitude);
+
+    const report1 = computeSambhavitFalkathan(chartTime1);
+    const report2 = computeSambhavitFalkathan(chartTime2);
+
+    expect(report1.dimensions.length).toBe(51);
+    expect(report2.dimensions.length).toBe(51);
+
+    // 1-Second micro-precision stamps must visibly and mathematically change
+    expect(report1.dimensions[0].detailedAnalysisEn).not.toBe(report2.dimensions[0].detailedAnalysisEn);
+    expect(report1.dimensions[0].detailedAnalysisHi).not.toBe(report2.dimensions[0].detailedAnalysisHi);
+    expect(report1.dimensions[0].astroBasisEn).not.toBe(report2.dimensions[0].astroBasisEn);
+    expect(report1.dimensions[0].astroBasisHi).not.toBe(report2.dimensions[0].astroBasisHi);
   });
 });

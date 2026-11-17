@@ -194,15 +194,15 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
                 {report.planets.map((p) => (
                   <tr key={p.planet}>
                     <td>
-                      <strong>{HINDI_GRAHAS[p.planet] || p.planet}</strong>
+                      <strong>{isHi ? (HINDI_GRAHAS[p.planet] || p.planet) : p.planet}</strong>
                     </td>
-                    <td>{p.natalHouse}वां भाव</td>
+                    <td>{isHi ? `${p.natalHouse}वां भाव` : `House ${p.natalHouse}`}</td>
                     <td>
                       <span className="oj-badge-accent" style={{ fontWeight: 'bold' }}>
-                        {p.varshaHouse}वां भाव
+                        {isHi ? `${p.varshaHouse}वां भाव` : `House ${p.varshaHouse}`}
                       </span>
                     </td>
-                    <td>{p.pakkaGhar}वां भाव</td>
+                    <td>{isHi ? `${p.pakkaGhar}वां भाव` : `House ${p.pakkaGhar}`}</td>
                     <td>
                       <span
                         style={{
@@ -293,8 +293,8 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
             <tbody>
               {report.planets.map((p) => (
                 <tr key={p.planet}>
-                  <td><strong>{HINDI_GRAHAS[p.planet] || p.planet}</strong></td>
-                  <td>{p.natalHouse}वां भाव</td>
+                  <td><strong>{isHi ? (HINDI_GRAHAS[p.planet] || p.planet) : p.planet}</strong></td>
+                  <td>{isHi ? `${p.natalHouse}वां भाव` : `House ${p.natalHouse}`}</td>
                   <td>
                     <span
                       style={{
@@ -336,41 +336,87 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
           <div className="oj-two-col-grid">
             {[
               {
-                nameHi: '1. मातृ ऋण (Mother’s Debt)',
+                nameHi: '1. मातृ ऋण (मातृ दोष)',
+                nameEn: '1. Mother’s Debt (Matri Rin)',
                 causeHi: 'केतु चौथे भाव में या चंद्र पीड़ित होने पर। मानसिक अशांति व धन क्षय।',
+                causeEn: 'Ketu in 4th house or afflicted Moon. Mental unrest, chronic worry and cash depletion.',
                 upayaHi: 'परिवार के सभी सदस्यों से बराबर चांदी के सिक्के एकत्र कर बहते जल में प्रवाहित करें।',
+                upayaEn: 'Collect equal silver pieces from all blood relatives and immerse them in running river water.',
               },
               {
-                nameHi: '2. पितृ ऋण (Father’s Debt)',
+                nameHi: '2. पितृ ऋण (पितृ दोष)',
+                nameEn: '2. Father’s Debt (Pitru Rin)',
                 causeHi: 'बृहस्पति 2, 5, 9, 12वें भाव में पापी ग्रहों से घिरने पर। कुल में संतान कष्ट।',
+                causeEn: 'Jupiter in 2, 5, 9, 12 afflicted by malefics. Delays in progeny and family progress.',
                 upayaHi: 'सभी संबंधियों से समान धन लेकर मंदिर में पीले फल व केसर अर्पित करें।',
+                upayaEn: 'Pool equal money from family members and offer yellow fruits and saffron in a shrine.',
               },
               {
-                nameHi: '3. स्व-ऋण (Self Debt)',
+                nameHi: '3. स्व-ऋण (आत्म दोष)',
+                nameEn: '3. Self Debt (Swa Rin)',
                 causeHi: 'सूर्य 5वें भाव में शुक्र-शनि-राहु-केतु से पीड़ित। प्रतिष्ठा पर आघात।',
+                causeEn: 'Sun afflicted in 5th house by Venus/Saturn/Rahu. Blows to reputation and heart stress.',
                 upayaHi: 'सभी सदस्यों से पैसे लेकर सूर्य यज्ञ व गरीबों को गुड़-गेहूं का दान करें।',
+                upayaEn: 'Collect funds from all relatives for a Surya Yajna and donate jaggery and wheat to the needy.',
               },
               {
-                nameHi: '4. स्त्री ऋण (Wife/Women’s Debt)',
+                nameHi: '4. स्त्री ऋण (स्त्री दोष)',
+                nameEn: '4. Wife/Women’s Debt (Stri Rin)',
                 causeHi: 'शुक्र 2 या 7वें भाव में राहु/केतु के प्रभाव में। दांपत्य कलह व रोग।',
+                causeEn: 'Venus in 2nd or 7th house afflicted by Rahu/Ketu. Domestic friction and female health issues.',
                 upayaHi: 'परिवार के सभी लोगों से चंदा एकत्र कर 100 गायों को हरा चारा खिलाएं।',
+                upayaEn: 'Pool contributions from all relatives to feed green fodder to 100 cows.',
               },
               {
-                nameHi: '5. भ्रातृ ऋण (Brother/Relatives Debt)',
+                nameHi: '5. भ्रातृ ऋण (भ्रातृ दोष)',
+                nameEn: '5. Relatives & Brother’s Debt (Bhratri Rin)',
                 causeHi: 'मंगल 1 या 8वें भाव में बुध या केतु के साथ। संपत्ति विवाद व रक्त विकार।',
+                causeEn: 'Mars in 1st or 8th with Mercury or Ketu. Inheritance disputes and sibling estrangement.',
                 upayaHi: 'कपूर जलाकर सुरमे का दान करें अथवा लाल मसूर पक्षियों को दें।',
+                upayaEn: 'Burn pure camphor, donate kajal/surma, or feed red lentils (masoor) to wild birds.',
               },
               {
-                nameHi: '6. जल ऋण (Water / Nature Debt)',
+                nameHi: '6. जल ऋण (कुदरती दोष)',
+                nameEn: '6. Water & Nature’s Debt (Jal Rin)',
                 causeHi: 'चंद्र 6, 8, 12वें भाव में राहु से पीड़ित। जल से भय, व्यापारिक हानि।',
-                upayaHi: 'सभी से चांदी एकत्र कर कुएं या जलाशय में डालें।',
+                causeEn: 'Moon in 6, 8, 12 afflicted by Rahu. Hydrophobia, insomnia, and erratic cash flow.',
+                upayaHi: 'सभी से चांदी एकत्र कर कुएं या प्राकृतिक जलाशय में डालें।',
+                upayaEn: 'Collect silver from all relatives and submerge into an active well or natural water reservoir.',
+              },
+              {
+                nameHi: '7. निर्दयता ऋण (क्रूरता दोष)',
+                nameEn: '7. Cruelty Debt (Nirdayata Rin)',
+                causeHi: 'शनि 1 या 2रे भाव में सूर्य-चंद्र से दृष्ट। अकारण दंड व कानूनी उलझनें।',
+                causeEn: 'Saturn in 1st or 2nd aspected by Sun/Moon. Unjust penalties and legal stress.',
+                upayaHi: 'परिवार से तेल एकत्र कर शनिवार को भैरव अथवा शनि मंदिर में दीप जलाएं।',
+                upayaEn: 'Collect mustard oil from all relatives to light a lamp at a Bhairava or Shani shrine.',
+              },
+              {
+                nameHi: '8. अजन्मे का ऋण (जीव ऋण)',
+                nameEn: '8. Unborn / Life Debt (Jeeva Rin)',
+                causeHi: 'राहु 5वें या 12वें भाव में गुरु के साथ। वंश वृद्धि में अवरोध।',
+                causeEn: 'Rahu in 5th or 12th conjunct Jupiter. Lineage delays and unfulfilled promises.',
+                upayaHi: 'पीले कपड़े में नारियल लपेटकर बहते जल में प्रवाहित करें।',
+                upayaEn: 'Wrap dry coconuts in yellow cloth and float in running river water with family prayers.',
+              },
+              {
+                nameHi: '9. दैवीय ऋण (कुदरती ऋण)',
+                nameEn: '9. Divine / Cosmic Debt (Deva Rin)',
+                causeHi: 'चंद्र व मंगल का केंद्र में वक्री अथवा दग्ध होना। भाग्य का अचानक रुकना।',
+                causeEn: 'Moon and Mars afflicted in kendras. Sudden roadblocks at the final step of success.',
+                upayaHi: 'कुत्ते को मीठी रोटी खिलाएं तथा पक्षियों को दाना-पानी दें।',
+                upayaEn: 'Feed sweet bread (meethi roti) to stray dogs and replenish bird baths daily.',
               },
             ].map((d, i) => (
               <div key={i} className="oj-card" style={{ padding: '16px' }}>
-                <h4 style={{ margin: '0 0 6px', color: '#b45309', fontSize: '14.5px' }}>{d.nameHi}</h4>
-                <p style={{ margin: '0 0 8px', fontSize: '12px', color: 'var(--text-muted)' }}>{d.causeHi}</p>
+                <h4 style={{ margin: '0 0 6px', color: '#b45309', fontSize: '14.5px' }}>
+                  {isHi ? d.nameHi : d.nameEn}
+                </h4>
+                <p style={{ margin: '0 0 8px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  {isHi ? d.causeHi : d.causeEn}
+                </p>
                 <div style={{ padding: '8px 10px', background: 'rgba(217, 119, 6, 0.08)', borderRadius: '6px', fontSize: '11.5px', color: '#92400e', fontWeight: 600 }}>
-                  उपाय: {d.upayaHi}
+                  {isHi ? `उपाय: ${d.upayaHi}` : `Remedy: ${d.upayaEn}`}
                 </div>
               </div>
             ))}
@@ -397,9 +443,9 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
             <tbody>
               {report.dasha35.map((d, idx) => (
                 <tr key={idx}>
-                  <td><strong>{HINDI_GRAHAS[d.planet] || d.planet}</strong></td>
+                  <td><strong>{isHi ? (HINDI_GRAHAS[d.planet] || d.planet) : d.planet}</strong></td>
                   <td>{d.years} {isHi ? 'वर्ष' : 'Years'}</td>
-                  <td>{d.startAge} से {d.endAge} वर्ष</td>
+                  <td>{isHi ? `${d.startAge} से ${d.endAge} वर्ष` : `${d.startAge} to ${d.endAge} Yrs`}</td>
                   <td><span className="muted" style={{ fontSize: '11.5px' }}>{formatDateDmy(d.startDate)} — {formatDateDmy(d.endDate)}</span></td>
                   <td style={{ fontSize: '12px' }}>{isHi ? d.effectHi : d.effectEn}</td>
                 </tr>

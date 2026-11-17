@@ -16,7 +16,7 @@ import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import { getNakshatraSyllable, getAllNakshatraSyllables } from '../avakahadaChalit';
 import { computeLifeEventsAndLedger } from './lifeEventsLedger';
-import { build101LifeDimensions, type Classical101Context } from './classicalCorpus101';
+import { build51LifeDimensions, type Classical51Context } from './classicalCorpus51';
 
 export type DimensionCategory =
   | 'identity'
@@ -438,8 +438,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const allSyl = getAllNakshatraSyllables(nakIdx);
   const nakName = moon.nakshatraName || 'Ashwini';
 
-  // Build the complete 101 Life Dimensions
-  const corpusContext: Classical101Context = {
+  // Build the complete 51 Master Life Dimensions
+  const corpusContext: Classical51Context = {
     chart,
     ascSign,
     ascSignName,
@@ -458,9 +458,9 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     getKartariOnHouse,
   };
 
-  const dims = build101LifeDimensions(corpusContext);
+  const dims = build51LifeDimensions(corpusContext);
 
-  // Summary counts across all 101 dimensions
+  // Summary counts across all 51 dimensions
   let hf = 0, f = 0, m = 0, c = 0;
   for (const d of dims) {
     if (d.auspiciousness === 'highly_favorable') hf++;
@@ -470,7 +470,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   }
 
   const summary: SambhavitSummary = {
-    totalDimensions: dims.length, // 101
+    totalDimensions: dims.length, // 51
     highlyFavorableCount: hf,
     favorableCount: f,
     mixedCount: m,
@@ -488,41 +488,33 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const d2 = getDim(2);
   const d3 = getDim(3);
   const d4 = getDim(4);
-  const d7 = getDim(7);
-  const d8 = getDim(8);
+  const d5 = getDim(5);
+  const d9 = getDim(9);
   const d10 = getDim(10);
+  const d13 = getDim(13);
+  const d14 = getDim(14);
+  const d17 = getDim(17);
+  const d18 = getDim(18);
+  const d19 = getDim(19);
   const d20 = getDim(20);
-  const d24 = getDim(24);
+  const d21 = getDim(21);
+  const d22 = getDim(22);
+  const d26 = getDim(26);
   const d27 = getDim(27);
+  const d28 = getDim(28);
   const d31 = getDim(31);
-  const d32 = getDim(32);
+  const d33 = getDim(33);
   const d35 = getDim(35);
   const d36 = getDim(36);
-  const d37 = getDim(37);
   const d38 = getDim(38);
   const d39 = getDim(39);
+  const d40 = getDim(40);
+  const d41 = getDim(41);
   const d43 = getDim(43);
-  const d46 = getDim(46);
+  const d44 = getDim(44);
+  const d45 = getDim(45);
   const d48 = getDim(48);
-  const d55 = getDim(55);
-  const d56 = getDim(56);
-  const d57 = getDim(57);
-  const d62 = getDim(62);
-  const d65 = getDim(65);
-  const d69 = getDim(69);
-  const d70 = getDim(70);
-  const d74 = getDim(74);
-  const d75 = getDim(75);
-  const d80 = getDim(80);
-  const d83 = getDim(83);
-  const d84 = getDim(84);
-  const d89 = getDim(89);
-  const d91 = getDim(91);
-  const d92 = getDim(92);
-  const d94 = getDim(94);
-  const d97 = getDim(97);
-  const d99 = getDim(99);
-  const d100 = getDim(100);
+  const d50 = getDim(50);
 
   // Construct backward-compatible report structure
   const report: SambhavitFalkathanReport = {
@@ -542,8 +534,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     ishtaDevata: {
       nameEn: ledger.deityAndMainPlanet.ishtaDevataEn,
       nameHi: ledger.deityAndMainPlanet.ishtaDevataHi,
-      basisEn: d10.astroBasisEn,
-      basisHi: d10.astroBasisHi,
+      basisEn: d18.astroBasisEn,
+      basisHi: d18.astroBasisHi,
       mantra: ledger.deityAndMainPlanet.ishtaMantra,
     },
     mukhyaGraha: {
@@ -551,116 +543,116 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       planetHi: ledger.deityAndMainPlanet.mainPlanetHi,
       roleEn: ledger.deityAndMainPlanet.supportingKingsEn,
       roleHi: ledger.deityAndMainPlanet.supportingKingsHi,
-      rationaleEn: d7.detailedAnalysisEn,
-      rationaleHi: d7.detailedAnalysisHi,
+      rationaleEn: d3.detailedAnalysisEn,
+      rationaleHi: d3.detailedAnalysisHi,
     },
     father: {
-      temperamentEn: d75.verdictEn,
-      temperamentHi: d75.verdictHi,
-      professionEn: d89.verdictEn,
-      professionHi: d89.verdictHi,
-      lifespanEn: d75.detailedAnalysisEn,
-      lifespanHi: d75.detailedAnalysisHi,
-      relationshipEn: d75.verdictEn,
-      relationshipHi: d75.verdictHi,
+      temperamentEn: d35.verdictEn,
+      temperamentHi: d35.verdictHi,
+      professionEn: d35.detailedAnalysisEn,
+      professionHi: d35.detailedAnalysisHi,
+      lifespanEn: d36.verdictEn,
+      lifespanHi: d36.verdictHi,
+      relationshipEn: d35.verdictEn,
+      relationshipHi: d35.verdictHi,
     },
     mother: {
-      temperamentEn: d27.verdictEn,
-      temperamentHi: d27.verdictHi,
-      professionEn: d31.verdictEn,
-      professionHi: d31.verdictHi,
-      lifespanEn: d27.detailedAnalysisEn,
-      lifespanHi: d27.detailedAnalysisHi,
-      relationshipEn: d27.verdictEn,
-      relationshipHi: d27.verdictHi,
+      temperamentEn: d13.verdictEn,
+      temperamentHi: d13.verdictHi,
+      professionEn: d13.detailedAnalysisEn,
+      professionHi: d13.detailedAnalysisHi,
+      lifespanEn: d14.verdictEn,
+      lifespanHi: d14.verdictHi,
+      relationshipEn: d13.verdictEn,
+      relationshipHi: d13.verdictHi,
     },
     siblings: {
-      countProjectionEn: d20.verdictEn,
-      countProjectionHi: d20.verdictHi,
+      countProjectionEn: d9.verdictEn,
+      countProjectionHi: d9.verdictHi,
       birthOrderEn: 'Determined by Lagna and 3rd house dispositor',
       birthOrderHi: 'लग्न व तृतीय भाव अनुसार जन्म क्रम',
-      harmonyEn: d20.detailedAnalysisEn,
-      harmonyHi: d20.detailedAnalysisHi,
+      harmonyEn: d9.detailedAnalysisEn,
+      harmonyHi: d9.detailedAnalysisHi,
     },
     marriage: {
-      timingAgeWindowEn: d55.verdictEn,
-      timingAgeWindowHi: d55.verdictHi,
-      marriageYogasEn: d57.verdictEn,
-      marriageYogasHi: d57.verdictHi,
-      spouseNatureEn: d56.verdictEn,
-      spouseNatureHi: d56.verdictHi,
-      spouseAgeGapEn: d55.verdictEn,
-      spouseAgeGapHi: d55.verdictHi,
-      relationshipEn: d57.detailedAnalysisEn,
-      relationshipHi: d57.detailedAnalysisHi,
+      timingAgeWindowEn: d26.verdictEn,
+      timingAgeWindowHi: d26.verdictHi,
+      marriageYogasEn: d28.verdictEn,
+      marriageYogasHi: d28.verdictHi,
+      spouseNatureEn: d27.verdictEn,
+      spouseNatureHi: d27.verdictHi,
+      spouseAgeGapEn: d26.verdictEn,
+      spouseAgeGapHi: d26.verdictHi,
+      relationshipEn: d28.detailedAnalysisEn,
+      relationshipHi: d28.detailedAnalysisHi,
     },
     children: {
-      conceptionModeEn: d37.verdictEn,
-      conceptionModeHi: d37.verdictHi,
-      progenyCountEn: d37.verdictEn,
-      progenyCountHi: d37.verdictHi,
-      miscarriageRiskEn: d37.detailedAnalysisEn,
-      miscarriageRiskHi: d37.detailedAnalysisHi,
-      filialHappinessEn: d38.verdictEn,
-      filialHappinessHi: d38.verdictHi,
-      countAndGenderEn: d37.verdictEn,
-      countAndGenderHi: d37.verdictHi,
-      filialJoyEn: d38.verdictEn,
-      filialJoyHi: d38.verdictHi,
+      conceptionModeEn: d19.verdictEn,
+      conceptionModeHi: d19.verdictHi,
+      progenyCountEn: d19.verdictEn,
+      progenyCountHi: d19.verdictHi,
+      miscarriageRiskEn: d20.verdictEn,
+      miscarriageRiskHi: d20.verdictHi,
+      filialHappinessEn: d19.detailedAnalysisEn,
+      filialHappinessHi: d19.detailedAnalysisHi,
+      countAndGenderEn: d19.verdictEn,
+      countAndGenderHi: d19.verdictHi,
+      filialJoyEn: d19.detailedAnalysisEn,
+      filialJoyHi: d19.detailedAnalysisHi,
     },
     education: {
-      attainmentLevelEn: d39.verdictEn,
-      attainmentLevelHi: d39.verdictHi,
-      suitableStreamsEn: [d32.verdictEn],
-      suitableStreamsHi: [d32.verdictHi],
-      academicSuccessEn: d36.verdictEn,
-      academicSuccessHi: d36.verdictHi,
-      highestAttainmentEn: d39.verdictEn,
-      highestAttainmentHi: d39.verdictHi,
-      suitableFieldsEn: [d32.verdictEn],
-      suitableFieldsHi: [d32.verdictHi],
+      attainmentLevelEn: d17.verdictEn,
+      attainmentLevelHi: d17.verdictHi,
+      suitableStreamsEn: [d17.verdictEn],
+      suitableStreamsHi: [d17.verdictHi],
+      academicSuccessEn: d17.detailedAnalysisEn,
+      academicSuccessHi: d17.detailedAnalysisHi,
+      highestAttainmentEn: d38.verdictEn,
+      highestAttainmentHi: d38.verdictHi,
+      suitableFieldsEn: [d17.verdictEn],
+      suitableFieldsHi: [d17.verdictHi],
     },
     career: {
-      jobVsBusinessEn: d83.verdictEn,
-      jobVsBusinessHi: d83.verdictHi,
-      govtVsPrivateEn: d84.verdictEn,
-      govtVsPrivateHi: d84.verdictHi,
-      suitableProfessionsEn: [d91.verdictEn],
-      suitableProfessionsHi: [d91.verdictHi],
-      foreignTravelEn: d80.verdictEn,
-      foreignTravelHi: d80.verdictHi,
-      foreignSettlementEn: d97.verdictEn,
-      foreignSettlementHi: d97.verdictHi,
+      jobVsBusinessEn: d39.verdictEn,
+      jobVsBusinessHi: d39.verdictHi,
+      govtVsPrivateEn: d40.verdictEn,
+      govtVsPrivateHi: d40.verdictHi,
+      suitableProfessionsEn: [d41.verdictEn],
+      suitableProfessionsHi: [d41.verdictHi],
+      foreignTravelEn: d48.verdictEn,
+      foreignTravelHi: d48.verdictHi,
+      foreignSettlementEn: d48.detailedAnalysisEn,
+      foreignSettlementHi: d48.detailedAnalysisHi,
     },
     longevity: {
-      categoryEn: d4.verdictEn,
-      categoryHi: d4.verdictHi,
-      rangeEn: d65.verdictEn,
-      rangeHi: d65.verdictHi,
-      keyFactorsEn: d4.astroBasisEn,
-      keyFactorsHi: d4.astroBasisHi,
+      categoryEn: d31.verdictEn,
+      categoryHi: d31.verdictHi,
+      rangeEn: d31.detailedAnalysisEn,
+      rangeHi: d31.detailedAnalysisHi,
+      keyFactorsEn: d31.astroBasisEn,
+      keyFactorsHi: d31.astroBasisHi,
     },
     bandhanaYoga: {
       hasRisk: false,
-      verdictEn: d100.verdictEn,
-      verdictHi: d100.verdictHi,
-      mitigationEn: d100.remedyEn,
-      mitigationHi: d100.remedyHi,
+      verdictEn: d50.verdictEn,
+      verdictHi: d50.verdictHi,
+      mitigationEn: d50.remedyEn,
+      mitigationHi: d50.remedyHi,
     },
     surgeryYoga: {
       hasRisk: false,
-      riskLevelEn: d69.verdictEn,
-      riskLevelHi: d69.verdictHi,
-      vulnerableAreasEn: d69.astroBasisEn,
-      vulnerableAreasHi: d69.astroBasisHi,
-      timingEn: d69.verdictEn,
-      timingHi: d69.verdictHi,
+      riskLevelEn: d33.verdictEn,
+      riskLevelHi: d33.verdictHi,
+      vulnerableAreasEn: d33.astroBasisEn,
+      vulnerableAreasHi: d33.astroBasisHi,
+      timingEn: d33.detailedAnalysisEn,
+      timingHi: d33.detailedAnalysisHi,
     },
     physicalMarks: {
-      identificationEn: d8.verdictEn,
-      identificationHi: d8.verdictHi,
-      locationsEn: [d8.verdictEn],
-      locationsHi: [d8.verdictHi],
+      identificationEn: d1.verdictEn,
+      identificationHi: d1.verdictHi,
+      locationsEn: [d1.verdictEn],
+      locationsHi: [d1.verdictHi],
     },
     addictions: {
       vulnerabilitiesEn: ['Sensory overindulgence during high stress'],
@@ -669,69 +661,69 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       adviceHi: 'नियमित ध्यान करें और देर रात उत्तेजक पदार्थों से बचें।',
     },
     bedPleasure: {
-      shayanaSukhaEn: d99.verdictEn,
-      shayanaSukhaHi: d99.verdictHi,
-      sexualityEn: d62.verdictEn,
-      sexualityHi: d62.verdictHi,
+      shayanaSukhaEn: d50.verdictEn,
+      shayanaSukhaHi: d50.verdictHi,
+      sexualityEn: d28.verdictEn,
+      sexualityHi: d28.verdictHi,
     },
     friends: {
-      natureEn: d94.verdictEn,
-      natureHi: d94.verdictHi,
-      loyaltyVerdictEn: d94.detailedAnalysisEn,
-      loyaltyVerdictHi: d94.detailedAnalysisHi,
+      natureEn: d45.verdictEn,
+      natureHi: d45.verdictHi,
+      loyaltyVerdictEn: d45.detailedAnalysisEn,
+      loyaltyVerdictHi: d45.detailedAnalysisHi,
     },
     cautions: {
-      hazardsEn: [d48.verdictEn, d70.verdictEn, 'Overconfidence in financial schemes', 'Neglecting routine health examinations'],
-      hazardsHi: [d48.verdictHi, d70.verdictHi, 'वित्तीय योजनाओं में अति-विश्वास', 'स्वास्थ्य की नियमित जांच में लापरवाही'],
-      warningNoteEn: d48.detailedAnalysisEn || 'Maintain ethical transparency and health awareness.',
-      warningNoteHi: d48.detailedAnalysisHi || 'कार्यक्षेत्र में पारदर्शिता और स्वास्थ्य के प्रति सजगता बनाए रखें।',
+      hazardsEn: [d43.verdictEn, d22.verdictEn, 'Overconfidence in financial schemes', 'Neglecting routine health examinations'],
+      hazardsHi: [d43.verdictHi, d22.verdictHi, 'वित्तीय योजनाओं में अति-विश्वास', 'स्वास्थ्य की नियमित जांच में लापरवाही'],
+      warningNoteEn: d43.detailedAnalysisEn || 'Maintain ethical transparency and health awareness.',
+      warningNoteHi: d43.detailedAnalysisHi || 'कार्यक्षेत्र में पारदर्शिता और स्वास्थ्य के प्रति सजगता बनाए रखें।',
     },
     crisisStrategy: {
       primaryDeityEn: ledger.deityAndMainPlanet.ishtaDevataEn,
       primaryDeityHi: ledger.deityAndMainPlanet.ishtaDevataHi,
       rescueMantra: ledger.deityAndMainPlanet.ishtaMantra,
-      actionProtocolEn: d10.remedyEn,
-      actionProtocolHi: d10.remedyHi,
+      actionProtocolEn: d4.remedyEn,
+      actionProtocolHi: d4.remedyHi,
     },
     sports: {
-      preferencesEn: d24.verdictEn.split(/[,;]/).map((s) => s.trim()).filter(Boolean),
-      preferencesHi: d24.verdictHi.split(/[,;।]/).map((s) => s.trim()).filter(Boolean),
-      fitnessStyleEn: d24.detailedAnalysisEn,
-      fitnessStyleHi: d24.detailedAnalysisHi,
+      preferencesEn: d10.verdictEn.split(/[,;]/).map((s) => s.trim()).filter(Boolean),
+      preferencesHi: d10.verdictHi.split(/[,;।]/).map((s) => s.trim()).filter(Boolean),
+      fitnessStyleEn: d10.detailedAnalysisEn,
+      fitnessStyleHi: d10.detailedAnalysisHi,
     },
     temperament: {
-      traitSummaryEn: d2.verdictEn,
-      traitSummaryHi: d2.verdictHi,
-      gunaEn: d2.astroBasisEn,
-      gunaHi: d2.astroBasisHi,
+      traitSummaryEn: d3.verdictEn,
+      traitSummaryHi: d3.verdictHi,
+      gunaEn: d3.astroBasisEn,
+      gunaHi: d3.astroBasisHi,
     },
     loveLife: {
-      romanceEn: d43.verdictEn,
-      romanceHi: d43.verdictHi,
-      marriageTypeEn: d43.detailedAnalysisEn,
-      marriageTypeHi: d43.detailedAnalysisHi,
+      romanceEn: d21.verdictEn,
+      romanceHi: d21.verdictHi,
+      marriageTypeEn: d21.detailedAnalysisEn,
+      marriageTypeHi: d21.detailedAnalysisHi,
     },
     mentalHealth: {
-      conditionEn: d35.verdictEn,
-      conditionHi: d35.verdictHi,
-      vulnerabilitiesEn: d35.astroBasisEn,
-      vulnerabilitiesHi: d35.astroBasisHi,
-      remedyEn: d35.remedyEn,
-      remedyHi: d35.remedyHi,
+      conditionEn: d2.verdictEn,
+      conditionHi: d2.verdictHi,
+      vulnerabilitiesEn: d2.astroBasisEn,
+      vulnerabilitiesHi: d2.astroBasisHi,
+      remedyEn: d2.remedyEn,
+      remedyHi: d2.remedyHi,
     },
     health: {
       constitutionEn: d1.verdictEn,
       constitutionHi: d1.verdictHi,
-      vulnerableOrgansEn: d46.astroBasisEn,
-      vulnerableOrgansHi: d46.astroBasisHi,
+      vulnerableOrgansEn: d22.astroBasisEn,
+      vulnerableOrgansHi: d22.astroBasisHi,
     },
     wealth: {
-      statusEn: d92.verdictEn,
-      statusHi: d92.verdictHi,
-      activeYogasEn: [d92.verdictEn],
-      activeYogasHi: [d92.verdictHi],
-      peakAgeWindowEn: d74.verdictEn,
-      peakAgeWindowHi: d74.verdictHi,
+      statusEn: d5.verdictEn,
+      statusHi: d5.verdictHi,
+      activeYogasEn: [d5.verdictEn, d44.verdictEn],
+      activeYogasHi: [d5.verdictHi, d44.verdictHi],
+      peakAgeWindowEn: 'Major prosperity surges between age 28 and 42',
+      peakAgeWindowHi: '28 से 42 वर्ष की आयु के मध्य विशेष वित्तीय समृद्धि',
     },
   };
 
