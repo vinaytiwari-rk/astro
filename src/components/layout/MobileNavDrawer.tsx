@@ -74,15 +74,24 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   const menuSections = [
     {
-      titleEn: 'Workstation Divisions (1 to 12)',
-      titleHi: 'वैदिक ज्योतिष वर्कस्टेशन (भाग 1 से 12)',
-      items: WORKSTATION_DIVISIONS.map((div) => ({
-        tab: 'workstation' as MainTab,
-        subTab: String(div.divisionNumber),
-        labelEn: div.labelEn,
-        labelHi: div.labelHi,
-        icon: <span style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)' }}>#{div.divisionNumber}</span>,
-      })),
+      titleEn: 'Main Navigation & 12 Divisions',
+      titleHi: 'मुख्य नेविगेशन एवं 12 भाग',
+      items: [
+        {
+          tab: 'home' as MainTab,
+          subTab: 'home',
+          labelEn: 'OnlineJyotish Home Portal',
+          labelHi: 'मुख्य ऑनलाइन ज्योतिष पोर्टल',
+          icon: <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--accent)' }}>ॐ</span>,
+        },
+        ...WORKSTATION_DIVISIONS.map((div) => ({
+          tab: 'workstation' as MainTab,
+          subTab: String(div.divisionNumber),
+          labelEn: div.labelEn,
+          labelHi: div.labelHi,
+          icon: <span style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)' }}>#{div.divisionNumber}</span>,
+        })),
+      ],
     },
   ];
 

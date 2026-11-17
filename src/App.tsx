@@ -4,6 +4,7 @@ import type { BirthInput, CalcSettings, ChartStyle } from './astro/types';
 import { BirthEditorModal } from './components/BirthEditorModal';
 import { KundaliBookletModal } from './components/KundaliBookletModal';
 import { SettingsModal } from './components/SettingsModal';
+import { OnlineJyotishHomePortal } from './components/OnlineJyotishHomePortal';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -59,8 +60,8 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation State - Exclusively Vedic Master Workstation (Divisions 1 to 12)
-  const [activeTab, setActiveTab] = useState<MainTab>('workstation');
+  // Master Navigation State - Home Portal or Vedic Workstation Divisions 1 to 12
+  const [activeTab, setActiveTab] = useState<MainTab>('home');
   const [activeSubTab, setActiveSubTab] = useState<string>('1');
   const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
 
@@ -123,16 +124,26 @@ export function App() {
     [activeInput, settings]
   );
 
-  // Central Navigation Dispatcher - All routes map to Vedic Workstation Divisions 1 to 12
+  // Central Navigation Dispatcher - OnlineJyotish Portal or Workstation Divisions 1 to 12
   const navigateTo = (tab: MainTab | string, subTab?: string, nested?: string) => {
+    if (tab === 'home' || tab === 'portal') {
+      setActiveTab('home');
+      setDrawerOpen(false);
+      return;
+    }
+
     let target = subTab || tab;
+    if (target === 'home' || target === 'portal') {
+      setActiveTab('home');
+      setDrawerOpen(false);
+      return;
+    }
 
     // Check if target is already a division number 1..12
     const targetNum = parseInt(target, 10);
     if (!isNaN(targetNum) && targetNum >= 1 && targetNum <= 12) {
       target = String(targetNum);
     } else if (
-      target === 'home' ||
       target === 'overview' ||
       target === 'basics' ||
       target === 'sarini' ||
@@ -341,22 +352,38 @@ export function App() {
           onToggleTheme={() => setTheme((th) => (th === 'light' ? 'dark' : 'light'))}
         />
 
-        {/* Full-Width Workspace Shell - EXCLUSIVELY VEDIC MASTER WORKSTATION */}
+        {/* Full-Width Workspace Shell - OnlineJyotish Portal or 12-Division Workstation */}
         <div className="workspace-shell">
           <main className="main-content">
-            <VedicMasterWorkstation
-              chart={chart}
-              chartStyle={settings.chartStyle}
-              onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
-              settings={settings}
-              profiles={profiles}
-              activeProfileId={activeInput.id}
-              onSelectProfile={(id) => setActiveId(id)}
-              onOpenEditor={() => setEditorOpen(true)}
-              onOpenBooklet={() => setBookletOpen(true)}
-              onOpenMatchMaking={() => navigateTo('workstation', 'matchmaking')}
-              requestedMenu={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
-            />
+            {activeTab === 'home' ? (
+              <OnlineJyotishHomePortal
+                chart={chart}
+                activeInput={activeInput}
+                profiles={profiles}
+                settings={settings}
+                onSelectProfile={(id) => setActiveId(id)}
+                onNavigateToDivision={(divNum) => {
+                  navigateTo('workstation', String(divNum));
+                }}
+                onOpenEditor={() => setEditorOpen(true)}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onApplyBirthInput={(input) => handleApplyBirth(input, false)}
+              />
+            ) : (
+              <VedicMasterWorkstation
+                chart={chart}
+                chartStyle={settings.chartStyle}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                settings={settings}
+                profiles={profiles}
+                activeProfileId={activeInput.id}
+                onSelectProfile={(id) => setActiveId(id)}
+                onOpenEditor={() => setEditorOpen(true)}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onOpenMatchMaking={() => navigateTo('workstation', 'matchmaking')}
+                requestedMenu={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
+              />
+            )}
           </main>
         </div>
 

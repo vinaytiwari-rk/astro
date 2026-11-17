@@ -1,0 +1,909 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ArrowRight,
+  BookOpen,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Compass,
+  Edit3,
+  FileText,
+  Globe,
+  Grid3x3,
+  Heart,
+  HelpCircle,
+  Layers,
+  Moon,
+  RefreshCw,
+  Search,
+  ShieldAlert,
+  Sparkles,
+  Star,
+  Sun,
+  User,
+} from 'lucide-react';
+import { calculateChart } from '../astro/calculator';
+import { SIGNS } from '../astro/constants';
+import { computeDailyChoghadiyaAndGowri } from '../astro/panchangExtra';
+import { computeRashifalReport, type RashiForecastItem } from '../astro/rashifalBabyRudraksha';
+import { formatDateDmy } from '../astro/time';
+import type { BirthInput, CalcSettings, ChartData } from '../astro/types';
+import type { CityEntry } from '../data/cities';
+import { useLanguage } from '../i18n/LanguageContext';
+import { trPlanet, trSign } from '../i18n/translations';
+import { DateDmyInput } from './DateDmyInput';
+import { InlineCityAutocomplete } from './InlineCityAutocomplete';
+
+interface OnlineJyotishHomePortalProps {
+  chart: ChartData;
+  activeInput: BirthInput;
+  profiles: BirthInput[];
+  settings: CalcSettings;
+  onSelectProfile: (id: string) => void;
+  onNavigateToDivision: (divisionNumber: number | string) => void;
+  onOpenEditor: () => void;
+  onOpenBooklet: () => void;
+  onApplyBirthInput: (input: BirthInput) => void;
+}
+
+function getLocalIsoAndTime(d: Date): { date: string; time: string; minutes: number } {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+  const minutes = d.getHours() * 60 + d.getMinutes();
+  return { date, time, minutes };
+}
+
+function parseHhMm(hhmm: string): number {
+  const parts = hhmm.trim().split(':');
+  const h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return -1;
+  return h * 60 + m;
+}
+
+export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = ({
+  chart,
+  activeInput,
+  profiles,
+  settings,
+  onSelectProfile,
+  onNavigateToDivision,
+  onOpenEditor,
+  onOpenBooklet,
+  onApplyBirthInput,
+}) => {
+  const { lang, setLang } = useLanguage();
+  const isHi = lang === 'hi';
+
+  // --- Quick Kundli Generator Form ---
+  const [quickForm, setQuickForm] = useState<BirthInput>(activeInput);
+  useEffect(() => {
+    setQuickForm(activeInput);
+  }, [activeInput]);
+
+  const handleCitySelect = (entry: CityEntry) => {
+    setQuickForm((prev) => ({
+      ...prev,
+      city: entry.city,
+      country: entry.country,
+      latitude: entry.lat,
+      longitude: entry.lng,
+      timezone: entry.timezone,
+    }));
+  };
+
+  const handleGenerateKundli = (e: React.FormEvent) => {
+    e.preventDefault();
+    onApplyBirthInput(quickForm);
+    onNavigateToDivision(1);
+  };
+
+  // --- Real-time Live Panchang & Muhurta ---
+  const [nowClock, setNowClock] = useState<Date>(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNowClock(new Date()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const currentMoment = useMemo(() => getLocalIsoAndTime(nowClock), [nowClock]);
+
+  const livePanchangInput: BirthInput = useMemo(
+    () => ({
+      id: 'live-portal-panchang',
+      name: 'Current Moment',
+      gender: 'other',
+      date: currentMoment.date,
+      time: currentMoment.time,
+      timezone: activeInput.timezone || 'Asia/Kolkata',
+      city: activeInput.city || 'New Delhi',
+      country: activeInput.country || 'India',
+      latitude: activeInput.latitude || 28.6139,
+      longitude: activeInput.longitude || 77.209,
+    }),
+    [currentMoment.date, currentMoment.time, activeInput]
+  );
+
+  const livePanchangChart = useMemo(
+    () => calculateChart(livePanchangInput, settings),
+    [livePanchangInput, settings]
+  );
+
+  const choghadiyaToday = useMemo(
+    () =>
+      computeDailyChoghadiyaAndGowri(
+        currentMoment.date,
+        activeInput.latitude || 28.6139,
+        activeInput.longitude || 77.209,
+        livePanchangChart.offsetMinutesUsed
+      ),
+    [currentMoment.date, activeInput, livePanchangChart.offsetMinutesUsed]
+  );
+
+  // Active running Choghadiya
+  const activeChoghadiya = useMemo(() => {
+    const srMin = parseHhMm(choghadiyaToday.sunrise);
+    const ssMin = parseHhMm(choghadiyaToday.sunset);
+    const nowM = currentMoment.minutes;
+    const isDay = srMin >= 0 && ssMin >= 0 ? nowM >= srMin && nowM < ssMin : nowM >= 360 && nowM < 1080;
+    const slots = isDay ? choghadiyaToday.dayChoghadiya : choghadiyaToday.nightChoghadiya;
+    const current = slots.find((s) => {
+      const a = parseHhMm(s.startTime);
+      const b = parseHhMm(s.endTime);
+      return nowM >= a && nowM < b;
+    });
+    return current || slots[0];
+  }, [choghadiyaToday, currentMoment.minutes]);
+
+  // Rashifal Report (12 items)
+  const rashifalReport: RashiForecastItem[] = useMemo(
+    () => computeRashifalReport(chart, currentMoment.date),
+    [chart, currentMoment.date]
+  );
+
+  const [selectedRashiIdx, setSelectedRashiIdx] = useState<number>(0);
+
+  // Search box state
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const activeRashiItem = rashifalReport[selectedRashiIdx] || rashifalReport[0];
+
+  return (
+    <div className="oj-portal-root">
+      {/* 1. Header Emblem & Hero Section */}
+      <section className="oj-hero-banner">
+        <div className="oj-hero-container">
+          <div className="oj-emblem-row">
+            <div className="oj-emblem-badge">
+              <span className="oj-om-symbol" aria-hidden="true">ॐ</span>
+              <div className="oj-emblem-text">
+                <span className="oj-site-title">OnlineJyotish.com</span>
+                <span className="oj-site-org">Om Sri Sai Jyotisha Vidyapeetham · Serving you since 2004</span>
+              </div>
+            </div>
+            <div className="oj-hero-tag">
+              <span className="oj-pill-badge">{isHi ? '100% निःशुल्क वैदिक ज्योतिष सॉफ्टवेयर' : '100% Free Vedic Astrology Software'}</span>
+              <span className="oj-pill-sub">{isHi ? 'कोई पंजीकरण या सशुल्क सेवा नहीं' : 'No Registration · Zero Paid Barrier'}</span>
+            </div>
+          </div>
+
+          <h1 className="oj-hero-heading">
+            {isHi ? 'दैनिक जीवन के प्रश्नों हेतु प्रामाणिक वैदिक ज्योतिष' : 'Vedic astrology for your everyday questions'}
+          </h1>
+          <p className="oj-hero-subtitle">
+            {isHi
+              ? 'जन्म कुंडली बनाएं, स्थानीय पंचांग देखें, कुंडली मिलान करें, दैनिक व वार्षिक राशिफल पढ़ें और विशिष्ट ज्योतिषीय कैलकुलेटरों का उपयोग करें। हमारे सॉफ्टवेयर में समस्त गणनाएं, भविष्यवाणियां एवं 118-पृष्ठीय बृहत पत्रिका पूर्णतः निःशुल्क हैं।'
+              : 'Create a Janam Kundli, check your local Panchang, compare horoscopes, read Rashifal and use specialist astrology calculators. 100% free calculators and complete 118-page PDF reports, with no registration required.'}
+          </p>
+
+          {/* 4 Hero Action Buttons */}
+          <div className="oj-hero-actions-grid">
+            <button
+              type="button"
+              className="oj-btn-hero-primary"
+              onClick={() => onNavigateToDivision(1)}
+            >
+              <FileText size={17} />
+              <span>{isHi ? 'निःशुल्क कुंडली बनाएं' : 'Create free Kundli'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="oj-btn-hero-secondary"
+              onClick={() => onNavigateToDivision(11)}
+            >
+              <Calendar size={17} />
+              <span>{isHi ? 'पंचांग देखें' : 'View Panchang'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="oj-btn-hero-secondary"
+              onClick={() => onNavigateToDivision(10)}
+            >
+              <Heart size={17} />
+              <span>{isHi ? 'कुंडली मिलान' : 'Check matching'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="oj-btn-hero-secondary"
+              onClick={() => onNavigateToDivision(11)}
+            >
+              <Star size={17} />
+              <span>{isHi ? 'दैनिक राशिफल' : 'Read daily horoscope'}</span>
+            </button>
+          </div>
+
+          {/* Quick Feature Pills Bar */}
+          <div className="oj-quick-pills-row">
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(1)}>
+              {isHi ? 'जन्म कुंडली (Lagna & Chalit)' : 'Birth chart (Kundli)'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(9)}>
+              {isHi ? 'KP कुंडली (KP System)' : 'KP horoscope'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(12)}>
+              {isHi ? 'शिशु नामकरण (Newborn & Namakshar)' : 'Newborn horoscope'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
+              {isHi ? 'गुण मिलान व दोष भंग' : 'Guna Milan with Dosha Bhanga analysis'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
+              {isHi ? 'नक्षत्र मिलान' : 'Nakshatra Matching'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
+              {isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota matching (10 Poruthams)'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
+              {isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(12)}>
+              {isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions (25 Dimensions)'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={onOpenBooklet}>
+              {isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page PDF Report (Free)'}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Quick Birth Entry & Native Profile Card */}
+      <section className="oj-section oj-quick-entry-section">
+        <div className="oj-container">
+          <div className="oj-entry-card">
+            <div className="oj-entry-header">
+              <div>
+                <h3 className="oj-entry-title">
+                  <User size={18} />
+                  {isHi ? 'त्वरित जन्म विवरण प्रविष्टि (Quick Birth Entry)' : 'Quick Birth Details & Instant Horoscope'}
+                </h3>
+                <p className="oj-entry-sub">
+                  {isHi
+                    ? 'जातक का नाम, जन्म दिनांक, समय व स्थान दर्ज करें। तुरंत संपूर्ण कुंडली गणना व फलादेश प्राप्त करें।'
+                    : 'Enter birth date, exact time, and location to generate comprehensive Vedic calculations.'}
+                </p>
+              </div>
+              <div className="oj-profile-switch-inline">
+                <span className="small-text muted">{isHi ? 'सहेजे गए जातक:' : 'Saved Native:'}</span>
+                <select
+                  aria-label="Select Saved Native Profile"
+                  value={activeInput.id}
+                  onChange={(e) => onSelectProfile(e.target.value)}
+                  className="oj-select-profile"
+                >
+                  {profiles.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({formatDateDmy(p.date)} · {p.city})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <form onSubmit={handleGenerateKundli} className="oj-entry-form-grid">
+              <div className="oj-form-group">
+                <label>{isHi ? 'जातक का नाम' : 'Native Name'}</label>
+                <input
+                  type="text"
+                  required
+                  placeholder={isHi ? 'नाम दर्ज करें' : 'Enter full name'}
+                  value={quickForm.name}
+                  onChange={(e) => setQuickForm({ ...quickForm, name: e.target.value })}
+                  className="oj-input"
+                />
+              </div>
+
+              <div className="oj-form-group">
+                <label>{isHi ? 'लिंग' : 'Gender'}</label>
+                <select
+                  value={quickForm.gender}
+                  onChange={(e) => setQuickForm({ ...quickForm, gender: e.target.value as any })}
+                  className="oj-input"
+                >
+                  <option value="male">{isHi ? 'पुरुष (Male)' : 'Male'}</option>
+                  <option value="female">{isHi ? 'स्त्री (Female)' : 'Female'}</option>
+                  <option value="other">{isHi ? 'अन्य (Other)' : 'Other'}</option>
+                </select>
+              </div>
+
+              <div className="oj-form-group">
+                <label>{isHi ? 'जन्म दिनांक (DD-MM-YYYY)' : 'Date of Birth (DD-MM-YYYY)'}</label>
+                <DateDmyInput
+                  value={quickForm.date}
+                  onChange={(d) => setQuickForm({ ...quickForm, date: d })}
+                  className="oj-input"
+                />
+              </div>
+
+              <div className="oj-form-group">
+                <label>{isHi ? 'जन्म समय (HH:MM:SS)' : 'Time of Birth (HH:MM:SS)'}</label>
+                <input
+                  type="time"
+                  step="1"
+                  required
+                  value={quickForm.time.slice(0, 8)}
+                  onChange={(e) => setQuickForm({ ...quickForm, time: e.target.value })}
+                  className="oj-input"
+                />
+              </div>
+
+              <div className="oj-form-group oj-form-group-full">
+                <label>{isHi ? 'जन्म स्थान (शहर/राज्य/देश)' : 'Birth Place (City, State, Country)'}</label>
+                <InlineCityAutocomplete
+                  value={quickForm.city}
+                  country={quickForm.country}
+                  lang={lang}
+                  placeholder={isHi ? 'शहर का नाम खोजें (उदा. Delhi, Mumbai, London)...' : 'Search city or birthplace...'}
+                  onChangeText={(txt) => setQuickForm((prev) => ({ ...prev, city: txt }))}
+                  onSelectCity={handleCitySelect}
+                />
+              </div>
+
+              <div className="oj-form-actions oj-form-group-full">
+                <button type="submit" className="oj-btn-primary">
+                  <FileText size={16} />
+                  <span>{isHi ? 'जन्म कुंडली बनाएं (Open Kundli) →' : 'Generate Janam Kundli →'}</span>
+                </button>
+                <button
+                  type="button"
+                  className="oj-btn-outline"
+                  onClick={() => {
+                    onApplyBirthInput(quickForm);
+                    onOpenBooklet();
+                  }}
+                >
+                  <BookOpen size={16} />
+                  <span>{isHi ? '118-पृष्ठीय बृहत पत्रिका PDF खोलें' : 'Open 118-Page Patrika PDF'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Live Today's Panchang & Transits Bar */}
+      <section className="oj-section oj-live-panchang-section">
+        <div className="oj-container">
+          <div className="oj-panchang-strip">
+            <div className="oj-strip-head">
+              <div className="oj-strip-title">
+                <Clock size={16} />
+                <strong>{isHi ? 'आज का स्थानीय पंचांग एवं ग्रह गोचर' : "Today's Live Panchang & Planetary Transits"}</strong>
+                <span className="oj-badge-city">{activeInput.city || 'New Delhi'} · {formatDateDmy(currentMoment.date)}</span>
+              </div>
+              <button
+                type="button"
+                className="oj-btn-text"
+                onClick={() => onNavigateToDivision(11)}
+              >
+                <span>{isHi ? 'विस्तृत पंचांग खोलें →' : 'View Full Panchang →'}</span>
+              </button>
+            </div>
+
+            <div className="oj-strip-grid">
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'तिथि:' : 'Tithi:'}</span>
+                <span className="oj-val">
+                  {livePanchangChart.panchang.tithi.name} ({livePanchangChart.panchang.tithi.paksha})
+                </span>
+              </div>
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'नक्षत्र:' : 'Nakshatra:'}</span>
+                <span className="oj-val">
+                  {livePanchangChart.panchang.nakshatra.name} (P{livePanchangChart.panchang.nakshatra.pada})
+                </span>
+              </div>
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'योग / करण:' : 'Yoga / Karana:'}</span>
+                <span className="oj-val">
+                  {livePanchangChart.panchang.yoga.name} · {livePanchangChart.panchang.karana.name}
+                </span>
+              </div>
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'सूर्योदय / सूर्यास्त:' : 'Sun Rise / Set:'}</span>
+                <span className="oj-val">{choghadiyaToday.sunrise} · {choghadiyaToday.sunset}</span>
+              </div>
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'राहु काल:' : 'Rahu Kalam:'}</span>
+                <span className="oj-val" style={{ color: 'var(--bad, #b91c1c)' }}>
+                  {livePanchangChart.panchang.rahuKalam || '--'}
+                </span>
+              </div>
+              <div className="oj-strip-item">
+                <span className="oj-label">{isHi ? 'वर्तमान चौघड़िया:' : 'Active Choghadiya:'}</span>
+                <span
+                  className="oj-val"
+                  style={{
+                    color: activeChoghadiya.quality === 'best' || activeChoghadiya.quality === 'good' ? 'var(--good, #15803d)' : 'var(--warn, #b45309)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {isHi ? activeChoghadiya.nameHi : activeChoghadiya.nameEn} ({activeChoghadiya.startTime} - {activeChoghadiya.endTime})
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Service Hubs Grid ("Choose the service you need") */}
+      <section className="oj-section">
+        <div className="oj-container">
+          <div className="oj-section-header">
+            <h2 className="oj-section-title">
+              {isHi ? 'अपनी आवश्यकतानुसार सेवा चुनें (Choose the service you need)' : 'Choose the service you need'}
+            </h2>
+            <p className="oj-section-desc">
+              {isHi
+                ? 'प्रत्येक उपकरण विशिष्ट शास्त्रीय प्रयोजन हेतु निर्मित है। संबंधित सेवा खोलें और प्रामाणिक फलादेश प्राप्त करें।'
+                : 'Each tool below is designed for a specific purpose. Open the relevant service and enter only the details needed for that calculation.'}
+            </p>
+          </div>
+
+          <div className="oj-services-grid">
+            {/* Card 1: Free Janam Kundli */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'सर्वाधिक लोकप्रिय' : 'Most Popular'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'निःशुल्क जन्म कुंडली (Free Janam Kundli)' : 'Free Janam Kundli'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'लग्न, राशि, नक्षत्र, ग्रह स्थिति, षोडशवर्ग (D-1 से D-60) तथा विंशोत्तरी व त्रिभागी दशा विवरण के साथ प्रामाणिक वैदिक कुंडली बनाएं।'
+                  : 'Create a Vedic birth chart with Lagna, Rashi, Nakshatra, planetary positions, divisional charts and Vimshottari Dasha details.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(1)}
+              >
+                <span>{isHi ? 'कुंडली बनाएं →' : 'Create your Kundli →'}</span>
+              </button>
+            </article>
+
+            {/* Card 2: Daily Panchang */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'दैनिक पंचांग' : 'Daily Panchang'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'दैनिक एवं मासिक पंचांग (Daily Panchang)' : 'Daily Panchang'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'तिथि, नक्षत्र, योग, करण, सूर्योदय, सूर्यास्त, राहु काल, चौघड़िया, होरा एवं अपने स्थान हेतु सटीक मुहूर्त समय देखें।'
+                  : 'Check Tithi, Nakshatra, Yoga, Karana, sunrise, sunset, Rahu Kalam and other timings calculated for your selected place.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(11)}
+              >
+                <span>{isHi ? 'पंचांग देखें →' : "View today's Panchang →"}</span>
+              </button>
+            </article>
+
+            {/* Card 3: Marriage Matching */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'विवाह मिलान' : 'Match Making'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'कुंडली मिलान (Marriage Matching)' : 'Marriage Matching'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'अष्टकूट गुण मिलान (36 गुण), दक्षिण भारतीय दश कूट (10 Poruthams) एवं मांगलिक दोष भंग परिहार के साथ दो कुंडलियों की तुलना करें।'
+                  : 'Compare two birth charts using Ashtakoota Guna Milan, South Indian Porutham and other traditional compatibility factors.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(10)}
+              >
+                <span>{isHi ? 'कुंडली मिलान करें →' : 'Compare horoscopes →'}</span>
+              </button>
+            </article>
+
+            {/* Card 4: Daily, Monthly & Yearly Rashifal */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? '12 राशियां' : 'All 12 Signs'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'दैनिक, मासिक व वार्षिक राशिफल' : 'Daily, Monthly & Yearly Rashifal'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'सभी 12 चंद्र राशियों हेतु आज का राशिफल, मासिक मार्गदर्शन एवं 2026-2027 के प्रमुख ग्रह गोचर का विस्तृत फलादेश पढ़ें।'
+                  : 'Read general Moon-sign guidance for all 12 Rashis. These forecasts cover day, month, and major annual transit themes.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(11)}
+              >
+                <span>{isHi ? 'राशिफल पढ़ें →' : 'Read Rashifal →'}</span>
+              </button>
+            </article>
+
+            {/* Card 5: KP Horoscope */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'केपी ज्योतिष' : 'KP System'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'केपी कुंडली (KP Horoscope)' : 'KP Horoscope'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'कृष्णमूर्ति पद्धति (KP) चार्ट, भाव संधि (Cusps), नक्षत्र स्वामी (Star Lords), उप-स्वामी (Sub Lords) एवं कारक ग्रहों का विश्लेषण।'
+                  : 'Generate Krishnamurti Paddhati charts with cusps, star lords, sub-lords, significators and ruling-planet information.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(9)}
+              >
+                <span>{isHi ? 'KP चार्ट बनाएं →' : 'Generate a KP chart →'}</span>
+              </button>
+            </article>
+
+            {/* Card 6: Newborn Horoscope */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'शिशु नामकरण' : 'Newborn Baby'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'नवजात शिशु कुंडली (Newborn Horoscope)' : 'Newborn Horoscope'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'नवजात शिशु की राशि, नक्षत्र, चरण, नामाक्षर, गंडमूल दोष जांच तथा प्रारंभिक जन्म कुंडली विवरण प्राप्त करें।'
+                  : 'Find the baby’s Rashi, Nakshatra, Pada, suggested naming syllables and basic birth-chart details.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(12)}
+              >
+                <span>{isHi ? 'शिशु विवरण देखें →' : 'Check newborn details →'}</span>
+              </button>
+            </article>
+
+            {/* Card 7: Astrology Calculators */}
+            <article className="oj-service-card">
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag">{isHi ? 'कैलकुलेटर' : 'Calculators'}</span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'ज्योतिषीय कैलकुलेटर (Astro Calculators)' : 'Astrology Calculators'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'गोचर, अष्टकवर्ग (SAV/BAV), षड्बल, ग्रह अवस्था, वक्री व अस्त ग्रह, मुहूर्त चेकर एवं चौघड़िया समय का तत्काल अन्वेषण करें।'
+                  : 'Use transit, eclipse, retrograde, Shadbala, Ashtakavarga, Choghadiya, and other practical astrology calculators.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(4)}
+              >
+                <span>{isHi ? 'कैलकुलेटर खोलें →' : 'Browse calculators →'}</span>
+              </button>
+            </article>
+
+            {/* Card 8: Sambhavit Falkathan (Probable Predictions) */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
+                  {isHi ? '25 जीवन आयाम' : '25 Life Dimensions'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'संभावित फलकथन (Probable Predictions)' : 'Probable Predictions'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'समस्त कुंडलियों का संश्लेषित फलादेश: शिक्षा, आजीविका/सरकारी नौकरी, विवाह, संतान/IVF, आयु, सर्जरी, शारीरिक चिन्ह व धन योग।'
+                  : 'Point-wise concrete life predictions across 25 vital dimensions: Education, Career/Govt Job, Marriage, Progeny, Longevity, Bandhana, Surgery, Wealth vs Daridrya.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigateToDivision(12)}
+              >
+                <span>{isHi ? 'संभावित फलकथन देखें →' : 'View Falkathan →'}</span>
+              </button>
+            </article>
+
+            {/* Card 9: Comprehensive 118-Page Patrika PDF (100% Free) */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid var(--good, #15803d)' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: 'var(--good, #15803d)', color: '#fff' }}>
+                  {isHi ? '100% निःशुल्क (Free)' : '100% Free PDF'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'बृहत जन्म पत्रिका (118-Page PDF Report)' : 'Complete Janmakundali (118-Page PDF)'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'अपनी जन्म कुंडली का गहनतम अध्ययन। 12 भाव फल, भावेश फल, सर्वाष्टकवर्ग, महादशा-अंतर्दशा एवं शास्त्रीय उपाय 118-पृष्ठीय संपूर्ण पीडीएफ में। पूर्णतः निःशुल्क!'
+                  : 'Explore career, relationships, lifelong dashas, SAV 12 houses, and traditional remedies in one detailed 118-page PDF report. Completely free of charge.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={onOpenBooklet}
+              >
+                <span>{isHi ? 'निःशुल्क 118-पृष्ठीय पत्रिका खोलें →' : 'Open Free 118-Page Report →'}</span>
+              </button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 12 Zodiac Signs Rashifal Section */}
+      <section className="oj-section oj-rashifal-preview-section">
+        <div className="oj-container">
+          <div className="oj-section-header">
+            <h2 className="oj-section-title">
+              {isHi ? '12 राशियों का राशिफल (Rashifal in Your Language)' : 'Rashifal in your preferred language'}
+            </h2>
+            <p className="oj-section-desc">
+              {isHi
+                ? 'अपनी चंद्र राशि का चयन कर आज का फलादेश एवं 2026 वार्षिक गोचर फल देखें।'
+                : 'Select an available Moon-sign forecast below for daily trends and 2026 yearly transit themes.'}
+            </p>
+          </div>
+
+          <div className="oj-rashi-selector-strip">
+            {rashifalReport.map((r, idx) => (
+              <button
+                key={r.signIndex}
+                type="button"
+                className={`oj-rashi-pill ${selectedRashiIdx === idx ? 'is-active' : ''}`}
+                onClick={() => setSelectedRashiIdx(idx)}
+              >
+                <span className="oj-rashi-name">{trSign(r.signIndex, lang)}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Active Selected Rashi Detail Card */}
+          {activeRashiItem && (
+            <div className="oj-rashi-detail-card">
+              <div className="oj-rashi-card-top">
+                <div>
+                  <h3 className="oj-rashi-heading">
+                    {trSign(activeRashiItem.signIndex, lang)}{' '}
+                    {isHi ? 'राशि फलादेश' : 'Moon-Sign Guidance'}
+                  </h3>
+                  <span className="oj-rashi-sub">
+                    {isHi ? 'स्वामी ग्रह:' : 'Ruling Planet:'}{' '}
+                    <strong>{trPlanet(SIGNS[activeRashiItem.signIndex].lord, lang)}</strong>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="oj-btn-outline btn-sm"
+                  onClick={() => onNavigateToDivision(11)}
+                >
+                  {isHi ? 'संपूर्ण 12 राशियों का वार्षिक फल →' : 'View Full Rashifal Module →'}
+                </button>
+              </div>
+
+              <div className="oj-rashi-content-grid">
+                <div className="oj-rashi-box">
+                  <h4 className="oj-box-title">{isHi ? 'आज का फलादेश (Today)' : "Today's Guidance"}</h4>
+                  <p>{isHi ? activeRashiItem.dailyHi : activeRashiItem.dailyEn}</p>
+                </div>
+                <div className="oj-rashi-box">
+                  <h4 className="oj-box-title">{isHi ? 'मासिक फलादेश (Monthly Outlook)' : 'Monthly Outlook'}</h4>
+                  <p>{isHi ? activeRashiItem.monthlyHi : activeRashiItem.monthlyEn}</p>
+                </div>
+                <div className="oj-rashi-box">
+                  <h4 className="oj-box-title">{isHi ? '2026 वार्षिक गोचर थीम (Yearly Theme)' : '2026 Yearly Transit Theme'}</h4>
+                  <p>{isHi ? activeRashiItem.yearlyHi : activeRashiItem.yearlyEn}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 6. Related Free Astrology Services Section */}
+      <section className="oj-section oj-related-services-section">
+        <div className="oj-container">
+          <div className="oj-section-header">
+            <h2 className="oj-section-title">
+              {isHi ? 'लोकप्रिय ज्योतिषीय सेवाएं एवं कैलकुलेटर' : 'Related Free Astrology Services'}
+            </h2>
+          </div>
+
+          <div className="oj-popular-links-grid">
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(1)}>
+              <strong>{isHi ? 'वैदिक जन्म कुंडली' : 'Vedic Horoscope'}</strong>
+              <span className="oj-badge-popular">Popular</span>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(9)}>
+              <strong>{isHi ? 'केपी ज्योतिष (KP Horoscope)' : 'KP Horoscope'}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'मासिक पंचांग कैलेंडर' : 'Monthly Panchang Calendar'}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+              <strong>{isHi ? 'गुण मिलान व दोष भंग' : 'Guna Milan with Dosha Bhanga'}</strong>
+              <span className="oj-badge-popular">Popular</span>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+              <strong>{isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}</strong>
+              <span className="oj-badge-popular">Popular</span>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+              <strong>{isHi ? 'अनुकूल विवाह नक्षत्र' : 'Suitable Marriage Nakshatras'}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'आज का पंचांग' : "Today's Panchang"}</strong>
+              <span className="oj-badge-popular">Popular</span>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'आज के होरा समय (Hora)' : "Today's Hora Times"}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'आज का चौघड़िया (Choghadiya)' : "Today's Choghadiya Times"}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'आज के शुभ मुहूर्त' : "Today's Muhurta Times"}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+              <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
+            </div>
+            <div className="oj-popular-item" onClick={() => onNavigateToDivision(12)}>
+              <strong>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Sambhavit Falkathan (25 Dim)'}</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. How Calculations Work & About OnlineJyotish */}
+      <section className="oj-section oj-info-section">
+        <div className="oj-container">
+          <div className="oj-info-grid">
+            <div className="oj-info-box">
+              <h3 className="oj-info-heading">
+                {isHi ? 'खगोलीय गणनाएं एवं सिद्धांत (Planetary Calculations)' : 'How the calculations work'}
+              </h3>
+              <p>
+                {isHi
+                  ? 'समस्त ग्रह स्थितियां एवं काल गणनाएं उच्च-सटीक स्विस एफिमरिस (Swiss Ephemeris) एवं लाहिरी अयनांश (Lahiri Ayanamsha) पर आधारित हैं। द्रिक सिद्धांत, पराशरी होरा शास्त्र एवं जैमिनी सूत्रों के अनुसार अक्षांश व देशांतर की शुद्धता से तात्कालिक भाव एवं दशाएं संगणित की जाती हैं।'
+                  : 'Planet positions and timing calculations use high-precision Swiss Ephemeris data with Lahiri Ayanamsha. Your date, time, location and time zone directly determine the calculated Ascendant, house cusps, and planetary periods.'}
+              </p>
+            </div>
+
+            <div className="oj-info-box">
+              <h3 className="oj-info-heading">
+                {isHi ? 'मार्गदर्शन एवं नैतिक नियम (Guidance & Ethics)' : 'Predictions are traditional guidance'}
+              </h3>
+              <p>
+                {isHi
+                  ? 'राशिफल एवं कुंडली फलादेश पारंपरिक ज्योतिषीय प्रवृत्तियों और संभावनाओं का निरूपण करते हैं। जीवन के महत्वपूर्ण निर्णयों, स्वास्थ्य, चिकित्सा, वित्त एवं विधिक मामलों में जातक का स्वविवेक, पुरुषार्थ एवं योग्य विशेषज्ञों का परामर्श सर्वोपरि रहता है।'
+                  : 'Horoscope interpretations describe traditional astrological tendencies to support mindful reflection. They should always be considered alongside your circumstances, personal effort, and qualified professional advice.'}
+              </p>
+            </div>
+
+            <div className="oj-info-box">
+              <h3 className="oj-info-heading">
+                {isHi ? 'शून्य शुल्क आश्वासन (100% Free Guarantee)' : 'Zero Paid Barrier Guarantee'}
+              </h3>
+              <p>
+                {isHi
+                  ? 'व्यावसायिक ज्योतिष पोर्टलों के विपरीत, इस सॉफ्टवेयर में जन्म कुंडली, 12 भाग वर्कस्टेशन, संभावित फलकथन एवं 118-पृष्ठीय संपूर्ण बृहत पत्रिका पीडीएफ सभी उपयोगकर्ताओं हेतु 100% निःशुल्क हैं। किसी भी गणना या रिपोर्ट हेतु कोई शुल्क देय नहीं है।'
+                  : 'Unlike commercial platforms, all tools, 12-Division Workstation calculations, Sambhavit Falkathan, and 118-page comprehensive Patrika reports in this software are 100% free with no paid barriers or hidden costs.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. OnlineJyotish Portal Footer */}
+      <footer className="oj-site-footer">
+        <div className="oj-container">
+          <div className="oj-footer-top">
+            <div className="oj-footer-brand">
+              <span className="oj-om-symbol-small" aria-hidden="true">ॐ</span>
+              <span className="oj-footer-title">OnlineJyotish.com</span>
+              <p className="oj-footer-tagline">
+                {isHi ? 'अपनी भाषा में अपना भविष्य जानें · 2004 से आपकी सेवा में' : 'Know your future in your language · Serving you since 2004.'}
+              </p>
+            </div>
+
+            <div className="oj-footer-search-wrap">
+              <input
+                type="text"
+                placeholder={isHi ? 'उपकरण, पंचांग, या विषय खोजें...' : 'Search tools, festivals, topics...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="oj-footer-search-input"
+              />
+              <button
+                type="button"
+                className="oj-footer-search-btn"
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    onNavigateToDivision(1);
+                  }
+                }}
+              >
+                <Search size={14} />
+                <span>{isHi ? 'खोजें' : 'Search'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="oj-footer-links-grid">
+            <div className="oj-footer-col">
+              <h4>{isHi ? 'निःशुल्क सेवाएं' : 'Free Tools & Kundli'}</h4>
+              <ul>
+                <li><button type="button" onClick={() => onNavigateToDivision(1)}>{isHi ? 'वैदिक जन्म कुंडली (D-1)' : 'Vedic Horoscope (D-1)'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(3)}>{isHi ? 'षोडशवर्ग कुंडलियां (D1-D60)' : 'Shodashavargas (D1-D60)'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(6)}>{isHi ? 'विंशोत्तरी व त्रिभागी दशा' : 'Vimshottari & Tribhagi Dasha'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(9)}>{isHi ? 'केपी पद्धति कुंडली' : 'KP System Horoscope'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(12)}>{isHi ? 'शिशु नामकरण व नामाक्षर' : 'Newborn Baby Naming'}</button></li>
+              </ul>
+            </div>
+
+            <div className="oj-footer-col">
+              <h4>{isHi ? 'पंचांग एवं पर्व' : 'Panchang & Festivals'}</h4>
+              <ul>
+                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'दैनिक पंचांग व राहु काल' : 'Daily Panchang & Rahu Kalam'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'मासिक पंचांग कैलेंडर' : 'Monthly Panchang Calendar'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'हिंदू पर्व व व्रत सूची' : 'Hindu Festivals & Vrats'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'चौघड़िया मुहूर्त (दिन व रात)' : 'Choghadiya Timings'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'होरा चक्र (Planetary Hours)' : 'Planetary Hora Timings'}</button></li>
+              </ul>
+            </div>
+
+            <div className="oj-footer-col">
+              <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
+              <ul>
+                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'कुंडली दोष व शांति उपाय' : 'Kundali Doshas & Remedies'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(12)}>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Sambhavit Falkathan (25 Dim)'}</button></li>
+              </ul>
+            </div>
+
+            <div className="oj-footer-col">
+              <h4>{isHi ? 'बृहत पत्रिका व मिलान' : 'Patrika Reports & Matching'}</h4>
+              <ul>
+                <li><button type="button" onClick={onOpenBooklet}>{isHi ? '118-पृष्ठीय बृहत पत्रिका (निःशुल्क)' : '118-Page Patrika Booklet (Free)'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(10)}>{isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(10)}>{isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota Matching'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(4)}>{isHi ? 'षड्बल व अष्टकवर्ग बल' : 'Shadbala & Planetary Strengths'}</button></li>
+                <li><button type="button" onClick={() => onNavigateToDivision(5)}>{isHi ? 'विशेष चक्र (सुदर्शन, सर्वतोभद्र)' : 'Special Vedic Chakras'}</button></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="oj-footer-bottom">
+            <p>
+              © {new Date().getFullYear()} OnlineJyotish · Om Sri Sai Jyotisha Vidyapeetham. All rights reserved.
+              <br />
+              {isHi
+                ? 'गणनाएं द्रिक सिद्धांत, स्विस एफिमरिस एवं प्रामाणिक पराशरी/जैमिनी सिद्धांतों पर आधारित हैं। सभी सेवाएं 100% निःशुल्क हैं।'
+                : 'Astronomical calculations computed via Drik Siddhanta and Swiss Ephemeris. All reports and tools are 100% free of charge.'}
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
