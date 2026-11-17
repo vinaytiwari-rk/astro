@@ -1869,7 +1869,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
         </div>
       )}
 
-      {/* 10. DIVISION 8: DEEP COMPREHENSIVE PREDICTIONS & REMEDIES (118-PAGE REFERENCE PARITY) */}
+      {/* 10. DIVISION 8: DEEP COMPREHENSIVE PREDICTIONS & REMEDIES (BIRTH REPORT REFERENCE PARITY) */}
       {activeDivision === 8 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Sub-tab Navigation */}

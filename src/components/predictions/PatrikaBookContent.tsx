@@ -1301,7 +1301,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
             </div>
           </section>
 
-          {/* CH 28: MASTER HOROSCOPE PREDICTIONS (118-PAGE REFERENCE PARITY) */}
+          {/* CH 28: MASTER HOROSCOPE PREDICTIONS (COMPLETE BIRTH REPORT PARITY) */}
           <div className="print-page-break" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">

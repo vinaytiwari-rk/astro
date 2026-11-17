@@ -46,7 +46,6 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
   const [transitDate, setTransitDate] = useState<string>(todayStr);
   const [transitTime, setTransitTime] = useState<string>('12:00');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<'wheel' | 'side_by_side'>('wheel');
   const [filterAspect, setFilterAspect] = useState<string>('all');
 
   // Compute live transit chart
@@ -206,7 +205,6 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
   const innerR = 135;
 
   const getCoordinates = (deg: number, radius: number) => {
-    // 0 deg Aries at 3 o'clock, counter-clockwise
     const rad = ((360 - deg) * Math.PI) / 180;
     return {
       x: center + radius * Math.cos(rad),
@@ -215,33 +213,53 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
   };
 
   return (
-    <div className="dual-transit-wheel-view space-y-6 max-w-6xl mx-auto px-4 py-6">
+    <div className="oj-page-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-900 via-stone-900 to-amber-950 text-white rounded-2xl p-6 shadow-xl border border-amber-600/30">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #78350f 0%, #1c1917 50%, #0c0a09 100%)',
+          color: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+          border: '1px solid rgba(217, 119, 6, 0.3)',
+          marginBottom: '20px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 text-xs font-semibold uppercase tracking-wider mb-2 border border-amber-500/30">
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '4px 10px',
+                borderRadius: '9999px',
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: '#fde68a',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                marginBottom: '8px',
+              }}
+            >
               Interactive Live Dual Transit Simulator
             </div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-amber-100">
+            <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#fef3c7' }}>
               द्वि-चक्र गोचर सिम्युलेटर (Double Transit Wheel)
             </h1>
-            <p className="text-amber-200/90 text-xs sm:text-sm mt-1 max-w-2xl font-sans">
+            <p style={{ margin: 0, fontSize: '13px', color: 'rgba(254, 243, 199, 0.85)', maxWidth: '680px', lineHeight: '1.5' }}>
               जन्म कुंडली (आंतरिक चक्र) पर वर्तमान गोचर ग्रहों (बाह्य चक्र) की तात्कालिक स्थिति, दृष्टि संबंध (Aspect Rays) एवं सटीक डिग्री अंतर का जीवंत विश्लेषण।
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setViewMode(viewMode === 'wheel' ? 'side_by_side' : 'wheel')}
-              className="btn btn-secondary"
-            >
-              {viewMode === 'wheel' ? 'साइड-बाय-साइड चक्र' : 'डबल व्हील चक्र'}
-            </button>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {onNavigate && (
               <button
+                type="button"
                 onClick={() => onNavigate('kundli')}
-                className="btn btn-primary"
+                className="oj-action-btn primary"
               >
                 लग्न चक्र
               </button>
@@ -249,60 +267,91 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
           </div>
         </div>
 
-        {/* Time Travel Controls */}
-        <div className="mt-6 pt-4 border-t border-amber-700/40 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-amber-300 font-semibold">गोचर दिनांक:</span>
+        {/* Time Travel Controls Bar */}
+        <div
+          style={{
+            marginTop: '20px',
+            paddingTop: '16px',
+            borderTop: '1px solid rgba(245, 158, 11, 0.2)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            fontSize: '12.5px',
+          }}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#fde68a', fontWeight: 'bold' }}>गोचर दिनांक:</span>
             <input
               type="date"
               value={transitDate}
               onChange={(e) => setTransitDate(e.target.value)}
-              className="bg-black/40 border border-amber-500/30 rounded-lg px-2.5 py-1 text-white font-mono"
+              className="oj-select-pill"
+              style={{ background: 'rgba(0, 0, 0, 0.4)', color: '#ffffff', borderColor: 'rgba(245, 158, 11, 0.3)' }}
             />
             <input
               type="time"
               value={transitTime}
               onChange={(e) => setTransitTime(e.target.value)}
-              className="bg-black/40 border border-amber-500/30 rounded-lg px-2 py-1 text-white font-mono"
+              className="oj-select-pill"
+              style={{ background: 'rgba(0, 0, 0, 0.4)', color: '#ffffff', borderColor: 'rgba(245, 158, 11, 0.3)' }}
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px' }}>
             <button
+              type="button"
               onClick={() => stepDate(-1)}
-              className="px-2.5 py-1 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-200 font-semibold border border-stone-700"
+              className="oj-tab-pill"
+              style={{ padding: '6px 12px', fontSize: '11.5px' }}
             >
               -1 दिन
             </button>
             <button
+              type="button"
               onClick={() => stepDate(1)}
-              className="px-2.5 py-1 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-200 font-semibold border border-stone-700"
+              className="oj-tab-pill"
+              style={{ padding: '6px 12px', fontSize: '11.5px' }}
             >
               +1 दिन
             </button>
             <button
+              type="button"
               onClick={() => stepMonth(-1)}
-              className="px-2.5 py-1 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-200 font-semibold border border-stone-700"
+              className="oj-tab-pill"
+              style={{ padding: '6px 12px', fontSize: '11.5px' }}
             >
               -1 माह
             </button>
             <button
+              type="button"
               onClick={() => stepMonth(1)}
-              className="px-2.5 py-1 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-200 font-semibold border border-stone-700"
+              className="oj-tab-pill"
+              style={{ padding: '6px 12px', fontSize: '11.5px' }}
             >
               +1 माह
             </button>
             <button
+              type="button"
               onClick={resetToToday}
-              className="px-3 py-1 rounded-full bg-amber-600 hover:bg-amber-500 text-white font-bold"
+              className="btn btn-primary"
+              style={{ padding: '6px 14px', fontSize: '11.5px' }}
             >
               वर्तमान (Now)
             </button>
             <button
+              type="button"
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`px-3 py-1 rounded-full font-bold ${
-                isPlaying ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
-              }`}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '9999px',
+                fontSize: '11.5px',
+                fontWeight: 'bold',
+                background: isPlaying ? '#dc2626' : '#16a34a',
+                color: '#ffffff',
+                boxShadow: isPlaying ? '0 2px 8px rgba(220, 38, 38, 0.4)' : '0 2px 8px rgba(22, 163, 74, 0.4)',
+              }}
             >
               {isPlaying ? 'रोकें (Pause)' : 'ऑटो-प्ले (Play)'}
             </button>
@@ -310,33 +359,33 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Dual Wheel Interactive SVG */}
-        <div className="lg:col-span-7 bg-white dark:bg-stone-900 rounded-2xl p-4 sm:p-6 shadow-md border border-stone-200 dark:border-stone-800 flex flex-col items-center">
-          <div className="flex justify-between items-center w-full mb-3 text-xs">
-            <span className="font-bold text-stone-700 dark:text-stone-300">
+      {/* Main Wheel & Aspects Content */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', alignItems: 'start' }}>
+        {/* Left: Dual Wheel SVG */}
+        <div className="oj-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '12px', fontSize: '12px' }}>
+            <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>
               बाहरी रिंग: गोचर ग्रह ({transitDate}) | आंतरिक रिंग: जन्म कुंडली
             </span>
-            <div className="flex gap-2">
-              <span className="inline-flex items-center gap-1 text-[11px] text-red-600 font-medium">
-                <span className="w-2 h-2 rounded-full bg-red-600"></span> युति (0°)
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#dc2626', fontWeight: 'bold' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#dc2626' }}></span> युति (0°)
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-600"></span> त्रिकोण (120°)
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#16a34a', fontWeight: 'bold' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#16a34a' }}></span> त्रिकोण (120°)
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] text-orange-600 font-medium">
-                <span className="w-2 h-2 rounded-full bg-orange-600"></span> दृष्टि (180°)
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#ea580c', fontWeight: 'bold' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ea580c' }}></span> दृष्टि (180°)
               </span>
             </div>
           </div>
 
-          <div className="w-full flex justify-center overflow-x-auto">
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
             <svg
               width={size}
               height={size}
               viewBox={`0 0 ${size} ${size}`}
-              className="max-w-full h-auto select-none"
+              style={{ maxWidth: '100%', height: 'auto', userSelect: 'none' }}
             >
               {/* Outer boundary circle */}
               <circle
@@ -518,65 +567,71 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
         </div>
 
         {/* Right: Live Transit Hits & Aspects Inspector */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-5 shadow-md border border-stone-200 dark:border-stone-800">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-serif font-bold text-lg text-amber-900 dark:text-amber-400">
-                सक्रिय गोचर दृष्टि व युति (Live Aspect Hits)
-              </h2>
-              <span className="text-xs bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold">
-                {aspectHits.length} सक्रिय संबंध
-              </span>
-            </div>
+        <div className="oj-card" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h2 style={{ margin: 0, fontFamily: 'Cinzel, Playfair Display, serif', fontWeight: 'bold', fontSize: '17px', color: '#b45309' }}>
+              सक्रिय गोचर दृष्टि व युति (Live Aspect Hits)
+            </h2>
+            <span style={{ fontSize: '11px', background: 'rgba(217, 119, 6, 0.12)', color: '#b45309', padding: '3px 8px', borderRadius: '9999px', fontWeight: 'bold' }}>
+              {aspectHits.length} सक्रिय संबंध
+            </span>
+          </div>
 
-            {/* Filter */}
-            <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1 text-xs">
-              {['all', 'Conjunction', 'Trine', 'Opposition', 'Square', 'Sextile'].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilterAspect(f)}
-                  className={`px-2 py-0.5 rounded-full font-semibold transition-all ${
-                    filterAspect === f
-                      ? 'bg-amber-600 text-white'
-                      : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
-                  }`}
+          {/* Filter Pills */}
+          <div className="oj-tab-pills-row" style={{ marginBottom: '12px' }}>
+            {['all', 'Conjunction', 'Trine', 'Opposition', 'Square', 'Sextile'].map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilterAspect(f)}
+                className={`oj-tab-pill ${filterAspect === f ? 'is-active' : ''}`}
+                style={{ padding: '4px 10px', fontSize: '11.5px' }}
+              >
+                {f === 'all' ? 'समस्त' : f}
+              </button>
+            ))}
+          </div>
+
+          {/* Aspect Hits List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '460px', overflowY: 'auto', paddingRight: '4px' }}>
+            {filteredHits.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '12px', fontStyle: 'italic' }}>
+                इस समय इस श्रेणी का कोई निकट दृष्टि संबंध नहीं है।
+              </div>
+            ) : (
+              filteredHits.map((hit, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-elevated)',
+                    fontSize: '12px',
+                  }}
                 >
-                  {f === 'all' ? 'समस्त' : f}
-                </button>
-              ))}
-            </div>
-
-            {/* Aspect Hits List */}
-            <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-              {filteredHits.length === 0 ? (
-                <div className="text-center py-8 text-stone-500 text-xs italic">
-                  इस समय इस श्रेणी का कोई निकट दृष्टि संबंध नहीं है।
-                </div>
-              ) : (
-                filteredHits.map((hit, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-800/40 text-xs"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
-                        <span
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: hit.aspectColor }}
-                        ></span>
-                        गोचर {HINDI_PLANETS[hit.transitPlanet] || hit.transitPlanet} → जन्म {HINDI_PLANETS[hit.natalPlanet] || hit.natalPlanet}
-                      </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
-                        {hit.aspectType} (अंतर: {hit.orb.toFixed(1)}°)
-                      </span>
-                    </div>
-                    <p className="text-stone-600 dark:text-stone-400 text-[11.5px] mt-1 leading-snug">
-                      {hit.vedicImpactHi}
-                    </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span
+                        style={{
+                          width: '9px',
+                          height: '9px',
+                          borderRadius: '50%',
+                          backgroundColor: hit.aspectColor,
+                        }}
+                      />
+                      गोचर {HINDI_PLANETS[hit.transitPlanet] || hit.transitPlanet} → जन्म {HINDI_PLANETS[hit.natalPlanet] || hit.natalPlanet}
+                    </span>
+                    <span style={{ fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '9999px', background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>
+                      {hit.aspectType} ({hit.orb.toFixed(1)}°)
+                    </span>
                   </div>
-                ))
-              )}
-            </div>
+                  <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '11.5px', lineHeight: '1.4' }}>
+                    {hit.vedicImpactHi}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

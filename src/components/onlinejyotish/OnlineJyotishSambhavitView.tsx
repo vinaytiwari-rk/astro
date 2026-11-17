@@ -142,7 +142,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         <div className="oj-page-actions-bar no-print">
           <button type="button" className="oj-action-btn primary" onClick={onOpenBooklet}>
             <Download size={14} />
-            <span>{isHi ? 'संपूर्ण 118-पृष्ठ पीडीएफ डाउनलोड करें' : 'Download Complete 118-Page PDF'}</span>
+            <span>{isHi ? 'संपूर्ण जन्म पत्रिका (Birth Report) डाउनलोड करें' : 'Download Complete Birth Report (PDF)'}</span>
           </button>
           <button type="button" className="oj-action-btn secondary" onClick={() => window.print()}>
             <Printer size={14} />

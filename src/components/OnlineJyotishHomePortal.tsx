@@ -192,8 +192,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
           </h1>
           <p className="oj-hero-subtitle">
             {isHi
-              ? 'जन्म कुंडली बनाएं, स्थानीय पंचांग देखें, कुंडली मिलान करें, दैनिक व वार्षिक राशिफल पढ़ें और विशिष्ट ज्योतिषीय कैलकुलेटरों का उपयोग करें। हमारे सॉफ्टवेयर में समस्त गणनाएं, भविष्यवाणियां एवं 118-पृष्ठीय बृहत पत्रिका पूर्णतः निःशुल्क हैं।'
-              : 'Create a Janam Kundli, check your local Panchang, compare horoscopes, read Rashifal and use specialist astrology calculators. 100% free calculators and complete 118-page PDF reports, with no registration required.'}
+              ? 'जन्म कुंडली बनाएं, स्थानीय पंचांग देखें, कुंडली मिलान करें, दैनिक व वार्षिक राशिफल पढ़ें और विशिष्ट ज्योतिषीय कैलकुलेटरों का उपयोग करें। हमारे सॉफ्टवेयर में समस्त गणनाएं, भविष्यवाणियां एवं संपूर्ण जन्म पत्रिका (Birth Report) पूर्णतः निःशुल्क हैं।'
+              : 'Create a Janam Kundli, check your local Panchang, compare horoscopes, read Rashifal and use specialist astrology calculators. 100% free calculators and complete Birth Report PDF documents, with no registration required.'}
           </p>
 
           {/* 4 Hero Action Buttons */}
@@ -259,7 +259,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               {isHi ? 'संभावित फलकथन (50 आयाम)' : 'Probable Predictions (50 Dimensions)'}
             </button>
             <button type="button" className="oj-link-pill" onClick={onOpenBooklet}>
-              {isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page PDF Report (Free)'}
+              {isHi ? 'जन्म पत्रिका PDF (निःशुल्क)' : 'Birth Report PDF (Free)'}
             </button>
           </div>
         </div>
@@ -371,7 +371,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                   }}
                 >
                   <BookOpen size={16} />
-                  <span>{isHi ? '118-पृष्ठीय बृहत पत्रिका PDF खोलें' : 'Open 118-Page Patrika PDF'}</span>
+                  <span>{isHi ? 'संपूर्ण जन्म पत्रिका PDF खोलें' : 'Open Birth Report (जन्म पत्रिका)'}</span>
                 </button>
               </div>
             </form>
@@ -621,25 +621,25 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </button>
             </article>
 
-            {/* Card 9: Comprehensive 118-Page Patrika PDF (100% Free) */}
+            {/* Card 9: Comprehensive Birth Report (जन्म पत्रिका) (100% Free) */}
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--good, #15803d)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--good, #15803d)', color: '#fff' }}>
                   {isHi ? '100% निःशुल्क (Free)' : '100% Free PDF'}
                 </span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'बृहत जन्म पत्रिका (118-Page PDF Report)' : 'Complete Janmakundali (118-Page PDF)'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'बृहत जन्म पत्रिका (Birth Report (PDF))' : 'Complete Janmakundali (Birth Report)'}</h3>
               <p className="oj-card-text">
                 {isHi
-                  ? 'अपनी जन्म कुंडली का गहनतम अध्ययन। 12 भाव फल, भावेश फल, सर्वाष्टकवर्ग, महादशा-अंतर्दशा एवं शास्त्रीय उपाय 118-पृष्ठीय संपूर्ण पीडीएफ में। पूर्णतः निःशुल्क!'
-                  : 'Explore career, relationships, lifelong dashas, SAV 12 houses, and traditional remedies in one detailed 118-page PDF report. Completely free of charge.'}
+                  ? 'अपनी जन्म कुंडली का गहनतम अध्ययन। 12 भाव फल, भावेश फल, सर्वाष्टकवर्ग, महादशा-अंतर्दशा एवं शास्त्रीय उपाय संपूर्ण जन्म पत्रिका पीडीएफ में। पूर्णतः निःशुल्क!'
+                  : 'Explore career, relationships, lifelong dashas, SAV 12 houses, and traditional remedies in one detailed Birth Report PDF. Completely free of charge.'}
               </p>
               <button
                 type="button"
                 className="oj-card-link-btn"
                 onClick={onOpenBooklet}
               >
-                <span>{isHi ? 'निःशुल्क 118-पृष्ठीय पत्रिका खोलें →' : 'Open Free 118-Page Report →'}</span>
+                <span>{isHi ? 'निःशुल्क जन्म पत्रिका खोलें →' : 'Open Free Birth Report →'}</span>
               </button>
             </article>
 
@@ -1021,8 +1021,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </h3>
               <p>
                 {isHi
-                  ? 'व्यावसायिक ज्योतिष पोर्टलों के विपरीत, इस सॉफ्टवेयर में जन्म कुंडली, 12 भाग वर्कस्टेशन, संभावित फलकथन एवं 118-पृष्ठीय संपूर्ण बृहत पत्रिका पीडीएफ सभी उपयोगकर्ताओं हेतु 100% निःशुल्क हैं। किसी भी गणना या रिपोर्ट हेतु कोई शुल्क देय नहीं है।'
-                  : 'Unlike commercial platforms, all tools, 12-Division Workstation calculations, Sambhavit Falkathan, and 118-page comprehensive Patrika reports in this software are 100% free with no paid barriers or hidden costs.'}
+                  ? 'व्यावसायिक ज्योतिष पोर्टलों के विपरीत, इस सॉफ्टवेयर में जन्म कुंडली, 12 भाग वर्कस्टेशन, संभावित फलकथन एवं संपूर्ण जन्म पत्रिका (Birth Report) पीडीएफ सभी उपयोगकर्ताओं हेतु 100% निःशुल्क हैं। किसी भी गणना या रिपोर्ट हेतु कोई शुल्क देय नहीं है।'
+                  : 'Unlike commercial platforms, all tools, 12-Division Workstation calculations, Sambhavit Falkathan, and comprehensive Birth Reports in this software are 100% free with no paid barriers or hidden costs.'}
               </p>
             </div>
           </div>
@@ -1101,7 +1101,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'बृहत पत्रिका व टूल्स' : 'Patrika Reports & Tools'}</h4>
               <ul>
-                <li><button type="button" onClick={onOpenBooklet}>{isHi ? '118-पृष्ठीय बृहत पत्रिका (निःशुल्क)' : '118-Page Patrika Booklet (Free)'}</button></li>
+                <li><button type="button" onClick={onOpenBooklet}>{isHi ? 'संपूर्ण जन्म पत्रिका (निःशुल्क)' : 'Birth Report Booklet (Free)'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('shadbala')}>{isHi ? 'षड्बल व ग्रह बल' : 'Shadbala & Planetary Strengths'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('marriage-matching')}>{isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota Matching'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('workstation')}>{isHi ? '12-भाग विस्तृत वर्कस्टेशन' : '12-Division Workstation'}</button></li>
@@ -1114,8 +1114,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               © {new Date().getFullYear()} AV Astro Vibe. All rights reserved.
               <br />
               {isHi
-                ? 'गणनाएं द्रिक सिद्धांत, स्विस एफिमरिस एवं प्रामाणिक पराशरी/जैमिनी सिद्धांतों पर आधारित हैं। 118 पृष्ठीय पत्रिका एवं समस्त सेवाएं 100% निःशुल्क हैं।'
-                : 'Astronomical calculations computed via Drik Siddhanta and Swiss Ephemeris. All 118-page PDF reports and tools are 100% free of charge.'}
+                ? 'गणनाएं द्रिक सिद्धांत, स्विस एफिमरिस एवं प्रामाणिक पराशरी/जैमिनी सिद्धांतों पर आधारित हैं। संपूर्ण जन्म पत्रिका एवं समस्त सेवाएं 100% निःशुल्क हैं।'
+                : 'Astronomical calculations computed via Drik Siddhanta and Swiss Ephemeris. All Birth Report PDFs and tools are 100% free of charge.'}
             </p>
           </div>
         </div>

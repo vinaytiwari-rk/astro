@@ -163,10 +163,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenBooklet}
-            title={isHi ? '118-पृष्ठीय बृहत पत्रिका PDF (100% निःशुल्क)' : '118-Page Patrika PDF (100% Free)'}
+            title={isHi ? 'जन्म पत्रिका PDF (100% निःशुल्क)' : 'Birth Report PDF (100% Free)'}
           >
             <FileText size={14} />
-            <span className="hide-on-mobile">{isHi ? '118P पत्रिका' : '118P PDF'}</span>
+            <span className="hide-on-mobile">{isHi ? 'जन्म पत्रिका' : 'Birth Report'}</span>
           </button>
 
           {/* Settings */}
@@ -414,7 +414,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               style={{ padding: '5px 12px', fontSize: '12px' }}
             >
               <FileText size={13} />
-              <span>{isHi ? '118P पत्रिका (निःशुल्क)' : '118P Report (Free)'}</span>
+              <span>{isHi ? 'जन्म पत्रिका (निःशुल्क)' : 'Birth Report (Free)'}</span>
             </button>
           </div>
         </div>

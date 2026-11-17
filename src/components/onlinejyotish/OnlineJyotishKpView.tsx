@@ -64,7 +64,7 @@ export const OnlineJyotishKpView: React.FC<OnlineJyotishKpViewProps> = ({
         <div className="oj-page-actions-bar">
           <button type="button" className="oj-action-btn primary" onClick={onOpenBooklet}>
             <Download size={14} />
-            <span>{isHi ? '118-पृष्ठीय पत्रिका डाउनलोड' : '118-Page Patrika PDF'}</span>
+            <span>{isHi ? 'जन्म पत्रिका डाउनलोड' : 'Birth Report (जन्म पत्रिका)'}</span>
           </button>
           <button type="button" className="oj-action-btn secondary" onClick={() => window.print()}>
             <Printer size={14} />

@@ -208,7 +208,7 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
             onClick={onOpenBooklet}
           >
             <Download size={14} />
-            <span>{isHi ? 'संपूर्ण 118-पृष्ठ पत्रिका PDF' : '118-Page Patrika PDF'}</span>
+            <span>{isHi ? 'संपूर्ण जन्म पत्रिका (Birth Report)' : 'Birth Report (जन्म पत्रिका)'}</span>
           </button>
         </div>
       </div>
@@ -802,11 +802,11 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
 
       {/* Bottom Action Footer */}
       <div className="oj-card oj-bottom-cta-card">
-        <h3>{isHi ? 'संपूर्ण 118-पृष्ठीय बृहत जन्म पत्रिका डाउनलोड करें' : 'Download Complete 118-Page Printed Patrika Report'}</h3>
+        <h3>{isHi ? 'संपूर्ण जन्म पत्रिका रिपोर्ट (Birth Report)' : 'Download Complete Birth Report (Kundli Patrika)'}</h3>
         <p>
           {isHi
-            ? 'AV Astro Vibe के समस्त विभागों, दशाओं, गोचर, उपायों, और जीवन भविष्यवाणियों को समाहित करने वाला विस्तृत 118 पृष्ठीय उच्च-गुणवत्ता मुद्रण रिपोर्ट 100% निःशुल्क प्राप्त करें।'
-            : 'Access the complete high-density 118-page comprehensive printed Janmapatrika containing all calculations, dashas, transits, and traditional remedies completely free.'}
+            ? 'AV Astro Vibe के समस्त विभागों, दशाओं, गोचर, उपायों, और जीवन भविष्यवाणियों को समाहित करने वाला विस्तृत उच्च-गुणवत्ता संपूर्ण जन्म पत्रिका रिपोर्ट 100% निःशुल्क प्राप्त करें।'
+            : 'Access the complete comprehensive printed Birth Report (Janmapatrika) containing all calculations, dashas, transits, and traditional remedies completely free.'}
         </p>
         <button
           type="button"
@@ -814,7 +814,7 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
           onClick={onOpenBooklet}
         >
           <FileText size={16} />
-          <span>{isHi ? '118-पृष्ठीय पत्रिका PDF खोलें (निःशुल्क)' : 'Open 118-Page Patrika PDF (100% Free)'}</span>
+          <span>{isHi ? 'जन्म पत्रिका खोलें (100% निःशुल्क)' : 'Open Birth Report (जन्म पत्रिका) (100% Free)'}</span>
         </button>
       </div>
     </div>

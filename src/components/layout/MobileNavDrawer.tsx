@@ -168,7 +168,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
               }}
             >
               <FileText size={15} />
-              <span>{isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page Patrika PDF (Free)'}</span>
+              <span>{isHi ? 'जन्म पत्रिका PDF (निःशुल्क)' : 'Birth Report (जन्म पत्रिका) (Free)'}</span>
             </button>
           </div>
         </div>

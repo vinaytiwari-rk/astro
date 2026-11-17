@@ -45,33 +45,60 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
   };
 
   return (
-    <div className="holistic-remedies-view space-y-6 max-w-6xl mx-auto px-4 py-6">
+    <div className="oj-page-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-600/30">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #78350f 0%, #451a03 50%, #291205 100%)',
+          color: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+          border: '1px solid rgba(217, 119, 6, 0.3)',
+          marginBottom: '20px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 text-xs font-semibold uppercase tracking-wider mb-2 border border-amber-500/30">
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '4px 10px',
+                borderRadius: '9999px',
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: '#fde68a',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                marginBottom: '8px',
+              }}
+            >
               Desh-Kaal-Paristhiti Vedic Healing
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-amber-100">
+            <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#fef3c7' }}>
               समग्र वैदिक उपचार एवं व्यावहारिक परिहार
             </h1>
-            <p className="text-amber-200/90 text-sm sm:text-base mt-2 max-w-2xl font-sans">
+            <p style={{ margin: 0, fontSize: '13px', color: 'rgba(254, 243, 199, 0.85)', maxWidth: '680px', lineHeight: '1.5' }}>
               महंगे रत्नों व जटिल अनुष्ठानों के आडंबर से मुक्त — दशा, गोचर व D1-D9 के आधार पर प्राकृतिक जड़ी-बूटी, रंग चिकित्सा, योग-प्राणायाम, रसोई के टोटके, शास्त्रीय स्तोत्र एवं इष्ट देव साधना।
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
+              type="button"
               onClick={() => setActiveTab('prescription')}
-              className="btn btn-primary"
+              className="oj-action-btn primary"
             >
               उपचार पर्ची देखें (Prescription)
             </button>
             {onNavigate && (
               <button
+                type="button"
                 onClick={() => onNavigate('kundli')}
-                className="btn btn-secondary"
+                className="oj-action-btn secondary"
               >
                 कुंडली चक्र
               </button>
@@ -80,28 +107,48 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
         </div>
 
         {/* Live Active Context Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-amber-700/40 text-xs sm:text-sm">
-          <div className="bg-black/25 rounded-lg p-3 border border-amber-500/20">
-            <span className="text-amber-300 font-semibold block">सक्रिय महादशा / अंतर्दशा:</span>
-            <span className="text-white font-medium">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '10px',
+            marginTop: '20px',
+            paddingTop: '16px',
+            borderTop: '1px solid rgba(245, 158, 11, 0.2)',
+            fontSize: '12.5px',
+          }}
+        >
+          <div style={{ background: 'rgba(0, 0, 0, 0.25)', borderRadius: '10px', padding: '10px 12px', border: '1px solid rgba(245, 158, 11, 0.15)' }}>
+            <span style={{ color: '#fde68a', fontWeight: 'bold', display: 'block', fontSize: '11.5px' }}>सक्रिय महादशा / अंतर्दशा:</span>
+            <span style={{ color: '#ffffff', fontWeight: '600' }}>
               {report.activeDasha.mahadasha} / {report.activeDasha.antardasha}
             </span>
           </div>
-          <div className="bg-black/25 rounded-lg p-3 border border-amber-500/20">
-            <span className="text-amber-300 font-semibold block">शनि गोचर / साढ़े साती स्थिति:</span>
-            <span className="text-white font-medium">{report.gocharHighlights.sadeSatiPhaseTextHi}</span>
+          <div style={{ background: 'rgba(0, 0, 0, 0.25)', borderRadius: '10px', padding: '10px 12px', border: '1px solid rgba(245, 158, 11, 0.15)' }}>
+            <span style={{ color: '#fde68a', fontWeight: 'bold', display: 'block', fontSize: '11.5px' }}>शनि गोचर / साढ़े साती स्थिति:</span>
+            <span style={{ color: '#ffffff', fontWeight: '600' }}>{report.gocharHighlights.sadeSatiPhaseTextHi}</span>
           </div>
-          <div className="bg-black/25 rounded-lg p-3 border border-amber-500/20">
-            <span className="text-amber-300 font-semibold block">इष्ट देव (D9 कारकांश 12वां भाव):</span>
-            <span className="text-white font-medium">{report.ishtaDevata.deityNameHi}</span>
+          <div style={{ background: 'rgba(0, 0, 0, 0.25)', borderRadius: '10px', padding: '10px 12px', border: '1px solid rgba(245, 158, 11, 0.15)' }}>
+            <span style={{ color: '#fde68a', fontWeight: 'bold', display: 'block', fontSize: '11.5px' }}>इष्ट देव (D9 कारकांश 12वां भाव):</span>
+            <span style={{ color: '#ffffff', fontWeight: '600' }}>{report.ishtaDevata.deityNameHi}</span>
           </div>
         </div>
       </div>
 
       {/* Filter Controls Row */}
-      <div className="bg-white dark:bg-stone-900 rounded-xl p-4 shadow-sm border border-stone-200 dark:border-stone-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        className="oj-horo-control-strip"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+          marginBottom: '20px',
+        }}
+      >
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1 max-w-full">
+        <div className="oj-tab-pills-row">
           {[
             { id: 'all', label: 'समस्त समाधान' },
             { id: 'roots', label: 'वृक्षों की जड़ें (Herbal Roots)' },
@@ -115,12 +162,9 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
           ].map((t) => (
             <button
               key={t.id}
+              type="button"
               onClick={() => setActiveTab(t.id as any)}
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === t.id
-                  ? 'bg-amber-600 text-white shadow-md'
-                  : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200'
-              }`}
+              className={`oj-tab-pill ${activeTab === t.id ? 'is-active' : ''}`}
             >
               {t.label}
             </button>
@@ -128,11 +172,11 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
         </div>
 
         {/* Problem and Lifestyle Filters */}
-        <div className="flex flex-wrap items-center gap-2 self-end md:self-auto">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
           <select
             value={problemFilter}
             onChange={(e) => setProblemFilter(e.target.value as ProblemFocusArea)}
-            className="text-xs bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-lg px-2.5 py-1.5 text-stone-800 dark:text-stone-200 font-medium"
+            className="oj-select-pill"
           >
             <option value="all">समस्त समस्याएं (All Concerns)</option>
             <option value="finance_wealth">आर्थिक संकट व ऋण (Finance)</option>
@@ -147,7 +191,7 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
           <select
             value={lifestyleFilter}
             onChange={(e) => setLifestyleFilter(e.target.value as LifestyleMode)}
-            className="text-xs bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-lg px-2.5 py-1.5 text-stone-800 dark:text-stone-200 font-medium"
+            className="oj-select-pill"
           >
             <option value="all">सभी जीवनशैलियां (All Lifestyles)</option>
             <option value="metro_flat">शहरी फ्लैट अनुकूल (Zero Smoke / Metro)</option>
@@ -161,56 +205,58 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 1. Herbal Roots (जड़ी-बूटी धारण) */}
       {(activeTab === 'all' || activeTab === 'roots') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               ग्रह संबंधित वृक्षों की जड़ें (Planetary Herbal Roots — जड़ी-बूटी धारण)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               वैदिक ज्योतिष में रत्नों से भी अधिक सौम्य, निर्दोष एवं अत्यंत किफायती विकल्प। जड़ें पृथ्वी तत्व से जुड़ी होने के कारण बिना किसी आकस्मिक झटके के ग्रहों की रश्मियों को शरीर में अवशोषित करती हैं।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
             {report.herbalRoots.map((root) => (
               <div
                 key={root.planet}
-                className={`rounded-xl p-4 border transition-all ${
-                  root.isRecommended
-                    ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 shadow-md ring-1 ring-amber-400'
-                    : 'border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40'
-                }`}
+                style={{
+                  borderRadius: '12px',
+                  padding: '14px',
+                  border: root.isRecommended ? '2px solid #d97706' : '1px solid var(--border)',
+                  background: root.isRecommended ? 'rgba(217, 119, 6, 0.06)' : 'var(--bg-elevated)',
+                  boxShadow: root.isRecommended ? '0 4px 12px rgba(217, 119, 6, 0.15)' : 'none',
+                }}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontFamily: 'Cinzel, Playfair Display, serif', fontWeight: 'bold', fontSize: '14px', color: 'var(--text)' }}>
                     {root.planetHi} ({root.planet})
                   </span>
                   {root.isRecommended && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white uppercase tracking-wider">
+                    <span style={{ padding: '2px 8px', borderRadius: '9999px', fontSize: '10px', fontWeight: 'bold', background: '#b45309', color: '#ffffff', textTransform: 'uppercase' }}>
                       आपकी दशा/लग्न अनुकूल
                     </span>
                   )}
                 </div>
 
-                <div className="space-y-1.5 text-xs">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '12px' }}>
                   <div>
-                    <span className="font-semibold text-amber-800 dark:text-amber-300">जड़ का नाम: </span>
-                    <span className="text-stone-800 dark:text-stone-200 font-medium">{root.rootNameHi}</span>
+                    <span style={{ fontWeight: 'bold', color: '#b45309' }}>जड़ का नाम: </span>
+                    <span style={{ fontWeight: '600' }}>{root.rootNameHi}</span>
                   </div>
                   <div>
-                    <span className="font-semibold text-stone-500">रत्न का विकल्प: </span>
-                    <span className="text-stone-700 dark:text-stone-300">{root.gemstoneAlternativeHi}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>रत्न का विकल्प: </span>
+                    <span>{root.gemstoneAlternativeHi}</span>
                   </div>
                   <div>
-                    <span className="font-semibold text-stone-500">धारण विधि: </span>
-                    <span className="text-stone-700 dark:text-stone-300">{root.wrappingMethodHi}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>धारण विधि: </span>
+                    <span>{root.wrappingMethodHi}</span>
                   </div>
                   <div>
-                    <span className="font-semibold text-stone-500">शुभ समय: </span>
-                    <span className="text-stone-700 dark:text-stone-300">{root.dayTimeHi}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>शुभ समय: </span>
+                    <span>{root.dayTimeHi}</span>
                   </div>
                   {root.isRecommended && (
-                    <div className="mt-2 pt-2 border-t border-amber-200 dark:border-amber-800/50 text-amber-900 dark:text-amber-300 font-semibold text-[11.5px]">
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(217, 119, 6, 0.2)', color: '#b45309', fontWeight: '600', fontSize: '11.5px' }}>
                       {root.reasonHi}
                     </div>
                   )}
@@ -223,58 +269,58 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 2. Color Therapy (रंग चिकित्सा) */}
       {(activeTab === 'all' || activeTab === 'colors') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               रंग चिकित्सा (Astro-Color Therapy — शुभ व वर्जित रंग)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               नेत्रों द्वारा मस्तिष्क को मिलने वाले प्रकाश तरंगों का प्रभाव। शुभ रंगों का उपयोग आत्मविश्वास बढ़ाता है, जबकि वर्जित रंगों से मानसिक तनाव और रुकावटें पैदा होती हैं।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-300 dark:border-emerald-800/40 rounded-xl p-5">
-              <h3 className="font-bold text-emerald-900 dark:text-emerald-300 text-base mb-2 flex items-center gap-2">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '14px', padding: '16px' }}>
+              <h3 style={{ margin: '0 0 6px', fontWeight: 'bold', color: '#065f46', fontSize: '15px' }}>
                 धारणीय व शुभ रंग (Recommended Colors)
               </h3>
-              <p className="text-xs text-emerald-800 dark:text-emerald-400 mb-3">
+              <p style={{ fontSize: '12px', color: '#047857', marginBottom: '10px' }}>
                 आपके लग्न के परम कारक ग्रहों के अनुसार इन रंगों के वस्त्र, रुमाल अथवा आंतरिक वस्त्र पहनें:
               </p>
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                 {report.colorTherapy.favorableColorsHi.map((c, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-white dark:bg-stone-800 text-emerald-900 dark:text-emerald-200 font-semibold text-xs rounded-full border border-emerald-300 shadow-sm"
+                    style={{ padding: '4px 10px', background: '#ffffff', color: '#065f46', fontWeight: 'bold', fontSize: '11.5px', borderRadius: '9999px', border: '1px solid rgba(16, 185, 129, 0.4)', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}
                   >
                     {c}
                   </span>
                 ))}
               </div>
-              <div className="text-xs text-stone-700 dark:text-stone-300 pt-2 border-t border-emerald-200 dark:border-emerald-800">
-                <span className="font-semibold text-emerald-800 dark:text-emerald-300">दशा विशेष रंग: </span>
+              <div style={{ fontSize: '12px', color: 'var(--text)', paddingTop: '8px', borderTop: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <span style={{ fontWeight: 'bold', color: '#065f46' }}>दशा विशेष रंग: </span>
                 {report.colorTherapy.dashaColorFocusHi}
               </div>
             </div>
 
-            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-300 dark:border-rose-800/40 rounded-xl p-5">
-              <h3 className="font-bold text-rose-900 dark:text-rose-300 text-base mb-2 flex items-center gap-2">
+            <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '14px', padding: '16px' }}>
+              <h3 style={{ margin: '0 0 6px', fontWeight: 'bold', color: '#991b1b', fontSize: '15px' }}>
                 वर्जित व त्याज्य रंग (Strictly Avoid Colors)
               </h3>
-              <p className="text-xs text-rose-800 dark:text-rose-400 mb-3">
+              <p style={{ fontSize: '12px', color: '#b91c1c', marginBottom: '10px' }}>
                 आपकी कुंडली के मारक व बाधक ग्रहों के रंग; महत्वपूर्ण कार्यों, परीक्षाओं व साक्षात्कारों में इनसे बचें:
               </p>
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                 {report.colorTherapy.avoidColorsHi.map((c, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-white dark:bg-stone-800 text-rose-900 dark:text-rose-200 font-semibold text-xs rounded-full border border-rose-300 shadow-sm"
+                    style={{ padding: '4px 10px', background: '#ffffff', color: '#991b1b', fontWeight: 'bold', fontSize: '11.5px', borderRadius: '9999px', border: '1px solid rgba(239, 68, 68, 0.4)', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}
                   >
                     {c}
                   </span>
                 ))}
               </div>
-              <div className="text-xs text-stone-700 dark:text-stone-300 pt-2 border-t border-rose-200 dark:border-rose-800">
+              <div style={{ fontSize: '12px', color: 'var(--text)', paddingTop: '8px', borderTop: '1px solid rgba(239, 68, 68, 0.2)' }}>
                 {report.colorTherapy.practicalApplicationHi}
               </div>
             </div>
@@ -284,56 +330,56 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 3. Astro-Yoga & Pranayama */}
       {(activeTab === 'all' || activeTab === 'yoga') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               योग एवं प्राणायाम परिहार (Astro-Yoga & Pranayama Alignment)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               ग्रह केवल आकाश में नहीं, हमारे सूक्ष्म शरीर की 72,000 नाड़ियों और चक्रों में स्पंदित होते हैं। विशिष्ट आसन व प्राणायाम से दशा के नकारात्मक प्रभाव स्वतः विसर्जित हो जाते हैं।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
             {report.astroYoga.map((yoga, idx) => (
               <div
                 key={idx}
-                className="bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-xl p-5"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}
               >
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-bold font-serif text-amber-900 dark:text-amber-300 text-base">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ fontWeight: 'bold', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309', fontSize: '14px' }}>
                     सक्रिय दशा स्वामी ({yoga.planetTargeted}) हेतु यौगिक दिनचर्या
                   </span>
-                  <span className="text-xs bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2.5 py-1 rounded-full font-semibold">
+                  <span style={{ fontSize: '11px', background: 'rgba(217, 119, 6, 0.1)', color: '#b45309', padding: '3px 8px', borderRadius: '9999px', fontWeight: 'bold' }}>
                     {yoga.durationMinutes} मिनट नित्य
                   </span>
                 </div>
 
-                <div className="space-y-2 text-xs text-stone-700 dark:text-stone-300">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px' }}>
                   <div>
-                    <span className="font-semibold text-stone-900 dark:text-stone-100 block mb-1">सुझाए गए मुख्य आसन:</span>
-                    <ul className="list-disc list-inside space-y-0.5 text-stone-600 dark:text-stone-300">
+                    <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>सुझाए गए मुख्य आसन:</span>
+                    <ul style={{ margin: 0, paddingLeft: '18px', color: 'var(--text-muted)' }}>
                       {yoga.asanasHi.map((a, i) => (
                         <li key={i}>{a}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="pt-2 border-t border-stone-200 dark:border-stone-700">
-                    <span className="font-semibold text-stone-900 dark:text-stone-100 block mb-1">संस्तुत प्राणायाम:</span>
-                    <ul className="list-disc list-inside space-y-0.5 text-stone-600 dark:text-stone-300">
+                  <div style={{ paddingTop: '6px', borderTop: '1px solid var(--border)' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>संस्तुत प्राणायाम:</span>
+                    <ul style={{ margin: 0, paddingLeft: '18px', color: 'var(--text-muted)' }}>
                       {yoga.pranayamaHi.map((p, i) => (
                         <li key={i}>{p}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="pt-2 border-t border-stone-200 dark:border-stone-700">
-                    <span className="font-semibold text-stone-900 dark:text-stone-100">शुभ समय: </span>
+                  <div style={{ paddingTop: '6px', borderTop: '1px solid var(--border)' }}>
+                    <span style={{ fontWeight: 'bold' }}>शुभ समय: </span>
                     <span>{yoga.timingHi}</span>
                   </div>
 
-                  <div className="bg-amber-50 dark:bg-amber-950/30 p-2.5 rounded-lg border border-amber-200/60 dark:border-amber-800/40 text-amber-900 dark:text-amber-200 font-medium">
+                  <div style={{ background: 'rgba(217, 119, 6, 0.08)', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(217, 119, 6, 0.2)', color: '#92400e', fontWeight: '500', fontSize: '11.5px' }}>
                     {yoga.therapeuticBenefitsHi}
                   </div>
                 </div>
@@ -345,28 +391,28 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 4. Kitchen & Household Totke */}
       {(activeTab === 'all' || activeTab === 'totke') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               घरेलू व रसोई के सरल टोटके (Zero-Cost Kitchen & Household Upaya)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               लाल किताब एवं लोक परंपरा के सिद्ध घरेलू उपाय, जिनमें किसी पुरोहित या धन की आवश्यकता नहीं है। आपकी अपनी रसोई की सामग्री ही औषधि व ग्रह-शांति का कार्य करती है।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
             {filteredTotke.map((totka, idx) => (
               <div
                 key={idx}
-                className="bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700 rounded-xl p-4 flex flex-col justify-between"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <div>
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <h3 style={{ margin: 0, fontWeight: 'bold', fontSize: '13.5px', color: 'var(--text)' }}>
                       {totka.titleHi}
                     </h3>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300">
+                    <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '9999px', fontWeight: 'bold', background: 'var(--bg-subtle)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       {totka.lifestyleTag === 'zero_cost'
                         ? 'शून्य खर्च'
                         : totka.lifestyleTag === 'metro_friendly'
@@ -375,19 +421,19 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 text-xs text-stone-600 dark:text-stone-300 mb-3">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
                     <div>
-                      <span className="font-semibold text-stone-800 dark:text-stone-200">आवश्यक सामग्री: </span>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>आवश्यक सामग्री: </span>
                       {totka.itemsNeededHi}
                     </div>
                     <div>
-                      <span className="font-semibold text-stone-800 dark:text-stone-200">सरल विधि: </span>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>सरल विधि: </span>
                       {totka.stepByStepHi}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-stone-200 dark:border-stone-700 text-[11px] text-amber-800 dark:text-amber-300 font-medium">
+                <div style={{ paddingTop: '8px', borderTop: '1px solid var(--border)', fontSize: '11px', color: '#b45309', fontWeight: '600' }}>
                   {totka.logicalAstroBasisHi}
                 </div>
               </div>
@@ -398,50 +444,53 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 5. Classical Stotras & Paths */}
       {(activeTab === 'all' || activeTab === 'stotras') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               संकट एवं समस्या अनुसार शास्त्रीय स्तोत्र व पाठ (Problem-Specific Stotras)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               ऋषि-प्रणीत सिद्ध स्तोत्र जो व्यक्ति के जीवन के विशिष्ट संकटों (ऋण, साढ़े साती, रोग, संतान, मुकदमा) में ढाल बनकर रक्षा करते हैं।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px' }}>
             {filteredStotras.map((stotra, idx) => (
               <div
                 key={idx}
-                className="bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-5"
+                style={{ background: 'rgba(217, 119, 6, 0.04)', border: '1px solid rgba(217, 119, 6, 0.25)', borderRadius: '12px', padding: '16px' }}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold font-serif text-base text-amber-900 dark:text-amber-200">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontWeight: 'bold', fontFamily: 'Cinzel, Playfair Display, serif', fontSize: '15px', color: '#92400e' }}>
                     {stotra.stotraNameHi}
                   </h3>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                      stotra.urgencyLevel === 'high'
-                        ? 'bg-rose-600 text-white'
-                        : 'bg-amber-600 text-white'
-                    }`}
+                    style={{
+                      fontSize: '10px',
+                      padding: '2px 8px',
+                      borderRadius: '9999px',
+                      fontWeight: 'bold',
+                      background: stotra.urgencyLevel === 'high' ? '#dc2626' : '#d97706',
+                      color: '#ffffff',
+                    }}
                   >
                     {stotra.urgencyLevel === 'high' ? 'अति आवश्यक' : 'नियमित पाठ'}
                   </span>
                 </div>
 
-                <div className="space-y-2 text-xs text-stone-700 dark:text-stone-300">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
                   <div>
-                    <span className="font-semibold text-stone-900 dark:text-stone-100">आराध्य देवता: </span>
-                    <span className="text-amber-800 dark:text-amber-300 font-medium">{stotra.keyDeity}</span>
+                    <span style={{ fontWeight: 'bold' }}>आराध्य देवता: </span>
+                    <span style={{ color: '#b45309', fontWeight: '600' }}>{stotra.keyDeity}</span>
                   </div>
                   <div>
-                    <span className="font-semibold text-stone-900 dark:text-stone-100">पाठ संख्या एवं शुभ वेला: </span>
+                    <span style={{ fontWeight: 'bold' }}>पाठ समय: </span>
                     <span>{stotra.bestDayTimingHi} ({stotra.recommendedCount})</span>
                   </div>
-                  <div className="bg-white dark:bg-stone-900 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800 text-center font-serif text-xs text-amber-900 dark:text-amber-300 italic">
+                  <div style={{ background: 'var(--bg-elevated)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(217, 119, 6, 0.2)', textAlign: 'center', fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#b45309', fontStyle: 'italic' }}>
                     {stotra.sampleSanskritVerse}
                   </div>
-                  <div className="text-[11.5px] text-stone-800 dark:text-stone-200 font-medium">
+                  <div style={{ fontSize: '11.5px', color: 'var(--text)', fontWeight: '500' }}>
                     {stotra.meaningHi}
                   </div>
                 </div>
@@ -453,53 +502,53 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 6. Ishta Devata Sadhana */}
       {(activeTab === 'all' || activeTab === 'ishta') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               इष्ट देव मोक्ष साधना (D9 कारकांश से 12वें भाव के देवता)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               जैमिनी उपदेश सूत्रों के अनुसार आत्मा का सच्चा उद्धार व जन्म-जन्मांतर के प्रारब्ध का मोचन केवल अपने इष्ट देव के मंत्र जप से ही संभव है।
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-stone-800 dark:to-stone-800/80 border border-amber-300 dark:border-amber-700 rounded-xl p-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <div style={{ background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(245, 158, 11, 0.04) 100%)', border: '1px solid rgba(217, 119, 6, 0.3)', borderRadius: '14px', padding: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
               <div>
-                <span className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider block">
+                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block' }}>
                   आपके जन्मकालिक इष्ट देव
                 </span>
-                <h3 className="text-2xl font-serif font-bold text-amber-950 dark:text-amber-100">
+                <h3 style={{ margin: 0, fontSize: '22px', fontFamily: 'Cinzel, Playfair Display, serif', color: 'var(--text)' }}>
                   {report.ishtaDevata.deityNameHi}
                 </h3>
               </div>
-              <div className="bg-amber-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-sm">
+              <div style={{ background: '#b45309', color: '#ffffff', padding: '5px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: 'bold' }}>
                 नित्य 108 जप अनिवार्य
               </div>
             </div>
 
-            <div className="space-y-3 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
-              <div className="bg-white dark:bg-stone-900 p-4 rounded-xl border border-amber-200 dark:border-amber-800 text-center">
-                <span className="text-xs text-stone-500 block mb-1">सिद्ध मूल मंत्र</span>
-                <span className="text-lg sm:text-xl font-serif font-bold text-amber-900 dark:text-amber-300 tracking-wide">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12.5px' }}>
+              <div style={{ background: 'var(--bg-elevated)', padding: '14px', borderRadius: '10px', border: '1px solid rgba(217, 119, 6, 0.25)', textAlign: 'center' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>सिद्ध मूल मंत्र</span>
+                <span style={{ fontSize: '17px', fontFamily: 'Cinzel, serif', fontWeight: 'bold', color: '#b45309' }}>
                   {report.ishtaDevata.moolaMantra}
                 </span>
               </div>
 
               <div>
-                <span className="font-semibold text-stone-900 dark:text-stone-100">शास्त्रीय आधार (जैमिनी सिद्धांत): </span>
-                <p className="mt-0.5 text-stone-600 dark:text-stone-300 text-xs leading-relaxed">
+                <span style={{ fontWeight: 'bold' }}>शास्त्रीय आधार (जैमिनी सिद्धांत): </span>
+                <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '12px', lineHeight: '1.5' }}>
                   {report.ishtaDevata.classicalBasisHi}
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-2 border-t border-amber-200 dark:border-amber-800/60 text-xs">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', paddingTop: '8px', borderTop: '1px solid rgba(217, 119, 6, 0.2)', fontSize: '12px' }}>
                 <div>
-                  <span className="font-semibold text-stone-900 dark:text-stone-100">जप संख्या: </span>
+                  <span style={{ fontWeight: 'bold' }}>जप संख्या: </span>
                   <span>{report.ishtaDevata.recitationCount}</span>
                 </div>
                 <div>
-                  <span className="font-semibold text-stone-900 dark:text-stone-100">प्रिय नैवेद्य/भोग: </span>
+                  <span style={{ fontWeight: 'bold' }}>प्रिय नैवेद्य/भोग: </span>
                   <span>{report.ishtaDevata.offeringHi}</span>
                 </div>
               </div>
@@ -510,42 +559,40 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 7. Herbal Planetary Astro-Baths (स्नान परिहार) */}
       {(activeTab === 'all' || activeTab === 'bath') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-md border border-stone-200 dark:border-stone-800">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold font-serif text-amber-900 dark:text-amber-400">
+        <section className="oj-card" style={{ marginBottom: '20px', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif', color: '#b45309' }}>
               औषधि स्नान परिहार (Herbal Planetary Astro-Baths)
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
               शरीर के बाह्य आभामंडल (Aura) पर जमी हुई नकारात्मक तरंगों को जल एवं प्राकृतिक औषधियों के संयोग से शुद्ध करने का प्राचीन विधान।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
             {report.herbalBaths.map((bath, idx) => (
               <div
                 key={idx}
-                className="bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-xl p-4 flex flex-col justify-between"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-serif font-bold text-amber-900 dark:text-amber-300 text-sm">
-                      {bath.dayOfWeekHi} ({bath.planet})
-                    </span>
-                  </div>
+                  <span style={{ fontFamily: 'Cinzel, Playfair Display, serif', fontWeight: 'bold', color: '#b45309', fontSize: '14px', display: 'block', marginBottom: '8px' }}>
+                    {bath.dayOfWeekHi} ({bath.planet})
+                  </span>
 
-                  <div className="space-y-1.5 text-xs text-stone-600 dark:text-stone-300">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
                     <div>
-                      <span className="font-semibold text-stone-800 dark:text-stone-200">सामग्री: </span>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>सामग्री: </span>
                       {bath.herbalIngredientsHi.join(', ')}
                     </div>
                     <div>
-                      <span className="font-semibold text-stone-800 dark:text-stone-200">विधि: </span>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>विधि: </span>
                       {bath.methodHi}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2 border-t border-stone-200 dark:border-stone-700 text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
+                <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border)', fontSize: '11px', color: '#065f46', fontWeight: 'bold' }}>
                   {bath.benefitsHi}
                 </div>
               </div>
@@ -556,64 +603,73 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
 
       {/* 8. Printable Prescription Slip */}
       {(activeTab === 'all' || activeTab === 'prescription') && (
-        <section className="bg-white dark:bg-stone-900 rounded-2xl p-6 sm:p-8 shadow-xl border-2 border-amber-600/40 printable-prescription">
-          <div className="flex justify-between items-center pb-4 mb-4 border-b border-stone-200 dark:border-stone-700">
+        <section
+          className="oj-card printable-prescription"
+          style={{
+            border: '2px solid #b45309',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 8px 24px rgba(180, 83, 9, 0.12)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '14px', marginBottom: '16px', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <span className="text-[11px] uppercase tracking-wider font-semibold text-amber-700 dark:text-amber-400">
+              <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold', color: '#b45309' }}>
                 AV Astro Vibe Holistic Vedic Prescription
               </span>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+              <h2 style={{ margin: '2px 0 0', fontSize: '22px', fontFamily: 'Cinzel, Playfair Display, serif', color: 'var(--text)' }}>
                 वैदिक उपचार परामर्श पर्ची (Remedy Prescription)
               </h2>
             </div>
             <button
+              type="button"
               onClick={handlePrintSlip}
-              className="btn btn-primary"
+              className="oj-action-btn primary"
             >
               प्रिंट / सुरक्षित करें
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm mb-6">
-            <div className="bg-stone-50 dark:bg-stone-800 p-3 rounded-lg">
-              <span className="font-semibold text-stone-500 block">जातक का नाम:</span>
-              <span className="font-bold text-stone-900 dark:text-stone-100 text-base">{report.prescriptionSlip.clientName}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', marginBottom: '16px' }}>
+            <div style={{ background: 'var(--bg-subtle)', padding: '10px 14px', borderRadius: '10px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>जातक का नाम:</span>
+              <span style={{ fontWeight: 'bold', fontSize: '15px' }}>{report.prescriptionSlip.clientName}</span>
             </div>
-            <div className="bg-stone-50 dark:bg-stone-800 p-3 rounded-lg">
-              <span className="font-semibold text-stone-500 block">सक्रिय दशा व स्थिति:</span>
-              <span className="font-bold text-stone-900 dark:text-stone-100 text-base">{report.prescriptionSlip.activeDasha}</span>
-            </div>
-          </div>
-
-          <div className="space-y-3 text-xs sm:text-sm">
-            <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block mb-0.5">1. प्रधान जड़ी-बूटी धारण:</span>
-              <span className="text-stone-800 dark:text-stone-200">{report.prescriptionSlip.primaryRoot}</span>
-            </div>
-
-            <div className="p-3 bg-stone-50 dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block mb-0.5">2. वर्ण व रंग नियम:</span>
-              <span className="text-stone-800 dark:text-stone-200">{report.prescriptionSlip.primaryColorRule}</span>
-            </div>
-
-            <div className="p-3 bg-stone-50 dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block mb-0.5">3. नित्य स्तोत्र एवं मंत्र पाठ:</span>
-              <span className="text-stone-800 dark:text-stone-200">{report.prescriptionSlip.coreDailyStotra}</span>
-            </div>
-
-            <div className="p-3 bg-stone-50 dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block mb-0.5">4. घरेलू व जल परिहार:</span>
-              <span className="text-stone-800 dark:text-stone-200">{report.prescriptionSlip.kitchenZeroCostHabit}</span>
-            </div>
-
-            <div className="p-3 bg-stone-50 dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block mb-0.5">5. आहार एवं सात्विक नियम:</span>
-              <span className="text-stone-800 dark:text-stone-200">{report.prescriptionSlip.dietaryTip}</span>
+            <div style={{ background: 'var(--bg-subtle)', padding: '10px 14px', borderRadius: '10px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>सक्रिय दशा व स्थिति:</span>
+              <span style={{ fontWeight: 'bold', fontSize: '15px' }}>{report.prescriptionSlip.activeDasha}</span>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-stone-200 dark:border-stone-700 text-xs italic text-stone-600 dark:text-stone-400 bg-amber-50/50 dark:bg-stone-800/40 p-4 rounded-xl">
-            <span className="font-bold text-amber-900 dark:text-amber-300 not-italic block mb-1">ज्योतिषीय परामर्श व मार्गदर्शन:</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12.5px' }}>
+            <div style={{ padding: '10px 14px', background: 'rgba(217, 119, 6, 0.06)', borderRadius: '10px', border: '1px solid rgba(217, 119, 6, 0.2)' }}>
+              <span style={{ fontWeight: 'bold', color: '#b45309', display: 'block', marginBottom: '2px' }}>1. प्रधान जड़ी-बूटी धारण:</span>
+              <span>{report.prescriptionSlip.primaryRoot}</span>
+            </div>
+
+            <div style={{ padding: '10px 14px', background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>2. वर्ण व रंग नियम:</span>
+              <span>{report.prescriptionSlip.primaryColorRule}</span>
+            </div>
+
+            <div style={{ padding: '10px 14px', background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>3. नित्य स्तोत्र एवं मंत्र पाठ:</span>
+              <span>{report.prescriptionSlip.coreDailyStotra}</span>
+            </div>
+
+            <div style={{ padding: '10px 14px', background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>4. घरेलू व जल परिहार:</span>
+              <span>{report.prescriptionSlip.kitchenZeroCostHabit}</span>
+            </div>
+
+            <div style={{ padding: '10px 14px', background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'block', marginBottom: '2px' }}>5. आहार एवं सात्विक नियम:</span>
+              <span>{report.prescriptionSlip.dietaryTip}</span>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border)', fontSize: '12px', fontStyle: 'italic', color: 'var(--text-muted)', background: 'rgba(217, 119, 6, 0.04)', padding: '12px 16px', borderRadius: '10px' }}>
+            <span style={{ fontWeight: 'bold', color: '#b45309', fontStyle: 'normal', display: 'block', marginBottom: '3px' }}>ज्योतिषीय परामर्श व मार्गदर्शन:</span>
             {report.prescriptionSlip.astrologerCounselHi}
           </div>
         </section>

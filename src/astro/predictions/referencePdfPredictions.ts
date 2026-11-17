@@ -1,8 +1,8 @@
 /**
- * Reference PDF Comprehensive Prediction Engine (118-Page OnlineJyotish Fidelity)
+ * Reference PDF Comprehensive Prediction Engine (Birth Report OnlineJyotish Fidelity)
  *
  * Faithfully reproduces the exact structure, breadth, depth, and classical wording
- * of the authentic 118-page Vedic Janmapatrika (Om Sri Sai Jyotisha Vidyapeetham / onlinejyotish.com)
+ * of the authentic Birth Report Vedic Janmapatrika (Om Sri Sai Jyotisha Vidyapeetham / onlinejyotish.com)
  * while conforming to our modern, elegant, zero-emoji UI and multi-division workstation architecture.
  */
 
