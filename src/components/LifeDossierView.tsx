@@ -476,8 +476,9 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
             </button>
           )}
           {onOpenBooklet && (
-            <button className="btn btn-secondary btn-sm" onClick={onOpenBooklet} title={isHi ? '34-अध्यायी बृहत् पत्रिका' : '34-Ch Patrika Book'}>
-              📖 {isHi ? '34-अध्यायी पत्रिका' : 'Deluxe PDF'}
+            <button className="btn btn-secondary btn-sm" onClick={onOpenBooklet} title={isHi ? 'जन्म पत्रिका (Birth Report) PDF' : 'Birth Report (Patrika) PDF'}>
+              <Printer size={13} />
+              <span>{isHi ? 'जन्म पत्रिका (Birth Report)' : 'Birth Report (PDF)'}</span>
             </button>
           )}
           <button className="btn btn-primary btn-sm" onClick={handlePrint} title={isHi ? 'प्रिंट / PDF' : 'Print / Export'}>

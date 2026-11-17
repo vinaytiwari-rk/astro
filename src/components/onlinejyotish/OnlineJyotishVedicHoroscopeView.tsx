@@ -753,13 +753,39 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
                 <h4>
                   {isHi ? `${hp.houseNumber}वां भाव (${hp.titleHi}): ${hp.signNameHi} राशि` : `House ${hp.houseNumber} (${hp.titleEn}): ${hp.signNameEn}`}
                 </h4>
-                <span className="oj-house-lord-tag">
-                  {isHi ? `भावेश: ${trPlanet(hp.lordPlanet, lang)}` : `Lord: ${trPlanet(hp.lordPlanet, lang)} in H${hp.lordPlacedHouse}`}
-                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                  <span className="oj-house-lord-tag">
+                    {isHi ? `भावेश: ${trPlanet(hp.lordPlanet, lang)} (${hp.lordPlacedHouse}वें भाव में)` : `Lord: ${trPlanet(hp.lordPlanet, lang)} in H${hp.lordPlacedHouse}`}
+                  </span>
+                  {hp.lordNakshatraName && (
+                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(217, 119, 6, 0.12)', color: '#b45309', fontWeight: 600 }}>
+                      {isHi ? `नक्षत्र: ${hp.lordNakshatraName} (पद ${hp.lordPada})` : `Nakshatra: ${hp.lordNakshatraName} (P${hp.lordPada})`}
+                    </span>
+                  )}
+                  {hp.lordBaladiAvasthaHi && (
+                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.12)', color: '#047857', fontWeight: 600 }}>
+                      {isHi ? hp.lordBaladiAvasthaHi : hp.lordBaladiAvasthaEn}
+                    </span>
+                  )}
+                  {hp.lordCombust && (
+                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', color: '#b91c1c', fontWeight: 700 }}>
+                      {isHi ? 'अस्त (Combust)' : 'Combust'}
+                    </span>
+                  )}
+                  {hp.kartariYoga && hp.kartariYoga !== 'None' && (
+                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: hp.kartariYoga === 'Papakartari' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', color: hp.kartariYoga === 'Papakartari' ? '#b91c1c' : '#047857', fontWeight: 700 }}>
+                      {hp.kartariYoga === 'Papakartari' ? (isHi ? 'पापकर्तरी योग' : 'Papakartari') : (isHi ? 'शुभकर्तरी योग' : 'Subhakartari')}
+                    </span>
+                  )}
+                  <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(0,0,0,0.06)', color: 'var(--text-muted, #64748b)', fontWeight: 600 }}>
+                    {isHi ? `SAV (गौण): ${hp.savBindus} बिंदु` : `SAV (Auxiliary): ${hp.savBindus}`}
+                  </span>
+                </div>
               </div>
               <div className="oj-pred-house-body">
-                <p><strong>{isHi ? 'भाव फल:' : 'House Analysis:'}</strong> {isHi ? hp.synthesisHi : hp.synthesisEn}</p>
-                <p><strong>{isHi ? 'भावेश स्थिति:' : 'Lord Placement:'}</strong> {isHi ? hp.lordReadingHi : hp.lordReadingEn}</p>
+                <div style={{ whiteSpace: 'pre-line', lineHeight: '1.65', color: 'var(--text, #1e293b)' }}>
+                  {isHi ? hp.synthesisHi : hp.synthesisEn}
+                </div>
               </div>
             </div>
           ))}

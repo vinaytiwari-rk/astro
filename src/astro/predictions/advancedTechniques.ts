@@ -199,6 +199,19 @@ const PLANET_HI: Record<NineGrahaId, string> = {
   Ketu: 'केतु',
 };
 
+const DIGNITY_HI: Record<string, string> = {
+  Exalted: 'उच्च',
+  Moolatrikona: 'मूलत्रिकोण',
+  'Own Sign': 'स्वराशि',
+  'Great Friend': 'अति मित्र',
+  Friend: 'मित्र',
+  Neutral: 'सम',
+  Enemy: 'शत्रु',
+  'Great Enemy': 'अति शत्रु',
+  Debilitated: 'नीच',
+  '-': '—',
+};
+
 const HOUSE_META: Array<{ en: string; hi: string; varga: DivisionalChartId }> = [
   { en: 'Self, Health & Personality', hi: 'स्वयं, स्वास्थ्य व व्यक्तित्व', varga: 'D9' },
   { en: 'Wealth, Family & Speech', hi: 'धन, कुटुंब व वाणी', varga: 'D2' },
@@ -1160,15 +1173,18 @@ function buildHolisticSynthesisAndRules(
     const mepStatus: HolisticHouseSynthesis['mepStatus'] =
       affs.length > bless.length ? 'Afflicted' : bless.length > 0 ? 'Blessed' : 'Clean';
 
-    let score = 58 + (savBindus - 28) * 1.8;
-    if (vargaCheck.status === 'Strong') score += 12;
-    else if (vargaCheck.status === 'Weak') score -= 10;
-    if (mepStatus === 'Blessed') score += 11;
-    else if (mepStatus === 'Afflicted') score -= 12;
-    if (lordBody.dignity === 'Exalted' || lordBody.dignity === 'Own Sign' || lordBody.dignity === 'Moolatrikona') score += 12;
-    else if (lordBody.dignity === 'Debilitated') score -= 12;
-    if ([1, 4, 5, 7, 9, 10, 11].includes(lordBody.rasiHouseNumber)) score += 6;
-    else if ([6, 8, 12].includes(lordBody.rasiHouseNumber) && ![6, 8, 12].includes(h)) score -= 8;
+    let score = 55 + (savBindus - 28) * 0.6; // SAV strictly auxiliary / secondary capacity
+    if (lordBody.dignity === 'Exalted' || lordBody.dignity === 'Own Sign' || lordBody.dignity === 'Moolatrikona') score += 18;
+    else if (lordBody.dignity === 'Great Friend' || lordBody.dignity === 'Friend') score += 10;
+    else if (lordBody.dignity === 'Enemy' || lordBody.dignity === 'Great Enemy') score -= 10;
+    else if (lordBody.dignity === 'Debilitated') score -= 18;
+    if ([1, 4, 7, 10].includes(lordBody.rasiHouseNumber)) score += 12;
+    if ([5, 9].includes(lordBody.rasiHouseNumber)) score += 14;
+    if ([6, 8, 12].includes(lordBody.rasiHouseNumber) && ![6, 8, 12].includes(h)) score -= 14;
+    if (vargaCheck.status === 'Strong') score += 8;
+    else if (vargaCheck.status === 'Weak') score -= 8;
+    if (mepStatus === 'Blessed') score += 9;
+    else if (mepStatus === 'Afflicted') score -= 10;
 
     score = Math.max(15, Math.min(98, Math.round(score)));
 
@@ -1183,8 +1199,8 @@ function buildHolisticSynthesisAndRules(
       vargaSupport: vargaCheck.status,
       mepStatus,
       vitalityScore: score,
-      verdictEn: `${lord} rules H${h} (placed in H${lordBody.rasiHouseNumber}, SAV ${savBindus}, ${meta.varga} ${vargaCheck.status}, MEP ${mepStatus}).`,
-      verdictHi: `भाव ${h} के स्वामी ${PLANET_HI[lord]} भाव ${lordBody.rasiHouseNumber} में हैं (SAV ${savBindus}, ${meta.varga} ${vargaCheck.status === 'Strong' ? 'बली' : vargaCheck.status === 'Weak' ? 'निर्बल' : 'सम'}, MEP ${mepStatus === 'Blessed' ? 'शुभ' : mepStatus === 'Afflicted' ? 'पीड़ित' : 'स्वच्छ'})।`,
+      verdictEn: `${lord} rules H${h} (placed in H${lordBody.rasiHouseNumber}, ${lordBody.dignity}; Varga ${meta.varga} ${vargaCheck.status}; SAV ${savBindus} secondary).`,
+      verdictHi: `भाव ${h} के स्वामी ${PLANET_HI[lord]} भाव ${lordBody.rasiHouseNumber} में हैं (${DIGNITY_HI[lordBody.dignity] ?? lordBody.dignity}, वर्ग ${meta.varga}: ${vargaCheck.status === 'Strong' ? 'बली' : vargaCheck.status === 'Weak' ? 'निर्बल' : 'सम'}, सर्वाष्टकवर्ग (सहायक): ${savBindus} बिंदु)।`,
     });
 
     // Sweep 12 lordship destinations & 9 graha placements (21 per house => 252 base + 12 SAV)

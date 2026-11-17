@@ -137,6 +137,25 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     handleMouseLeave();
   };
 
+  const getDropdownMenuInlineStyle = () => {
+    if (!dropdownCoords || typeof window === 'undefined') return undefined;
+    if (window.innerWidth <= 768) {
+      return {
+        position: 'fixed' as const,
+        top: dropdownCoords.top,
+        left: 12,
+        right: 12,
+        width: 'calc(100vw - 24px)',
+        maxWidth: 'calc(100vw - 24px)',
+      };
+    }
+    return {
+      position: 'fixed' as const,
+      top: dropdownCoords.top,
+      left: dropdownCoords.left,
+    };
+  };
+
   const handleLinkClick = (view: string, sub?: string) => {
     clearHoverTimer();
     setOpenDropdown(null);
@@ -286,7 +305,17 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       </div>
 
       {/* Row 2: Main Navigation Bar with Direct Links & Necessary Dropdowns Only */}
-      <div className="oj-navbar-row" ref={navRef}>
+      <div
+        className="oj-navbar-row"
+        ref={navRef}
+        onScroll={() => {
+          if (openDropdown) {
+            clearHoverTimer();
+            setOpenDropdown(null);
+            setDropdownCoords(null);
+          }
+        }}
+      >
         <div className="oj-navbar-inner">
           <ul className="oj-nav-links">
             {/* 1. Home — Direct Link (No Dropdown) */}
@@ -349,7 +378,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   role="menu"
                   onMouseEnter={handleMenuMouseEnter}
                   onMouseLeave={handleMenuMouseLeave}
-                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                  style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('dual-transit')}>
                     <strong>{isHi ? 'द्वि-चक्र गोचर सिम्युलेटर (Double Wheel)' : 'Live Double Transit Wheel'}</strong>
@@ -399,7 +428,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   role="menu"
                   onMouseEnter={handleMenuMouseEnter}
                   onMouseLeave={handleMenuMouseLeave}
-                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                  style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('multi-dasha')}>
                     <strong>{isHi ? 'त्रिवेणी दशा संगम (Multi-Dasha Matrix)' : 'Multi-Dasha Matrix (4 Dashas)'}</strong>
@@ -473,7 +502,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   role="menu"
                   onMouseEnter={handleMenuMouseEnter}
                   onMouseLeave={handleMenuMouseLeave}
-                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                  style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('client-diary')}>
                     <strong>{isHi ? 'ज्योतिषी परामर्श डायरी (Client Case Notes)' : 'Client Consultation Diary'}</strong>
@@ -539,7 +568,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   role="menu"
                   onMouseEnter={handleMenuMouseEnter}
                   onMouseLeave={handleMenuMouseLeave}
-                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                  style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('festivals')}>
                     <strong>{isHi ? 'हिंदू पर्व एवं व्रत कैलेंडर' : 'Hindu Festival Calendar'}</strong>

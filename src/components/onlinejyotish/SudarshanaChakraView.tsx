@@ -127,14 +127,14 @@ export const SudarshanaChakraView: React.FC<SudarshanaChakraViewProps> = ({
       </div>
 
       {/* Main Two-Col: Concentric Chakra SVG + Interpretation Card */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '20px', alignItems: 'start' }}>
         {/* Left: Interactive 3-Concentric Ring Chakra SVG */}
-        <div className="oj-card" style={{ padding: '24px', textAlign: 'center' }}>
+        <div className="oj-card" style={{ padding: '20px', textAlign: 'center' }}>
           <h3 style={{ margin: '0 0 14px', fontSize: '16px', color: 'var(--text)' }}>
             {isHi ? 'सुदर्शन त्रिवृत्त चक्र (Concentric Rings)' : 'Concentric Tri-Wheel Display'}
           </h3>
 
-          <div style={{ position: 'relative', width: '320px', height: '320px', margin: '0 auto' }}>
+          <div style={{ position: 'relative', maxWidth: '320px', width: '100%', margin: '0 auto', aspectRatio: '1/1' }}>
             <svg viewBox="0 0 320 320" style={{ width: '100%', height: '100%' }}>
               {/* Outer Ring: Lagna */}
               <circle cx="160" cy="160" r="145" fill="none" stroke="#b45309" strokeWidth="2.5" />

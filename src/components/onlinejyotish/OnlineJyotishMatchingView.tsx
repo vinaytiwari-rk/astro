@@ -310,44 +310,46 @@ export const OnlineJyotishMatchingView: React.FC<OnlineJyotishMatchingViewProps>
         <div className="oj-card-header">
           <h2>{isHi ? 'अष्टकूट 36 गुण विस्तृत सारणी (Ashtakoota 36-Point Table)' : 'Ashtakoota 36-Point Compatibility Table'}</h2>
         </div>
-        <table className="oj-table">
-          <thead>
-            <tr>
-              <th>{isHi ? 'कूट (Koota)' : 'Koota'}</th>
-              <th>{isHi ? 'अधिकतम अंक' : 'Max Gunas'}</th>
-              <th>{isHi ? 'प्राप्त अंक' : 'Obtained'}</th>
-              <th>{isHi ? 'वर विवरण' : 'Groom'}</th>
-              <th>{isHi ? 'कन्या विवरण' : 'Bride'}</th>
-              <th>{isHi ? 'शास्त्रीय फल' : 'Significance'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {matchReport.kootas.map((k, i) => (
-              <tr key={i}>
-                <td><strong>{k.name}</strong></td>
-                <td>{k.maxPoints}</td>
-                <td>
-                  <strong style={{ color: k.obtainedPoints === k.maxPoints ? 'var(--good)' : k.obtainedPoints === 0 ? 'var(--bad)' : 'var(--accent)' }}>
-                    {k.obtainedPoints}
-                  </strong>
-                </td>
-                <td>{k.groomValue}</td>
-                <td>{k.brideValue}</td>
-                <td>{k.note}</td>
+        <div className="oj-table-wrapper">
+          <table className="oj-table">
+            <thead>
+              <tr>
+                <th>{isHi ? 'कूट (Koota)' : 'Koota'}</th>
+                <th>{isHi ? 'अधिकतम अंक' : 'Max Gunas'}</th>
+                <th>{isHi ? 'प्राप्त अंक' : 'Obtained'}</th>
+                <th>{isHi ? 'वर विवरण' : 'Groom'}</th>
+                <th>{isHi ? 'कन्या विवरण' : 'Bride'}</th>
+                <th>{isHi ? 'शास्त्रीय फल' : 'Significance'}</th>
               </tr>
-            ))}
-            <tr className="oj-row-highlight">
-              <th>{isHi ? 'कुल योग' : 'Total Score'}</th>
-              <th>36</th>
-              <th><strong style={{ fontSize: '1.1rem' }}>{totalPoints.toFixed(1)}</strong></th>
-              <th colSpan={3}>
-                {totalPoints >= 18
-                  ? (isHi ? 'विवाह हेतु अनुशंसित (18 या अधिक अंक)' : 'Favorable (18 or more points)')
-                  : (isHi ? '18 से कम अंक' : 'Less than 18 points')}
-              </th>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {matchReport.kootas.map((k, i) => (
+                <tr key={i}>
+                  <td><strong>{k.name}</strong></td>
+                  <td>{k.maxPoints}</td>
+                  <td>
+                    <strong style={{ color: k.obtainedPoints === k.maxPoints ? 'var(--good)' : k.obtainedPoints === 0 ? 'var(--bad)' : 'var(--accent)' }}>
+                      {k.obtainedPoints}
+                    </strong>
+                  </td>
+                  <td>{k.groomValue}</td>
+                  <td>{k.brideValue}</td>
+                  <td>{k.note}</td>
+                </tr>
+              ))}
+              <tr className="oj-row-highlight">
+                <th>{isHi ? 'कुल योग' : 'Total Score'}</th>
+                <th>36</th>
+                <th><strong style={{ fontSize: '1.1rem' }}>{totalPoints.toFixed(1)}</strong></th>
+                <th colSpan={3}>
+                  {totalPoints >= 18
+                    ? (isHi ? 'विवाह हेतु अनुशंसित (18 या अधिक अंक)' : 'Favorable (18 or more points)')
+                    : (isHi ? '18 से कम अंक' : 'Less than 18 points')}
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Manglik Dosha Samya Comparison */}

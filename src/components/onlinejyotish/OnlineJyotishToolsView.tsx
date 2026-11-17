@@ -244,38 +244,40 @@ export const OnlineJyotishToolsView: React.FC<OnlineJyotishToolsViewProps> = ({
               ? 'प्रत्येक राशि 8 कक्षाओं (3°45\' प्रत्येक) में विभाजित होती है। जब गोचर ग्रह उस कक्षा से गुजरता है जिसमें उसे बिंदु (1) प्राप्त है, तो वह दिन अत्यंत शुभ व कार्य सिद्धि कारक होता है। 0 बिंदु पर अड़चन आती है।'
               : 'Each sign has 8 Kakshyas (3°45\' each). A transit planet delivers auspicious results when moving through a Kakshya with 1 Bindu, and temporary delays when Bindu is 0.'}
           </p>
-          <table className="oj-table">
-            <thead>
-              <tr>
-                <th>{isHi ? 'ग्रह' : 'Planet'}</th>
-                <th>{isHi ? 'गोचर राशि एवं अंश' : 'Sign & Longitude'}</th>
-                <th>{isHi ? 'कक्षा सं.' : 'Kakshya #'}</th>
-                <th>{isHi ? 'कक्षा अंश विस्तार' : 'Span (3°45\')'}</th>
-                <th>{isHi ? 'कक्षा स्वामी' : 'Kakshya Lord'}</th>
-                <th>{isHi ? 'बिंदु स्थिति' : 'Bindu (1/0)'}</th>
-                <th>{isHi ? 'दैनिक सूक्ष्म फल' : 'Micro-Verdict'}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kakshaEntries.map((k) => (
-                <tr key={k.planet}>
-                  <td><strong>{trPlanet(k.planet, lang)}</strong></td>
-                  <td>{trSign(k.signIndex, lang)} ({k.dms})</td>
-                  <td><strong>#{k.kakshaNumber}</strong></td>
-                  <td>{k.kakshaRange}</td>
-                  <td><strong style={{ color: '#b45309' }}>{k.kakshaLord}</strong></td>
-                  <td>
-                    <span style={{ padding: '2px 8px', borderRadius: '4px', background: k.kakshaBindu === 1 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: k.kakshaBindu === 1 ? '#059669' : '#dc2626', fontWeight: 800 }}>
-                      {k.kakshaBindu === 1 ? (isHi ? '1 बिंदु (शुभ)' : '1 Bindu (Fav)') : (isHi ? '0 बिंदु (बाधा)' : '0 Bindu (Obstacle)')}
-                    </span>
-                  </td>
-                  <td style={{ fontSize: '12px' }}>
-                    {isHi ? k.verdictHi : k.verdictEn}
-                  </td>
+          <div className="oj-table-wrapper">
+            <table className="oj-table">
+              <thead>
+                <tr>
+                  <th>{isHi ? 'ग्रह' : 'Planet'}</th>
+                  <th>{isHi ? 'गोचर राशि एवं अंश' : 'Sign & Longitude'}</th>
+                  <th>{isHi ? 'कक्षा सं.' : 'Kakshya #'}</th>
+                  <th>{isHi ? 'कक्षा अंश विस्तार' : 'Span (3°45\')'}</th>
+                  <th>{isHi ? 'कक्षा स्वामी' : 'Kakshya Lord'}</th>
+                  <th>{isHi ? 'बिंदु स्थिति' : 'Bindu (1/0)'}</th>
+                  <th>{isHi ? 'दैनिक सूक्ष्म फल' : 'Micro-Verdict'}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {kakshaEntries.map((k) => (
+                  <tr key={k.planet}>
+                    <td><strong>{trPlanet(k.planet, lang)}</strong></td>
+                    <td>{trSign(k.signIndex, lang)} ({k.dms})</td>
+                    <td><strong>#{k.kakshaNumber}</strong></td>
+                    <td>{k.kakshaRange}</td>
+                    <td><strong style={{ color: '#b45309' }}>{k.kakshaLord}</strong></td>
+                    <td>
+                      <span style={{ padding: '2px 8px', borderRadius: '4px', background: k.kakshaBindu === 1 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: k.kakshaBindu === 1 ? '#059669' : '#dc2626', fontWeight: 800 }}>
+                        {k.kakshaBindu === 1 ? (isHi ? '1 बिंदु (शुभ)' : '1 Bindu (Fav)') : (isHi ? '0 बिंदु (बाधा)' : '0 Bindu (Obstacle)')}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '12px' }}>
+                      {isHi ? k.verdictHi : k.verdictEn}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         </>
       )}

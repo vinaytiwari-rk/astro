@@ -8,8 +8,9 @@
  * Placements, Dignities, SAV Bindus, and running Mahadasha/Antardasha.
  */
 
-import type { ChartData, NineGrahaId } from '../types';
-import { SIGNS } from '../constants';
+import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
+import { angularDiffDeg } from '../time';
 import { getNakshatraSyllable, getAllNakshatraSyllables } from '../avakahadaChalit';
 import { computeLifeEventsAndLedger } from './lifeEventsLedger';
 
@@ -357,11 +358,73 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const currentAge = isNaN(birthDate.getTime()) ? 28 : Math.max(0, (now - birthDate.getTime()) / (365.25 * 86400000));
   const currentAgeRound = Math.round(currentAge);
 
-  // House lord resolver
+  // Aspect resolver for any house
+  const getAspectsOnHouse = (targetHouse: number) => {
+    const list: Array<{ planet: NineGrahaId; planetHi: string; type: string; isBenefic: boolean }> = [];
+    for (const p of planets) {
+      if (p.id === 'Asc') continue;
+      const fromH = p.houseNumber;
+      const step = (offset: number) => ((fromH - 1 + offset) % 12) + 1;
+      const isBenefic = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id);
+      const pHi = HINDI_PLANETS[p.id] || p.id;
+      const pGrahaId = p.id as NineGrahaId;
+
+      if (step(6) === targetHouse) {
+        list.push({ planet: pGrahaId, planetHi: pHi, type: '7th (180° पूर्ण दृष्टि)', isBenefic });
+      }
+      if (p.id === 'Mars') {
+        if (step(3) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '4th विशेष दृष्टि', isBenefic: false });
+        if (step(7) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '8th विशेष दृष्टि', isBenefic: false });
+      } else if (p.id === 'Jupiter') {
+        if (step(4) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '5th अमृत दृष्टि', isBenefic: true });
+        if (step(8) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '9th अमृत दृष्टि', isBenefic: true });
+      } else if (p.id === 'Saturn') {
+        if (step(2) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '3rd विशेष दृष्टि', isBenefic: false });
+        if (step(9) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '10th विशेष दृष्टि', isBenefic: false });
+      } else if (p.id === 'Rahu' || p.id === 'Ketu') {
+        if (step(4) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '5th विशेष दृष्टि', isBenefic: false });
+        if (step(8) === targetHouse) list.push({ planet: pGrahaId, planetHi: pHi, type: '9th विशेष दृष्टि', isBenefic: false });
+      }
+    }
+    return list;
+  };
+
+  const getKartariOnHouse = (targetHouse: number) => {
+    const prevH = targetHouse === 1 ? 12 : targetHouse - 1;
+    const nextH = targetHouse === 12 ? 1 : targetHouse + 1;
+    const prevMal = planets.some((p) => p.houseNumber === prevH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    const nextMal = planets.some((p) => p.houseNumber === nextH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    if (prevMal && nextMal) return 'Papakartari';
+    const prevBen = planets.some((p) => p.houseNumber === prevH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
+    const nextBen = planets.some((p) => p.houseNumber === nextH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
+    if (prevBen && nextBen) return 'Subhakartari';
+    return 'None';
+  };
+
+  const DIGNITY_HI_MAP: Record<string, string> = {
+    Exalted: 'उच्च', Moolatrikona: 'मूलत्रिकोण', 'Own Sign': 'स्वराशि',
+    'Great Friend': 'अति मित्र', Friendly: 'मित्र', Neutral: 'सम',
+    Enemy: 'शत्रु', 'Great Enemy': 'अति शत्रु', Debilitated: 'नीच',
+  };
+
+  // House lord resolver with elevated Parashari parameters (Sthan, Rashi, Nakshatra, Drishti, Yuti, Degree, Avastha, Kartari)
   const getHLord = (h: number) => {
     const signIdx = (ascSign + h - 1) % 12;
     const lord = SIGNS[signIdx].lord;
     const planet = planets.find((p) => p.id === lord) || sun;
+    const nakIdx = planet.nakshatraIndex ?? Math.floor(planet.longitude / (360 / 27));
+    const nak = NAKSHATRAS[nakIdx] ?? NAKSHATRAS[0];
+    const aspects = getAspectsOnHouse(h);
+    const occupants = planets.filter((p) => p.houseNumber === h);
+    const kartari = getKartariOnHouse(h);
+    const isCombust = planet.id !== 'Sun' && angularDiffDeg(planet.longitude, sun.longitude) <= (COMBUSTION_ORB[planet.id as SevenPlanetId]?.direct ?? 12);
+    const degInSign = planet.degreeInSign ?? (planet.longitude % 30);
+    const isOdd = planet.signIndex % 2 === 0;
+    const seg = Math.min(4, Math.floor(degInSign / 6));
+    const effIdx = isOdd ? seg : 4 - seg;
+    const avasthaNamesHi = ['बाल्यावस्था', 'कुमारावस्था', 'युवावस्था', 'वृद्धावस्था', 'मृतावस्था'];
+    const avasthaNamesEn = ['Bala', 'Kumara', 'Yuva', 'Vriddha', 'Mrita'];
+
     return {
       house: h,
       signIdx,
@@ -374,6 +437,17 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       placedSignName: SIGNS[planet.signIndex].name,
       placedSignHi: HINDI_SIGNS[planet.signIndex],
       dignity: planet.dignity || 'Neutral',
+      dignityHi: DIGNITY_HI_MAP[planet.dignity || 'Neutral'] || planet.dignity,
+      nakshatraName: nak.name,
+      pada: planet.pada || 1,
+      starLord: nak.lord,
+      starLordHi: HINDI_PLANETS[nak.lord] || nak.lord,
+      isCombust,
+      avasthaHi: avasthaNamesHi[effIdx],
+      avasthaEn: avasthaNamesEn[effIdx],
+      aspects,
+      occupants,
+      kartari,
       sav: sav[h - 1],
     };
   };
@@ -554,16 +628,16 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 6. Father's Lifespan & Longevity Indicators
   // ==========================================
   {
-    const score = Math.max(35, Math.min(92, 50 + (sav[8] >= 28 ? 12 : -10) + getDignityBonus(sun.dignity)));
-    const lifeEn = sav[8] >= 30 && (sun.dignity === 'Exalted' || sun.dignity === 'Own Sign' || sun.houseNumber === 9 || sun.houseNumber === 10)
-      ? 'Purna Pitru Ayu: Long lifespan (76+ years), revered in community'
-      : sun.dignity === 'Debilitated' || sun.houseNumber === 6 || sun.houseNumber === 8 || sav[8] < 24
-      ? 'Madhyayu (60-70 years); susceptibility to cardiovascular, bone, or blood pressure issues'
+    const score = Math.max(35, Math.min(95, 45 + getDignityBonus(sun.dignity) + ([1, 4, 5, 9, 10, 11].includes(h9.placedHouse) ? 14 : -10) + (sav[8] >= 28 ? 6 : -4)));
+    const lifeEn = (sun.dignity === 'Exalted' || sun.dignity === 'Own Sign' || h9.placedHouse === 9 || h9.placedHouse === 10) && !h9.isCombust
+      ? 'Purna Pitru Ayu: Long lifespan (76+ years), revered in community with lasting vigor'
+      : sun.dignity === 'Debilitated' || sun.houseNumber === 6 || sun.houseNumber === 8 || h9.placedHouse === 6 || h9.placedHouse === 8 || h9.isCombust
+      ? 'Madhyayu (60-70 years); susceptibility to cardiovascular, bone, or blood pressure issues; regular health discipline recommended'
       : 'Healthy medium-to-long lifespan (68-78 years) with gradual maturity';
-    const lifeHi = sav[8] >= 30 && (sun.dignity === 'Exalted' || sun.dignity === 'Own Sign' || sun.houseNumber === 9 || sun.houseNumber === 10)
-      ? 'पूर्ण पितृ आयु: सुदीर्घ जीवनकाल (76+ वर्ष), बुढ़ापे में सम्मान व परिवार का सान्निध्य'
-      : sun.dignity === 'Debilitated' || sun.houseNumber === 6 || sun.houseNumber === 8 || sav[8] < 24
-      ? 'मध्यायु (60-70 वर्ष); हृदय, नेत्र, रीढ़ अथवा रक्तचाप से संबंधित सतर्कता अपेक्षित'
+    const lifeHi = (sun.dignity === 'Exalted' || sun.dignity === 'Own Sign' || h9.placedHouse === 9 || h9.placedHouse === 10) && !h9.isCombust
+      ? 'पूर्ण पितृ आयु: सुदीर्घ जीवनकाल (76+ वर्ष), सूर्य व नवमेश के शुभ प्रभाव से बुढ़ापे में सम्मान व परिवार का सान्निध्य'
+      : sun.dignity === 'Debilitated' || sun.houseNumber === 6 || sun.houseNumber === 8 || h9.placedHouse === 6 || h9.placedHouse === 8 || h9.isCombust
+      ? 'मध्यायु (60-70 वर्ष); हृदय, नेत्र, रीढ़ अथवा रक्तचाप से संबंधित सतर्कता व स्वास्थ्य अनुशासन अपेक्षित'
       : 'सामान्यतः सुखी व दीर्घायु (68-78 वर्ष), स्वास्थ्य में नियमित देखभाल से स्थिरता';
 
     dims.push({
@@ -573,12 +647,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: "Father's Lifespan, Longevity & Health Resilience",
       titleHi: 'पिता का जीवनकाल, दीर्घायु व स्वास्थ्य संवेदनशीलता',
-      astroBasisEn: `8th from 9th (4th House) SAV: ${sav[3]} bindus; 9th House SAV: ${sav[8]} bindus; Sun in House ${sun.houseNumber} (${sun.dignity}).`,
-      astroBasisHi: `नवम से अष्टम (चतुर्थ भाव) अष्टकवर्ग: ${sav[3]} बिंदु; नवम भाव अष्टकवर्ग: ${sav[8]} बिंदु; सूर्य भाव ${sun.houseNumber} में (${sun.dignity})।`,
+      astroBasisEn: `9th Lord ${h9.lord} in H${h9.placedHouse} (${h9.dignity}, Star Lord ${h9.starLord}); Sun (Pitrukaraka) in H${sun.houseNumber} (${sun.dignity}); [SAV (Auxiliary): 9th H ${sav[8]} bindus, 4th H ${sav[3]} bindus].`,
+      astroBasisHi: `नवमेश ${h9.lordHi} भाव ${h9.placedHouse} में (${h9.dignityHi}, नक्षत्र स्वामी: ${h9.starLordHi}); सूर्य भाव ${sun.houseNumber} में (${sun.dignity}); [सर्वाष्टकवर्ग (सहायक): नवम भाव ${sav[8]} बिंदु, चतुर्थ भाव ${sav[3]} बिंदु]।`,
       verdictEn: lifeEn,
       verdictHi: lifeHi,
-      detailedAnalysisEn: `Pitru Ayush is analyzed via the 8th from 9th (4th house) and the vital strength of Sun. With 9th house possessing ${sav[8]} bindus, your father's vitality is anchored, though regular health checkups of heart and joints are prudent during Saturn/Rahu sub-periods.`,
-      detailedAnalysisHi: `पिता की आयु का विचार नवम भाव से अष्टम (चतुर्थ भाव) व सूर्य के बल से किया जाता है। नवम भाव में ${sav[8]} बिंदु होने से जीवनी शक्ति सुदृढ़ रहती है, परंतु राहु या शनि के गोचर/दशा में स्वास्थ्य का ध्यान रखना चाहिए।`,
+      detailedAnalysisEn: `Pitru Ayush is primarily determined by the 9th house lord, the natural vitality of the Sun, and aspects from benefics vs malefics, with the 8th from 9th (4th house) corroborating the lifespan threshold. The 9th lord situated in ${h9.placedSignName} under ${h9.nakshatraName} Nakshatra anchors paternal vitality, while ${sav[8]} SAV bindus provide supplemental bio-energetic support.`,
+      detailedAnalysisHi: `पिता की आयु का प्राथमिक विचार नवमेश की स्थिति, राशि बल, नक्षत्र स्वामी (${h9.starLordHi}) एवं सूर्य के प्राकृतिक बल से किया जाता है। नवमेश का ${h9.placedHouse}वें भाव में होना तथा सूर्य का प्रभाव पिता की जीवनी शक्ति का मूल आधार है; नवम भाव के ${sav[8]} अष्टकवर्ग बिंदु इसे सहायक संबल प्रदान करते हैं।`,
       remedyEn: `Perform Aditya Hridaya Stotram recitation for father's vitality and health protection.`,
       remedyHi: `पिता के उत्तम स्वास्थ्य व दीर्घायु हेतु नित्य अथवा रविवार को आदित्य हृदय स्तोत्र का पाठ करें।`,
       strengthScore: score,
@@ -622,16 +696,16 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 8. Mother's Nature & Mental Anchor
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 50 + getDignityBonus(moon.dignity) + (sav[3] >= 28 ? 10 : -8)));
+    const score = Math.max(35, Math.min(95, 50 + getDignityBonus(moon.dignity) + ([1, 4, 5, 9, 10].includes(h4.placedHouse) ? 14 : -8) + (sav[3] >= 28 ? 6 : -4)));
     const moonDignity = moon.dignity || 'Neutral';
     const natureEn = moonDignity === 'Exalted' || moonDignity === 'Own Sign'
       ? 'Deeply compassionate, spiritually devoted, emotionally grounding, resilient domestic anchor'
-      : moonDignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8
+      : moonDignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8 || h4.isCombust
       ? 'Extremely sensitive, highly protective, prone to worry and sacrifice for family'
       : 'Affectionate, hardworking, practical, maintaining family harmony with patience';
     const natureHi = moonDignity === 'Exalted' || moonDignity === 'Own Sign'
       ? 'अत्यंत ममतामयी, सात्विक, धार्मिक, मानसिक संबल प्रदान करने वाली व सहनशील'
-      : moonDignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8
+      : moonDignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8 || h4.isCombust
       ? 'अति-संवेदनशील, निरंतर चिंता करने वाली, परिवार हेतु स्वयं को समर्पित करने वाली'
       : 'स्नेहमयी, कर्तव्यनिष्ठ, व्यावहारिक व परिवार में संतुलन बनाए रखने वाली';
 
@@ -642,12 +716,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: "Mother's Nature, Temperament & Emotional Anchor",
       titleHi: 'माता का स्वभाव, संस्कार व भावनात्मक संबल',
-      astroBasisEn: `4th Lord ${h4.lord} in House ${h4.placedHouse} (${h4.placedSignName}); Moon (Matrukaraka) in House ${moon.houseNumber} (${moon.signName}, ${moonDignity}), 4th House SAV: ${sav[3]} bindus.`,
-      astroBasisHi: `चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में (${h4.placedSignHi}); चंद्रमा (मातृकारक) भाव ${moon.houseNumber} में (${HINDI_SIGNS[moon.signIndex]}, ${moonDignity}), चतुर्थ भाव अष्टकवर्ग: ${sav[3]} बिंदु।`,
+      astroBasisEn: `4th Lord ${h4.lord} in House ${h4.placedHouse} (${h4.dignity}), Nakshatra ${h4.nakshatraName} (Star Lord: ${h4.starLord}); Moon (Matrukaraka) in House ${moon.houseNumber} (${moonDignity}); [SAV (Auxiliary): ${sav[3]} bindus].`,
+      astroBasisHi: `चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में (${h4.dignityHi}), नक्षत्र: ${h4.nakshatraName} (स्वामी: ${h4.starLordHi}); चंद्रमा (मातृकारक) भाव ${moon.houseNumber} में (${moonDignity}); [सर्वाष्टकवर्ग (सहायक): ${sav[3]} बिंदु]।`,
       verdictEn: natureEn,
       verdictHi: natureHi,
-      detailedAnalysisEn: `The 4th house and Moon represent the mother and inner peace (Matru Sukha). Moon placed in House ${moon.houseNumber} with 4th house possessing ${sav[3]} bindus signifies that your mother serves as the primary emotional foundation of your character and psychological poise.`,
-      detailedAnalysisHi: `कुंडली का चतुर्थ भाव व चंद्रमा माता के सुख, संस्कार व हृदय का प्रतिनिधित्व करते हैं। भाव ${moon.houseNumber} में चंद्रमा की स्थिति व चतुर्थ भाव में ${sav[3]} अष्टकवर्ग बिंदुओं के प्रभाव से माता का स्नेह आपके अंतर्मन को शांति प्रदान करता है।`,
+      detailedAnalysisEn: `The 4th house lord, its dispositor star lord (${h4.starLord}), and the Moon govern maternal traits. Moon placed in House ${moon.houseNumber} reflects your mother's deep psychological imprint, with 4th house SAV points acting as corroborative domestic support.`,
+      detailedAnalysisHi: `कुंडली का चतुर्थ भाव, चतुर्थेश का नक्षत्र स्वामी (${h4.starLordHi}) एवं चंद्रमा माता के स्वभाव व आंतरिक संस्कारों के मुख्य निर्धारक हैं। भाव ${moon.houseNumber} में चंद्रमा की स्थिति माता के वात्सल्य को दर्शाती है, जबकि अष्टकवर्ग के ${sav[3]} बिंदु इसे सहायक ऊर्जा देते हैं।`,
       remedyEn: `Offer silver or white rice to needy women on Mondays and keep a silver coin given by mother.`,
       remedyHi: `सोमवार को किसी जरूरतमंद महिला को दूध या चावल का दान करें तथा माता के हाथ से चांदी का सिक्का लेकर संभालें।`,
       strengthScore: score,
@@ -659,7 +733,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 9. Mother's Profession & Domestic Role
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 45 + (sav[3] >= 28 ? 10 : 0) + (h4.placedHouse === 1 || h4.placedHouse === 10 || h4.placedHouse === 4 ? 15 : 0)));
+    const score = Math.max(35, Math.min(95, 45 + (h4.placedHouse === 1 || h4.placedHouse === 10 || h4.placedHouse === 4 ? 16 : 0) + (sav[3] >= 28 ? 6 : 0)));
     const profEn = h4.lord === 'Sun' || h4.lord === 'Jupiter'
       ? 'Education, academia, social leadership, administrative work or spiritual mentoring'
       : h4.lord === 'Venus' || h4.lord === 'Moon'
@@ -678,12 +752,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: "Mother's Profession, Domestic Leadership & Role",
       titleHi: 'माता का कार्यक्षेत्र, सामाजिक भूमिका व गृह-प्रबंधन',
-      astroBasisEn: `10th from 4th (1st House) sign ${ascSignName} ruled by ${ascLord}; 4th Lord ${h4.lord} in House ${h4.placedHouse}; 4th SAV: ${sav[3]} bindus.`,
-      astroBasisHi: `चतुर्थ से दशम (लग्न भाव) ${ascSignHi} राशि, स्वामी ${ascLordHi}; चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में; चतुर्थ भाव अष्टकवर्ग: ${sav[3]} बिंदु।`,
+      astroBasisEn: `10th from 4th (1st House) sign ${ascSignName} ruled by ${ascLord}; 4th Lord ${h4.lord} in H${h4.placedHouse} (${h4.dignity}); [SAV (Auxiliary): ${sav[3]} bindus].`,
+      astroBasisHi: `चतुर्थ से दशम (लग्न भाव) ${ascSignHi} राशि, स्वामी ${ascLordHi}; चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में (${h4.dignityHi}); [सर्वाष्टकवर्ग (सहायक): ${sav[3]} बिंदु]।`,
       verdictEn: profEn,
       verdictHi: profHi,
-      detailedAnalysisEn: `Counting 10 houses from the 4th reveals the mother's social work and leadership. With 4th Lord ${h4.lord} situated in House ${h4.placedHouse}, she exercises strong moral authority within the household and family clan.`,
-      detailedAnalysisHi: `चतुर्थ से दशम भाव माता के कार्यक्षेत्र व कर्तव्य का दर्पण है। चतुर्थेश ${h4.lordHi} की स्थिति से स्पष्ट है कि माता गृहस्थी की धुरी बनकर सभी का कुशल प्रबंधन करती हैं।`,
+      detailedAnalysisEn: `Assessed via the 10th from 4th (Lagna) and the 4th lord's vocational nakshatra alignment. The 4th lord's dignity shapes whether your mother leads domestic administration or active external leadership.`,
+      detailedAnalysisHi: `माता के कार्यक्षेत्र का विचार चतुर्थ से दशम (लग्न) तथा चतुर्थेश की नक्षत्र स्थिति से होता है। चतुर्थेश की गरिमा यह तय करती है कि वे परिवार की कुशल प्रबंधक अथवा बाहरी कार्यक्षेत्र में सक्रिय रहेंगी।`,
       remedyEn: `Gift green or white clothing to mother on festive days to strengthen her domestic harmony.`,
       remedyHi: `त्योहारों अथवा विशेष अवसरों पर माता को श्वेत या हरे रंग के वस्त्र भेंट करें।`,
       strengthScore: score,
@@ -712,7 +786,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
 
     const score = isMatruArishta
       ? Math.max(25, 45 - matruAffliction * 3)
-      : Math.max(35, Math.min(92, 50 + (sav[3] >= 28 ? 12 : -10) + getDignityBonus(moon.dignity)));
+      : Math.max(35, Math.min(92, 50 + (sav[3] >= 28 ? 6 : -6) + getDignityBonus(moon.dignity)));
 
     const lifeEn = isMatruArishta
       ? 'Matru-Arishta Yoga (Severe Maternal Vulnerability): Classical texts warn of early maternal demise, separation, or critical health vulnerability during native’s childhood or youth (4th house/lord and Moon afflicted by Dusthana/malefics).'
@@ -737,12 +811,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: "Mother's Lifespan, Longevity & Health Sensitivities",
       titleHi: 'माता का जीवनकाल, दीर्घायु व स्वास्थ्य संवेदनशीलता',
-      astroBasisEn: `8th from 4th (11th House) SAV: ${sav[10]} bindus; 4th House SAV: ${sav[3]} bindus; Moon in House ${moon.houseNumber} (${moon.dignity}).`,
-      astroBasisHi: `चतुर्थ से अष्टम (एकादश भाव) अष्टकवर्ग: ${sav[10]} बिंदु; चतुर्थ भाव अष्टकवर्ग: ${sav[3]} बिंदु; चंद्रमा भाव ${moon.houseNumber} में (${moon.dignity})।`,
+      astroBasisEn: `4th Lord ${h4.lord} in H${h4.placedHouse} (${h4.dignity}, Star Lord: ${h4.starLord}); Moon in H${moon.houseNumber} (${moon.dignity}); [SAV (Auxiliary): 4th H ${sav[3]} bindus, 11th H ${sav[10]} bindus].`,
+      astroBasisHi: `चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में (${h4.dignityHi}, नक्षत्र स्वामी: ${h4.starLordHi}); चंद्रमा भाव ${moon.houseNumber} में (${moon.dignity}); [सर्वाष्टकवर्ग (सहायक): चतुर्थ भाव ${sav[3]} बिंदु, एकादश भाव ${sav[10]} बिंदु]।`,
       verdictEn: lifeEn,
       verdictHi: lifeHi,
-      detailedAnalysisEn: `Mother's longevity is assessed through the 8th from the 4th (11th house) and the lunar vitality. The presence of ${sav[3]} SAV points in the 4th house provides steady vital energy, protecting maternal well-being through most life transitions.`,
-      detailedAnalysisHi: `माता की आयु का विचार चतुर्थ से अष्टम (एकादश भाव) व चंद्रमा के बल से किया जाता है। चतुर्थ भाव में ${sav[3]} बिंदु होने से माता की जीवनी शक्ति सुरक्षित रहती है, यद्यपि चंद्रमा पर पाप प्रभाव में स्वास्थ्य का ध्यान रखना चाहिए।`,
+      detailedAnalysisEn: `Mother's longevity is rooted in the 4th house lord, the condition of the Moon, and aspects from Saturn or Mars, with the 8th from the 4th (11th house) providing supplementary depth. Lunar vitality is the primary pillar, while SAV points provide background energetic reserve.`,
+      detailedAnalysisHi: `माता की आयु का निर्णय चतुर्थेश, चंद्रमा की गरिमा तथा शुभ/अशुभ ग्रहों की दृष्टि से होता है; चतुर्थ से अष्टम (एकादश भाव) इसका संपूरक है। चंद्रमा का बल मातृ आयु का मुख्य आधार है, जबकि अष्टकवर्ग के बिंदु सहायक शक्ति के रूप में कार्य करते हैं।`,
       remedyEn: `Chant Chandra Beej Mantra ("Om Shram Shreem Shrom Sah Chandramase Namah") for mother's longevity.`,
       remedyHi: `माता के दीर्घायु व आरोग्य हेतु सोमवार को चंद्र बीज मंत्र का 108 बार जप करें।`,
       strengthScore: score,
@@ -754,11 +828,11 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 11. Mother-Child Relationship & Emotional Bond
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 50 + (sav[3] >= 28 ? 15 : -5) + (h4.placedHouse === 1 || h4.placedHouse === 4 || h4.placedHouse === 5 || h4.placedHouse === 9 ? 15 : 0)));
-    const relEn = sav[3] >= 28
+    const score = Math.max(35, Math.min(95, 50 + ([1, 4, 5, 9].includes(h4.placedHouse) ? 18 : -8) + getDignityBonus(h4.dignity) + (sav[3] >= 28 ? 6 : -4)));
+    const relEn = [1, 4, 5, 9].includes(h4.placedHouse) && !h4.isCombust
       ? 'Profound emotional resonance, mother is your greatest psychological anchor and protector'
       : 'Affectionate yet emotionally sensitive bond; occasional worry over each other’s well-being';
-    const relHi = sav[3] >= 28
+    const relHi = [1, 4, 5, 9].includes(h4.placedHouse) && !h4.isCombust
       ? 'अत्यंत गहरा व भावनात्मक लगाव, माता आपके जीवन की सबसे बड़ी मानसिक संबल व रक्षा कवच'
       : 'स्नेहपूर्ण किंतु संवेदनशील संबंध; एक-दूसरे के प्रति अत्यधिक चिंता से कभी-कभी भावुक तनाव';
 
@@ -769,12 +843,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: 'Relationship with Mother & Emotional Bond',
       titleHi: 'माता से संबंध, मानसिक लगाव व वात्सल्य सुख',
-      astroBasisEn: `4th Lord ${h4.lord} in House ${h4.placedHouse}; Moon in House ${moon.houseNumber}; 4th House SAV: ${sav[3]} bindus.`,
-      astroBasisHi: `चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में; चंद्रमा भाव ${moon.houseNumber} में; चतुर्थ भाव अष्टकवर्ग: ${sav[3]} बिंदु।`,
+      astroBasisEn: `4th Lord ${h4.lord} in House ${h4.placedHouse} (${h4.dignity}), Nakshatra ${h4.nakshatraName} (Star Lord: ${h4.starLord}); Moon in H${moon.houseNumber}; [SAV (Auxiliary): ${sav[3]} bindus].`,
+      astroBasisHi: `चतुर्थेश ${h4.lordHi} भाव ${h4.placedHouse} में (${h4.dignityHi}), नक्षत्र: ${h4.nakshatraName} (स्वामी: ${h4.starLordHi}); चंद्रमा भाव ${moon.houseNumber} में; [सर्वाष्टकवर्ग (सहायक): ${sav[3]} बिंदु]।`,
       verdictEn: relEn,
       verdictHi: relHi,
-      detailedAnalysisEn: `The strength of the 4th bhava directly influences maternal happiness. With ${sav[3]} bindus in the 4th house, your mother's prayers and spiritual blessings shield you during critical phases of life.`,
-      detailedAnalysisHi: `चतुर्थ भाव का बल माता से मिलने वाले वात्सल्य का प्रत्यक्ष प्रमाण है। चतुर्थ भाव में ${sav[3]} अष्टकवर्ग बिंदु यह संकेत देते हैं कि माता का आशीर्वाद हर संकट में आपके लिए रक्षा कवच सिद्ध होता है।`,
+      detailedAnalysisEn: `The 4th lord's placement and the Moon's mutual relationship with Lagna dictate the maternal bond. Because the 4th lord connects to positive houses, mother's prayers act as an invisible spiritual shield.`,
+      detailedAnalysisHi: `चतुर्थेश की स्थिति एवं चंद्रमा का लग्न से संबंध मातृ सुख व स्नेह का मुख्य आधार है। चतुर्थेश के शुभ भाव में होने से माता का आशीर्वाद जीवन के हर मोड़ पर रक्षा कवच बनता है।`,
       remedyEn: `Never leave home on major assignments without taking mother's blessing.`,
       remedyHi: `घर से किसी भी महत्वपूर्ण कार्य पर निकलते समय माता का चरण स्पर्श अवश्य करें।`,
       strengthScore: score,
@@ -820,12 +894,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'माता-पिता, कुल व कुटुंब',
       titleEn: 'Siblings Count & Gender Tendencies (Bhratri Bhava)',
       titleHi: 'भाई-बहनों की संख्या, सहोदर योग व लिंग संकेत',
-      astroBasisEn: `3rd House (${h3.signName}) ruled by ${h3.lord} in House ${h3.placedHouse}; Mars (Bhratrikaraka) in House ${mars.houseNumber} (${marsDignity}); 3rd House SAV: ${sav[2]} bindus.`,
-      astroBasisHi: `तृतीय भाव (${h3.signHi}) स्वामी ${h3.lordHi} भाव ${h3.placedHouse} में; मंगल (भ्रातृकारक) भाव ${mars.houseNumber} में (${marsDignity}); तृतीय भाव अष्टकवर्ग: ${sav[2]} बिंदु।`,
+      astroBasisEn: `3rd House (${h3.signName}) ruled by ${h3.lord} in H${h3.placedHouse} (${h3.dignity}, Star Lord: ${h3.starLord}); Mars (Bhratrikaraka) in House ${mars.houseNumber} (${marsDignity}); [SAV (Auxiliary): ${sav[2]} bindus].`,
+      astroBasisHi: `तृतीयेश ${h3.lordHi} भाव ${h3.placedHouse} में (${h3.dignityHi}, नक्षत्र स्वामी: ${h3.starLordHi}); मंगल (भ्रातृकारक) भाव ${mars.houseNumber} में (${marsDignity}); [सर्वाष्टकवर्ग (सहायक): ${sav[2]} बिंदु]।`,
       verdictEn: countEn,
       verdictHi: countHi,
-      detailedAnalysisEn: `Classical Parashari texts evaluate younger siblings from the 3rd house and Mars, and elder siblings from the 11th house. With 3rd house holding ${sav[2]} SAV bindus and Mars placed in House ${mars.houseNumber}, family growth reflects this planetary strength.`,
-      detailedAnalysisHi: `पराशरी सिद्धांत में तृतीय भाव व मंगल से छोटे सहोदरों तथा एकादश भाव से बड़े सहोदरों का विचार किया जाता है। तृतीय भाव में ${sav[2]} अष्टकवर्ग बिंदु एवं मंगल की स्थिति के आधार पर सहोदरों की संख्या संतुलित रहती है।`,
+      detailedAnalysisEn: `Classical Parashari texts evaluate younger siblings from the 3rd house and Mars, and elder siblings from the 11th house. The primary causal factor is the placement and aspects of the 3rd lord and Mars, while 3rd house SAV points act as a corroborative energetic reserve.`,
+      detailedAnalysisHi: `पराशरी सिद्धांत में तृतीयेश, मंगल (भ्रातृकारक) तथा एकादश भाव के स्वामी से सहोदरों का निर्णय होता है। तृतीयेश व मंगल की स्थिति सहोदर संख्या का मुख्य आधार है, जबकि अष्टकवर्ग के ${sav[2]} बिंदु सहायक बल प्रदान करते हैं।`,
       remedyEn: `Distribute sweet jalebis or batasha to young boys or siblings on Tuesdays.`,
       remedyHi: `मंगलवार के दिन छोटे बच्चों अथवा सहोदरों को गुड़ या मीठा प्रसाद बांटें।`,
       strengthScore: score,
@@ -948,12 +1022,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'विवाह, दांपत्य व जीवनसाथी',
       titleEn: 'Marriage Timing Window & Probable Age Range',
       titleHi: 'विवाह काल, संभावित आयु सीमा व शुभ लग्न काल',
-      astroBasisEn: `7th House (${h7.signName}) ruled by ${h7.lord} in House ${h7.placedHouse} (${h7.dignity}); 7th House SAV: ${sav[6]} bindus; Current Dasha: ${mdLord}-${adLord}.`,
-      astroBasisHi: `सप्तम भाव (${h7.signHi}) स्वामी ${h7.lordHi} भाव ${h7.placedHouse} में (${h7.dignity}); सप्तम भाव अष्टकवर्ग: ${sav[6]} बिंदु; वर्तमान दशा: ${mdLordHi}-${adLordHi}।`,
+      astroBasisEn: `7th House (${h7.signName}) ruled by ${h7.lord} in H${h7.placedHouse} (${h7.dignity}, Star Lord: ${h7.starLord}); [SAV (Auxiliary): ${sav[6]} bindus]; Running Dasha: ${mdLord}-${adLord}.`,
+      astroBasisHi: `सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में (${h7.dignityHi}, नक्षत्र स्वामी: ${h7.starLordHi}); [सर्वाष्टकवर्ग (सहायक): ${sav[6]} बिंदु]; वर्तमान दशा: ${mdLordHi}-${adLordHi}।`,
       verdictEn: windowEn,
       verdictHi: windowHi,
-      detailedAnalysisEn: `The 7th house and its lord, in conjunction with Venus (for men) and Jupiter (for women), trigger marriage when the Vimshottari Mahadasha/Antardasha connects to the 7th or 2nd lords. With 7th SAV holding ${sav[6]} bindus, entering marriage within this window fosters relational harmony.`,
-      detailedAnalysisHi: `सप्तम भाव, सप्तमेश एवं शुक्र/गुरु का संबंध विवाह का काल निर्धारित करता है। सप्तम भाव में ${sav[6]} अष्टकवर्ग बिंदु एवं दशा स्वामी ${mdLordHi} के प्रभाव से उपरोक्त आयु खंड में विवाह का सर्वोत्तम योग निर्मित होता है।`,
+      detailedAnalysisEn: `The 7th house and its lord, in conjunction with Venus (for men) and Jupiter (for women), trigger marriage when the Vimshottari Mahadasha/Antardasha connects to the 7th or 2nd lords. The primary causal factor is the 7th lord's dignity and aspects, while 7th SAV points provide supplemental energetic support.`,
+      detailedAnalysisHi: `सप्तमेश की स्थिति, नक्षत्र स्वामी (${h7.starLordHi}) एवं शुक्र/गुरु का संबंध विवाह काल का प्राथमिक आधार हैं। दशा स्वामी ${mdLordHi} के संचरण तथा सप्तम भाव के ${sav[6]} अष्टकवर्ग बिंदुओं के सहायक प्रभाव से विवाह योग परिपक्व होता है।`,
       remedyEn: `Worship Goddess Gauri or Lord Shiva on Mondays and light a ghee lamp facing North-East.`,
       remedyHi: `शीघ्र व शुभ विवाह हेतु सोमवार को भगवान शिव व माता पार्वती की संयुक्त पूजा करें तथा घी का दीपक जलाएं।`,
       strengthScore: score,
@@ -965,7 +1039,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 16. Marital Structure: Timely, Delayed, or Challenges
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 45 + (sav[6] >= 28 ? 15 : -10) + (h7.placedHouse === 6 || h7.placedHouse === 8 || h7.placedHouse === 12 ? -15 : 10)));
+    const score = Math.max(35, Math.min(95, 45 + ([1, 4, 5, 7, 9, 10].includes(h7.placedHouse) ? 14 : -14) + getDignityBonus(h7.dignity) + (sav[6] >= 28 ? 6 : -6)));
     const saturnOn7 = planets.some((p) => p.houseNumber === 7 && p.id === 'Saturn');
     const rahuOn7 = planets.some((p) => p.houseNumber === 7 && p.id === 'Rahu');
     const structEn = saturnOn7
@@ -990,12 +1064,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'विवाह, दांपत्य व जीवनसाथी',
       titleEn: 'Marital Structure: Timely, Delayed or Karmic Lessons',
       titleHi: 'विवाह स्वरूप: समय पर, विलंब अथवा कार्मिक संतुलन',
-      astroBasisEn: `Planets in 7th House: ${planets.filter((p) => p.houseNumber === 7).map((p) => p.id).join(', ') || 'None'}; 7th Lord in House ${h7.placedHouse}; 7th SAV: ${sav[6]} bindus.`,
-      astroBasisHi: `सप्तम भाव में ग्रह: ${planets.filter((p) => p.houseNumber === 7).map((p) => HINDI_PLANETS[p.id] || p.id).join(', ') || 'कोई नहीं'}; सप्तमेश भाव ${h7.placedHouse} में; सप्तम अष्टकवर्ग: ${sav[6]} बिंदु।`,
+      astroBasisEn: `7th Lord ${h7.lord} in H${h7.placedHouse} (${h7.dignity}); Occupants: ${h7.occupants.map((o) => o.id).join(', ') || 'None'}; Aspects: ${h7.aspects.map((a) => `${a.planet} (${a.type})`).join(', ') || 'None'}; [SAV (Auxiliary): ${sav[6]} bindus].`,
+      astroBasisHi: `सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में (${h7.dignityHi}); स्थित ग्रह: ${h7.occupants.map((o) => HINDI_PLANETS[o.id] || o.id).join(', ') || 'कोई नहीं'}; दृष्टि: ${h7.aspects.map((a) => `${a.planetHi} (${a.type})`).join(', ') || 'कोई नहीं'}; [सर्वाष्टकवर्ग (सहायक): ${sav[6]} बिंदु]।`,
       verdictEn: structEn,
       verdictHi: structHi,
-      detailedAnalysisEn: `Classical texts emphasize that malefic aspect on the 7th house delays but solidifies marital commitment, whereas benefics grant early ease. With ${sav[6]} SAV points in the 7th bhava, the fundamental structure remains secure against permanent disruption.`,
-      detailedAnalysisHi: `सप्तम भाव में शुभ ग्रहों की दृष्टि अथवा अनुकूल अष्टकवर्ग बिंदु दांपत्य को सुरक्षा प्रदान करते हैं। सप्तम भाव में ${sav[6]} बिंदु होने से वैवाहिक जीवन में आने वाले उतार-चढ़ाव धैर्य से शांत हो जाते हैं।`,
+      detailedAnalysisEn: `Classical Parashari texts evaluate marital stability through 7th lord dignity, conjunctions, and aspects from Saturn, Mars, or Jupiter. The primary tone is established by these graha positions, while 7th house SAV bindus act as an auxiliary reservoir.`,
+      detailedAnalysisHi: `सप्तमेश का स्थान, स्थित ग्रह एवं शनि, मंगल या गुरु की दृष्टि वैवाहिक स्थिरता के मूल निर्णायक हैं। ग्रहों की यह स्थिति दांपत्य की आधारशिला है, जबकि अष्टकवर्ग के ${sav[6]} बिंदु इसे सहायक ऊर्जा प्रदान करते हैं।`,
       remedyEn: `Perform Vishnu Sahasranama recital on Thursdays to safeguard marital bond.`,
       remedyHi: `गुरुवार को श्री विष्णु सहस्रनाम का पाठ करें अथवा केले के वृक्ष में जल अर्पित करें।`,
       strengthScore: score,
@@ -1102,12 +1176,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'विवाह, दांपत्य व जीवनसाथी',
       titleEn: 'Marital Harmony, Age Difference & Intimate Chemistry',
       titleHi: 'दांपत्य सामंजस्य, आयु अंतर व परस्पर समर्पण',
-      astroBasisEn: `7th House SAV: ${sav[6]} bindus; 12th House SAV: ${sav[11]} bindus; Venus in House ${venus.houseNumber} (${venus.dignity}).`,
-      astroBasisHi: `सप्तम भाव अष्टकवर्ग: ${sav[6]} बिंदु; द्वादश भाव अष्टकवर्ग: ${sav[11]} बिंदु; शुक्र भाव ${venus.houseNumber} में (${venus.dignity}) स्थित।`,
-      verdictEn: `Age Difference: ${ageGapEn} · Marital Chemistry: High bonding backed by ${sav[6]} SAV bindus.`,
-      verdictHi: `आयु अंतर: ${ageGapHi} · दांपत्य सुख: ${sav[6]} अष्टकवर्ग बिंदुओं के कारण सुदृढ़।`,
-      detailedAnalysisEn: `Marital happiness relies on the harmony between 7th house (partnership) and 12th house (Shayana Sukha). With 7th SAV holding ${sav[6]} points and Venus dignity intact, mutual respect overcomes routine domestic disputes.`,
-      detailedAnalysisHi: `दांपत्य सुख का सीधा संबंध सप्तम भाव (साझेदारी) व द्वादश भाव (शयन सुख) से है। सप्तम भाव में ${sav[6]} बिंदु होने से मतभेदों के बावजूद दांपत्य की डोर सदैव अटूट व मजबूत बनी रहती है।`,
+      astroBasisEn: `7th Lord in H${h7.placedHouse} (${h7.dignity}, Star Lord ${h7.starLord}); 12th Lord in H${h12.placedHouse}; Venus in H${venus.houseNumber} (${venus.dignity}); [SAV (Auxiliary): 7th H ${sav[6]} bindus, 12th H ${sav[11]} bindus].`,
+      astroBasisHi: `सप्तमेश भाव ${h7.placedHouse} में (${h7.dignityHi}, नक्षत्र स्वामी: ${h7.starLordHi}); द्वादशेश भाव ${h12.placedHouse} में; शुक्र भाव ${venus.houseNumber} में (${venus.dignity}); [सर्वाष्टकवर्ग (सहायक): सप्तम भाव ${sav[6]} बिंदु, द्वादश भाव ${sav[11]} बिंदु]।`,
+      verdictEn: `Age Difference: ${ageGapEn} · Marital Chemistry: Harmony supported by 7th/12th lord balance.`,
+      verdictHi: `आयु अंतर: ${ageGapHi} · दांपत्य सुख: सप्तमेश व द्वादशेश के संतुलन द्वारा सुदृढ़।`,
+      detailedAnalysisEn: `Marital happiness relies on the harmony between the 7th house (partnership) and 12th house (Shayana Sukha). With Venus possessing dignity and 7th lord supported in ${h7.placedSignName}, mutual respect overcomes routine domestic disputes, while SAV points provide background strength.`,
+      detailedAnalysisHi: `दांपत्य सुख का सीधा संबंध सप्तमेश, द्वादशेश एवं शुक्र की गरिमा से है। सप्तमेश के शुभ नक्षत्र में होने से दांपत्य संबंध सुदृढ़ रहता है, जबकि अष्टकवर्ग के बिंदु इसे सहायक पोषण देते हैं।`,
       remedyEn: `Keep a silver item or crystal ball in the North-West zone of your master bedroom.`,
       remedyHi: `शयनकक्ष के उत्तर-पश्चिम कोण में चांदी की कोई वस्तु अथवा स्फटिक रखें।`,
       strengthScore: score,
@@ -1129,7 +1203,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     if (sav[4] < 20) progAffliction += 2;
 
     const isAnapatya = progAffliction >= 5;
-    const score = isAnapatya ? 35 : Math.max(35, Math.min(95, 50 + (sav[4] >= 28 ? 12 : -10) + getDignityBonus(jupiter.dignity)));
+    const score = isAnapatya ? 35 : Math.max(35, Math.min(95, 50 + ([1, 4, 5, 9, 10, 11].includes(h5.placedHouse) ? 14 : -12) + getDignityBonus(jupiter.dignity) + (sav[4] >= 28 ? 6 : -6)));
     const rahuKetuOn5 = planets.some((p) => p.houseNumber === 5 && (p.id === 'Rahu' || p.id === 'Ketu'));
 
     const modeEn = isAnapatya
@@ -1151,12 +1225,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       categoryTitleHi: 'संतान, कुल वृद्धि व वंश सुख',
       titleEn: 'Children Conception Mode: Natural vs Assisted/Medical',
       titleHi: 'संतान उत्पत्ति स्वरूप: प्राकृतिक अथवा चिकित्सकीय/वैज्ञानिक',
-      astroBasisEn: `5th House (${h5.signName}) ruled by ${h5.lord} in House ${h5.placedHouse}; Jupiter (Putrakaraka) in House ${jupiter.houseNumber} (${jupiter.dignity}); 5th House SAV: ${sav[4]} bindus.`,
-      astroBasisHi: `पंचम भाव (${h5.signHi}) स्वामी ${h5.lordHi} भाव ${h5.placedHouse} में; गुरु (पुत्रकारक) भाव ${jupiter.houseNumber} में (${jupiter.dignity}); पंचम भाव अष्टकवर्ग: ${sav[4]} बिंदु।`,
+      astroBasisEn: `5th Lord ${h5.lord} in H${h5.placedHouse} (${h5.dignity}, Star Lord: ${h5.starLord}); Jupiter (Putrakaraka) in H${jupiter.houseNumber} (${jupiter.dignity}); Occupants: ${h5.occupants.map((o) => o.id).join(', ') || 'None'}; [SAV (Auxiliary): ${sav[4]} bindus].`,
+      astroBasisHi: `पंचमेश ${h5.lordHi} भाव ${h5.placedHouse} में (${h5.dignityHi}, नक्षत्र स्वामी: ${h5.starLordHi}); गुरु भाव ${jupiter.houseNumber} में (${jupiter.dignity}); स्थित ग्रह: ${h5.occupants.map((o) => HINDI_PLANETS[o.id] || o.id).join(', ') || 'कोई नहीं'}; [सर्वाष्टकवर्ग (सहायक): ${sav[4]} बिंदु]।`,
       verdictEn: modeEn,
       verdictHi: modeHi,
-      detailedAnalysisEn: `The 5th house and Jupiter govern progeny (Santan Bhava). With 5th house holding ${sav[4]} bindus and ${h5.lord} positioned in House ${h5.placedHouse}, timely devotion to Santan Gopal and following medical rhythm ensures wholesome parenthood.`,
-      detailedAnalysisHi: `पंचम भाव व देवगुरु बृहस्पति संतान सुख के मुख्य कारक हैं। पंचम भाव में ${sav[4]} अष्टकवर्ग बिंदु होने से संतान का योग निर्मित होता है। यदि पाप ग्रहों का प्रभाव हो, तो चिकित्सकीय परामर्श व ईश्वरीय उपासना से मार्ग प्रशस्त होता है।`,
+      detailedAnalysisEn: `The 5th house lord, its dispositor star lord, and Putrakaraka Jupiter establish the primary conception karma. Benefic aspects from Jupiter or Venus facilitate ease, while 5th house SAV bindus provide supplemental vital reserve.`,
+      detailedAnalysisHi: `पंचमेश, इसका नक्षत्र स्वामी (${h5.starLordHi}) तथा पुत्रकारक गुरु संतान उत्पत्ति के प्राथमिक निर्णायक हैं। गुरु की शुभ दृष्टि से मार्ग प्रशस्त होता है, जबकि अष्टकवर्ग के ${sav[4]} बिंदु इसे सहायक ऊर्जा प्रदान करते हैं।`,
       remedyEn: `Recite Santan Gopal Mantra ("Om Shreem Hreem Kleem Glaum Devakisuta Govinda Vasudeva Jagatpate Dehi Me Tanayam Krishna Tvamaham Sharanam Gatah") daily.`,
       remedyHi: `संतान सुख व गर्भ रक्षा हेतु नित्य संतान गोपाल स्तोत्र अथवा मंत्र का भक्तिभाव से जप करें।`,
       strengthScore: score,

@@ -107,8 +107,8 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
         <div className="modal-header no-print">
           <h3>
             {isHi
-              ? 'बृहत् जन्म पत्रिका — बहु-पृष्ठीय PDF कुंडली पुस्तिका'
-              : 'Brihat Janam Patrika — Multi-Page Printable PDF Booklet'}
+              ? 'बृहत् जन्म पत्रिका — संपूर्ण Birth Report (PDF)'
+              : 'Brihat Janam Patrika — Complete Birth Report (PDF)'}
           </h3>
           <div className="toolbar-group">
             <button type="button" className="btn btn-primary btn-sm" onClick={handlePrint}>

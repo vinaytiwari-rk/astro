@@ -269,10 +269,10 @@ export const SecondarySubNav: React.FC<SecondarySubNavProps> = ({
     patrika_booklet: [
       {
         id: 'full_edition',
-        labelEn: '34-Chapter Deluxe Patrika',
-        labelHi: '34-अध्यायी बृहत् जन्मपत्रिका',
+        labelEn: 'Complete Birth Report (PDF)',
+        labelHi: 'संपूर्ण जन्म पत्रिका (Birth Report)',
         icon: <FileText size={14} />,
-        badge: '34 Ch',
+        badge: 'Deluxe',
       },
       {
         id: 'branding_options',
