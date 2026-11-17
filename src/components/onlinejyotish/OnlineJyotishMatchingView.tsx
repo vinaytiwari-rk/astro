@@ -17,6 +17,7 @@ import {
 import { calculateChart } from '../../astro/calculator';
 import { NAKSHATRAS, SIGNS } from '../../astro/constants';
 import { computeAshtakoota } from '../../astro/matchmaking';
+import { matchBeejaKshetraSphuta, evaluateMatchDoshasAndPoojas } from '../../astro/matchmakingDeep';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import type { CityEntry } from '../../data/cities';
@@ -78,6 +79,14 @@ export const OnlineJyotishMatchingView: React.FC<OnlineJyotishMatchingViewProps>
   const matchReport = useMemo(() => {
     return computeAshtakoota(girlChart, boyChart);
   }, [girlChart, boyChart]);
+
+  const beejaKshetra = useMemo(() => {
+    return matchBeejaKshetraSphuta(boyChart, girlChart);
+  }, [boyChart, girlChart]);
+
+  const doshaPoojas = useMemo(() => {
+    return evaluateMatchDoshasAndPoojas(boyChart, girlChart, matchReport, beejaKshetra);
+  }, [boyChart, girlChart, matchReport, beejaKshetra]);
 
   const boyBadges: ChartBadgeItem[] = useMemo(() => [
     {
@@ -367,6 +376,92 @@ export const OnlineJyotishMatchingView: React.FC<OnlineJyotishMatchingViewProps>
               : (isHi ? 'आंशिक असंतुलन (दोष परिहार अपेक्षित)' : 'One-Sided Kuja Dosha (Remedies Advised)')}
           </h4>
           <p>{matchReport.brideManglik.note} {matchReport.groomManglik.note}</p>
+        </div>
+      </div>
+
+      {/* Beeja & Kshetra Sphuta Progeny Analysis */}
+      <div className="oj-card">
+        <div className="oj-card-header">
+          <h2>{isHi ? 'बीज एवं क्षेत्र स्फुट (संतान सुख एवं आनुवंशिक अनुकूलता)' : 'Beeja & Kshetra Sphuta (Progeny Vitality Analysis)'}</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', marginBottom: '14px' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.06)', border: '1px solid rgba(217, 119, 6, 0.25)' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#b45309', textTransform: 'uppercase' }}>
+              {isHi ? 'वर बीज स्फुट (Beeja Sphuta)' : 'Groom Beeja Sphuta'}
+            </span>
+            <div style={{ fontSize: '18px', fontWeight: 800, margin: '4px 0', color: 'var(--text)' }}>
+              {trSign(beejaKshetra.partnerABeeja.signIndex, lang)} ({beejaKshetra.partnerABeeja.dms})
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {isHi ? 'नवांश राशि:' : 'Navamsha:'} <strong>{trSign(beejaKshetra.partnerABeeja.d9SignIndex, lang)}</strong> · {beejaKshetra.partnerABeeja.labelHi}
+            </div>
+          </div>
+
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.25)' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase' }}>
+              {isHi ? 'कन्या क्षेत्र स्फुट (Kshetra Sphuta)' : 'Bride Kshetra Sphuta'}
+            </span>
+            <div style={{ fontSize: '18px', fontWeight: 800, margin: '4px 0', color: 'var(--text)' }}>
+              {trSign(beejaKshetra.partnerAKshetra.signIndex, lang)} ({beejaKshetra.partnerAKshetra.dms})
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {isHi ? 'नवांश राशि:' : 'Navamsha:'} <strong>{trSign(beejaKshetra.partnerAKshetra.d9SignIndex, lang)}</strong> · {beejaKshetra.partnerAKshetra.labelHi}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding: '12px 16px', borderRadius: '10px', background: 'var(--bg-subtle)', borderLeft: '4px solid #059669', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <strong style={{ color: '#065f46', fontSize: '13px' }}>
+              {isHi ? 'संतान स्फुट सामर्थ्य मूल्यांकन:' : 'Progeny Compatibility Score:'} {beejaKshetra.score}/100
+            </strong>
+            <span style={{ padding: '2px 8px', borderRadius: '9999px', background: beejaKshetra.score >= 70 ? '#059669' : '#d97706', color: '#fff', fontSize: '11px', fontWeight: 700 }}>
+              {beejaKshetra.score >= 70 ? (isHi ? 'अति उत्तम' : 'High') : (isHi ? 'मध्यम' : 'Moderate')}
+            </span>
+          </div>
+          <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text)' }}>
+            {isHi ? beejaKshetra.summaryHi : beejaKshetra.summaryEn}
+          </p>
+        </div>
+      </div>
+
+      {/* Classical Dosha Parihara & Exceptions Table */}
+      <div className="oj-card">
+        <div className="oj-card-header">
+          <h2>{isHi ? 'दोष परिहार एवं शास्त्रीय अपवाद निर्णय (Classical Parihara)' : 'Classical Dosha Cancellation (Parihara)'}</h2>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {doshaPoojas.map((d, i) => (
+            <div
+              key={i}
+              style={{
+                padding: '12px 14px',
+                borderRadius: '8px',
+                background: d.severity === 'High' ? 'rgba(239, 68, 68, 0.05)' : 'rgba(217, 119, 6, 0.05)',
+                border: `1px solid ${d.severity === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(217, 119, 6, 0.3)'}`,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <strong style={{ color: d.severity === 'High' ? '#dc2626' : '#b45309', fontSize: '13px' }}>
+                  {isHi ? d.doshaHi : d.doshaEn}
+                </strong>
+                <span style={{ fontSize: '11px', padding: '1px 8px', borderRadius: '4px', background: d.severity === 'High' ? '#dc2626' : '#b45309', color: '#fff' }}>
+                  {d.severity}
+                </span>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text)', marginBottom: '4px' }}>
+                {isHi ? d.affectedHi : d.affectedEn}
+              </div>
+              <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                <strong>{isHi ? 'शास्त्रीय परिहार विधि:' : 'Classical Remedy:'}</strong> {isHi ? d.poojaNameHi : d.poojaNameEn}
+              </div>
+            </div>
+          ))}
+          {doshaPoojas.length === 0 && (
+            <div style={{ padding: '12px', color: '#059669', fontWeight: 600, fontSize: '13px' }}>
+              {isHi ? 'कुंडली में किसी गंभीर दोष का प्रभाव नहीं है। सभी परिहार स्वतः मान्य हैं।' : 'No critical doshas detected. Natural cancellations apply.'}
+            </div>
+          )}
         </div>
       </div>
 

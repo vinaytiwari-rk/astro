@@ -187,6 +187,39 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
                         {strength || (isHi ? 'सक्रिय' : 'Active')}
                       </span>
                     )}
+                    {det && det.bhangaStatus && (
+                      <span
+                        className="tag"
+                        style={{
+                          background:
+                            det.bhangaStatus === 'Full'
+                              ? 'rgba(16, 185, 129, 0.15)'
+                              : det.bhangaStatus === 'Neechabhanga'
+                                ? 'rgba(139, 92, 246, 0.15)'
+                                : det.bhangaStatus === 'Partial'
+                                  ? 'rgba(245, 158, 11, 0.15)'
+                                  : 'rgba(239, 68, 68, 0.15)',
+                          color:
+                            det.bhangaStatus === 'Full'
+                              ? '#059669'
+                              : det.bhangaStatus === 'Neechabhanga'
+                                ? '#7c3aed'
+                                : det.bhangaStatus === 'Partial'
+                                  ? '#d97706'
+                                  : '#dc2626',
+                          border: '1px solid currentColor',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {det.bhangaStatus === 'Full'
+                          ? isHi ? 'पूर्ण प्रभावी' : 'Full Fruition (100%)'
+                          : det.bhangaStatus === 'Neechabhanga'
+                            ? isHi ? 'नीचभंग राजयोग' : 'Neechabhanga Active'
+                            : det.bhangaStatus === 'Partial'
+                              ? isHi ? 'आंशिक प्रभावी' : 'Partial (Combust)'
+                              : isHi ? 'योग-भंग / निष्फल' : 'Yoga Bhanga'}
+                      </span>
+                    )}
                     <span
                       className={`tag ${
                         y.quality === 'Positive'
@@ -223,6 +256,16 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
                           {isHi ? `भाव ${det.houses.join(', ')}` : `House ${det.houses.join(', ')}`}
                         </span>
                       )}
+                    </div>
+                  )}
+                  {det && det.bhangaReasonEn && (
+                    <div style={{ marginTop: 6, padding: '6px 10px', borderRadius: 6, background: 'var(--bg-subtle)', borderLeft: `3px solid ${det.bhangaStatus === 'Bhanga' ? '#dc2626' : det.bhangaStatus === 'Partial' ? '#d97706' : '#059669'}`, fontSize: '0.82rem' }}>
+                      <strong style={{ color: det.bhangaStatus === 'Bhanga' ? '#dc2626' : det.bhangaStatus === 'Partial' ? '#d97706' : '#059669' }}>
+                        {isHi ? 'योग प्रभावशीलता / भंग निर्णय:' : 'Bhanga / Potency Decision:'}
+                      </strong>{' '}
+                      <span className="muted">
+                        {isHi ? det.bhangaReasonHi : det.bhangaReasonEn}
+                      </span>
                     </div>
                   )}
                   <p className="lead-text" style={{ marginTop: 6, fontSize: '0.88rem' }}>

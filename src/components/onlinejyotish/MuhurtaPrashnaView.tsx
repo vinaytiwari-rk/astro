@@ -226,14 +226,34 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
                   KP Horary Seed (1 to 249):
                 </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={249}
-                  value={horaryNum}
-                  onChange={(e) => setHoraryNum(Math.max(1, Math.min(249, Number(e.target.value))))}
-                  style={{ width: '100px', padding: '8px 12px', borderRadius: '6px', border: '1.5px solid var(--accent)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 700, fontSize: '15px' }}
-                />
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <input
+                    type="number"
+                    min={1}
+                    max={249}
+                    value={horaryNum}
+                    onChange={(e) => setHoraryNum(Math.max(1, Math.min(249, Number(e.target.value))))}
+                    style={{ width: '90px', padding: '8px 12px', borderRadius: '6px', border: '1.5px solid var(--accent)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 700, fontSize: '15px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setHoraryNum(Math.floor(Math.random() * 249) + 1)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(217, 119, 6, 0.4)',
+                      background: 'rgba(254, 243, 199, 0.7)',
+                      color: '#b45309',
+                      fontWeight: 700,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title="रैंडम प्रश्न बीज (1–249) चुनें"
+                  >
+                    रैंडम बीज (Random)
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -268,6 +288,41 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                   style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontSize: '13px' }}
                 />
               </div>
+            </div>
+
+            {/* Quick Question Presets */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', paddingTop: '4px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#b45309' }}>त्वरित प्रश्न (Presets):</span>
+              {[
+                { label: 'नौकरी: नया अवसर?', cat: 'job_career' as PrashnaCategory, text: 'क्या मुझे नई नौकरी या पदोन्नति का अवसर शीघ्र मिलेगा?' },
+                { label: 'विवाह: क्या तय होगा?', cat: 'marriage' as PrashnaCategory, text: 'क्या इस वर्ष मेरा विवाह तय या संपन्न होगा?' },
+                { label: 'धन लाभ: रुका धन?', cat: 'wealth_business' as PrashnaCategory, text: 'क्या व्यापार या ऋण में रुका हुआ धन वापस मिलेगा?' },
+                { label: 'रोग मुक्ति: स्वास्थ्य लाभ?', cat: 'health_recovery' as PrashnaCategory, text: 'क्या वर्तमान रोग या अस्वस्थता से शीघ्र पूर्ण मुक्ति मिलेगी?' },
+                { label: 'मुकदमा: क्या विजय होगी?', cat: 'litigation_court' as PrashnaCategory, text: 'क्या न्यायालय/विवाद में निर्णय मेरे पक्ष में आएगा?' },
+                { label: 'खोई वस्तु: क्या मिलेगी?', cat: 'lost_object' as PrashnaCategory, text: 'क्या खोई या चोरी हुई वस्तु पुनः प्राप्त हो जाएगी?' },
+                { label: 'वाहन/भवन क्रय?', cat: 'property_vehicle' as PrashnaCategory, text: 'क्या नया मकान या वाहन खरीदना शुभ और सफल रहेगा?' },
+              ].map((p, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setPrashnaCat(p.cat);
+                    setQuestionText(p.text);
+                  }}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '11px',
+                    border: '1px solid rgba(217, 119, 6, 0.35)',
+                    background: 'rgba(254, 243, 199, 0.5)',
+                    color: 'var(--text)',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
 

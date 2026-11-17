@@ -155,6 +155,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'nadi',
     'ashtakavarga',
     'shadbala',
+    'multi-dasha',
+    'sudarshana',
   ].includes(currentView);
   const isToolsActive = [
     'prashna',
@@ -164,6 +166,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'medical-astrology',
     'gemstones',
     'workstation',
+    'client-diary',
   ].includes(currentView);
   const isFestivalsActive = ['festivals', 'daily-panchanga', 'choghadiya'].includes(currentView);
 
@@ -398,6 +401,14 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
+                  <button type="button" onClick={() => handleLinkClick('multi-dasha')}>
+                    <strong>{isHi ? 'त्रिवेणी दशा संगम (Multi-Dasha Matrix)' : 'Multi-Dasha Matrix (4 Dashas)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'विंशोत्तरी + योगिनी + चर + अष्टोत्तरी एक साथ' : 'Vimshottari, Yogini, Chara & Ashtottari'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('sudarshana')}>
+                    <strong>{isHi ? 'सुदर्शन चक्र 3-इन-1 (Sudarshana Chakra)' : 'Sudarshana Chakra (3-in-1)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'लग्न + चंद्र + सूर्य 3-वलय व 100 वर्षीय आयु स्लाइडर' : 'Lagna + Moon + Sun Concentric Rings'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('split-studio')}>
                     <strong>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'D1 + D9 + दशा + गोचर एक ही स्क्रीन पर' : 'D1 + D9 + Dashas + Live Transits'}</span>
@@ -464,6 +475,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
+                  <button type="button" onClick={() => handleLinkClick('client-diary')}>
+                    <strong>{isHi ? 'ज्योतिषी परामर्श डायरी (Client Case Notes)' : 'Client Consultation Diary'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जातक प्रश्न, समयसीमा, उपाय पर्ची व फॉलो-अप' : 'Case History, Predictions & Printable Slips'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('prashna')}>
                     <strong>{isHi ? 'केपी प्रश्न कुण्डली (1–249)' : 'KP Prashna Horary (1–249)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'तात्कालिक प्रश्न: हाँ/ना/सशर्त उत्तर' : 'Instant Yes/No/Conditional Outcome'}</span>

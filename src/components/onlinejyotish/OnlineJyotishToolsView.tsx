@@ -14,7 +14,9 @@ import {
   Sun,
 } from 'lucide-react';
 import { computeAvakahadaChakra } from '../../astro/avakahadaChalit';
+import { calculateChart } from '../../astro/calculator';
 import { NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../../astro/constants';
+import { computeGocharaKakshas } from '../../astro/panchaPakshiAndKaksha';
 import { computeDeepGochar } from '../../astro/predictions/gocharDeep';
 import { computeGemstoneAndRudraksha } from '../../astro/rashifalBabyRudraksha';
 import { formatDateDmy } from '../../astro/time';
@@ -61,6 +63,21 @@ export const OnlineJyotishToolsView: React.FC<OnlineJyotishToolsViewProps> = ({
   const jupiterItem = useMemo(() => gochar.items.find((it) => it.planet === 'Jupiter'), [gochar]);
   const rahuItem = useMemo(() => gochar.items.find((it) => it.planet === 'Rahu'), [gochar]);
   const ketuItem = useMemo(() => gochar.items.find((it) => it.planet === 'Ketu'), [gochar]);
+
+  const transitChart = useMemo(() => {
+    return calculateChart(
+      {
+        ...activeInput,
+        date: todayIso,
+        time: '12:00',
+      },
+      settings
+    );
+  }, [activeInput, todayIso, settings]);
+
+  const kakshaEntries = useMemo(() => {
+    return computeGocharaKakshas(chart, transitChart);
+  }, [chart, transitChart]);
 
   const toolTitles: Record<AstroToolCategory, { titleEn: string; titleHi: string; descEn: string; descHi: string }> = {
     ashtakavarga: {
@@ -172,6 +189,7 @@ export const OnlineJyotishToolsView: React.FC<OnlineJyotishToolsViewProps> = ({
 
       {/* 1. Ashtakavarga View */}
       {tool === 'ashtakavarga' && (
+        <>
         <div className="oj-card">
           <div className="oj-card-header">
             <h2>{isHi ? 'सर्वाष्टकवर्ग सारणी (337 कुल बिंदु)' : 'Samudaya Ashtakavarga (337 Total Bindus)'}</h2>
@@ -215,6 +233,51 @@ export const OnlineJyotishToolsView: React.FC<OnlineJyotishToolsViewProps> = ({
             </tbody>
           </table>
         </div>
+
+        {/* Kakshya Micro-Transit Table */}
+        <div className="oj-card" style={{ marginTop: '20px' }}>
+          <div className="oj-card-header">
+            <h2>{isHi ? 'दैनिक कक्षा गोचर सारणी (3°45\' सूक्ष्म फल निर्णय)' : 'Daily Kakshya Transit Filter (3°45\' Micro-Results)'}</h2>
+          </div>
+          <p style={{ margin: '0 0 14px', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+            {isHi
+              ? 'प्रत्येक राशि 8 कक्षाओं (3°45\' प्रत्येक) में विभाजित होती है। जब गोचर ग्रह उस कक्षा से गुजरता है जिसमें उसे बिंदु (1) प्राप्त है, तो वह दिन अत्यंत शुभ व कार्य सिद्धि कारक होता है। 0 बिंदु पर अड़चन आती है।'
+              : 'Each sign has 8 Kakshyas (3°45\' each). A transit planet delivers auspicious results when moving through a Kakshya with 1 Bindu, and temporary delays when Bindu is 0.'}
+          </p>
+          <table className="oj-table">
+            <thead>
+              <tr>
+                <th>{isHi ? 'ग्रह' : 'Planet'}</th>
+                <th>{isHi ? 'गोचर राशि एवं अंश' : 'Sign & Longitude'}</th>
+                <th>{isHi ? 'कक्षा सं.' : 'Kakshya #'}</th>
+                <th>{isHi ? 'कक्षा अंश विस्तार' : 'Span (3°45\')'}</th>
+                <th>{isHi ? 'कक्षा स्वामी' : 'Kakshya Lord'}</th>
+                <th>{isHi ? 'बिंदु स्थिति' : 'Bindu (1/0)'}</th>
+                <th>{isHi ? 'दैनिक सूक्ष्म फल' : 'Micro-Verdict'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kakshaEntries.map((k) => (
+                <tr key={k.planet}>
+                  <td><strong>{trPlanet(k.planet, lang)}</strong></td>
+                  <td>{trSign(k.signIndex, lang)} ({k.dms})</td>
+                  <td><strong>#{k.kakshaNumber}</strong></td>
+                  <td>{k.kakshaRange}</td>
+                  <td><strong style={{ color: '#b45309' }}>{k.kakshaLord}</strong></td>
+                  <td>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', background: k.kakshaBindu === 1 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: k.kakshaBindu === 1 ? '#059669' : '#dc2626', fontWeight: 800 }}>
+                      {k.kakshaBindu === 1 ? (isHi ? '1 बिंदु (शुभ)' : '1 Bindu (Fav)') : (isHi ? '0 बिंदु (बाधा)' : '0 Bindu (Obstacle)')}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: '12px' }}>
+                    {isHi ? k.verdictHi : k.verdictEn}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        </>
       )}
 
       {/* 2. Shadbala View */}

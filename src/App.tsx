@@ -23,6 +23,9 @@ import { DualTransitWheelView } from './components/onlinejyotish/DualTransitWhee
 import { SarvatobhadraChakraView } from './components/onlinejyotish/SarvatobhadraChakraView';
 import { LalKitabView } from './components/onlinejyotish/LalKitabView';
 import { SplitStudioWorkstationView } from './components/onlinejyotish/SplitStudioWorkstationView';
+import { MultiDashaMatrixView } from './components/onlinejyotish/MultiDashaMatrixView';
+import { SudarshanaChakraView } from './components/onlinejyotish/SudarshanaChakraView';
+import { ClientConsultationDiaryView } from './components/onlinejyotish/ClientConsultationDiaryView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -409,6 +412,30 @@ export function App() {
                 onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
                 onNavigate={navigateTo}
                 onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {currentView === 'multi-dasha' && (
+              <MultiDashaMatrixView
+                chart={chart}
+                settings={settings}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'sudarshana' && (
+              <SudarshanaChakraView
+                chart={chart}
+                settings={settings}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'client-diary' && (
+              <ClientConsultationDiaryView
+                chart={chart}
+                activeInput={activeInput}
+                onNavigate={navigateTo}
               />
             )}
 
