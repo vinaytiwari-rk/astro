@@ -40,7 +40,7 @@ interface OnlineJyotishHomePortalProps {
   profiles: BirthInput[];
   settings: CalcSettings;
   onSelectProfile: (id: string) => void;
-  onNavigateToDivision: (divisionNumber: number | string) => void;
+  onNavigate: (view: string, sub?: string) => void;
   onOpenEditor: () => void;
   onOpenBooklet: () => void;
   onApplyBirthInput: (input: BirthInput) => void;
@@ -68,7 +68,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
   profiles,
   settings,
   onSelectProfile,
-  onNavigateToDivision,
+  onNavigate,
   onOpenEditor,
   onOpenBooklet,
   onApplyBirthInput,
@@ -96,7 +96,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
   const handleGenerateKundli = (e: React.FormEvent) => {
     e.preventDefault();
     onApplyBirthInput(quickForm);
-    onNavigateToDivision(1);
+    onNavigate('vedic-horoscope');
   };
 
   // --- Real-time Live Panchang & Muhurta ---
@@ -177,8 +177,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-emblem-badge">
               <span className="oj-om-symbol" aria-hidden="true">ॐ</span>
               <div className="oj-emblem-text">
-                <span className="oj-site-title">OnlineJyotish.com</span>
-                <span className="oj-site-org">Om Sri Sai Jyotisha Vidyapeetham · Serving you since 2004</span>
+                <span className="oj-site-title">AV Astro Vibe</span>
+                <span className="oj-site-org">{isHi ? 'वैदिक ज्योतिष, पंचांग एवं संपूर्ण फलादेश' : 'Vedic Astrology, Panchang & Free Predictions'}</span>
               </div>
             </div>
             <div className="oj-hero-tag">
@@ -201,7 +201,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-primary"
-              onClick={() => onNavigateToDivision(1)}
+              onClick={() => onNavigate('vedic-horoscope')}
             >
               <FileText size={17} />
               <span>{isHi ? 'निःशुल्क कुंडली बनाएं' : 'Create free Kundli'}</span>
@@ -210,7 +210,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigateToDivision(11)}
+              onClick={() => onNavigate('daily-panchanga')}
             >
               <Calendar size={17} />
               <span>{isHi ? 'पंचांग देखें' : 'View Panchang'}</span>
@@ -219,7 +219,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigateToDivision(10)}
+              onClick={() => onNavigate('marriage-matching')}
             >
               <Heart size={17} />
               <span>{isHi ? 'कुंडली मिलान' : 'Check matching'}</span>
@@ -228,38 +228,35 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigateToDivision(11)}
+              onClick={() => onNavigate('sambhavit-falkathan')}
             >
               <Star size={17} />
-              <span>{isHi ? 'दैनिक राशिफल' : 'Read daily horoscope'}</span>
+              <span>{isHi ? 'संभावित फलादेश' : 'Life Predictions'}</span>
             </button>
           </div>
 
           {/* Quick Feature Pills Bar */}
           <div className="oj-quick-pills-row">
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(1)}>
-              {isHi ? 'जन्म कुंडली (Lagna & Chalit)' : 'Birth chart (Kundli)'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('vedic-horoscope')}>
+              {isHi ? 'जन्म कुंडली (Kundli)' : 'Birth chart (Kundli)'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(9)}>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('kp-horoscope')}>
               {isHi ? 'KP कुंडली (KP System)' : 'KP horoscope'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(12)}>
-              {isHi ? 'शिशु नामकरण (Newborn & Namakshar)' : 'Newborn horoscope'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('baby-names')}>
+              {isHi ? 'शिशु नामकरण (Newborn)' : 'Newborn horoscope'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
-              {isHi ? 'गुण मिलान व दोष भंग' : 'Guna Milan with Dosha Bhanga analysis'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
+              {isHi ? 'गुण मिलान व दोष भंग' : 'Guna Milan with Dosha Bhanga'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
               {isHi ? 'नक्षत्र मिलान' : 'Nakshatra Matching'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
-              {isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota matching (10 Poruthams)'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
+              {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(10)}>
-              {isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}
-            </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigateToDivision(12)}>
-              {isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions (25 Dimensions)'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('sambhavit-falkathan')}>
+              {isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions'}
             </button>
             <button type="button" className="oj-link-pill" onClick={onOpenBooklet}>
               {isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page PDF Report (Free)'}
@@ -395,7 +392,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-btn-text"
-                onClick={() => onNavigateToDivision(11)}
+                onClick={() => onNavigate('panchang')}
               >
                 <span>{isHi ? 'विस्तृत पंचांग खोलें →' : 'View Full Panchang →'}</span>
               </button>
@@ -476,7 +473,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(1)}
+                onClick={() => onNavigate('vedic-horoscope')}
               >
                 <span>{isHi ? 'कुंडली बनाएं →' : 'Create your Kundli →'}</span>
               </button>
@@ -496,7 +493,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(11)}
+                onClick={() => onNavigate('daily-panchanga')}
               >
                 <span>{isHi ? 'पंचांग देखें →' : "View today's Panchang →"}</span>
               </button>
@@ -516,7 +513,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(10)}
+                onClick={() => onNavigate('marriage-matching')}
               >
                 <span>{isHi ? 'कुंडली मिलान करें →' : 'Compare horoscopes →'}</span>
               </button>
@@ -536,7 +533,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(11)}
+                onClick={() => onNavigate('daily-panchanga')}
               >
                 <span>{isHi ? 'राशिफल पढ़ें →' : 'Read Rashifal →'}</span>
               </button>
@@ -556,7 +553,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(9)}
+                onClick={() => onNavigate('kp-horoscope')}
               >
                 <span>{isHi ? 'KP चार्ट बनाएं →' : 'Generate a KP chart →'}</span>
               </button>
@@ -576,7 +573,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(12)}
+                onClick={() => onNavigate('baby-names')}
               >
                 <span>{isHi ? 'शिशु विवरण देखें →' : 'Check newborn details →'}</span>
               </button>
@@ -596,7 +593,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(4)}
+                onClick={() => onNavigate('ashtakavarga')}
               >
                 <span>{isHi ? 'कैलकुलेटर खोलें →' : 'Browse calculators →'}</span>
               </button>
@@ -618,7 +615,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigateToDivision(12)}
+                onClick={() => onNavigate('sambhavit-falkathan')}
               >
                 <span>{isHi ? 'संभावित फलकथन देखें →' : 'View Falkathan →'}</span>
               </button>
@@ -693,7 +690,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <button
                   type="button"
                   className="oj-btn-outline btn-sm"
-                  onClick={() => onNavigateToDivision(11)}
+                  onClick={() => onNavigate('panchang')}
                 >
                   {isHi ? 'संपूर्ण 12 राशियों का वार्षिक फल →' : 'View Full Rashifal Module →'}
                 </button>
@@ -728,44 +725,44 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
           </div>
 
           <div className="oj-popular-links-grid">
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(1)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('vedic-horoscope')}>
               <strong>{isHi ? 'वैदिक जन्म कुंडली' : 'Vedic Horoscope'}</strong>
               <span className="oj-badge-popular">Popular</span>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(9)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('kp')}>
               <strong>{isHi ? 'केपी ज्योतिष (KP Horoscope)' : 'KP Horoscope'}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'मासिक पंचांग कैलेंडर' : 'Monthly Panchang Calendar'}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('matching')}>
               <strong>{isHi ? 'गुण मिलान व दोष भंग' : 'Guna Milan with Dosha Bhanga'}</strong>
               <span className="oj-badge-popular">Popular</span>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('matching')}>
               <strong>{isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}</strong>
               <span className="oj-badge-popular">Popular</span>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(10)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('matching')}>
               <strong>{isHi ? 'अनुकूल विवाह नक्षत्र' : 'Suitable Marriage Nakshatras'}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'आज का पंचांग' : "Today's Panchang"}</strong>
               <span className="oj-badge-popular">Popular</span>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'आज के होरा समय (Hora)' : "Today's Hora Times"}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'आज का चौघड़िया (Choghadiya)' : "Today's Choghadiya Times"}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'आज के शुभ मुहूर्त' : "Today's Muhurta Times"}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(11)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigateToDivision(12)}>
+            <div className="oj-popular-item" onClick={() => onNavigate('sambhavit')}>
               <strong>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Sambhavit Falkathan (25 Dim)'}</strong>
             </div>
           </div>
@@ -818,9 +815,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
           <div className="oj-footer-top">
             <div className="oj-footer-brand">
               <span className="oj-om-symbol-small" aria-hidden="true">ॐ</span>
-              <span className="oj-footer-title">OnlineJyotish.com</span>
+              <span className="oj-footer-title">AV Astro Vibe</span>
               <p className="oj-footer-tagline">
-                {isHi ? 'अपनी भाषा में अपना भविष्य जानें · 2004 से आपकी सेवा में' : 'Know your future in your language · Serving you since 2004.'}
+                {isHi ? 'वैदिक ज्योतिष, पंचांग एवं संपूर्ण फलादेश' : 'Vedic Astrology, Panchang & Free Predictions'}
               </p>
             </div>
 
@@ -837,7 +834,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-footer-search-btn"
                 onClick={() => {
                   if (searchQuery.trim()) {
-                    onNavigateToDivision(1);
+                    onNavigate('vedic-horoscope');
                   }
                 }}
               >
@@ -851,55 +848,54 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'निःशुल्क सेवाएं' : 'Free Tools & Kundli'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigateToDivision(1)}>{isHi ? 'वैदिक जन्म कुंडली (D-1)' : 'Vedic Horoscope (D-1)'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(3)}>{isHi ? 'षोडशवर्ग कुंडलियां (D1-D60)' : 'Shodashavargas (D1-D60)'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(6)}>{isHi ? 'विंशोत्तरी व त्रिभागी दशा' : 'Vimshottari & Tribhagi Dasha'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(9)}>{isHi ? 'केपी पद्धति कुंडली' : 'KP System Horoscope'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(12)}>{isHi ? 'शिशु नामकरण व नामाक्षर' : 'Newborn Baby Naming'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'वैदिक जन्म कुंडली (D-1)' : 'Vedic Horoscope (D-1)'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('kp-horoscope')}>{isHi ? 'केपी पद्धति कुंडली' : 'KP System Horoscope'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('marriage-matching')}>{isHi ? 'कुंडली मिलान (36 गुण)' : 'Marriage Matching'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('daily-panchanga')}>{isHi ? 'दैनिक पंचांग व राहु काल' : 'Daily Panchang & Rahu Kalam'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('baby-names')}>{isHi ? 'शिशु नामकरण व नामाक्षर' : 'Newborn Baby Naming'}</button></li>
               </ul>
             </div>
 
             <div className="oj-footer-col">
               <h4>{isHi ? 'पंचांग एवं पर्व' : 'Panchang & Festivals'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'दैनिक पंचांग व राहु काल' : 'Daily Panchang & Rahu Kalam'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'मासिक पंचांग कैलेंडर' : 'Monthly Panchang Calendar'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'हिंदू पर्व व व्रत सूची' : 'Hindu Festivals & Vrats'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'चौघड़िया मुहूर्त (दिन व रात)' : 'Choghadiya Timings'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(11)}>{isHi ? 'होरा चक्र (Planetary Hours)' : 'Planetary Hora Timings'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('daily-panchanga')}>{isHi ? 'दैनिक पंचांग व राहु काल' : 'Daily Panchang & Rahu Kalam'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('festivals')}>{isHi ? 'हिंदू पर्व व व्रत सूची' : 'Hindu Festivals & Vrats'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('festivals')}>{isHi ? 'एकादशी एवं प्रदोष तिथियां' : 'Ekadashi & Pradosh Dates'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('choghadiya')}>{isHi ? 'चौघड़िया मुहूर्त (दिन व रात)' : 'Choghadiya Timings'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('daily-panchanga')}>{isHi ? 'होरा चक्र (Planetary Hours)' : 'Planetary Hora Timings'}</button></li>
               </ul>
             </div>
 
             <div className="oj-footer-col">
               <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(8)}>{isHi ? 'कुंडली दोष व शांति उपाय' : 'Kundali Doshas & Remedies'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(12)}>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Sambhavit Falkathan (25 Dim)'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions (25 Dim)'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('ashtakavarga')}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('transit-today')}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('gemstones')}>{isHi ? 'वैदिक रत्न व रुद्राक्ष परामर्श' : 'Gemstone & Rudraksha'}</button></li>
               </ul>
             </div>
 
             <div className="oj-footer-col">
-              <h4>{isHi ? 'बृहत पत्रिका व मिलान' : 'Patrika Reports & Matching'}</h4>
+              <h4>{isHi ? 'बृहत पत्रिका व टूल्स' : 'Patrika Reports & Tools'}</h4>
               <ul>
                 <li><button type="button" onClick={onOpenBooklet}>{isHi ? '118-पृष्ठीय बृहत पत्रिका (निःशुल्क)' : '118-Page Patrika Booklet (Free)'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(10)}>{isHi ? 'अष्टकूट गुण मिलान (36 गुण)' : 'Ashtakoota Guna Milan'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(10)}>{isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota Matching'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(4)}>{isHi ? 'षड्बल व अष्टकवर्ग बल' : 'Shadbala & Planetary Strengths'}</button></li>
-                <li><button type="button" onClick={() => onNavigateToDivision(5)}>{isHi ? 'विशेष चक्र (सुदर्शन, सर्वतोभद्र)' : 'Special Vedic Chakras'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('shadbala')}>{isHi ? 'षड्बल व ग्रह बल' : 'Shadbala & Planetary Strengths'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('marriage-matching')}>{isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota Matching'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('workstation')}>{isHi ? '12-भाग विस्तृत वर्कस्टेशन' : '12-Division Workstation'}</button></li>
               </ul>
             </div>
           </div>
 
           <div className="oj-footer-bottom">
             <p>
-              © {new Date().getFullYear()} OnlineJyotish · Om Sri Sai Jyotisha Vidyapeetham. All rights reserved.
+              © {new Date().getFullYear()} AV Astro Vibe. All rights reserved.
               <br />
               {isHi
-                ? 'गणनाएं द्रिक सिद्धांत, स्विस एफिमरिस एवं प्रामाणिक पराशरी/जैमिनी सिद्धांतों पर आधारित हैं। सभी सेवाएं 100% निःशुल्क हैं।'
-                : 'Astronomical calculations computed via Drik Siddhanta and Swiss Ephemeris. All reports and tools are 100% free of charge.'}
+                ? 'गणनाएं द्रिक सिद्धांत, स्विस एफिमरिस एवं प्रामाणिक पराशरी/जैमिनी सिद्धांतों पर आधारित हैं। 118 पृष्ठीय पत्रिका एवं समस्त सेवाएं 100% निःशुल्क हैं।'
+                : 'Astronomical calculations computed via Drik Siddhanta and Swiss Ephemeris. All 118-page PDF reports and tools are 100% free of charge.'}
             </p>
           </div>
         </div>

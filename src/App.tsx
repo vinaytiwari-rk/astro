@@ -1,10 +1,17 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { calculateChart } from './astro/calculator';
 import type { BirthInput, CalcSettings, ChartStyle } from './astro/types';
 import { BirthEditorModal } from './components/BirthEditorModal';
 import { KundaliBookletModal } from './components/KundaliBookletModal';
 import { SettingsModal } from './components/SettingsModal';
 import { OnlineJyotishHomePortal } from './components/OnlineJyotishHomePortal';
+import { OnlineJyotishVedicHoroscopeView } from './components/onlinejyotish/OnlineJyotishVedicHoroscopeView';
+import { OnlineJyotishKpView } from './components/onlinejyotish/OnlineJyotishKpView';
+import { OnlineJyotishMatchingView } from './components/onlinejyotish/OnlineJyotishMatchingView';
+import { OnlineJyotishPanchangView } from './components/onlinejyotish/OnlineJyotishPanchangView';
+import { OnlineJyotishSambhavitView } from './components/onlinejyotish/OnlineJyotishSambhavitView';
+import { OnlineJyotishFestivalsView } from './components/onlinejyotish/OnlineJyotishFestivalsView';
+import { OnlineJyotishToolsView, type AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -15,7 +22,6 @@ import {
   SAMPLE_CHARTS,
 } from './data/cities';
 import { LanguageProvider } from './i18n/LanguageContext';
-import type { MainTab, RouteRequest } from './nav';
 
 const STORAGE_PROFILES_KEY = 'jyotish_hora_profiles_v1';
 const STORAGE_ACTIVE_KEY = 'jyotish_hora_active_v1';
@@ -60,10 +66,9 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Master Navigation State - Home Portal or Vedic Workstation Divisions 1 to 12
-  const [activeTab, setActiveTab] = useState<MainTab>('home');
-  const [activeSubTab, setActiveSubTab] = useState<string>('1');
-  const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
+  // Current Active View in AV Astro Vibe
+  const [currentView, setCurrentView] = useState<string>('home');
+  const [workstationSubTab, setWorkstationSubTab] = useState<string>('1');
 
   const [language, setLanguage] = useState<'en' | 'hi'>(() => {
     try {
@@ -124,150 +129,38 @@ export function App() {
     [activeInput, settings]
   );
 
-  // Central Navigation Dispatcher - OnlineJyotish Portal or Workstation Divisions 1 to 12
-  const navigateTo = (tab: MainTab | string, subTab?: string, nested?: string) => {
-    if (tab === 'home' || tab === 'portal') {
-      setActiveTab('home');
-      setDrawerOpen(false);
-      return;
-    }
-
-    let target = subTab || tab;
-    if (target === 'home' || target === 'portal') {
-      setActiveTab('home');
-      setDrawerOpen(false);
-      return;
-    }
-
-    // Check if target is already a division number 1..12
-    const targetNum = parseInt(target, 10);
-    if (!isNaN(targetNum) && targetNum >= 1 && targetNum <= 12) {
-      target = String(targetNum);
-    } else if (
-      target === 'overview' ||
-      target === 'basics' ||
-      target === 'sarini' ||
-      target === 'div_1_basics'
-    ) {
-      target = '1';
-    } else if (
-      target === 'core_charts' ||
-      target === 'd1' ||
-      target === 'chalit' ||
-      target === 'chandra' ||
-      target === 'calculations' ||
-      target === 'div_2_core_charts'
-    ) {
-      target = '2';
-    } else if (
-      target === 'vargas' ||
-      target === 'all_kundalis' ||
-      target === 'all_vargas' ||
-      target === 'd9' ||
-      target === 'd60' ||
-      target === 'upagrahas' ||
-      target === 'div_3_all_vargas_sensitive'
-    ) {
-      target = '3';
-    } else if (
-      target === 'strength' ||
-      target === 'shadbala' ||
-      target === 'sav' ||
-      target === 'bav' ||
-      target === 'grahbala' ||
-      target === 'div_4_strengths_balas'
-    ) {
-      target = '4';
-    } else if (
-      target === 'chakras' ||
-      target === 'sudarshan' ||
-      target === 'sarvatobhadra' ||
-      target === 'kota' ||
-      target === 'kurma' ||
-      target === 'tables' ||
-      target === 'div_5_special_chakras_tables'
-    ) {
-      target = '5';
-    } else if (
-      target === 'dasha' ||
-      target === 'dasha_transits' ||
-      target === 'vimshottari' ||
-      target === 'tribhagi' ||
-      target === 'yogini' ||
-      target === 'char' ||
-      target === 'div_6_all_dashas'
-    ) {
-      target = '6';
-    } else if (
-      target === 'gochar' ||
-      target === 'transits' ||
-      target === 'live_transits' ||
-      target === 'sade_sati' ||
-      target === 'div_7_gochar_transits'
-    ) {
-      target = '7';
-    } else if (
-      target === 'predictions' ||
-      target === 'dossier' ||
-      target === 'remedies' ||
-      target === 'doshas' ||
-      target === 'yuti' ||
-      target === 'house_wise' ||
-      target === 'planet_wise' ||
-      target === 'bhavesha' ||
-      target === 'bhavat_bhavam' ||
-      target === 'div_8_deep_predictions_remedies'
-    ) {
-      target = '8';
-    } else if (
-      target === 'kp_system' ||
-      target === 'kp' ||
-      target === 'lal_kitab' ||
-      target === 'western' ||
-      target === 'nadi' ||
-      target === 'branches' ||
-      target === 'div_9_multi_system_astrology'
-    ) {
-      target = '9';
-    } else if (
-      target === 'match' ||
-      target === 'matchmaking' ||
-      target === 'ashtakoota' ||
-      target === 'marriage' ||
-      target === 'div_10_marriage_matching'
-    ) {
-      target = '10';
-    } else if (
-      target === 'tools' ||
-      target === 'panchang' ||
-      target === 'panchang_muhurta' ||
-      target === 'daily_panchang' ||
-      target === 'rashifal' ||
-      target === 'festivals' ||
-      target === 'choghadiya' ||
-      target === 'muhurta' ||
-      target === 'div_11_panchang_rashifal'
-    ) {
-      target = '11';
-    } else if (
-      target === 'sambhavit_falkathan' ||
-      target === 'falkathan' ||
-      target === 'probable_predictions' ||
-      target === 'falan' ||
-      target === 'div_12_sambhavit_falkathan'
-    ) {
-      target = '12';
-    }
-
-    setActiveTab('workstation');
-    setActiveSubTab(target);
+  // Central Navigation Dispatcher
+  const navigateTo = (view: string, sub?: string) => {
     setDrawerOpen(false);
-    setRouteRequest((prev) => ({
-      tab: 'workstation',
-      subTab: target,
-      nested,
-      nonce: (prev?.nonce ?? 0) + 1,
-    }));
+    if (view === 'free-pdf' || view === 'booklet' || view === 'pdf') {
+      setBookletOpen(true);
+      return;
+    }
+    if (view === 'workstation') {
+      setCurrentView('workstation');
+      if (sub) setWorkstationSubTab(sub);
+      return;
+    }
+
+    let target = view;
+    if (view === 'tools' && sub) {
+      target = sub;
+    } else if (view === 'kp' || view === 'kp-horoscope') {
+      target = 'kp-horoscope';
+    } else if (view === 'matching' || view === 'marriage-matching') {
+      target = 'marriage-matching';
+    } else if (view === 'panchang' || view === 'daily-panchanga' || view === 'daily-panchang') {
+      target = 'daily-panchanga';
+    } else if (view === 'sambhavit' || view === 'sambhavit-falkathan' || view === 'falkathan') {
+      target = 'sambhavit-falkathan';
+    } else if (view === 'vedic' || view === 'vedic-horoscope' || view === 'janam-kundli') {
+      target = 'vedic-horoscope';
+    } else if (view === 'festivals' || view === 'festival-calendar') {
+      target = 'festivals';
+    }
+
+    setCurrentView(target);
+    if (sub) setWorkstationSubTab(sub);
   };
 
   const handleApplyBirth = (updated: BirthInput, saveAsNew: boolean) => {
@@ -293,19 +186,10 @@ export function App() {
   return (
     <LanguageProvider lang={language} setLang={setLanguage}>
       <div className="app-shell">
-        {/* Modern Unified Dropdown-First Header (Compatible with Web & Phone) */}
+        {/* AV Astro Vibe Navigation Header */}
         <DropdownNavHeader
-          activeTab={activeTab}
-          activeSubTab={activeSubTab}
-          onSelectPrimaryTab={(tab) => navigateTo(tab)}
-          onSelectSubTab={(sub) => {
-            setActiveSubTab(sub);
-            setRouteRequest((prev) => ({
-              tab: 'workstation',
-              subTab: sub,
-              nonce: (prev?.nonce ?? 0) + 1,
-            }));
-          }}
+          currentView={currentView}
+          onNavigate={navigateTo}
           activeInput={activeInput}
           profiles={profiles}
           onSelectProfile={(id) => setActiveId(id)}
@@ -330,8 +214,8 @@ export function App() {
         <MobileNavDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          activeTab={activeTab}
-          onNavigate={(tab, sub) => navigateTo(tab, sub)}
+          currentView={currentView}
+          onNavigate={navigateTo}
           activeInput={activeInput}
           profiles={profiles}
           onSelectProfile={(id) => setActiveId(id)}
@@ -352,24 +236,89 @@ export function App() {
           onToggleTheme={() => setTheme((th) => (th === 'light' ? 'dark' : 'light'))}
         />
 
-        {/* Full-Width Workspace Shell - OnlineJyotish Portal or 12-Division Workstation */}
+        {/* View Router Shell */}
         <div className="workspace-shell">
           <main className="main-content">
-            {activeTab === 'home' ? (
+            {currentView === 'home' && (
               <OnlineJyotishHomePortal
                 chart={chart}
                 activeInput={activeInput}
                 profiles={profiles}
                 settings={settings}
                 onSelectProfile={(id) => setActiveId(id)}
-                onNavigateToDivision={(divNum) => {
-                  navigateTo('workstation', String(divNum));
-                }}
+                onNavigate={navigateTo}
                 onOpenEditor={() => setEditorOpen(true)}
                 onOpenBooklet={() => setBookletOpen(true)}
                 onApplyBirthInput={(input) => handleApplyBirth(input, false)}
               />
-            ) : (
+            )}
+
+            {currentView === 'vedic-horoscope' && (
+              <OnlineJyotishVedicHoroscopeView
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                onApplyBirthInput={(input) => handleApplyBirth(input, false)}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'kp-horoscope' && (
+              <OnlineJyotishKpView
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {currentView === 'marriage-matching' && (
+              <OnlineJyotishMatchingView
+                settings={settings}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'daily-panchanga' && (
+              <OnlineJyotishPanchangView
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'sambhavit-falkathan' && (
+              <OnlineJyotishSambhavitView
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {currentView === 'festivals' && (
+              <OnlineJyotishFestivalsView
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {(['ashtakavarga', 'shadbala', 'transit-today', 'baby-names', 'gemstones', 'choghadiya'] as const).includes(currentView as any) && (
+              <OnlineJyotishToolsView
+                tool={currentView as AstroToolCategory}
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {currentView === 'workstation' && (
               <VedicMasterWorkstation
                 chart={chart}
                 chartStyle={settings.chartStyle}
@@ -380,18 +329,17 @@ export function App() {
                 onSelectProfile={(id) => setActiveId(id)}
                 onOpenEditor={() => setEditorOpen(true)}
                 onOpenBooklet={() => setBookletOpen(true)}
-                onOpenMatchMaking={() => navigateTo('workstation', 'matchmaking')}
-                requestedMenu={{ id: activeSubTab, nonce: routeRequest?.nonce ?? 0 }}
+                onOpenMatchMaking={() => navigateTo('marriage-matching')}
+                requestedMenu={{ id: workstationSubTab, nonce: 0 }}
               />
             )}
           </main>
         </div>
 
-        {/* Mobile Bottom Navigation Bar (Fixed 5 Thumb Actions) */}
+        {/* Mobile Bottom Navigation Bar */}
         <MobileBottomNav
-          activeTab={activeTab}
-          activeSubTab={activeSubTab}
-          onNavigate={(tab, sub) => navigateTo(tab, sub)}
+          currentView={currentView}
+          onNavigate={navigateTo}
           onOpenDrawer={() => setDrawerOpen(true)}
         />
 

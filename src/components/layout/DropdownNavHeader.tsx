@@ -21,14 +21,10 @@ import {
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import type { MainTab } from '../../nav';
-import { WORKSTATION_DIVISIONS } from '../VedicMasterWorkstation';
 
-interface DropdownNavHeaderProps {
-  activeTab: MainTab;
-  activeSubTab: string;
-  onSelectPrimaryTab: (tab: MainTab) => void;
-  onSelectSubTab: (subTab: string) => void;
+export interface DropdownNavHeaderProps {
+  currentView: string;
+  onNavigate: (view: string, sub?: string) => void;
   activeInput: BirthInput;
   profiles: BirthInput[];
   onSelectProfile: (id: string) => void;
@@ -43,10 +39,8 @@ interface DropdownNavHeaderProps {
 }
 
 export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
-  activeTab,
-  activeSubTab,
-  onSelectPrimaryTab,
-  onSelectSubTab,
+  currentView,
+  onNavigate,
   activeInput,
   profiles,
   onSelectProfile,
@@ -68,55 +62,31 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     setOpenDropdown((prev) => (prev === key ? null : key));
   };
 
-  const handleNavClick = (divisionNumber: number) => {
+  const handleLinkClick = (view: string, sub?: string) => {
     setOpenDropdown(null);
-    onSelectPrimaryTab('workstation');
-    onSelectSubTab(String(divisionNumber));
+    onNavigate(view, sub);
   };
 
   return (
     <header className="dropdown-nav-header no-print">
-      {/* Row 1: Brand Logo, Native Selector, View Mode Switcher, Language & Utilities */}
+      {/* Row 1: Brand Logo (AV Astro Vibe), Active Profile, Language & Tools */}
       <div className="dropdown-nav-top-row">
-        {/* Brand */}
+        {/* Brand: AV Astro Vibe */}
         <div
           className="dropdown-brand-btn"
-          onClick={() => {
-            setOpenDropdown(null);
-            onSelectPrimaryTab('home');
-          }}
-          title={isHi ? 'मुख्य पोर्टल पर जाएं' : 'Go to Home Portal'}
+          onClick={() => handleLinkClick('home')}
+          title={isHi ? 'मुख्य पृष्ठ पर जाएं' : 'Go to Home'}
           style={{ cursor: 'pointer' }}
         >
           <span className="dropdown-brand-om" aria-hidden="true">
             ॐ
           </span>
           <div className="dropdown-brand-text">
-            <span className="dropdown-brand-name">OnlineJyotish</span>
+            <span className="dropdown-brand-name">AV Astro Vibe</span>
             <span className="dropdown-brand-tag">
-              {isHi ? 'श्री साईं ज्योतिष विद्यापीठम् · 2004 से' : 'Om Sri Sai Jyotisha Vidyapeetham · Since 2004'}
+              {isHi ? 'वैदिक ज्योतिष, पंचांग एवं संपूर्ण फलादेश' : 'Vedic Astrology, Panchang & Free Predictions'}
             </span>
           </div>
-        </div>
-
-        {/* View Mode Switcher Pills: Portal vs Workstation */}
-        <div className="oj-view-mode-pills hide-on-mobile">
-          <button
-            type="button"
-            className={`oj-mode-btn ${activeTab === 'home' ? 'is-active' : ''}`}
-            onClick={() => onSelectPrimaryTab('home')}
-          >
-            <Home size={14} />
-            <span>{isHi ? 'मुख्य पोर्टल' : 'Home Portal'}</span>
-          </button>
-          <button
-            type="button"
-            className={`oj-mode-btn ${activeTab === 'workstation' ? 'is-active' : ''}`}
-            onClick={() => onSelectPrimaryTab('workstation')}
-          >
-            <Compass size={14} />
-            <span>{isHi ? '12-भाग वर्कस्टेशन' : '12-Div Workstation'}</span>
-          </button>
         </div>
 
         {/* Center: Active Profile Selector */}
@@ -156,7 +126,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           </button>
         </div>
 
-        {/* Right Tools: Language, Chart Style, Booklet, Theme, Settings */}
+        {/* Right Tools: Language, Chart Style, 118P Booklet, Theme, Settings */}
         <div className="dropdown-utilities-group">
           {/* Language Toggle */}
           <div className="pro-lang-toggle" role="group" aria-label="Language">
@@ -183,8 +153,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             value={settings.chartStyle}
             onChange={(e) => onChangeChartStyle(e.target.value as ChartStyle)}
           >
-            <option value="north">{isHi ? 'उत्तर (North)' : 'North Indian'}</option>
             <option value="south">{isHi ? 'दक्षिण (South)' : 'South Indian'}</option>
+            <option value="north">{isHi ? 'उत्तर (North)' : 'North Indian'}</option>
             <option value="east">{isHi ? 'पूर्व (East)' : 'East Indian'}</option>
           </select>
 
@@ -193,20 +163,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenBooklet}
-            title={isHi ? '118-पृष्ठीय बृहत पत्रिका PDF (निःशुल्क)' : '118-Page Patrika PDF (Free)'}
+            title={isHi ? '118-पृष्ठीय बृहत पत्रिका PDF (100% निःशुल्क)' : '118-Page Patrika PDF (100% Free)'}
           >
             <FileText size={14} />
-            <span className="hide-on-mobile">{isHi ? '118P पत्रिका' : '118P Report'}</span>
-          </button>
-
-          {/* Theme */}
-          <button
-            type="button"
-            className="icon-tool-btn"
-            onClick={onToggleTheme}
-            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-          >
-            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+            <span className="hide-on-mobile">{isHi ? '118P पत्रिका' : '118P PDF'}</span>
           </button>
 
           {/* Settings */}
@@ -221,212 +181,166 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         </div>
       </div>
 
-      {/* Row 2: OnlineJyotish Style Menu Bar with Dropdowns */}
+      {/* Row 2: Main Navigation Bar with Direct Links & Necessary Dropdowns Only */}
       <div className="oj-navbar-row">
         <div className="oj-navbar-inner">
           <ul className="oj-nav-links">
-            {/* 1. Home */}
+            {/* 1. Home — Direct Link (No Dropdown) */}
             <li className="oj-nav-item">
               <button
                 type="button"
-                className={`oj-nav-link-btn ${activeTab === 'home' ? 'is-current' : ''}`}
-                onClick={() => {
-                  setOpenDropdown(null);
-                  onSelectPrimaryTab('home');
-                }}
+                className={`oj-nav-link-btn ${currentView === 'home' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('home')}
               >
-                <Home size={15} />
                 <span>{isHi ? 'होम' : 'Home'}</span>
               </button>
             </li>
 
-            {/* 2. Free Tools Menu */}
+            {/* 2. Janam Kundli — Direct Link (No Dropdown) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'vedic-horoscope' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('vedic-horoscope')}
+              >
+                <span>{isHi ? 'जन्म कुंडली' : 'Janam Kundli'}</span>
+              </button>
+            </li>
+
+            {/* 3. KP Horoscope — Direct Link (No Dropdown) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'kp-horoscope' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('kp-horoscope')}
+              >
+                <span>{isHi ? 'केपी कुंडली' : 'KP Horoscope'}</span>
+              </button>
+            </li>
+
+            {/* 4. Marriage Matching — Direct Link (No Dropdown) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'marriage-matching' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('marriage-matching')}
+              >
+                <span>{isHi ? 'कुंडली मिलान' : 'Marriage Matching'}</span>
+              </button>
+            </li>
+
+            {/* 5. Daily Panchang — Direct Link (No Dropdown) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'daily-panchanga' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('daily-panchanga')}
+              >
+                <span>{isHi ? 'दैनिक पंचांग' : 'Daily Panchang'}</span>
+              </button>
+            </li>
+
+            {/* 6. Life Predictions (Sambhavit Falkathan) — Direct Link (No Dropdown) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'sambhavit-falkathan' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('sambhavit-falkathan')}
+              >
+                <span>{isHi ? 'संभावित फलकथन' : 'Life Predictions'}</span>
+              </button>
+            </li>
+
+            {/* 7. More Astro Tools — NECESSARY Dropdown */}
             <li className="oj-nav-item oj-dropdown-parent">
               <button
                 type="button"
-                className={`oj-nav-link-btn ${openDropdown === 'tools' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('tools')}
+                className={`oj-nav-link-btn ${openDropdown === 'more-tools' ? 'is-open' : ''}`}
+                onClick={() => toggleDropdown('more-tools')}
               >
-                <span>{isHi ? 'निःशुल्क सेवाएं' : 'Free tools'}</span>
+                <span>{isHi ? 'अन्य टूल्स' : 'More Tools'}</span>
                 <ChevronDown size={12} className="oj-chevron" />
               </button>
 
-              {openDropdown === 'tools' && (
+              {openDropdown === 'more-tools' && (
                 <div className="oj-dropdown-menu">
-                  <button type="button" onClick={() => handleNavClick(1)}>
-                    <strong>{isHi ? 'वैदिक जन्म कुंडली (D-1 & Basic Details)' : 'Vedic Birth Chart (D-1 & Basics)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 1: अवकहड़ा, पंचांग, घात चक्र' : 'Division 1: Avakahada & Core'}</span>
+                  <button type="button" onClick={() => handleLinkClick('ashtakavarga')}>
+                    <strong>{isHi ? 'अष्टकवर्ग सारणी (SAV 337)' : 'Ashtakavarga (SAV 337)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'ग्रह बिंदु एवं 12 भाव फल' : 'Planetary Bindus & Houses'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(2)}>
-                    <strong>{isHi ? 'मुख्य गणनाएं (Lagna, Chalit, Chandra, D9)' : 'Core Calculations (Lagna, Chalit, D9)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 2: भाव चलित व नवांश' : 'Division 2: Chalit & Navamsha'}</span>
+                  <button type="button" onClick={() => handleLinkClick('shadbala')}>
+                    <strong>{isHi ? 'षड्बल गणना (Shadbala)' : 'Shadbala Strengths'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'छह प्रकार के ग्रह बल' : 'Six-fold Planetary Balas'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(9)}>
-                    <strong>{isHi ? 'केपी कुंडली (KP Horoscope)' : 'KP Horoscope & Sub-Lords'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 9: भाव संधि व उप-स्वामी' : 'Division 9: Cusps & Significators'}</span>
+                  <button type="button" onClick={() => handleLinkClick('transit-today')}>
+                    <strong>{isHi ? 'आज का गोचर (Live Transits)' : 'Live Transits (Gochar)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'शनि, गुरु, राहु-केतु गोचर' : 'Saturn, Jupiter, Rahu-Ketu'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(10)}>
-                    <strong>{isHi ? 'कुंडली मिलान (Marriage Matching)' : 'Marriage Matching (Guna Milan)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 10: अष्टकूट 36 गुण व दश कूट' : 'Division 10: 36 Gunas & 10 Poruthams'}</span>
+                  <button type="button" onClick={() => handleLinkClick('baby-names')}>
+                    <strong>{isHi ? 'शिशु नामकरण व नामाक्षर' : 'Baby Names & Namakshar'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'नक्षत्र नामाक्षर व गंडमूल' : 'Birth Star Syllables'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(12)}>
-                    <strong>{isHi ? 'शिशु नामकरण व नामाक्षर (Newborn Horoscope)' : 'Newborn Horoscope & Namakshar'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 12: नक्षत्र नामाक्षर व गंडमूल' : 'Division 12: Name Syllables'}</span>
+                  <button type="button" onClick={() => handleLinkClick('gemstones')}>
+                    <strong>{isHi ? 'वैदिक रत्न व रुद्राक्ष' : 'Gemstones & Rudraksha'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्राण रत्न, भाग्य रत्न व इष्ट' : 'Life & Lucky Stones'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('choghadiya')}>
+                    <strong>{isHi ? 'चौघड़िया मुहूर्त' : 'Choghadiya Muhurta'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'दिन व रात के 8-8 चौघड़िया' : 'Day & Night Choghadiyas'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('workstation')}>
+                    <strong>{isHi ? '12-भाग विस्तृत वर्कस्टेशन' : '12-Division Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'उन्नत ज्योतिष अनुसंधान स्टूडियो' : 'Advanced Calculation Studio'}</span>
                   </button>
                 </div>
               )}
             </li>
 
-            {/* 3. Puja & Festivals Menu */}
+            {/* 8. Puja & Festivals — NECESSARY Dropdown */}
             <li className="oj-nav-item oj-dropdown-parent">
               <button
                 type="button"
                 className={`oj-nav-link-btn ${openDropdown === 'festivals' ? 'is-open' : ''}`}
                 onClick={() => toggleDropdown('festivals')}
               >
-                <span>{isHi ? 'पंचांग एवं पर्व' : 'Puja & Festivals'}</span>
+                <span>{isHi ? 'पर्व एवं व्रत' : 'Puja & Festivals'}</span>
                 <ChevronDown size={12} className="oj-chevron" />
               </button>
 
               {openDropdown === 'festivals' && (
                 <div className="oj-dropdown-menu">
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'दैनिक पंचांग (Daily Panchang)' : 'Daily Panchang (Tithi, Nakshatra, Yoga)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'सूर्योदय, सूर्यास्त व राहु काल' : 'Sunrise, Sunset & Rahu Kalam'}</span>
+                  <button type="button" onClick={() => handleLinkClick('festivals')}>
+                    <strong>{isHi ? 'हिंदू पर्व एवं व्रत कैलेंडर' : 'Hindu Festival Calendar'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '2026-2027 के समस्त पर्व' : '2026-2027 All Festivals'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'मासिक पंचांग कैलेंडर (Monthly Calendar)' : 'Monthly Panchang Calendar'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'माह के समस्त दिन व तिथियां' : 'Month-wise Tithis & Dates'}</span>
+                  <button type="button" onClick={() => handleLinkClick('daily-panchanga')}>
+                    <strong>{isHi ? 'दैनिक पंचांग एवं होरा' : "Today's Panchang & Hora"}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'सूर्योदय, राहु काल, 24 घंटे की होरा' : 'Sunrise, Rahu Kalam, 24-hr Hora'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'हिंदू पर्व एवं व्रत सूची (Festivals & Vrats)' : 'Hindu Festivals & Vrats Calendar'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'एकादशी, प्रदोष, पूर्णिमा, अमावस्या' : 'Navaratri, Shivaratri, Vrats'}</span>
+                  <button type="button" onClick={() => handleLinkClick('festivals')}>
+                    <strong>{isHi ? 'एकादशी एवं प्रदोष तिथियां' : 'Ekadashi & Pradosham Dates'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'मासिक व्रत एवं पारणा समय' : 'Monthly Fasting Schedules'}</span>
                   </button>
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'चौघड़िया मुहूर्त (Choghadiya Times)' : "Today's Choghadiya Times"}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'दिन व रात के 8-8 चौघड़िया' : 'Day & Night Choghadiya Slots'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'होरा चक्र (Planetary Hora Times)' : "Today's Hora Times"}</strong>
-                    <span className="oj-dd-sub">{isHi ? '24 घंटे का ग्रह होरा चक्र' : '24-Hour Planetary Hours'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(11)}>
-                    <strong>{isHi ? 'शुभ मुहूर्त एवं मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker & Timings'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'अभिजीत, ब्रह्म, विजय मुहूर्त' : 'Abhijit, Brahma, Amrit'}</span>
-                  </button>
-                </div>
-              )}
-            </li>
-
-            {/* 4. Astro Tools Menu */}
-            <li className="oj-nav-item oj-dropdown-parent">
-              <button
-                type="button"
-                className={`oj-nav-link-btn ${openDropdown === 'astro' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('astro')}
-              >
-                <span>{isHi ? 'ज्योतिष टूल्स' : 'Astro Tools'}</span>
-                <ChevronDown size={12} className="oj-chevron" />
-              </button>
-
-              {openDropdown === 'astro' && (
-                <div className="oj-dropdown-menu">
-                  <button type="button" onClick={() => handleNavClick(3)}>
-                    <strong>{isHi ? 'समस्त वर्ग कुंडलियां (D-1 से D-60)' : 'Shodashavargas (D-1 to D-60)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 3: उपग्रह, आरूढ़, 64वां नवांश' : 'Division 3: Higher Vargas & Sensitive Points'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(4)}>
-                    <strong>{isHi ? 'ग्रह बल व अष्टकवर्ग (Balas & Ashtakavarga)' : 'Shadbala & Ashtakavarga (SAV/BAV)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 4: षड्बल, भावबल, बिन्दु प्रास्तार' : 'Division 4: Planetary Strengths'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(5)}>
-                    <strong>{isHi ? 'विशेष चक्र व सारणी (Vedic Special Chakras)' : 'Special Chakras & Tables'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 5: सुदर्शन, सर्वतोभद्र, कोटा' : 'Division 5: Sudarshan, Sarvatobhadra, Kota'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(6)}>
-                    <strong>{isHi ? 'समस्त दशाएं (All Vedic Dashas)' : 'All Dashas (Vimshottari, Tribhagi, Yogini)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 6: चर, योगिनी व त्रिभागी' : 'Division 6: 4-Level Dashas'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(7)}>
-                    <strong>{isHi ? 'ग्रह गोचर (Live Transits & Sade Sati)' : 'Planetary Transits & Sade Sati'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 7: शनि, गुरु, राहु गोचर' : 'Division 7: Real-time Transit Charts'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(9)}>
-                    <strong>{isHi ? 'लाल किताब एवं पाश्चात्य (Lal Kitab & Multi-System)' : 'Lal Kitab & Multi-System Astrology'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 9: ऋण, दृष्टि व ग्रह युति' : 'Division 9: Nadi, Western, Lal Kitab'}</span>
-                  </button>
-                </div>
-              )}
-            </li>
-
-            {/* 5. Reports & Predictions Menu (100% Free / निःशुल्क) */}
-            <li className="oj-nav-item oj-dropdown-parent">
-              <button
-                type="button"
-                className={`oj-nav-link-btn ${openDropdown === 'reports' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('reports')}
-              >
-                <span>{isHi ? 'पत्रिका व फलादेश (निःशुल्क)' : 'Reports & Predictions (Free)'}</span>
-                <ChevronDown size={12} className="oj-chevron" />
-              </button>
-
-              {openDropdown === 'reports' && (
-                <div className="oj-dropdown-menu">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpenDropdown(null);
-                      onOpenBooklet();
-                    }}
-                  >
-                    <strong style={{ color: 'var(--accent)' }}>
-                      {isHi ? '118-पृष्ठीय बृहत जन्म पत्रिका PDF' : 'Complete 118-Page Patrika PDF Report'}
-                    </strong>
-                    <span className="oj-dd-sub">{isHi ? '100% निःशुल्क (Zero Cost / No ₹599 charge)' : '100% Free (Zero Cost / No Fee)'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(12)}>
-                    <strong>{isHi ? 'संभावित फलकथन (25 जीवन आयाम)' : 'Probable Predictions (Sambhavit Falkathan)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 12: शिक्षा, नौकरी, विवाह, संतान, आयु' : 'Division 12: 25 Vital Dimensions'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(8)}>
-                    <strong>{isHi ? 'द्वादश भाव व भावेश फलादेश' : '12 Houses & House Lords Predictions'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 8: पराशर होराशास्त्र फलादेश' : 'Division 8: Parashari Bhavesha'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(8)}>
-                    <strong>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल व उपाय' : 'SAV 12 Houses Analysis & Remedies'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 8: 111-113 संदर्भ पीडीएफ के अनुरूप' : 'Division 8: Reference PDF Parity'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(8)}>
-                    <strong>{isHi ? 'आजीवन विंशोत्तरी महादशा फलादेश' : 'Lifelong Vimshottari Dasha Predictions'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 8: जन्म से 100+ वर्ष तक' : 'Division 8: Birth to 100+ Years'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleNavClick(8)}>
-                    <strong>{isHi ? 'चंद्र से प्रमुख गोचर (शनि/गुरु/राहु-केतु)' : 'Major Transits from Moon (Saturn/Jupiter)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'भाग 8: कर्म शनि, साढ़ेसाती, कंटक' : 'Division 8: Transit Predictions'}</span>
+                  <button type="button" onClick={() => handleLinkClick('choghadiya')}>
+                    <strong>{isHi ? 'शुभ मुहूर्त चेकर' : 'Auspicious Muhurta Checker'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'अभिजीत, अमृत, ब्रह्म मुहूर्त' : 'Abhijit, Brahma Muhurta'}</span>
                   </button>
                 </div>
               )}
             </li>
           </ul>
 
-          {/* Direct Workstation Division Jumper */}
-          <div className="oj-division-jumper">
-            <label className="oj-jumper-label">
-              <Compass size={13} />
-              <span>{isHi ? 'वर्कस्टेशन भाग:' : 'Division:'}</span>
-            </label>
-            <select
-              aria-label="Select Workstation Division"
-              className="oj-select-division"
-              value={activeSubTab || '1'}
-              onChange={(e) => handleNavClick(parseInt(e.target.value, 10))}
+          {/* 118-Page PDF Quick Action Button */}
+          <div className="oj-nav-right-cta">
+            <button
+              type="button"
+              className="oj-action-btn primary"
+              onClick={onOpenBooklet}
+              style={{ padding: '5px 12px', fontSize: '12px' }}
             >
-              {WORKSTATION_DIVISIONS.map((div) => (
-                <option key={div.divisionNumber} value={String(div.divisionNumber)}>
-                  {isHi ? div.shortLabelHi : div.shortLabelEn}
-                </option>
-              ))}
-            </select>
+              <FileText size={13} />
+              <span>{isHi ? '118P पत्रिका (निःशुल्क)' : '118P Report (Free)'}</span>
+            </button>
           </div>
         </div>
       </div>

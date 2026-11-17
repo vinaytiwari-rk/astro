@@ -1,37 +1,29 @@
 import React from 'react';
 import {
-  Award,
   BookOpen,
   Calendar,
   Clock,
   Compass,
   Edit3,
-  Flame,
-  Grid,
+  FileText,
   Heart,
-  Moon,
+  Home,
   Plus,
-  RotateCcw,
-  Scroll,
   Settings,
-  ShieldAlert,
   Sparkles,
   Star,
-  Sun,
   UserCheck,
   X,
 } from 'lucide-react';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import type { MainTab } from '../../nav';
-import { WORKSTATION_DIVISIONS } from '../VedicMasterWorkstation';
 
 interface MobileNavDrawerProps {
   open: boolean;
   onClose: () => void;
-  activeTab: MainTab;
-  onNavigate: (tab: MainTab, subTab?: string, nested?: string) => void;
+  currentView: string;
+  onNavigate: (view: string, sub?: string) => void;
   activeInput: BirthInput;
   profiles: BirthInput[];
   onSelectProfile: (id: string) => void;
@@ -48,7 +40,7 @@ interface MobileNavDrawerProps {
 export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
   open,
   onClose,
-  activeTab,
+  currentView,
   onNavigate,
   activeInput,
   profiles,
@@ -67,32 +59,26 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
   if (!open) return null;
 
-  const handleItemClick = (tab: MainTab, subTab?: string, nested?: string) => {
-    onNavigate(tab, subTab, nested);
+  const handleItemClick = (view: string, sub?: string) => {
+    onNavigate(view, sub);
     onClose();
   };
 
-  const menuSections = [
-    {
-      titleEn: 'Main Navigation & 12 Divisions',
-      titleHi: 'मुख्य नेविगेशन एवं 12 भाग',
-      items: [
-        {
-          tab: 'home' as MainTab,
-          subTab: 'home',
-          labelEn: 'OnlineJyotish Home Portal',
-          labelHi: 'मुख्य ऑनलाइन ज्योतिष पोर्टल',
-          icon: <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--accent)' }}>ॐ</span>,
-        },
-        ...WORKSTATION_DIVISIONS.map((div) => ({
-          tab: 'workstation' as MainTab,
-          subTab: String(div.divisionNumber),
-          labelEn: div.labelEn,
-          labelHi: div.labelHi,
-          icon: <span style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)' }}>#{div.divisionNumber}</span>,
-        })),
-      ],
-    },
+  const navLinks = [
+    { view: 'home', labelEn: 'Home', labelHi: 'होम', icon: <Home size={16} /> },
+    { view: 'vedic-horoscope', labelEn: 'Janam Kundli (Horoscope)', labelHi: 'वैदिक जन्म कुंडली', icon: <FileText size={16} /> },
+    { view: 'kp-horoscope', labelEn: 'KP Horoscope & Sub-Lords', labelHi: 'केपी पद्धति कुंडली', icon: <Compass size={16} /> },
+    { view: 'marriage-matching', labelEn: 'Marriage Matching (Guna Milan)', labelHi: 'विवाह मिलान (36 गुण)', icon: <Heart size={16} /> },
+    { view: 'daily-panchanga', labelEn: "Daily Panchang & Hora", labelHi: 'दैनिक पंचांग व होरा', icon: <Calendar size={16} /> },
+    { view: 'sambhavit-falkathan', labelEn: 'Life Predictions (25 Dimensions)', labelHi: 'संभावित फलकथन (25 आयाम)', icon: <Star size={16} /> },
+    { view: 'festivals', labelEn: 'Hindu Festival Calendar 2026-2027', labelHi: 'हिंदू पर्व एवं व्रत कैलेंडर', icon: <Calendar size={16} /> },
+    { view: 'ashtakavarga', labelEn: 'Ashtakavarga Table (SAV 337)', labelHi: 'अष्टकवर्ग सारणी (SAV)', icon: <Sparkles size={16} /> },
+    { view: 'shadbala', labelEn: 'Shadbala Strengths', labelHi: 'षड्बल गणना', icon: <Sparkles size={16} /> },
+    { view: 'transit-today', labelEn: 'Live Transits (Gochar)', labelHi: 'आज का गोचर', icon: <Clock size={16} /> },
+    { view: 'baby-names', labelEn: 'Newborn Baby Names', labelHi: 'शिशु नामकरण व नामाक्षर', icon: <Star size={16} /> },
+    { view: 'gemstones', labelEn: 'Gemstone & Rudraksha', labelHi: 'वैदिक रत्न व रुद्राक्ष', icon: <Sparkles size={16} /> },
+    { view: 'choghadiya', labelEn: 'Choghadiya & Muhurta', labelHi: 'चौघड़िया मुहूर्त', icon: <Clock size={16} /> },
+    { view: 'workstation', labelEn: '12-Division Workstation', labelHi: '12-भाग विस्तृत वर्कस्टेशन', icon: <Compass size={16} /> },
   ];
 
   return (
@@ -108,9 +94,9 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
           <div className="pro-drawer-brand">
             <span className="pro-om-symbol">ॐ</span>
             <div>
-              <div className="pro-drawer-title">{isHi ? 'ज्योतिष होरा' : 'Jyotish Hora'}</div>
+              <div className="pro-drawer-title">AV Astro Vibe</div>
               <div className="pro-drawer-sub">
-                {isHi ? 'वैदिक ज्योतिष संस्थान' : 'Professional Vedic Studio'}
+                {isHi ? 'वैदिक ज्योतिष एवं पंचांग संस्थान' : 'Vedic Astrology & Free Predictions'}
               </div>
             </div>
           </div>
@@ -140,140 +126,49 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
                 onOpenEditor();
                 onClose();
               }}
-              title={isHi ? 'सुधार करें' : 'Edit Profile'}
+              title={isHi ? 'विवरण बदलें' : 'Edit Details'}
             >
-              <Edit3 size={14} />
+              <Edit3 size={15} />
             </button>
           </div>
+        </div>
 
-          <div className="pro-drawer-native-select-row">
-            <select
-              className="pro-drawer-select"
-              value={activeInput.id}
-              onChange={(e) => onSelectProfile(e.target.value)}
-              aria-label="Select Native Profile"
-            >
-              {profiles.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({formatDateDmy(p.date)})
-                </option>
+        {/* Navigation Items */}
+        <div className="pro-drawer-content">
+          <div className="pro-drawer-section">
+            <div className="pro-drawer-section-title">
+              {isHi ? 'नेविगेशन सेवाएं (100% निःशुल्क)' : 'Navigation Services (100% Free)'}
+            </div>
+            <div className="pro-drawer-list">
+              {navLinks.map((item) => (
+                <button
+                  key={item.view}
+                  type="button"
+                  className={`pro-drawer-item ${currentView === item.view ? 'is-active' : ''}`}
+                  onClick={() => handleItemClick(item.view)}
+                >
+                  <span className="pro-drawer-item-icon">{item.icon}</span>
+                  <span className="pro-drawer-item-label">
+                    {isHi ? item.labelHi : item.labelEn}
+                  </span>
+                </button>
               ))}
-            </select>
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              onClick={() => {
-                onNewKundli();
-                onClose();
-              }}
-              title={isHi ? 'नई कुंडली' : 'New Chart'}
-            >
-              <Plus size={13} />
-              <span>{isHi ? 'नई' : 'New'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Scrollable Navigation Categories */}
-        <div className="pro-drawer-scroll-body">
-          {menuSections.map((sec, sIdx) => (
-            <div key={sIdx} className="pro-drawer-section">
-              <div className="pro-drawer-section-title">
-                {isHi ? sec.titleHi : sec.titleEn}
-              </div>
-              <div className="pro-drawer-section-items">
-                {sec.items.map((item, iIdx) => (
-                  <button
-                    key={iIdx}
-                    type="button"
-                    className="pro-drawer-item-btn"
-                    onClick={() => handleItemClick(item.tab, item.subTab)}
-                  >
-                    <span className="pro-drawer-item-icon">{item.icon}</span>
-                    <span className="pro-drawer-item-label">
-                      {isHi ? item.labelHi : item.labelEn}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Drawer Footer Utilities */}
-        <div className="pro-drawer-footer">
-          <div className="pro-drawer-footer-row">
-            {/* Language Toggle */}
-            <div className="pro-lang-toggle" role="group" aria-label="Language">
-              <button
-                type="button"
-                className={`pro-lang-btn ${lang === 'en' ? 'is-active' : ''}`}
-                onClick={() => setLang('en')}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                className={`pro-lang-btn ${lang === 'hi' ? 'is-active' : ''}`}
-                onClick={() => setLang('hi')}
-              >
-                हिन्दी
-              </button>
-            </div>
-
-            {/* Chart Style Toggle */}
-            <div className="pro-chart-style-toggle" role="group" aria-label="Chart Style">
-              <button
-                type="button"
-                className={`pro-chart-btn ${settings.chartStyle === 'north' ? 'is-active' : ''}`}
-                onClick={() => onChangeChartStyle('north')}
-                title={isHi ? 'उत्तर भारतीय' : 'North Indian'}
-              >
-                {isHi ? 'उत्तर' : 'North'}
-              </button>
-              <button
-                type="button"
-                className={`pro-chart-btn ${settings.chartStyle === 'south' ? 'is-active' : ''}`}
-                onClick={() => onChangeChartStyle('south')}
-                title={isHi ? 'दक्षिण भारतीय' : 'South Indian'}
-              >
-                {isHi ? 'दक्षिण' : 'South'}
-              </button>
-              <button
-                type="button"
-                className={`pro-chart-btn ${settings.chartStyle === 'east' ? 'is-active' : ''}`}
-                onClick={() => onChangeChartStyle('east')}
-                title={isHi ? 'पूर्वी भारतीय' : 'East Indian'}
-              >
-                {isHi ? 'पूर्व' : 'East'}
-              </button>
             </div>
           </div>
 
-          <div className="pro-drawer-footer-row pro-footer-secondary">
-            {/* Theme Toggle */}
+          {/* Quick PDF Report CTA */}
+          <div style={{ padding: '12px' }}>
             <button
               type="button"
-              className="pro-footer-action-btn"
-              onClick={onToggleTheme}
-              title={isHi ? 'थीम बदलें' : 'Toggle Theme'}
-            >
-              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-              <span>{theme === 'dark' ? (isHi ? 'लाइट थीम' : 'Light') : (isHi ? 'डार्क थीम' : 'Dark')}</span>
-            </button>
-
-            {/* Settings Dialog Trigger */}
-            <button
-              type="button"
-              className="pro-footer-action-btn"
+              className="oj-action-btn primary"
+              style={{ width: '100%', justifyContent: 'center' }}
               onClick={() => {
-                onOpenSettings();
+                onOpenBooklet();
                 onClose();
               }}
-              title={isHi ? 'सेटिंग्स' : 'Settings'}
             >
-              <Settings size={15} />
-              <span>{isHi ? 'सेटिंग्स' : 'Settings'}</span>
+              <FileText size={15} />
+              <span>{isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page Patrika PDF (Free)'}</span>
             </button>
           </div>
         </div>
