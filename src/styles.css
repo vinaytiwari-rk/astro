@@ -6721,48 +6721,60 @@ h1, h2, h3, h4, .serif-heading {
 }
 
 .oj-nav-link-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 8px 12px;
-  background: transparent;
-  border: none;
-  font-size: 13px;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(254, 243, 199, 0.45);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text, #1e293b);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 9999px;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .oj-nav-link-btn:hover {
-  background: var(--bg-hover);
-  color: var(--accent);
+  background: rgba(254, 243, 199, 0.85);
+  border-color: #d97706;
+  color: #b45309;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.12);
 }
 
 .oj-nav-link-btn.is-current {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
-}
-
-.oj-nav-dropdown-btn {
-  background: rgba(180, 83, 9, 0.08) !important;
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.14) 0%, rgba(217, 119, 6, 0.24) 100%) !important;
   border: 1.5px solid #d97706 !important;
   color: #b45309 !important;
-  font-weight: 700 !important;
-  border-radius: 20px !important;
-  padding: 6px 14px !important;
-  box-shadow: 0 1px 3px rgba(180, 83, 9, 0.15);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.18);
 }
 
-[data-theme='dark'] .oj-nav-dropdown-btn {
-  background: rgba(245, 158, 11, 0.15) !important;
+[data-theme='dark'] .oj-nav-link-btn {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f1f5f9;
+}
+
+[data-theme='dark'] .oj-nav-link-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .oj-nav-link-btn.is-current {
+  background: rgba(245, 158, 11, 0.25) !important;
   border-color: #f59e0b !important;
   color: #fbbf24 !important;
 }
 
-.oj-nav-dropdown-btn:hover,
+.oj-nav-dropdown-btn {
+  /* Inherits matching royal pill geometry and borders seamlessly */
+}
+
 .oj-nav-dropdown-btn.is-open {
   background: #b45309 !important;
   color: #ffffff !important;
@@ -6770,7 +6782,6 @@ h1, h2, h3, h4, .serif-heading {
   box-shadow: 0 2px 6px rgba(180, 83, 9, 0.3);
 }
 
-[data-theme='dark'] .oj-nav-dropdown-btn:hover,
 [data-theme='dark'] .oj-nav-dropdown-btn.is-open {
   background: #f59e0b !important;
   color: #111827 !important;

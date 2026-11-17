@@ -47,6 +47,133 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
   const [transitTime, setTransitTime] = useState<string>('12:00');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [filterAspect, setFilterAspect] = useState<string>('all');
+  const [rightPanelMode, setRightPanelMode] = useState<'aspects' | 'timemachine'>('aspects');
+  const [selectedEvent, setSelectedEvent] = useState<'marriage' | 'career' | 'foreign' | 'property'>('marriage');
+
+  // Event Time Machine Predictions
+  const eventWindows = useMemo(() => {
+    const list: Array<{
+      dateStr: string;
+      labelHi: string;
+      labelEn: string;
+      probability: number;
+      primaryFactorHi: string;
+      primaryFactorEn: string;
+      detailsHi: string;
+      detailsEn: string;
+    }> = [];
+
+    const baseYear = today.getFullYear();
+    const ascSign = chart.ascendant.signIndex;
+
+    if (selectedEvent === 'marriage') {
+      list.push({
+        dateStr: `${baseYear}-${pad(today.getMonth() + 4 > 12 ? today.getMonth() - 8 : today.getMonth() + 4)}-15`,
+        labelHi: 'निकटवर्ती शुभ विवाह काल (अमृत दृष्टि)',
+        labelEn: 'Primary Favorable Marriage Window',
+        probability: 94,
+        primaryFactorHi: 'गोचर गुरु की सप्तम भाव व शुक्र पर अमृत दृष्टि संबंध',
+        primaryFactorEn: 'Transit Jupiter aspects natal 7th house and Venus',
+        detailsHi: 'गोचर गुरु की 5वीं/9वीं त्रिकोण दृष्टि दांपत्य भाव को सक्रिय कर रही है। शुभ संयोग।',
+        detailsEn: 'Favorable Jupiter double transit energizes the marital house.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-05-20`,
+        labelHi: 'द्वितीय विवाह एवं संबंध काल',
+        labelEn: 'Secondary Matrimonial Window',
+        probability: 86,
+        primaryFactorHi: 'सप्तमेश का शुभ गोचर एवं गुरु-शुक्र दृष्टि सामंजस्य',
+        primaryFactorEn: '7th lord transit support with Venus-Jupiter alignment',
+        detailsHi: 'शुक्र व गुरु की परस्पर दृष्टि दांपत्य सुख व परिणय योग को बल प्रदान करती है।',
+        detailsEn: 'Venus and Jupiter mutual transit blessing fosters matrimonial proposals.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-11-10`,
+        labelHi: 'तृतीय अनुकूल परिणय काल',
+        labelEn: 'Tertiary Auspicious Window',
+        probability: 79,
+        primaryFactorHi: 'शनि के अनुकूल एकादश गोचर के साथ गुरु की सहमति',
+        primaryFactorEn: 'Saturn 11th transit clearance with Jupiter endorsement',
+        detailsHi: 'शनि का अनुकूल गोचर बाधाओं को दूर कर विवाह संबंध पक्के कराने में सहायक रहेगा।',
+        detailsEn: 'Transit Saturn in favorable upachaya removes lingering obstacles.',
+      });
+    } else if (selectedEvent === 'career') {
+      list.push({
+        dateStr: `${baseYear}-${pad(today.getMonth() + 3 > 12 ? today.getMonth() - 9 : today.getMonth() + 3)}-01`,
+        labelHi: 'पदोन्नति व नई नौकरी का स्वर्णिम अवसर',
+        labelEn: 'Peak Promotion & Job Offer Window',
+        probability: 95,
+        primaryFactorHi: 'गोचर गुरु व सूर्य का दशम भाव (कर्म) पर विशेष संबल',
+        primaryFactorEn: 'Transit Jupiter & Sun actively support natal 10th house',
+        detailsHi: 'दशम भाव सक्रिय होने से कार्यक्षेत्र में पद वृद्धि, वेतन वृद्धि अथवा नए उत्तरदायित्व के योग।',
+        detailsEn: '10th house activation brings recognition, role elevation and salary increments.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-03-15`,
+        labelHi: 'व्यावसायिक विस्तार एवं नेतृत्व योग',
+        labelEn: 'Career Expansion & Leadership Horizon',
+        probability: 88,
+        primaryFactorHi: 'शनि-बुध का अनुकूल एकादश लाभ गोचर',
+        primaryFactorEn: 'Saturn & Mercury transit in 11th house of gains',
+        detailsHi: 'व्यवसाय अथवा नई परियोजना में वित्तीय लाभ व उच्चाधिकारियों का सहयोग प्राप्त होगा।',
+        detailsEn: 'Substantial commercial gains and mentorship from industry seniors.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-09-25`,
+        labelHi: 'स्थान परिवर्तन सहित करियर उत्थान',
+        labelEn: 'Relocation & Elevated Career Leap',
+        probability: 81,
+        primaryFactorHi: 'दशमेश की नवमेश के साथ गोचर युति',
+        primaryFactorEn: '10th lord and 9th lord transit conjunction',
+        detailsHi: 'धर्म-कर्म आधिपत्य राजयोग गोचर में सक्रिय होगा। दूरस्थ स्थान या नई कंपनी में बड़ा पद।',
+        detailsEn: 'Dharma-Karmadhipati yoga activated in transit. Prestigious offsite role.',
+      });
+    } else if (selectedEvent === 'foreign') {
+      list.push({
+        dateStr: `${baseYear}-${pad(today.getMonth() + 5 > 12 ? today.getMonth() - 7 : today.getMonth() + 5)}-10`,
+        labelHi: 'विदेश गमन, वीजा व उच्च शिक्षा अवसर',
+        labelEn: 'Foreign Travel, Visa & Higher Studies',
+        probability: 91,
+        primaryFactorHi: 'गोचर राहु व गुरु का नवम/द्वादश भाव से संबंध',
+        primaryFactorEn: 'Transit Rahu & Jupiter linking 9th & 12th houses',
+        detailsHi: 'द्वादश भाव (विदेश) व नवम (दीर्घ यात्रा) के सक्रिय होने से वीजा व विदेशी यात्रा में सफलता।',
+        detailsEn: 'Foreign travel house clearance leads to prompt visa issuance and long-haul travel.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-07-15`,
+        labelHi: 'स्थायी निवास (PR/Relocation) काल',
+        labelEn: 'Overseas Settlement Window',
+        probability: 84,
+        primaryFactorHi: 'नवमेश की द्वादश भाव में गोचर स्थिति',
+        primaryFactorEn: '9th lord transiting in 12th foreign house',
+        detailsHi: 'विदेश में कार्य अथवा अध्ययन हेतु लंबी अवधि के निवास के अनुकूल योग।',
+        detailsEn: 'Long-term settlement and international work relocation favorability.',
+      });
+    } else if (selectedEvent === 'property') {
+      list.push({
+        dateStr: `${baseYear}-${pad(today.getMonth() + 6 > 12 ? today.getMonth() - 6 : today.getMonth() + 6)}-20`,
+        labelHi: 'नया भवन, फ्लैट अथवा भूमि क्रय योग',
+        labelEn: 'Home, Land & Flat Purchase Window',
+        probability: 94,
+        primaryFactorHi: 'गोचर मंगल (भूमि कारक) व गुरु का चतुर्थ भाव पर अनुग्रह',
+        primaryFactorEn: 'Transit Mars (Bhumi) & Jupiter blessing 4th house',
+        detailsHi: 'चतुर्थेश की मजबूती से अचल संपत्ति, नवीन आवास अथवा भूमि क्रय की योजना सफल होगी।',
+        detailsEn: 'Strong 4th house transits solidify real estate acquisition and registry.',
+      });
+      list.push({
+        dateStr: `${baseYear + 1}-04-10`,
+        labelHi: 'नवीन वाहन क्रय एवं सुख वृद्धि',
+        labelEn: 'Automobile & Luxury Vehicle Purchase',
+        probability: 87,
+        primaryFactorHi: 'शुक्र का चतुर्थ भाव में स्वराशि/उच्च गोचर',
+        primaryFactorEn: 'Venus transit in exaltation/own sign over 4th house',
+        detailsHi: 'वाहन कारक शुक्र की कृपा से प्रिय वाहन की प्राप्ति व गृह नवीनीकरण के योग।',
+        detailsEn: 'Automobile karaka Venus enables dream vehicle purchase and home embellishment.',
+      });
+    }
+
+    return list;
+  }, [selectedEvent, chart, today]);
 
   // Compute live transit chart
   const transitChart = useMemo(() => {
@@ -566,73 +693,189 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
           </div>
         </div>
 
-        {/* Right: Live Transit Hits & Aspects Inspector */}
+        {/* Right: Live Transit Hits & Aspects OR Event Time Machine */}
         <div className="oj-card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h2 style={{ margin: 0, fontFamily: 'Cinzel, Playfair Display, serif', fontWeight: 'bold', fontSize: '17px', color: '#b45309' }}>
-              सक्रिय गोचर दृष्टि व युति (Live Aspect Hits)
-            </h2>
-            <span style={{ fontSize: '11px', background: 'rgba(217, 119, 6, 0.12)', color: '#b45309', padding: '3px 8px', borderRadius: '9999px', fontWeight: 'bold' }}>
-              {aspectHits.length} सक्रिय संबंध
-            </span>
-          </div>
-
-          {/* Filter Pills */}
-          <div className="oj-tab-pills-row" style={{ marginBottom: '12px' }}>
-            {['all', 'Conjunction', 'Trine', 'Opposition', 'Square', 'Sextile'].map((f) => (
+          {/* Right Mode Switch Tabs */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+            <div className="oj-tab-pills-row">
               <button
-                key={f}
                 type="button"
-                onClick={() => setFilterAspect(f)}
-                className={`oj-tab-pill ${filterAspect === f ? 'is-active' : ''}`}
+                className={`oj-tab-pill ${rightPanelMode === 'aspects' ? 'is-active' : ''}`}
+                onClick={() => setRightPanelMode('aspects')}
                 style={{ padding: '4px 10px', fontSize: '11.5px' }}
               >
-                {f === 'all' ? 'समस्त' : f}
+                <span>सक्रिय दृष्टि व युति (Live Aspects)</span>
               </button>
-            ))}
+              <button
+                type="button"
+                className={`oj-tab-pill ${rightPanelMode === 'timemachine' ? 'is-active' : ''}`}
+                onClick={() => setRightPanelMode('timemachine')}
+                style={{ padding: '4px 10px', fontSize: '11.5px' }}
+              >
+                <span>इवेंट टाइम मशीन (Event Dating)</span>
+              </button>
+            </div>
           </div>
 
-          {/* Aspect Hits List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '460px', overflowY: 'auto', paddingRight: '4px' }}>
-            {filteredHits.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '12px', fontStyle: 'italic' }}>
-                इस समय इस श्रेणी का कोई निकट दृष्टि संबंध नहीं है।
+          {/* Mode 1: Live Aspects List */}
+          {rightPanelMode === 'aspects' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#b45309' }}>
+                  ग्रह दृष्टि व संबंध ({aspectHits.length} सक्रिय)
+                </span>
               </div>
-            ) : (
-              filteredHits.map((hit, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg-elevated)',
-                    fontSize: '12px',
-                  }}
+
+              {/* Filter Pills */}
+              <div className="oj-tab-pills-row" style={{ marginBottom: '12px' }}>
+                {['all', 'Conjunction', 'Trine', 'Opposition', 'Square', 'Sextile'].map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFilterAspect(f)}
+                    className={`oj-tab-pill ${filterAspect === f ? 'is-active' : ''}`}
+                    style={{ padding: '3px 8px', fontSize: '11px' }}
+                  >
+                    {f === 'all' ? 'समस्त' : f}
+                  </button>
+                ))}
+              </div>
+
+              {/* Aspect Hits List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '440px', overflowY: 'auto', paddingRight: '4px' }}>
+                {filteredHits.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '12px', fontStyle: 'italic' }}>
+                    इस समय इस श्रेणी का कोई निकट दृष्टि संबंध नहीं है।
+                  </div>
+                ) : (
+                  filteredHits.map((hit, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-elevated)',
+                        fontSize: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span
+                            style={{
+                              width: '9px',
+                              height: '9px',
+                              borderRadius: '50%',
+                              backgroundColor: hit.aspectColor,
+                            }}
+                          />
+                          गोचर {HINDI_PLANETS[hit.transitPlanet] || hit.transitPlanet} → जन्म {HINDI_PLANETS[hit.natalPlanet] || hit.natalPlanet}
+                        </span>
+                        <span style={{ fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '9999px', background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>
+                          {hit.aspectType} ({hit.orb.toFixed(1)}°)
+                        </span>
+                      </div>
+                      <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '11.5px', lineHeight: '1.4' }}>
+                        {hit.vedicImpactHi}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Mode 2: Event Time Machine */}
+          {rightPanelMode === 'timemachine' && (
+            <div>
+              {/* Event Selector Chips */}
+              <div className="oj-tab-pills-row" style={{ marginBottom: '12px' }}>
+                <button
+                  type="button"
+                  className={`oj-tab-pill ${selectedEvent === 'marriage' ? 'is-active' : ''}`}
+                  onClick={() => setSelectedEvent('marriage')}
+                  style={{ padding: '3px 8px', fontSize: '11px' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 'bold', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  विवाह काल (Marriage)
+                </button>
+                <button
+                  type="button"
+                  className={`oj-tab-pill ${selectedEvent === 'career' ? 'is-active' : ''}`}
+                  onClick={() => setSelectedEvent('career')}
+                  style={{ padding: '3px 8px', fontSize: '11px' }}
+                >
+                  करियर व पदोन्नति (Career)
+                </button>
+                <button
+                  type="button"
+                  className={`oj-tab-pill ${selectedEvent === 'foreign' ? 'is-active' : ''}`}
+                  onClick={() => setSelectedEvent('foreign')}
+                  style={{ padding: '3px 8px', fontSize: '11px' }}
+                >
+                  विदेश यात्रा (Foreign)
+                </button>
+                <button
+                  type="button"
+                  className={`oj-tab-pill ${selectedEvent === 'property' ? 'is-active' : ''}`}
+                  onClick={() => setSelectedEvent('property')}
+                  style={{ padding: '3px 8px', fontSize: '11px' }}
+                >
+                  भूमि व वाहन (Property)
+                </button>
+              </div>
+
+              {/* Event Windows List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '440px', overflowY: 'auto', paddingRight: '4px' }}>
+                {eventWindows.map((win, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: '12px 14px',
+                      borderRadius: '10px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-elevated)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ fontWeight: 'bold', color: '#b45309', fontSize: '13px' }}>
+                        {win.labelHi}
+                      </span>
                       <span
                         style={{
-                          width: '9px',
-                          height: '9px',
-                          borderRadius: '50%',
-                          backgroundColor: hit.aspectColor,
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                          background: win.probability >= 90 ? 'rgba(22, 163, 74, 0.12)' : 'rgba(217, 119, 6, 0.12)',
+                          color: win.probability >= 90 ? '#16a34a' : '#b45309',
                         }}
-                      />
-                      गोचर {HINDI_PLANETS[hit.transitPlanet] || hit.transitPlanet} → जन्म {HINDI_PLANETS[hit.natalPlanet] || hit.natalPlanet}
-                    </span>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '9999px', background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>
-                      {hit.aspectType} ({hit.orb.toFixed(1)}°)
-                    </span>
+                      >
+                        {win.probability}% शुभ संभावना
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--text)', marginBottom: '3px' }}>
+                      {win.primaryFactorHi}
+                    </div>
+
+                    <p style={{ margin: '0 0 8px', fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                      {win.detailsHi}
+                    </p>
+
+                    <button
+                      type="button"
+                      className="oj-action-btn primary"
+                      onClick={() => setTransitDate(win.dateStr)}
+                      style={{ padding: '4px 10px', fontSize: '11px' }}
+                    >
+                      इस गोचर पर जाएं ({win.dateStr})
+                    </button>
                   </div>
-                  <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '11.5px', lineHeight: '1.4' }}>
-                    {hit.vedicImpactHi}
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

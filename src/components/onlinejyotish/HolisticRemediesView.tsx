@@ -22,6 +22,35 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
   >('all');
   const [problemFilter, setProblemFilter] = useState<ProblemFocusArea>('all');
   const [lifestyleFilter, setLifestyleFilter] = useState<LifestyleMode>('all');
+  const [playingStotraIndex, setPlayingStotraIndex] = useState<number | null>(null);
+  const [chantCount, setChantCount] = useState<Record<number, number>>({});
+
+  const handlePlayStotra = (idx: number, verseText: string) => {
+    if (playingStotraIndex === idx) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setPlayingStotraIndex(null);
+      return;
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(verseText);
+      utterance.lang = 'hi-IN';
+      utterance.rate = 0.85; // meditative Vedic speed
+      utterance.pitch = 1.0;
+      utterance.onend = () => {
+        setPlayingStotraIndex(null);
+        setChantCount((prev) => ({ ...prev, [idx]: (prev[idx] || 0) + 1 }));
+      };
+      utterance.onerror = () => {
+        setPlayingStotraIndex(null);
+      };
+      setPlayingStotraIndex(idx);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   const report = useMemo(() => {
     return computeHolisticRemedies(chart, problemFilter, lifestyleFilter);
@@ -487,11 +516,38 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
                     <span style={{ fontWeight: 'bold' }}>पाठ समय: </span>
                     <span>{stotra.bestDayTimingHi} ({stotra.recommendedCount})</span>
                   </div>
-                  <div style={{ background: 'var(--bg-elevated)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(217, 119, 6, 0.2)', textAlign: 'center', fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#b45309', fontStyle: 'italic' }}>
+                  <div style={{ background: 'var(--bg-elevated)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(217, 119, 6, 0.25)', textAlign: 'center', fontFamily: 'Cinzel, serif', fontSize: '12.5px', color: '#b45309', fontStyle: 'italic', lineHeight: 1.5 }}>
                     {stotra.sampleSanskritVerse}
                   </div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text)', fontWeight: '500' }}>
                     {stotra.meaningHi}
+                  </div>
+
+                  {/* Interactive Vedic Chanting & Mala Japam Player */}
+                  <div style={{ marginTop: '6px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                    <button
+                      type="button"
+                      className={`oj-action-btn ${playingStotraIndex === idx ? 'primary' : 'secondary'}`}
+                      onClick={() => handlePlayStotra(idx, stotra.sampleSanskritVerse)}
+                      style={{ padding: '3px 10px', fontSize: '11px' }}
+                    >
+                      {playingStotraIndex === idx ? '■ पाठ विराम' : '▶ वैदिक श्रवण'}
+                    </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                        जप संख्या: <strong>{chantCount[idx] || 0}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        className="oj-action-btn secondary"
+                        onClick={() => setChantCount((prev) => ({ ...prev, [idx]: (prev[idx] || 0) + 1 }))}
+                        style={{ padding: '2px 8px', fontSize: '10.5px' }}
+                        title="माला जप वृद्धि (+1)"
+                      >
+                        +1 मनका
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

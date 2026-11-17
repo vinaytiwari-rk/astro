@@ -20,6 +20,9 @@ import { SynastryBTRView } from './components/onlinejyotish/SynastryBTRView';
 import { MuhurtaPrashnaView } from './components/onlinejyotish/MuhurtaPrashnaView';
 import { HolisticRemediesView } from './components/onlinejyotish/HolisticRemediesView';
 import { DualTransitWheelView } from './components/onlinejyotish/DualTransitWheelView';
+import { SarvatobhadraChakraView } from './components/onlinejyotish/SarvatobhadraChakraView';
+import { LalKitabView } from './components/onlinejyotish/LalKitabView';
+import { SplitStudioWorkstationView } from './components/onlinejyotish/SplitStudioWorkstationView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -382,6 +385,30 @@ export function App() {
                 chart={chart}
                 settings={settings}
                 onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'sarvatobhadra' && (
+              <SarvatobhadraChakraView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'lal-kitab' && (
+              <LalKitabView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {(currentView === 'split-studio' || currentView === 'multi-chart') && (
+              <SplitStudioWorkstationView
+                chart={chart}
+                settings={settings}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
               />
             )}
 

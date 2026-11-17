@@ -192,6 +192,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 className={`oj-nav-link-btn ${currentView === 'home' ? 'is-current' : ''}`}
                 onClick={() => handleLinkClick('home')}
               >
+                <Home size={13} />
                 <span>{isHi ? 'होम' : 'Home'}</span>
               </button>
             </li>
@@ -203,6 +204,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 className={`oj-nav-link-btn ${currentView === 'vedic-horoscope' ? 'is-current' : ''}`}
                 onClick={() => handleLinkClick('vedic-horoscope')}
               >
+                <Compass size={13} />
                 <span>{isHi ? 'जन्म कुंडली' : 'Janam Kundli'}</span>
               </button>
             </li>
@@ -214,6 +216,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 className={`oj-nav-link-btn ${currentView === 'sambhavit-falkathan' ? 'is-current' : ''}`}
                 onClick={() => handleLinkClick('sambhavit-falkathan')}
               >
+                <BookOpen size={13} />
                 <span>{isHi ? '50 फलादेश' : '50 Predictions'}</span>
               </button>
             </li>
@@ -231,6 +234,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-expanded={openDropdown === 'transits-menu'}
                 aria-haspopup="true"
               >
+                <Clock size={13} />
                 <span>{isHi ? 'गोचर व साढ़े साती' : 'Gochar & Sade Sati'}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
@@ -256,6 +260,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 className={`oj-nav-link-btn ${currentView === 'holistic-remedies' ? 'is-current' : ''}`}
                 onClick={() => handleLinkClick('holistic-remedies')}
               >
+                <Heart size={13} />
                 <span>{isHi ? 'वैदिक समग्र उपचार' : 'Holistic Remedies'}</span>
               </button>
             </li>
@@ -280,6 +285,18 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
               {openDropdown === 'advanced-astro' && (
                 <div className="oj-dropdown-menu" role="menu">
+                  <button type="button" onClick={() => handleLinkClick('split-studio')}>
+                    <strong>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'D1 + D9 + दशा + गोचर एक ही स्क्रीन पर' : 'D1 + D9 + Dashas + Live Transits'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('sarvatobhadra')}>
+                    <strong>{isHi ? 'सर्वतोभद्र चक्र एवं वेध (9x9)' : 'Sarvatobhadra Chakra (9x9)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '28 नक्षत्र, स्वर, व्यंजन व त्रि-दिशीय वेध' : '28 Nakshatras & Tri-Directional Vedha'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('lal-kitab')}>
+                    <strong>{isHi ? 'लाल किताब एवं 100-वर्षीय वर्षफल' : 'Lal Kitab & Annual Varshphal'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'सोए हुए ग्रह, 9 ऋण एवं वार्षिक टोटके' : 'Sleeping Planets, 9 Debts & Age Slider'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('kp-enterprise')}>
                     <strong>{isHi ? 'केपी सिस्टम (4-Fold & CSL)' : 'KP System (4-Fold & CSL)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'कस्पल सब-लॉर्ड एवं रूलिंग प्लैनेट्स' : 'Cuspal Sub-Lords & Ruling Planets'}</span>
