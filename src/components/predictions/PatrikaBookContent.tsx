@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Award, BookOpen, Clock, Compass, FileText, Gem, Layers, Printer, ShieldAlert, Sparkles, Star } from 'lucide-react';
-import { SEVEN_PLANETS } from '../../astro/constants';
+import { SIGNS, SEVEN_PLANETS } from '../../astro/constants';
 import { computePatrikaBookData, SHODASHA_VARGAS_LIST, type PatrikaBookData } from '../../astro/predictions/patrikaBook';
+import { computeReferencePdfPredictions, type ReferencePdfReport } from '../../astro/predictions/referencePdfPredictions';
+import { computeSambhavitFalkathan, type SambhavitFalkathanReport } from '../../astro/predictions/sambhavitFalkathan';
+import { SIGN_HI, PLANET_HI } from '../../astro/predictions/dynamicDossierChapters';
 import type { PredictionReport } from '../../astro/predictions/types';
 import { formatDateDmy, formatLocalDateTimeFromUtc } from '../../astro/time';
 import type { ChartData, ChartStyle } from '../../astro/types';
@@ -811,6 +814,8 @@ export const PatrikaBookFullPrintEdition: React.FC<{
   language: 'en' | 'hi';
 }> = ({ chart, chartStyle, report, language }) => {
   const isHi = language === 'hi';
+  const refPdf = useMemo(() => computeReferencePdfPredictions(chart), [chart]);
+  const sambhavit = useMemo(() => computeSambhavitFalkathan(chart), [chart]);
   const [edition, setEdition] = useState<'complete' | 'concise'>('complete');
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -1296,7 +1301,169 @@ export const PatrikaBookFullPrintEdition: React.FC<{
             </div>
           </section>
 
-          {/* CH 28: MASTER HOROSCOPE PREDICTIONS (Panchanga Phal + Lagna 6-Part + 12 Houses Book) */}
+          {/* CH 28: MASTER HOROSCOPE PREDICTIONS (118-PAGE REFERENCE PARITY) */}
+          <div className="print-page-break" />
+          <section className="panel">
+            <div className="panel-header patrika-chapter-head">
+              <h3>{isHi ? 'अध्याय 28: कुंडली सर्वांगीण विश्लेषण एवं लग्न संपूर्ण फलादेश (Pages 54-61 Parity)' : 'Ch 28: Master Horoscope Analysis & Ascendant Deep Predictions'}</h3>
+              <span className="tag tag-accent">{signTxt(chart.ascendant.signIndex, language)} Lagna</span>
+            </div>
+            <div className="pred-card-body">
+              {/* Shloka */}
+              <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', textAlign: 'center', marginBottom: 12, borderRadius: 4 }}>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--accent)' }}>
+                  जननी जन्म सौख्यानां वर्धनी कुल संपदाम् । पदवी पूर्व पुण्यानां लिख्यते जन्म पत्रिका ॥
+                </strong>
+              </div>
+
+              {/* 12 Houses Rulership Table */}
+              <h4 style={{ marginBottom: 6 }}>{isHi ? 'द्वादश भाव विश्लेषण (Horoscope Analysis):' : 'Horoscope Analysis — 12 Bhavas Rulership & Placements:'}</h4>
+              <div className="table-scroll" style={{ marginBottom: 12 }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>{isHi ? 'भाव' : 'House'}</th>
+                      <th>{isHi ? 'कारकत्व' : 'Domain'}</th>
+                      <th>{isHi ? 'राशि' : 'Sign'}</th>
+                      <th>{isHi ? 'स्वामी' : 'Lord'}</th>
+                      <th>{isHi ? 'स्थिति' : 'Placed In'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {refPdf.horoscopeAnalysis.houses.map((h) => (
+                      <tr key={h.houseNumber}>
+                        <td><strong>H{h.houseNumber}</strong></td>
+                        <td>{isHi ? h.houseNameHi : h.houseNameEn}</td>
+                        <td><strong>{isHi ? h.signNameHi : h.signNameEn}</strong></td>
+                        <td><strong>{isHi ? h.rulerNameHi : h.rulerNameEn}</strong></td>
+                        <td><span className="tag tag-subtle">H{h.placedInHouse} ({isHi ? SIGN_HI[h.placedSignIndex] : SIGNS[h.placedSignIndex].name})</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Benefics, Malefics, Marakas, Yogakaraka */}
+              <div style={{ padding: '10px 14px', background: 'var(--bg-subtle)', borderRadius: 4, marginBottom: 12 }}>
+                <strong>{isHi ? `आपके ${signTxt(chart.ascendant.signIndex, language)} लग्न हेतु:` : `For your ${signTxt(chart.ascendant.signIndex, language)} Ascendant:`}</strong>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', marginTop: 6, fontSize: '0.85rem' }}>
+                  <div><strong style={{ color: 'var(--good, #22c55e)' }}>{isHi ? 'शुभ ग्रह:' : 'Benefic Planets:'}</strong> {isHi ? refPdf.horoscopeAnalysis.beneficsHi.join(', ') : refPdf.horoscopeAnalysis.benefics.join(', ')}</div>
+                  <div><strong style={{ color: 'var(--warn, #eab308)' }}>{isHi ? 'अशुभ ग्रह:' : 'Malefic Planets:'}</strong> {isHi ? refPdf.horoscopeAnalysis.maleficsHi.join(', ') : refPdf.horoscopeAnalysis.malefics.join(', ')}</div>
+                  <div><strong style={{ color: 'var(--bad, #ef4444)' }}>{isHi ? 'मारक ग्रह:' : 'Maraka Planets:'}</strong> {isHi ? refPdf.horoscopeAnalysis.marakasHi.join(', ') : refPdf.horoscopeAnalysis.marakas.join(', ')}</div>
+                  <div><strong style={{ color: 'var(--accent)' }}>{isHi ? 'योगकारक ग्रह:' : 'Yoga Karaka Planet:'}</strong> {isHi ? refPdf.horoscopeAnalysis.yogakarakaHi || 'कोई नहीं' : refPdf.horoscopeAnalysis.yogakaraka || 'None'}</div>
+                </div>
+              </div>
+
+              {/* Birth Time Predictions */}
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>{isHi ? 'जन्म-काल फल (Birth-Time Predictions):' : 'Birth-Time Predictions (Ritu, Masa, Tithi, Weekday):'}</h4>
+              <div className="pred-bullets">
+                <div><strong>{isHi ? `जन्म ऋतु (${refPdf.birthTimePredictions.ritu.nameHi}):` : `Birth Season (${refPdf.birthTimePredictions.ritu.nameEn}):`}</strong> {isHi ? refPdf.birthTimePredictions.ritu.resultHi : refPdf.birthTimePredictions.ritu.resultEn}</div>
+                <div><strong>{isHi ? `जन्म मास (${refPdf.birthTimePredictions.masa.nameHi}):` : `Birth Month (${refPdf.birthTimePredictions.masa.nameEn}):`}</strong> {isHi ? refPdf.birthTimePredictions.masa.resultHi : refPdf.birthTimePredictions.masa.resultEn}</div>
+                <div><strong>{isHi ? `जन्म तिथि (${refPdf.birthTimePredictions.tithi.nameHi}):` : `Birth Tithi (${refPdf.birthTimePredictions.tithi.nameEn}):`}</strong> {isHi ? refPdf.birthTimePredictions.tithi.resultHi : refPdf.birthTimePredictions.tithi.resultEn}</div>
+                <div><strong>{isHi ? `जन्म वार (${refPdf.birthTimePredictions.weekday.nameHi}):` : `Birth Weekday (${refPdf.birthTimePredictions.weekday.nameEn}):`}</strong> {isHi ? refPdf.birthTimePredictions.weekday.resultHi : refPdf.birthTimePredictions.weekday.resultEn}</div>
+              </div>
+
+              {/* Birth Nakshatra */}
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>{isHi ? `जन्म नक्षत्र फल — ${refPdf.birthNakshatra.nameHi} (चरण ${refPdf.birthNakshatra.pada}, अधिदेवता: ${refPdf.birthNakshatra.deityHi}):` : `Birth Nakshatra — ${refPdf.birthNakshatra.nameEn} (Pada ${refPdf.birthNakshatra.pada}, Deity: ${refPdf.birthNakshatra.deityEn}):`}</h4>
+              <p className="lead-text" style={{ fontSize: '0.85rem' }}>{isHi ? refPdf.birthNakshatra.fullReadingHi : refPdf.birthNakshatra.fullReadingEn}</p>
+
+              {/* Lagna In-Depth 11 Dimensions */}
+              <h4 style={{ marginTop: 14, marginBottom: 6 }}>{isHi ? `लग्न संपूर्ण फलादेश — ${refPdf.lagnaPredictions.signHi} (11 आयाम):` : `Ascendant Complete Predictions — ${refPdf.lagnaPredictions.signEn} (11 Dimensions):`}</h4>
+              <div className="pred-bullets">
+                <div><strong>{isHi ? '1. शारीरिक गठन:' : '1. Physical Features:'}</strong> {isHi ? refPdf.lagnaPredictions.physicalFeaturesHi : refPdf.lagnaPredictions.physicalFeaturesEn}</div>
+                <div><strong>{isHi ? '2. मानसिकता व जीवनशैली:' : '2. Mentality & Lifestyle:'}</strong> {isHi ? refPdf.lagnaPredictions.mentalityLifestyleHi : refPdf.lagnaPredictions.mentalityLifestyleEn}</div>
+                <div><strong>{isHi ? '3. पसंद:' : '3. Likes:'}</strong> {isHi ? refPdf.lagnaPredictions.likesHi : refPdf.lagnaPredictions.likesEn}</div>
+                <div><strong>{isHi ? '4. नापसंद:' : '4. Dislikes:'}</strong> {isHi ? refPdf.lagnaPredictions.dislikesHi : refPdf.lagnaPredictions.dislikesEn}</div>
+                <div><strong>{isHi ? '5. प्रमुख शक्तियां:' : '5. Core Strengths:'}</strong> {(isHi ? refPdf.lagnaPredictions.strengthsHi : refPdf.lagnaPredictions.strengthsEn).join(' • ')}</div>
+                <div><strong>{isHi ? '6. सुधार क्षेत्र:' : '6. Weaknesses & Improvement Areas:'}</strong> {(isHi ? refPdf.lagnaPredictions.weaknessesHi : refPdf.lagnaPredictions.weaknessesEn).join(' • ')}</div>
+                <div><strong>{isHi ? '7. शिक्षा:' : '7. Education:'}</strong> {isHi ? refPdf.lagnaPredictions.educationHi : refPdf.lagnaPredictions.educationEn}</div>
+                <div><strong>{isHi ? '8. स्वास्थ्य:' : '8. Health:'}</strong> {isHi ? refPdf.lagnaPredictions.healthHi : refPdf.lagnaPredictions.healthEn}</div>
+                <div><strong>{isHi ? '9. आर्थिक स्थिति:' : '9. Financial Life:'}</strong> {isHi ? refPdf.lagnaPredictions.financialLifeHi : refPdf.lagnaPredictions.financialLifeEn}</div>
+                <div><strong>{isHi ? '10. प्रेम व दांपत्य:' : '10. Love & Marriage:'}</strong> {isHi ? refPdf.lagnaPredictions.loveMarriageHi : refPdf.lagnaPredictions.loveMarriageEn}</div>
+                <div><strong>{isHi ? '11. परिवार व आजीविका:' : '11. Family & Profession:'}</strong> {isHi ? `${refPdf.lagnaPredictions.familyHi} ${refPdf.lagnaPredictions.professionHi}` : `${refPdf.lagnaPredictions.familyEn} ${refPdf.lagnaPredictions.professionEn}`}</div>
+              </div>
+            </div>
+          </section>
+
+          {/* CH 28.E: Predictions of House Lords Placed in Various Houses (Bhavesha) */}
+          <div className="print-page-break" />
+          <section className="panel">
+            <div className="panel-header patrika-chapter-head">
+              <h3>{isHi ? 'अध्याय 28.E: द्वादश भावेशों का विभिन्न भावों में फल (Bhavesha in Houses — Pages 62-64 Parity)' : 'Ch 28.E: Predictions of House Lords Placed in Various Houses'}</h3>
+            </div>
+            <div className="pred-card-body">
+              <div className="domains-grid">
+                {refPdf.houseLordsPredictions.map((hl) => (
+                  <article key={hl.lordHouse} className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                    <div className="domain-top">
+                      <div>
+                        <h4>{isHi ? `${hl.lordHouse}वें भाव के स्वामी (${hl.lordPlanetHi})` : `Lord of House ${hl.lordHouse} (${hl.lordPlanetEn})`}</h4>
+                        <div className="muted small-text">{isHi ? `भाव ${hl.placedHouse} में (${hl.placedSignHi})` : `In House ${hl.placedHouse} (${hl.placedSignEn})`}</div>
+                      </div>
+                      <span className="tag tag-karaka">H{hl.lordHouse} → H{hl.placedHouse}</span>
+                    </div>
+                    <p className="lead-text" style={{ fontSize: '0.84rem', marginTop: 4 }}>{isHi ? hl.readingHi : hl.readingEn}</p>
+                    <div className="muted small-text" style={{ marginTop: 4 }}>
+                      <strong>{isHi ? 'संभावित घटना:' : 'Event:'}</strong> {isHi ? hl.eventScenarioHi : hl.eventScenarioEn}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* CH 28.F: Planetary Positions & House Predictions (Sun to Ketu: Zodiac + House) */}
+          <div className="print-page-break" />
+          <section className="panel">
+            <div className="panel-header patrika-chapter-head">
+              <h3>{isHi ? 'अध्याय 28.F: नवग्रह राशि एवं भाव स्थिति फल (Sun to Ketu — Pages 64-72 Parity)' : 'Ch 28.F: Planetary Positions & House Predictions (Sun to Ketu)'}</h3>
+            </div>
+            <div className="pred-card-body">
+              <div className="domains-grid">
+                {refPdf.planetaryPositionsPredictions.map((pl) => (
+                  <article key={pl.planetId} className="domain-card">
+                    <div className="domain-top">
+                      <div>
+                        <h4>{isHi ? pl.planetHi : pl.planetEn}</h4>
+                        <div className="muted small-text">{isHi ? `${pl.signHi} राशि · भाव ${pl.houseNumber}` : `${pl.signEn} · House ${pl.houseNumber}`} ({pl.degreeDms})</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        {pl.isRetrograde && <span className="tag tag-warn">{isHi ? 'वक्री' : 'Rx'}</span>}
+                        {pl.isCombust && <span className="tag tag-bad">{isHi ? 'अस्त' : 'Combust'}</span>}
+                      </div>
+                    </div>
+                    <div className="pred-bullets" style={{ marginTop: 4 }}>
+                      <div><strong>{isHi ? 'राशिगत फल:' : 'Zodiac Position:'}</strong> {isHi ? pl.zodiacPositionReadingHi : pl.zodiacPositionReadingEn}</div>
+                      <div><strong>{isHi ? 'भावगत फल:' : 'House Position:'}</strong> {isHi ? pl.housePositionReadingHi : pl.housePositionReadingEn}</div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* CH 28.G: Conjunction Yogas (Dwi, Tri, Chatur Graha Yogas) */}
+          {(refPdf.variousYogas.dwiGrahaYogas.length > 0 || refPdf.variousYogas.triGrahaYogas.length > 0 || refPdf.variousYogas.chaturGrahaYogas.length > 0) && (
+            <section className="panel">
+              <div className="panel-header patrika-chapter-head">
+                <h3>{isHi ? 'अध्याय 28.G: ग्रह युति फल (Conjunction Yogas — Pages 74-75 Parity)' : 'Ch 28.G: Conjunction Yogas (Two, Three & Four Planets in One Sign)'}</h3>
+              </div>
+              <div className="pred-card-body">
+                <div className="domains-grid">
+                  {[...refPdf.variousYogas.dwiGrahaYogas, ...refPdf.variousYogas.triGrahaYogas, ...refPdf.variousYogas.chaturGrahaYogas].map((conj, idx) => (
+                    <article key={idx} className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                      <div className="domain-top">
+                        <h4>{isHi ? conj.titleHi : conj.titleEn}</h4>
+                        <span className="tag tag-varg">H{conj.houseNumber}</span>
+                      </div>
+                      <p className="lead-text" style={{ fontSize: '0.84rem', marginTop: 4 }}>{isHi ? conj.readingHi : conj.readingEn}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           <div className="print-page-break" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
@@ -1481,7 +1648,332 @@ export const PatrikaBookFullPrintEdition: React.FC<{
         </>
       )}
 
-      {/* Classical Astrological Disclaimer */}
+      {/* CH 35: SAMBHAVIT FALKATHAN (DIVISION 12: 25 CORE LIFE DIMENSIONS HOLISTIC SYNTHESIS) */}
+          <div className="print-page-break" />
+          <section className="panel">
+            <div className="panel-header patrika-chapter-head">
+              <h3>{isHi ? 'अध्याय 35: संभावित फलकथन — समस्त कुंडलियों का संश्लेषित फलादेश (25 आयाम)' : 'Ch 35: Probable Life Predictions (Sambhavit Falkathan — 25 Dimensions Holistic Synthesis)'}</h3>
+              <span className="tag tag-karaka">{chart.input.name}</span>
+            </div>
+            <div className="pred-card-body">
+              <div className="small-text muted" style={{ marginBottom: 12 }}>
+                {isHi
+                  ? 'यह विशेष फलकथन डी-1, नवांश (D-9), द्रेष्काण (D-3), सप्तमांश (D-7), दशमांश (D-10), द्वादशांश (D-12), सिद्धभांश (D-24), त्रिंशांश (D-30) व षष्ट्यंश (D-60) के सूक्ष्म समन्वय द्वारा जीवन के 25 महत्वपूर्ण पक्षों पर सटीक व प्रमाणिक निष्कर्ष प्रस्तुत करता है।'
+                  : 'Synthesized classical predictions across D1, D9, D3, D7, D10, D12, D24, D30, and D60 across 25 vital dimensions of life.'}
+              </div>
+
+              <div className="domains-grid">
+                {/* 1. Nama Akshar */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '1. नामाक्षर (Name Syllables)' : '1. Birth Name Syllables'}</h4>
+                    <span className="tag tag-accent">{sambhavit.namakshar.nakshatraName} - P{sambhavit.namakshar.pada}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'मुख्य नामाक्षर:' : 'Primary Syllable:'}</strong> <span className="tag tag-karaka">{sambhavit.namakshar.primaryHi} ({sambhavit.namakshar.primaryEn})</span></div>
+                    <div><strong>{isHi ? 'चारों चरण:' : '4-Pada Syllables:'}</strong> {sambhavit.namakshar.allPadasHi.join(', ')}</div>
+                    <div><span className="small-text muted">{isHi ? sambhavit.namakshar.explanationHi : sambhavit.namakshar.explanationEn}</span></div>
+                  </div>
+                </article>
+
+                {/* 2. Ishta Devata */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '2. इष्ट देवता एवं साधना' : '2. Ishta Devata & Sadhana'}</h4>
+                    <span className="tag tag-good">{isHi ? sambhavit.ishtaDevata.nameHi : sambhavit.ishtaDevata.nameEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'शास्त्रीय मंत्र:' : 'Mantra:'}</strong> <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{sambhavit.ishtaDevata.mantra}</span></div>
+                    <div><strong>{isHi ? 'साधना आधार:' : 'Basis:'}</strong> {isHi ? sambhavit.ishtaDevata.basisHi : sambhavit.ishtaDevata.basisEn}</div>
+                  </div>
+                </article>
+
+                {/* 3. Mukhya Graha */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '3. मुख्य नियंत्रक ग्रह' : '3. Governing Life Planet'}</h4>
+                    <span className="tag tag-karaka">{isHi ? sambhavit.mukhyaGraha.planetHi : sambhavit.mukhyaGraha.planetEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'भूमिका:' : 'Role:'}</strong> {isHi ? sambhavit.mukhyaGraha.roleHi : sambhavit.mukhyaGraha.roleEn}</div>
+                    <div><span className="small-text muted">{isHi ? sambhavit.mukhyaGraha.rationaleHi : sambhavit.mukhyaGraha.rationaleEn}</span></div>
+                  </div>
+                </article>
+
+                {/* 4. Father */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '4. पिता का फलित' : '4. Father Heritage & Bond'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.father.lifespanHi : sambhavit.father.lifespanEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'स्वभाव:' : 'Nature:'}</strong> {isHi ? sambhavit.father.temperamentHi : sambhavit.father.temperamentEn}</div>
+                    <div><strong>{isHi ? 'संभावित व्यवसाय:' : 'Profession:'}</strong> {isHi ? sambhavit.father.professionHi : sambhavit.father.professionEn}</div>
+                    <div><strong>{isHi ? 'संबंध:' : 'Bond:'}</strong> {isHi ? sambhavit.father.relationshipHi : sambhavit.father.relationshipEn}</div>
+                  </div>
+                </article>
+
+                {/* 5. Mother */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '5. माता का फलित' : '5. Mother Heritage & Bond'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.mother.lifespanHi : sambhavit.mother.lifespanEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'स्वभाव:' : 'Nature:'}</strong> {isHi ? sambhavit.mother.temperamentHi : sambhavit.mother.temperamentEn}</div>
+                    <div><strong>{isHi ? 'संभावित पेशा:' : 'Profession:'}</strong> {isHi ? sambhavit.mother.professionHi : sambhavit.mother.professionEn}</div>
+                    <div><strong>{isHi ? 'संबंध:' : 'Bond:'}</strong> {isHi ? sambhavit.mother.relationshipHi : sambhavit.mother.relationshipEn}</div>
+                  </div>
+                </article>
+
+                {/* 6. Siblings */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '6. सहोदर व जन्म क्रम' : '6. Siblings & Birth Order'}</h4>
+                    <span className="tag tag-varg">{isHi ? sambhavit.siblings.birthOrderHi : sambhavit.siblings.birthOrderEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'संभावित संख्या:' : 'Count:'}</strong> {isHi ? sambhavit.siblings.countProjectionHi : sambhavit.siblings.countProjectionEn}</div>
+                    <div><strong>{isHi ? 'सहोदर सुख:' : 'Harmony:'}</strong> {isHi ? sambhavit.siblings.harmonyHi : sambhavit.siblings.harmonyEn}</div>
+                  </div>
+                </article>
+
+                {/* 7. Marriage & Spouse */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '7. विवाह एवं जीवनसाथी' : '7. Marriage & Spouse Profile'}</h4>
+                    <span className="tag tag-accent">{isHi ? sambhavit.marriage.timingAgeWindowHi : sambhavit.marriage.timingAgeWindowEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'विवाह योग स्वरूप:' : 'Marriage Yogas:'}</strong> {isHi ? sambhavit.marriage.marriageYogasHi : sambhavit.marriage.marriageYogasEn}</div>
+                    <div><strong>{isHi ? 'जीवनसाथी का स्वभाव:' : 'Spouse Nature:'}</strong> {isHi ? sambhavit.marriage.spouseNatureHi : sambhavit.marriage.spouseNatureEn}</div>
+                    <div><strong>{isHi ? 'आयु अंतर व दांपत्य संबंध:' : 'Age Gap & Bond:'}</strong> {isHi ? `${sambhavit.marriage.spouseAgeGapHi} • ${sambhavit.marriage.relationshipHi}` : `${sambhavit.marriage.spouseAgeGapEn} • ${sambhavit.marriage.relationshipEn}`}</div>
+                  </div>
+                </article>
+
+                {/* 8. Progeny & Children */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '8. संतान सुख व योग' : '8. Progeny & Conception'}</h4>
+                    <span className="tag tag-good">{isHi ? sambhavit.children.conceptionModeHi : sambhavit.children.conceptionModeEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'संतान संख्या व लिंग:' : 'Progeny Projection:'}</strong> {isHi ? sambhavit.children.progenyCountHi : sambhavit.children.progenyCountEn}</div>
+                    <div><strong>{isHi ? 'गर्भपात जोखिम:' : 'Miscarriage Risk:'}</strong> {isHi ? sambhavit.children.miscarriageRiskHi : sambhavit.children.miscarriageRiskEn}</div>
+                    <div><strong>{isHi ? 'संतान से सुख:' : 'Filial Joy:'}</strong> {isHi ? sambhavit.children.filialHappinessHi : sambhavit.children.filialHappinessEn}</div>
+                  </div>
+                </article>
+
+                {/* 9. Education */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '9. विद्या एवं उच्च शिक्षा' : '9. Academics & Higher Studies'}</h4>
+                    <span className="tag tag-varg">{isHi ? sambhavit.education.attainmentLevelHi : sambhavit.education.attainmentLevelEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'अनुकूल विषय:' : 'Suitable Streams:'}</strong> {(isHi ? sambhavit.education.suitableStreamsHi : sambhavit.education.suitableStreamsEn).join(', ')}</div>
+                    <div><strong>{isHi ? 'सफलता परामर्श:' : 'Academic Advice:'}</strong> {isHi ? sambhavit.education.academicSuccessHi : sambhavit.education.academicSuccessEn}</div>
+                  </div>
+                </article>
+
+                {/* 10. Profession & Career */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '10. आजीविका, नौकरी व व्यवसाय' : '10. Profession & Enterprise'}</h4>
+                    <span className="tag tag-accent">{isHi ? `${sambhavit.career.jobVsBusinessHi} • ${sambhavit.career.govtVsPrivateHi}` : `${sambhavit.career.jobVsBusinessEn} • ${sambhavit.career.govtVsPrivateEn}`}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'अनुकूल कार्यक्षेत्र:' : 'Recommended Fields:'}</strong> {(isHi ? sambhavit.career.suitableProfessionsHi : sambhavit.career.suitableProfessionsEn).join(', ')}</div>
+                    <div><strong>{isHi ? 'विदेश योग:' : 'Foreign Yoga:'}</strong> {isHi ? `${sambhavit.career.foreignTravelHi} (${sambhavit.career.foreignSettlementHi})` : `${sambhavit.career.foreignTravelEn} (${sambhavit.career.foreignSettlementEn})`}</div>
+                  </div>
+                </article>
+
+                {/* 11. Longevity */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '11. आयु-बल एवं दीर्घायु' : '11. Longevity & Vitality'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.longevity.categoryHi : sambhavit.longevity.categoryEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'संभावित आयु सीमा:' : 'Estimated Range:'}</strong> {isHi ? sambhavit.longevity.rangeHi : sambhavit.longevity.rangeEn}</div>
+                    <div><strong>{isHi ? 'आयु रक्षा कारक:' : 'Key Factors:'}</strong> {isHi ? sambhavit.longevity.keyFactorsHi : sambhavit.longevity.keyFactorsEn}</div>
+                  </div>
+                </article>
+
+                {/* 12. Incarceration Yoga */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '12. कारावास / बंधन योग' : '12. Bandhana / Confinement'}</h4>
+                    <span className={`tag ${sambhavit.bandhanaYoga.hasRisk ? 'tag-warn' : 'tag-good'}`}>{isHi ? (sambhavit.bandhanaYoga.hasRisk ? 'सावधानी अपेक्षित' : 'दोष मुक्त (सुरक्षित)') : (sambhavit.bandhanaYoga.hasRisk ? 'Caution Required' : 'Safe / Absent')}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'विश्लेषण:' : 'Analysis:'}</strong> {isHi ? sambhavit.bandhanaYoga.verdictHi : sambhavit.bandhanaYoga.verdictEn}</div>
+                    <div><strong>{isHi ? 'सुरक्षा सूत्र:' : 'Mitigation:'}</strong> {isHi ? sambhavit.bandhanaYoga.mitigationHi : sambhavit.bandhanaYoga.mitigationEn}</div>
+                  </div>
+                </article>
+
+                {/* 13. Surgery Yoga */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '13. शल्य चिकित्सा (सर्जरी) योग' : '13. Surgical Interventions'}</h4>
+                    <span className={`tag ${sambhavit.surgeryYoga.hasRisk ? 'tag-warn' : 'tag-good'}`}>{isHi ? sambhavit.surgeryYoga.riskLevelHi : sambhavit.surgeryYoga.riskLevelEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'प्रभावित अंग:' : 'Vulnerable Areas:'}</strong> {isHi ? sambhavit.surgeryYoga.vulnerableAreasHi : sambhavit.surgeryYoga.vulnerableAreasEn}</div>
+                    <div><strong>{isHi ? 'संभावित समय:' : 'Timing:'}</strong> {isHi ? sambhavit.surgeryYoga.timingHi : sambhavit.surgeryYoga.timingEn}</div>
+                  </div>
+                </article>
+
+                {/* 14. Physical Marks */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '14. शरीर पर विशेष पहचान / चिन्ह' : '14. Physical Marks & Scars'}</h4>
+                    <span className="tag tag-subtle">{sambhavit.physicalMarks.locationsEn.length} Locations</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'पहचान चिन्ह:' : 'Distinct Marks:'}</strong> {isHi ? sambhavit.physicalMarks.identificationHi : sambhavit.physicalMarks.identificationEn}</div>
+                    <div><strong>{isHi ? 'संभावित स्थान:' : 'Locations:'}</strong> {(isHi ? sambhavit.physicalMarks.locationsHi : sambhavit.physicalMarks.locationsEn).join(' • ')}</div>
+                  </div>
+                </article>
+
+                {/* 15. Addictions */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '15. व्यसन, लत एवं प्रलोभन' : '15. Habits & Shadow Addictions'}</h4>
+                    <span className="tag tag-warn">{isHi ? sambhavit.addictions.vulnerabilitiesHi.join(', ') || 'सात्विक' : sambhavit.addictions.vulnerabilitiesEn.join(', ') || 'Sattvic'}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'परामर्श व उपाय:' : 'Advice:'}</strong> {isHi ? sambhavit.addictions.adviceHi : sambhavit.addictions.adviceEn}</div>
+                  </div>
+                </article>
+
+                {/* 16. Bed Pleasure */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '16. शयन सुख व कामुकता' : '16. Bed Pleasure & Sexuality'}</h4>
+                    <span className="tag tag-varg">{isHi ? sambhavit.bedPleasure.shayanaSukhaHi : sambhavit.bedPleasure.shayanaSukhaEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'शयन सुख:' : 'Bed Comfort:'}</strong> {isHi ? sambhavit.bedPleasure.shayanaSukhaHi : sambhavit.bedPleasure.shayanaSukhaEn}</div>
+                    <div><strong>{isHi ? 'कामुकता / अंतरंगता:' : 'Sexuality:'}</strong> {isHi ? sambhavit.bedPleasure.sexualityHi : sambhavit.bedPleasure.sexualityEn}</div>
+                  </div>
+                </article>
+
+                {/* 17. Friends & Social */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '17. मित्र मंडली व सामाजिक दायरा' : '17. Friends & Social Circle'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.friends.loyaltyVerdictHi : sambhavit.friends.loyaltyVerdictEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'मित्रों की प्रकृति:' : 'Nature:'}</strong> {isHi ? sambhavit.friends.natureHi : sambhavit.friends.natureEn}</div>
+                    <div><strong>{isHi ? 'विश्वसनीयता:' : 'Loyalty:'}</strong> {isHi ? sambhavit.friends.loyaltyVerdictHi : sambhavit.friends.loyaltyVerdictEn}</div>
+                  </div>
+                </article>
+
+                {/* 18. Cautions & Hazards */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--warn, #eab308)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '18. किन बातों से सावधान रहें' : '18. Traps & Areas of Caution'}</h4>
+                    <span className="tag tag-warn">Caution</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'संभावित खतरे:' : 'Hazards:'}</strong> {(isHi ? sambhavit.cautions.hazardsHi : sambhavit.cautions.hazardsEn).join(' • ')}</div>
+                    <div><strong>{isHi ? 'निर्देश:' : 'Note:'}</strong> {isHi ? sambhavit.cautions.warningNoteHi : sambhavit.cautions.warningNoteEn}</div>
+                  </div>
+                </article>
+
+                {/* 19. Crisis Strategy */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--accent)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '19. संकट में क्या करें' : '19. Crisis Rescue Strategy'}</h4>
+                    <span className="tag tag-accent">{isHi ? sambhavit.crisisStrategy.primaryDeityHi : sambhavit.crisisStrategy.primaryDeityEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'संकटमोचक मंत्र:' : 'Mantra:'}</strong> <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{sambhavit.crisisStrategy.rescueMantra}</span></div>
+                    <div><strong>{isHi ? 'संकट निवारण विधान:' : 'Action Protocol:'}</strong> {isHi ? sambhavit.crisisStrategy.actionProtocolHi : sambhavit.crisisStrategy.actionProtocolEn}</div>
+                  </div>
+                </article>
+
+                {/* 20. Sports & Fitness */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '20. पसंदीदा खेल व व्यायाम' : '20. Sports & Athletic Inclinations'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.sports.preferencesHi.join(', ') : sambhavit.sports.preferencesEn.join(', ')}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'पसंदीदा खेल:' : 'Favorite Sports:'}</strong> {isHi ? sambhavit.sports.preferencesHi.join(', ') : sambhavit.sports.preferencesEn.join(', ')}</div>
+                    <div><strong>{isHi ? 'व्यायाम शैली:' : 'Fitness Style:'}</strong> {isHi ? sambhavit.sports.fitnessStyleHi : sambhavit.sports.fitnessStyleEn}</div>
+                  </div>
+                </article>
+
+                {/* 21. Core Temperament */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '21. मूल स्वभाव व त्रिगुण' : '21. Core Temperament & Guna'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.temperament.gunaHi : sambhavit.temperament.gunaEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'स्वभाव फलादेश:' : 'Traits:'}</strong> {isHi ? sambhavit.temperament.traitSummaryHi : sambhavit.temperament.traitSummaryEn}</div>
+                  </div>
+                </article>
+
+                {/* 22. Love Life & Romance */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '22. प्रेम जीवन व आकर्षण' : '22. Romance & Love Life'}</h4>
+                    <span className="tag tag-accent">{isHi ? sambhavit.loveLife.marriageTypeHi : sambhavit.loveLife.marriageTypeEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'रोमांस स्वरूप:' : 'Romance:'}</strong> {isHi ? sambhavit.loveLife.romanceHi : sambhavit.loveLife.romanceEn}</div>
+                    <div><strong>{isHi ? 'विवाह प्रारूप:' : 'Marriage Type:'}</strong> {isHi ? sambhavit.loveLife.marriageTypeHi : sambhavit.loveLife.marriageTypeEn}</div>
+                  </div>
+                </article>
+
+                {/* 23. Psychological Health */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '23. मानसिक स्थिति व मनोवैज्ञानिक स्वास्थ्य' : '23. Psychological Well-being'}</h4>
+                    <span className="tag tag-subtle">{isHi ? sambhavit.mentalHealth.conditionHi : sambhavit.mentalHealth.conditionEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'मानसिक स्थिति:' : 'Condition:'}</strong> {isHi ? sambhavit.mentalHealth.conditionHi : sambhavit.mentalHealth.conditionEn}</div>
+                    <div><strong>{isHi ? 'संभावित संवेदनशीलता:' : 'Sensitivities:'}</strong> {isHi ? sambhavit.mentalHealth.vulnerabilitiesHi : sambhavit.mentalHealth.vulnerabilitiesEn}</div>
+                    <div><strong>{isHi ? 'मानसिक शांति उपाय:' : 'Mind Calm Protocol:'}</strong> {isHi ? sambhavit.mentalHealth.remedyHi : sambhavit.mentalHealth.remedyEn}</div>
+                  </div>
+                </article>
+
+                {/* 24. General Health & Tridosha */}
+                <article className="domain-card">
+                  <div className="domain-top">
+                    <h4>{isHi ? '24. शारीरिक स्वास्थ्य व त्रिदोष' : '24. Health Constitution (Tridosha)'}</h4>
+                    <span className="tag tag-varg">{isHi ? sambhavit.health.constitutionHi : sambhavit.health.constitutionEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'प्रकृति:' : 'Constitution:'}</strong> {isHi ? sambhavit.health.constitutionHi : sambhavit.health.constitutionEn}</div>
+                    <div><strong>{isHi ? 'संवेदनशील अंग:' : 'Vulnerable Organs:'}</strong> {isHi ? sambhavit.health.vulnerableOrgansHi : sambhavit.health.vulnerableOrgansEn}</div>
+                  </div>
+                </article>
+
+                {/* 25. Wealth vs Poverty Yoga */}
+                <article className="domain-card" style={{ borderLeft: '3px solid var(--good, #22c55e)' }}>
+                  <div className="domain-top">
+                    <h4>{isHi ? '25. धन योग अथवा दरिद्रता योग' : '25. Wealth vs Poverty Yoga'}</h4>
+                    <span className="tag tag-good">{isHi ? sambhavit.wealth.statusHi : sambhavit.wealth.statusEn}</span>
+                  </div>
+                  <div className="pred-bullets" style={{ marginTop: 4 }}>
+                    <div><strong>{isHi ? 'स्थिति:' : 'Status:'}</strong> {isHi ? sambhavit.wealth.statusHi : sambhavit.wealth.statusEn}</div>
+                    {sambhavit.wealth.activeYogasHi.length > 0 && (
+                      <div><strong>{isHi ? 'सक्रिय धन योग:' : 'Active Dhana Yogas:'}</strong> {(isHi ? sambhavit.wealth.activeYogasHi : sambhavit.wealth.activeYogasEn).join(', ')}</div>
+                    )}
+                    <div><strong>{isHi ? 'समृद्धि का स्वर्ण काल:' : 'Peak Prosperity Window:'}</strong> {isHi ? sambhavit.wealth.peakAgeWindowHi : sambhavit.wealth.peakAgeWindowEn}</div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          {/* Classical Astrological Disclaimer */}
       <section className="panel patrika-disclaimer-panel">
         <div className="pred-card-body small-text muted">
           <strong>{isHi ? 'वैदिक ज्योतिषीय सूचना (अस्वीकरण):' : 'Astrological Note & Ethical Disclaimer:'}</strong>{' '}

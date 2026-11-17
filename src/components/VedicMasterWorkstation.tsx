@@ -89,6 +89,8 @@ import { getBhavesha144Entry } from '../astro/predictions/bhavesha144';
 import { computeTribhagiDasha, computeYoginiDasha } from '../astro/dasha';
 import { computeAdvancedDashas } from '../astro/advancedDashas';
 import { computeSambhavitFalkathan, type SambhavitFalkathanReport } from '../astro/predictions/sambhavitFalkathan';
+import { computeReferencePdfPredictions, type ReferencePdfReport } from '../astro/predictions/referencePdfPredictions';
+import { SIGN_HI, PLANET_HI } from '../astro/predictions/dynamicDossierChapters';
 import { AshtakavargaView } from './AshtakavargaView';
 import { DashaView } from './DashaView';
 import { MatchMakingView } from './MatchMakingView';
@@ -280,7 +282,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const [div5SubTab, setDiv5SubTab] = useState<'sudarshan' | 'sarvatobhadra' | 'kota' | 'kurma' | 'maitri' | 'avasthas'>('sudarshan');
   const [div6SubTab, setDiv6SubTab] = useState<'vimshottari' | 'tribhagi' | 'yogini' | 'char' | 'ashtottari' | 'predictions'>('vimshottari');
   const [div7SubTab, setDiv7SubTab] = useState<'gochar_chart' | 'sade_sati' | 'jupiter' | 'rahu_ketu' | 'kakshya'>('gochar_chart');
-  const [div8SubTab, setDiv8SubTab] = useState<'planet_wise' | 'house_wise' | 'sign_wise' | 'yuti' | 'doshas' | 'nakshatra' | 'drishti' | 'bhavat_bhavam' | 'house_lords_144' | 'remedies'>('planet_wise');
+  const [div8SubTab, setDiv8SubTab] = useState<'horoscope_analysis' | 'house_lords_144' | 'planet_wise' | 'yuti' | 'sav_houses' | 'major_transits' | 'dasha_predictions' | 'yogini_predictions' | 'doshas' | 'remedies'>('horoscope_analysis');
   const [selectedBhaveshaLord, setSelectedBhaveshaLord] = useState<number>(1);
   const [selectedBhaveshaHouse, setSelectedBhaveshaHouse] = useState<number>(1);
   const [div9SubTab, setDiv9SubTab] = useState<'kp' | 'western' | 'nadi' | 'lal_kitab'>('kp');
@@ -355,6 +357,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const gemstoneData = useMemo(() => computeGemstoneAndRudraksha(chart), [chart]);
   const rashifalReport = useMemo(() => computeRashifalReport(chart, nowDateAndTime().date), [chart]);
   const sambhavitReport = useMemo(() => computeSambhavitFalkathan(chart), [chart]);
+  const refPdfPred = useMemo(() => computeReferencePdfPredictions(chart), [chart]);
 
   // Selected Varga Chart Data for Division 3
   const selectedVargaData = useMemo(() => {
@@ -512,8 +515,8 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            onClick={() => setActiveDivision((d) => Math.min(11, d + 1))}
-            disabled={activeDivision >= 11}
+            onClick={() => setActiveDivision((d) => Math.min(12, d + 1))}
+            disabled={activeDivision >= 12}
             style={{ fontWeight: 600 }}
           >
             <span>{isHi ? 'अगला भाग' : 'Next Division'}</span>
@@ -524,7 +527,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
         {/* Right: Native Profile & Quick Edit */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <span className="mono" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent)' }}>
-            {isHi ? `भाग ${activeDivision} / 11` : `Division ${activeDivision} of 11`}
+            {isHi ? `भाग ${activeDivision} / 12` : `Division ${activeDivision} of 12`}
           </span>
 
           <span className="tag tag-accent mono">
@@ -1866,143 +1869,759 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
         </div>
       )}
 
-      {/* 10. DIVISION 8: DEEP COMPREHENSIVE PREDICTIONS & REMEDIES */}
+      {/* 10. DIVISION 8: DEEP COMPREHENSIVE PREDICTIONS & REMEDIES (118-PAGE REFERENCE PARITY) */}
       {activeDivision === 8 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Sub-tab Navigation */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'planet_wise' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('planet_wise')}>
-              {isHi ? '1. ग्रह अनुसार (Planet Wise)' : '1. Planet Wise'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'house_wise' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('house_wise')}>
-              {isHi ? '2. भाव अनुसार (House Wise)' : '2. House Wise'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'sign_wise' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('sign_wise')}>
-              {isHi ? '3. राशि अनुसार (Sign Wise)' : '3. Sign Wise'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'yuti' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('yuti')}>
-              {isHi ? '4. युति विश्लेषण (Yuti Conjunctions)' : '4. Conjunctions (Yuti)'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'doshas' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('doshas')}>
-              {isHi ? '5. दोष विश्लेषण (Doshas)' : '5. Doshas Analysis'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'nakshatra' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('nakshatra')}>
-              {isHi ? '6. नक्षत्र फल (Nakshatras)' : '6. Nakshatras'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'drishti' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('drishti')}>
-              {isHi ? '7. दृष्टि फल (Aspects/Drishti)' : '7. Drishti / Aspects'}
-            </button>
-            <button type="button" className={`btn btn-sm ${div8SubTab === 'bhavat_bhavam' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('bhavat_bhavam')}>
-              {isHi ? '8. भावात भावम (Bhavat Bhavam)' : '8. Bhavat Bhavam'}
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'horoscope_analysis' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('horoscope_analysis')}>
+              {isHi ? '1. लग्न व कुंडली विश्लेषण (Horoscope & Lagna)' : '1. Horoscope & Lagna Analysis'}
             </button>
             <button type="button" className={`btn btn-sm ${div8SubTab === 'house_lords_144' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('house_lords_144')}>
-              {isHi ? '9. भावेश 144 योग (House Lords in Houses)' : '9. 144 House Lord Combos'}
+              {isHi ? '2. द्वादश भावेश फल (12 House Lords)' : '2. 12 House Lords (Bhavesha)'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'planet_wise' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('planet_wise')}>
+              {isHi ? '3. ग्रह राशि व भाव फल (Planetary Positions)' : '3. Planetary Positions (Sign & House)'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'yuti' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('yuti')}>
+              {isHi ? '4. शास्त्रीय योग एवं युति (Classical & Conjunction Yogas)' : '4. Yogas & Conjunctions'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'sav_houses' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('sav_houses')}>
+              {isHi ? '5. सर्वाष्टकवर्ग 12 भाव फल (SAV 12 Houses)' : '5. SAV 12 House Predictions'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'major_transits' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('major_transits')}>
+              {isHi ? '6. प्रमुख गोचर फल (Major Transits)' : '6. Major Transits (Gochar)'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'dasha_predictions' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('dasha_predictions')}>
+              {isHi ? '7. विंशोत्तरी महादशा फल (Vimshottari Dasha)' : '7. Vimshottari Dasha Predictions'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'yogini_predictions' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('yogini_predictions')}>
+              {isHi ? '8. योगिनी दशा फल (Yogini Dasha)' : '8. Yogini Dasha Predictions'}
+            </button>
+            <button type="button" className={`btn btn-sm ${div8SubTab === 'doshas' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('doshas')}>
+              {isHi ? '9. कुंडली दोष व परिहार (Doshas & Mitigations)' : '9. Kundali Doshas'}
             </button>
             <button type="button" className={`btn btn-sm ${div8SubTab === 'remedies' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setDiv8SubTab('remedies')}>
-              {isHi ? '10. सम्पूर्ण शास्त्रीय उपाय (Remedies)' : '10. Vedic Remedies'}
+              {isHi ? '10. संपूर्ण वैदिक उपाय व स्तोत्र (Vedic Remedies)' : '10. Vedic Remedies & Mantras'}
             </button>
           </div>
 
-          {/* Sub-Tab 1: Planet Wise */}
+          {/* Sub-Tab 1: Horoscope & Lagna Comprehensive Analysis */}
+          {div8SubTab === 'horoscope_analysis' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Classical Shloka Banner */}
+              <div className="card" style={{ padding: '16px', background: 'var(--bg-subtle)', textAlign: 'center', borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.5px' }}>
+                  जननी जन्म सौख्यानां वर्धनी कुल संपदाम् । पदवी पूर्व पुण्यानां लिख्यते जन्म पत्रिका ॥
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  {isHi
+                    ? 'माता के सुख की वृद्धि करने वाली, कुल की संपदा को बढ़ाने वाली तथा पूर्व जन्म के पुण्यों से प्राप्त पदवी को प्रकट करने वाली जन्मपत्रिका का शास्त्रीय फलकथन।'
+                    : 'The natal horoscope revealing motherly comfort, ancestral lineage prosperity, and destiny fruits earned through past-life merits.'}
+                </div>
+              </div>
+
+              {/* 1.1 Horoscope Analysis (12 Houses Table & Rulerships) */}
+              <div className="card" style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? 'द्वादश भाव विश्लेषण (Horoscope Analysis - House by House)' : 'Horoscope Analysis - 12 Bhavas Rulership & Placements'}
+                  </h3>
+                  <span className="tag tag-accent">{trSign(chart.ascendant.signIndex, lang)} Lagna</span>
+                </div>
+                <div className="table-scroll">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>{isHi ? 'भाव' : 'House'}</th>
+                        <th>{isHi ? 'भाव संज्ञा / कारकत्व' : 'Bhava Title & Domain'}</th>
+                        <th>{isHi ? 'राशि' : 'Zodiac Sign'}</th>
+                        <th>{isHi ? 'भावेश (स्वामी)' : 'Lord (Ruler)'}</th>
+                        <th>{isHi ? 'भावेश की स्थिति' : 'Lord Placed in'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {refPdfPred.horoscopeAnalysis.houses.map((h) => (
+                        <tr key={h.houseNumber}>
+                          <td><strong>House {h.houseNumber}</strong></td>
+                          <td>{isHi ? h.houseNameHi : h.houseNameEn}</td>
+                          <td><strong>{isHi ? h.signNameHi : h.signNameEn}</strong></td>
+                          <td><strong>{isHi ? h.rulerNameHi : h.rulerNameEn}</strong></td>
+                          <td>
+                            <span className="tag tag-subtle">
+                              {isHi ? `भाव ${h.placedInHouse} (${SIGN_HI[h.placedSignIndex]})` : `House ${h.placedInHouse} (${SIGNS[h.placedSignIndex].name})`}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Ascendant Classification (Benefic, Malefic, Maraka, Yogakaraka) */}
+                <div style={{ marginTop: '16px', padding: '14px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                  <div style={{ fontSize: '13.5px', fontWeight: 700, marginBottom: '8px' }}>
+                    {isHi ? `आपके ${trSign(chart.ascendant.signIndex, lang)} लग्न हेतु ग्रह वर्गीकरण:` : `For your ${trSign(chart.ascendant.signIndex, lang)} Ascendant:`}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', fontSize: '12.5px' }}>
+                    <div>
+                      <strong style={{ color: 'var(--good, #22c55e)' }}>{isHi ? 'शुभ ग्रह (Benefics):' : 'Benefic Planets:'}</strong>{' '}
+                      {isHi ? refPdfPred.horoscopeAnalysis.beneficsHi.join(', ') : refPdfPred.horoscopeAnalysis.benefics.join(', ')}
+                    </div>
+                    <div>
+                      <strong style={{ color: 'var(--warn, #eab308)' }}>{isHi ? 'अशुभ ग्रह (Malefics):' : 'Malefic Planets:'}</strong>{' '}
+                      {isHi ? refPdfPred.horoscopeAnalysis.maleficsHi.join(', ') : refPdfPred.horoscopeAnalysis.malefics.join(', ')}
+                    </div>
+                    <div>
+                      <strong style={{ color: 'var(--bad, #ef4444)' }}>{isHi ? 'मारक ग्रह (Marakas):' : 'Maraka Planets:'}</strong>{' '}
+                      {isHi ? refPdfPred.horoscopeAnalysis.marakasHi.join(', ') : refPdfPred.horoscopeAnalysis.marakas.join(', ')}
+                    </div>
+                    <div>
+                      <strong style={{ color: 'var(--accent)' }}>{isHi ? 'योगकारक ग्रह (Yoga Karaka):' : 'Yoga Karaka Planet:'}</strong>{' '}
+                      {isHi ? refPdfPred.horoscopeAnalysis.yogakarakaHi || 'कोई नहीं' : refPdfPred.horoscopeAnalysis.yogakaraka || 'None'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1.2 Birth-Time Predictions (Ritu, Masa, Tithi, Weekday) */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'जन्म-काल फल (Birth-Time Predictions)' : 'Birth-Time Predictions (Ritu, Masa, Tithi, Weekday)'}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
+                  <div className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '4px' }}>
+                      {isHi ? `जन्म ऋतु फल — ${refPdfPred.birthTimePredictions.ritu.nameHi}` : `Birth Season (Ritu) — ${refPdfPred.birthTimePredictions.ritu.nameEn}`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                      {isHi ? refPdfPred.birthTimePredictions.ritu.resultHi : refPdfPred.birthTimePredictions.ritu.resultEn}
+                    </div>
+                  </div>
+
+                  <div className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '4px' }}>
+                      {isHi ? `जन्म मास फल — ${refPdfPred.birthTimePredictions.masa.nameHi}` : `Birth Month (Masa) — ${refPdfPred.birthTimePredictions.masa.nameEn}`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                      {isHi ? refPdfPred.birthTimePredictions.masa.resultHi : refPdfPred.birthTimePredictions.masa.resultEn}
+                    </div>
+                  </div>
+
+                  <div className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '4px' }}>
+                      {isHi ? `जन्म तिथि फल — ${refPdfPred.birthTimePredictions.tithi.nameHi}` : `Birth Tithi — ${refPdfPred.birthTimePredictions.tithi.nameEn}`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                      {isHi ? refPdfPred.birthTimePredictions.tithi.resultHi : refPdfPred.birthTimePredictions.tithi.resultEn}
+                    </div>
+                  </div>
+
+                  <div className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '4px' }}>
+                      {isHi ? `जन्म वार फल — ${refPdfPred.birthTimePredictions.weekday.nameHi}` : `Birth Weekday — ${refPdfPred.birthTimePredictions.weekday.nameEn}`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                      {isHi ? refPdfPred.birthTimePredictions.weekday.resultHi : refPdfPred.birthTimePredictions.weekday.resultEn}
+                    </div>
+                    {refPdfPred.birthTimePredictions.weekday.isPreSunrise && (
+                      <div className="muted" style={{ fontSize: '11px', marginTop: '4px' }}>
+                        {isHi
+                          ? 'विशेष: अंग्रेजी कैलेंडर अनुसार जन्म रविवार को किंतु सूर्योदय से पूर्व होने के कारण भारतीय ज्योतिष अनुसार वार शनिवार माना जाएगा।'
+                          : 'Note: Birth occurred before sunrise, so classical Hindu weekday is calculated from prior solar day.'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* 1.3 Birth Nakshatra In-Depth Reading */}
+              <div className="card" style={{ padding: '16px', borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? `जन्म नक्षत्र फल — ${refPdfPred.birthNakshatra.nameHi} (चरण ${refPdfPred.birthNakshatra.pada})` : `Birth Nakshatra — ${refPdfPred.birthNakshatra.nameEn} (Pada ${refPdfPred.birthNakshatra.pada})`}
+                  </h3>
+                  <span className="tag tag-accent">
+                    {isHi ? `अधिदेवता: ${refPdfPred.birthNakshatra.deityHi}` : `Deity: ${refPdfPred.birthNakshatra.deityEn}`}
+                  </span>
+                </div>
+                <div style={{ fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                  {isHi ? refPdfPred.birthNakshatra.fullReadingHi : refPdfPred.birthNakshatra.fullReadingEn}
+                </div>
+              </div>
+
+              {/* 1.4 Lagna In-Depth 11-Dimensional Analysis */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? `लग्न संपूर्ण फलादेश — ${refPdfPred.lagnaPredictions.signHi} लग्न (स्वामी: ${refPdfPred.lagnaPredictions.rulerHi})` : `Ascendant In-Depth Predictions — ${refPdfPred.lagnaPredictions.signEn} Lagna (Lord: ${refPdfPred.lagnaPredictions.rulerEn})`}
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Physical Features */}
+                  <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                      {isHi ? '1. शारीरिक गठन व स्वरूप (Physical Features)' : '1. Physical Features & Body Constitution'}
+                    </div>
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                      {isHi ? refPdfPred.lagnaPredictions.physicalFeaturesHi : refPdfPred.lagnaPredictions.physicalFeaturesEn}
+                    </div>
+                  </div>
+
+                  {/* Mentality & Lifestyle */}
+                  <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                      {isHi ? '2. मानसिकता व जीवनशैली (Mentality and Lifestyle)' : '2. Mentality & Lifestyle'}
+                    </div>
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                      {isHi ? refPdfPred.lagnaPredictions.mentalityLifestyleHi : refPdfPred.lagnaPredictions.mentalityLifestyleEn}
+                    </div>
+                  </div>
+
+                  {/* Likes & Dislikes */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--good, #22c55e)', marginBottom: '4px' }}>
+                        {isHi ? '3. पसंद (Likes)' : '3. Likes'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.likesHi : refPdfPred.lagnaPredictions.likesEn}
+                      </div>
+                    </div>
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--bad, #ef4444)', marginBottom: '4px' }}>
+                        {isHi ? '4. नापसंद (Dislikes)' : '4. Dislikes'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.dislikesHi : refPdfPred.lagnaPredictions.dislikesEn}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Strengths & Weaknesses (Point by Point) */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px', borderLeft: '3px solid var(--good, #22c55e)' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--good, #22c55e)', marginBottom: '6px' }}>
+                        {isHi ? '5. आपकी प्रमुख शक्तियां (Your Strengths)' : '5. Your Core Strengths'}
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', lineHeight: 1.6 }}>
+                        {(isHi ? refPdfPred.lagnaPredictions.strengthsHi : refPdfPred.lagnaPredictions.strengthsEn).map((st, i) => (
+                          <li key={i}>{st}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px', borderLeft: '3px solid var(--warn, #eab308)' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--warn, #eab308)', marginBottom: '6px' }}>
+                        {isHi ? '6. कमजोरियां व सुधार क्षेत्र (Your Weaknesses)' : '6. Weaknesses & Improvement Areas'}
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', lineHeight: 1.6 }}>
+                        {(isHi ? refPdfPred.lagnaPredictions.weaknessesHi : refPdfPred.lagnaPredictions.weaknessesEn).map((wk, i) => (
+                          <li key={i}>{wk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Education, Health, Financial, Love/Marriage, Family, Profession */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '7. शिक्षा व अध्ययन (Education)' : '7. Education'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.educationHi : refPdfPred.lagnaPredictions.educationEn}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '8. स्वास्थ्य (Health)' : '8. Health'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.healthHi : refPdfPred.lagnaPredictions.healthEn}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '9. आर्थिक स्थिति (Financial Life)' : '9. Financial Life'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.financialLifeHi : refPdfPred.lagnaPredictions.financialLifeEn}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '10. प्रेम व दांपत्य (Love and Marriage)' : '10. Love and Marriage'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.loveMarriageHi : refPdfPred.lagnaPredictions.loveMarriageEn}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '11. परिवार (Family)' : '11. Family'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.familyHi : refPdfPred.lagnaPredictions.familyEn}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? '12. व्यवसाय व करियर (Profession)' : '12. Profession'}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? refPdfPred.lagnaPredictions.professionHi : refPdfPred.lagnaPredictions.professionEn}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 2: 12 House Lords in Houses (Bhavesha) */}
+          {div8SubTab === 'house_lords_144' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'द्वादश भावेशों का आपकी जन्मकुंडली में वास्तविक फल (Natal House Lords Placed in Various Houses)' : 'Predictions of House Lords Placed in Various Houses'}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+                  {refPdfPred.houseLordsPredictions.map((hl) => (
+                    <div key={hl.lordHouse} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>
+                          {isHi ? `${hl.lordHouse}वें भाव के स्वामी (${hl.lordPlanetHi})` : `Lord of House ${hl.lordHouse} (${hl.lordPlanetEn})`}
+                        </strong>
+                        <span className="tag tag-subtle">
+                          {isHi ? `${hl.placedHouse}वें भाव में (${hl.placedSignHi})` : `In House ${hl.placedHouse} (${hl.placedSignEn})`}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                        {isHi ? hl.readingHi : hl.readingEn}
+                      </div>
+                      <div className="muted" style={{ fontSize: '11.5px' }}>
+                        <strong>{isHi ? 'संभावित घटनाक्रम:' : 'Likely Event:'}</strong> {isHi ? hl.eventScenarioHi : hl.eventScenarioEn}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Interactive 144 Combination Explorer */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: 'var(--accent)' }}>
+                  {isHi ? '144 भावेश संयोजन अन्वेषक (Interactive 144 Bhavesha Combinations Explorer)' : 'Interactive 144 Bhavesha Combinations Explorer'}
+                </h4>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '12px' }}>
+                  <div>
+                    <span style={{ fontSize: '12.5px', fontWeight: 600, marginRight: '6px' }}>{isHi ? 'किस भाव के स्वामी:' : 'Lord of House:'}</span>
+                    <select aria-label="Select Lord House" value={selectedBhaveshaLord} onChange={(e) => setSelectedBhaveshaLord(parseInt(e.target.value, 10))} style={{ padding: '4px 8px', fontSize: '12.5px' }}>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>House {n} Lord</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <span style={{ fontSize: '12.5px', fontWeight: 600, marginRight: '6px' }}>{isHi ? 'किस भाव में स्थित:' : 'Posited in House:'}</span>
+                    <select aria-label="Select Occupied House" value={selectedBhaveshaHouse} onChange={(e) => setSelectedBhaveshaHouse(parseInt(e.target.value, 10))} style={{ padding: '4px 8px', fontSize: '12.5px' }}>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>House {n}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {(() => {
+                  const combo = getBhavesha144Entry(selectedBhaveshaLord, selectedBhaveshaHouse);
+                  return (
+                    <div style={{ padding: '12px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? combo.headlineHi : combo.headlineEn}
+                      </div>
+                      <p style={{ margin: '0 0 8px', fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                        {isHi ? combo.readingHi : combo.readingEn}
+                      </p>
+                      <div className="muted" style={{ fontSize: '12px' }}>
+                        <strong>{isHi ? 'यथार्थवादी परिदृश्य:' : 'Realistic Scenario:'}</strong> {isHi ? combo.eventHi : combo.eventEn}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 3: Planetary Positions & House Predictions (Sun to Ketu: Zodiac + House) */}
           {div8SubTab === 'planet_wise' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-              {twelvePlanetsPred.planets.map((pl) => (
-                <div key={pl.id} className="card" style={{ padding: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <strong style={{ fontSize: '14px', color: 'var(--accent)' }}>{isHi ? pl.nameHi : pl.nameEn}</strong>
-                    <span className="tag tag-subtle">{trSign(pl.signIndex, lang)} (H{pl.houseNumber})</span>
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
-                    {isHi ? pl.placementSummaryHi : pl.placementSummaryEn}
-                  </div>
-                  {pl.positiveEventsEn && pl.positiveEventsEn.length > 0 && (
-                    <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--text-secondary)' }}>
-                      <strong>{isHi ? 'मुख्य फल:' : 'Key Outcomes:'}</strong> {isHi ? pl.positiveEventsHi?.[0] || pl.positiveEventsEn[0] : pl.positiveEventsEn[0]}
+              {refPdfPred.planetaryPositionsPredictions.map((pl) => (
+                <div key={pl.planetId} className="card" style={{ padding: '14px', borderLeft: '3px solid var(--accent)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <strong style={{ fontSize: '14.5px', color: 'var(--accent)' }}>
+                      {isHi ? pl.planetHi : pl.planetEn}
+                    </strong>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <span className="tag tag-accent">{isHi ? pl.signHi : pl.signEn}</span>
+                      <span className="tag tag-subtle">H{pl.houseNumber}</span>
+                      {pl.isRetrograde && <span className="tag tag-warn">{isHi ? 'वक्री' : 'Rx'}</span>}
+                      {pl.isCombust && <span className="tag tag-bad">{isHi ? 'अस्त' : 'Combust'}</span>}
                     </div>
-                  )}
+                  </div>
+
+                  {/* Results of Zodiac Position */}
+                  <div style={{ marginBottom: '8px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                      {isHi ? `राशिगत स्थिति का फल (${pl.planetHi} in ${pl.signHi}):` : `Results of Zodiac Position (${pl.planetEn} in ${pl.signEn}):`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginTop: '2px' }}>
+                      {isHi ? pl.zodiacPositionReadingHi : pl.zodiacPositionReadingEn}
+                    </div>
+                  </div>
+
+                  {/* Results of House Position */}
+                  <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '6px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                      {isHi ? `भावगत स्थिति का फल (House ${pl.houseNumber}):` : `Results of House Position (House ${pl.houseNumber}):`}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginTop: '2px' }}>
+                      {isHi ? pl.housePositionReadingHi : pl.housePositionReadingEn}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Sub-Tab 2: House Wise */}
-          {div8SubTab === 'house_wise' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-              {houseWisePred.map((hw) => (
-                <div key={hw.houseNumber} className="card" style={{ padding: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <strong style={{ fontSize: '14px', color: 'var(--accent)' }}>House {hw.houseNumber} ({isHi ? hw.titleHi : hw.titleEn})</strong>
-                    <span className="tag tag-accent">{trSign(hw.signIndex, lang)}</span>
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
-                    {isHi ? hw.synthesisHi : hw.synthesisEn}
-                  </div>
-                  {hw.lordReadingEn && (
-                    <div style={{ marginTop: '6px', fontSize: '11.5px', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px' }}>
-                      <strong>{isHi ? 'भावेश स्थिति:' : 'Lord Placement:'}</strong> {isHi ? hw.lordReadingHi : hw.lordReadingEn}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sub-Tab 3: Sign Wise */}
-          {div8SubTab === 'sign_wise' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-              {planetInSignPred.map((ps, idx) => (
-                <div key={idx} className="card" style={{ padding: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>{isHi ? ps.headlineHi : ps.headlineEn}</strong>
-                    <span className="tag tag-subtle">{trSign(ps.signIndex, lang)} (H{ps.houseNumber})</span>
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginTop: '6px' }}>
-                    {isHi ? ps.readingHi : ps.readingEn}
-                  </div>
-                  {ps.positiveEn && (
-                    <div style={{ marginTop: '6px', fontSize: '11px', color: 'var(--color-success, #22c55e)' }}>
-                      <strong>+</strong> {isHi ? ps.positiveHi : ps.positiveEn}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sub-Tab 4: Yuti Conjunctions */}
+          {/* Sub-Tab 4: Classical Yogas & Conjunctions (Dwi, Tri, Chatur) */}
           {div8SubTab === 'yuti' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {yutiReport.groups.length === 0 ? (
-                <div className="card" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  {isHi ? 'कुंडली में कोई प्रमुख युति समूह नहीं मिला।' : 'No major multi-planet conjunction groups found in D-1.'}
-                </div>
-              ) : (
-                yutiReport.groups.map((yt, idx) => (
-                  <div key={idx} className="card" style={{ padding: '14px', borderLeft: '4px solid var(--accent)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <strong style={{ fontSize: '14px' }}>{isHi ? yt.labelHi : yt.labelEn}</strong>
-                      <span className="tag tag-accent">House {yt.houseNumber} ({trSign(yt.signIndex, lang)})</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Conjunction Yogas (Dwi, Tri, Chatur) */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'ग्रह युति फल (Conjunction Yogas — Dwi, Tri, Chatur Graha Yogas)' : 'Conjunction Yogas (Two, Three & Four Planets in One Sign)'}
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {refPdfPred.variousYogas.dwiGrahaYogas.map((dwi, idx) => (
+                    <div key={`dwi-${idx}`} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? dwi.titleHi : dwi.titleEn}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? dwi.readingHi : dwi.readingEn}
+                      </div>
                     </div>
-                    <p style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
-                      {isHi ? yt.headlineHi : yt.headlineEn}
-                    </p>
-                    {yt.positiveEn && (
-                      <p style={{ fontSize: '11.5px', color: 'var(--text-secondary)', margin: '4px 0' }}>
-                        <strong>{isHi ? 'शुभ प्रभाव:' : 'Positive:'}</strong> {isHi ? yt.positiveHi : yt.positiveEn}
-                      </p>
-                    )}
-                    {yt.remedyEn && (
-                      <p style={{ fontSize: '11.5px', color: 'var(--accent)', margin: '4px 0' }}>
-                        <strong>{isHi ? 'उपाय:' : 'Remedy:'}</strong> {isHi ? yt.remedyHi : yt.remedyEn}
-                      </p>
-                    )}
-                  </div>
-                ))
-              )}
+                  ))}
+
+                  {refPdfPred.variousYogas.triGrahaYogas.map((tri, idx) => (
+                    <div key={`tri-${idx}`} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--good, #22c55e)' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--good, #22c55e)', marginBottom: '4px' }}>
+                        {isHi ? tri.titleHi : tri.titleEn}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? tri.readingHi : tri.readingEn}
+                      </div>
+                    </div>
+                  ))}
+
+                  {refPdfPred.variousYogas.chaturGrahaYogas.map((chatur, idx) => (
+                    <div key={`chatur-${idx}`} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--warn, #eab308)' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--warn, #eab308)', marginBottom: '4px' }}>
+                        {isHi ? chatur.titleHi : chatur.titleEn}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                        {isHi ? chatur.readingHi : chatur.readingEn}
+                      </div>
+                    </div>
+                  ))}
+
+                  {refPdfPred.variousYogas.dwiGrahaYogas.length === 0 && refPdfPred.variousYogas.triGrahaYogas.length === 0 && refPdfPred.variousYogas.chaturGrahaYogas.length === 0 && (
+                    <div className="muted" style={{ padding: '12px' }}>
+                      {isHi ? 'कुंडली में कोई बहु-ग्रह युति समूह नहीं मिला।' : 'No multi-planet conjunctions found in natal D-1.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Classical Detected Yogas */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'कुंडली में निर्मित प्रमुख शास्त्रीय योग (Classical Yogas)' : 'Classical Vedic Yogas Detected in Chart'}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
+                  {refPdfPred.variousYogas.classicalYogas.map((y, idx) => (
+                    <div key={idx} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                        {isHi ? y.nameHi : y.nameEn}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                        {isHi ? y.readingHi : y.readingEn}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Sub-Tab 5: Doshas */}
+          {/* Sub-Tab 5: Samudaya Ashtakavarga (SAV) 12 Houses Strength & Predictions */}
+          {div8SubTab === 'sav_houses' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="card" style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? 'सर्वाष्टकवर्ग (SAV) 12 भाव फलादेश एवं भाव-बल (Pages 111-113 Parity)' : 'Natal Samudaya Ashtakavarga Predictions (House Strength & Life Effects)'}
+                  </h3>
+                  <span className="tag tag-accent">Total SAV = {chart.ashtakavarga.totalBindus} Points</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+                  {refPdfPred.savHousePredictions.map((hp) => (
+                    <div
+                      key={hp.houseNumber}
+                      className="card"
+                      style={{
+                        padding: '12px',
+                        borderLeft: `3px solid ${
+                          hp.ratingEn === 'Excellent' ? 'var(--good, #22c55e)' : hp.ratingEn === 'Good' ? 'var(--accent)' : hp.ratingEn === 'Demands Attention' ? 'var(--warn, #eab308)' : 'var(--text-secondary)'
+                        }`,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <strong style={{ fontSize: '13px' }}>
+                          {isHi ? hp.houseNameHi : hp.houseNameEn}
+                        </strong>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <span className="tag tag-subtle">{isHi ? hp.signHi : hp.signEn}</span>
+                          <span
+                            className={`tag ${
+                              hp.ratingEn === 'Excellent'
+                                ? 'tag-good'
+                                : hp.ratingEn === 'Good'
+                                ? 'tag-accent'
+                                : hp.ratingEn === 'Demands Attention'
+                                ? 'tag-warn'
+                                : 'tag-subtle'
+                            }`}
+                          >
+                            {hp.points} Pts ({isHi ? hp.ratingHi : hp.ratingEn})
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                        {isHi ? hp.predictionHi : hp.predictionEn}
+                      </div>
+                      {hp.remedyHi && (
+                        <div style={{ marginTop: '6px', fontSize: '11.5px', color: 'var(--accent)', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
+                          <strong>{isHi ? 'शास्त्रीय उपाय:' : 'Remedy:'}</strong> {isHi ? hp.remedyHi : hp.remedyEn}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 6: Major Planetary Transits (Gochar: Saturn, Jupiter, Rahu-Ketu) */}
+          {div8SubTab === 'major_transits' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Saturn Transit */}
+              <div className="card" style={{ padding: '16px', borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? `शनि गोचर फलादेश — ${refPdfPred.majorTransits.saturn.transitNameHi}` : `Saturn Transit Predictions — ${refPdfPred.majorTransits.saturn.transitNameEn}`}
+                  </h3>
+                  <span className="tag tag-accent">
+                    {isHi ? `चंद्र से ${refPdfPred.majorTransits.saturn.houseFromMoon}वां भाव (${refPdfPred.majorTransits.saturn.transitSignHi})` : `House ${refPdfPred.majorTransits.saturn.houseFromMoon} from Moon (${refPdfPred.majorTransits.saturn.transitSignEn})`}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '12.5px', lineHeight: 1.6, marginBottom: '8px' }}>
+                  <strong>{isHi ? 'संभावित शुभ फल:' : 'Likely Outcomes:'}</strong>
+                  <ul style={{ margin: '4px 0 8px 0', paddingLeft: '18px' }}>
+                    {(isHi ? refPdfPred.majorTransits.saturn.likelyResultsHi : refPdfPred.majorTransits.saturn.likelyResultsEn).map((res, i) => (
+                      <li key={i}>{res}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '4px', fontSize: '12px', color: 'var(--warn, #eab308)', marginBottom: '8px' }}>
+                  <strong>{isHi ? 'सावधानी:' : 'Caution:'}</strong> {isHi ? refPdfPred.majorTransits.saturn.cautionHi : refPdfPred.majorTransits.saturn.cautionEn}
+                </div>
+
+                <div style={{ fontSize: '12px', color: 'var(--accent)' }}>
+                  <strong>{isHi ? 'पारंपरिक उपाय:' : 'Traditional Remedies:'}</strong> {isHi ? refPdfPred.majorTransits.saturn.remediesHi : refPdfPred.majorTransits.saturn.remediesEn}
+                </div>
+              </div>
+
+              {/* Jupiter Transit */}
+              <div className="card" style={{ padding: '16px', borderLeft: '4px solid var(--good, #22c55e)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--good, #22c55e)' }}>
+                    {isHi ? `बृहस्पति (गुरु) गोचर फलादेश — ${refPdfPred.majorTransits.jupiter.transitNameHi}` : `Jupiter Transit Predictions — ${refPdfPred.majorTransits.jupiter.transitNameEn}`}
+                  </h3>
+                  <span className="tag tag-good">
+                    {isHi ? `चंद्र से ${refPdfPred.majorTransits.jupiter.houseFromMoon}वां भाव (${refPdfPred.majorTransits.jupiter.transitSignHi})` : `House ${refPdfPred.majorTransits.jupiter.houseFromMoon} from Moon (${refPdfPred.majorTransits.jupiter.transitSignEn})`}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '12.5px', lineHeight: 1.6, marginBottom: '8px' }}>
+                  <strong>{isHi ? 'संभावित शुभ फल:' : 'Likely Outcomes:'}</strong>
+                  <ul style={{ margin: '4px 0 8px 0', paddingLeft: '18px' }}>
+                    {(isHi ? refPdfPred.majorTransits.jupiter.likelyResultsHi : refPdfPred.majorTransits.jupiter.likelyResultsEn).map((res, i) => (
+                      <li key={i}>{res}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginBottom: '8px', fontSize: '12px' }}>
+                  <strong>{isHi ? 'गुरु की अमृत दृष्टियों का फल:' : 'Jupiter Aspect Results (5th, 7th, 9th):'}</strong>
+                  <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px' }}>
+                    {(isHi ? refPdfPred.majorTransits.jupiter.aspectsHi : refPdfPred.majorTransits.jupiter.aspectsEn).map((asp, i) => (
+                      <li key={i}>{asp}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  <strong>{isHi ? 'सावधानी:' : 'Caution:'}</strong> {isHi ? refPdfPred.majorTransits.jupiter.cautionHi : refPdfPred.majorTransits.jupiter.cautionEn}
+                </div>
+              </div>
+
+              {/* Rahu-Ketu Transit */}
+              <div className="card" style={{ padding: '16px', borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? 'राहु एवं केतु गोचर फलादेश' : 'Rahu & Ketu Planetary Transit Predictions'}
+                  </h3>
+                  <span className="tag tag-subtle">
+                    {isHi ? `राहु: भाव ${refPdfPred.majorTransits.rahuKetu.rahuHouseFromMoon} · केतु: भाव ${refPdfPred.majorTransits.rahuKetu.ketuHouseFromMoon}` : `Rahu: H${refPdfPred.majorTransits.rahuKetu.rahuHouseFromMoon} · Ketu: H${refPdfPred.majorTransits.rahuKetu.ketuHouseFromMoon}`}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '12.5px', lineHeight: 1.6, marginBottom: '8px' }}>
+                  <ul style={{ margin: '4px 0 8px 0', paddingLeft: '18px' }}>
+                    {(isHi ? refPdfPred.majorTransits.rahuKetu.likelyResultsHi : refPdfPred.majorTransits.rahuKetu.likelyResultsEn).map((res, i) => (
+                      <li key={i}>{res}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '4px', fontSize: '12px', color: 'var(--warn, #eab308)', marginBottom: '8px' }}>
+                  <strong>{isHi ? 'सावधानी:' : 'Caution:'}</strong> {isHi ? refPdfPred.majorTransits.rahuKetu.cautionHi : refPdfPred.majorTransits.rahuKetu.cautionEn}
+                </div>
+
+                <div style={{ fontSize: '12px', color: 'var(--accent)' }}>
+                  <strong>{isHi ? 'उपाय:' : 'Remedies:'}</strong> {isHi ? refPdfPred.majorTransits.rahuKetu.remediesHi : refPdfPred.majorTransits.rahuKetu.remediesEn}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 7: Lifelong Vimshottari Mahadasha & Antardasha Predictions */}
+          {div8SubTab === 'dasha_predictions' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'आजीवन विंशोत्तरी महादशा एवं अंतर्दशा फलकथन (Pages 76-106 Parity)' : 'Lifelong Vimshottari Mahadasha & Antardasha Predictions with Remedies'}
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {refPdfPred.dashaBhuktiPredictions.map((db, idx) => (
+                    <div key={idx} className="card" style={{ padding: '12px', borderLeft: '3px solid var(--accent)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>
+                          {isHi ? `${PLANET_HI[db.mdLord] || db.mdLord} महादशा` : `${db.mdLord} Mahadasha`}
+                        </strong>
+                        <span className="tag tag-subtle">
+                          {isHi ? `प्रारंभ: ${db.startDateStr} (आयु: ${db.ageStr})` : `Starts: ${db.startDateStr} (Age: ${db.ageStr})`}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                        {isHi ? db.forecastHi : db.forecastEn}
+                      </div>
+                      <div style={{ fontSize: '11.5px', color: 'var(--accent)' }}>
+                        <strong>{isHi ? 'अनुशंसित उपाय:' : 'Remedy:'}</strong> {isHi ? db.remediesHi : db.remediesEn}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 8: Yogini Dasha Predictions */}
+          {div8SubTab === 'yogini_predictions' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Current Yogini Period */}
+              <div className="card" style={{ padding: '16px', borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent)' }}>
+                    {isHi ? `वर्तमान सक्रिय योगिनी काल — ${refPdfPred.yoginiPredictions.currentPeriod.mdName} / ${refPdfPred.yoginiPredictions.currentPeriod.adName}` : `Current Active Yogini Period — ${refPdfPred.yoginiPredictions.currentPeriod.mdName} / ${refPdfPred.yoginiPredictions.currentPeriod.adName}`}
+                  </h3>
+                  <span className="tag tag-accent">{refPdfPred.yoginiPredictions.currentPeriod.datesStr}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px', marginTop: '8px' }}>
+                  <div style={{ padding: '10px', background: 'var(--bg-subtle)', borderRadius: '4px' }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                      {isHi ? 'कर्म एवं व्यापार (Work & Business)' : 'Work & Business'}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                      {isHi ? refPdfPred.yoginiPredictions.currentPeriod.workBusinessHi : refPdfPred.yoginiPredictions.currentPeriod.workBusinessEn}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '10px', background: 'var(--bg-subtle)', borderRadius: '4px' }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                      {isHi ? 'धन एवं परिवार (Money & Family)' : 'Money & Family'}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                      {isHi ? refPdfPred.yoginiPredictions.currentPeriod.moneyFamilyHi : refPdfPred.yoginiPredictions.currentPeriod.moneyFamilyEn}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '10px', background: 'var(--bg-subtle)', borderRadius: '4px' }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--accent)', marginBottom: '4px' }}>
+                      {isHi ? 'स्वास्थ्य एवं दिनचर्या (Health & Daily Life)' : 'Health & Daily Life'}
+                    </div>
+                    <div style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                      {isHi ? refPdfPred.yoginiPredictions.currentPeriod.healthLifeHi : refPdfPred.yoginiPredictions.currentPeriod.healthLifeEn}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* All 8 Yoginis Reading */}
+              <div className="card" style={{ padding: '16px' }}>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'अष्ट योगिनी दशाएं एवं फल (All 8 Yoginis Overview)' : 'All 8 Yoginis Classical Readings'}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '10px' }}>
+                  {refPdfPred.yoginiPredictions.allYoginis.map((yog, idx) => (
+                    <div key={idx} className="card" style={{ padding: '10px', borderLeft: '3px solid var(--accent)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <strong style={{ fontSize: '13px' }}>{isHi ? yog.nameHi : yog.nameEn}</strong>
+                        <span className="tag tag-subtle">{yog.years} Yrs · {isHi ? yog.lordHi : yog.lordEn}</span>
+                      </div>
+                      <div style={{ fontSize: '11.5px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+                        {isHi ? yog.generalReadingHi : yog.generalReadingEn}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Tab 9: Doshas & Mitigations */}
           {div8SubTab === 'doshas' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
               {doshaReport.doshas.map((ds, idx) => (
@@ -2023,109 +2642,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
             </div>
           )}
 
-          {/* Sub-Tab 6: Nakshatras */}
-          {div8SubTab === 'nakshatra' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-              {planetInNakshatraPred.map((pn, idx) => (
-                <div key={idx} className="card" style={{ padding: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>{trPlanet(pn.planet as any, lang)} in {isHi ? pn.nakshatraNameHi : pn.nakshatraNameEn}</strong>
-                    <span className="tag tag-accent">Pada {pn.pada}</span>
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
-                    {isHi ? pn.readingHi : pn.readingEn}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sub-Tab 7: Drishti */}
-          {div8SubTab === 'drishti' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {drishtiReport.planetaryDrishtis.map((dr, idx) => (
-                <div key={idx} className="card" style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <strong>{trPlanet(dr.from, lang)} {isHi ? 'की दृष्टि' : 'Aspects'} &rarr; {trPlanet(dr.to as any, lang)}</strong>
-                    <span className="tag tag-accent">{isHi ? dr.typeHi : dr.typeEn}</span>
-                  </div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>
-                    {isHi ? dr.headlineHi : dr.headlineEn} - {isHi ? dr.positiveHi : dr.positiveEn}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sub-Tab 8: Bhavat Bhavam */}
-          {div8SubTab === 'bhavat_bhavam' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-              {bhavatBhavamReport.houses.map((bh) => (
-                <div key={bh.primaryHouse} className="card" style={{ padding: '14px' }}>
-                  <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>
-                    House {bh.primaryHouse} &rarr; House {bh.mirrorHouse} ({isHi ? bh.principleFormulaHi : bh.principleFormulaEn})
-                  </strong>
-                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-primary)', marginTop: '6px' }}>
-                    {isHi ? bh.readingHi : bh.readingEn}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sub-Tab 9: 144 House Lord Combinations */}
-          {div8SubTab === 'house_lords_144' && (
-            <div className="card" style={{ padding: '16px' }}>
-              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '14px' }}>
-                <div>
-                  <span style={{ fontSize: '12.5px', fontWeight: 600, marginRight: '6px' }}>{isHi ? 'भाव स्वामी (Lord):' : 'Lord of House:'}</span>
-                  <select
-                    aria-label="Select Lord House"
-                    value={selectedBhaveshaLord}
-                    onChange={(e) => setSelectedBhaveshaLord(parseInt(e.target.value, 10))}
-                    style={{ padding: '4px 8px', fontSize: '12.5px' }}
-                  >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>House {n} Lord</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '12.5px', fontWeight: 600, marginRight: '6px' }}>{isHi ? 'किस भाव में स्थित:' : 'Posited in House:'}</span>
-                  <select
-                    aria-label="Select Occupied House"
-                    value={selectedBhaveshaHouse}
-                    onChange={(e) => setSelectedBhaveshaHouse(parseInt(e.target.value, 10))}
-                    style={{ padding: '4px 8px', fontSize: '12.5px' }}
-                  >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>House {n}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {(() => {
-                const combo = getBhavesha144Entry(selectedBhaveshaLord, selectedBhaveshaHouse);
-                return (
-                  <div style={{ padding: '14px', background: 'var(--bg-subtle)', borderRadius: '6px' }}>
-                    <h4 style={{ margin: '0 0 8px', fontSize: '15px', color: 'var(--accent)' }}>
-                      {isHi ? combo.headlineHi : combo.headlineEn}
-                    </h4>
-                    <p style={{ margin: '0 0 10px', fontSize: '12.5px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
-                      {isHi ? combo.readingHi : combo.readingEn}
-                    </p>
-                    <div className="muted" style={{ fontSize: '12px' }}>
-                      <strong>{isHi ? 'यथार्थवादी परिदृश्य:' : 'Realistic Scenario:'}</strong> {isHi ? combo.eventHi : combo.eventEn}
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          )}
-
-          {/* Sub-Tab 10: Vedic Remedies */}
+          {/* Sub-Tab 10: Vedic Remedies & Stotras */}
           {div8SubTab === 'remedies' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
               <div className="card" style={{ padding: '16px' }}>
@@ -2141,7 +2658,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
               </div>
 
               <div className="card" style={{ padding: '16px' }}>
-                <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--good)' }}>
+                <h3 style={{ margin: '0 0 10px', fontSize: '14.5px', color: 'var(--good, #22c55e)' }}>
                   {isHi ? 'दैनिक वैदिक मंत्र व दान (Mantra & Daana)' : 'Vedic Mantras & Charity'}
                 </h3>
                 <div style={{ fontSize: '12px', lineHeight: 1.6 }}>
