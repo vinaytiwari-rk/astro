@@ -132,8 +132,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     },
     {
       id: 'patrika_booklet' as MainTab,
-      labelEn: 'Patrika PDF',
-      labelHi: 'बृहत् पत्रिका PDF',
+      labelEn: 'Birth Report',
+      labelHi: 'जन्म पत्रिका',
       icon: <FileText size={15} />,
     },
   ];

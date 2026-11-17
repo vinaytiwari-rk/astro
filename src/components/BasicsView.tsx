@@ -376,10 +376,10 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
               type="button"
               className="btn btn-secondary btn-sm"
               onClick={onOpenBooklet}
-              title={isHi ? '34-अध्यायी बृहत् पत्रिका PDF' : 'Print 34-Ch Patrika PDF'}
+              title={isHi ? 'जन्म पत्रिका (Birth Report) PDF' : 'Birth Report (Patrika) PDF'}
             >
               <FileText size={13} />
-              <span>{isHi ? 'पत्रिका PDF' : 'Patrika PDF'}</span>
+              <span>{isHi ? 'जन्म पत्रिका PDF' : 'Birth Report PDF'}</span>
             </button>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   BookOpen,
   Calendar,
@@ -58,6 +58,32 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number } | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearHoverTimer = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        clearHoverTimer();
+        setOpenDropdown(null);
+        setDropdownCoords(null);
+      }
+    };
+    document.addEventListener('mousedown', handlePointerOutside);
+    document.addEventListener('touchstart', handlePointerOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handlePointerOutside);
+      document.removeEventListener('touchstart', handlePointerOutside);
+      clearHoverTimer();
+    };
+  }, []);
 
   const calculateDropdownPos = (target: HTMLElement) => {
     const rect = target.getBoundingClientRect();
@@ -73,6 +99,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   };
 
   const toggleDropdown = (key: string, e?: React.MouseEvent<HTMLElement>) => {
+    clearHoverTimer();
     if (openDropdown === key) {
       setOpenDropdown(null);
       setDropdownCoords(null);
@@ -86,6 +113,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const handleMouseEnter = (key: string, e: React.MouseEvent<HTMLElement>) => {
     if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      clearHoverTimer();
       setDropdownCoords(calculateDropdownPos(e.currentTarget));
       setOpenDropdown(key);
     }
@@ -93,30 +121,54 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const handleMouseLeave = () => {
     if (typeof window !== 'undefined' && window.innerWidth > 768) {
-      setOpenDropdown(null);
-      setDropdownCoords(null);
+      clearHoverTimer();
+      hoverTimerRef.current = setTimeout(() => {
+        setOpenDropdown(null);
+        setDropdownCoords(null);
+      }, 240);
     }
   };
 
+  const handleMenuMouseEnter = () => {
+    clearHoverTimer();
+  };
+
+  const handleMenuMouseLeave = () => {
+    handleMouseLeave();
+  };
+
   const handleLinkClick = (view: string, sub?: string) => {
+    clearHoverTimer();
     setOpenDropdown(null);
     setDropdownCoords(null);
     onNavigate(view, sub);
   };
 
+  const isTransitsActive = currentView === 'sade-sati' || currentView === 'dual-transit';
+  const isAdvancedActive = [
+    'split-studio',
+    'sarvatobhadra',
+    'lal-kitab',
+    'kp-enterprise',
+    'jaimini',
+    'varshaphala',
+    'nadi',
+    'ashtakavarga',
+    'shadbala',
+  ].includes(currentView);
+  const isToolsActive = [
+    'prashna',
+    'muhurta',
+    'synastry',
+    'btr',
+    'medical-astrology',
+    'gemstones',
+    'workstation',
+  ].includes(currentView);
+  const isFestivalsActive = ['festivals', 'daily-panchanga', 'choghadiya'].includes(currentView);
+
   return (
     <header className="dropdown-nav-header no-print">
-      {/* Mobile/Floating Backdrop for open dropdowns */}
-      {openDropdown && (
-        <div
-          className="oj-dropdown-backdrop"
-          onClick={() => {
-            setOpenDropdown(null);
-            setDropdownCoords(null);
-          }}
-          aria-hidden="true"
-        />
-      )}
 
       {/* Row 1: Brand Logo (AV Astro Vibe), Active Profile, Language & Tools */}
       <div className="dropdown-nav-top-row">
@@ -175,7 +227,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           </button>
         </div>
 
-        {/* Right Tools: Language, Chart Style, 118P Booklet, Theme, Settings */}
+        {/* Right Tools: Language, Chart Style, Birth Report, Theme, Settings */}
         <div className="dropdown-utilities-group">
           {/* Language Toggle */}
           <div className="pro-lang-toggle" role="group" aria-label="Language">
@@ -231,7 +283,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       </div>
 
       {/* Row 2: Main Navigation Bar with Direct Links & Necessary Dropdowns Only */}
-      <div className="oj-navbar-row">
+      <div className="oj-navbar-row" ref={navRef}>
         <div className="oj-navbar-inner">
           <ul className="oj-nav-links">
             {/* 1. Home — Direct Link (No Dropdown) */}
@@ -278,7 +330,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             >
               <button
                 type="button"
-                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'transits-menu' ? 'is-open' : ''} ${currentView === 'sade-sati' || currentView === 'dual-transit' ? 'is-current' : ''}`}
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'transits-menu' ? 'is-open' : ''} ${isTransitsActive ? 'is-current' : ''}`}
                 onClick={(e) => toggleDropdown('transits-menu', e)}
                 aria-expanded={openDropdown === 'transits-menu'}
                 aria-haspopup="true"
@@ -292,6 +344,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 <div
                   className="oj-dropdown-menu"
                   role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
                   <button type="button" onClick={() => handleLinkClick('dual-transit')}>
@@ -326,7 +380,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             >
               <button
                 type="button"
-                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'advanced-astro' ? 'is-open' : ''}`}
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'advanced-astro' ? 'is-open' : ''} ${isAdvancedActive ? 'is-current' : ''}`}
                 onClick={(e) => toggleDropdown('advanced-astro', e)}
                 aria-expanded={openDropdown === 'advanced-astro'}
                 aria-haspopup="true"
@@ -340,6 +394,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 <div
                   className="oj-dropdown-menu"
                   role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
                   <button type="button" onClick={() => handleLinkClick('split-studio')}>
@@ -390,7 +446,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             >
               <button
                 type="button"
-                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'more-tools' ? 'is-open' : ''}`}
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'more-tools' ? 'is-open' : ''} ${isToolsActive ? 'is-current' : ''}`}
                 onClick={(e) => toggleDropdown('more-tools', e)}
                 aria-expanded={openDropdown === 'more-tools'}
                 aria-haspopup="true"
@@ -404,6 +460,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 <div
                   className="oj-dropdown-menu"
                   role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
                   <button type="button" onClick={() => handleLinkClick('prashna')}>
@@ -450,7 +508,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             >
               <button
                 type="button"
-                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'festivals' ? 'is-open' : ''}`}
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'festivals' ? 'is-open' : ''} ${isFestivalsActive ? 'is-current' : ''}`}
                 onClick={(e) => toggleDropdown('festivals', e)}
                 aria-expanded={openDropdown === 'festivals'}
                 aria-haspopup="true"
@@ -464,6 +522,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 <div
                   className="oj-dropdown-menu align-right"
                   role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
                   style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
                 >
                   <button type="button" onClick={() => handleLinkClick('festivals')}>
@@ -487,13 +547,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             </li>
           </ul>
 
-          {/* 118-Page PDF Quick Action Button */}
+          {/* Quick PDF Report Action Button */}
           <div className="oj-nav-right-cta">
             <button
               type="button"
-              className="oj-action-btn primary"
+              className="oj-nav-link-btn oj-nav-cta-pill"
               onClick={onOpenBooklet}
-              style={{ padding: '5px 12px', fontSize: '12px' }}
+              title={isHi ? 'जन्म पत्रिका PDF (100% निःशुल्क)' : 'Birth Report PDF (100% Free)'}
             >
               <FileText size={13} />
               <span>{isHi ? 'जन्म पत्रिका (निःशुल्क)' : 'Birth Report (Free)'}</span>
