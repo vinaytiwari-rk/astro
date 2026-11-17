@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { findAuspiciousMuhurtas, type MuhurtaPurpose } from '../../astro/muhurtaFinder';
 import { computePrashnaKP, type PrashnaCategory } from '../../astro/prashnaKP';
 import { computeComprehensiveNadiReport } from '../../astro/nadiAstrology';
+import { computeBhriguChakraAndNadiAmsas } from '../../astro/predictions/bhriguChakraPaddhati';
+import { computeTajikaAndKeralaPrashna, type PrashnaTheme } from '../../astro/prashnaTajika';
 import type { ChartData } from '../../astro/types';
+import { useLanguage } from '../../i18n/LanguageContext';
+import {
+  Award,
+  BookOpen,
+  Calendar,
+  CheckCircle2,
+  Compass,
+  Flame,
+  HelpCircle,
+  Layers,
+  Printer,
+  Shield,
+  Sparkles,
+  Star,
+  Users,
+} from 'lucide-react';
 
 interface MuhurtaPrashnaViewProps {
   chart: ChartData;
@@ -10,6 +28,9 @@ interface MuhurtaPrashnaViewProps {
 }
 
 export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, initialTab = 'muhurta' }) => {
+  const { lang } = useLanguage();
+  const isHi = lang === 'hi';
+
   const [activeTab, setActiveTab] = useState<'muhurta' | 'prashna' | 'nadi'>(initialTab);
 
   // Muhurta State
@@ -17,7 +38,7 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [daysCount, setDaysCount] = useState(30);
 
-  const muhurtaReport = React.useMemo(() => {
+  const muhurtaReport = useMemo(() => {
     return findAuspiciousMuhurtas({
       purpose,
       startDate,
@@ -31,9 +52,10 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
   // KP Prashna State
   const [horaryNum, setHoraryNum] = useState(108);
   const [prashnaCat, setPrashnaCat] = useState<PrashnaCategory>('job_career');
+  const [tajikaTheme, setTajikaTheme] = useState<PrashnaTheme>('career_job');
   const [questionText, setQuestionText] = useState('Will I get the new job offer this month?');
 
-  const prashnaReport = React.useMemo(() => {
+  const prashnaReport = useMemo(() => {
     return computePrashnaKP({
       horaryNumber: horaryNum,
       question: questionText,
@@ -46,20 +68,28 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
     });
   }, [horaryNum, questionText, prashnaCat, chart.input]);
 
-  // Nadi Report
-  const nadiReport = React.useMemo(() => {
-    return computeComprehensiveNadiReport(chart);
-  }, [chart]);
+  const tajikaReport = useMemo(() => {
+    return computeTajikaAndKeralaPrashna(chart, tajikaTheme, questionText);
+  }, [chart, tajikaTheme, questionText]);
+
+  // Nadi Reports (14 Agastya Kandams + BCP + Deva Keralam 150 Amsas)
+  const nadiReport = useMemo(() => computeComprehensiveNadiReport(chart), [chart]);
+  const bcpReport = useMemo(() => computeBhriguChakraAndNadiAmsas(chart), [chart]);
+
+  const [selectedBcpAge, setSelectedBcpAge] = useState<number>(bcpReport.currentAge);
+  const activeBcpForecast = bcpReport.timeline120Years[selectedBcpAge] || bcpReport.currentYearForecast;
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
           <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text)' }}>
-            Electional Muhurta, KP Horary (1–249) & Nadi Shastra
+            {isHi ? 'मुहूर्त महा-इंजन, प्रश्न तंत्र एवं नाड़ी ज्योतिष' : 'Electional Muhurta, Prashna Tantra & Nadi Shastra'}
           </h2>
           <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)' }}>
-            Automated 90-day auspicious window finder, Krishnamurti horary seed calculator & 14 Agastya Kandams
+            {isHi
+              ? 'विवाह त्रिबल शुद्धि, ताजिक षोडश योग (इत्थशाल), केरल प्रश्न मार्ग, भृगु चक्र पद्धति व देव केरळम् 150 नाड़ी अंश'
+              : 'Tribal Shuddhi Vivaha Muhurta, Tajika 16 Yogas (Ithasala), Kerala Prashna, Bhrigu Chakra Paddhati & Deva Keralam 150 Nadi Amsas'}
           </p>
         </div>
 
@@ -70,21 +100,24 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
             onClick={() => setActiveTab('muhurta')}
             className={`oj-tab-pill ${activeTab === 'muhurta' ? 'is-active' : ''}`}
           >
-            Muhurta Finder (90-Day)
+            <Calendar size={13} style={{ marginRight: '5px' }} />
+            {isHi ? 'मुहूर्त चयनकर्ता' : 'Muhurta Finder'}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('prashna')}
             className={`oj-tab-pill ${activeTab === 'prashna' ? 'is-active' : ''}`}
           >
-            KP Prashna (1–249)
+            <HelpCircle size={13} style={{ marginRight: '5px' }} />
+            {isHi ? 'ताजिक व केपी प्रश्न' : 'Tajika & KP Prashna'}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('nadi')}
             className={`oj-tab-pill ${activeTab === 'nadi' ? 'is-active' : ''}`}
           >
-            Nadi Palm Leaf Kandams
+            <BookOpen size={13} style={{ marginRight: '5px' }} />
+            {isHi ? 'भृगु नाड़ी व BCP चक्र' : 'Nadi & Bhrigu Chakra'}
           </button>
         </div>
       </div>
@@ -96,18 +129,18 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', background: 'var(--bg-elevated)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
             <div>
               <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Muhurta Purpose:
+                {isHi ? 'मुहूर्त प्रयोजन:' : 'Muhurta Purpose:'}
               </label>
               <select
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value as MuhurtaPurpose)}
                 style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
               >
-                <option value="marriage">Vivaha (Marriage / विवाह)</option>
+                <option value="marriage">Vivaha (Marriage / विवाह - त्रिबल शुद्धि)</option>
                 <option value="griha_pravesh">Griha Pravesh (House Warming / गृह प्रवेश)</option>
                 <option value="vehicle">Vehicle Purchase (वाहन क्रय)</option>
                 <option value="business">Business Launch (व्यापार प्रारंभ)</option>
-                <option value="property">Property / Land (भूमि क्रय)</option>
+                <option value="property">Property / Land (भूमि क्रय व शिलान्यास)</option>
                 <option value="surgery">Surgery / Medical (शल्य क्रिया)</option>
                 <option value="travel">Travel / Journey (यात्रा)</option>
               </select>
@@ -115,7 +148,7 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
 
             <div>
               <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Search From Date:
+                {isHi ? 'आरंभ तिथि:' : 'Search From Date:'}
               </label>
               <input
                 type="date"
@@ -127,7 +160,7 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
 
             <div>
               <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Window Range:
+                {isHi ? 'अवधि:' : 'Window Range:'}
               </label>
               <select
                 value={daysCount}
@@ -140,292 +173,285 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 <option value={90}>Next 90 Days (Quarter)</option>
               </select>
             </div>
-
-            <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Auspicious Dates Found</div>
-              <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--accent)' }}>
-                {muhurtaReport.bestDates.length} Optimal Windows
-              </div>
-            </div>
           </div>
 
-          {/* Best Muhurta Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-            {muhurtaReport.bestDates.slice(0, 12).map((m, idx) => (
+          {/* Results Summary Strip */}
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>
+              {isHi
+                ? `कुल ${muhurtaReport.bestDates.length} शुभ मुहूर्त उपलब्ध (${muhurtaReport.scannedDays} दिनों में)`
+                : `Found ${muhurtaReport.bestDates.length} Auspicious Muhurtas across ${muhurtaReport.scannedDays} Days`}
+            </span>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {isHi ? 'लत्ता, युति, बाण, जामित्र, कर्त्तरी व एकाधल दोष शोधन सहित' : 'Purified against Latta, Yuti, Baana, Jamitra, Kartari & Ekadhala doshas'}
+            </span>
+          </div>
+
+          {/* Windows Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+            {muhurtaReport.bestDates.map((w, idx) => (
               <div
                 key={idx}
                 style={{
-                  background: 'var(--bg-elevated)',
-                  borderRadius: '10px',
-                  border: '1px solid var(--border)',
-                  borderTop: `4px solid ${m.score >= 80 ? '#059669' : '#2563eb'}`,
                   padding: '16px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-elevated)',
+                  border: w.verdict === 'Highly Auspicious' ? '1.5px solid #059669' : '1px solid var(--border)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '10px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                  gap: '8px',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>
-                      {m.date} ({m.dayOfWeek})
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                      {m.tithiPaksha} {m.tithiName} · {m.nakshatraName}
-                    </div>
-                  </div>
+                  <strong style={{ fontSize: '15px', color: 'var(--text)' }}>{w.date} ({w.dayOfWeek})</strong>
                   <span
                     style={{
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      padding: '3px 8px',
+                      padding: '2px 8px',
                       borderRadius: '4px',
-                      background: m.score >= 80 ? 'rgba(5, 150, 105, 0.12)' : 'rgba(37, 99, 235, 0.12)',
-                      color: m.score >= 80 ? '#059669' : '#2563eb',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      background: w.verdict === 'Highly Auspicious' ? 'rgba(5, 150, 105, 0.15)' : 'rgba(37, 99, 235, 0.15)',
+                      color: w.verdict === 'Highly Auspicious' ? '#059669' : '#2563eb',
                     }}
                   >
-                    {m.score}/100
+                    {isHi ? w.verdictHi : w.verdict} ({w.score}%)
                   </span>
                 </div>
-
-                {/* Windows */}
-                <div style={{ background: 'var(--bg-subtle)', borderRadius: '6px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>
-                    Recommended Shubh Lagna / Choghadiya Windows
-                  </div>
-                  {m.windows.map((w, wIdx) => (
-                    <div key={wIdx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text)' }}>
-                      <span>• {w.muhurtaType}</span>
-                      <strong style={{ color: 'var(--accent)' }}>{w.startTime} - {w.endTime}</strong>
-                    </div>
-                  ))}
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Tithi: {w.tithiName} · Nakshatra: {w.nakshatraName} · Yoga: {w.yogaName}
                 </div>
-
-                {/* Rahu Kalam */}
-                <div style={{ fontSize: '11.5px', color: '#dc2626' }}>
-                  ⚠ Inauspicious Rahu Kalam to Avoid: <strong>{m.rahuKalam}</strong>
+                <div style={{ fontSize: '12.5px', color: '#059669', fontWeight: 600 }}>
+                  Abhijit: {w.abhijitMuhurta || 'N/A'} · Rahu Kalam: {w.rahuKalam || 'N/A'}
                 </div>
+                <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
+                  {w.strengthsEn.join('; ')}
+                </p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Tab 2: KP Prashna 1-249 */}
+      {/* Tab 2: Prashna Tantra (Tajika Neelakanthi + Kerala + KP) */}
       {activeTab === 'prashna' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Query Bar */}
-          <div style={{ background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text)' }}>
-              Ask a Specific Horary Question (1–249 KP Seed Number)
-            </h4>
-
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  KP Horary Seed (1 to 249):
-                </label>
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                  <input
-                    type="number"
-                    min={1}
-                    max={249}
-                    value={horaryNum}
-                    onChange={(e) => setHoraryNum(Math.max(1, Math.min(249, Number(e.target.value))))}
-                    style={{ width: '90px', padding: '8px 12px', borderRadius: '6px', border: '1.5px solid var(--accent)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 700, fontSize: '15px' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setHoraryNum(Math.floor(Math.random() * 249) + 1)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid rgba(217, 119, 6, 0.4)',
-                      background: 'rgba(254, 243, 199, 0.7)',
-                      color: '#b45309',
-                      fontWeight: 700,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                    title="रैंडम प्रश्न बीज (1–249) चुनें"
-                  >
-                    रैंडम बीज (Random)
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Question Category:
-                </label>
-                <select
-                  value={prashnaCat}
-                  onChange={(e) => setPrashnaCat(e.target.value as PrashnaCategory)}
-                  style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600, fontSize: '13px' }}
-                >
-                  <option value="job_career">Job & Career (नौकरी / आजीविका)</option>
-                  <option value="marriage">Marriage & Relationship (विवाह)</option>
-                  <option value="wealth_business">Wealth & Business (धन लाभ)</option>
-                  <option value="health_recovery">Health Recovery (रोग मुक्ति)</option>
-                  <option value="property_vehicle">Property / Vehicle (भवन / वाहन)</option>
-                  <option value="litigation_court">Court Litigation (मुकदमा)</option>
-                  <option value="foreign_travel">Foreign Travel & Visa (विदेश यात्रा)</option>
-                  <option value="lost_object">Lost Object Recovery (खोई वस्तु)</option>
-                  <option value="education">Education & Exam (परीक्षा)</option>
-                </select>
-              </div>
-
-              <div style={{ flex: 1, minWidth: '260px' }}>
-                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Question Context:
-                </label>
-                <input
-                  type="text"
-                  value={questionText}
-                  onChange={(e) => setQuestionText(e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontSize: '13px' }}
-                />
-              </div>
+          {/* Controls Bar */}
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', background: 'var(--bg-elevated)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+            <div style={{ flex: '1 1 240px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                {isHi ? 'प्रश्न का विषय (Tajika Theme):' : 'Prashna Theme:'}
+              </label>
+              <select
+                value={tajikaTheme}
+                onChange={(e) => {
+                  const val = e.target.value as PrashnaTheme;
+                  setTajikaTheme(val);
+                  if (val === 'career_job') setPrashnaCat('job_career');
+                  else if (val === 'marriage_partnership') setPrashnaCat('marriage');
+                  else if (val === 'wealth_finance') setPrashnaCat('wealth_business');
+                  else if (val === 'health_illness') setPrashnaCat('health_recovery');
+                  else if (val === 'property_vehicle') setPrashnaCat('property_vehicle');
+                  else if (val === 'children_education') setPrashnaCat('education');
+                  else if (val === 'litigation_dispute') setPrashnaCat('litigation_court');
+                }}
+                style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
+              >
+                <option value="career_job">Career / Job (आजीविका व नौकरी)</option>
+                <option value="marriage_partnership">Marriage & Spouse (विवाह व दांपत्य)</option>
+                <option value="wealth_finance">Wealth & Finance (धन संचय व लाभ)</option>
+                <option value="health_illness">Health & Recovery (रोग व स्वास्थ्य)</option>
+                <option value="property_vehicle">Property & Vehicles (भूमि व वाहन)</option>
+                <option value="children_education">Children & Intellect (संतान व विद्या)</option>
+                <option value="litigation_dispute">Litigation & Disputes (कोर्ट व विवाद)</option>
+              </select>
             </div>
 
-            {/* Quick Question Presets */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', paddingTop: '4px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#b45309' }}>त्वरित प्रश्न (Presets):</span>
-              {[
-                { label: 'नौकरी: नया अवसर?', cat: 'job_career' as PrashnaCategory, text: 'क्या मुझे नई नौकरी या पदोन्नति का अवसर शीघ्र मिलेगा?' },
-                { label: 'विवाह: क्या तय होगा?', cat: 'marriage' as PrashnaCategory, text: 'क्या इस वर्ष मेरा विवाह तय या संपन्न होगा?' },
-                { label: 'धन लाभ: रुका धन?', cat: 'wealth_business' as PrashnaCategory, text: 'क्या व्यापार या ऋण में रुका हुआ धन वापस मिलेगा?' },
-                { label: 'रोग मुक्ति: स्वास्थ्य लाभ?', cat: 'health_recovery' as PrashnaCategory, text: 'क्या वर्तमान रोग या अस्वस्थता से शीघ्र पूर्ण मुक्ति मिलेगी?' },
-                { label: 'मुकदमा: क्या विजय होगी?', cat: 'litigation_court' as PrashnaCategory, text: 'क्या न्यायालय/विवाद में निर्णय मेरे पक्ष में आएगा?' },
-                { label: 'खोई वस्तु: क्या मिलेगी?', cat: 'lost_object' as PrashnaCategory, text: 'क्या खोई या चोरी हुई वस्तु पुनः प्राप्त हो जाएगी?' },
-                { label: 'वाहन/भवन क्रय?', cat: 'property_vehicle' as PrashnaCategory, text: 'क्या नया मकान या वाहन खरीदना शुभ और सफल रहेगा?' },
-              ].map((p, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setPrashnaCat(p.cat);
-                    setQuestionText(p.text);
-                  }}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '9999px',
-                    fontSize: '11px',
-                    border: '1px solid rgba(217, 119, 6, 0.35)',
-                    background: 'rgba(254, 243, 199, 0.5)',
-                    color: 'var(--text)',
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                  }}
-                >
-                  {p.label}
-                </button>
-              ))}
+            <div style={{ flex: '2 1 300px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                {isHi ? 'जातक का तात्कालिक प्रश्न:' : 'Querent Question:'}
+              </label>
+              <input
+                type="text"
+                value={questionText}
+                onChange={(e) => setQuestionText(e.target.value)}
+                style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                KP Seed (1–249):
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={249}
+                value={horaryNum}
+                onChange={(e) => setHoraryNum(Number(e.target.value))}
+                style={{ width: '80px', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
+              />
             </div>
           </div>
 
-          {/* Outcome Verdict Card */}
-          <div
-            style={{
-              padding: '24px',
-              borderRadius: '10px',
-              background:
-                prashnaReport.verdict.outcome.startsWith('Favorable')
-                  ? 'rgba(5, 150, 105, 0.08)'
-                  : prashnaReport.verdict.outcome.startsWith('Conditional')
-                    ? 'rgba(217, 119, 6, 0.08)'
-                    : 'rgba(220, 38, 38, 0.08)',
-              border: `2px solid ${
-                prashnaReport.verdict.outcome.startsWith('Favorable')
-                  ? '#059669'
-                  : prashnaReport.verdict.outcome.startsWith('Conditional')
-                    ? '#d97706'
-                    : '#dc2626'
-              }`,
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
-              <div>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>
-                  KP Shastra Prashna Verdict
-                </span>
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 700,
-                    color:
-                      prashnaReport.verdict.outcome.startsWith('Favorable')
-                        ? '#059669'
-                        : prashnaReport.verdict.outcome.startsWith('Conditional')
-                          ? '#d97706'
-                          : '#dc2626',
-                    marginTop: '2px',
-                  }}
-                >
-                  {prashnaReport.verdict.outcome} ({prashnaReport.verdict.outcomeHi})
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Confidence Index</span>
-                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text)' }}>
-                  {prashnaReport.verdict.confidencePercent}%
-                </div>
-              </div>
+          {/* Tajika Neelakanthi Primary Verdict Hero */}
+          <div style={{ padding: '20px', borderRadius: '10px', background: 'rgba(37, 99, 235, 0.08)', border: '1.5px solid #2563eb' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase' }}>
+                {isHi ? 'ताजिक नीलकंठी षोडश योग निर्णय' : 'Tajika Neelakanthi 16-Yoga Verdict'}
+              </span>
+              <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 700, background: '#2563eb', color: '#fff' }}>
+                {isHi ? `सफलता संभावना: ${tajikaReport.probabilityScore}%` : `Outcome Probability: ${tajikaReport.probabilityScore}%`}
+              </span>
             </div>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>
+              {isHi ? tajikaReport.primaryYoga.yogaNameHi : tajikaReport.primaryYoga.yogaName}
+            </div>
+            <p style={{ margin: '0 0 10px', fontSize: '13.5px', lineHeight: 1.6, color: 'var(--text)' }}>
+              {isHi ? tajikaReport.verdictHi : tajikaReport.verdictEn}
+            </p>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {isHi
+                ? `लग्नेश: ${tajikaReport.lagneshaHi} · कार्येश: ${tajikaReport.karyeshaHi} (भाव ${tajikaReport.karyeshaHouse}) · दीप्तांश दूरी: ${tajikaReport.primaryYoga.orbDistanceDeg}°`
+                : `Querent Lord: ${tajikaReport.lagnesha} · Significator: ${tajikaReport.karyesha} (H${tajikaReport.karyeshaHouse}) · Orb Separation: ${tajikaReport.primaryYoga.orbDistanceDeg}°`}
+            </div>
+          </div>
 
-            <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--text)', marginBottom: '10px' }}>
-              {prashnaReport.verdict.detailedAnalysisEn}
-            </div>
-            <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '14px' }}>
-              {prashnaReport.verdict.detailedAnalysisHi}
-            </div>
-
-            {/* Timing & Remedy */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', paddingTop: '14px', borderTop: '1px dashed var(--border)' }}>
+          {/* Kerala Prashna Marga Arudha Card */}
+          <div style={{ padding: '18px 20px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: '16px', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Compass size={16} color="var(--accent)" />
+              <span>{isHi ? 'केरल प्रश्न मार्ग (आरूढ़ लग्न व बाधक निर्णय)' : 'Kerala Prashna Marga (Arudha & Badhaka Assessment)'}</span>
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
               <div>
-                <strong style={{ fontSize: '12px', color: 'var(--accent)', textTransform: 'uppercase' }}>Timing of Fulfillment:</strong>
-                <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text)' }}>
-                  {prashnaReport.verdict.timingPredictionEn}
+                <strong style={{ fontSize: '13px', color: 'var(--text)' }}>
+                  {isHi ? `आरूढ़ लग्न: ${tajikaReport.keralaPrashnaMarga.arudhaSignHi}` : `Arudha Lagna: ${tajikaReport.keralaPrashnaMarga.arudhaSignName}`}
+                </strong>
+                <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {isHi ? tajikaReport.keralaPrashnaMarga.deepaLakshanaHi : tajikaReport.keralaPrashnaMarga.deepaLakshanaEn}
                 </p>
               </div>
               <div>
-                <strong style={{ fontSize: '12px', color: '#059669', textTransform: 'uppercase' }}>Recommended Vedic Upaya:</strong>
-                <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text)' }}>
-                  {prashnaReport.verdict.remedyEn}
+                <strong style={{ fontSize: '13px', color: '#dc2626' }}>
+                  {isHi ? `बाधक स्थान: ${tajikaReport.keralaPrashnaMarga.badhakaSignHi} (${tajikaReport.keralaPrashnaMarga.badhakaLordHi})` : `Badhaka Sign: ${tajikaReport.keralaPrashnaMarga.badhakaSignName} (${tajikaReport.keralaPrashnaMarga.badhakaLord})`}
+                </strong>
+                <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {isHi ? tajikaReport.keralaPrashnaMarga.tamboolaVerdictHi : tajikaReport.keralaPrashnaMarga.tamboolaVerdictEn}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Astronomical & RP Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
-            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>KP Ascendant Longitude</div>
-              <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--accent)', marginTop: '4px' }}>
-                {prashnaReport.ascendant.signName} {prashnaReport.ascendant.dms}
-              </div>
+          {/* KP Prashna Sub-Lord Result */}
+          <div style={{ padding: '18px 20px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+            <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>
+              KP Horary (Seed #{horaryNum}) — Cuspal Sub-Lord Verification
+            </h3>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: prashnaReport.verdict.outcome.includes('Favorable') ? '#059669' : '#dc2626', marginBottom: '6px' }}>
+              {isHi ? prashnaReport.verdict.outcomeHi : prashnaReport.verdict.outcome}
             </div>
-            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Star Lord & Sub-Lord</div>
-              <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginTop: '4px' }}>
-                Star: {prashnaReport.ascendant.starLord} · Sub: {prashnaReport.ascendant.subLord}
-              </div>
-            </div>
-            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Live Ruling Planets Agreement</div>
-              <div style={{ fontSize: '17px', fontWeight: 700, color: '#059669', marginTop: '4px' }}>
-                {prashnaReport.verdict.rulingPlanetsAgreement} Alignment
-              </div>
-            </div>
+            <p style={{ margin: 0, fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-muted)' }}>
+              Asc Star: {prashnaReport.ascendant.starLord} · Sub-Lord: {prashnaReport.ascendant.subLord} · Sign: {prashnaReport.ascendant.signName} {prashnaReport.ascendant.dms}
+            </p>
           </div>
         </div>
       )}
 
-      {/* Tab 3: Nadi Palm Leaf Kandams */}
+      {/* Tab 3: Nadi Shastra (BCP + Deva Keralam 150 Amsas + 14 Kandams) */}
       {activeTab === 'nadi' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Deva Keralam 150 Nadi Amsa Hero */}
+          <div style={{ padding: '20px', borderRadius: '10px', background: 'rgba(109, 40, 217, 0.08)', border: '1.5px solid #6d28d9' }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: '17px', fontWeight: 700, color: '#6d28d9', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={18} />
+              <span>{isHi ? 'देव केरळम् (चंद्रकला नाड़ी) — 150 नाड़ी अंश फलादेश' : 'Deva Keralam (Chandra Kala Nadi) — 150 Nadi Amsas'}</span>
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px' }}>
+              <div style={{ background: 'var(--bg-elevated)', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '11px', color: '#6d28d9', fontWeight: 700, textTransform: 'uppercase' }}>
+                  {isHi ? 'लग्न नाड़ी अंश (Ascendant Nadi Amsa)' : 'Lagna Nadi Amsa'}
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginTop: '2px' }}>
+                  {bcpReport.ascendantNadiAmsa.shlokaRef}
+                </div>
+                <p style={{ margin: '6px 0 0', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                  {isHi ? bcpReport.ascendantNadiAmsa.destinyReadingHi : bcpReport.ascendantNadiAmsa.destinyReadingEn}
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--bg-elevated)', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '11px', color: '#6d28d9', fontWeight: 700, textTransform: 'uppercase' }}>
+                  {isHi ? 'चंद्र नाड़ी अंश (Moon Nadi Amsa)' : 'Moon Nadi Amsa'}
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginTop: '2px' }}>
+                  {bcpReport.moonNadiAmsa.shlokaRef}
+                </div>
+                <p style={{ margin: '6px 0 0', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                  {isHi ? bcpReport.moonNadiAmsa.destinyReadingHi : bcpReport.moonNadiAmsa.destinyReadingEn}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bhrigu Chakra Paddhati (BCP) 120-Year Wheel */}
+          <div style={{ padding: '20px', borderRadius: '10px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '14px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text)' }}>
+                  {isHi ? 'भृगु चक्र पद्धति (BCP) — 12-वर्षीय भाव चक्र काल-निर्धारण' : 'Bhrigu Chakra Paddhati (BCP) — 12-Year House Cycle Wheel'}
+                </h3>
+                <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                  {isHi ? `वर्तमान आयु: ${bcpReport.currentAge} वर्ष (सक्रिय भाव: ${bcpReport.currentActiveHouse})` : `Current Age: ${bcpReport.currentAge} Yrs (Active House: H${bcpReport.currentActiveHouse})`}
+                </p>
+              </div>
+
+              {/* Age Selector */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)' }}>
+                  {isHi ? 'आयु चुनें:' : 'Select Age:'}
+                </label>
+                <select
+                  value={selectedBcpAge}
+                  onChange={(e) => setSelectedBcpAge(Number(e.target.value))}
+                  style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 700 }}
+                >
+                  {Array.from({ length: 101 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {isHi ? `आयु ${i} वर्ष (${bcpReport.timeline120Years[i]?.yearRange})` : `Age ${i} (${bcpReport.timeline120Years[i]?.yearRange})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Active Year Card */}
+            <div
+              style={{
+                background: 'rgba(180, 83, 9, 0.08)',
+                border: '1.5px solid var(--accent)',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: '10px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <strong style={{ fontSize: '15px', color: 'var(--text)' }}>
+                  {isHi ? activeBcpForecast.houseTitleHi : activeBcpForecast.houseTitleEn} · {isHi ? activeBcpForecast.themeHi : activeBcpForecast.themeEn}
+                </strong>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#059669' }}>
+                  {activeBcpForecast.favorableIndex}% {isHi ? 'अनुकूल' : 'Favorable'}
+                </span>
+              </div>
+              <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: 1.6, color: 'var(--text)' }}>
+                {isHi ? activeBcpForecast.predictionHi : activeBcpForecast.predictionEn}
+              </p>
+              <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                {isHi ? activeBcpForecast.bhriguPrincipleHi : activeBcpForecast.bhriguPrincipleEn}
+              </div>
+            </div>
+          </div>
+
           {/* Shiva Dialogue Decree Hero */}
           <div style={{ padding: '20px', borderRadius: '10px', background: 'rgba(180, 83, 9, 0.08)', border: '1.5px solid var(--accent)' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '6px' }}>

@@ -351,3 +351,32 @@ export const DIVISIONAL_META: DivisionalMeta[] = [
 
 export const CHARA_KARAKA_NAMES_7 = ['AK', 'AmK', 'BK', 'MK', 'PK', 'GK', 'DK'] as const;
 export const CHARA_KARAKA_NAMES_8 = ['AK', 'AmK', 'BK', 'MK', 'PiK', 'PK', 'GK', 'DK'] as const;
+
+export const HINDI_SIGNS = [
+  'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+  'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'
+];
+
+export const HINDI_PLANETS: Record<string, string> = {
+  Sun: 'सूर्य',
+  Moon: 'चंद्र',
+  Mars: 'मंगल',
+  Mercury: 'बुध',
+  Jupiter: 'गुरु',
+  Venus: 'शुक्र',
+  Saturn: 'शनि',
+  Rahu: 'राहु',
+  Ketu: 'केतु',
+  Asc: 'लग्न',
+  Uranus: 'यूरेनस',
+  Neptune: 'नेपच्यून',
+  Pluto: 'प्लूटो'
+};
+
+export const HINDI_NAKSHATRAS = [
+  'अश्विनी', 'भरणी', 'कृत्तिका', 'रोहिणी', 'मृगशिरा', 'आर्द्रा',
+  'पुनर्वसु', 'पुष्य', 'अश्लेषा', 'मघा', 'पूर्वाफाल्गुनी', 'उत्तराफाल्गुनी',
+  'हस्त', 'चित्रा', 'स्वाति', 'विशाखा', 'अनुराधा', 'ज्येष्ठा',
+  'मूल', 'पूर्वाषाढ़ा', 'उत्तराषाढ़ा', 'श्रवण', 'धनिष्ठा', 'शतभिषा',
+  'पूर्वाभाद्रपद', 'उत्तराभाद्रपद', 'रेवती'
+];

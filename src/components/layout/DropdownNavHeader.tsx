@@ -163,7 +163,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     onNavigate(view, sub);
   };
 
-  const isTransitsActive = currentView === 'sade-sati' || currentView === 'dual-transit';
+  const isTransitsActive = currentView === 'sade-sati' || currentView === 'dual-transit' || currentView === 'transit-calendar';
   const isAdvancedActive = [
     'split-studio',
     'sarvatobhadra',
@@ -183,6 +183,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'synastry',
     'btr',
     'medical-astrology',
+    'financial-astrology',
+    'samudrika-shastra',
     'gemstones',
     'workstation',
     'client-diary',
@@ -388,6 +390,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'शनि साढ़े साती एवं ढैया टाइमलाइन' : 'Sade Sati & Dhaiya Timeline'}</strong>
                     <span className="oj-dd-sub">{isHi ? '3 चरण, कंटक, अष्टम शनि व मूर्ति निर्णय' : '3 Charans & Moorti Nirnaya'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('transit-calendar')}>
+                    <strong>{isHi ? '365-दिवसीय व्यक्तिगत गोचर कैलेंडर' : 'Personal 365-Day Transit Calendar'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'दैनिक शुभता स्कोर (0-100), तारा बल व हीटमैप' : 'Daily 0-100 Score & Monthly Heatmap'}</span>
+                  </button>
                 </div>
               )}
             </li>
@@ -531,6 +537,14 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('medical-astrology')}>
                     <strong>{isHi ? 'चिकित्सा ज्योतिष व लाल किताब' : 'Medical Astrology & Lal Kitab'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'त्रिदोष, खरेश 22वां द्रेष्काण व फरमान' : 'Tridosha, Kharesh & Lal Kitab Upaya'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('financial-astrology')}>
+                    <strong>{isHi ? 'वित्तीय व शेयर बाजार ज्योतिष' : 'Financial & Stock Market Astrology'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'इंदु लग्न, कुबेर संपदा व उद्योग क्षेत्र' : 'Indu Lagna, Dhana Yogas & Business'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('samudrika-shastra')}>
+                    <strong>{isHi ? 'सामुद्रिक शास्त्र एवं हस्तरेखा' : 'Samudrika Shastra & Palmistry'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'हस्त रेखाएं, पर्वत व मत्स्य-त्रिशूल चिन्ह' : 'Palm Lines, Mounts & Sacred Marks'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('gemstones')}>
                     <strong>{isHi ? 'वैदिक रत्न व रुद्राक्ष' : 'Gemstones & Rudraksha'}</strong>

@@ -26,6 +26,9 @@ import { SplitStudioWorkstationView } from './components/onlinejyotish/SplitStud
 import { MultiDashaMatrixView } from './components/onlinejyotish/MultiDashaMatrixView';
 import { SudarshanaChakraView } from './components/onlinejyotish/SudarshanaChakraView';
 import { ClientConsultationDiaryView } from './components/onlinejyotish/ClientConsultationDiaryView';
+import { TransitCalendar365View } from './components/onlinejyotish/TransitCalendar365View';
+import { FinancialAstrologyView } from './components/onlinejyotish/FinancialAstrologyView';
+import { SamudrikaShastraView } from './components/onlinejyotish/SamudrikaShastraView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -435,6 +438,27 @@ export function App() {
               <ClientConsultationDiaryView
                 chart={chart}
                 activeInput={activeInput}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'transit-calendar' && (
+              <TransitCalendar365View
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'financial-astrology' && (
+              <FinancialAstrologyView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'samudrika-shastra' && (
+              <SamudrikaShastraView
+                chart={chart}
                 onNavigate={navigateTo}
               />
             )}

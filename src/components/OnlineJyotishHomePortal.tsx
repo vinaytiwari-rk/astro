@@ -258,6 +258,15 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('sambhavit-falkathan')}>
               {isHi ? 'संभावित फलकथन (101 आयाम)' : 'Probable Predictions (101 Dimensions)'}
             </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
+              {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('financial-astrology')}>
+              {isHi ? 'शेयर बाजार व इंदु लग्न' : 'Financial Astrology & Indu Lagna'}
+            </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('samudrika-shastra')}>
+              {isHi ? 'सामुद्रिक शास्त्र व हस्तरेखा' : 'Samudrika Shastra & Palmistry'}
+            </button>
             <button type="button" className="oj-link-pill" onClick={onOpenBooklet}>
               {isHi ? 'जन्म पत्रिका PDF (निःशुल्क)' : 'Birth Report PDF (Free)'}
             </button>

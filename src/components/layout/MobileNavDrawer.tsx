@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Award,
   BookOpen,
   Calendar,
   Clock,
@@ -83,6 +84,9 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
     { view: 'baby-names', labelEn: 'Newborn Baby Names', labelHi: 'शिशु नामकरण व नामाक्षर', icon: <Star size={16} /> },
     { view: 'gemstones', labelEn: 'Gemstone & Rudraksha', labelHi: 'वैदिक रत्न व रुद्राक्ष', icon: <Sparkles size={16} /> },
     { view: 'choghadiya', labelEn: 'Choghadiya & Muhurta', labelHi: 'चौघड़िया मुहूर्त', icon: <Clock size={16} /> },
+    { view: 'transit-calendar', labelEn: '365-Day Transit Calendar', labelHi: '365-दिवसीय गोचर कैलेंडर', icon: <Calendar size={16} /> },
+    { view: 'financial-astrology', labelEn: 'Financial & Stock Market', labelHi: 'वित्तीय व शेयर बाजार ज्योतिष', icon: <Award size={16} /> },
+    { view: 'samudrika-shastra', labelEn: 'Samudrika & Palmistry', labelHi: 'सामुद्रिक शास्त्र व हस्तरेखा', icon: <Sparkles size={16} /> },
     { view: 'workstation', labelEn: '12-Division Workstation', labelHi: '12-भाग विस्तृत वर्कस्टेशन', icon: <Compass size={16} /> },
   ];
 
