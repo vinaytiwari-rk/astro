@@ -27,64 +27,32 @@ export const KPEnterpriseView: React.FC<KPEnterpriseViewProps> = ({ chart }) => 
         </div>
 
         {/* Tab Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-subtle)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+        <div className="oj-tab-pills-row">
           <button
+            type="button"
             onClick={() => setActiveTab('fourfold')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'fourfold' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'fourfold' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'fourfold' ? 'is-active' : ''}`}
           >
             4-Fold Significators
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('csl')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'csl' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'csl' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'csl' ? 'is-active' : ''}`}
           >
             Cuspal Sub-Lords
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('rp')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'rp' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'rp' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'rp' ? 'is-active' : ''}`}
           >
             Live Ruling Planets
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('varsha')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'varsha' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'varsha' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'varsha' ? 'is-active' : ''}`}
           >
             Tajika Varshaphala
           </button>

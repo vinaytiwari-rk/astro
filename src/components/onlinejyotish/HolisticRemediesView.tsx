@@ -165,17 +165,7 @@ export const HolisticRemediesView: React.FC<HolisticRemediesViewProps> = ({
       </div>
 
       {/* Filter Controls Row */}
-      <div
-        className="oj-horo-control-strip"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px',
-          marginBottom: '20px',
-        }}
-      >
+      <div className="oj-horo-control-strip" style={{ marginBottom: '20px' }}>
         {/* Navigation Tabs */}
         <div className="oj-tab-pills-row">
           {[

@@ -73,34 +73,18 @@ export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initial
         </div>
 
         {/* Tab Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-subtle)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+        <div className="oj-tab-pills-row">
           <button
+            type="button"
             onClick={() => setActiveTab('synastry')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'synastry' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'synastry' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'synastry' ? 'is-active' : ''}`}
           >
             Multi-Chart Synastry
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('btr')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'btr' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'btr' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'btr' ? 'is-active' : ''}`}
           >
             BTR Calibration Workbench
           </button>

@@ -26,64 +26,32 @@ export const MedicalAstrologyView: React.FC<MedicalAstrologyViewProps> = ({ char
         </div>
 
         {/* Tab Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-subtle)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+        <div className="oj-tab-pills-row">
           <button
+            type="button"
             onClick={() => setActiveTab('tridosha')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'tridosha' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'tridosha' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'tridosha' ? 'is-active' : ''}`}
           >
             Tridosha Balance
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('systems')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'systems' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'systems' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'systems' ? 'is-active' : ''}`}
           >
             Body Systems (12 Bhavas)
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('critical')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'critical' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'critical' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'critical' ? 'is-active' : ''}`}
           >
             22nd Drekkana & 64th Navamsha
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('lalkitab')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'lalkitab' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'lalkitab' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'lalkitab' ? 'is-active' : ''}`}
           >
             Lal Kitab Farman & Teva
           </button>

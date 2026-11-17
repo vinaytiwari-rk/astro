@@ -57,18 +57,67 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   const isHi = lang === 'hi';
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number } | null>(null);
 
-  const toggleDropdown = (key: string) => {
-    setOpenDropdown((prev) => (prev === key ? null : key));
+  const calculateDropdownPos = (target: HTMLElement) => {
+    const rect = target.getBoundingClientRect();
+    const menuWidth = 300;
+    let left = rect.left;
+    if (typeof window !== 'undefined' && left + menuWidth > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - menuWidth - 12);
+    }
+    return {
+      top: Math.round(rect.bottom + 6),
+      left: Math.round(Math.max(12, left)),
+    };
+  };
+
+  const toggleDropdown = (key: string, e?: React.MouseEvent<HTMLElement>) => {
+    if (openDropdown === key) {
+      setOpenDropdown(null);
+      setDropdownCoords(null);
+    } else {
+      setOpenDropdown(key);
+      if (e?.currentTarget) {
+        setDropdownCoords(calculateDropdownPos(e.currentTarget));
+      }
+    }
+  };
+
+  const handleMouseEnter = (key: string, e: React.MouseEvent<HTMLElement>) => {
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      setDropdownCoords(calculateDropdownPos(e.currentTarget));
+      setOpenDropdown(key);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      setOpenDropdown(null);
+      setDropdownCoords(null);
+    }
   };
 
   const handleLinkClick = (view: string, sub?: string) => {
     setOpenDropdown(null);
+    setDropdownCoords(null);
     onNavigate(view, sub);
   };
 
   return (
     <header className="dropdown-nav-header no-print">
+      {/* Mobile/Floating Backdrop for open dropdowns */}
+      {openDropdown && (
+        <div
+          className="oj-dropdown-backdrop"
+          onClick={() => {
+            setOpenDropdown(null);
+            setDropdownCoords(null);
+          }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Row 1: Brand Logo (AV Astro Vibe), Active Profile, Language & Tools */}
       <div className="dropdown-nav-top-row">
         {/* Brand: AV Astro Vibe */}
@@ -224,13 +273,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             {/* 4. Sade Sati & Dual Transit Wheel */}
             <li
               className="oj-nav-item oj-dropdown-parent"
-              onMouseEnter={() => setOpenDropdown('transits-menu')}
-              onMouseLeave={() => setOpenDropdown(null)}
+              onMouseEnter={(e) => handleMouseEnter('transits-menu', e)}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 type="button"
                 className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'transits-menu' ? 'is-open' : ''} ${currentView === 'sade-sati' || currentView === 'dual-transit' ? 'is-current' : ''}`}
-                onClick={() => toggleDropdown('transits-menu')}
+                onClick={(e) => toggleDropdown('transits-menu', e)}
                 aria-expanded={openDropdown === 'transits-menu'}
                 aria-haspopup="true"
               >
@@ -240,7 +289,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
 
               {openDropdown === 'transits-menu' && (
-                <div className="oj-dropdown-menu" role="menu">
+                <div
+                  className="oj-dropdown-menu"
+                  role="menu"
+                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                >
                   <button type="button" onClick={() => handleLinkClick('dual-transit')}>
                     <strong>{isHi ? 'द्वि-चक्र गोचर सिम्युलेटर (Double Wheel)' : 'Live Double Transit Wheel'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जन्म कुंडली + लाइव गोचर दृष्टि किरणें' : 'Natal + Transit Aspect Rays'}</span>
@@ -268,13 +321,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             {/* 5. Advanced Astrology Dropdown */}
             <li
               className="oj-nav-item oj-dropdown-parent"
-              onMouseEnter={() => setOpenDropdown('advanced-astro')}
-              onMouseLeave={() => setOpenDropdown(null)}
+              onMouseEnter={(e) => handleMouseEnter('advanced-astro', e)}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 type="button"
                 className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'advanced-astro' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('advanced-astro')}
+                onClick={(e) => toggleDropdown('advanced-astro', e)}
                 aria-expanded={openDropdown === 'advanced-astro'}
                 aria-haspopup="true"
               >
@@ -284,7 +337,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
 
               {openDropdown === 'advanced-astro' && (
-                <div className="oj-dropdown-menu" role="menu">
+                <div
+                  className="oj-dropdown-menu"
+                  role="menu"
+                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                >
                   <button type="button" onClick={() => handleLinkClick('split-studio')}>
                     <strong>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'D1 + D9 + दशा + गोचर एक ही स्क्रीन पर' : 'D1 + D9 + Dashas + Live Transits'}</span>
@@ -328,13 +385,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             {/* 6. Consultation Tools Dropdown */}
             <li
               className="oj-nav-item oj-dropdown-parent"
-              onMouseEnter={() => setOpenDropdown('more-tools')}
-              onMouseLeave={() => setOpenDropdown(null)}
+              onMouseEnter={(e) => handleMouseEnter('more-tools', e)}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 type="button"
                 className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'more-tools' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('more-tools')}
+                onClick={(e) => toggleDropdown('more-tools', e)}
                 aria-expanded={openDropdown === 'more-tools'}
                 aria-haspopup="true"
               >
@@ -344,7 +401,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
 
               {openDropdown === 'more-tools' && (
-                <div className="oj-dropdown-menu" role="menu">
+                <div
+                  className="oj-dropdown-menu"
+                  role="menu"
+                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                >
                   <button type="button" onClick={() => handleLinkClick('prashna')}>
                     <strong>{isHi ? 'केपी प्रश्न कुण्डली (1–249)' : 'KP Prashna Horary (1–249)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'तात्कालिक प्रश्न: हाँ/ना/सशर्त उत्तर' : 'Instant Yes/No/Conditional Outcome'}</span>
@@ -384,13 +445,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             {/* 8. Puja & Festivals — Highlighted High-Visibility Dropdown */}
             <li
               className="oj-nav-item oj-dropdown-parent"
-              onMouseEnter={() => setOpenDropdown('festivals')}
-              onMouseLeave={() => setOpenDropdown(null)}
+              onMouseEnter={(e) => handleMouseEnter('festivals', e)}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 type="button"
                 className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'festivals' ? 'is-open' : ''}`}
-                onClick={() => toggleDropdown('festivals')}
+                onClick={(e) => toggleDropdown('festivals', e)}
                 aria-expanded={openDropdown === 'festivals'}
                 aria-haspopup="true"
               >
@@ -400,7 +461,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
 
               {openDropdown === 'festivals' && (
-                <div className="oj-dropdown-menu align-right" role="menu">
+                <div
+                  className="oj-dropdown-menu align-right"
+                  role="menu"
+                  style={dropdownCoords && typeof window !== 'undefined' && window.innerWidth > 768 ? { position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left } : undefined}
+                >
                   <button type="button" onClick={() => handleLinkClick('festivals')}>
                     <strong>{isHi ? 'हिंदू पर्व एवं व्रत कैलेंडर' : 'Hindu Festival Calendar'}</strong>
                     <span className="oj-dd-sub">{isHi ? '2026-2027 के समस्त पर्व' : '2026-2027 All Festivals'}</span>

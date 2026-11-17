@@ -64,49 +64,25 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
         </div>
 
         {/* Tab Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-subtle)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+        <div className="oj-tab-pills-row">
           <button
+            type="button"
             onClick={() => setActiveTab('muhurta')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'muhurta' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'muhurta' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'muhurta' ? 'is-active' : ''}`}
           >
             Muhurta Finder (90-Day)
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('prashna')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'prashna' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'prashna' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'prashna' ? 'is-active' : ''}`}
           >
             KP Prashna (1–249)
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('nadi')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeTab === 'nadi' ? 'var(--accent)' : 'transparent',
-              color: activeTab === 'nadi' ? '#fff' : 'var(--text)',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-            }}
+            className={`oj-tab-pill ${activeTab === 'nadi' ? 'is-active' : ''}`}
           >
             Nadi Palm Leaf Kandams
           </button>
