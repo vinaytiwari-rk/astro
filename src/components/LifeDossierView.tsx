@@ -1,15 +1,22 @@
 import React, { useMemo, useState } from 'react';
 import {
   Activity,
+  AlertTriangle,
   Award,
   BookOpen,
   Bookmark,
   Briefcase,
+  Calendar,
+  CheckCircle,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
+  Clock,
   Coins,
   Compass,
   Download,
+  Edit3,
   Eye,
   Flame,
   Globe,
@@ -17,11 +24,13 @@ import {
   HelpCircle,
   Hourglass,
   Layers,
+  MapPin,
   Moon,
   Printer,
   Scale,
   Shield,
   ShieldAlert,
+  ShieldCheck,
   Sparkles,
   Sun,
   User,
@@ -65,7 +74,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
   const [isChapterDrawerOpen, setIsChapterDrawerOpen] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(1);
 
-  // Generate 10-Chapter Master Life Dossier
+  // Generate 12-Chapter Master Life Dossier
   const dossier = useMemo<LifeDossierReport>(() => {
     return computeLifeDossierReport(chart);
   }, [chart]);
@@ -197,7 +206,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
   const expandAll = () => setCollapsedChapters({});
   const collapseAll = () => {
     const all: Record<number, boolean> = {};
-    for (let i = 1; i <= 10; i++) all[i] = true;
+    for (let i = 1; i <= 12; i++) all[i] = true;
     setCollapsedChapters(all);
   };
 
@@ -290,7 +299,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
     <div className="dossier-planets-card card">
       <div className="card-header-compact">
         <h3 className="section-title-sm">
-          📊 {isHi ? 'ग्रह स्थिति सारणी (अंश, नक्षत्र, पद व कारक)' : 'Planetary Matrix (Degrees, Nakshatra & Karakas)'}
+          <Activity size={14} className="accent-icon" />{' '}
+          {isHi ? 'ग्रह स्थिति सारणी (अंश, नक्षत्र, पद व कारक)' : 'Planetary Matrix (Degrees, Nakshatra & Karakas)'}
         </h3>
       </div>
 
@@ -451,13 +461,18 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         <div className="dossier-hero-left">
           <div className="dossier-badge-pill">
             <Sparkles size={14} className="accent-icon" />
-            <span>{isHi ? 'स्प्लिट-स्टूडियो गोपनीय जीवन आलेख' : 'Split-Studio Master Life Dossier'}</span>
+            <span>{isHi ? 'AV Astro Vibe 12-अध्याय सम्पूर्ण जीवन डोजियर' : 'AV Astro Vibe 12-Chapter Master Life Dossier'}</span>
           </div>
           <h1 className="dossier-hero-title">
-            {dossier.nativeName} — {isHi ? 'सम्पूर्ण जन्म कुंडली व 10-अध्यायी रहस्योद्घाटन' : 'Complete Natal Chart & 10-Chapter Life Revelations'}
+            {dossier.nativeName} — {isHi ? 'सम्पूर्ण जन्म कुंडली व 12-भाव यथार्थ फलादेश' : 'Complete Natal Chart & 12-Bhava Unvarnished Revelations'}
           </h1>
           <p className="dossier-hero-subtitle">
-            📅 {dossier.birthDateFormatted} · ⏰ {dossier.birthTimeFormatted} · 📍 {dossier.birthCity} ·{' '}
+            <Calendar size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+            {dossier.birthDateFormatted} ·{' '}
+            <Clock size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+            {dossier.birthTimeFormatted} ·{' '}
+            <MapPin size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+            {dossier.birthCity} ·{' '}
             <strong>{isHi ? 'लग्न:' : 'Asc:'}</strong> {dossier.ascendantSignHi} ({dossier.ascendantSignEn}) ·{' '}
             <strong>{isHi ? 'राशि:' : 'Moon:'}</strong> {dossier.moonSignHi} ({dossier.moonSignEn}) ·{' '}
             <strong>{isHi ? 'सूर्य:' : 'Sun:'}</strong> {dossier.sunSignHi}
@@ -467,12 +482,14 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         <div className="dossier-hero-actions">
           {onOpenEditor && (
             <button className="btn btn-secondary btn-sm" onClick={onOpenEditor} title={isHi ? 'जन्म विवरण बदलें' : 'Edit Birth Details'}>
-              ✏️ {isHi ? 'विवरण बदलें' : 'Edit Birth'}
+              <Edit3 size={13} />
+              <span>{isHi ? 'विवरण बदलें' : 'Edit Birth'}</span>
             </button>
           )}
           {onOpenMatchMaking && (
             <button className="btn btn-secondary btn-sm" onClick={onOpenMatchMaking} title={isHi ? 'कुंडली मिलान' : 'Match Making'}>
-              💍 {isHi ? 'कुंडली मिलान' : 'Match Making'}
+              <Heart size={13} />
+              <span>{isHi ? 'कुंडली मिलान' : 'Match Making'}</span>
             </button>
           )}
           {onOpenBooklet && (
@@ -494,19 +511,22 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
           className={`dossier-m-tab-btn ${mobileTab === 'dossier' ? 'active' : ''}`}
           onClick={() => setMobileTab('dossier')}
         >
-          📖 {isHi ? 'जीवन आलेख' : 'Dossier'}
+          <BookOpen size={14} />
+          <span>{isHi ? 'जीवन आलेख' : 'Dossier'}</span>
         </button>
         <button
           className={`dossier-m-tab-btn ${mobileTab === 'charts' ? 'active' : ''}`}
           onClick={() => setMobileTab('charts')}
         >
-          🗺️ {isHi ? 'जन्म चक्र' : 'Charts'}
+          <Compass size={14} />
+          <span>{isHi ? 'जन्म चक्र' : 'Charts'}</span>
         </button>
         <button
           className={`dossier-m-tab-btn ${mobileTab === 'planets' ? 'active' : ''}`}
           onClick={() => setMobileTab('planets')}
         >
-          🪐 {isHi ? 'ग्रह स्थिति' : 'Planets'}
+          <Layers size={14} />
+          <span>{isHi ? 'ग्रह स्थिति' : 'Planets'}</span>
         </button>
       </div>
 
@@ -534,7 +554,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         </aside>
 
         {/* =========================================================================
-            RIGHT COLUMN (62-64%): 10-CHAPTER MASTER LIFE DOSSIER
+            RIGHT COLUMN (62-64%): 12-CHAPTER MASTER LIFE DOSSIER
            ========================================================================= */}
         <main
           className={`dossier-right-pane ${
@@ -544,36 +564,33 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
           {/* Sticky Chapter Navigation Bar */}
           <nav className="dossier-chapter-nav-sticky">
             <div className="dossier-nav-scrollable">
-              {dossier.chapters.map((ch) => (
-                <button
-                  key={ch.chapterNumber}
-                  className={`chapter-nav-chip ${currentChapter === ch.chapterNumber ? 'active' : ''}`}
-                  onClick={() => scrollToChapter(ch.chapterNumber)}
-                >
-                  <span className="chip-num">{ch.chapterNumber}</span>
-                  <span className="chip-label">
-                    {ch.chapterNumber === 1
-                      ? isHi ? 'मूल पहचान' : 'Identity'
-                      : ch.chapterNumber === 2
-                      ? isHi ? 'स्वभाव' : 'Psychology'
-                      : ch.chapterNumber === 3
-                      ? isHi ? 'वर्तमान' : 'Now'
-                      : ch.chapterNumber === 4
-                      ? isHi ? 'करियर' : 'Career'
-                      : ch.chapterNumber === 5
-                      ? isHi ? 'धन' : 'Wealth'
-                      : ch.chapterNumber === 6
-                      ? isHi ? 'दांपत्य' : 'Marriage'
-                      : ch.chapterNumber === 7
-                      ? isHi ? 'स्वास्थ्य' : 'Health'
-                      : ch.chapterNumber === 8
-                      ? isHi ? 'कालचक्र' : 'Timeline'
-                      : ch.chapterNumber === 9
-                      ? isHi ? 'पूर्व जन्म' : 'Past Life'
-                      : isHi ? 'वैदिक उपाय' : 'Vedic Remedies'}
-                  </span>
-                </button>
-              ))}
+              {dossier.chapters.map((ch) => {
+                const CHIP_TITLES: Record<number, { hi: string; en: string }> = {
+                  1: { hi: 'तनु', en: 'Tanu' },
+                  2: { hi: 'धन', en: 'Dhana' },
+                  3: { hi: 'सहज', en: 'Sahaja' },
+                  4: { hi: 'सुख', en: 'Sukha' },
+                  5: { hi: 'सुत/विद्या', en: 'Suta' },
+                  6: { hi: 'रिपु/रोग', en: 'Ripu' },
+                  7: { hi: 'कलत्र/विवाह', en: 'Kalatra' },
+                  8: { hi: 'रंध्र/आयु', en: 'Randhra' },
+                  9: { hi: 'भाग्य/धर्म', en: 'Bhagya' },
+                  10: { hi: 'कर्म/राज्य', en: 'Karma' },
+                  11: { hi: 'लाभ', en: 'Labha' },
+                  12: { hi: 'व्यय/मोक्ष', en: 'Vyaya' },
+                };
+                const chipLabel = isHi ? CHIP_TITLES[ch.chapterNumber]?.hi : CHIP_TITLES[ch.chapterNumber]?.en;
+                return (
+                  <button
+                    key={ch.chapterNumber}
+                    className={`chapter-nav-chip ${currentChapter === ch.chapterNumber ? 'active' : ''}`}
+                    onClick={() => scrollToChapter(ch.chapterNumber)}
+                  >
+                    <span className="chip-num">{ch.chapterNumber}</span>
+                    <span className="chip-label">{chipLabel}</span>
+                  </button>
+                );
+              })}
             </div>
             <div className="dossier-nav-controls">
               <button className="btn-icon-sm" onClick={expandAll} title={isHi ? 'सभी अध्याय खोलें' : 'Expand All'}>
@@ -589,6 +606,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
           <div className="dossier-chapters-wrapper">
             {dossier.chapters.map((chapter) => {
               const isCollapsed = collapsedChapters[chapter.chapterNumber] ?? false;
+              const bp = chapter.bhavaProfile;
+              const tr = chapter.targetedRemedy;
 
               return (
                 <section
@@ -626,6 +645,56 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                   )}
 
                   {/* =================================================================
+                      BHAVA PROFILE CARD: HOUSE ATTRIBUTES & UNVARNISHED VERDICT
+                     ================================================================= */}
+                  {!isCollapsed && bp && (
+                    <div className="dossier-bhava-profile-card">
+                      <div className="bhava-profile-header">
+                        <div className="bhava-profile-title-group">
+                          <span className="bhava-number-badge">{bp.houseNumber}</span>
+                          <span className="bhava-name-text">{isHi ? bp.bhavaNameHi : bp.bhavaNameEn}</span>
+                        </div>
+                        <div className={`bhava-score-pill tone-${bp.verdictTone}`}>
+                          <span>{isHi ? 'भाव सामर्थ्य:' : 'Bhava Strength:'}</span>
+                          <strong className="mono">{bp.afflictionScore}/100</strong>
+                          <span className="small">
+                            ({bp.verdictTone === 'favorable' ? (isHi ? 'शुभ' : 'Favorable') : bp.verdictTone === 'mixed' ? (isHi ? 'मध्यम' : 'Mixed') : bp.verdictTone === 'challenging' ? (isHi ? 'चुनौतीपूर्ण' : 'Challenging') : (isHi ? 'गंभीर' : 'Critical')})
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bhava-meta-strip">
+                        <span className="bhava-meta-item">
+                          {isHi ? 'राशि:' : 'Sign:'} <strong>{isHi ? bp.signNameHi : bp.signNameEn}</strong>
+                        </span>
+                        <span className="bhava-meta-item">
+                          {isHi ? 'भावेश:' : 'Lord:'} <strong>{isHi ? bp.lordNameHi : bp.lordNameEn}</strong>{' '}
+                          (भाव {bp.lordPlacedHouse}, {bp.lordDignity}
+                          {bp.isLordRetrograde ? (isHi ? ', वक्री' : ', Retro') : ''}
+                          {bp.isLordCombust ? (isHi ? ', अस्त' : ', Combust') : ''})
+                        </span>
+                        <span className="bhava-meta-item">
+                          {isHi ? 'अष्टकवर्ग:' : 'SAV Bindus:'} <strong>{bp.savBindus} बिंदु</strong>
+                        </span>
+                        <span className="bhava-meta-item">
+                          {isHi ? 'स्थित ग्रह:' : 'Occupants:'}{' '}
+                          <strong>
+                            {(isHi ? bp.occupantsHi : bp.occupantsEn).length > 0
+                              ? (isHi ? bp.occupantsHi : bp.occupantsEn).join(', ')
+                              : (isHi ? 'रिक्त' : 'None')}
+                          </strong>
+                        </span>
+                      </div>
+
+                      {/* Unvarnished Verdict Banner */}
+                      <div className={`bhava-unvarnished-verdict tone-${bp.verdictTone}`}>
+                        <strong>{isHi ? 'यथार्थ फलादेश निर्णय: ' : 'Unvarnished Verdict: '}</strong>
+                        {isHi ? bp.verdictSummaryHi : bp.verdictSummaryEn}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* =================================================================
                       CHAPTER 1 EXCLUSIVE: TOP SACRED SPIRITUAL IDENTITY CARD
                      ================================================================= */}
                   {!isCollapsed && chapter.chapterNumber === 1 && (
@@ -647,7 +716,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                             <div className="mono identity-mantra">{topIdentity.ishtaDevata.mantra}</div>
                           </div>
                           <div className="identity-sub-note small">
-                            🗓️ {isHi ? 'उपासना वार:' : 'Day:'} {isHi ? topIdentity.ishtaDevata.worshipDayHi : topIdentity.ishtaDevata.worshipDayEn}
+                            <Calendar size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? 'उपासना वार:' : 'Day:'} {isHi ? topIdentity.ishtaDevata.worshipDayHi : topIdentity.ishtaDevata.worshipDayEn}
                           </div>
                         </div>
 
@@ -664,7 +734,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                             <span className="large-glyph-en">({topIdentity.naamakshar.syllableEn})</span>
                           </div>
                           <div className="identity-sub-note">
-                            ⭐ {topIdentity.naamakshar.nakshatraName} ({isHi ? 'चरण' : 'Pada'} {topIdentity.naamakshar.pada})
+                            <Sparkles size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {topIdentity.naamakshar.nakshatraName} ({isHi ? 'चरण' : 'Pada'} {topIdentity.naamakshar.pada})
                           </div>
                           <div className="identity-padas-strip small text-muted">
                             {isHi ? 'चारों चरण:' : 'All Padas:'}{' '}
@@ -687,7 +758,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                             {isHi ? topIdentity.paya.meaningHi : topIdentity.paya.meaningEn}
                           </div>
                           <div className="identity-paya-rule small text-muted">
-                            📐 {isHi ? `लग्न से भाव: ${topIdentity.paya.moonHouseFromLagna}` : `House from Lagna: ${topIdentity.paya.moonHouseFromLagna}`}
+                            <Shield size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? `लग्न से भाव: ${topIdentity.paya.moonHouseFromLagna}` : `House from Lagna: ${topIdentity.paya.moonHouseFromLagna}`}
                           </div>
                         </div>
                       </div>
@@ -696,34 +768,111 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                       <div className="avakahada-spec-grid">
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'वर्ण' : 'Varna'}</span>
-                          <span className="spec-val">{chapter.specialData?.avakahada.varna}</span>
+                          <span className="spec-val">{chapter.specialData?.avakahada?.varna}</span>
                         </div>
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'वश्य' : 'Vashya'}</span>
-                          <span className="spec-val">{chapter.specialData?.avakahada.vashya}</span>
+                          <span className="spec-val">{chapter.specialData?.avakahada?.vashya}</span>
                         </div>
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'योनि' : 'Yoni'}</span>
-                          <span className="spec-val">{chapter.specialData?.avakahada.yoni}</span>
+                          <span className="spec-val">{chapter.specialData?.avakahada?.yoni}</span>
                         </div>
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'गण' : 'Gana'}</span>
-                          <span className="spec-val">{chapter.specialData?.avakahada.gana}</span>
+                          <span className="spec-val">{chapter.specialData?.avakahada?.gana}</span>
                         </div>
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'नाड़ी' : 'Nadi'}</span>
-                          <span className="spec-val">{chapter.specialData?.avakahada.nadi}</span>
+                          <span className="spec-val">{chapter.specialData?.avakahada?.nadi}</span>
                         </div>
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'तत्व' : 'Element'}</span>
-                          <span className="spec-val">{isHi ? chapter.specialData?.avakahada.tatvaHi : chapter.specialData?.avakahada.tatvaEn}</span>
+                          <span className="spec-val">{isHi ? chapter.specialData?.avakahada?.tatvaHi : chapter.specialData?.avakahada?.tatvaEn}</span>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* CHAPTER 4 EXCLUSIVE: CAREER VERDICTS & GOVT JOB METER */}
-                  {!isCollapsed && chapter.chapterNumber === 4 && chapter.specialData?.careerVerdicts && (
+                  {/* CHAPTER 6 EXCLUSIVE: ADDICTIONS & LEGAL HAZARDS SENTINEL */}
+                  {!isCollapsed && chapter.chapterNumber === 6 && chapter.specialData?.addictionsAndVices && (
+                    <div className="dossier-vulnerabilities-box">
+                      <div className="vulnerability-strip-grid">
+                        <div className="vuln-item">
+                          <span className="vuln-label">{isHi ? 'रासायनिक नशा/व्यसन संवेदनशीलता:' : 'Substance Risk:'}</span>
+                          <span className="badge badge-neutral font-bold">{chapter.specialData.addictionsAndVices.substanceRiskHi.split('(')[0].trim()}</span>
+                        </div>
+                        <div className="vuln-item">
+                          <span className="vuln-label">{isHi ? 'बंधन योग (कारावास/दंड):' : 'Bandhana Yoga:'}</span>
+                          <span className="badge badge-subtle font-bold">{chapter.specialData.litigationAndAffairs.bandhanaYogaHi.split('(')[0].trim()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CHAPTER 8 EXCLUSIVE: LONGEVITY CATEGORY BADGE */}
+                  {!isCollapsed && chapter.chapterNumber === 8 && chapter.specialData?.longevity && (
+                    <div className="dossier-vulnerabilities-box" style={{ background: 'var(--bg-elevated)' }}>
+                      <div className="vulnerability-strip-grid">
+                        <div className="vuln-item">
+                          <Hourglass size={16} className="text-accent" />
+                          <span className="vuln-label">{isHi ? 'पाराशरी आयु वर्ग:' : 'Longevity Category:'}</span>
+                          <span className="badge badge-good font-bold">{isHi ? chapter.specialData.longevity.categoryHi : chapter.specialData.longevity.categoryEn}</span>
+                        </div>
+                        <div className="vuln-item">
+                          <ShieldCheck size={16} className="text-accent" />
+                          <span className="vuln-label">{isHi ? 'आयुर्दाय मर्यादा:' : 'Estimated Lifespan:'}</span>
+                          <span className="mono font-bold">{chapter.specialData.longevity.estimatedYears} {isHi ? 'वर्ष' : 'Years'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CHAPTER 9 EXCLUSIVE: WORLD CIVILIZATIONS ODYSSEY */}
+                  {!isCollapsed && chapter.chapterNumber === 9 && chapter.specialData?.pastLife && (
+                    <div className="dossier-global-odyssey-box">
+                      <div className="odyssey-grid">
+                        <div className="odyssey-card past-odyssey">
+                          <div className="odyssey-header">
+                            <Globe size={18} className="text-accent" />
+                            <span className="odyssey-title">{isHi ? 'पूर्व जन्म की विश्व सभ्यता व भूगोल' : 'Past Life World Civilization'}</span>
+                          </div>
+                          <div className="odyssey-val font-bold">
+                            {isHi ? chapter.specialData.pastLife.civilizationHi : chapter.specialData.pastLife.civilizationEn}
+                          </div>
+                          <div className="small text-muted">
+                            <MapPin size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? chapter.specialData.pastLife.birthPlaceOrCountryHi : chapter.specialData.pastLife.birthPlaceOrCountryEn}
+                          </div>
+                          <div className="odyssey-sub small">
+                            <Hourglass size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? chapter.specialData.pastLife.historicalEraHi : chapter.specialData.pastLife.historicalEraEn}
+                          </div>
+                        </div>
+
+                        <div className="odyssey-card future-odyssey">
+                          <div className="odyssey-header">
+                            <Sparkles size={18} className="text-accent" />
+                            <span className="odyssey-title">{isHi ? 'भावी पुनर्जन्म का महाद्वीप व स्वरूप' : 'Future Rebirth Continent & Station'}</span>
+                          </div>
+                          <div className="odyssey-val font-bold">
+                            {isHi ? chapter.specialData.futureBecoming.futureContinentHi : chapter.specialData.futureBecoming.futureContinentEn}
+                          </div>
+                          <div className="small text-muted">
+                            <Globe size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? chapter.specialData.futureBecoming.futureCountryHi : chapter.specialData.futureBecoming.futureCountryEn}
+                          </div>
+                          <div className="odyssey-sub small">
+                            <Sparkles size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? chapter.specialData.futureBecoming.futureYoniHi : chapter.specialData.futureBecoming.futureYoniEn}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CHAPTER 10 EXCLUSIVE: CAREER VERDICTS & GOVT JOB METER */}
+                  {!isCollapsed && chapter.chapterNumber === 10 && chapter.specialData?.careerVerdicts && (
                     <div className="dossier-career-verdicts-box">
                       <div className="career-verdicts-grid">
                         <div className="verdict-metric-card govt-job-metric">
@@ -764,85 +913,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                             {isHi ? chapter.specialData.careerVerdicts.jobVsBusinessRatio.verdictHi : chapter.specialData.careerVerdicts.jobVsBusinessRatio.verdictEn}
                           </p>
                           <div className="exam-window-note small">
-                            ⏳ {isHi ? 'परीक्षा स्वर्णिम काल:' : 'Peak Crack Window:'} <strong>{isHi ? chapter.specialData.careerVerdicts.examCrackingAgeWindowHi : chapter.specialData.careerVerdicts.examCrackingAgeWindowEn}</strong>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 6 EXCLUSIVE: 360° RELATIONAL WEB SUMMARY */}
-                  {!isCollapsed && chapter.chapterNumber === 6 && chapter.specialData?.relationalMatrix && (
-                    <div className="dossier-relational-matrix-box">
-                      <div className="box-header-row">
-                        <Users size={18} className="text-accent" />
-                        <h3 className="section-title-sm">{isHi ? 'सम्पूर्ण 360° पारिवारिक व सामाजिक संबंध संक्षेप' : '360° Relational Web Quick Matrix'}</h3>
-                      </div>
-                      <div className="relational-cards-grid">
-                        {chapter.specialData.relationalMatrix.map((item: any) => (
-                          <div key={item.id} className="relational-pill-card">
-                            <div className="pill-header">
-                              <span className="relation-name font-bold">{isHi ? item.relationHi.split('(')[0].trim() : item.relationEn.split('(')[0].trim()}</span>
-                              <span className="badge badge-subtle small">{isHi ? item.bhavatBhavamHi.split('(')[0].trim() : item.bhavatBhavamEn.split('(')[0].trim()}</span>
-                            </div>
-                            <div className="pill-status small">
-                              <span className="status-label">{isHi ? item.bondStatusHi.split('/')[0].trim() : item.bondStatusEn.split('/')[0].trim()}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 7 EXCLUSIVE: ADDICTIONS & LEGAL HAZARDS SENTINEL */}
-                  {!isCollapsed && chapter.chapterNumber === 7 && chapter.specialData?.addictionsAndVices && (
-                    <div className="dossier-vulnerabilities-box">
-                      <div className="vulnerability-strip-grid">
-                        <div className="vuln-item">
-                          <span className="vuln-label">{isHi ? 'रासायनिक नशा/व्यसन संवेदनशीलता:' : 'Substance Risk:'}</span>
-                          <span className="badge badge-neutral font-bold">{chapter.specialData.addictionsAndVices.substanceRiskHi.split('(')[0].trim()}</span>
-                        </div>
-                        <div className="vuln-item">
-                          <span className="vuln-label">{isHi ? 'बंधन योग (कारावास/दंड):' : 'Bandhana Yoga:'}</span>
-                          <span className="badge badge-subtle font-bold">{chapter.specialData.litigationAndAffairs.bandhanaYogaHi.split('(')[0].trim()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 9 EXCLUSIVE: WORLD CIVILIZATIONS ODYSSEY */}
-                  {!isCollapsed && chapter.chapterNumber === 9 && chapter.specialData?.pastLife && (
-                    <div className="dossier-global-odyssey-box">
-                      <div className="odyssey-grid">
-                        <div className="odyssey-card past-odyssey">
-                          <div className="odyssey-header">
-                            <Globe size={18} className="text-accent" />
-                            <span className="odyssey-title">{isHi ? 'पूर्व जन्म की विश्व सभ्यता व भूगोल' : 'Past Life World Civilization'}</span>
-                          </div>
-                          <div className="odyssey-val font-bold">
-                            {isHi ? chapter.specialData.pastLife.civilizationHi : chapter.specialData.pastLife.civilizationEn}
-                          </div>
-                          <div className="small text-muted">
-                            📍 {isHi ? chapter.specialData.pastLife.birthPlaceOrCountryHi : chapter.specialData.pastLife.birthPlaceOrCountryEn}
-                          </div>
-                          <div className="odyssey-sub small">
-                            ⏳ {isHi ? chapter.specialData.pastLife.historicalEraHi : chapter.specialData.pastLife.historicalEraEn}
-                          </div>
-                        </div>
-
-                        <div className="odyssey-card future-odyssey">
-                          <div className="odyssey-header">
-                            <Sparkles size={18} className="text-accent" />
-                            <span className="odyssey-title">{isHi ? 'भावी पुनर्जन्म का महाद्वीप व स्वरूप' : 'Future Rebirth Continent & Station'}</span>
-                          </div>
-                          <div className="odyssey-val font-bold">
-                            {isHi ? chapter.specialData.futureBecoming.futureContinentHi : chapter.specialData.futureBecoming.futureContinentEn}
-                          </div>
-                          <div className="small text-muted">
-                            🌍 {isHi ? chapter.specialData.futureBecoming.futureCountryHi : chapter.specialData.futureBecoming.futureCountryEn}
-                          </div>
-                          <div className="odyssey-sub small">
-                            🕊️ {isHi ? chapter.specialData.futureBecoming.futureYoniHi : chapter.specialData.futureBecoming.futureYoniEn}
+                            <Clock size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                            {isHi ? 'परीक्षा स्वर्णिम काल:' : 'Peak Crack Window:'} <strong>{isHi ? chapter.specialData.careerVerdicts.examCrackingAgeWindowHi : chapter.specialData.careerVerdicts.examCrackingAgeWindowEn}</strong>
                           </div>
                         </div>
                       </div>
@@ -899,6 +971,59 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                       ))}
                     </div>
                   )}
+
+                  {/* =================================================================
+                      TARGETED REMEDY CARD: ONLY PRESCRIBED WHERE AFFLICTION EXISTS
+                     ================================================================= */}
+                  {!isCollapsed && tr && (
+                    <div className={`dossier-targeted-remedy-card ${tr.isNeeded ? 'remedy-needed' : 'remedy-safe'}`}>
+                      <div className="remedy-card-header">
+                        {tr.isNeeded ? (
+                          <>
+                            <AlertTriangle size={16} className="text-warning" />
+                            <span className="remedy-card-title">{isHi ? 'शास्त्रीय अनिष्ट शमन उपाय (Targeted Vedic Remedy)' : 'Targeted Vedic Remedy (Shanti Vidhana)'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck size={16} className="text-success" />
+                            <span className="remedy-card-title">{isHi ? 'भाव स्थिति: सुरक्षित व निर्दोष (Protected & Auspicious House)' : 'Bhava Disposition: Safe & Auspicious (No Remedy Needed)'}</span>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="remedy-card-reason">
+                        {isHi ? tr.reasonHi : tr.reasonEn}
+                      </div>
+
+                      {tr.isNeeded ? (
+                        <>
+                          <div className="remedy-details-grid">
+                            {tr.stotraOrMantraHi && (
+                              <div className="remedy-detail-block">
+                                <span className="remedy-detail-label">{isHi ? 'सिद्ध मंत्र / स्तोत्र पाठ:' : 'Sacred Mantra / Stotra:'}</span>
+                                <strong className="mono">{isHi ? tr.stotraOrMantraHi : tr.stotraOrMantraEn}</strong>
+                              </div>
+                            )}
+                            {tr.charityItemHi && (
+                              <div className="remedy-detail-block">
+                                <span className="remedy-detail-label">{isHi ? 'शास्त्रीय दान द्रव्य व शुभ समय:' : 'Donation Item & Auspicious Timing:'}</span>
+                                <span>{isHi ? tr.charityItemHi : tr.charityItemEn} ({isHi ? tr.charityDayHi : tr.charityDayEn})</span>
+                              </div>
+                            )}
+                          </div>
+                          <p className="remedy-precaution-text">
+                            <strong>{isHi ? 'सात्विक आचार-व्यवहार सावधानी: ' : 'Practical Behavioral Precaution: '}</strong>
+                            {isHi ? tr.practicalPrecautionHi : tr.practicalPrecautionEn}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="remedy-precaution-text">
+                          <strong>{isHi ? 'वैदिक परामर्श: ' : 'Vedic Counsel: '}</strong>
+                          {isHi ? tr.practicalPrecautionHi : tr.practicalPrecautionEn}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </section>
               );
             })}
@@ -927,37 +1052,41 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
           }}
           disabled={currentChapter <= 1}
         >
-          ⬅️ {isHi ? 'पिछला' : 'Prev'}
+          <ChevronLeft size={16} />
+          <span>{isHi ? 'पिछला' : 'Prev'}</span>
         </button>
         <button
           className="mbb-btn mbb-chapter-btn"
           onClick={() => setIsChapterDrawerOpen(true)}
         >
-          📖 {isHi ? `अध्याय ${currentChapter}/10` : `Ch ${currentChapter}/10`}
+          <BookOpen size={14} />
+          <span>{isHi ? `अध्याय ${currentChapter}/12` : `Ch ${currentChapter}/12`}</span>
         </button>
         <button
           className="mbb-btn"
           onClick={() => {
-            const next = Math.min(10, currentChapter + 1);
+            const next = Math.min(12, currentChapter + 1);
             setCurrentChapter(next);
             scrollToChapter(next);
           }}
-          disabled={currentChapter >= 10}
+          disabled={currentChapter >= 12}
         >
-          {isHi ? 'अगला' : 'Next'} ➡️
+          <span>{isHi ? 'अगला' : 'Next'}</span>
+          <ChevronRight size={16} />
         </button>
         <button
           className="mbb-btn mbb-chart-btn"
           onClick={() => setIsChartModalOpen(true)}
         >
-          🗺️ {isHi ? 'चक्र' : 'Chart'}
+          <Compass size={14} />
+          <span>{isHi ? 'चक्र' : 'Chart'}</span>
         </button>
         <button
           className="mbb-btn"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           title={isHi ? 'ऊपर जाएं' : 'Scroll Top'}
         >
-          🔝
+          <ChevronUp size={16} />
         </button>
       </div>
 
@@ -966,7 +1095,10 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         <div className="dossier-modal-backdrop" onClick={() => setIsChartModalOpen(false)}>
           <div className="dossier-modal-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="modal-sheet-header">
-              <h3 className="modal-sheet-title">🗺️ {isHi ? 'जन्म कुंडली व वर्ग चक्र' : 'Natal & Divisional Charts'}</h3>
+              <h3 className="modal-sheet-title">
+                <Compass size={16} className="accent-icon" />{' '}
+                {isHi ? 'जन्म कुंडली व वर्ग चक्र' : 'Natal & Divisional Charts'}
+              </h3>
               <button className="btn-close-sheet" onClick={() => setIsChartModalOpen(false)}>✕</button>
             </div>
             <div className="modal-sheet-body">
@@ -981,7 +1113,10 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
         <div className="dossier-modal-backdrop" onClick={() => setIsChapterDrawerOpen(false)}>
           <div className="dossier-modal-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="modal-sheet-header">
-              <h3 className="modal-sheet-title">📖 {isHi ? 'अध्याय सूची (1 से 10)' : 'Select Chapter (1 to 10)'}</h3>
+              <h3 className="modal-sheet-title">
+                <BookOpen size={16} className="accent-icon" />{' '}
+                {isHi ? 'अध्याय सूची (1 से 12 भाव)' : 'Select Chapter (Houses 1 to 12)'}
+              </h3>
               <button className="btn-close-sheet" onClick={() => setIsChapterDrawerOpen(false)}>✕</button>
             </div>
             <div className="modal-sheet-body chapter-picker-list">

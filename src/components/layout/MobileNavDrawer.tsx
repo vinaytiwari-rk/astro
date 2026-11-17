@@ -68,6 +68,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
   const navLinks = [
     { view: 'home', labelEn: 'Home', labelHi: 'होम', icon: <Home size={16} /> },
     { view: 'vedic-horoscope', labelEn: 'Janam Kundli (Horoscope)', labelHi: 'वैदिक जन्म कुंडली', icon: <FileText size={16} /> },
+    { view: 'life-dossier', labelEn: '12-Chapter Master Dossier', labelHi: '12-अध्याय जीवन डोजियर', icon: <BookOpen size={16} /> },
     { view: 'dual-transit', labelEn: 'Live Dual Transit & Event Machine', labelHi: 'द्वि-चक्र गोचर व टाइम मशीन', icon: <Clock size={16} /> },
     { view: 'split-studio', labelEn: '4-Screen Split Studio Workstation', labelHi: '4-स्क्रीन ज्योतिषी वर्कस्टेशन', icon: <Compass size={16} /> },
     { view: 'sarvatobhadra', labelEn: 'Sarvatobhadra 9x9 & Vedha', labelHi: 'सर्वतोभद्र चक्र व वेध फल', icon: <Sparkles size={16} /> },

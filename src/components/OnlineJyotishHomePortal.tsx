@@ -228,6 +228,15 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
+              onClick={() => onNavigate('life-dossier')}
+            >
+              <Sparkles size={17} />
+              <span>{isHi ? '12-अध्याय डोजियर' : '12-Ch Dossier'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="oj-btn-hero-secondary"
               onClick={() => onNavigate('sambhavit-falkathan')}
             >
               <Star size={17} />
@@ -237,6 +246,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 
           {/* Quick Feature Pills Bar */}
           <div className="oj-quick-pills-row">
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('life-dossier')}>
+              {isHi ? '12-अध्याय सम्पूर्ण जीवन डोजियर' : '12-Chapter Master Life Dossier'}
+            </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('vedic-horoscope')}>
               {isHi ? 'जन्म कुंडली (Kundli)' : 'Birth chart (Kundli)'}
             </button>

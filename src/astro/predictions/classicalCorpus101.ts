@@ -145,8 +145,22 @@ export function build101LifeDimensions(ctx: Classical101Context): LifeDimensionR
   const h11 = getHLord(11);
   const h12 = getHLord(12);
 
-  // Helper to push dimension with standard fields
+  // Helper to push dimension with standard fields, targeted remedies & anti-sugarcoating
   const addDim = (d: LifeDimensionReading) => {
+    // Anti-Sugarcoating & Targeted Remedy Overhaul:
+    // 1. If score >= 50 and not challenging_caution: Safe dimension! No remedy needed.
+    if (d.strengthScore >= 50 && d.auspiciousness !== 'challenging_caution') {
+      d.remedyHi = 'इस क्षेत्र में कोई अनिष्टकारी ग्रह प्रभाव नहीं है; किसी उपाय, रत्न अथवा अनुष्ठान की आवश्यकता नहीं है। केवल सात्विक आचरण बनाए रखें।';
+      d.remedyEn = 'No malefic affliction in this domain; no gemstone, ritual, or remedy is required. Maintain ethical and balanced conduct.';
+    } else {
+      // 2. Afflicted dimension: Keep targeted remedy, and ensure unvarnished adverse consequences are explicit
+      if (d.strengthScore < 45 || d.auspiciousness === 'challenging_caution') {
+        if (!d.verdictHi.includes('प्रतिकूल') && !d.verdictHi.includes('सावधानी') && !d.verdictHi.includes('अवरोध')) {
+          d.verdictHi = `[प्रतिकूल प्रभाव व अवरोध योग]: ${d.verdictHi} इस क्षेत्र में अप्रत्याशित विलंब, नुकसान अथवा हानि की वास्तविक संभावना है; बिना पूर्व तैयारी के बड़ा जोखिम न लें।`;
+          d.verdictEn = `[Adverse Influence & Caution]: ${d.verdictEn} Tangible vulnerability to setbacks, friction, or capital/health losses in this sector; avoid uncalculated exposure.`;
+        }
+      }
+    }
     dims.push(d);
   };
 

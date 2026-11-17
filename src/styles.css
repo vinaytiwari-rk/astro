@@ -5386,6 +5386,203 @@ h1, h2, h3, h4, .serif-heading {
   font-weight: 500;
 }
 
+/* Bhava Profile Card & Unvarnished Verdict Banner */
+.dossier-bhava-profile-card {
+  margin: 14px 0 20px 0;
+  padding: 16px 20px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bhava-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bhava-profile-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bhava-number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.bhava-name-text {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.bhava-score-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.bhava-score-pill.tone-favorable {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.bhava-score-pill.tone-mixed {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.bhava-score-pill.tone-challenging {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.bhava-score-pill.tone-critical {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.bhava-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.bhava-meta-item strong {
+  color: var(--text);
+}
+
+.bhava-unvarnished-verdict {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--accent);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.bhava-unvarnished-verdict.tone-critical {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.bhava-unvarnished-verdict.tone-challenging {
+  border-left-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.bhava-unvarnished-verdict.tone-favorable {
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+/* Targeted Remedy Card */
+.dossier-targeted-remedy-card {
+  margin-top: 24px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.dossier-targeted-remedy-card.remedy-needed {
+  background: rgba(245, 158, 11, 0.04);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.dossier-targeted-remedy-card.remedy-safe {
+  background: rgba(16, 185, 129, 0.04);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.remedy-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.remedy-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.remedy-needed .remedy-card-title {
+  color: #d97706;
+}
+
+.remedy-safe .remedy-card-title {
+  color: #059669;
+}
+
+.remedy-card-reason {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.remedy-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 640px) {
+  .remedy-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.remedy-detail-block {
+  padding: 8px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.remedy-detail-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.remedy-precaution-text {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+
 /* Print Overrides */
 @media print {
   .app-shell > header,

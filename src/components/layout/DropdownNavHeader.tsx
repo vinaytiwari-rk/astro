@@ -344,7 +344,19 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* 3. Life Predictions (Sambhavit Falkathan) */}
+            {/* 3. Life Dossier (12-Chapter Master Dossier) */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'life-dossier' || currentView === 'dossier' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('life-dossier')}
+              >
+                <Sparkles size={13} />
+                <span>{isHi ? '12-अध्याय डोजियर' : '12-Ch Dossier'}</span>
+              </button>
+            </li>
+
+            {/* 4. Life Predictions (Sambhavit Falkathan) */}
             <li className="oj-nav-item">
               <button
                 type="button"

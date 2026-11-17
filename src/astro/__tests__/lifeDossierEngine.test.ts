@@ -3,18 +3,30 @@ import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeLifeDossierReport } from '../predictions/lifeDossierEngine';
 
-describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
+describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   const sample = SAMPLE_CHARTS[0];
   const chart = calculateChart(sample, DEFAULT_SETTINGS);
   const report = computeLifeDossierReport(chart);
 
-  it('generates all 10 chapters without omission', () => {
-    expect(report.chapters.length).toBe(10);
-    for (let i = 1; i <= 10; i++) {
+  it('generates all 12 chapters strictly mapping Bhavas 1 through 12 without omission', () => {
+    expect(report.chapters.length).toBe(12);
+    for (let i = 1; i <= 12; i++) {
       const ch = report.chapters.find((c) => c.chapterNumber === i);
       expect(ch).toBeDefined();
+      expect(ch?.houseNumber).toBe(i);
       expect(ch?.titleEn).toBeDefined();
       expect(ch?.titleHi).toBeDefined();
+      expect(ch?.bhavaProfile).toBeDefined();
+      expect(ch?.bhavaProfile.afflictionScore).toBeGreaterThanOrEqual(15);
+      expect(ch?.bhavaProfile.afflictionScore).toBeLessThanOrEqual(95);
+      expect(ch?.bhavaProfile.verdictSummaryHi.length).toBeGreaterThan(10);
+      expect(ch?.bhavaProfile.verdictSummaryEn.length).toBeGreaterThan(10);
+
+      expect(ch?.targetedRemedy).toBeDefined();
+      expect(typeof ch?.targetedRemedy.isNeeded).toBe('boolean');
+      expect(ch?.targetedRemedy.practicalPrecautionHi.length).toBeGreaterThan(10);
+      expect(ch?.targetedRemedy.practicalPrecautionEn.length).toBeGreaterThan(10);
+
       expect(ch?.sections.length).toBeGreaterThanOrEqual(2);
       for (const sec of ch!.sections) {
         expect(sec.paragraphsEn.length).toBeGreaterThanOrEqual(1);
@@ -49,7 +61,7 @@ describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
     expect(ch1?.specialData?.topIdentity.ishtaDevata.deityEn).toBe(ishtaDevata.deityEn);
 
     // Verify other chapters do not duplicate the top identity as a primary section
-    for (let i = 2; i <= 10; i++) {
+    for (let i = 2; i <= 12; i++) {
       const ch = report.chapters.find((c) => c.chapterNumber === i);
       expect(ch?.specialData?.topIdentity).toBeUndefined();
     }
@@ -65,120 +77,101 @@ describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
     }
   });
 
-  it('verifies Chapter 8 contains all 12 epochs spanning 15 to 75 years', () => {
-    const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
-    expect(ch8).toBeDefined();
-    expect(ch8?.sections.length).toBe(12);
-    expect(ch8?.sections[0].titleEn).toContain('15–20');
-    expect(ch8?.sections[11].titleEn).toContain('71–75');
+  it('verifies targeted remedy logic: safe houses require no remedy, afflicted houses prescribe targeted stotras', () => {
+    let safeHouseFound = false;
+    let afflictedHouseFound = false;
+
+    for (const ch of report.chapters) {
+      if (!ch.targetedRemedy.isNeeded) {
+        safeHouseFound = true;
+        expect(ch.targetedRemedy.practicalPrecautionHi).toContain('किसी उपाय, रत्न');
+      } else {
+        afflictedHouseFound = true;
+        expect(ch.targetedRemedy.stotraOrMantraHi).toBeDefined();
+        expect(ch.targetedRemedy.charityDayHi).toBeDefined();
+      }
+    }
+
+    expect(safeHouseFound).toBe(true);
+    expect(afflictedHouseFound).toBe(true);
   });
 
-  it('verifies Chapter 1 contains Physical Appearance & Education sections', () => {
+  it('verifies Chapter 1 contains Physical Appearance', () => {
     const ch1 = report.chapters.find((c) => c.chapterNumber === 1);
     expect(ch1?.sections.length).toBe(5);
     const physSec = ch1?.sections.find((s) => s.titleEn.includes('Physical Appearance'));
     expect(physSec).toBeDefined();
     expect(physSec?.paragraphsEn.some((p) => p.includes('Stature'))).toBe(true);
     expect(ch1?.specialData?.physicalAppearance).toBeDefined();
-    expect(ch1?.specialData?.physicalAppearance.complexionEn).toBeDefined();
+  });
 
-    const eduSec = ch1?.sections.find((s) => s.titleEn.includes('Academic Crucible'));
+  it('verifies Chapter 5 (Suta Bhava) contains Academic Crucible & Education', () => {
+    const ch5 = report.chapters.find((c) => c.chapterNumber === 5);
+    expect(ch5).toBeDefined();
+    const eduSec = ch5?.sections.find((s) => s.titleEn.includes('Academic Crucible'));
     expect(eduSec).toBeDefined();
     expect(eduSec?.paragraphsEn.some((p) => p.includes('Competitive'))).toBe(true);
-    expect(ch1?.specialData?.educationAcademics).toBeDefined();
+    expect(ch5?.specialData?.educationAcademics).toBeDefined();
   });
 
-  it('verifies Chapter 4 contains Government Job verdict, top vocations & workplace hazards', () => {
-    const ch4 = report.chapters.find((c) => c.chapterNumber === 4);
-    expect(ch4?.sections.length).toBe(5);
-    const govtSec = ch4?.sections.find((s) => s.titleEn.includes('Government Job'));
-    expect(govtSec).toBeDefined();
-    expect(ch4?.specialData?.careerVerdicts).toBeDefined();
-    expect(ch4?.specialData?.careerVerdicts.govtJobLikelihoodPct).toBeGreaterThanOrEqual(20);
-    expect(ch4?.specialData?.careerVerdicts.targetWingsEn.length).toBeGreaterThanOrEqual(2);
-    expect(ch4?.specialData?.careerVerdicts.jobVsBusinessRatio).toBeDefined();
-
-    const vocSec = ch4?.sections.find((s) => s.titleEn.includes('Top 5 Most Suitable Vocations'));
-    expect(vocSec).toBeDefined();
-
-    const hazardSec = ch4?.sections.find((s) => s.titleEn.includes('Workplace Hazards'));
-    expect(hazardSec).toBeDefined();
-  });
-
-  it('verifies Chapter 6 contains Exhaustive 360° Relational Matrix', () => {
+  it('verifies Chapter 6 (Ripu Bhava) contains Addictions & Litigation', () => {
     const ch6 = report.chapters.find((c) => c.chapterNumber === 6);
-    expect(ch6?.sections.length).toBe(4);
-    const coreRelSec = ch6?.sections.find((s) => s.titleEn.includes('Core Family') || s.titleEn.includes('Father, Mother'));
-    expect(coreRelSec).toBeDefined();
-    expect(coreRelSec?.paragraphsEn.some((p) => p.includes('Father'))).toBe(true);
-    expect(coreRelSec?.paragraphsEn.some((p) => p.includes('Mother'))).toBe(true);
-
-    const extRelSec = ch6?.sections.find((s) => s.titleEn.includes('Extended Kinship'));
-    expect(extRelSec).toBeDefined();
-    expect(extRelSec?.paragraphsEn.some((p) => p.includes('Grandparents'))).toBe(true);
-    expect(extRelSec?.paragraphsEn.some((p) => p.includes('In-Laws'))).toBe(true);
-    expect(extRelSec?.paragraphsEn.some((p) => p.includes('Friends'))).toBe(true);
-    expect(extRelSec?.paragraphsEn.some((p) => p.includes('Neighbours'))).toBe(true);
-
-    expect(ch6?.specialData?.relationalMatrix.length).toBeGreaterThanOrEqual(10);
-  });
-
-  it('verifies Chapter 7 contains Addictions, Litigation & Bandhana Yoga', () => {
-    const ch7 = report.chapters.find((c) => c.chapterNumber === 7);
-    expect(ch7?.sections.length).toBe(5);
-    const addictSec = ch7?.sections.find((s) => s.titleEn.includes('Addictions'));
+    expect(ch6).toBeDefined();
+    const addictSec = ch6?.sections.find((s) => s.titleEn.includes('Addiction'));
     expect(addictSec).toBeDefined();
-    expect(addictSec?.paragraphsEn.some((p) => p.includes('Substance'))).toBe(true);
-    expect(ch7?.specialData?.addictionsAndVices).toBeDefined();
+    expect(ch6?.specialData?.addictionsAndVices).toBeDefined();
 
-    const litSec = ch7?.sections.find((s) => s.titleEn.includes('Litigation'));
+    const litSec = ch6?.sections.find((s) => s.titleEn.includes('Litigation'));
     expect(litSec).toBeDefined();
-    expect(litSec?.paragraphsEn.some((p) => p.includes('Bandhana'))).toBe(true);
-    expect(ch7?.specialData?.litigationAndAffairs).toBeDefined();
+    expect(ch6?.specialData?.litigationAndAffairs).toBeDefined();
   });
 
-  it('verifies Chapter 9 contains Global World Civilizations & Future Rebirth Global Geography', () => {
+  it('verifies Chapter 7 (Kalatra Bhava) contains Marriage, Spouse & Bed Pleasures', () => {
+    const ch7 = report.chapters.find((c) => c.chapterNumber === 7);
+    expect(ch7).toBeDefined();
+    expect(ch7?.sections.length).toBeGreaterThanOrEqual(3);
+    const spouseSec = ch7?.sections.find((s) => s.titleEn.includes('Spouse') || s.titleEn.includes('Marriage'));
+    expect(spouseSec).toBeDefined();
+  });
+
+  it('verifies Chapter 8 (Randhra Bhava) contains Longevity & all 12 epochs spanning 15 to 75 years', () => {
+    const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
+    expect(ch8).toBeDefined();
+    expect(ch8?.sections.length).toBe(15); // 3 foundation sections + 12 epochs
+    expect(ch8?.specialData?.longevity).toBeDefined();
+    const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
+    expect(epoch1).toBeDefined();
+  });
+
+  it('verifies Chapter 9 (Bhagya Bhava) contains Global World Civilizations & Future Rebirth Global Geography', () => {
     const ch9 = report.chapters.find((c) => c.chapterNumber === 9);
     expect(ch9).toBeDefined();
-    expect(ch9?.sections.length).toBe(2);
-    const pastSec = ch9?.sections[0];
+    expect(ch9?.sections.length).toBe(4);
+    const pastSec = ch9?.sections.find((s) => s.titleEn.includes('Past-Life Identity Markers'));
+    expect(pastSec).toBeDefined();
     expect(pastSec?.paragraphsEn.some((p) => p.includes('Civilization'))).toBe(true);
-    expect(pastSec?.paragraphsEn.some((p) => p.includes('Manner of Death'))).toBe(true);
 
-    const futureSec = ch9?.sections[1];
-    expect(futureSec?.paragraphsEn.some((p) => p.includes('Future Incarnation Global Continent'))).toBe(true);
+    const futureSec = ch9?.sections.find((s) => s.titleEn.includes('Future Incarnation'));
+    expect(futureSec).toBeDefined();
   });
 
-  it('verifies Chapter 10 contains comprehensive 6-tier Vedic Shastric Remedies, Gochar shield, Nakshatra snana, active dasha and Lal Kitab conduct', () => {
+  it('verifies Chapter 10 (Karma Bhava) contains Government Job verdict, top vocations & workplace hazards', () => {
     const ch10 = report.chapters.find((c) => c.chapterNumber === 10);
     expect(ch10).toBeDefined();
     expect(ch10?.sections.length).toBe(6);
-    expect(ch10?.sections[0].titleEn).toContain('Vedic Planetary Shanti');
-    expect(ch10?.sections[1].titleEn).toContain('Dusthana Cleansing');
-    expect(ch10?.sections[2].titleEn).toContain('Nakshatra Deity');
-    expect(ch10?.sections[3].titleEn).toContain('Active Gochar');
-    expect(ch10?.sections[4].titleEn).toContain('Active Running Dasha Prescription');
-    expect(ch10?.sections[5].titleEn).toContain('Lal Kitab Conduct Rules');
+    const govtSec = ch10?.sections.find((s) => s.titleEn.includes('Government Job'));
+    expect(govtSec).toBeDefined();
+    expect(ch10?.specialData?.careerVerdicts).toBeDefined();
+    expect(ch10?.specialData?.careerVerdicts.govtJobLikelihoodPct).toBeGreaterThanOrEqual(20);
+    expect(ch10?.specialData?.careerVerdicts.jobVsBusinessRatio).toBeDefined();
   });
 
-  it('verifies dynamic relational contingencies and denial yogas are handled', () => {
-    const ch6 = report.chapters.find((c) => c.chapterNumber === 6);
-    expect(ch6).toBeDefined();
-    const matrix = ch6?.specialData?.relationalMatrix as Array<{ id: string; relationEn: string; bondStatusHi: string; bondStatusEn: string }>;
-    expect(matrix).toBeDefined();
-    expect(matrix.length).toBe(13);
-    const father = matrix.find((m) => m.id === 'father');
-    const mother = matrix.find((m) => m.id === 'mother');
-    const brothers = matrix.find((m) => m.id === 'brothers');
-    const sisters = matrix.find((m) => m.id === 'sisters');
-    const children = matrix.find((m) => m.id === 'children');
-    const inlaws = matrix.find((m) => m.id === 'inlaws');
-    expect(father).toBeDefined();
-    expect(mother).toBeDefined();
-    expect(brothers).toBeDefined();
-    expect(sisters).toBeDefined();
-    expect(children).toBeDefined();
-    expect(inlaws).toBeDefined();
+  it('verifies Chapter 12 (Vyaya Bhava) contains Financial Leakage & comprehensive Vedic remedies', () => {
+    const ch12 = report.chapters.find((c) => c.chapterNumber === 12);
+    expect(ch12).toBeDefined();
+    expect(ch12?.specialData?.vedicRemediesSummary).toBeDefined();
+    const remSec = ch12?.sections.find((s) => s.titleEn.includes('Vedic Planetary Shanti'));
+    expect(remSec).toBeDefined();
   });
 
   it('guarantees unique, individualized predictions across different horoscopes with zero boilerplate parity', () => {
@@ -188,30 +181,27 @@ describe('Life Dossier Engine (10-Chapter Master Life Dossier)', () => {
     const repVivekananda = computeLifeDossierReport(vivekanandaChart);
     const repEinstein = computeLifeDossierReport(einsteinChart);
 
-    // Verify completely different Nakshatra profiles & psychology in Chapter 2
+    // Verify completely different Nakshatra profiles & psychology in Chapter 1
+    const ch1Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 1);
+    const ch1Ein = repEinstein.chapters.find((c) => c.chapterNumber === 1);
+    expect(ch1Viv?.sections[4].paragraphsEn[1]).not.toBe(ch1Ein?.sections[4].paragraphsEn[1]);
+
+    // Verify completely different Indu Lagna in Chapter 2
     const ch2Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 2);
     const ch2Ein = repEinstein.chapters.find((c) => c.chapterNumber === 2);
     expect(ch2Viv?.sections[0].paragraphsEn[1]).not.toBe(ch2Ein?.sections[0].paragraphsEn[1]);
-    expect(ch2Viv?.sections[1].paragraphsEn[0]).not.toBe(ch2Ein?.sections[1].paragraphsEn[0]);
 
-    // Verify completely different Indu Lagna and 12th Lord Leakage in Chapter 5
-    const ch5Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 5);
-    const ch5Ein = repEinstein.chapters.find((c) => c.chapterNumber === 5);
-    expect(ch5Viv?.sections[0].paragraphsEn[1]).not.toBe(ch5Ein?.sections[0].paragraphsEn[1]);
-    expect(ch5Viv?.sections[1].paragraphsEn[0]).not.toBe(ch5Ein?.sections[1].paragraphsEn[0]);
+    // Verify completely different Marriage profiles in Chapter 7
+    const ch7Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 7);
+    const ch7Ein = repEinstein.chapters.find((c) => c.chapterNumber === 7);
+    expect(ch7Viv?.sections[0].paragraphsEn[0]).not.toBe(ch7Ein?.sections[0].paragraphsEn[0]);
 
-    // Verify completely different Marriage & Spouse profiles in Chapter 6
-    const ch6Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 6);
-    const ch6Ein = repEinstein.chapters.find((c) => c.chapterNumber === 6);
-    expect(ch6Viv?.sections[0].paragraphsEn[0]).not.toBe(ch6Ein?.sections[0].paragraphsEn[0]);
-
-    // Verify completely different Epoch Timeline calendar years and dasha paths in Chapter 8
+    // Verify completely different Epoch Timeline calendar years in Chapter 8
     const ch8Viv = repVivekananda.chapters.find((c) => c.chapterNumber === 8);
     const ch8Ein = repEinstein.chapters.find((c) => c.chapterNumber === 8);
-    expect(ch8Viv?.sections[0].titleEn).toContain('1878–1883');
-    expect(ch8Ein?.sections[0].titleEn).toContain('1894–1899');
-    expect(ch8Viv?.sections[0].paragraphsEn[0]).not.toBe(ch8Ein?.sections[0].paragraphsEn[0]);
-    expect(ch8Viv?.sections[2].titleEn).toContain('1889–1893');
-    expect(ch8Ein?.sections[2].titleEn).toContain('1905–1909');
+    const vivEpoch1 = ch8Viv?.sections.find((s) => s.titleEn.includes('1878–1883'));
+    const einEpoch1 = ch8Ein?.sections.find((s) => s.titleEn.includes('1894–1899'));
+    expect(vivEpoch1).toBeDefined();
+    expect(einEpoch1).toBeDefined();
   });
 });

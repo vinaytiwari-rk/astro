@@ -29,6 +29,7 @@ import { ClientConsultationDiaryView } from './components/onlinejyotish/ClientCo
 import { TransitCalendar365View } from './components/onlinejyotish/TransitCalendar365View';
 import { FinancialAstrologyView } from './components/onlinejyotish/FinancialAstrologyView';
 import { SamudrikaShastraView } from './components/onlinejyotish/SamudrikaShastraView';
+import { LifeDossierView } from './components/LifeDossierView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -315,6 +316,17 @@ export function App() {
                 settings={settings}
                 onNavigate={navigateTo}
                 onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {(currentView === 'dossier' || currentView === 'life-dossier') && (
+              <LifeDossierView
+                chart={chart}
+                chartStyle={settings.chartStyle}
+                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
+                onOpenMatchMaking={() => navigateTo('marriage-matching')}
+                onOpenBooklet={() => setBookletOpen(true)}
+                onOpenEditor={() => setEditorOpen(true)}
               />
             )}
 
