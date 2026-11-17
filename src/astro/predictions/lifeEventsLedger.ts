@@ -849,6 +849,9 @@ export function computeLifeEventsAndLedger(chart: ChartData): LifeEventsAndLedge
   const topShad = [...chart.shadbala].sort((a, b) => b.ratio - a.ratio)[0];
 
   // 5. Comprehensive Specific Questions Ledger (Both Positive & Negative!)
+  const birthDateLedger = new Date(chart.input.date);
+  const ledgerCurrentAge = isNaN(birthDateLedger.getTime()) ? 28 : Math.max(0, (Date.now() - birthDateLedger.getTime()) / (365.25 * 86400000));
+  const ledgerAgeRound = Math.round(ledgerCurrentAge);
   const fHealthBad = [6, 8, 12].includes(sun.rasiHouseNumber) || [6, 8, 12].includes(l9.rasiHouseNumber) || sun.signIndex === saturn.signIndex || sun.signIndex === rahu.signIndex;
   const mHealthBad = [6, 8, 12].includes(moon.rasiHouseNumber) || [6, 8, 12].includes(l4.rasiHouseNumber) || moon.signIndex === saturn.signIndex || moon.signIndex === rahu.signIndex;
 
@@ -868,24 +871,29 @@ export function computeLifeEventsAndLedger(chart: ChartData): LifeEventsAndLedge
       ? '2 to 4+ siblings (active 3rd/11th/D3 support)'
       : sibMetric >= 2
         ? '1 to 2 siblings indicated'
-        : '0 to 1 sibling (single-child or separated bond tendency)';
+        : '0 Siblings (Only Child / Single Progeny Yoga - no co-borns)';
   const sibEstHi =
     sibMetric >= 4
       ? '2 से 4+ भाई-बहन के योग (तृतीय/एकादश/D3 बली)'
       : sibMetric >= 2
         ? '1 से 2 भाई-बहन का संकेत'
-        : '0 से 1 भाई-बहन (एकल संतान या दूरी का योग)';
+        : '0 सहोदर (एकल संतान योग — कोई सगा भाई-बहन नहीं)';
   const sibHealthStrain = [6, 8, 12].includes(l3.rasiHouseNumber) || [6, 8, 12].includes(mars.rasiHouseNumber) || mars.dignity === 'Debilitated';
 
   // Marriage: Timing, Direction, Spouse Health, Affairs Risk, Marriage Count
   const satSees7OrL7 = saturn.rasiHouseNumber === 7 || isAspecting(saturn, (ascSign + 6) % 12) || saturn.signIndex === l7.signIndex || saturn.signIndex === venus.signIndex;
-  const marriageAgeBandEn = satSees7OrL7
-    ? 'Moderate to Late (Age ~27–33+ due to Saturnian maturity check)'
+  const marrDeniedOrSevere = (satSees7OrL7 && [6, 8, 12].includes(l7.rasiHouseNumber)) || (venus.dignity === 'Debilitated' && [saturn, rahu].some((m) => m.signIndex === l7.signIndex));
+  const marriageAgeBandEn = ledgerCurrentAge >= 32 && marrDeniedOrSevere
+    ? `Severe Delay / Celibacy Tendency (Age ${ledgerAgeRound}+ currently unmarried; marriage deferred beyond 38-42+ or spiritual autonomy)`
+    : satSees7OrL7
+    ? `Moderate to Late (Age ~28–34+ due to Saturnian maturity check)`
     : [1, 5, 7, 11].includes(venus.rasiHouseNumber) && !satSees7OrL7
       ? 'Early to Standard (Age ~22–27 favorable)'
       : 'Standard Adult Window (Age ~25–30)';
-  const marriageAgeBandHi = satSees7OrL7
-    ? 'मध्यम से विलंबित (शनि प्रभाव से ~27–33+ वर्ष उपयुक्त)'
+  const marriageAgeBandHi = ledgerCurrentAge >= 32 && marrDeniedOrSevere
+    ? `अत्यधिक विलंब / विवाह प्रतिबंधक योग (वर्तमान आयु ${ledgerAgeRound}+ वर्ष; विवाह 38-42+ वर्ष के पश्चात अथवा वैराग्य भाव)`
+    : satSees7OrL7
+    ? 'मध्यम से विलंबित (शनि प्रभाव से ~28–34+ वर्ष उपयुक्त)'
     : [1, 5, 7, 11].includes(venus.rasiHouseNumber) && !satSees7OrL7
       ? 'शीघ्र से मध्यम (शुक्र अनुग्रह से ~22–27 वर्ष अनुकूल)'
       : 'सामान्य विवाह आयु (~25–30 वर्ष)';
@@ -956,14 +964,13 @@ export function computeLifeEventsAndLedger(chart: ChartData): LifeEventsAndLedge
   // Children: Yoga, Count, Health
   const d7Occ5 = chart.divisionalCharts.D7.placements.filter((p) => p.id !== 'Asc' && p.houseFromVargaLagna === 5);
   const childBlocked =
-    [6, 8, 12].includes(l5.rasiHouseNumber) &&
-    jupiter.dignity === 'Debilitated' &&
-    !isAspecting(jupiter, (ascSign + 4) % 12);
+    ([6, 8, 12].includes(l5.rasiHouseNumber) && jupiter.dignity === 'Debilitated' && !isAspecting(jupiter, (ascSign + 4) % 12)) ||
+    (chart.planets.filter((p) => p.rasiHouseNumber === 5 && [saturn, rahu, ketu, mars].includes(p)).length >= 2 && [6, 8, 12].includes(l5.rasiHouseNumber));
   const childDelayed =
     [saturn, rahu, ketu].includes(l5) ||
     chart.planets.some((p) => p.rasiHouseNumber === 5 && [saturn, rahu, ketu].includes(p));
   const childCountEst =
-    childBlocked ? 1 : digWeight(l5.dignity) + digWeight(jupiter.dignity) >= 12 ? 3 : 2;
+    childBlocked ? 0 : digWeight(l5.dignity) + digWeight(jupiter.dignity) >= 12 ? 3 : 2;
   const d7Odds = d7Occ5.filter((x) => SIGNS[x.signIndex].gender === 'Odd').length;
   const h5Odd = SIGNS[(ascSign + 4) % 12].gender === 'Odd';
   const childGenderHintEn = h5Odd || d7Odds > 0 ? 'Balanced with male-sign enterprise/yang spark' : 'Balanced with caring feminine/lunar grace';
@@ -1043,7 +1050,7 @@ export function computeLifeEventsAndLedger(chart: ChartData): LifeEventsAndLedge
       verdictBadgeEn: fHealthBad || mHealthBad ? 'Health Vigilance Needed' : 'Strong Parental Support',
       verdictBadgeHi: fHealthBad || mHealthBad ? 'स्वास्थ्य देखभाल आवश्यक' : 'सुदृढ़ मातृ-पितृ सुख',
       tone: fHealthBad && mHealthBad ? 'negative' : fHealthBad || mHealthBad ? 'mixed' : 'positive',
-      answerEn: `Father (Sun H${sun.rasiHouseNumber}, 9th Lord ${l9.id} H${l9.rasiHouseNumber}) ${fHealthBad ? 'faces cardiac/eye/joint/stress sensitivity or ideological generation gap' : 'shows dignified ethics, resilience and supportive guidance'}. Mother (Moon H${moon.rasiHouseNumber}, 4th Lord ${l4.id} H${l4.rasiHouseNumber}) ${mHealthBad ? 'needs care for blood pressure, respiratory, water/emotional fatigue' : 'brings warm nurturing, longevity and domestic security'}.`,
+      answerEn: `Father (Sun H${sun.rasiHouseNumber}, 9th Lord ${l9.id} H${l9.rasiHouseNumber}) ${fHealthBad ? 'faces cardiac/eye/joint/stress sensitivity or ideological generation gap' : 'shows dignified ethics, resilience and supportive guidance'}. Mother (Moon H${moon.rasiHouseNumber}, 4th Lord ${l4.id} H${l4.rasiHouseNumber}) ${[6, 8, 12].includes(l4.rasiHouseNumber) && [6, 8, 12].includes(moon.rasiHouseNumber) ? 'shows classical Matru-Arishta vulnerability / risk of early separation or acute health crises in youth' : mHealthBad ? 'needs care for blood pressure, respiratory, water/emotional fatigue' : 'brings warm nurturing, longevity and domestic security'}.`,
       answerHi: `पिता (सूर्य ${sun.rasiHouseNumber}वें, नवमेश ${PLANET_HI[l9.id]} ${l9.rasiHouseNumber}वें भाव): ${fHealthBad ? 'हृदय/नेत्र/हड्डी स्वास्थ्य देखभाल या वैचारिक मतभेद संभव।' : 'सम्मानित व्यक्तित्व, अनुशासन व जीवन में सहयोग।'} माता (चंद्र ${moon.rasiHouseNumber}वें, चतुर्थेश ${PLANET_HI[l4.id]} ${l4.rasiHouseNumber}वें भाव): ${mHealthBad ? 'रक्तचाप, कफ या भावनात्मक तनाव से माता की सेवा आवश्यक।' : 'ममतामयी पोषण, गृह-शांति व मातृ आशीर्वाद।'}`,
       positiveEn: `Respecting elders directly unlocks 9th-house fortune (SAV ${savAt(9)}) and 4th-house real estate (SAV ${savAt(4)}).`,
       positiveHi: `माता-पिता की सेवा व सम्मान से भाग्य (SAV ${savAt(9)}) और भूमि-भवन सुख (SAV ${savAt(4)}) तुरंत बढ़ता है।`,

@@ -18,6 +18,8 @@ import { KPEnterpriseView } from './components/onlinejyotish/KPEnterpriseView';
 import { MedicalAstrologyView } from './components/onlinejyotish/MedicalAstrologyView';
 import { SynastryBTRView } from './components/onlinejyotish/SynastryBTRView';
 import { MuhurtaPrashnaView } from './components/onlinejyotish/MuhurtaPrashnaView';
+import { HolisticRemediesView } from './components/onlinejyotish/HolisticRemediesView';
+import { DualTransitWheelView } from './components/onlinejyotish/DualTransitWheelView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -363,6 +365,23 @@ export function App() {
               <MuhurtaPrashnaView
                 chart={chart}
                 initialTab={currentView as 'muhurta' | 'prashna' | 'nadi'}
+              />
+            )}
+
+            {(currentView === 'holistic-remedies' || currentView === 'remedies') && (
+              <HolisticRemediesView
+                chart={chart}
+                settings={settings}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {(currentView === 'dual-transit' || currentView === 'transit-wheel') && (
+              <DualTransitWheelView
+                chart={chart}
+                settings={settings}
+                onNavigate={navigateTo}
               />
             )}
 

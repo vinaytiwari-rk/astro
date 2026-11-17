@@ -218,14 +218,45 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* 4. Sade Sati & Transits */}
+            {/* 4. Sade Sati & Dual Transit Wheel */}
+            <li
+              className="oj-nav-item oj-dropdown-parent"
+              onMouseEnter={() => setOpenDropdown('transits-menu')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <button
+                type="button"
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'transits-menu' ? 'is-open' : ''} ${currentView === 'sade-sati' || currentView === 'dual-transit' ? 'is-current' : ''}`}
+                onClick={() => toggleDropdown('transits-menu')}
+                aria-expanded={openDropdown === 'transits-menu'}
+                aria-haspopup="true"
+              >
+                <span>{isHi ? 'गोचर व साढ़े साती' : 'Gochar & Sade Sati'}</span>
+                <ChevronDown size={13} className="oj-chevron" />
+              </button>
+
+              {openDropdown === 'transits-menu' && (
+                <div className="oj-dropdown-menu" role="menu">
+                  <button type="button" onClick={() => handleLinkClick('dual-transit')}>
+                    <strong>{isHi ? 'द्वि-चक्र गोचर सिम्युलेटर (Double Wheel)' : 'Live Double Transit Wheel'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जन्म कुंडली + लाइव गोचर दृष्टि किरणें' : 'Natal + Transit Aspect Rays'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('sade-sati')}>
+                    <strong>{isHi ? 'शनि साढ़े साती एवं ढैया टाइमलाइन' : 'Sade Sati & Dhaiya Timeline'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '3 चरण, कंटक, अष्टम शनि व मूर्ति निर्णय' : '3 Charans & Moorti Nirnaya'}</span>
+                  </button>
+                </div>
+              )}
+            </li>
+
+            {/* Holistic Remedies */}
             <li className="oj-nav-item">
               <button
                 type="button"
-                className={`oj-nav-link-btn ${currentView === 'sade-sati' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('sade-sati')}
+                className={`oj-nav-link-btn ${currentView === 'holistic-remedies' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('holistic-remedies')}
               >
-                <span>{isHi ? 'साढ़े साती व गोचर' : 'Sade Sati & Gochar'}</span>
+                <span>{isHi ? 'वैदिक समग्र उपचार' : 'Holistic Remedies'}</span>
               </button>
             </li>
 
@@ -312,6 +343,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('btr')}>
                     <strong>{isHi ? 'जन्म समय संशोधन (BTR)' : 'Birth Time Rectification (BTR)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जीवन घटनाओं से समय सुधार' : 'Event Timeline Calibration'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('holistic-remedies')}>
+                    <strong>{isHi ? 'समग्र वैदिक उपचार एवं टोटके' : 'Holistic Remedies & Totke'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जड़ी-बूटी, रंग चिकित्सा, योग व स्तोत्र' : 'Herbal Roots, Colors & Stotras'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('medical-astrology')}>
                     <strong>{isHi ? 'चिकित्सा ज्योतिष व लाल किताब' : 'Medical Astrology & Lal Kitab'}</strong>

@@ -352,6 +352,11 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const mdLordHi = HINDI_PLANETS[mdLord] || mdLord;
   const adLordHi = HINDI_PLANETS[adLord] || adLord;
 
+  // Native's exact chronological age calculation
+  const birthDate = new Date(chart.input.date);
+  const currentAge = isNaN(birthDate.getTime()) ? 28 : Math.max(0, (now - birthDate.getTime()) / (365.25 * 86400000));
+  const currentAgeRound = Math.round(currentAge);
+
   // House lord resolver
   const getHLord = (h: number) => {
     const signIdx = (ascSign + h - 1) % 12;
@@ -690,17 +695,40 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 10. Mother's Lifespan & Health Sensitivities
   // ==========================================
   {
-    const score = Math.max(35, Math.min(92, 50 + (sav[3] >= 28 ? 12 : -10) + getDignityBonus(moon.dignity)));
-    const lifeEn = sav[3] >= 29 && (moon.dignity === 'Exalted' || moon.dignity === 'Own Sign' || moon.houseNumber === 4)
+    let matruAffliction = 0;
+    const maleficsIn4 = planets.filter((p) => p.houseNumber === 4 && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu' || p.id === 'Mars' || p.id === 'Sun'));
+    matruAffliction += maleficsIn4.length * 2;
+    if (h4.placedHouse === 6 || h4.placedHouse === 8 || h4.placedHouse === 12) matruAffliction += 2.5;
+    if (h4.dignity === 'Debilitated') matruAffliction += 2;
+    if (moon.houseNumber === 6 || moon.houseNumber === 8 || moon.houseNumber === 12) matruAffliction += 2;
+    if (moon.dignity === 'Debilitated') matruAffliction += 2;
+    const moonAfflicted = planets.some((p) => p.houseNumber === moon.houseNumber && p.id !== 'Moon' && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu' || p.id === 'Mars'));
+    if (moonAfflicted) matruAffliction += 2;
+    if (sav[3] < 24) matruAffliction += 1.5;
+    if (sav[3] < 20) matruAffliction += 2;
+
+    const isMatruArishta = matruAffliction >= 5;
+    const isMatruVulnerable = matruAffliction >= 3;
+
+    const score = isMatruArishta
+      ? Math.max(25, 45 - matruAffliction * 3)
+      : Math.max(35, Math.min(92, 50 + (sav[3] >= 28 ? 12 : -10) + getDignityBonus(moon.dignity)));
+
+    const lifeEn = isMatruArishta
+      ? 'Matru-Arishta Yoga (Severe Maternal Vulnerability): Classical texts warn of early maternal demise, separation, or critical health vulnerability during native’s childhood or youth (4th house/lord and Moon afflicted by Dusthana/malefics).'
+      : isMatruVulnerable
+      ? 'Madhyayu with Health Sensitivities (52-64 years); requires conscious vigilance regarding water-borne illness, chronic stress, or cardiac/respiratory care'
+      : sav[3] >= 29 && (moon.dignity === 'Exalted' || moon.dignity === 'Own Sign' || moon.houseNumber === 4)
       ? 'Purna Matru Ayu: Long, healthy and peaceful lifespan (78+ years)'
-      : moon.dignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8 || sav[3] < 24
-      ? 'Madhyayu (62-72 years); needs attention toward water retention, digestion, or stress'
-      : 'Healthy medium-to-long lifespan (70-80 years) with good emotional care';
-    const lifeHi = sav[3] >= 29 && (moon.dignity === 'Exalted' || moon.dignity === 'Own Sign' || moon.houseNumber === 4)
+      : 'Healthy medium-to-long lifespan (68-78 years) with good emotional care';
+
+    const lifeHi = isMatruArishta
+      ? 'मातृ-अरिष्ट योग (अल्पायु अथवा बाल्यावस्था में मातृ वियोग): चतुर्थ भाव, चतुर्थेश व चंद्र पर क्रूर ग्रहों व त्रिक भावों (6/8/12) के प्रबल प्रभाव के कारण बाल्यावस्था अथवा युवावस्था में माता को गंभीर संकट/वियोग का स्पष्ट योग।'
+      : isMatruVulnerable
+      ? 'मध्यायु व स्वास्थ्य संवेदनशीलता (52-64 वर्ष); कफ, जल तत्व, उदर, रक्तचाप अथवा मानसिक तनाव से स्वास्थ्य की विशेष रक्षा आवश्यक'
+      : sav[3] >= 29 && (moon.dignity === 'Exalted' || moon.dignity === 'Own Sign' || moon.houseNumber === 4)
       ? 'पूर्ण मातृ आयु: सुदीर्घ, स्वस्थ व शांत जीवनकाल (78+ वर्ष)'
-      : moon.dignity === 'Debilitated' || moon.houseNumber === 6 || moon.houseNumber === 8 || sav[3] < 24
-      ? 'मध्यायु (62-72 वर्ष); कफ, जल तत्व, उदर अथवा मानसिक तनाव से सावधानी अपेक्षित'
-      : 'सामान्यतः सुखी व दीर्घायु (70-80 वर्ष), भावनात्मक देखभाल से आरोग्य की रक्षा';
+      : 'सामान्यतः सुखी व दीर्घायु (68-78 वर्ष), पारिवारिक सुख व आरोग्य की रक्षा';
 
     dims.push({
       id: 10,
@@ -758,16 +786,29 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 12. Siblings Count & Gender Tendencies
   // ==========================================
   {
-    const score = Math.max(35, Math.min(90, 50 + (sav[2] >= 28 ? 10 : -5) + getDignityBonus(mars.dignity)));
+    let sibAffliction = 0;
+    const maleficsIn3 = planets.filter((p) => p.houseNumber === 3 && (p.id === 'Ketu' || p.id === 'Saturn' || p.id === 'Mars' || p.id === 'Sun'));
+    sibAffliction += maleficsIn3.length * 2;
+    if (h3.placedHouse === 6 || h3.placedHouse === 8 || h3.placedHouse === 12) sibAffliction += 2.5;
+    if (h3.dignity === 'Debilitated') sibAffliction += 2;
     const marsDignity = mars.dignity || 'Neutral';
-    const isOnly = (marsDignity === 'Debilitated' || mars.houseNumber === 8) && sav[2] < 23;
-    const countEn = isOnly
-      ? 'Singular Native / Raised essentially with sole responsibility (0 or distant siblings)'
+    if (marsDignity === 'Debilitated' || mars.houseNumber === 6 || mars.houseNumber === 8 || mars.houseNumber === 12) sibAffliction += 2;
+    if (sav[2] < 24) sibAffliction += 1.5;
+    if (sav[2] < 20) sibAffliction += 2;
+
+    const elderBlocked = planets.some((p) => p.houseNumber === 11 && (p.id === 'Ketu' || p.id === 'Saturn')) || h11.placedHouse === 6 || h11.placedHouse === 8 || h11.placedHouse === 12 || sav[10] < 24;
+    if (elderBlocked) sibAffliction += 2;
+
+    const isOnlyChild = sibAffliction >= 5;
+    const score = isOnlyChild ? 40 : Math.max(35, Math.min(90, 50 + (sav[2] >= 28 ? 10 : -5) + getDignityBonus(mars.dignity)));
+
+    const countEn = isOnlyChild
+      ? 'Only Child Yoga (Single Progeny / 0 Siblings): No co-born biological brothers or sisters indicated; native stands as the sole anchor and independent carrier of family responsibilities.'
       : sav[2] >= 28 && (h3.lord === 'Jupiter' || h3.lord === 'Mercury' || h3.lord === 'Venus')
       ? '2 to 4 siblings indicated (Harmonious combination of brothers and sisters)'
       : '1 to 2 siblings indicated based on 3rd and 11th bhavas';
-    const countHi = isOnly
-      ? 'इकलौती संतान अथवा अकेले उत्तरदायित्व संभालने का योग (कोई अन्य सक्रिय सहोदर नहीं)'
+    const countHi = isOnlyChild
+      ? 'एकल संतान योग (Single Child — शून्य सहोदर): माता-पिता की एकमात्र संतान होने का प्रबल योग — कोई सगा भाई अथवा बहन नहीं; परिवार का संपूर्ण दायित्व अकेले वहन करने का संकेत।'
       : sav[2] >= 28 && (h3.lord === 'Jupiter' || h3.lord === 'Mercury' || h3.lord === 'Venus')
       ? '2 से 4 भाई-बहनों का योग (भाई व बहन दोनों की अनुकूल उपस्थिति)'
       : '1 से 2 भाई-बहनों का योग (तृतीय व एकादश भाव के समीकरण अनुसार)';
@@ -799,12 +840,17 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     const score = 70;
     const isEldest = h11.lord === 'Saturn' || h11.lord === 'Sun' || planets.some((p) => p.houseNumber === 11 && (p.id === 'Saturn' || p.id === 'Rahu'));
     const isYoungest = planets.some((p) => p.houseNumber === 3 && (p.id === 'Saturn' || p.id === 'Mars'));
-    const orderEn = isEldest
+    const isOnlyChildInScope = dims[11]?.verdictEn.includes('Only Child');
+    const orderEn = isOnlyChildInScope
+      ? 'Single Progeny / Only Child — No elder or younger siblings; bears family mantle independently'
+      : isEldest
       ? 'Eldest among siblings / Primary decision-maker carrying leadership responsibilities'
       : isYoungest
       ? 'Youngest among siblings / Affectionate beneficiary of family pampering'
       : 'Middle sibling / Natural coordinator bridging elders and youngsters';
-    const orderHi = isEldest
+    const orderHi = isOnlyChildInScope
+      ? 'एकल संतान (इकलौती संतान) — कोई अग्रज या अनुज नहीं; परिवार की एकमात्र आधारशिला'
+      : isEldest
       ? 'ज्येष्ठ संतान (सबसे बड़े) — परिवार में नेतृत्व व प्रमुख निर्णय लेने का दायित्व'
       : isYoungest
       ? 'कनिष्ठ संतान (सबसे छोटे) — परिवार में सबका स्नेह व विशेष दुलार पाने वाले'
@@ -866,14 +912,34 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 15. Marriage Timing Window & Age
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 50 + (sav[6] >= 28 ? 12 : -8) + getDignityBonus(h7.dignity)));
-    const isDelayed = planets.some((p) => p.houseNumber === 7 && (p.id === 'Saturn' || p.id === 'Rahu')) || h7.placedHouse === 6 || h7.placedHouse === 8 || h7.placedHouse === 12;
-    const windowEn = isDelayed
-      ? `Delayed Auspicious Window: 28 to 33 years of age (7th Lord ${h7.lord} in H${h7.placedHouse}, 7th SAV: ${sav[6]} bindus)`
-      : `Timely Auspicious Window: 24 to 28 years of age (7th Lord ${h7.lord} in H${h7.placedHouse}, 7th SAV: ${sav[6]} bindus)`;
-    const windowHi = isDelayed
-      ? `विलंबित परिपक्व विवाह काल: 28 से 33 वर्ष की आयु में (सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में, 7वां SAV: ${sav[6]} बिंदु)`
-      : `समय पर शुभ विवाह काल: 24 से 28 वर्ष की आयु में (सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में, 7वां SAV: ${sav[6]} बिंदु)`;
+    let marrAffliction = 0;
+    const maleficsIn7 = planets.filter((p) => p.houseNumber === 7 && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu' || p.id === 'Mars' || p.id === 'Sun'));
+    marrAffliction += maleficsIn7.length * 2;
+    if (h7.placedHouse === 6 || h7.placedHouse === 8 || h7.placedHouse === 12) marrAffliction += 2.5;
+    if (h7.dignity === 'Debilitated') marrAffliction += 2;
+    if (venus.dignity === 'Debilitated' || venus.houseNumber === 6 || venus.houseNumber === 8) marrAffliction += 2;
+    if (sav[6] < 24) marrAffliction += 1.5;
+    if (sav[6] < 20) marrAffliction += 2;
+
+    const isSevereDelayOrDenial = marrAffliction >= 4.5;
+    const isDelayed = marrAffliction >= 2 || maleficsIn7.length > 0 || h7.placedHouse === 6 || h7.placedHouse === 8 || h7.placedHouse === 12;
+
+    const score = isSevereDelayOrDenial ? 38 : Math.max(35, Math.min(95, 50 + (sav[6] >= 28 ? 12 : -8) + getDignityBonus(h7.dignity)));
+
+    let windowEn = '';
+    let windowHi = '';
+
+    if (currentAge >= 32 && isSevereDelayOrDenial) {
+      windowEn = `Marriage Obstruction / Severe Delay / Celibacy Tendency: Native is currently ${currentAgeRound} years old. Strong afflictions on 7th House/Lord indicate either lifelong independence/celibacy or marriage only after age 38-42+ following dedicated Vedic remedies.`;
+      windowHi = `विवाह प्रतिबंधक योग / अत्यधिक विलंब अथवा वैराग्य योग: जातक की वर्तमान आयु ${currentAgeRound} वर्ष है। सप्तम भाव व सप्तमेश पर क्रूर प्रभाव के कारण विवाह में अत्यधिक विलंब, आजीवन अविवाहित रहने अथवा 38-42+ वर्ष की आयु के पश्चात ही विशेष शांति अनुष्ठान से विवाह संभव।`;
+    } else if (currentAge >= 28 || isDelayed) {
+      const startAge = Math.max(28, Math.min(35, currentAgeRound));
+      windowEn = `Delayed Auspicious Window: ${startAge} to ${startAge + 5} years of age (7th Lord ${h7.lord} in H${h7.placedHouse}, 7th SAV: ${sav[6]} bindus)`;
+      windowHi = `विलंबित परिपक्व विवाह काल: ${startAge} से ${startAge + 5} वर्ष की आयु में (सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में, 7वां SAV: ${sav[6]} बिंदु)`;
+    } else {
+      windowEn = `Timely Auspicious Window: 24 to 28 years of age (7th Lord ${h7.lord} in H${h7.placedHouse}, 7th SAV: ${sav[6]} bindus)`;
+      windowHi = `समय पर शुभ विवाह काल: 24 से 28 वर्ष की आयु में (सप्तमेश ${h7.lordHi} भाव ${h7.placedHouse} में, 7वां SAV: ${sav[6]} बिंदु)`;
+    }
 
     dims.push({
       id: 15,
@@ -1053,12 +1119,28 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 20. Progeny Conception: Natural vs Assisted/IVF
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 50 + (sav[4] >= 28 ? 12 : -10) + getDignityBonus(jupiter.dignity)));
+    let progAffliction = 0;
+    const maleficsIn5 = planets.filter((p) => p.houseNumber === 5 && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu' || p.id === 'Mars' || p.id === 'Sun'));
+    progAffliction += maleficsIn5.length * 2;
+    if (h5.placedHouse === 6 || h5.placedHouse === 8 || h5.placedHouse === 12) progAffliction += 2.5;
+    if (h5.dignity === 'Debilitated') progAffliction += 2;
+    if (jupiter.dignity === 'Debilitated' || jupiter.houseNumber === 6 || jupiter.houseNumber === 8 || jupiter.houseNumber === 12) progAffliction += 2;
+    if (sav[4] < 24) progAffliction += 1.5;
+    if (sav[4] < 20) progAffliction += 2;
+
+    const isAnapatya = progAffliction >= 5;
+    const score = isAnapatya ? 35 : Math.max(35, Math.min(95, 50 + (sav[4] >= 28 ? 12 : -10) + getDignityBonus(jupiter.dignity)));
     const rahuKetuOn5 = planets.some((p) => p.houseNumber === 5 && (p.id === 'Rahu' || p.id === 'Ketu'));
-    const modeEn = rahuKetuOn5 || sav[4] < 24
+
+    const modeEn = isAnapatya
+      ? 'Severe Progeny Obstruction (Natural Conception Obstructed): Classical Putradosha/Anapatya indicators suggest natural conception is heavily blocked; modern assisted reproductive techniques (IVF/ICSI) or legal adoption necessary.'
+      : rahuKetuOn5 || sav[4] < 24
       ? 'Conception with Medical/Scientific Timing: Initial patience or medical assistance (IVF/IUI/hormonal balancing) advised'
       : 'Natural & Smooth Conception: Spontaneous conception under auspicious planetary transit';
-    const modeHi = rahuKetuOn5 || sav[4] < 24
+
+    const modeHi = isAnapatya
+      ? 'संतान उत्पत्ति में गंभीर प्राकृतिक बाधा (अनपत्य / पितृ दोष योग): पंचम भाव व गुरु पर गंभीर पाप प्रभाव के कारण प्राकृतिक गर्भधारण बाधित; सुख केवल उन्नत चिकित्सा (IVF/ICSI) अथवा दत्तक संतान (गोद लेने) द्वारा ही संभव।'
+      : rahuKetuOn5 || sav[4] < 24
       ? 'चिकित्सकीय परामर्श व धैर्यपूर्वक गर्भधारण: आरंभिक विलंब के पश्चात आधुनिक चिकित्सा (IVF/उपचार) से सफलता'
       : 'प्राकृतिक व सहज गर्भधारण: अनुकूल गोचर व दशा में बिना किसी बाधा के सुखद संतान प्राप्ति';
 
@@ -1086,12 +1168,17 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // 21. Number of Children & Gender Tendency
   // ==========================================
   {
-    const score = Math.max(35, Math.min(95, 45 + (sav[4] >= 28 ? 10 : 0) + getDignityBonus(jupiter.dignity)));
+    const isAnapatyaInScope = dims[19]?.verdictEn.includes('Severe Progeny Obstruction');
+    const score = isAnapatyaInScope ? 35 : Math.max(35, Math.min(95, 45 + (sav[4] >= 28 ? 10 : 0) + getDignityBonus(jupiter.dignity)));
     const isOdd = h5.signIdx % 2 === 0; // Aries(0)=Odd, Taurus(1)=Even
-    const countEn = sav[4] >= 28
+    const countEn = isAnapatyaInScope
+      ? 'Anapatya Yoga / Zero Natural Progeny Indicated (0 biological children): Classical affliction to 5th house/lord and Putrakaraka Jupiter; family lineage carried forward via spiritual mentorship, niece/nephew, or adoption.'
+      : sav[4] >= 28
       ? `2 to 3 children indicated (${isOdd ? 'First child exhibits masculine/solar vigor' : 'First child exhibits feminine/lunar grace'})`
       : '1 to 2 children indicated (Balanced small family)';
-    const countHi = sav[4] >= 28
+    const countHi = isAnapatyaInScope
+      ? 'अनपत्य योग / शून्य प्राकृतिक संतान योग (0 संतान): पंचम भाव, पंचमेश व पुत्रकारक गुरु पीड़ित होने से प्राकृतिक संतान का अभाव; कुल परंपरा दत्तक संतान, भांजे/भतीजे अथवा ईश्वरीय सेवा से आगे बढ़ती है।'
+      : sav[4] >= 28
       ? `2 से 3 संतानों का शुभ योग (${isOdd ? 'प्रथम संतान में पुरुषोचित/सौर ऊर्जा की प्रधानता' : 'प्रथम संतान में सौम्य/स्त्री गुण की प्रधानता'})`
       : '1 से 2 संतानों का संतुलित योग (छोटा व सुखी परिवार)';
 

@@ -665,6 +665,50 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </button>
             </article>
 
+            {/* Card: Live Double Transit Wheel Simulator */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #b45309' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#b45309', color: '#fff' }}>
+                  {isHi ? 'द्वि-चक्र गोचर' : 'Dual Transit Wheel'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'द्वि-चक्र गोचर सिम्युलेटर (Double Transit Wheel)' : 'Live Double Transit Wheel Simulator'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'जन्म कुंडली के केंद्र पर घूमते हुए लाइव गोचर ग्रह, युति/दृष्टि किरणें (Aspect Rays), समय यात्रा कंट्रोल्स एवं सटीक डिग्री अंतर विश्लेषण।'
+                  : 'Outer transit wheel orbiting natal chart with live aspect rays (Conjunction, Trine, Opposition), time-travel controls and exact degree orbs.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('dual-transit')}
+              >
+                <span>{isHi ? 'गोचर सिम्युलेटर खोलें →' : 'Open Transit Simulator →'}</span>
+              </button>
+            </article>
+
+            {/* Card: Holistic Vedic Remedies */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #15803d' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#15803d', color: '#fff' }}>
+                  {isHi ? 'समग्र वैदिक उपचार' : 'Holistic Remedies'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'वैदिक समग्र उपचार एवं परिहार (Holistic Remedies)' : 'Holistic Remedies & Practical Upaya'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'रत्नों के भारी खर्च के बिना — वृक्षों की जड़ें, रंग चिकित्सा, योग-प्राणायाम, रसोई के टोटके, संकट अनुसार शास्त्रीय स्तोत्र एवं इष्ट देव साधना।'
+                  : 'Zero-cost practical remedies: Planetary roots, color therapy, astro-yoga, kitchen totke, crisis stotras, and D9 Karakamsa Ishta Devata.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('holistic-remedies')}
+              >
+                <span>{isHi ? 'समग्र उपचार देखें →' : 'View Holistic Remedies →'}</span>
+              </button>
+            </article>
+
             {/* Card 11: KP Enterprise & Cuspal Sub-Lords */}
             <article className="oj-service-card" style={{ borderLeft: '3px solid #d97706' }}>
               <div className="oj-card-badge-row">

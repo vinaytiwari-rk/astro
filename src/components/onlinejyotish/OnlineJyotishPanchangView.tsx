@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { calculateChart } from '../../astro/calculator';
 import { SEVEN_PLANETS, SIGNS } from '../../astro/constants';
-import { getChoghadiyaForChart, type ChoghadiyaSlot } from '../../astro/panchangExtra';
+import { getChoghadiyaForChart, computeAnnualHinduCalendar, type ChoghadiyaSlot, type HinduCalendarEvent } from '../../astro/panchangExtra';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings } from '../../astro/types';
 import type { CityEntry } from '../../data/cities';
@@ -57,6 +57,7 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
   }, []);
 
   const [selectedDate, setSelectedDate] = useState<string>(todayIso);
+  const [panchangViewTab, setPanchangViewTab] = useState<'daily' | 'monthly'>('daily');
   const [selectedCity, setSelectedCity] = useState<CityEntry>(() => {
     if (activeInput) {
       return {
@@ -93,6 +94,68 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
   const chart = useMemo(() => calculateChart(panchangInput, settings), [panchangInput, settings]);
   const choghadiya = useMemo(() => getChoghadiyaForChart(chart), [chart]);
   const moon = useMemo(() => chart.planets.find((p) => p.id === 'Moon') || chart.ascendant, [chart]);
+
+  // Year & Month details for 30-Day Wall Calendar
+  const [curYear, curMonth] = useMemo(() => {
+    const parts = selectedDate.split('-').map(Number);
+    return [parts[0], parts[1]];
+  }, [selectedDate]);
+
+  const annualEvents = useMemo(() => {
+    return computeAnnualHinduCalendar(
+      curYear,
+      settings.ayanamsa || 'lahiri',
+      330,
+      selectedCity.lat,
+      selectedCity.lng
+    );
+  }, [curYear, settings.ayanamsa, selectedCity]);
+
+  const monthGridData = useMemo(() => {
+    const firstDay = new Date(curYear, curMonth - 1, 1);
+    const lastDay = new Date(curYear, curMonth, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const days = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dStr = `${curYear}-${pad(curMonth)}-${pad(d)}`;
+      const dayInput: BirthInput = {
+        id: `cal-day-${d}`,
+        name: 'Calendar Day',
+        gender: 'other',
+        date: dStr,
+        time: '06:00',
+        city: selectedCity.city,
+        country: selectedCity.country,
+        latitude: selectedCity.lat,
+        longitude: selectedCity.lng,
+        timezone: selectedCity.timezone,
+      };
+      const c = calculateChart(dayInput, settings);
+      const evts = annualEvents.filter((e) => e.date === dStr);
+      days.push({
+        dayNum: d,
+        dateStr: dStr,
+        panchang: c.panchang,
+        events: evts,
+      });
+    }
+
+    return {
+      daysInMonth,
+      startingDayOfWeek,
+      days,
+    };
+  }, [curYear, curMonth, selectedCity, settings, annualEvents]);
+
+  const stepMonthNav = (offset: number) => {
+    const d = new Date(selectedDate);
+    d.setMonth(d.getMonth() + offset);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    setSelectedDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`);
+  };
 
   const setRelativeDay = (offset: number) => {
     const d = new Date(selectedDate);
@@ -131,6 +194,24 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
             ? 'तिथि, वार, नक्षत्र, योग, करण, राहु काल, यमगंड, अभिजित मुहूर्त, दिन-रात का चौघड़िया एवं 24 घंटे का होरा चक्र।'
             : 'Detailed five limbs of time: Tithi, Vara, Nakshatra, Yoga, Karana with Rahu Kalam, Abhijit Muhurta, Choghadiya, and 24-hr Hora.'}
         </p>
+
+        {/* Daily vs Monthly Wall Calendar Tabs */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={`btn ${panchangViewTab === 'daily' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPanchangViewTab('daily')}
+          >
+            {isHi ? 'दैनिक पंचांग विवरण (Daily Panchang)' : 'Daily Panchang Details'}
+          </button>
+          <button
+            type="button"
+            className={`btn ${panchangViewTab === 'monthly' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPanchangViewTab('monthly')}
+          >
+            {isHi ? 'मासिक दीवार कैलेंडर (30-Day Wall Calendar)' : '30-Day Monthly Wall Calendar Grid'}
+          </button>
+        </div>
 
         {/* Date & Location Controls Bar */}
         <div className="oj-panchang-control-bar">
@@ -226,7 +307,136 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
         </div>
       </div>
 
-      {/* The Five Limbs (Panchang Core Table) */}
+      {/* Monthly 30-Day Wall Calendar Grid */}
+      {panchangViewTab === 'monthly' && (
+        <div className="oj-card" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '18px', fontFamily: 'Cinzel, Playfair Display, serif' }}>
+                {isHi ? `मासिक पंचांग कैलेंडर — ${new Date(curYear, curMonth - 1).toLocaleDateString('hi-IN', { month: 'long', year: 'numeric' })}` : `Monthly Vedic Calendar — ${new Date(curYear, curMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
+                {isHi ? 'प्रत्येक दिन की तिथि, पक्ष, नक्षत्र, व्रत-त्योहार व शुभता। किसी भी दिन पर क्लिक कर उसका दैनिक पंचांग देखें।' : 'Daily Tithi, Paksha, Nakshatra, Festivals and Auspiciousness indicators. Click any date to inspect.'}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => stepMonthNav(-1)}
+              >
+                {isHi ? '◄ पिछला माह' : '◄ Prev Month'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => stepMonthNav(1)}
+              >
+                {isHi ? 'अगला माह ►' : 'Next Month ►'}
+              </button>
+            </div>
+          </div>
+
+          {/* Calendar Day Headers */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', marginBottom: '8px' }}>
+            {['रवि (Sun)', 'सोम (Mon)', 'मंगल (Tue)', 'बुध (Wed)', 'गुरु (Thu)', 'शुक्र (Fri)', 'शनि (Sat)'].map((dName, idx) => (
+              <div key={idx} style={{ padding: '6px', background: 'var(--bg-subtle)', borderRadius: '6px', color: idx === 0 ? '#dc2626' : 'var(--text)' }}>
+                {isHi ? dName.split(' ')[0] : dName.split(' ')[1].replace(/[()]/g, '')}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Days Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+            {/* Blank cells for starting day offset */}
+            {Array.from({ length: monthGridData.startingDayOfWeek }).map((_, idx) => (
+              <div key={`blank-${idx}`} style={{ minHeight: '88px', background: 'transparent' }} />
+            ))}
+
+            {/* Actual Month Days */}
+            {monthGridData.days.map((item) => {
+              const isSelected = item.dateStr === selectedDate;
+              const hasEvents = item.events.length > 0;
+              const tithiName = isHi ? item.panchang.tithi.name : item.panchang.tithi.name;
+              const isEkadashiOrPurnima = tithiName.includes('एकादशी') || tithiName.includes('पूर्णिमा') || tithiName.includes('अमावस्या') || tithiName.includes('Ekadashi') || tithiName.includes('Purnima') || tithiName.includes('Amavasya');
+
+              return (
+                <div
+                  key={item.dayNum}
+                  onClick={() => {
+                    setSelectedDate(item.dateStr);
+                    setPanchangViewTab('daily');
+                  }}
+                  style={{
+                    minHeight: '88px',
+                    padding: '6px 8px',
+                    borderRadius: '8px',
+                    border: isSelected ? '2px solid #d97706' : '1px solid var(--border)',
+                    background: isSelected ? 'rgba(217, 119, 6, 0.08)' : 'var(--bg-elevated)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    transition: 'all 0.15s ease',
+                    boxShadow: isSelected ? '0 2px 8px rgba(217, 119, 6, 0.2)' : 'none',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', fontSize: '13px', color: isSelected ? '#b45309' : 'var(--text)' }}>
+                      {item.dayNum}
+                    </span>
+                    <span
+                      style={{
+                        width: '7px',
+                        height: '7px',
+                        borderRadius: '50%',
+                        backgroundColor: isEkadashiOrPurnima ? '#16a34a' : hasEvents ? '#d97706' : '#9ca3af',
+                      }}
+                      title={isEkadashiOrPurnima ? 'अति शुभ पर्व तिथि' : hasEvents ? 'पर्व / उत्सव' : 'सामान्य'}
+                    />
+                  </div>
+
+                  <div style={{ fontSize: '10.5px', color: isSelected ? '#b45309' : 'var(--text-muted)', lineHeight: '1.2', marginTop: '2px' }}>
+                    <div style={{ fontWeight: '600', color: isEkadashiOrPurnima ? '#b45309' : 'inherit' }}>
+                      {tithiName.split(' ')[0]}
+                    </div>
+                    <div style={{ fontSize: '9.5px', opacity: 0.85 }}>
+                      {isHi ? item.panchang.nakshatra.name : item.panchang.nakshatra.name}
+                    </div>
+                  </div>
+
+                  {hasEvents && (
+                    <div style={{ marginTop: '3px' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          fontSize: '9px',
+                          fontWeight: 'bold',
+                          padding: '1px 4px',
+                          borderRadius: '4px',
+                          backgroundColor: '#fef3c7',
+                          color: '#78350f',
+                          border: '1px solid #fde68a',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '100%',
+                        }}
+                      >
+                        {isHi ? item.events[0].nameHi : item.events[0].nameEn}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Five Limbs of Panchang Grid (Daily View) */}
+      {panchangViewTab === 'daily' && (
+      <>
       <div className="oj-two-col-grid">
         <div className="oj-card">
           <div className="oj-card-header">
@@ -361,6 +571,8 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };
