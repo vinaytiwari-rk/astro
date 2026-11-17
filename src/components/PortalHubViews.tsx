@@ -88,10 +88,10 @@ export const PortalHubViews: React.FC<PortalHubViewsProps> = ({
 
   // Calculators state
   const [calcSub, setCalcSub] = useState<'signs' | 'ayanamsa' | 'name_compat' | 'friendship'>('signs');
-  const [partnerNameA, setPartnerNameA] = useState(baseInput.name || 'Aarav');
-  const [partnerDateA, setPartnerDateA] = useState(baseInput.date || '2000-05-15');
-  const [partnerNameB, setPartnerNameB] = useState(profiles[profiles.length - 1]?.name || 'Meera');
-  const [partnerDateB, setPartnerDateB] = useState(profiles[profiles.length - 1]?.date || '2001-08-20');
+  const [partnerNameA, setPartnerNameA] = useState(baseInput.name || (isHi ? 'जातक' : 'Native'));
+  const [partnerDateA, setPartnerDateA] = useState(baseInput.date || '2000-01-01');
+  const [partnerNameB, setPartnerNameB] = useState((profiles.find((p) => p.id !== baseInput.id)?.name) || (isHi ? 'साथी' : 'Partner'));
+  const [partnerDateB, setPartnerDateB] = useState((profiles.find((p) => p.id !== baseInput.id)?.date) || '2000-01-01');
   const [friendA, setFriendA] = useState<SevenPlanetId>('Jupiter');
   const [friendB, setFriendB] = useState<SevenPlanetId>('Venus');
 

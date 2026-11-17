@@ -37,7 +37,6 @@ import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
 import {
   createNowPrashnaInput,
   DEFAULT_SETTINGS,
-  SAMPLE_CHARTS,
 } from './data/cities';
 import { LanguageProvider } from './i18n/LanguageContext';
 
@@ -47,17 +46,71 @@ const STORAGE_SETTINGS_KEY = 'jyotish_hora_settings_v1';
 const STORAGE_THEME_KEY = 'jyotish_hora_theme_v1';
 const STORAGE_LANG_KEY = 'jyotish_hora_lang_v1';
 
+export const DEFAULT_USER_PROFILE: BirthInput = {
+  id: 'user-profile-default',
+  name: 'जातक',
+  gender: 'male',
+  date: '2000-01-01',
+  time: '12:00:00',
+  city: 'New Delhi',
+  country: 'India',
+  latitude: 28.6139,
+  longitude: 77.209,
+  timezone: 'Asia/Kolkata',
+  notes: 'Default native profile',
+};
+
+const DISALLOWED_PROFILE_PATTERNS = [
+  'einstein',
+  'vivekanand',
+  'tagore',
+  'aarav sharma',
+  'sample native',
+  'sample-vivekananda',
+  'sample-einstein',
+  'sample-tagore',
+  'sample-partner-1998',
+  'sample-new-delhi-modern',
+];
+
+export function filterOutDisallowedProfiles(list: BirthInput[]): BirthInput[] {
+  return list.filter((p) => {
+    if (!p) return false;
+    const idLower = (p.id || '').toLowerCase();
+    const nameLower = (p.name || '').toLowerCase();
+    return !DISALLOWED_PROFILE_PATTERNS.some(
+      (pattern) => idLower.includes(pattern) || nameLower.includes(pattern)
+    );
+  });
+}
+
 function loadStoredProfiles(): BirthInput[] {
   try {
     const raw = localStorage.getItem(STORAGE_PROFILES_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const clean = filterOutDisallowedProfiles(parsed);
+        if (clean.length > 0) {
+          try {
+            localStorage.setItem(STORAGE_PROFILES_KEY, JSON.stringify(clean));
+          } catch {
+            // ignore
+          }
+          return clean;
+        }
+      }
     }
   } catch {
     // ignore storage errors
   }
-  return SAMPLE_CHARTS;
+  const fallback = [DEFAULT_USER_PROFILE];
+  try {
+    localStorage.setItem(STORAGE_PROFILES_KEY, JSON.stringify(fallback));
+  } catch {
+    // ignore
+  }
+  return fallback;
 }
 
 function loadStoredSettings(): CalcSettings {
@@ -75,8 +128,8 @@ export function App() {
   const [activeId, setActiveId] = useState<string>(() => {
     const stored = localStorage.getItem(STORAGE_ACTIVE_KEY);
     const list = loadStoredProfiles();
-    if (list.some((p) => p.id === stored)) return stored!;
-    return (list.find((p) => p.id === 'sample-new-delhi-modern') ?? list[0]).id;
+    if (stored && list.some((p) => p.id === stored)) return stored;
+    return list[0]?.id || DEFAULT_USER_PROFILE.id;
   });
   const [settings, setSettings] = useState<CalcSettings>(loadStoredSettings);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -191,13 +244,12 @@ export function App() {
   };
 
   const handleDeleteProfile = (targetId?: string) => {
-    if (profiles.length <= 1) return;
     const idToDelete = targetId ?? activeInput.id;
     const remaining = profiles.filter((p) => p.id !== idToDelete);
-    if (remaining.length === 0) return;
-    setProfiles(remaining);
-    if (activeInput.id === idToDelete || !remaining.some((p) => p.id === activeId)) {
-      setActiveId(remaining[0].id);
+    const nextList = remaining.length > 0 ? remaining : [DEFAULT_USER_PROFILE];
+    setProfiles(nextList);
+    if (activeInput.id === idToDelete || !nextList.some((p) => p.id === activeId)) {
+      setActiveId(nextList[0].id);
     }
   };
 
@@ -378,7 +430,19 @@ export function App() {
             {(currentView === 'synastry' || currentView === 'btr') && (
               <SynastryBTRView
                 chart={chart}
+                profiles={profiles}
+                settings={settings}
                 initialTab={currentView === 'btr' ? 'btr' : 'synastry'}
+                onOpenEditor={() => setEditorOpen(true)}
+                onNewKundli={() => {
+                  const newChart = createNowPrashnaInput();
+                  newChart.id = `kundli-${Date.now()}`;
+                  newChart.name = language === 'hi' ? 'नवीन जातक' : 'New Native';
+                  setProfiles((prev) => [newChart, ...prev]);
+                  setActiveId(newChart.id);
+                  setEditorOpen(true);
+                }}
+                onSelectProfile={(id) => setActiveId(id)}
               />
             )}
 

@@ -1,31 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { computeSynastry, type RelationshipType } from '../../astro/synastry';
 import { computeBTR, type BTRLifeEvent, type BTREventType } from '../../astro/birthTimeRectification';
-import { SAMPLE_CHARTS } from '../../data/cities';
 import { calculateChart } from '../../astro/calculator';
 import { DEFAULT_SETTINGS } from '../../data/cities';
 import { formatDateDmy } from '../../astro/time';
 import { DateDmyInput } from '../DateDmyInput';
-import type { ChartData } from '../../astro/types';
+import type { BirthInput, CalcSettings, ChartData } from '../../astro/types';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { Plus } from 'lucide-react';
 
 interface SynastryBTRViewProps {
   chart: ChartData;
+  profiles?: BirthInput[];
+  settings?: CalcSettings;
   initialTab?: 'synastry' | 'btr';
+  onOpenEditor?: () => void;
+  onNewKundli?: () => void;
+  onSelectProfile?: (id: string) => void;
 }
 
-export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initialTab = 'synastry' }) => {
+export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({
+  chart,
+  profiles = [],
+  settings,
+  initialTab = 'synastry',
+  onOpenEditor,
+  onNewKundli,
+  onSelectProfile,
+}) => {
+  const { lang } = useLanguage();
+  const isHi = lang === 'hi';
   const [activeTab, setActiveTab] = useState<'synastry' | 'btr'>(initialTab);
 
-  // Synastry State
-  const [partnerIdx, setPartnerIdx] = useState<number>(4); // Living Chart 2 by default
+  // Available partner profiles strictly from user's saved profiles
+  const partnerCandidates = useMemo<BirthInput[]>(() => {
+    const userProfiles = profiles && profiles.length > 0 ? profiles : [chart.input];
+    const others = userProfiles.filter((p) => p.id !== chart.input.id);
+    if (others.length > 0) return others;
+
+    // Fallback partner profile if the user only has 1 profile created so far
+    return [
+      {
+        id: 'partner-default-companion',
+        name: isHi ? 'साथी / साझीदार' : 'Partner / Companion',
+        gender: chart.input.gender === 'female' ? 'male' : 'female',
+        date: '2001-01-01',
+        time: '12:00:00',
+        city: chart.input.city || 'New Delhi',
+        country: chart.input.country || 'India',
+        latitude: chart.input.latitude || 28.6139,
+        longitude: chart.input.longitude || 77.209,
+        timezone: chart.input.timezone || 'Asia/Kolkata',
+        notes: 'Default companion profile for synastry comparison',
+      },
+    ];
+  }, [profiles, chart.input, isHi]);
+
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string>(() => {
+    return partnerCandidates[0]?.id || '';
+  });
+
+  useEffect(() => {
+    if (!partnerCandidates.some((p) => p.id === selectedPartnerId) && partnerCandidates.length > 0) {
+      setSelectedPartnerId(partnerCandidates[0].id);
+    }
+  }, [partnerCandidates, selectedPartnerId]);
+
+  const selectedPartnerInput = useMemo(() => {
+    return partnerCandidates.find((p) => p.id === selectedPartnerId) || partnerCandidates[0];
+  }, [partnerCandidates, selectedPartnerId]);
+
   const [relType, setRelType] = useState<RelationshipType>('marriage');
 
-  const partnerChart = React.useMemo(() => {
-    const raw = SAMPLE_CHARTS[partnerIdx] || SAMPLE_CHARTS[4];
-    return calculateChart(raw, DEFAULT_SETTINGS);
-  }, [partnerIdx]);
+  const partnerChart = useMemo(() => {
+    return calculateChart(selectedPartnerInput, settings || DEFAULT_SETTINGS);
+  }, [selectedPartnerInput, settings]);
 
-  const synastryReport = React.useMemo(() => {
+  const synastryReport = useMemo(() => {
     return computeSynastry(chart, partnerChart, relType);
   }, [chart, partnerChart, relType]);
 
@@ -99,20 +150,43 @@ export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initial
           {/* Controls Bar */}
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', background: 'var(--bg-elevated)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Compare Primary ({chart.input.name}) with:
+              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 600 }}>
+                {isHi ? `प्राथमिक जातक (${chart.input.name}) की तुलना किससे करें:` : `Compare Primary (${chart.input.name}) with:`}
               </label>
-              <select
-                value={partnerIdx}
-                onChange={(e) => setPartnerIdx(Number(e.target.value))}
-                style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
-              >
-                {SAMPLE_CHARTS.map((sc, idx) => (
-                  <option key={sc.id} value={idx}>
-                    {sc.name} ({formatDateDmy(sc.date)})
-                  </option>
-                ))}
-              </select>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <select
+                  value={selectedPartnerInput?.id || ''}
+                  onChange={(e) => setSelectedPartnerId(e.target.value)}
+                  style={{
+                    padding: '7px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-subtle)',
+                    color: 'var(--text)',
+                    fontWeight: 600,
+                    minWidth: '240px',
+                  }}
+                >
+                  {partnerCandidates.map((sc) => (
+                    <option key={sc.id} value={sc.id}>
+                      {sc.name} ({formatDateDmy(sc.date)} · {sc.city})
+                    </option>
+                  ))}
+                </select>
+
+                {onNewKundli && (
+                  <button
+                    type="button"
+                    onClick={onNewKundli}
+                    className="btn btn-secondary btn-sm"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', height: '34px' }}
+                    title={isHi ? 'नया जातक प्रोफाइल जोड़ें' : 'Add New Profile'}
+                  >
+                    <Plus size={13} />
+                    <span>{isHi ? 'नया जातक जोड़ें' : 'Add Profile'}</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             <div>
