@@ -256,7 +256,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('sambhavit-falkathan')}>
-              {isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions'}
+              {isHi ? 'संभावित फलकथन (50 आयाम)' : 'Probable Predictions (50 Dimensions)'}
             </button>
             <button type="button" className="oj-link-pill" onClick={onOpenBooklet}>
               {isHi ? '118-पृष्ठीय पत्रिका PDF (निःशुल्क)' : '118-Page PDF Report (Free)'}
@@ -603,14 +603,14 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
-                  {isHi ? '25 जीवन आयाम' : '25 Life Dimensions'}
+                  {isHi ? '50 जीवन आयाम' : '50 Life Dimensions'}
                 </span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'संभावित फलकथन (Probable Predictions)' : 'Probable Predictions'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'संभावित फलकथन (50 Probable Predictions)' : '50 Probable Predictions'}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'समस्त कुंडलियों का संश्लेषित फलादेश: शिक्षा, आजीविका/सरकारी नौकरी, विवाह, संतान/IVF, आयु, सर्जरी, शारीरिक चिन्ह व धन योग।'
-                  : 'Point-wise concrete life predictions across 25 vital dimensions: Education, Career/Govt Job, Marriage, Progeny, Longevity, Bandhana, Surgery, Wealth vs Daridrya.'}
+                  : 'Point-wise concrete life predictions across 50 vital dimensions: Education, Career/Govt Job, Marriage, Progeny, Longevity, Bandhana, Surgery, Wealth vs Daridrya.'}
               </p>
               <button
                 type="button"
@@ -640,6 +640,182 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 onClick={onOpenBooklet}
               >
                 <span>{isHi ? 'निःशुल्क 118-पृष्ठीय पत्रिका खोलें →' : 'Open Free 118-Page Report →'}</span>
+              </button>
+            </article>
+
+            {/* Card 10: Sade Sati & Live Transits */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #2563eb' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#2563eb', color: '#fff' }}>
+                  {isHi ? 'शनि साढ़े साती' : 'Saturn Sade Sati'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'साढ़े साती व गोचर टाइमलाइन (Sade Sati & Transits)' : 'Sade Sati & Live Transits'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'शनि साढ़े साती के तीनों चरण (उदय, मध्य, अस्त), ढैया, कंटक शनि, अष्टम शनि एवं शास्त्रीय मूर्ति निर्णय (स्वर्ण, रजत, ताम्र, लौह)।'
+                  : 'Track Saturn 3 Charans (Rising, Peak, Setting), Dhaiya, Kantaka Shani, Ashtama Shani, and classical Moorti Nirnaya foot calculations.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('sade-sati')}
+              >
+                <span>{isHi ? 'साढ़े साती रिपोर्ट देखें →' : 'View Sade Sati Report →'}</span>
+              </button>
+            </article>
+
+            {/* Card 11: KP Enterprise & Cuspal Sub-Lords */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #d97706' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#d97706', color: '#fff' }}>
+                  {isHi ? 'केपी सिस्टम' : 'KP Enterprise'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'केपी 4-फ़ोल्ड व कस्पल सब-लॉर्ड (KP 4-Fold & CSL)' : 'KP 4-Fold & Cuspal Sub-Lords'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? '12 भावों का 4-फ़ोल्ड सिग्निफिकेटर, कस्पल सब-लॉर्ड्स एवं रियल-टाइम लाइव रूलिंग प्लैनेट्स (RP) के साथ ताजिक वर्षफल वार्षिक सौर रिटर्न।'
+                  : '4-Fold planetary significators across all 12 bhavas, Cuspal Sub-Lord house links, Live Ruling Planets, and Tajika Varshaphala.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('kp-enterprise')}
+              >
+                <span>{isHi ? 'केपी 4-फ़ोल्ड खोलें →' : 'Open KP Enterprise →'}</span>
+              </button>
+            </article>
+
+            {/* Card 12: Jaimini Sutra Suite */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #7c3aed' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#7c3aed', color: '#fff' }}>
+                  {isHi ? 'जैमिनी सूत्र' : 'Jaimini Sutras'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'जैमिनी सूत्र व चर दशा (Jaimini Suite)' : 'Jaimini Sutra & Chara Dasha'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? '7 व 8 चर कारक (आत्मकारक से दाराकारक), 12 आरूढ़ पद (AL, UL, A7), कारकांश कुण्डली, राशि दृष्टि, अर्गला एवं के.एन. राव चर दशा।'
+                  : 'Chara Karakas (AK to DK), 12 Arudha Padas (AL, UL, A7), Karakamsha chart, Jaimini Rashi Drishti, Argala, and Chara Dasha.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('jaimini')}
+              >
+                <span>{isHi ? 'जैमिनी विश्लेषण देखें →' : 'View Jaimini Suite →'}</span>
+              </button>
+            </article>
+
+            {/* Card 13: Auspicious Muhurta Finder */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #059669' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#059669', color: '#fff' }}>
+                  {isHi ? 'शुभ मुहूर्त' : '90-Day Muhurta'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? '90-दिवसीय शुभ मुहूर्त फाइंडर (Muhurta Finder)' : '90-Day Auspicious Muhurta Finder'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'विवाह, गृह प्रवेश, वाहन क्रय, व्यापार उद्घाटन व शल्य चिकित्सा हेतु अगले 90 दिनों की श्रेष्ठतम तिथियों व चौघड़िया की स्वचालित खोज।'
+                  : 'Automated 90-day search engine for Vivaha, Griha Pravesh, Vehicle purchase, Business start, Property and Surgery windows.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('muhurta')}
+              >
+                <span>{isHi ? 'शुभ मुहूर्त खोजें →' : 'Find Best Muhurtas →'}</span>
+              </button>
+            </article>
+
+            {/* Card 14: Medical Astrology & Lal Kitab */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #ea580c' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#ea580c', color: '#fff' }}>
+                  {isHi ? 'रोग निर्णय' : 'Medical & Lal Kitab'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'चिकित्सा ज्योतिष व लाल किताब (Medical & Lal Kitab)' : 'Medical Astrology & Lal Kitab'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'वात-पित्त-कफ त्रिदोष संतुलन, 12 भाव अंग मैपिंग, 22वां द्रेष्काण (खरेश), 64वां नवमांश एवं लाल किताब के सोए ग्रह व अनिवार्य फरमान उपाय।'
+                  : 'Tridosha Vata-Pitta-Kapha breakdown, 12 Kalapurusha body systems, 22nd Drekkana Kharesh, 64th Navamsha and Lal Kitab remedies.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('medical-astrology')}
+              >
+                <span>{isHi ? 'स्वास्थ्य व उपाय देखें →' : 'View Health & Upaya →'}</span>
+              </button>
+            </article>
+
+            {/* Card 15: KP Horary 1-249 Prashna */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #0284c7' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#0284c7', color: '#fff' }}>
+                  {isHi ? 'प्रश्न कुण्डली' : 'KP Horary 1-249'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'केपी प्रश्न कुण्डली 1–249 (Horary Prashna)' : 'KP Prashna 1–249 Horary'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'बिना जन्म समय के 1 से 249 संख्या द्वारा तात्कालिक प्रश्न: नौकरी, विवाह, धन, रोगमुक्ति अथवा खोई वस्तु का हाँ/ना में सटीक उत्तर।'
+                  : 'Ask any specific question using a seed number from 1 to 249: Instant Yes/No/Conditional outcome with timing and remedies.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('prashna')}
+              >
+                <span>{isHi ? 'प्रश्न पूछें →' : 'Ask Horary Question →'}</span>
+              </button>
+            </article>
+
+            {/* Card 16: BTR & Synastry */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #4f46e5' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#4f46e5', color: '#fff' }}>
+                  {isHi ? 'समय संशोधन' : 'BTR & Synastry'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'जन्म समय संशोधन व सिनैस्ट्री (BTR & Synastry)' : 'BTR Workbench & Synastry'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'जीवन की प्रमुख घटनाओं (विवाह, नौकरी, संतान) से जन्म समय में सूक्ष्म सुधार (BTR) एवं दो कुंडलियों का ग्रहीय दृष्टि मिलान व सिनैस्ट्री।'
+                  : 'Rectify birth time using life event milestones and perform deep cross-chart planetary aspecting and synastry.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('btr')}
+              >
+                <span>{isHi ? 'BTR वर्कबेंच खोलें →' : 'Open BTR Workbench →'}</span>
+              </button>
+            </article>
+
+            {/* Card 17: Nadi Palm Leaf Shastra */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #b45309' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#b45309', color: '#fff' }}>
+                  {isHi ? 'नाड़ी ज्योतिष' : 'Nadi Shastra'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'नाड़ी ज्योतिष व 14 कण्डम (Nadi Palm Leaf)' : 'Nadi Palm Leaf Kandams'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'महर्षि अगस्त्य के 14 कण्डम फल, नंदी त्रिकोण संबंध (1-5-9, 2-6-10), शिव-पार्वती संवाद एवं प्रारब्ध कर्म विमोचन तीर्थ परिहार।'
+                  : '14 Agastya Kandams, Nandi directional trine connections, Shiva-Parvati dialogue decrees, and karmic pilgrimage remedies.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('nadi')}
+              >
+                <span>{isHi ? 'नाड़ी कण्डम पढ़ें →' : 'Read Nadi Kandams →'}</span>
               </button>
             </article>
           </div>
@@ -763,7 +939,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
             </div>
             <div className="oj-popular-item" onClick={() => onNavigate('sambhavit')}>
-              <strong>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Sambhavit Falkathan (25 Dim)'}</strong>
+              <strong>{isHi ? 'संभावित फलकथन (50 आयाम)' : 'Sambhavit Falkathan (50 Dim)'}</strong>
             </div>
           </div>
         </div>
@@ -870,7 +1046,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? 'संभावित फलकथन (25 आयाम)' : 'Probable Predictions (25 Dim)'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? 'संभावित फलकथन (50 आयाम)' : 'Probable Predictions (50 Dim)'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('ashtakavarga')}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('transit-today')}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>

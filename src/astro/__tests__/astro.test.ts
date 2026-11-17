@@ -1204,5 +1204,44 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(pred.mentalHealth.conditionHi).toMatch(/[\u0900-\u097F]/);
     expect(pred.health.constitutionHi).toMatch(/[\u0900-\u097F]/);
     expect(pred.wealth.statusHi).toMatch(/[\u0900-\u097F]/);
+
+    // 50 Dynamic Dimensions Verification
+    expect(pred.dimensions).toBeDefined();
+    expect(pred.dimensions.length).toBe(50);
+    expect(pred.summary.totalDimensions).toBe(50);
+    pred.dimensions.forEach((dim, idx) => {
+      expect(dim.id).toBe(idx + 1);
+      expect(dim.titleEn.length).toBeGreaterThan(3);
+      expect(dim.titleHi).toMatch(/[\u0900-\u097F]/);
+      expect(dim.astroBasisEn.length).toBeGreaterThan(5);
+      expect(dim.astroBasisHi).toMatch(/[\u0900-\u097F]/);
+      expect(dim.verdictEn.length).toBeGreaterThan(3);
+      expect(dim.verdictHi).toMatch(/[\u0900-\u097F]/);
+      expect(dim.detailedAnalysisEn.length).toBeGreaterThan(15);
+      expect(dim.detailedAnalysisHi).toMatch(/[\u0900-\u097F]/);
+      expect(dim.remedyEn.length).toBeGreaterThan(5);
+      expect(dim.remedyHi).toMatch(/[\u0900-\u097F]/);
+      expect(dim.strengthScore).toBeGreaterThanOrEqual(0);
+      expect(dim.strengthScore).toBeLessThanOrEqual(100);
+      expect(['highly_favorable', 'favorable', 'mixed_moderate', 'challenging_caution']).toContain(dim.auspiciousness);
+    });
+
+    // Check dynamic uniqueness between two different native charts
+    const chart2 = calculateChart({
+      id: 'chart-2',
+      name: 'Chart 2',
+      date: '1995-10-24',
+      time: '14:30',
+      latitude: 19.076,
+      longitude: 72.8777,
+      city: 'Mumbai',
+      timezone: 'Asia/Kolkata',
+    }, DEFAULT_SETTINGS);
+    const pred2 = computeSambhavitFalkathan(chart2);
+    expect(pred2.dimensions.length).toBe(50);
+    expect(pred2.dimensions[0].verdictEn).not.toBe(pred.dimensions[0].verdictEn);
+    expect(pred2.dimensions[3].astroBasisEn).not.toBe(pred.dimensions[3].astroBasisEn);
+    expect(pred2.dimensions[14].verdictEn).not.toBe(pred.dimensions[14].verdictEn);
+    expect(pred2.dimensions[26].verdictEn).not.toBe(pred.dimensions[26].verdictEn);
   });
 });

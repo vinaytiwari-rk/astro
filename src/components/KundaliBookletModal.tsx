@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Award, Printer, X } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Printer, X } from 'lucide-react';
 import {
   computeAvakahadaChakra,
   computeBhavaChalitPlacements,
@@ -37,34 +37,6 @@ interface KundaliBookletModalProps {
   language: AppLanguage;
 }
 
-interface BrandingConfig {
-  enabled: boolean;
-  kendraName: string;
-  astrologerName: string;
-  contactInfo: string;
-  footerNote: string;
-}
-
-const BRANDING_STORAGE_KEY = 'jyotish_hora_pdf_branding_v1';
-
-const DEFAULT_BRANDING: BrandingConfig = {
-  enabled: true,
-  kendraName: 'Jyotish Hora Vedic Studio',
-  astrologerName: '',
-  contactInfo: '',
-  footerNote: 'Prepared with Traditional Vedic, KP, Nadi & Lal Kitab Siddhanta',
-};
-
-function loadBranding(): BrandingConfig {
-  try {
-    const raw = localStorage.getItem(BRANDING_STORAGE_KEY);
-    if (raw) return { ...DEFAULT_BRANDING, ...JSON.parse(raw) };
-  } catch {
-    // ignore storage errors
-  }
-  return DEFAULT_BRANDING;
-}
-
 export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
   open,
   onClose,
@@ -72,16 +44,6 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
   chartStyle,
   language,
 }) => {
-  const [branding, setBranding] = useState<BrandingConfig>(loadBranding);
-  const [showBrandingEditor, setShowBrandingEditor] = useState(false);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(BRANDING_STORAGE_KEY, JSON.stringify(branding));
-    } catch {
-      // ignore storage errors
-    }
-  }, [branding]);
   const bundle = useMemo(() => {
     if (!open) return null;
     const rawReport = generatePredictionReport(chart);
@@ -149,14 +111,6 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
               : 'Brihat Janam Patrika — Multi-Page Printable PDF Booklet'}
           </h3>
           <div className="toolbar-group">
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              onClick={() => setShowBrandingEditor((v) => !v)}
-            >
-              <Award size={14} />
-              {isHi ? 'केंद्र / ज्योतिषी नाम' : 'White-Label Branding'}
-            </button>
             <button type="button" className="btn btn-primary btn-sm" onClick={handlePrint}>
               <Printer size={14} />
               {t.common.printPdf}
@@ -172,59 +126,14 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
           </div>
         </div>
 
-        {showBrandingEditor && (
-          <div className="branding-editor-strip no-print">
-            <label className="checkbox-inline">
-              <input
-                type="checkbox"
-                checked={branding.enabled}
-                onChange={(e) => setBranding({ ...branding, enabled: e.target.checked })}
-              />
-              <span>{isHi ? 'पत्रिका पर अपना केंद्र नाम व संपर्क दिखाएँ' : 'Show Custom Header & Footer on PDF'}</span>
-            </label>
-            <div className="branding-inputs-grid">
-              <input
-                type="text"
-                className="text-input input-sm"
-                value={branding.kendraName}
-                onChange={(e) => setBranding({ ...branding, kendraName: e.target.value })}
-                placeholder={isHi ? 'संस्था / ज्योतिष केंद्र का नाम' : 'Astrology Center / Studio Name'}
-              />
-              <input
-                type="text"
-                className="text-input input-sm"
-                value={branding.astrologerName}
-                onChange={(e) => setBranding({ ...branding, astrologerName: e.target.value })}
-                placeholder={isHi ? 'ज्योतिषी / आचार्य का नाम' : 'Astrologer Name'}
-              />
-              <input
-                type="text"
-                className="text-input input-sm"
-                value={branding.contactInfo}
-                onChange={(e) => setBranding({ ...branding, contactInfo: e.target.value })}
-                placeholder={isHi ? 'फ़ोन / वेबसाइट / पता' : 'Phone / Website / Address'}
-              />
-              <input
-                type="text"
-                className="text-input input-sm"
-                value={branding.footerNote}
-                onChange={(e) => setBranding({ ...branding, footerNote: e.target.value })}
-                placeholder={isHi ? 'फ़ुटर टिप्पणी' : 'Custom Footer Note'}
-              />
-            </div>
-          </div>
-        )}
-
         <div className="booklet-body">
           {/* PAGE 1: Cover, Birth Particulars, Panchang, Avakahada & Ghatak */}
           <div className="booklet-cover">
-            {branding.enabled && (branding.kendraName || branding.astrologerName) && (
-              <div className="booklet-letterhead">
-                <strong>{branding.kendraName}</strong>
-                {branding.astrologerName && <span> · {branding.astrologerName}</span>}
-                {branding.contactInfo && <div className="muted small-text">{branding.contactInfo}</div>}
-              </div>
-            )}
+            <div className="booklet-letterhead">
+              <strong>AV Astro Vibe</strong>
+              <span> · Vedic Astrological Systems</span>
+              <div className="muted small-text">Prepared with Traditional Vedic, KP, Nadi &amp; Lal Kitab Siddhanta</div>
+            </div>
             <div className="booklet-om">ॐ श्री गणेशाय नमः</div>
             <h2>
               {isHi ? 'बृहत् जन्म पत्रिका' : 'Brihat Janam Patrika'} · {chart.input.name}
@@ -783,13 +692,10 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             language={language}
           />
 
-          {branding.enabled && (branding.footerNote || branding.kendraName) && (
-            <footer className="booklet-footer">
-              <div><strong>{branding.kendraName}</strong> {branding.astrologerName ? `· ${branding.astrologerName}` : ''}</div>
-              {branding.contactInfo && <div className="small-text muted">{branding.contactInfo}</div>}
-              {branding.footerNote && <div className="small-text muted">{branding.footerNote}</div>}
-            </footer>
-          )}
+          <footer className="booklet-footer">
+            <div><strong>AV Astro Vibe</strong> · Vedic Astrological Systems</div>
+            <div className="small-text muted">Prepared with Traditional Vedic, KP, Nadi &amp; Lal Kitab Siddhanta · 100% Free Open Vedic Portal</div>
+          </footer>
         </div>
       </div>
     </div>

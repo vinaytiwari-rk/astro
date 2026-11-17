@@ -1,7 +1,7 @@
 {
-  "name": "jyotish-hora",
+  "name": "av-astro-vibe",
   "version": "1.0.0",
-  "description": "Jyotish Hora — Modern Vedic Astrology & Ephemeris Studio inspired by Jagannatha Hora",
+  "description": "AV Astro Vibe — Professional Vedic Astrology & Planetary Ephemeris Portal",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

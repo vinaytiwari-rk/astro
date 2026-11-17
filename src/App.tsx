@@ -12,6 +12,12 @@ import { OnlineJyotishPanchangView } from './components/onlinejyotish/OnlineJyot
 import { OnlineJyotishSambhavitView } from './components/onlinejyotish/OnlineJyotishSambhavitView';
 import { OnlineJyotishFestivalsView } from './components/onlinejyotish/OnlineJyotishFestivalsView';
 import { OnlineJyotishToolsView, type AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
+import SadeSatiView from './components/onlinejyotish/SadeSatiView';
+import { JaiminiView } from './components/onlinejyotish/JaiminiView';
+import { KPEnterpriseView } from './components/onlinejyotish/KPEnterpriseView';
+import { MedicalAstrologyView } from './components/onlinejyotish/MedicalAstrologyView';
+import { SynastryBTRView } from './components/onlinejyotish/SynastryBTRView';
+import { MuhurtaPrashnaView } from './components/onlinejyotish/MuhurtaPrashnaView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -315,6 +321,48 @@ export function App() {
                 settings={settings}
                 onNavigate={navigateTo}
                 onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {currentView === 'sade-sati' && (
+              <SadeSatiView
+                chart={chart}
+              />
+            )}
+
+            {currentView === 'jaimini' && (
+              <JaiminiView
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+                onOpenBooklet={() => setBookletOpen(true)}
+              />
+            )}
+
+            {(currentView === 'kp-enterprise' || currentView === 'varshaphala') && (
+              <KPEnterpriseView
+                chart={chart}
+              />
+            )}
+
+            {currentView === 'medical-astrology' && (
+              <MedicalAstrologyView
+                chart={chart}
+              />
+            )}
+
+            {(currentView === 'synastry' || currentView === 'btr') && (
+              <SynastryBTRView
+                chart={chart}
+                initialTab={currentView === 'btr' ? 'btr' : 'synastry'}
+              />
+            )}
+
+            {(currentView === 'muhurta' || currentView === 'prashna' || currentView === 'nadi') && (
+              <MuhurtaPrashnaView
+                chart={chart}
+                initialTab={currentView as 'muhurta' | 'prashna' | 'nadi'}
               />
             )}
 
