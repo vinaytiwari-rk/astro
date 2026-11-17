@@ -43,7 +43,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
   it('computes Sambhavit Falkathan with age calibration and authentic Arishta logic', () => {
     const report = computeSambhavitFalkathan(swamiChart);
 
-    expect(report.dimensions.length).toBe(50);
+    expect(report.dimensions.length).toBe(101);
 
     // Dimension 10 (Mother's Lifespan)
     const dim10 = report.dimensions.find((d) => d.id === 10);

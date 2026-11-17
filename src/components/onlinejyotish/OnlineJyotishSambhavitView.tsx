@@ -5,19 +5,18 @@ import {
   Award,
   BookOpen,
   Briefcase,
-  Calendar,
   CheckCircle2,
   Compass,
   Download,
   Flame,
+  Grid,
   Heart,
-  Moon,
+  Layers,
   Printer,
   Search,
   Shield,
   Sparkles,
   Star,
-  Sun,
   User,
   Users,
 } from 'lucide-react';
@@ -49,6 +48,8 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
+  const [filterType, setFilterType] = useState<'house' | 'category'>('house');
+  const [selectedHouse, setSelectedHouse] = useState<number | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -61,35 +62,61 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
     [chart]
   );
 
+  const houses = useMemo(() => [
+    { num: 'all', titleEn: 'All 101 Dimensions', titleHi: 'समस्त 101 आयाम', count: 101 },
+    { num: 1, titleEn: 'H1: Tanu & Self', titleHi: 'भाव 1: तनु व देह', count: 10 },
+    { num: 2, titleEn: 'H2: Dhana & Speech', titleHi: 'भाव 2: धन व वाणी', count: 8 },
+    { num: 3, titleEn: 'H3: Sahaja & Valour', titleHi: 'भाव 3: सहज व पराक्रम', count: 8 },
+    { num: 4, titleEn: 'H4: Sukha & Mother', titleHi: 'भाव 4: सुख व मातृ', count: 9 },
+    { num: 5, titleEn: 'H5: Intellect & Progeny', titleHi: 'भाव 5: बुद्धि व संतान', count: 10 },
+    { num: 6, titleEn: 'H6: Disease & Debts', titleHi: 'भाव 6: रोग, ऋण व शत्रु', count: 9 },
+    { num: 7, titleEn: 'H7: Marriage & Trade', titleHi: 'भाव 7: विवाह व व्यापार', count: 10 },
+    { num: 8, titleEn: 'H8: Longevity & Mystery', titleHi: 'भाव 8: आयु व रंध्र', count: 9 },
+    { num: 9, titleEn: 'H9: Fortune & Dharma', titleHi: 'भाव 9: भाग्य व धर्म', count: 9 },
+    { num: 10, titleEn: 'H10: Karma & Vocation', titleHi: 'भाव 10: कर्म व पद', count: 9 },
+    { num: 11, titleEn: 'H11: Gains & Network', titleHi: 'भाव 11: लाभ व आय', count: 5 },
+    { num: 12, titleEn: 'H12: Moksha & Foreign', titleHi: 'भाव 12: व्यय व मोक्ष', count: 5 },
+  ], []);
+
   const categories: { key: string; labelEn: string; labelHi: string; icon: React.ReactNode }[] = [
-    { key: 'all', labelEn: 'All 50 Dimensions', labelHi: 'समस्त 50 आयाम', icon: <Sparkles size={14} /> },
-    { key: 'identity', labelEn: 'Identity & Core', labelHi: 'पहचान व आत्म', icon: <User size={14} /> },
+    { key: 'all', labelEn: 'All Categories', labelHi: 'समस्त श्रेणियां', icon: <Sparkles size={14} /> },
+    { key: 'identity', labelEn: 'Identity & Core Self', labelHi: 'पहचान व आत्म', icon: <User size={14} /> },
+    { key: 'wealth_fortune', labelEn: 'Wealth & Prosperity', labelHi: 'धन व समृद्धि', icon: <Award size={14} /> },
     { key: 'family', labelEn: 'Parents & Lineage', labelHi: 'माता-पिता व कुल', icon: <Users size={14} /> },
-    { key: 'marriage', labelEn: 'Marriage & Spouse', labelHi: 'विवाह व दांपत्य', icon: <Heart size={14} /> },
-    { key: 'progeny', labelEn: 'Progeny & Family', labelHi: 'संतान व वंश', icon: <Star size={14} /> },
+    { key: 'marriage', labelEn: 'Marriage & Conjugal', labelHi: 'विवाह व दांपत्य', icon: <Heart size={14} /> },
+    { key: 'progeny', labelEn: 'Progeny & Lineage', labelHi: 'संतान व वंश', icon: <Star size={14} /> },
     { key: 'education', labelEn: 'Education & Intellect', labelHi: 'शिक्षा व विद्या', icon: <BookOpen size={14} /> },
     { key: 'career', labelEn: 'Career & Authority', labelHi: 'करियर व पद', icon: <Briefcase size={14} /> },
     { key: 'longevity_health', labelEn: 'Health & Longevity', labelHi: 'स्वास्थ्य व आयु', icon: <Activity size={14} /> },
     { key: 'shadow_challenges', labelEn: 'Shadow Challenges', labelHi: 'चुनौतियां व सतर्कता', icon: <Shield size={14} /> },
     { key: 'spirituality', labelEn: 'Spirituality & Grace', labelHi: 'आध्यात्म व मोक्ष', icon: <Flame size={14} /> },
-    { key: 'wealth_fortune', labelEn: 'Wealth & Prosperity', labelHi: 'धन व समृद्धि', icon: <Award size={14} /> },
   ];
 
   // Filter dimensions
   const filteredDimensions = useMemo(() => {
     return report.dimensions.filter((d) => {
-      const matchCat = selectedCategory === 'all' || d.category === selectedCategory;
-      if (!matchCat) return false;
+      // House filter
+      if (filterType === 'house' && selectedHouse !== 'all') {
+        if (d.houseNumber !== selectedHouse) return false;
+      }
 
+      // Category filter
+      if (filterType === 'category' && selectedCategory !== 'all') {
+        if (d.category !== selectedCategory) return false;
+      }
+
+      // Search query filter
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
       const inTitle = d.titleEn.toLowerCase().includes(q) || d.titleHi.includes(q);
       const inVerdict = d.verdictEn.toLowerCase().includes(q) || d.verdictHi.includes(q);
       const inBasis = d.astroBasisEn.toLowerCase().includes(q) || d.astroBasisHi.includes(q);
       const inAnalysis = d.detailedAnalysisEn.toLowerCase().includes(q) || d.detailedAnalysisHi.includes(q);
-      return inTitle || inVerdict || inBasis || inAnalysis;
+      const inRef = (d.classicalRef || '').toLowerCase().includes(q) || (d.classicalRef || '').includes(q);
+      const inVakri = (d.vakriNote || '').toLowerCase().includes(q) || (d.vakriNote || '').includes(q);
+      return inTitle || inVerdict || inBasis || inAnalysis || inRef || inVakri;
     });
-  }, [report.dimensions, selectedCategory, searchQuery]);
+  }, [report.dimensions, filterType, selectedHouse, selectedCategory, searchQuery]);
 
   return (
     <div className="oj-page-container">
@@ -116,7 +143,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </a>
         <span className="oj-bc-sep">/</span>
         <span className="oj-bc-current">
-          {isHi ? 'संभावित फलकथन (50 जीवन आयाम)' : 'Sambhavit Falkathan (50 Life Dimensions)'}
+          {isHi ? 'संभावित फलकथन (101 जीवन आयाम)' : 'Sambhavit Falkathan (101 Life Dimensions)'}
         </span>
       </nav>
 
@@ -124,18 +151,18 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
       <div className="oj-page-header-card">
         <div className="oj-header-badge">
           {isHi
-            ? 'समस्त 16 वर्ग कुंडलियों एवं अष्टकवर्ग (SAV 337) का संश्लेषित फलित · 100% निःशुल्क'
-            : 'Synthesized Synthesis of All 16 Divisional Charts & Ashtakavarga · 100% Free'}
+            ? 'पाराशर, जैमिनी, वराहमिहिर, फलदीपिका, सारावली, लाल किताब व बी.वी. रमन मत संश्लेषित · 100% निःशुल्क'
+            : 'Multi-Author Classical Synthesis: BPHS, Jaimini, Phaladeepika, Saravali, Lal Kitab & B.V. Raman · 100% Free'}
         </div>
         <h1 className="oj-page-title">
           {isHi
-            ? 'संभावित फलकथन — जीवन के 50 अनिवार्य पक्षों का प्रामाणिक व गतिशील विश्लेषण'
-            : 'Sambhavit Falkathan — 50 Dynamic & In-Depth Life Predictions'}
+            ? 'संभावित फलकथन — जीवन के 101 शास्त्रीय आयामों का प्रामाणिक व गतिशील महा-विश्लेषण'
+            : 'Sambhavit Falkathan — 101 Classical Life Dimensions Authentic Dossier'}
         </h1>
         <p className="oj-page-subtitle">
           {isHi
-            ? 'जातक के विशिष्ट लग्न, भावेश, ग्रह गरिमा, अष्टकवर्ग बिंदु एवं वर्तमान विंशोत्तरी दशा पर आधारित बिंदुवार प्रामाणिक फलादेश। कोई भी फलादेश सामान्य या स्थिर नहीं है।'
-            : 'Point-wise classical dossier strictly customized to the native’s exact Lagna, House Lords, planetary dignities, Ashtakavarga SAV points, and current Vimshottari Mahadasha/Antardasha.'}
+            ? 'समस्त 12 भावों, भावेश गरिमा, नवांश/दशमांश वर्ग पुष्टि, वक्री ग्रह चेष्टा बल एवं वर्तमान विंशोत्तरी महादशा-अंतर्दशा पर आधारित 101 बिंदुवार प्रामाणिक फलादेश।'
+            : 'Point-wise classical dossier covering all 12 houses, planetary dignities, D9/D10 divisional verifications, retrograde chesta bala calculations, and active Vimshottari dasha.'}
         </p>
 
         {/* Action Buttons */}
@@ -146,7 +173,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           </button>
           <button type="button" className="oj-action-btn secondary" onClick={() => window.print()}>
             <Printer size={14} />
-            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 50 Dimensions Dossier'}</span>
+            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 101 Dimensions Dossier'}</span>
           </button>
         </div>
       </div>
@@ -207,8 +234,9 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </div>
       </div>
 
-      {/* Search & Category Filter Bar */}
+      {/* Search & Multi-tier Filter Bar */}
       <div className="oj-filter-controls-card no-print">
+        {/* Search Row */}
         <div className="oj-search-row">
           <div className="oj-search-box">
             <Search size={15} className="oj-search-icon" />
@@ -218,8 +246,8 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 isHi
-                  ? '50 फलकथनों में खोजें (उदा: विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग...)'
-                  : 'Search 50 predictions (e.g. marriage, career, father, surgery, wealth, progeny...)'
+                  ? '101 फलकथनों में खोजें (उदा: विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग, फलदीपिका, वक्री...)'
+                  : 'Search 101 dimensions (e.g. marriage, career, father, surgery, wealth, Phaladeepika, retrograde...)'
               }
               className="oj-search-input"
             />
@@ -236,27 +264,77 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           <div className="oj-results-count">
             {isHi
               ? `कुल ${filteredDimensions.length} आयाम प्रदर्शित`
-              : `Showing ${filteredDimensions.length} of 50 Dimensions`}
+              : `Showing ${filteredDimensions.length} of 101 Dimensions`}
           </div>
         </div>
 
-        {/* Categories Pills */}
-        <div className="oj-category-pills-row">
-          {categories.map((cat) => (
-            <button
-              key={cat.key}
-              type="button"
-              className={`oj-cat-pill ${selectedCategory === cat.key ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.key)}
-            >
-              {cat.icon}
-              <span>{isHi ? cat.labelHi : cat.labelEn}</span>
-            </button>
-          ))}
+        {/* Filter Mode Selector (12 Bhavas vs Categories) */}
+        <div style={{ display: 'flex', gap: '8px', margin: '10px 0 8px 0', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
+            {isHi ? 'फिल्टर वर्गीकरण:' : 'Filter Grouping:'}
+          </span>
+          <button
+            type="button"
+            className={`oj-cat-pill ${filterType === 'house' ? 'active' : ''}`}
+            onClick={() => setFilterType('house')}
+            style={{ fontSize: '12px', padding: '4px 10px' }}
+          >
+            <Grid size={13} />
+            <span>{isHi ? '12 भाव अनुसार (House-wise)' : '12 Houses View'}</span>
+          </button>
+          <button
+            type="button"
+            className={`oj-cat-pill ${filterType === 'category' ? 'active' : ''}`}
+            onClick={() => setFilterType('category')}
+            style={{ fontSize: '12px', padding: '4px 10px' }}
+          >
+            <Layers size={13} />
+            <span>{isHi ? 'विषय / श्रेणी अनुसार (Categories)' : 'Category View'}</span>
+          </button>
         </div>
+
+        {/* 12 Bhavas Scrollable Strip */}
+        {filterType === 'house' && (
+          <div className="oj-bhava-filter-strip">
+            {houses.map((h) => {
+              const isSelected = selectedHouse === h.num;
+              return (
+                <button
+                  key={String(h.num)}
+                  type="button"
+                  className={`oj-cat-pill ${isSelected ? 'active' : ''}`}
+                  onClick={() => setSelectedHouse(h.num as any)}
+                  style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  <span>{isHi ? h.titleHi : h.titleEn}</span>
+                  <span style={{ fontSize: '10px', opacity: 0.8, marginLeft: '4px' }}>
+                    ({h.count})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Category Pills Strip */}
+        {filterType === 'category' && (
+          <div className="oj-category-pills-row">
+            {categories.map((cat) => (
+              <button
+                key={cat.key}
+                type="button"
+                className={`oj-cat-pill ${selectedCategory === cat.key ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat.key)}
+              >
+                {cat.icon}
+                <span>{isHi ? cat.labelHi : cat.labelEn}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 50 Dimensions Grid */}
+      {/* 101 Dimensions Grid */}
       <div className="oj-50-predictions-container">
         {filteredDimensions.map((dim) => (
           <article
@@ -264,10 +342,15 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
             className={`oj-dim-card oj-dim-${dim.auspiciousness}`}
             id={`dimension-${dim.id}`}
           >
-            {/* Header: Number, Title, Category Badge & Auspiciousness Pill */}
+            {/* Header: Number, House Badge, Category Badge & Auspiciousness Pill */}
             <div className="oj-dim-header">
-              <div className="oj-dim-id-badge">
+              <div className="oj-dim-id-badge" style={{ gap: '6px', flexWrap: 'wrap' }}>
                 <span className="oj-dim-num">#{dim.id}</span>
+                {dim.houseNumber && (
+                  <span className="oj-dim-house-badge">
+                    {isHi ? dim.houseTitleHi : dim.houseTitleEn}
+                  </span>
+                )}
                 <span className="oj-dim-cat-tag">
                   {isHi ? dim.categoryTitleHi : dim.categoryTitleEn}
                 </span>
@@ -279,6 +362,30 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
                 {dim.auspiciousness === 'challenging_caution' && (isHi ? 'सतर्कता अपेक्षित' : 'Needs Caution')}
               </div>
             </div>
+
+            {/* Classical Attributions & Divisional Badges */}
+            <div className="oj-dim-badges-row">
+              {dim.classicalRef && (
+                <span className="oj-dim-classical-badge" title={isHi ? 'शास्त्रीय ग्रंथ एवं ऋषि मत' : 'Classical Astrological Source'}>
+                  <BookOpen size={11} />
+                  <span>{dim.classicalRef}</span>
+                </span>
+              )}
+              {dim.divisionalRef && (
+                <span className="oj-dim-varga-badge" title={isHi ? 'वर्ग कुंडली प्रमाण' : 'Divisional Chart Verification'}>
+                  <Compass size={11} />
+                  <span>{dim.divisionalRef}</span>
+                </span>
+              )}
+            </div>
+
+            {/* Retrograde / Vakri Dynamic Note (when present) */}
+            {dim.vakriNote && (
+              <div className="oj-dim-vakri-badge">
+                <Flame size={13} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>{dim.vakriNote}</span>
+              </div>
+            )}
 
             <h2 className="oj-dim-title">{isHi ? dim.titleHi : dim.titleEn}</h2>
 
@@ -337,10 +444,11 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
               className="oj-action-btn secondary"
               onClick={() => {
                 setSearchQuery('');
+                setSelectedHouse('all');
                 setSelectedCategory('all');
               }}
             >
-              {isHi ? 'सभी 50 आयाम दिखाएं' : 'Reset Filters & Show All 50'}
+              {isHi ? 'सभी 101 आयाम दिखाएं' : 'Reset Filters & Show All 101'}
             </button>
           </div>
         )}
