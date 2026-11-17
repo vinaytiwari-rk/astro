@@ -4,6 +4,8 @@ import { computeBTR, type BTRLifeEvent, type BTREventType } from '../../astro/bi
 import { SAMPLE_CHARTS } from '../../data/cities';
 import { calculateChart } from '../../astro/calculator';
 import { DEFAULT_SETTINGS } from '../../data/cities';
+import { formatDateDmy } from '../../astro/time';
+import { DateDmyInput } from '../DateDmyInput';
 import type { ChartData } from '../../astro/types';
 
 interface SynastryBTRViewProps {
@@ -107,7 +109,7 @@ export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initial
               >
                 {SAMPLE_CHARTS.map((sc, idx) => (
                   <option key={sc.id} value={idx}>
-                    {sc.name} ({sc.date})
+                    {sc.name} ({formatDateDmy(sc.date)})
                   </option>
                 ))}
               </select>
@@ -239,11 +241,10 @@ export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initial
                 <option value="major_success">Major Success</option>
               </select>
 
-              <input
-                type="date"
+              <DateDmyInput
                 value={newEventDate}
-                onChange={(e) => setNewEventDate(e.target.value)}
-                style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontSize: '12.5px' }}
+                onChange={setNewEventDate}
+                compact
               />
 
               <input
@@ -268,7 +269,7 @@ export const SynastryBTRView: React.FC<SynastryBTRViewProps> = ({ chart, initial
                 <div key={ev.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '6px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
                   <div>
                     <strong style={{ fontSize: '13px', color: 'var(--accent)', textTransform: 'capitalize' }}>{ev.eventType.replace('_', ' ')}</strong>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '10px' }}>({ev.date})</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '10px' }}>({formatDateDmy(ev.date)})</span>
                     {ev.description && <span style={{ fontSize: '12px', color: 'var(--text)', marginLeft: '10px' }}>· {ev.description}</span>}
                   </div>
                   <button

@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { formatDateDmy } from '../../astro/time';
 import { ChartData } from '../../astro/types';
 import {
   computeSadeSatiPhases,
@@ -31,8 +32,7 @@ function intensityLabel(level: 1 | 2 | 3): string {
 }
 
 function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+  return formatDateDmy(iso);
 }
 
 function statusBadgeClass(status: SadeSatiCurrentStatus): string {

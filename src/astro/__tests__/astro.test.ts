@@ -860,6 +860,8 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     // 5. DD-MM-YYYY formatting & parsing roundtrip
     expect(formatDateDmy('2000-05-15')).toBe('15-05-2000');
     expect(formatDateDmy('2026-11-11 06:33')).toBe('11-11-2026 06:33');
+    expect(formatDateDmy(new Date(2026, 10, 17))).toBe('17-11-2026');
+    expect(formatDateDmy(new Date(2026, 10, 17).getTime())).toBe('17-11-2026');
     expect(parseDateInputToIso('15-05-2000')).toBe('2000-05-15');
     expect(parseDateInputToIso('29/02/2024')).toBe('2024-02-29');
     expect(parseDateInputToIso('31-02-2024')).toBeNull();

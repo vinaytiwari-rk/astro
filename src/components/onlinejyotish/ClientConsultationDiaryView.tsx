@@ -3,6 +3,7 @@ import { BookOpen, Calendar, Edit3, Plus, Printer, Trash2, CheckCircle2, User, S
 import type { ChartData, BirthInput } from '../../astro/types';
 import { formatDateDmy } from '../../astro/time';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { DateDmyInput } from '../DateDmyInput';
 
 export interface ConsultationNoteItem {
   id: string;
@@ -174,14 +175,12 @@ export const ClientConsultationDiaryView: React.FC<ClientConsultationDiaryViewPr
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
-                  {isHi ? 'परामर्श तिथि:' : 'Consultation Date:'}
+                  {isHi ? 'परामर्श तिथि (DD-MM-YYYY):' : 'Consultation Date (DD-MM-YYYY):'}
                 </label>
-                <input
-                  type="date"
+                <DateDmyInput
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)' }}
-                  required
+                  onChange={(d) => setFormData({ ...formData, date: d })}
+                  compact
                 />
               </div>
 
@@ -207,13 +206,12 @@ export const ClientConsultationDiaryView: React.FC<ClientConsultationDiaryViewPr
 
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
-                  {isHi ? 'अनुवर्ती परामर्श तिथि (Follow-up):' : 'Follow-up Date:'}
+                  {isHi ? 'अनुवर्ती परामर्श तिथि (DD-MM-YYYY):' : 'Follow-up Date (DD-MM-YYYY):'}
                 </label>
-                <input
-                  type="date"
+                <DateDmyInput
                   value={formData.followUpDate}
-                  onChange={(e) => setFormData({ ...formData, followUpDate: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)' }}
+                  onChange={(d) => setFormData({ ...formData, followUpDate: d })}
+                  compact
                 />
               </div>
             </div>

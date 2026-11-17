@@ -23,6 +23,7 @@ import type { CityEntry } from '../../data/cities';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign } from '../../i18n/translations';
 import { InlineCityAutocomplete } from '../InlineCityAutocomplete';
+import { DateDmyInput } from '../DateDmyInput';
 
 interface OnlineJyotishPanchangViewProps {
   settings: CalcSettings;
@@ -225,11 +226,10 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
               <ChevronLeft size={16} />
               <span>{isHi ? 'कल' : 'Prev'}</span>
             </button>
-            <input
-              type="date"
+            <DateDmyInput
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="oj-panchang-date-input"
+              onChange={setSelectedDate}
+              compact
             />
             <button
               type="button"

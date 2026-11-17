@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { ChartData, CalcSettings, ChartStyle, BirthInput, NineGrahaId } from '../../astro/types';
 import { calculateChart } from '../../astro/calculator';
 import { SIGNS } from '../../astro/constants';
+import { formatDateDmy } from '../../astro/time';
 import { VedicChartSvg, type ChartBadgeItem } from '../VedicChartSvg';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trPlanetShort, trSign } from '../../i18n/translations';
@@ -221,8 +222,8 @@ export const SplitStudioWorkstationView: React.FC<SplitStudioWorkstationViewProp
             {currentDasha.slice(0, 7).map((d, idx) => {
               const nowMs = new Date().getTime();
               const isCurrentMaha = nowMs >= d.startMs && nowMs <= d.endMs;
-              const startFormatted = new Date(d.startMs).toLocaleDateString();
-              const endFormatted = new Date(d.endMs).toLocaleDateString();
+              const startFormatted = formatDateDmy(d.startMs);
+              const endFormatted = formatDateDmy(d.endMs);
               const durationYrs = (d.durationDays / 365.25).toFixed(1);
 
               return (

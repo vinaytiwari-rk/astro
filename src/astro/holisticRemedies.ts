@@ -16,6 +16,7 @@
 
 import type { ChartData, NineGrahaId } from './types';
 import { SIGNS } from './constants';
+import { formatDateDmy } from './time';
 
 export type ProblemFocusArea =
   | 'all'
@@ -802,7 +803,7 @@ export function computeHolisticRemedies(
   // 8. Prescription Slip
   const prescriptionSlip: PrescriptionSlip = {
     clientName: chart.input.name || 'Valued Seeker',
-    dateStr: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+    dateStr: formatDateDmy(new Date()),
     activeDasha: `${mdLord} Mahadasha / ${adLord} Antardasha`,
     dominantDoshaOrAfflictionEn: isSadeSatiOrDhaiya
       ? `Active Sade Sati / Dhaiya Influence + Running ${mdLord} Dasha`

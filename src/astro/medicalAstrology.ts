@@ -1,5 +1,6 @@
 import type { ChartData, NineGrahaId, SevenPlanetId } from './types';
 import { SIGNS, NAKSHATRAS } from './constants';
+import { formatDateDmy } from './time';
 
 // ─────────────────────────── Types ───────────────────────────
 
@@ -426,15 +427,15 @@ function computeCriticalPoints(chart: ChartData): KriticalPoints {
   const khareshPeriods: string[] = [];
   for (const period of chart.vimshottari) {
     if (period.lord === dk22Lord) {
-      const start = new Date(period.startMs).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
-      const end = new Date(period.endMs).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
+      const start = formatDateDmy(period.startMs);
+      const end = formatDateDmy(period.endMs);
       khareshPeriods.push(`${dk22Lord} Mahadasha: ${start} – ${end}`);
     }
     if (period.children) {
       for (const sub of period.children) {
         if (sub.lord === dk22Lord) {
-          const start = new Date(sub.startMs).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
-          const end = new Date(sub.endMs).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
+          const start = formatDateDmy(sub.startMs);
+          const end = formatDateDmy(sub.endMs);
           khareshPeriods.push(`${period.lord}/${dk22Lord} Antardasha: ${start} – ${end}`);
         }
       }

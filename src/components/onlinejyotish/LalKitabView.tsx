@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ChartData } from '../../astro/types';
 import { computeFullLalKitabReport, type FullLalKitabReport } from '../../astro/lalKitabExtended';
+import { formatDateDmy } from '../../astro/time';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { BookOpen, AlertCircle, Compass, ShieldAlert, Sparkles, Sliders, Printer } from 'lucide-react';
 
@@ -389,7 +390,7 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
                 <th>{isHi ? 'दशा स्वामी' : 'Dasha Lord'}</th>
                 <th>{isHi ? 'अवधि (वर्ष)' : 'Duration (Yrs)'}</th>
                 <th>{isHi ? 'आयु विस्तार' : 'Age Span'}</th>
-                <th>{isHi ? 'तिथि सीमा' : 'Date Range'}</th>
+                <th>{isHi ? 'तिथि सीमा (DD-MM-YYYY)' : 'Date Range (DD-MM-YYYY)'}</th>
                 <th>{isHi ? 'शास्त्रीय फलकथन' : 'Lal Kitab Impact'}</th>
               </tr>
             </thead>
@@ -399,7 +400,7 @@ export const LalKitabView: React.FC<LalKitabViewProps> = ({ chart, onNavigate })
                   <td><strong>{HINDI_GRAHAS[d.planet] || d.planet}</strong></td>
                   <td>{d.years} {isHi ? 'वर्ष' : 'Years'}</td>
                   <td>{d.startAge} से {d.endAge} वर्ष</td>
-                  <td><span className="muted" style={{ fontSize: '11.5px' }}>{d.startDate} — {d.endDate}</span></td>
+                  <td><span className="muted" style={{ fontSize: '11.5px' }}>{formatDateDmy(d.startDate)} — {formatDateDmy(d.endDate)}</span></td>
                   <td style={{ fontSize: '12px' }}>{isHi ? d.effectHi : d.effectEn}</td>
                 </tr>
               ))}

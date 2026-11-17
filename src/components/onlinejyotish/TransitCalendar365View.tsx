@@ -22,6 +22,7 @@ import {
   type TransitCalendar365Report,
 } from '../../astro/transitCalendar365';
 import type { ChartData } from '../../astro/types';
+import { formatDateDmy } from '../../astro/time';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 interface TransitCalendar365ViewProps {
@@ -153,7 +154,7 @@ export const TransitCalendar365View: React.FC<TransitCalendar365ViewProps> = ({ 
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <strong style={{ fontSize: '13px', color: 'var(--text)' }}>{d.dateStr}</strong>
+                <strong style={{ fontSize: '13px', color: 'var(--text)' }}>{formatDateDmy(d.dateStr)}</strong>
                 <span style={{ fontSize: '11px', fontWeight: 700, background: '#059669', color: '#fff', padding: '2px 6px', borderRadius: '4px' }}>
                   {d.dailyScore} / 100
                 </span>
@@ -249,7 +250,7 @@ export const TransitCalendar365View: React.FC<TransitCalendar365ViewProps> = ({ 
                   <strong style={{ fontSize: '14px', color: 'var(--text)' }}>
                     {d.dayNum} {isHi ? currentMonth.monthNameHi : currentMonth.monthName} ({isHi ? d.dayOfWeekHi : d.dayOfWeek})
                   </strong>
-                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{d.dateStr}</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{formatDateDmy(d.dateStr)}</div>
                 </div>
 
                 <div

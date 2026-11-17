@@ -1590,8 +1590,8 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
                   <thead>
                     <tr>
                       <th>{isHi ? 'महादशा' : 'Mahadasha'}</th>
-                      <th>{isHi ? 'आरंभ तिथि' : 'Start Date'}</th>
-                      <th>{isHi ? 'समाप्ति तिथि' : 'End Date'}</th>
+                      <th>{isHi ? 'आरंभ तिथि (DD-MM-YYYY)' : 'Start Date (DD-MM-YYYY)'}</th>
+                      <th>{isHi ? 'समाप्ति तिथि (DD-MM-YYYY)' : 'End Date (DD-MM-YYYY)'}</th>
                       <th>{isHi ? 'अवधि' : 'Duration'}</th>
                     </tr>
                   </thead>
@@ -1599,8 +1599,8 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
                     {tribhagiData.map((td, i) => (
                       <tr key={i}>
                         <td style={{ fontWeight: 700, color: 'var(--accent)' }}>{trPlanet(td.lord, lang)}</td>
-                        <td>{new Date(td.startMs).toLocaleDateString()}</td>
-                        <td>{new Date(td.endMs).toLocaleDateString()}</td>
+                        <td>{formatDateDmy(td.startMs)}</td>
+                        <td>{formatDateDmy(td.endMs)}</td>
                         <td>{(td.durationDays / 365.25).toFixed(1)} {isHi ? 'वर्ष' : 'Years'}</td>
                       </tr>
                     ))}
@@ -1621,8 +1621,8 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
                   <thead>
                     <tr>
                       <th>{isHi ? 'योगिनी' : 'Yogini'}</th>
-                      <th>{isHi ? 'आरंभ तिथि' : 'Start Date'}</th>
-                      <th>{isHi ? 'समाप्ति तिथि' : 'End Date'}</th>
+                      <th>{isHi ? 'आरंभ तिथि (DD-MM-YYYY)' : 'Start Date (DD-MM-YYYY)'}</th>
+                      <th>{isHi ? 'समाप्ति तिथि (DD-MM-YYYY)' : 'End Date (DD-MM-YYYY)'}</th>
                       <th>{isHi ? 'अवधि' : 'Duration'}</th>
                     </tr>
                   </thead>
@@ -1630,8 +1630,8 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
                     {yoginiData.map((yd, i) => (
                       <tr key={i}>
                         <td style={{ fontWeight: 700 }}>{yd.lord}</td>
-                        <td>{new Date(yd.startMs).toLocaleDateString()}</td>
-                        <td>{new Date(yd.endMs).toLocaleDateString()}</td>
+                        <td>{formatDateDmy(yd.startMs)}</td>
+                        <td>{formatDateDmy(yd.endMs)}</td>
                         <td>{(yd.durationDays / 365.25).toFixed(1)} {isHi ? 'वर्ष' : 'Years'}</td>
                       </tr>
                     ))}

@@ -186,16 +186,63 @@ export function formatDurationMs(ms: number): string {
 }
 
 /**
- * Formats any YYYY-MM-DD (or YYYY-MM-DD HH:MM) string into DD-MM-YYYY display format.
+ * Formats any YYYY-MM-DD (or YYYY-MM-DD HH:MM), epoch timestamp (ms), Date instance,
+ * or MM/DD/YYYY string into canonical DD-MM-YYYY display format.
  */
-export function formatDateDmy(value: string | null | undefined): string {
-  if (!value) return '';
-  const trimmed = value.trim();
-  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})(.*)$/.exec(trimmed);
+export function formatDateDmy(value: string | number | Date | null | undefined): string {
+  if (value === null || value === undefined) return '';
+
+  if (typeof value === 'number') {
+    if (Number.isNaN(value) || value <= 0) return '';
+    const d = new Date(value);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return '';
+    const dd = String(value.getDate()).padStart(2, '0');
+    const mm = String(value.getMonth() + 1).padStart(2, '0');
+    const yyyy = value.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  const trimmed = String(value).trim();
+  if (!trimmed) return '';
+
+  // ISO: YYYY-MM-DD or YYYY/MM/DD
+  const isoMatch = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(.*)$/.exec(trimmed);
   if (isoMatch) {
     const [, y, m, d, rest] = isoMatch;
-    return `${d}-${m}-${y}${rest}`;
+    return `${d.padStart(2, '0')}-${m.padStart(2, '0')}-${y}${rest}`;
   }
+
+  // Already DD-MM-YYYY or DD/MM/YYYY
+  const dmyMatch = /^(\d{1,2})[-/](\d{1,2})[-/](\d{4})(.*)$/.exec(trimmed);
+  if (dmyMatch) {
+    const [, d, m, y, rest] = dmyMatch;
+    // Check if first number might be month and second day (e.g. MM/DD/YYYY where M <= 12 and D > 12)
+    const n1 = parseInt(d, 10);
+    const n2 = parseInt(m, 10);
+    if (n1 <= 12 && n2 > 12) {
+      // Month was first! Swap to DD-MM-YYYY
+      return `${String(n2).padStart(2, '0')}-${String(n1).padStart(2, '0')}-${y}${rest}`;
+    }
+    return `${d.padStart(2, '0')}-${m.padStart(2, '0')}-${y}${rest}`;
+  }
+
+  // Fallback: parse via Date if it's an ISO timestamp with T
+  const parsedMs = Date.parse(trimmed);
+  if (!Number.isNaN(parsedMs)) {
+    const d = new Date(parsedMs);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
   return trimmed;
 }
 

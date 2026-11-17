@@ -145,7 +145,7 @@ export const OnlineJyotishFestivalsView: React.FC<OnlineJyotishFestivalsViewProp
           <table className="oj-table">
             <thead>
               <tr>
-                <th>{isHi ? 'दिनांक' : 'Date (DD-MM-YYYY)'}</th>
+                <th>{isHi ? 'दिनांक (DD-MM-YYYY)' : 'Date (DD-MM-YYYY)'}</th>
                 <th>{isHi ? 'वार' : 'Day'}</th>
                 <th>{isHi ? 'पर्व / व्रत का नाम' : 'Festival / Vrat'}</th>
                 <th>{isHi ? 'श्रेणी' : 'Category'}</th>

@@ -1,6 +1,7 @@
 import type { BodyPosition, ChartData, DashaPeriod, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS, NAKSHATRAS } from '../constants';
 import { findActiveDashaPath } from '../dasha';
+import { formatDateDmy } from '../time';
 import type { ChapterSection } from './lifeDossierEngine';
 
 export const SIGN_HI = [
@@ -583,14 +584,14 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
     astrologicalCauseEn: `Phaladeepika (Ch. 20, Shloka 12–15) & Brihat Parashara Hora Shastra (Ch. 52): Running Mahadasha of ${mdLord} (House ${mdHouse}) with Antardasha of ${adLord} (House ${adHouse}) in mutual ${mutualDistance}th house relation (${isShadashtaka ? 'Shadashtaka 6/8' : isDvidwadasa ? 'Dvidwadasa 2/12' : isKendra ? 'Kendra' : isTrikona ? 'Trikona' : 'Upachaya'}). Transit Saturn operates in sidereal Pisces (House ${saturnHouseFromMoon} from natal Moon).`,
     astrologicalCauseHi: `शास्त्रीय कारण: फलदीपिका (अध्याय २०) एवं बृहत्पाराशर होराशास्त्र (अध्याय ५२): वर्तमान में '${PLANET_HI[mdLord] || mdLord}' (भाव ${mdHouse}) की महादशा में '${PLANET_HI[adLord] || adLord}' (भाव ${adHouse}) की अंतर्दशा गतिशील है, जिनका परस्पर संबंध ${mutualDistance}वें भाव का है (${isShadashtaka ? 'षडाष्टक 6/8' : isDvidwadasa ? 'द्विर्द्वादश 2/12' : 'केंद्र/त्रिकोण'})। गोचर में शनि देव मीन राशि में चंद्र से ${saturnHouseFromMoon}वें भाव में संचार कर रहे हैं।`,
     keyPointsEn: [
-      `Running Mahadasha: ${mdLord} (until ${mdPeriod?.endMs ? new Date(mdPeriod.endMs).toLocaleDateString() : 'Active'})`,
-      `Running Antardasha: ${adLord} (until ${adPeriod?.endMs ? new Date(adPeriod.endMs).toLocaleDateString() : 'Active'})`,
+      `Running Mahadasha: ${mdLord} (until ${mdPeriod?.endMs ? formatDateDmy(mdPeriod.endMs) : 'Active'})`,
+      `Running Antardasha: ${adLord} (until ${adPeriod?.endMs ? formatDateDmy(adPeriod.endMs) : 'Active'})`,
       `Saturn Transit Vector: ${sadeSatiStatusEn}`,
       `MD-AD Relationship: ${isShadashtaka ? 'Shadashtaka 6/8 (Acute Friction & Health Alerts)' : isDvidwadasa ? 'Dvidwadasa 2/12 (High Outflow & Relocation)' : 'Kendra/Trikona (Executive Consolidation)'}`,
     ],
     keyPointsHi: [
-      `सक्रिय महादशा: '${PLANET_HI[mdLord] || mdLord}' (समाप्ति: ${mdPeriod?.endMs ? new Date(mdPeriod.endMs).toLocaleDateString() : 'सक्रिय'})`,
-      `सक्रिय अंतर्दशा: '${PLANET_HI[adLord] || adLord}' (समाप्ति: ${adPeriod?.endMs ? new Date(adPeriod.endMs).toLocaleDateString() : 'सक्रिय'})`,
+      `सक्रिय महादशा: '${PLANET_HI[mdLord] || mdLord}' (समाप्ति: ${mdPeriod?.endMs ? formatDateDmy(mdPeriod.endMs) : 'सक्रिय'})`,
+      `सक्रिय अंतर्दशा: '${PLANET_HI[adLord] || adLord}' (समाप्ति: ${adPeriod?.endMs ? formatDateDmy(adPeriod.endMs) : 'सक्रिय'})`,
       `गोचर शनि की स्थिति: ${sadeSatiStatusHi}`,
       `दशा संबंध: ${isShadashtaka ? 'षडाष्टक 6/8 (संघर्ष व स्वास्थ्य सावधानी)' : isDvidwadasa ? 'द्विर्द्वादश 2/12 (अनपेक्षित व्यय)' : 'केंद्र/त्रिकोण (प्रतिष्ठा व दायित्व)'}`,
     ],

@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { ChartData, CalcSettings, BirthInput, NineGrahaId } from '../../astro/types';
 import { calculateChart } from '../../astro/calculator';
 import { SIGNS } from '../../astro/constants';
+import { formatDateDmy } from '../../astro/time';
+import { DateDmyInput } from '../DateDmyInput';
 
 interface DualTransitWheelViewProps {
   chart: ChartData;
@@ -410,12 +412,10 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
         >
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
             <span style={{ color: '#fde68a', fontWeight: 'bold' }}>गोचर दिनांक:</span>
-            <input
-              type="date"
+            <DateDmyInput
               value={transitDate}
-              onChange={(e) => setTransitDate(e.target.value)}
-              className="oj-select-pill"
-              style={{ background: 'rgba(0, 0, 0, 0.4)', color: '#ffffff', borderColor: 'rgba(245, 158, 11, 0.3)' }}
+              onChange={setTransitDate}
+              compact
             />
             <input
               type="time"
@@ -492,7 +492,7 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
         <div className="oj-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '12px', fontSize: '12px' }}>
             <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>
-              बाहरी रिंग: गोचर ग्रह ({transitDate}) | आंतरिक रिंग: जन्म कुंडली
+              बाहरी रिंग: गोचर ग्रह ({formatDateDmy(transitDate)}) | आंतरिक रिंग: जन्म कुंडली
             </span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#dc2626', fontWeight: 'bold' }}>
@@ -869,7 +869,7 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
                       onClick={() => setTransitDate(win.dateStr)}
                       style={{ padding: '4px 10px', fontSize: '11px' }}
                     >
-                      इस गोचर पर जाएं ({win.dateStr})
+                      इस गोचर पर जाएं ({formatDateDmy(win.dateStr)})
                     </button>
                   </div>
                 ))}

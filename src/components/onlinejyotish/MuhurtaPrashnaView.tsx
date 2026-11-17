@@ -4,8 +4,10 @@ import { computePrashnaKP, type PrashnaCategory } from '../../astro/prashnaKP';
 import { computeComprehensiveNadiReport } from '../../astro/nadiAstrology';
 import { computeBhriguChakraAndNadiAmsas } from '../../astro/predictions/bhriguChakraPaddhati';
 import { computeTajikaAndKeralaPrashna, type PrashnaTheme } from '../../astro/prashnaTajika';
+import { formatDateDmy } from '../../astro/time';
 import type { ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { DateDmyInput } from '../DateDmyInput';
 import {
   Award,
   BookOpen,
@@ -148,13 +150,12 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
 
             <div>
               <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                {isHi ? 'आरंभ तिथि:' : 'Search From Date:'}
+                {isHi ? 'आरंभ तिथि (DD-MM-YYYY):' : 'Search From Date (DD-MM-YYYY):'}
               </label>
-              <input
-                type="date"
+              <DateDmyInput
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)', fontWeight: 600 }}
+                onChange={setStartDate}
+                compact
               />
             </div>
 
@@ -203,7 +204,7 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong style={{ fontSize: '15px', color: 'var(--text)' }}>{w.date} ({w.dayOfWeek})</strong>
+                  <strong style={{ fontSize: '15px', color: 'var(--text)' }}>{formatDateDmy(w.date)} ({w.dayOfWeek})</strong>
                   <span
                     style={{
                       padding: '2px 8px',

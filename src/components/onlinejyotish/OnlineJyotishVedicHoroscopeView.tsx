@@ -682,8 +682,8 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
             <thead>
               <tr>
                 <th>{isHi ? 'महादशा' : 'Mahadasha'}</th>
-                <th>{isHi ? 'आरंभ तिथि' : 'Start Date'}</th>
-                <th>{isHi ? 'समाप्ति तिथि' : 'End Date'}</th>
+                <th>{isHi ? 'आरंभ तिथि (DD-MM-YYYY)' : 'Start Date (DD-MM-YYYY)'}</th>
+                <th>{isHi ? 'समाप्ति तिथि (DD-MM-YYYY)' : 'End Date (DD-MM-YYYY)'}</th>
                 <th>{isHi ? 'अवधि' : 'Span'}</th>
               </tr>
             </thead>
@@ -691,8 +691,8 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
               {chart.vimshottari.map((d, i) => (
                 <tr key={i}>
                   <td><strong className={`planet-${String(d.lord).toLowerCase()}`}>{trPlanet(d.lord as any, lang)} महादशा</strong></td>
-                  <td>{new Date(d.startMs).toLocaleDateString()}</td>
-                  <td>{new Date(d.endMs).toLocaleDateString()}</td>
+                  <td>{formatDateDmy(d.startMs)}</td>
+                  <td>{formatDateDmy(d.endMs)}</td>
                   <td>{Math.round(d.durationDays / 365.25)} {isHi ? 'वर्ष' : 'Years'}</td>
                 </tr>
               ))}

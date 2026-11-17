@@ -8,6 +8,7 @@
 
 import { NAKSHATRAS, NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
+import { formatDateDmy } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { getBhavesha144Entry } from './bhavesha144';
 import { detectClassicalYogas, type DetectedClassicalYoga } from './classicalYogasKb';
@@ -1444,7 +1445,7 @@ export function computeReferencePdfPredictions(chart: ChartData): ReferencePdfRe
   const dashaBhuktiPredictions: ReferencePdfDashaBhuktiItem[] = chart.vimshottari.slice(0, 15).map((d) => {
     const mdLord = d.lord;
     const adLord = d.lord; // representative
-    const startStr = new Date(d.startMs).toLocaleDateString('en-GB');
+    const startStr = formatDateDmy(d.startMs);
     const ageVal = ((d.startMs - new Date(chart.input.date).getTime()) / (365.2425 * 86400000)).toFixed(1);
 
     const fEn = `${mdLord} Mahadasha brings distinct cycles of growth, tests, and transformations. Material gains, career consolidation, and spiritual discernment evolve through sustained dedication. Financial stability requires proactive discipline.`;
