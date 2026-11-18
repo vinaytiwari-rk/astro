@@ -578,19 +578,6 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
   const topVocationsEn = vocationalThemesToShow.map((theme, index) => `${index + 1}. ${theme.en}`);
   const topVocationsHi = vocationalThemesToShow.map((theme, index) => `${index + 1}. ${theme.hi}`);
 
-    '1. Enterprise Technology & Software Architecture (AI, Cloud, Systems Engineering & Digital Platforms)',
-    '2. Wealth Portfolio Advisory & Strategic Financial Management (Investment Banking, Real Estate & Capital Markets)',
-    '3. High-Stakes Corporate Legal Strategy, Regulatory Arbitration & Intellectual Property Counsel',
-    '4. Industrial Manufacturing, Supply Chain Logistics & Infrastructure Contracting',
-    '5. Specialized Healthcare Diagnostics, Pharmaceutical Biotechnology & Clinical Research Leadership',
-  ];
-  const topVocationsHi: string[] = [
-    '1. एंटरप्राइज टेक्नोलॉजी एवं सॉफ्टवेयर आर्किटेक्चर (एआई, क्लाउड कंप्यूटिंग, सिस्टम्स डिजाइन व डिजिटल प्लेटफॉर्म्स)',
-    '2. रणनीतिक धन-प्रबंधन, वित्तीय परामर्श एवं पूंजी बाजार (इन्वेस्टमेंट बैंकिंग, रियल एस्टेट व कमर्शियल एसेट्स)',
-    '3. उच्च स्तरीय कॉर्पोरेट लीगल स्ट्रैटेजी, बौद्धिक संपदा (IPR) एवं विवाद मध्यस्थता परामर्श',
-    '4. औद्योगिक विनिर्माण, आपूर्ति श्रृंखला (Supply Chain/Logistics) एवं इंफ्रास्ट्रक्चर कॉन्ट्रैक्टिंग',
-    '5. स्वास्थ्य सेवा डायग्नोस्टिक्स, फार्मास्युटिकल बायो-टेक्नोलॉजी एवं क्लीनिकल रिसर्च मैनेजमेंट',
-  ];
 
   // 3d. Workplace Hazards & Politics
   const workplaceHazardsEn: string[] = [
