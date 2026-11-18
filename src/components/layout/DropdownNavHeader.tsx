@@ -213,6 +213,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'shadbala',
     'multi-dasha',
     'sudarshana',
+    'astrocartography',
+    'celebrity-twins',
+    'human-design',
+    'western-astrology',
   ].includes(currentView);
   const isToolsActive = [
     'prashna',
@@ -576,6 +580,22 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('shadbala')}>
                     <strong>{isHi ? 'षड्बल गणना (Shadbala)' : 'Shadbala Strengths'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'छह प्रकार के ग्रह बल' : 'Six-fold Planetary Balas'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('astrocartography')}>
+                    <strong>{isHi ? 'एस्ट्रोकार्टोग्राफी (विश्व मानचित्र)' : 'Astrocartography (World Lines)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('celebrity-twins')}>
+                    <strong>{isHi ? 'सेलिब्रिटी कुंडली ट्विन' : 'Celebrity Twin Matcher'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'ऐतिहासिक युगद्रष्टाओं से कुंडली सादृश्य' : 'Match with Historical Luminaries'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('human-design')}>
+                    <strong>{isHi ? 'ह्यूमन डिज़ाइन व ९ चक्र' : 'Human Design & 9 Centers'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '६४ आई-चिंग द्वार, आंतरिक सत्ता व बॉडीग्राफ़' : '64 I-Ching Gates & BodyGraph'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('western-astrology')}>
+                    <strong>{isHi ? 'पाश्चात्य 360° राशि चक्र' : 'Western Tropical Wheel'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '360° सर्कुलर व्हील, दृष्टि व तत्व' : '360° Circular Wheel & Aspects'}</span>
                   </button>
                 </div>
               )}

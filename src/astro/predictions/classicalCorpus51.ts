@@ -29,6 +29,7 @@ import {
   getPlanetHouseBookRecord,
   getDrekkanaRecord
 } from './classicalBookData';
+import { getBhavesha144Entry } from './bhavesha144';
 
 const HINDI_SIGNS = [
   'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
@@ -191,29 +192,56 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
   const eighthHousePlanet = planets.find((p) => (p.rasiHouseNumber ?? p.houseNumber) === 8);
   const twentySecondDrekkana = getDrekkanaRecord(eighthSign, eighthHousePlanet?.degreeInSign ?? lagnaDegVal);
 
-  const getBookHouseInsight = (h: number) => {
-    const occupants = planets.filter((p) => (p.rasiHouseNumber ?? p.houseNumber) === h);
-    if (occupants.length === 0) return null;
-    const p = occupants[0];
-    const rec = getPlanetHouseBookRecord(p.id, h);
-    if (!rec) return null;
+  // Tracks houses where chronological milestones and female horoscope notes have been attached
+  // so they appear strictly ONCE per house, rather than duplicating across all dimensions in that house.
+  const milestonesAssignedHouses = new Set<number>();
+  const femaleNoteAssignedHouses = new Set<number>();
 
-    let textHi = `\n\n[शास्त्रीय ग्रंथ फल - ${rec.titleHi}]: ${rec.baseHi}`;
-    let textEn = `\n\n[Classical Shastra Text - ${rec.titleEn}]: ${rec.baseEn}`;
+  const getDimensionTargetedInsight = (dimId: number, houseNum: number) => {
+    const occupants = planets.filter((p) => (p.rasiHouseNumber ?? p.houseNumber) === houseNum);
+    const hLord = getHLord(houseNum);
+    const bh = getBhavesha144Entry(houseNum, hLord.placedHouse);
 
-    if (isFemaleNative && rec.femaleHoroscope?.hi) {
-      textHi += `\n[स्त्री जातक विशेष फल]: ${rec.femaleHoroscope.hi}`;
-      textEn += `\n[In Female Horoscope]: ${rec.femaleHoroscope.en}`;
+    // Primary foundational dimension for each house (IDs: 1, 5, 9, 13, 17, 22, 26, 31, 35, 39, 44, 48)
+    const isPrimaryFoundationDim = [1, 5, 9, 13, 17, 22, 26, 31, 35, 39, 44, 48].includes(dimId);
+
+    let textHi = '';
+    let textEn = '';
+
+    if (occupants.length > 0) {
+      const p = occupants[0];
+      const rec = getPlanetHouseBookRecord(p.id, houseNum);
+      if (rec) {
+        if (isPrimaryFoundationDim) {
+          textHi += `\n\n[शास्त्रीय ग्रंथ प्रमाण - ${rec.titleHi}]: ${rec.baseHi}`;
+          textEn += `\n\n[Classical Shastra Treatise - ${rec.titleEn}]: ${rec.baseEn}`;
+
+          if (!milestonesAssignedHouses.has(houseNum) && rec.ageMilestones && rec.ageMilestones.length > 0) {
+            milestonesAssignedHouses.add(houseNum);
+            const msHi = rec.ageMilestones.map((m) => `आयु ${m.age}: ${m.eventHi}`).join(' | ');
+            const msEn = rec.ageMilestones.map((m) => `Age ${m.age}: ${m.eventEn}`).join(' | ');
+            textHi += `\n[आयु कालचक्र मील के पत्थर]: ${msHi}`;
+            textEn += `\n[Chronological Milestones]: ${msEn}`;
+          }
+        } else {
+          // Distinct Shastric Bhavesha lord synthesis for secondary dimensions in the same house
+          textHi += `\n\n[भावेश शास्त्रीय सूत्र - ${bh.headlineHi}]: ${bh.readingHi}`;
+          textEn += `\n\n[Classical House Lord Synthesis - ${bh.headlineEn}]: ${bh.readingEn}`;
+        }
+
+        if (isFemaleNative && [13, 26, 27].includes(dimId) && !femaleNoteAssignedHouses.has(houseNum) && rec.femaleHoroscope?.hi) {
+          femaleNoteAssignedHouses.add(houseNum);
+          textHi += `\n[स्त्री जातक विशेष फल]: ${rec.femaleHoroscope.hi}`;
+          textEn += `\n[In Female Horoscope]: ${rec.femaleHoroscope.en}`;
+        }
+      }
+    } else {
+      // Empty house: provide rich, authentic Bhavesha 144 entry for lord's placement
+      textHi += `\n\n[भावेश शास्त्रीय फल - ${bh.headlineHi}]: ${bh.readingHi} (फलकथन: ${bh.eventHi})`;
+      textEn += `\n\n[Classical House Lord Placement - ${bh.headlineEn}]: ${bh.readingEn} (Manifestation: ${bh.eventEn})`;
     }
 
-    if (rec.ageMilestones && rec.ageMilestones.length > 0) {
-      const msHi = rec.ageMilestones.map((m) => `आयु ${m.age}: ${m.eventHi}`).join(' | ');
-      const msEn = rec.ageMilestones.map((m) => `Age ${m.age}: ${m.eventEn}`).join(' | ');
-      textHi += `\n[आयु कालचक्र मील के पत्थर]: ${msHi}`;
-      textEn += `\n[Chronological Milestones]: ${msEn}`;
-    }
-
-    return { textHi, textEn, bookRec: rec };
+    return { textHi, textEn };
   };
 
   // Helper to add dimension with 1-second precision modulation and strict unvarnished truths
@@ -225,9 +253,9 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
     d.strengthScore = modulatedScore;
     d.auspiciousness = getAuspiciousness(modulatedScore);
 
-    // Integrate Classical Book House Sutras
+    // Integrate Dimension-Targeted Classical Shastra Sutras
     if (d.houseNumber) {
-      const bInsight = getBookHouseInsight(d.houseNumber);
+      const bInsight = getDimensionTargetedInsight(d.id, d.houseNumber);
       if (bInsight) {
         d.detailedAnalysisHi += bInsight.textHi;
         d.detailedAnalysisEn += bInsight.textEn;
@@ -241,33 +269,23 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
     }
 
     // Integrate 22nd Drekkana Maraka Indicator for 8th house
-    if (d.houseNumber === 8 && twentySecondDrekkana.isMarakaSensitive) {
+    if (d.houseNumber === 8 && d.id === 31 && twentySecondDrekkana.isMarakaSensitive) {
       d.detailedAnalysisHi += `\n\n[22वां खर द्रेष्काण सतर्कता]: ${twentySecondDrekkana.classificationHi} (${twentySecondDrekkana.nameHi}) - ${twentySecondDrekkana.karmicOutcomeHi}`;
       d.detailedAnalysisEn += `\n\n[22nd Drekkana Maraka Indicator]: ${twentySecondDrekkana.classification} (${twentySecondDrekkana.nameEn}) - ${twentySecondDrekkana.karmicOutcomeEn}`;
     }
 
-    // Stamping exact micro-astronomical coordinate into detailedAnalysis & astroBasis
-    const secStampHi = `\n\n[1-सेकंड सूक्ष्म वेध]: लग्न बिंदु: ${lagnaCoordStr} | D60 संचलन: ${d60ProgressionPct}% (${d60AmsaNameHi}) | KP उप-उप स्वामी: ${kpSubSubLordHi} | सूक्ष्म कला: ${(totalArcSec + d.id * 11) % 60}''`;
-    const secStampEn = `\n\n[1-Second Micro-Precision]: Lagna Cusp: ${lagnaCoordStr} | D60 Progression: ${d60ProgressionPct}% (${d60AmsaNameEn}) | KP Sub-Sub Lord: ${kpSubSubLord} | Micro-Sec: ${(totalArcSec + d.id * 11) % 60}''`;
+    // Exact micro-astronomical coordinate stamped into astroBasis & detailedAnalysis
+    d.detailedAnalysisHi += `\n[सूक्ष्म कालचक्र वेध]: लग्न बिंदु ${lagnaCoordStr} | D60 संचलन ${d60ProgressionPct}% (${d60AmsaNameHi}) | KP उप-उप ${kpSubSubLordHi}।`;
+    d.detailedAnalysisEn += `\n[Micro-Temporal Calibration]: Lagna Cusp ${lagnaCoordStr} | D60 Progression ${d60ProgressionPct}% (${d60AmsaNameEn}) | KP Sub-Sub ${kpSubSubLord}.`;
 
-    d.detailedAnalysisHi += secStampHi;
-    d.detailedAnalysisEn += secStampEn;
+    d.astroBasisHi += ` [सूक्ष्म लग्न बिंदु: ${lagnaCoordStr}, D60 संचलन: ${d60ProgressionPct}% (${d60AmsaNameHi}), KP उप-उप: ${kpSubSubLordHi}]`;
+    d.astroBasisEn += ` [Micro Cusp: ${lagnaCoordStr}, D60: ${d60ProgressionPct}% (${d60AmsaNameEn}), KP Sub-Sub: ${kpSubSubLord}]`;
 
-    d.astroBasisHi += ` [सूक्ष्म लग्न: ${lagnaCoordStr}, D60: ${d60ProgressionPct}%]`;
-    d.astroBasisEn += ` [Micro Cusp: ${lagnaCoordStr}, D60: ${d60ProgressionPct}%]`;
-
-    // Anti-Sugarcoating & Targeted Remedy Protocol:
-    // If dimension is favorable and strong, NO REMEDIES NEEDED!
-    if (d.strengthScore >= 52 && d.auspiciousness !== 'challenging_caution') {
-      d.remedyHi = 'इस क्षेत्र में कोई अनिष्टकारी ग्रह प्रभाव नहीं है; किसी उपाय, रत्न अथवा अनुष्ठान की आवश्यकता नहीं है। केवल सात्विक आचरण बनाए रखें।';
-      d.remedyEn = 'No malefic affliction in this domain; no gemstone, ritual, or remedy is required. Maintain ethical and balanced conduct.';
-    } else {
-      // If afflicted, state the unvarnished reality frankly
-      if (d.strengthScore < 45 || d.auspiciousness === 'challenging_caution') {
-        if (!d.verdictHi.includes('प्रतिकूल') && !d.verdictHi.includes('सावधानी') && !d.verdictHi.includes('अवरोध')) {
-          d.verdictHi = `[प्रतिकूल प्रभाव व अवरोध]: ${d.verdictHi} इस क्षेत्र में अप्रत्याशित विलंब, नुकसान अथवा हानि की वास्तविक संभावना है; सतर्कता अपेक्षित है।`;
-          d.verdictEn = `[Adverse Influence & Caution]: ${d.verdictEn} Tangible vulnerability to setbacks or friction in this sector; exercise measured prudence.`;
-        }
+    // Strict Unvarnished Truths — If afflicted, state the harsh reality frankly
+    if (d.strengthScore < 45 || d.auspiciousness === 'challenging_caution') {
+      if (!d.verdictHi.includes('प्रतिकूल') && !d.verdictHi.includes('सावधानी') && !d.verdictHi.includes('अवरोध')) {
+        d.verdictHi = `[प्रतिकूल प्रभाव व अवरोध]: ${d.verdictHi} इस क्षेत्र में अप्रत्याशित विलंब, रुकावट अथवा हानि की वास्तविक संभावना है; सतर्कता अपेक्षित है।`;
+        d.verdictEn = `[Adverse Influence & Caution]: ${d.verdictEn} Tangible vulnerability to setbacks or friction in this sector; exercise measured prudence.`;
       }
     }
 

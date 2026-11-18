@@ -883,6 +883,116 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <span>{isHi ? 'नाड़ी कण्डम पढ़ें →' : 'Read Nadi Kandams →'}</span>
               </button>
             </article>
+
+            {/* Card 18: Astrocartography */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #0284c7' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#0284c7', color: '#fff' }}>
+                  {isHi ? 'भू-ज्योतिष' : 'Astrocartography'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'एस्ट्रोकार्टोग्राफी व विश्व शक्ति रेखाएं' : 'Astrocartography & World Lines'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'जन्मकालीन ग्रहों की मध्यलग्न (MC), पाताल (IC), लग्न (AC) व सप्तम (DC) रेखाओं का वैश्विक मानचित्र एवं १२०+ प्रमुख वैश्विक नगरों में शक्ति विश्लेषण।'
+                  : 'Global projection of natal MC, IC, AC, and DC horizon/meridian vectors across 120+ top global metropolitan cities.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('astrocartography')}
+              >
+                <span>{isHi ? 'विश्व मानचित्र देखें →' : 'Explore World Map →'}</span>
+              </button>
+            </article>
+
+            {/* Card 19: Celebrity Kundli Twin */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #d97706' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#d97706', color: '#fff' }}>
+                  {isHi ? 'कुंडली सादृश्य' : 'Celebrity Twins'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'सेलिब्रिटी कुंडली ट्विन (Twin Matcher)' : 'Celebrity Kundli Twin Matcher'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'रॉडेन एए-रेटेड प्रामाणिक जन्म समय आधारित ऐतिहासिक युगद्रष्टाओं, वैज्ञानिकों व उद्योगपतियों से आपकी कुंडली का प्रतिशत सादृश्य एवं साझा योग।'
+                  : 'Benchmark your horoscope against Rodden AA-rated historical luminaries, identifying shared classical yogas and life lessons.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('celebrity-twins')}
+              >
+                <span>{isHi ? 'ट्विन मैच देखें →' : 'Check Twin Matches →'}</span>
+              </button>
+            </article>
+
+            {/* Card 20: Human Design BodyGraph */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #16a34a' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#16a34a', color: '#fff' }}>
+                  {isHi ? 'ह्यूमन डिज़ाइन' : 'Human Design'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'ह्यूमन डिज़ाइन व ९ चक्र बॉडीग्राफ़' : 'Human Design & 9 Centers BodyGraph'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? '६४ आई-चिंग षट्कोण द्वारों, ९ ऊर्जा केंद्रों (चक्रों), ५ ऊर्जा प्रकारों, आंतरिक निर्णय सत्ता एवं अवतार क्रॉस का आनुवंशिक ऊर्जा खाका।'
+                  : 'BodyGraph mapping of 64 I-Ching Gates, 9 Defined/Open Energy Centers, Energy Type, Strategy, and Inner Authority.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('human-design')}
+              >
+                <span>{isHi ? 'बॉडीग्राफ़ खोलें →' : 'Open BodyGraph →'}</span>
+              </button>
+            </article>
+
+            {/* Card 21: Tajika Varshaphala */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #f59e0b' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#f59e0b', color: '#fff' }}>
+                  {isHi ? 'ताजिक वर्षफल' : 'Varshaphala'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'ताजिक वार्षिक सौर वर्षफल (Varshaphala)' : 'Tajika Varshaphala (Solar Return)'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'सूर्य के जन्मकालीन निरयण अंश पर प्रवेश काल से वर्षेश, मुन्था, पंचाधिकारी, १६ ताजिक योग एवं मुद्देन दशा से वर्ष भर की घटनाओं का सटीक काल-निर्धारण।'
+                  : 'Solar return annual charts with Muntha, Varshesh, Panchadhikari candidates, 16 Tajika Yogas, and Mudda Dasha timeline.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('varshaphala')}
+              >
+                <span>{isHi ? 'वार्षिक वर्षफल देखें →' : 'View Annual Varshaphala →'}</span>
+              </button>
+            </article>
+
+            {/* Card 22: Western Tropical Wheel */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #8b5cf6' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#8b5cf6', color: '#fff' }}>
+                  {isHi ? 'पाश्चात्य चक्र' : 'Western Wheel'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'पाश्चात्य 360° राशि चक्र (Western Tropical)' : 'Western Tropical 360° Wheel'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? '360° वृत्ताकार पाश्चात्य होरोस्कोप, प्रमुख दृष्टि संबंध (युति, समसप्तक, नवपंचम, केंद्र दृष्टि) एवं चतुर्विध तत्व व स्वभाव का विश्लेषण।'
+                  : '360° circular tropical wheel, major aspects matrix (conjunction, opposition, trine, square, sextile) and elemental balances.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('western-astrology')}
+              >
+                <span>{isHi ? 'पाश्चात्य चक्र देखें →' : 'Open Western Wheel →'}</span>
+              </button>
+            </article>
           </div>
         </div>
       </section>

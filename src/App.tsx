@@ -29,6 +29,11 @@ import { ClientConsultationDiaryView } from './components/onlinejyotish/ClientCo
 import { TransitCalendar365View } from './components/onlinejyotish/TransitCalendar365View';
 import { FinancialAstrologyView } from './components/onlinejyotish/FinancialAstrologyView';
 import { SamudrikaShastraView } from './components/onlinejyotish/SamudrikaShastraView';
+import { AstrocartographyView } from './components/onlinejyotish/AstrocartographyView';
+import { CelebrityTwinView } from './components/onlinejyotish/CelebrityTwinView';
+import { HumanDesignView } from './components/onlinejyotish/HumanDesignView';
+import { VarshaphalaView } from './components/onlinejyotish/VarshaphalaView';
+import { WesternAstrologyView } from './components/WesternAstrologyView';
 import { LifeDossierView } from './components/LifeDossierView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
@@ -416,10 +421,17 @@ export function App() {
               />
             )}
 
-            {(currentView === 'kp-enterprise' || currentView === 'varshaphala') && (
+            {currentView === 'varshaphala' && (
+              <VarshaphalaView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'kp-enterprise' && (
               <KPEnterpriseView
                 chart={chart}
-                initialTab={currentView === 'varshaphala' ? 'varsha' : 'fourfold'}
+                initialTab="fourfold"
               />
             )}
 
@@ -538,6 +550,33 @@ export function App() {
               <SamudrikaShastraView
                 chart={chart}
                 onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'astrocartography' && (
+              <AstrocartographyView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'celebrity-twins' && (
+              <CelebrityTwinView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'human-design' && (
+              <HumanDesignView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'western-astrology' && (
+              <WesternAstrologyView
+                chart={chart}
               />
             )}
 

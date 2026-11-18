@@ -69,6 +69,15 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     const dim20 = report.dimensions.find((d) => d.id === 20);
     expect(dim20).toBeDefined();
     expect(dim20?.verdictHi).toBeTruthy();
+
+    // Verify all 51 dimensions have distinct, non-repetitive remedies and detailed analyses
+    const remediesHi = report.dimensions.map((d) => d.remedyHi);
+    const uniqueRemedies = new Set(remediesHi);
+    expect(uniqueRemedies.size).toBe(51);
+
+    const detailedHi = report.dimensions.map((d) => d.detailedAnalysisHi);
+    const uniqueDetailed = new Set(detailedHi);
+    expect(uniqueDetailed.size).toBe(51);
   });
 
   it('correctly handles chart with severe 7th house delay for adult native', () => {
