@@ -1,4 +1,5 @@
 name: One-time dependency remediation
+# Rebuild the npm lockfile after removing the temporary Git override.
 
 on:
   push:
