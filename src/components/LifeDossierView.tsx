@@ -561,6 +561,12 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
             mobileTab !== 'dossier' ? 'mobile-hidden' : ''
           }`}
         >
+          <div className="card" style={{ padding: '10px 14px', marginBottom: '12px', fontSize: '12.5px', lineHeight: 1.5 }}>
+            <strong>{isHi ? 'रिपोर्ट को कैसे पढ़ें: ' : 'How to read this report: '}</strong>
+            {isHi
+              ? 'हर अध्याय एक जीवन क्षेत्र के पारंपरिक ज्योतिषीय संकेत बताता है। अनुकूल, मिले-जुले या चुनौतीपूर्ण संकेत किसी घटना की गारंटी, प्रतिशत संभावना या निश्चित भविष्यवाणी नहीं हैं। स्वास्थ्य, कानूनी, वित्तीय और जीवन-मृत्यु से जुड़े निर्णय योग्य विशेषज्ञ की सलाह से ही लें।'
+              : 'Each chapter describes traditional astrological indications for one area of life. Supportive, mixed or challenging signs are not guarantees, probability percentages or certain predictions. For medical, legal, financial and life-or-death matters, rely on qualified professional advice.'}
+          </div>
           {/* Sticky Chapter Navigation Bar */}
           <nav className="dossier-chapter-nav-sticky">
             <div className="dossier-nav-scrollable">
@@ -654,43 +660,44 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                           <span className="bhava-number-badge">{bp.houseNumber}</span>
                           <span className="bhava-name-text">{isHi ? bp.bhavaNameHi : bp.bhavaNameEn}</span>
                         </div>
-                        <div className={`bhava-score-pill tone-${bp.verdictTone}`}>
-                          <span>{isHi ? 'भाव सामर्थ्य:' : 'Bhava Strength:'}</span>
-                          <strong className="mono">{bp.afflictionScore}/100</strong>
-                          <span className="small">
-                            ({bp.verdictTone === 'favorable' ? (isHi ? 'शुभ' : 'Favorable') : bp.verdictTone === 'mixed' ? (isHi ? 'मध्यम' : 'Mixed') : bp.verdictTone === 'challenging' ? (isHi ? 'चुनौतीपूर्ण' : 'Challenging') : (isHi ? 'गंभीर' : 'Critical')})
+                        <span className={`tag ${bp.verdictTone === 'favorable' ? 'tag-good' : bp.verdictTone === 'mixed' ? 'tag-subtle' : 'tag-warn'}`}>
+                          {isHi
+                            ? (bp.verdictTone === 'favorable' ? 'अनुकूल संकेत' : bp.verdictTone === 'mixed' ? 'मिले-जुले संकेत' : bp.verdictTone === 'challenging' ? 'अधिक प्रयास अपेक्षित' : 'विशेष सावधानी')
+                            : (bp.verdictTone === 'favorable' ? 'Supportive signs' : bp.verdictTone === 'mixed' ? 'Mixed signs' : bp.verdictTone === 'challenging' ? 'More effort needed' : 'Extra caution')}
+                        </span>
+                      </div>
+
+                      <div className={`bhava-unvarnished-verdict tone-${bp.verdictTone}`}>
+                        <strong>{isHi ? 'सरल अर्थ: ' : 'In everyday language: '}</strong>
+                        {bp.verdictTone === 'favorable'
+                          ? (isHi ? 'इस जीवन क्षेत्र में सहयोगी संकेत अधिक हैं। अवसरों का लाभ लेने के लिए योजना और निरंतर प्रयास जरूरी रहेंगे।' : 'This area has more supportive indications. Planning and consistent effort are still needed to make the most of opportunities.')
+                          : bp.verdictTone === 'mixed'
+                            ? (isHi ? 'इस क्षेत्र में अच्छे और चुनौतीपूर्ण दोनों संकेत हैं। परिणाम परिस्थिति और आपके निर्णयों के अनुसार बदल सकते हैं।' : 'Both supportive and challenging indications appear here. Outcomes can vary with circumstances and decisions.')
+                            : bp.verdictTone === 'challenging'
+                              ? (isHi ? 'इस क्षेत्र में अपेक्षाकृत अधिक मेहनत, धैर्य और व्यावहारिक तैयारी की जरूरत हो सकती है। इसे निश्चित असफलता न मानें।' : 'This area may require extra effort, patience and practical preparation. It does not mean certain failure.')
+                              : (isHi ? 'इस क्षेत्र में जल्दबाजी से बचें और जरूरी मामलों में विशेषज्ञ की सलाह लें। ज्योतिषीय संकेत को निश्चित घटना न समझें।' : 'Avoid rushing in this area and seek qualified advice where needed. An astrological indication is not a certain event.')}
+                      </div>
+                      <details className="dossier-technical-details" style={{ marginTop: '10px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}>
+                          {isHi ? 'विस्तृत फलादेश और ज्योतिषीय आधार देखें' : 'View detailed reading and astrological basis'}
+                        </summary>
+                        <div className="bhava-meta-strip">
+                          <span className="bhava-meta-item">{isHi ? 'राशि:' : 'Sign:'} <strong>{isHi ? bp.signNameHi : bp.signNameEn}</strong></span>
+                          <span className="bhava-meta-item">
+                            {isHi ? 'भावेश:' : 'House lord:'} <strong>{isHi ? bp.lordNameHi : bp.lordNameEn}</strong>
+                            {' '}({isHi ? 'भाव' : 'house'} {bp.lordPlacedHouse}, {bp.lordDignity}
+                            {bp.isLordRetrograde ? (isHi ? ', वक्री' : ', retrograde') : ''}
+                            {bp.isLordCombust ? (isHi ? ', अस्त' : ', combust') : ''})
+                          </span>
+                          <span className="bhava-meta-item">{isHi ? 'अष्टकवर्ग बिंदु:' : 'Ashtakavarga bindus:'} <strong>{bp.savBindus}</strong></span>
+                          <span className="bhava-meta-item">
+                            {isHi ? 'स्थित ग्रह:' : 'Occupants:'} <strong>{(isHi ? bp.occupantsHi : bp.occupantsEn).length > 0 ? (isHi ? bp.occupantsHi : bp.occupantsEn).join(', ') : (isHi ? 'कोई ग्रह नहीं' : 'None')}</strong>
                           </span>
                         </div>
-                      </div>
-
-                      <div className="bhava-meta-strip">
-                        <span className="bhava-meta-item">
-                          {isHi ? 'राशि:' : 'Sign:'} <strong>{isHi ? bp.signNameHi : bp.signNameEn}</strong>
-                        </span>
-                        <span className="bhava-meta-item">
-                          {isHi ? 'भावेश:' : 'Lord:'} <strong>{isHi ? bp.lordNameHi : bp.lordNameEn}</strong>{' '}
-                          (भाव {bp.lordPlacedHouse}, {bp.lordDignity}
-                          {bp.isLordRetrograde ? (isHi ? ', वक्री' : ', Retro') : ''}
-                          {bp.isLordCombust ? (isHi ? ', अस्त' : ', Combust') : ''})
-                        </span>
-                        <span className="bhava-meta-item">
-                          {isHi ? 'अष्टकवर्ग:' : 'SAV Bindus:'} <strong>{bp.savBindus} बिंदु</strong>
-                        </span>
-                        <span className="bhava-meta-item">
-                          {isHi ? 'स्थित ग्रह:' : 'Occupants:'}{' '}
-                          <strong>
-                            {(isHi ? bp.occupantsHi : bp.occupantsEn).length > 0
-                              ? (isHi ? bp.occupantsHi : bp.occupantsEn).join(', ')
-                              : (isHi ? 'रिक्त' : 'None')}
-                          </strong>
-                        </span>
-                      </div>
-
-                      {/* Unvarnished Verdict Banner */}
-                      <div className={`bhava-unvarnished-verdict tone-${bp.verdictTone}`}>
-                        <strong>{isHi ? 'यथार्थ फलादेश निर्णय: ' : 'Unvarnished Verdict: '}</strong>
-                        {isHi ? bp.verdictSummaryHi : bp.verdictSummaryEn}
-                      </div>
+                        <p style={{ margin: '8px 0 0', fontSize: '13px', lineHeight: 1.55 }}>
+                          {isHi ? bp.verdictSummaryHi : bp.verdictSummaryEn}
+                        </p>
+                      </details>
                     </div>
                   )}
 
