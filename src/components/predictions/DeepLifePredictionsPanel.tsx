@@ -64,7 +64,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
             style={{ fontSize: '14px', padding: '6px 12px', fontWeight: 700 }}
             title="Overall Life Auspiciousness Index"
           >
-            ★ {report.overallLifeScore} / 100
+            Score: {report.overallLifeScore} / 100
           </div>
         </div>
 

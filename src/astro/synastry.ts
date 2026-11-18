@@ -160,20 +160,20 @@ function getOverlaySignificance(chart1Point: string, chart2House: number): strin
   const map: Record<string, Record<number, string>> = {
     Asc: {
       1: 'Chart1 Lagna falls in Chart2\'s 1st — strong self-identity resonance.',
-      7: 'Chart1 Lagna in Chart2\'s 7th — powerful attraction and partnership potential. ★★★',
+      7: 'Chart1 Lagna in Chart2\'s 7th — powerful attraction and partnership potential.',
       5: 'Chart1 Lagna in Chart2\'s 5th — joy, romance, and creative energy.',
       11: 'Chart1 Lagna in Chart2\'s 11th — friendship and fulfillment of wishes.',
       4: 'Chart1 Lagna in Chart2\'s 4th — emotional security and home-making.',
     },
     Jupiter: {
-      2: 'Chart1 Jupiter in Chart2\'s 2nd — financial blessings and family values. ★★',
-      5: 'Chart1 Jupiter in Chart2\'s 5th — children, education, and wisdom blessings. ★★',
-      9: 'Chart1 Jupiter in Chart2\'s 9th — dharmic alignment and spiritual growth. ★★',
+      2: 'Chart1 Jupiter in Chart2\'s 2nd — financial blessings and family values.',
+      5: 'Chart1 Jupiter in Chart2\'s 5th — children, education, and wisdom blessings.',
+      9: 'Chart1 Jupiter in Chart2\'s 9th — dharmic alignment and spiritual growth.',
       11: 'Chart1 Jupiter in Chart2\'s 11th — expanding each other\'s prosperity and networks.',
     },
     Venus: {
       1: 'Chart1 Venus in Chart2\'s 1st — beauty, charm, and affectionate energy.',
-      7: 'Chart1 Venus in Chart2\'s 7th — strong romantic and marital compatibility. ★★',
+      7: 'Chart1 Venus in Chart2\'s 7th — strong romantic and marital compatibility.',
       5: 'Chart1 Venus in Chart2\'s 5th — romance, pleasure, and creative harmony.',
       2: 'Chart1 Venus in Chart2\'s 2nd — shared values around beauty and wealth.',
     },

@@ -353,8 +353,8 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
             </div>
           </div>
           <div className="muted small-text" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span>📅 {formatDateDmy(chart.input.date)} {chart.input.time}</span>
-            <span>📍 {chart.input.city}, {chart.input.country}</span>
+            <span>{formatDateDmy(chart.input.date)} {chart.input.time}</span>
+            <span>{chart.input.city}, {chart.input.country}</span>
             <span className="mono">({Math.abs(chart.input.latitude).toFixed(2)}°{chart.input.latitude >= 0 ? 'N' : 'S'}, {Math.abs(chart.input.longitude).toFixed(2)}°{chart.input.longitude >= 0 ? 'E' : 'W'})</span>
           </div>
         </div>
@@ -616,39 +616,39 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
                 background: 'var(--bg-subtle)',
               }}
             >
-              <optgroup label={isHi ? '🪐 वैदिक मूल गणना व ग्रह सामर्थ्य' : '🪐 Core Fundamentals & Strengths'}>
-                <option value="planets">🪐 {isHi ? 'ग्रह स्थिति, अंश, नक्षत्र, दृष्टि व चर कारक' : 'Planetary Longitudes, Nakshatras & Dignities'}</option>
-                <option value="cusps">🏛️ {isHi ? 'द्वादश भाव संधि, भाव मध्य व भाव विस्तार' : 'House Cusps & Bhava Spans (12 Bhavas)'}</option>
-                <option value="dasha">⏳ {isHi ? 'विंशोत्तरी 5-स्तरीय दशा वृक्ष व योगिनी दशा' : '5-Level Vimshottari & Yogini Dasha Explorer'}</option>
-                <option value="ashtakavarga">🔢 {isHi ? 'अष्टकवर्ग तालिका (SAV, BAV व शोधन)' : 'Ashtakavarga Matrix (SAV, BAV & Shodhanas)'}</option>
-                <option value="shadbala">⚖️ {isHi ? 'षड्बल सामर्थ्य (6 बल, रूपा व इष्ट/कष्ट फल)' : 'Shadbala Strength Assessment (6 Balas & Rupas)'}</option>
-                <option value="avakahada">📋 {isHi ? 'अवकहड़ा चक्र, पाया, गण, नाड़ी व घातक चक्र' : 'Avakahada Chakra, Paya & Ghatak Malefics'}</option>
-                <option value="chalit">🔄 {isHi ? 'भाव चलित (श्रीपति) भाव परिवर्तन तालिका' : 'Bhava Chalit Sripati Shifts & Table'}</option>
-                <option value="special">🌟 {isHi ? 'विशेष लग्न, उपग्रह, आरूढ़ पद (AL-UL) व कर्म बिंदु' : 'Special Lagnas, Arudhas (AL–UL) & Sensitive Points'}</option>
-                <option value="mrityu">⚡ {isHi ? 'मृत्यु भाग (Mrityu Bhaga — घातक अंश व परिहार)' : 'Mrityu Bhaga (Fatal Degrees & Danger Age Triggers)'}</option>
-                <option value="pushkara">✨ {isHi ? 'पुष्कर भाग व पुष्कर नवांश (Pushkara Rejuvenation)' : 'Pushkara Bhaga & Pushkara Navamsha'}</option>
-                <option value="navatara">⭐ {isHi ? 'नवतारा चक्र (Navatara Chakra — 9 तारा व 27 नक्षत्र)' : 'Navatara Chakra (9 Taras & Planetary Occupancy)'}</option>
-                <option value="shodhya_pinda">📊 {isHi ? 'अष्टकवर्ग शोध्य पिंड (Shodhya Pinda — राशि/ग्रह पिंड)' : 'Ashtakavarga Shodhya Pinda (Rasi & Graha Pinda)'}</option>
+              <optgroup label={isHi ? 'वैदिक मूल गणना व ग्रह सामर्थ्य' : 'Core Fundamentals & Strengths'}>
+                <option value="planets">{isHi ? 'ग्रह स्थिति, अंश, नक्षत्र, दृष्टि व चर कारक' : 'Planetary Longitudes, Nakshatras & Dignities'}</option>
+                <option value="cusps">{isHi ? 'द्वादश भाव संधि, भाव मध्य व भाव विस्तार' : 'House Cusps & Bhava Spans (12 Bhavas)'}</option>
+                <option value="dasha">{isHi ? 'विंशोत्तरी 5-स्तरीय दशा वृक्ष व योगिनी दशा' : '5-Level Vimshottari & Yogini Dasha Explorer'}</option>
+                <option value="ashtakavarga">{isHi ? 'अष्टकवर्ग तालिका (SAV, BAV व शोधन)' : 'Ashtakavarga Matrix (SAV, BAV & Shodhanas)'}</option>
+                <option value="shadbala">{isHi ? 'षड्बल सामर्थ्य (6 बल, रूपा व इष्ट/कष्ट फल)' : 'Shadbala Strength Assessment (6 Balas & Rupas)'}</option>
+                <option value="avakahada">{isHi ? 'अवकहड़ा चक्र, पाया, गण, नाड़ी व घातक चक्र' : 'Avakahada Chakra, Paya & Ghatak Malefics'}</option>
+                <option value="chalit">{isHi ? 'भाव चलित (श्रीपति) भाव परिवर्तन तालिका' : 'Bhava Chalit Sripati Shifts & Table'}</option>
+                <option value="special">{isHi ? 'विशेष लग्न, उपग्रह, आरूढ़ पद (AL-UL) व कर्म बिंदु' : 'Special Lagnas, Arudhas (AL–UL) & Sensitive Points'}</option>
+                <option value="mrityu">{isHi ? 'मृत्यु भाग (Mrityu Bhaga — घातक अंश व परिहार)' : 'Mrityu Bhaga (Fatal Degrees & Danger Age Triggers)'}</option>
+                <option value="pushkara">{isHi ? 'पुष्कर भाग व पुष्कर नवांश (Pushkara Rejuvenation)' : 'Pushkara Bhaga & Pushkara Navamsha'}</option>
+                <option value="navatara">{isHi ? 'नवतारा चक्र (Navatara Chakra — 9 तारा व 27 नक्षत्र)' : 'Navatara Chakra (9 Taras & Planetary Occupancy)'}</option>
+                <option value="shodhya_pinda">{isHi ? 'अष्टकवर्ग शोध्य पिंड (Shodhya Pinda — राशि/ग्रह पिंड)' : 'Ashtakavarga Shodhya Pinda (Rasi & Graha Pinda)'}</option>
               </optgroup>
 
-              <optgroup label={isHi ? '🎯 विशिष्ट एवं पाश्चात्य पद्धतियाँ' : '🎯 Advanced & Specialized Astrology Systems'}>
-                <option value="kp">🎯 {isHi ? 'के.पी. नक्षत्र पद्धति (12 भाव उप-स्वामी व 4-स्टेप)' : 'KP System (12 Cusp Sub-Lords & 4-Step Theory)'}</option>
-                <option value="lalkitab">📕 {isHi ? 'लाल किताब नियत मेष टेवा (सोये घर, ऋण व उपाय)' : 'Traditional Fixed Aries Tewa (Lal Kitab Soya Ghar & Upays)'}</option>
-                <option value="remedies">💎 {isHi ? 'रत्न, रुद्राक्ष, मंत्र व दोष परिहार (मांगलिक, कालसर्प)' : 'Gemstones, Rudraksha, Mantras & Dosha Remedies'}</option>
-                <option value="western">🌌 {isHi ? 'पाश्चात्य सायन 360° सर्कुलर व्हील व दृष्टियां' : 'Western Tropical 360° Circular Wheel & Aspect Grid'}</option>
-                <option value="transits">🔄 {isHi ? 'वर्तमान गोचर व शनि साढ़े साती कालचक्र' : 'Live Planetary Transits (Gochar & Sade Sati)'}</option>
-                <option value="varshaphala">☀️ {isHi ? 'वार्षिक ताजिक वर्षफल कुंडली व मुद्धा दशा' : 'Varshaphala / Tajika Solar Return Year Chart'}</option>
+              <optgroup label={isHi ? 'विशिष्ट एवं पाश्चात्य पद्धतियाँ' : 'Advanced & Specialized Astrology Systems'}>
+                <option value="kp">{isHi ? 'के.पी. नक्षत्र पद्धति (12 भाव उप-स्वामी व 4-स्टेप)' : 'KP System (12 Cusp Sub-Lords & 4-Step Theory)'}</option>
+                <option value="lalkitab">{isHi ? 'लाल किताब नियत मेष टेवा (सोये घर, ऋण व उपाय)' : 'Traditional Fixed Aries Tewa (Lal Kitab Soya Ghar & Upays)'}</option>
+                <option value="remedies">{isHi ? 'रत्न, रुद्राक्ष, मंत्र व दोष परिहार (मांगलिक, कालसर्प)' : 'Gemstones, Rudraksha, Mantras & Dosha Remedies'}</option>
+                <option value="western">{isHi ? 'पाश्चात्य सायन 360° सर्कुलर व्हील व दृष्टियां' : 'Western Tropical 360° Circular Wheel & Aspect Grid'}</option>
+                <option value="transits">{isHi ? 'वर्तमान गोचर व शनि साढ़े साती कालचक्र' : 'Live Planetary Transits (Gochar & Sade Sati)'}</option>
+                <option value="varshaphala">{isHi ? 'वार्षिक ताजिक वर्षफल कुंडली व मुद्धा दशा' : 'Varshaphala / Tajika Solar Return Year Chart'}</option>
               </optgroup>
 
-              <optgroup label={isHi ? '🔮 विस्तृत एवं अचूक फलादेश (Predictions)' : '🔮 Comprehensive In-Depth Predictions & Phala'}>
-                <option value="twelve_planets">🌟 {isHi ? 'द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)' : '12 Planets Detailed Event Predictions (Sun to Pluto)'}</option>
-                <option value="yogas">📜 {isHi ? 'सक्रिय राजयोग व ग्रह युति फल (2-7 ग्रह युति व 300+ योग)' : 'Active Yogas & Conjunctions (2-7 Planet Stelliums)'}</option>
-                <option value="deep_predictions">🏛️ {isHi ? 'विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, करियर, विवाह)' : 'Comprehensive Detailed Life Predictions (All Spheres)'}</option>
-                <option value="timeline">⏳ {isHi ? '120-वर्षीय जीवन घटनाक्रम रेखा व आयु मील के पत्थर' : '120-Year Complete Life Events Timeline & Milestones'}</option>
-                <option value="bhavas">🏠 {isHi ? 'द्वादश भाव संपूर्ण विस्तृत फलादेश (H1 से H12)' : '12 Bhavas Comprehensive Analysis'}</option>
-                <option value="bnn">✨ {isHi ? 'भृगु नंदी नाड़ी व BSP (29 आयु नियम व दिशा त्रिकोण)' : 'Bhrigu Nandi Nadi & BSP Age Rules'}</option>
-                <option value="yuti">⚡ {isHi ? 'ग्रह युति फल (2 से 7 ग्रह) व पारस्परिक दृष्टियां' : 'Planetary Conjunctions (2–7 Grahas) & Mutual Drishti'}</option>
-                <option value="past_life">🔄 {isHi ? 'पूर्व जन्म कर्म (D60) व आगामी जन्म गति' : 'Past Life Karma (D60) & Future Incarnation'}</option>
+              <optgroup label={isHi ? 'विस्तृत एवं अचूक फलादेश (Predictions)' : 'Comprehensive In-Depth Predictions & Phala'}>
+                <option value="twelve_planets">{isHi ? 'द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)' : '12 Planets Detailed Event Predictions (Sun to Pluto)'}</option>
+                <option value="yogas">{isHi ? 'सक्रिय राजयोग व ग्रह युति फल (2-7 ग्रह युति व 300+ योग)' : 'Active Yogas & Conjunctions (2-7 Planet Stelliums)'}</option>
+                <option value="deep_predictions">{isHi ? 'विस्तृत समग्र जीवन फलादेश (व्यक्तित्व, धन, करियर, विवाह)' : 'Comprehensive Detailed Life Predictions (All Spheres)'}</option>
+                <option value="timeline">{isHi ? '120-वर्षीय जीवन घटनाक्रम रेखा व आयु मील के पत्थर' : '120-Year Complete Life Events Timeline & Milestones'}</option>
+                <option value="bhavas">{isHi ? 'द्वादश भाव संपूर्ण विस्तृत फलादेश (H1 से H12)' : '12 Bhavas Comprehensive Analysis'}</option>
+                <option value="bnn">{isHi ? 'भृगु नंदी नाड़ी व BSP (29 आयु नियम व दिशा त्रिकोण)' : 'Bhrigu Nandi Nadi & BSP Age Rules'}</option>
+                <option value="yuti">{isHi ? 'ग्रह युति फल (2 से 7 ग्रह) व पारस्परिक दृष्टियां' : 'Planetary Conjunctions (2–7 Grahas) & Mutual Drishti'}</option>
+                <option value="past_life">{isHi ? 'पूर्व जन्म कर्म (D60) व आगामी जन्म गति' : 'Past Life Karma (D60) & Future Incarnation'}</option>
               </optgroup>
             </select>
           </div>

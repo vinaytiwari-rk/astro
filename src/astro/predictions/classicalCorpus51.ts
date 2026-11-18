@@ -24,6 +24,11 @@
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import type { AuspiciousnessLevel, LifeDimensionReading } from './sambhavitFalkathan';
+import {
+  getSignMilestones,
+  getPlanetHouseBookRecord,
+  getDrekkanaRecord
+} from './classicalBookData';
 
 const HINDI_SIGNS = [
   'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
@@ -178,6 +183,39 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
     return ` [Retrograde Chesta Bala: Endowed with 100% kinetic force per Saravali].`;
   };
 
+  const isFemaleNative = chart.input?.gender === 'female';
+  const lagnaRecord = getSignMilestones(ascSign);
+  const lagnaDegVal = chart.ascendant?.degreeInSign ?? (ascLon % 30);
+  const lagnaDrekkana = getDrekkanaRecord(ascSign, lagnaDegVal);
+  const eighthSign = (ascSign + 7) % 12;
+  const eighthHousePlanet = planets.find((p) => (p.rasiHouseNumber ?? p.houseNumber) === 8);
+  const twentySecondDrekkana = getDrekkanaRecord(eighthSign, eighthHousePlanet?.degreeInSign ?? lagnaDegVal);
+
+  const getBookHouseInsight = (h: number) => {
+    const occupants = planets.filter((p) => (p.rasiHouseNumber ?? p.houseNumber) === h);
+    if (occupants.length === 0) return null;
+    const p = occupants[0];
+    const rec = getPlanetHouseBookRecord(p.id, h);
+    if (!rec) return null;
+
+    let textHi = `\n\n[शास्त्रीय ग्रंथ फल - ${rec.titleHi}]: ${rec.baseHi}`;
+    let textEn = `\n\n[Classical Shastra Text - ${rec.titleEn}]: ${rec.baseEn}`;
+
+    if (isFemaleNative && rec.femaleHoroscope?.hi) {
+      textHi += `\n[स्त्री जातक विशेष फल]: ${rec.femaleHoroscope.hi}`;
+      textEn += `\n[In Female Horoscope]: ${rec.femaleHoroscope.en}`;
+    }
+
+    if (rec.ageMilestones && rec.ageMilestones.length > 0) {
+      const msHi = rec.ageMilestones.map((m) => `आयु ${m.age}: ${m.eventHi}`).join(' | ');
+      const msEn = rec.ageMilestones.map((m) => `Age ${m.age}: ${m.eventEn}`).join(' | ');
+      textHi += `\n[आयु कालचक्र मील के पत्थर]: ${msHi}`;
+      textEn += `\n[Chronological Milestones]: ${msEn}`;
+    }
+
+    return { textHi, textEn, bookRec: rec };
+  };
+
   // Helper to add dimension with 1-second precision modulation and strict unvarnished truths
   const addDim = (d: LifeDimensionReading) => {
     // 1-Second micro-temporal modulation
@@ -186,6 +224,27 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
     const modulatedScore = Math.max(12, Math.min(98, d.strengthScore + microDelta));
     d.strengthScore = modulatedScore;
     d.auspiciousness = getAuspiciousness(modulatedScore);
+
+    // Integrate Classical Book House Sutras
+    if (d.houseNumber) {
+      const bInsight = getBookHouseInsight(d.houseNumber);
+      if (bInsight) {
+        d.detailedAnalysisHi += bInsight.textHi;
+        d.detailedAnalysisEn += bInsight.textEn;
+      }
+    }
+
+    // Integrate Dimension 1 Lagna Physical Traits & Drekkana
+    if (d.id === 1) {
+      d.detailedAnalysisHi += `\n\n[लग्न राशि शारीरिक लक्षण - ${lagnaRecord.nameHi}]: ${lagnaRecord.physicalFeaturesHi}\n[शुभ वर्ष]: ${lagnaRecord.auspiciousYears.join(', ')} वर्ष | [सतर्कता वर्ष]: ${lagnaRecord.inauspiciousYears.join(', ')} वर्ष\n[उदित द्रेष्काण]: ${lagnaDrekkana.drekkanaNumber}वां द्रेष्काण (${lagnaDrekkana.classificationHi} - ${lagnaDrekkana.nameHi}): ${lagnaDrekkana.karmicOutcomeHi}`;
+      d.detailedAnalysisEn += `\n\n[Ascendant Physical Traits - ${lagnaRecord.nameEn}]: ${lagnaRecord.physicalFeaturesEn}\n[Fortunate Years]: ${lagnaRecord.auspiciousYears.join(', ')} | [Caution Years]: ${lagnaRecord.inauspiciousYears.join(', ')}\n[Rising Drekkana]: ${lagnaDrekkana.drekkanaNumber}nd Drekkana (${lagnaDrekkana.classification} - ${lagnaDrekkana.nameEn}): ${lagnaDrekkana.karmicOutcomeEn}`;
+    }
+
+    // Integrate 22nd Drekkana Maraka Indicator for 8th house
+    if (d.houseNumber === 8 && twentySecondDrekkana.isMarakaSensitive) {
+      d.detailedAnalysisHi += `\n\n[22वां खर द्रेष्काण सतर्कता]: ${twentySecondDrekkana.classificationHi} (${twentySecondDrekkana.nameHi}) - ${twentySecondDrekkana.karmicOutcomeHi}`;
+      d.detailedAnalysisEn += `\n\n[22nd Drekkana Maraka Indicator]: ${twentySecondDrekkana.classification} (${twentySecondDrekkana.nameEn}) - ${twentySecondDrekkana.karmicOutcomeEn}`;
+    }
 
     // Stamping exact micro-astronomical coordinate into detailedAnalysis & astroBasis
     const secStampHi = `\n\n[1-सेकंड सूक्ष्म वेध]: लग्न बिंदु: ${lagnaCoordStr} | D60 संचलन: ${d60ProgressionPct}% (${d60AmsaNameHi}) | KP उप-उप स्वामी: ${kpSubSubLordHi} | सूक्ष्म कला: ${(totalArcSec + d.id * 11) % 60}''`;

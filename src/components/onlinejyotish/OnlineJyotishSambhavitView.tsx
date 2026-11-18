@@ -5,7 +5,9 @@ import {
   Award,
   BookOpen,
   Briefcase,
+  Calendar,
   CheckCircle2,
+  Clock,
   Compass,
   Download,
   Flame,
@@ -26,6 +28,12 @@ import {
   type LifeDimensionReading,
   type SambhavitFalkathanReport,
 } from '../../astro/predictions/sambhavitFalkathan';
+import {
+  computeLifeMilestonesEngine,
+  type LifeMilestonesReport,
+  type ChronologicalMilestoneItem,
+  type StreeJatakaReadingItem,
+} from '../../astro/predictions/lifeMilestonesEngine';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -48,13 +56,18 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [filterType, setFilterType] = useState<'house' | 'category'>('house');
+  const [filterType, setFilterType] = useState<'house' | 'category' | 'milestones' | 'stree_jataka'>('house');
   const [selectedHouse, setSelectedHouse] = useState<number | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [milestoneStatusFilter, setMilestoneStatusFilter] = useState<'all' | 'active' | 'upcoming' | 'realized'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const report: SambhavitFalkathanReport = useMemo(() => {
     return computeSambhavitFalkathan(chart);
+  }, [chart]);
+
+  const milestonesReport: LifeMilestonesReport = useMemo(() => {
+    return computeLifeMilestonesEngine(chart);
   }, [chart]);
 
   const moon = useMemo(
@@ -117,6 +130,43 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
       return inTitle || inVerdict || inBasis || inAnalysis || inRef || inVakri;
     });
   }, [report.dimensions, filterType, selectedHouse, selectedCategory, searchQuery]);
+
+  // Filter chronological milestones
+  const filteredMilestones = useMemo(() => {
+    return milestonesReport.milestones.filter((m) => {
+      if (milestoneStatusFilter !== 'all' && m.status !== milestoneStatusFilter) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      return (
+        m.titleEn.toLowerCase().includes(q) ||
+        m.titleHi.includes(q) ||
+        m.eventEn.toLowerCase().includes(q) ||
+        m.eventHi.includes(q) ||
+        String(m.age).includes(q) ||
+        String(m.calendarYear).includes(q) ||
+        (m.sourceGraha || '').toLowerCase().includes(q) ||
+        (m.sourceGrahaHi || '').includes(q) ||
+        (m.houseTitleEn || '').toLowerCase().includes(q) ||
+        (m.houseTitleHi || '').includes(q)
+      );
+    });
+  }, [milestonesReport.milestones, milestoneStatusFilter, searchQuery]);
+
+  // Filter Stree Jataka sutras
+  const filteredStreeJataka = useMemo(() => {
+    return milestonesReport.streeJatakaReadings.filter((sj) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      return (
+        sj.planet.toLowerCase().includes(q) ||
+        sj.planetHi.includes(q) ||
+        sj.houseTitleEn.toLowerCase().includes(q) ||
+        sj.houseTitleHi.includes(q) ||
+        sj.sutraEn.toLowerCase().includes(q) ||
+        sj.sutraHi.includes(q)
+      );
+    });
+  }, [milestonesReport.streeJatakaReadings, searchQuery]);
 
   return (
     <div className="oj-page-container">
@@ -234,6 +284,155 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </div>
       </div>
 
+      {/* Classical Sign Milestone Years & 22nd Drekkana Card */}
+      <div
+        className="oj-card"
+        style={{
+          marginBottom: '16px',
+          padding: '16px 20px',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border)',
+          borderRadius: '10px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+          <Clock size={16} style={{ color: 'var(--accent)' }} />
+          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: 'var(--text)' }}>
+            {isHi
+              ? 'शास्त्रीय लग्न व चंद्र कालचक्र — शुभ, सतर्कता वर्ष एवं 22वां खर द्रेष्काण वेध'
+              : 'Classical Sign Milestones — Auspicious & Caution Years & 22nd Drekkana'}
+          </h3>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+          {/* Lagna Sign Milestones */}
+          <div style={{ background: 'var(--bg-subtle)', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>
+                {isHi ? `लग्न राशि: ${milestonesReport.lagnaSign.nameHi}` : `Lagna Sign: ${milestonesReport.lagnaSign.nameEn}`}
+              </strong>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                {isHi ? 'देहाधिपति काल' : 'Ascendant Years'}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', display: 'block', marginBottom: '4px' }}>
+                {isHi ? 'शुभ व भाग्योदय वर्ष:' : 'Auspicious Milestone Years:'}
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {milestonesReport.lagnaSign.auspiciousYears.map((yr: number) => (
+                  <span
+                    key={`lagna-ausp-${yr}`}
+                    className="tag tag-varg"
+                    style={{ fontSize: '11px', padding: '2px 7px' }}
+                  >
+                    {yr} {isHi ? 'वर्ष' : 'yr'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#dc2626', display: 'block', marginBottom: '4px' }}>
+                {isHi ? 'सतर्कता / अरिष्ट वर्ष:' : 'Caution / Vulnerability Years:'}
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {milestonesReport.lagnaSign.inauspiciousYears.map((yr: number) => (
+                  <span
+                    key={`lagna-caut-${yr}`}
+                    className="tag tag-combust"
+                    style={{ fontSize: '11px', padding: '2px 7px' }}
+                  >
+                    {yr} {isHi ? 'वर्ष' : 'yr'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.45 }}>
+              <strong>{isHi ? 'रोग संवेदनशीलता: ' : 'Vulnerability: '}</strong>
+              {isHi ? milestonesReport.lagnaSign.vulnerabilitiesHi : milestonesReport.lagnaSign.vulnerabilitiesEn}
+            </div>
+          </div>
+
+          {/* Moon Sign Milestones */}
+          <div style={{ background: 'var(--bg-subtle)', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <strong style={{ fontSize: '13.5px', color: 'var(--accent)' }}>
+                {isHi ? `जन्म चंद्र राशि: ${milestonesReport.moonSign.nameHi}` : `Moon Sign: ${milestonesReport.moonSign.nameEn}`}
+              </strong>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                {isHi ? 'मानसिक व भाग्य काल' : 'Janma Rasi Years'}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', display: 'block', marginBottom: '4px' }}>
+                {isHi ? 'शुभ व भाग्योदय वर्ष:' : 'Auspicious Milestone Years:'}
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {milestonesReport.moonSign.auspiciousYears.map((yr: number) => (
+                  <span
+                    key={`moon-ausp-${yr}`}
+                    className="tag tag-varg"
+                    style={{ fontSize: '11px', padding: '2px 7px' }}
+                  >
+                    {yr} {isHi ? 'वर्ष' : 'yr'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#dc2626', display: 'block', marginBottom: '4px' }}>
+                {isHi ? 'सतर्कता / अरिष्ट वर्ष:' : 'Caution / Vulnerability Years:'}
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {milestonesReport.moonSign.inauspiciousYears.map((yr: number) => (
+                  <span
+                    key={`moon-caut-${yr}`}
+                    className="tag tag-combust"
+                    style={{ fontSize: '11px', padding: '2px 7px' }}
+                  >
+                    {yr} {isHi ? 'वर्ष' : 'yr'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.45 }}>
+              <strong>{isHi ? 'अनुकूल कर्मक्षेत्र: ' : 'Suited Careers: '}</strong>
+              {isHi ? milestonesReport.moonSign.careerFitHi : milestonesReport.moonSign.careerFitEn}
+            </div>
+          </div>
+
+          {/* 22nd Drekkana (Kharesh) Maraka Indicator */}
+          <div style={{ background: 'var(--bg-subtle)', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <strong style={{ fontSize: '13.5px', color: '#dc2626' }}>
+                {isHi ? '22वां खर द्रेष्काण वेध' : '22nd Drekkana (Kharesh)'}
+              </strong>
+              <span className="tag tag-combust" style={{ fontSize: '10px' }}>
+                {isHi ? 'आयु व स्वास्थ्य वेध' : 'Longevity Maraka'}
+              </span>
+            </div>
+
+            <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text)', marginBottom: '8px' }}>
+              {isHi ? milestonesReport.drekkanaAnalysis.marakaWarningHi : milestonesReport.drekkanaAnalysis.marakaWarningEn}
+            </div>
+
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '6px' }}>
+              <span>
+                {isHi
+                  ? `लग्न द्रेष्काण: खंड ${milestonesReport.drekkanaAnalysis.lagnaDrekkana.drekkanaNumber} (${milestonesReport.drekkanaAnalysis.lagnaDrekkana.classificationHi}) · स्वामी: ${milestonesReport.drekkanaAnalysis.lagnaDrekkana.rulingPlanetHi}`
+                  : `Lagna Drekkana: Dec ${milestonesReport.drekkanaAnalysis.lagnaDrekkana.drekkanaNumber} (${milestonesReport.drekkanaAnalysis.lagnaDrekkana.classification}) · Ruler: ${milestonesReport.drekkanaAnalysis.lagnaDrekkana.rulingPlanet}`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search & Multi-tier Filter Bar */}
       <div className="oj-filter-controls-card no-print">
         {/* Search Row */}
@@ -246,8 +445,8 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 isHi
-                  ? '51 फलकथनों में खोजें (उदा: विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग, फलदीपिका, वक्री...)'
-                  : 'Search 51 dimensions (e.g. marriage, career, father, surgery, wealth, Phaladeepika, retrograde...)'
+                  ? 'खोजें (विवाह, शिक्षा, पिता, करियर, सर्जरी, धन योग, फलदीपिका, वक्री, आयु वर्ष...)'
+                  : 'Search (marriage, career, father, surgery, wealth, Phaladeepika, retrograde, age milestone...)'
               }
               className="oj-search-input"
             />
@@ -262,13 +461,21 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
             )}
           </div>
           <div className="oj-results-count">
-            {isHi
-              ? `कुल ${filteredDimensions.length} आयाम प्रदर्शित`
-              : `Showing ${filteredDimensions.length} of 51 Dimensions`}
+            {filterType === 'milestones'
+              ? (isHi
+                  ? `कुल ${filteredMilestones.length} कालचक्र वर्ष प्रदर्शित · वर्तमान आयु: ${milestonesReport.currentAge.toFixed(1)} वर्ष`
+                  : `Showing ${filteredMilestones.length} of ${milestonesReport.summary.totalMilestones} Milestones · Current Age: ${milestonesReport.currentAge.toFixed(1)} Yrs`)
+              : filterType === 'stree_jataka'
+                ? (isHi
+                    ? `कुल ${filteredStreeJataka.length} स्त्री जातक ग्रह सूत्र प्रदर्शित`
+                    : `Showing ${filteredStreeJataka.length} Stree Jataka Sutras`)
+                : (isHi
+                    ? `कुल ${filteredDimensions.length} आयाम प्रदर्शित`
+                    : `Showing ${filteredDimensions.length} of 51 Dimensions`)}
           </div>
         </div>
 
-        {/* Filter Mode Selector (12 Bhavas vs Categories) */}
+        {/* Filter Mode Selector */}
         <div style={{ display: 'flex', gap: '8px', margin: '10px 0 8px 0', alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
             {isHi ? 'फिल्टर वर्गीकरण:' : 'Filter Grouping:'}
@@ -290,6 +497,32 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           >
             <Layers size={13} />
             <span>{isHi ? 'विषय / श्रेणी अनुसार (Categories)' : 'Category View'}</span>
+          </button>
+          <button
+            type="button"
+            className={`oj-cat-pill ${filterType === 'milestones' ? 'active' : ''}`}
+            onClick={() => setFilterType('milestones')}
+            style={{ fontSize: '12px', padding: '4px 10px' }}
+          >
+            <Clock size={13} />
+            <span>
+              {isHi
+                ? `आयु कालचक्र (${milestonesReport.summary.totalMilestones} वर्ष)`
+                : `Life Milestones Timeline (${milestonesReport.summary.totalMilestones})`}
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`oj-cat-pill ${filterType === 'stree_jataka' ? 'active' : ''}`}
+            onClick={() => setFilterType('stree_jataka')}
+            style={{ fontSize: '12px', padding: '4px 10px' }}
+          >
+            <Heart size={13} />
+            <span>
+              {isHi
+                ? 'स्त्री जातक विशेष (9 ग्रह)'
+                : 'Stree Jataka Special (9 Planets)'}
+            </span>
           </button>
         </div>
 
@@ -332,125 +565,371 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
             ))}
           </div>
         )}
+
+        {/* Milestone Status Filter Strip */}
+        {filterType === 'milestones' && (
+          <div className="oj-category-pills-row">
+            <button
+              type="button"
+              className={`oj-cat-pill ${milestoneStatusFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setMilestoneStatusFilter('all')}
+            >
+              <Sparkles size={13} />
+              <span>{isHi ? `समस्त कालखंड (${milestonesReport.summary.totalMilestones})` : `All Milestones (${milestonesReport.summary.totalMilestones})`}</span>
+            </button>
+            <button
+              type="button"
+              className={`oj-cat-pill ${milestoneStatusFilter === 'active' ? 'active' : ''}`}
+              onClick={() => setMilestoneStatusFilter('active')}
+            >
+              <Activity size={13} />
+              <span>{isHi ? `सक्रिय वर्तमान काल (${milestonesReport.summary.activeCount})` : `Active Current Window (${milestonesReport.summary.activeCount})`}</span>
+            </button>
+            <button
+              type="button"
+              className={`oj-cat-pill ${milestoneStatusFilter === 'upcoming' ? 'active' : ''}`}
+              onClick={() => setMilestoneStatusFilter('upcoming')}
+            >
+              <Clock size={13} />
+              <span>{isHi ? `आगामी समय काल (${milestonesReport.summary.upcomingCount})` : `Upcoming Horizon (${milestonesReport.summary.upcomingCount})`}</span>
+            </button>
+            <button
+              type="button"
+              className={`oj-cat-pill ${milestoneStatusFilter === 'realized' ? 'active' : ''}`}
+              onClick={() => setMilestoneStatusFilter('realized')}
+            >
+              <CheckCircle2 size={13} />
+              <span>{isHi ? `घटित / पूर्व काल (${milestonesReport.summary.realizedCount})` : `Past / Realized (${milestonesReport.summary.realizedCount})`}</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 101 Dimensions Grid */}
+      {/* 51 Dimensions & Classical Timeline Container */}
       <div className="oj-50-predictions-container">
-        {filteredDimensions.map((dim) => (
-          <article
-            key={dim.id}
-            className={`oj-dim-card oj-dim-${dim.auspiciousness}`}
-            id={`dimension-${dim.id}`}
-          >
-            {/* Header: Number, House Badge, Category Badge & Auspiciousness Pill */}
-            <div className="oj-dim-header">
-              <div className="oj-dim-id-badge" style={{ gap: '6px', flexWrap: 'wrap' }}>
-                <span className="oj-dim-num">#{dim.id}</span>
-                {dim.houseNumber && (
-                  <span className="oj-dim-house-badge">
-                    {isHi ? dim.houseTitleHi : dim.houseTitleEn}
-                  </span>
-                )}
-                <span className="oj-dim-cat-tag">
-                  {isHi ? dim.categoryTitleHi : dim.categoryTitleEn}
-                </span>
+        {/* VIEW 1: Milestones Timeline */}
+        {filterType === 'milestones' && (
+          <>
+            <div
+              className="oj-card"
+              style={{
+                marginBottom: '14px',
+                padding: '14px 18px',
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}
+            >
+              <div>
+                <strong style={{ fontSize: '15px', color: 'var(--accent)' }}>
+                  {isHi ? 'आयु वर्ष कालचक्र — शास्त्रीय कालखंड फलादेश' : 'Chronological Life Milestones — Classical Timeline'}
+                </strong>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                  {isHi
+                    ? `जातक जन्म वर्ष: ${milestonesReport.birthYear} · वर्तमान आयु: ${milestonesReport.currentAge.toFixed(1)} वर्ष · ग्रहों की भाव स्थिति एवं राशि कालचक्र अनुसार निर्धारित मील के पत्थर`
+                    : `Birth Year: ${milestonesReport.birthYear} · Current Native Age: ${milestonesReport.currentAge.toFixed(1)} Yrs · Determined by planetary house positions and sign milestone years.`}
+                </p>
               </div>
-              <div className={`oj-dim-auspicious-pill ${dim.auspiciousness}`}>
-                {dim.auspiciousness === 'highly_favorable' && (isHi ? 'अति शुभ (90%+)' : 'Highly Auspicious')}
-                {dim.auspiciousness === 'favorable' && (isHi ? 'शुभ व अनुकूल' : 'Favorable')}
-                {dim.auspiciousness === 'mixed_moderate' && (isHi ? 'संतुलित / मिश्रित' : 'Balanced / Mixed')}
-                {dim.auspiciousness === 'challenging_caution' && (isHi ? 'सतर्कता अपेक्षित' : 'Needs Caution')}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <span className="tag tag-varg" style={{ fontSize: '12px', padding: '3px 8px' }}>
+                  {isHi ? `शुभ वर्ष: ${milestonesReport.summary.favorableCount}` : `Favorable: ${milestonesReport.summary.favorableCount}`}
+                </span>
+                <span className="tag tag-combust" style={{ fontSize: '12px', padding: '3px 8px' }}>
+                  {isHi ? `सतर्कता वर्ष: ${milestonesReport.summary.challengingCount}` : `Caution: ${milestonesReport.summary.challengingCount}`}
+                </span>
               </div>
             </div>
 
-            {/* Classical Attributions & Divisional Badges */}
-            <div className="oj-dim-badges-row">
-              {dim.classicalRef && (
-                <span className="oj-dim-classical-badge" title={isHi ? 'शास्त्रीय ग्रंथ एवं ऋषि मत' : 'Classical Astrological Source'}>
-                  <BookOpen size={11} />
-                  <span>{dim.classicalRef}</span>
-                </span>
-              )}
-              {dim.divisionalRef && (
-                <span className="oj-dim-varga-badge" title={isHi ? 'वर्ग कुंडली प्रमाण' : 'Divisional Chart Verification'}>
-                  <Compass size={11} />
-                  <span>{dim.divisionalRef}</span>
-                </span>
-              )}
-            </div>
+            {filteredMilestones.map((m) => {
+              const isChallenging = m.nature === 'challenging' || m.nature === 'health';
+              return (
+                <article
+                  key={m.id}
+                  className={`oj-dim-card oj-dim-${isChallenging ? 'challenging_caution' : 'favorable'}`}
+                  id={`milestone-${m.id}`}
+                >
+                  <div className="oj-dim-header">
+                    <div className="oj-dim-id-badge" style={{ gap: '6px', flexWrap: 'wrap' }}>
+                      <span className="oj-dim-num" style={{ fontSize: '13px', fontWeight: 800 }}>
+                        {isHi ? `आयु ${m.age} वर्ष` : `Age ${m.age} Yrs`}
+                      </span>
+                      <span className="oj-dim-house-badge">
+                        {isHi ? `ई. सन् ${m.calendarYear}` : `Year ${m.calendarYear}`}
+                      </span>
+                      {m.sourceGraha && (
+                        <span className="oj-dim-cat-tag">
+                          {isHi ? `${m.sourceGrahaHi} — ${m.houseTitleHi}` : `${m.sourceGraha} — ${m.houseTitleEn}`}
+                        </span>
+                      )}
+                    </div>
+                    <div className={`oj-dim-auspicious-pill ${m.status === 'active' ? 'highly_favorable' : m.status === 'upcoming' ? 'favorable' : 'mixed_moderate'}`}>
+                      {isHi ? m.statusTitleHi : m.statusTitleEn}
+                    </div>
+                  </div>
 
-            {/* Retrograde / Vakri Dynamic Note (when present) */}
-            {dim.vakriNote && (
-              <div className="oj-dim-vakri-badge">
-                <Flame size={13} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>{dim.vakriNote}</span>
+                  <h2 className="oj-dim-title">{isHi ? m.titleHi : m.titleEn}</h2>
+
+                  <div className="oj-dim-basis-box">
+                    <div className="oj-dim-basis-label">
+                      <Clock size={13} />
+                      <span>{isHi ? 'कालचक्र निर्धारण सूत्र:' : 'Chronological Milestone Formula:'}</span>
+                    </div>
+                    <div className="oj-dim-basis-text">
+                      {isHi
+                        ? `जातक जन्म: ${milestonesReport.birthYear} · लक्षित आयु: ${m.age} वर्ष · वर्तमान आयु: ${milestonesReport.currentAge.toFixed(1)} वर्ष (${m.statusTitleHi})`
+                        : `Birth: ${milestonesReport.birthYear} · Target Age: ${m.age} · Native Age: ${milestonesReport.currentAge.toFixed(1)} Yrs (${m.statusTitleEn})`}
+                    </div>
+                  </div>
+
+                  <div className="oj-dim-verdict-box">
+                    <div className="oj-dim-verdict-label">
+                      <CheckCircle2 size={14} />
+                      <span>{isHi ? 'शास्त्रीय फलकथन घटना (Textbook Sutra):' : 'Classical Textbook Event & Trigger:'}</span>
+                    </div>
+                    <div className="oj-dim-verdict-text">
+                      {isHi ? m.eventHi : m.eventEn}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+
+            {filteredMilestones.length === 0 && (
+              <div className="oj-no-results-card">
+                <AlertTriangle size={32} />
+                <p>
+                  {isHi
+                    ? 'इस कालखंड में कोई मील का पत्थर नहीं मिला।'
+                    : 'No milestones found in this status category.'}
+                </p>
+                <button
+                  type="button"
+                  className="oj-action-btn secondary"
+                  onClick={() => {
+                    setMilestoneStatusFilter('all');
+                    setSearchQuery('');
+                  }}
+                >
+                  {isHi ? 'समस्त कालखंड देखें' : 'Show All Milestones'}
+                </button>
               </div>
             )}
+          </>
+        )}
 
-            <h2 className="oj-dim-title">{isHi ? dim.titleHi : dim.titleEn}</h2>
-
-            {/* Astrological Determinants (Exact Basis) */}
-            <div className="oj-dim-basis-box">
-              <div className="oj-dim-basis-label">
-                <Compass size={13} />
-                <span>{isHi ? 'ज्योतिषीय आधार (कुंडली सूत्र):' : 'Astrological Basis (Exact Placements):'}</span>
+        {/* VIEW 2: Stree Jataka */}
+        {filterType === 'stree_jataka' && (
+          <>
+            <div
+              className="oj-card"
+              style={{
+                marginBottom: '14px',
+                padding: '14px 18px',
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+              }}
+            >
+              <div className="oj-header-badge">
+                {isHi
+                  ? 'फलदीपिका एवं बृहत्पाराशर होरा शास्त्र — स्त्री जातक अध्याय'
+                  : 'Classical Stree Jataka — Phaladeepika & BPHS Female Horoscopy Sutras'}
               </div>
-              <div className="oj-dim-basis-text">
-                {isHi ? dim.astroBasisHi : dim.astroBasisEn}
-              </div>
-            </div>
-
-            {/* Clear Decisive Verdict */}
-            <div className="oj-dim-verdict-box">
-              <div className="oj-dim-verdict-label">
-                <CheckCircle2 size={14} />
-                <span>{isHi ? 'स्पष्ट फलादेश निष्कर्ष:' : 'Concrete Verdict:'}</span>
-              </div>
-              <div className="oj-dim-verdict-text">
-                {isHi ? dim.verdictHi : dim.verdictEn}
-              </div>
-            </div>
-
-            {/* In-Depth Classical Vedic Analysis */}
-            <div className="oj-dim-analysis-box">
-              <p className="oj-dim-analysis-text">
-                {isHi ? dim.detailedAnalysisHi : dim.detailedAnalysisEn}
+              <h3 style={{ margin: '6px 0 2px 0', fontSize: '15px', fontWeight: 700 }}>
+                {isHi
+                  ? 'स्त्री कुंडली में 9 ग्रहों के भाव स्थित शास्त्रीय फल'
+                  : 'Classical Manifestation of 9 Planets in Female Horoscopy'}
+              </h3>
+              <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                {isHi
+                  ? 'स्त्री जातक में लग्न, सप्तम, अष्टम व नवम भाव का विशेष महत्व होता है। यह विश्लेषण पाठ्यपुस्तक के स्त्री जातक सूत्रों पर आधारित है।'
+                  : 'Female horoscopy accords paramount importance to the 1st, 7th, 8th, and 9th houses. This dossier details planetary manifestations without sugarcoating.'}
               </p>
             </div>
 
-            {/* Authentic Classical Remedy */}
-            <div className="oj-dim-remedy-box">
-              <div className="oj-dim-remedy-label">
-                <Sparkles size={13} />
-                <span>{isHi ? 'वैदिक शांति उपाय व मंत्र:' : 'Vedic Remedy & Protective Protocol:'}</span>
-              </div>
-              <div className="oj-dim-remedy-text">
-                {isHi ? dim.remedyHi : dim.remedyEn}
-              </div>
-            </div>
-          </article>
-        ))}
+            {filteredStreeJataka.map((sj, idx) => (
+              <article key={idx} className="oj-dim-card">
+                <div className="oj-dim-header">
+                  <div className="oj-dim-id-badge" style={{ gap: '6px' }}>
+                    <span className="oj-dim-num">#{idx + 1}</span>
+                    <span className="oj-dim-cat-tag">
+                      {isHi ? sj.planetHi : sj.planet}
+                    </span>
+                    <span className="oj-dim-house-badge">
+                      {isHi ? sj.houseTitleHi : sj.houseTitleEn}
+                    </span>
+                  </div>
+                  <div className="oj-dim-auspicious-pill favorable">
+                    {isHi ? 'स्त्री जातक सूत्र' : 'Stree Jataka Sutra'}
+                  </div>
+                </div>
 
-        {filteredDimensions.length === 0 && (
-          <div className="oj-no-results-card">
-            <AlertTriangle size={32} />
-            <p>
-              {isHi
-                ? 'कोई फलकथन नहीं मिला। कृपया अन्य खोज शब्द का प्रयास करें।'
-                : 'No dimensions match your search filter. Please try a different query.'}
-            </p>
-            <button
-              type="button"
-              className="oj-action-btn secondary"
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedHouse('all');
-                setSelectedCategory('all');
-              }}
-            >
-              {isHi ? 'सभी 51 आयाम दिखाएं' : 'Reset Filters & Show All 51'}
-            </button>
-          </div>
+                <h2 className="oj-dim-title">
+                  {isHi ? `${sj.planetHi} का ${sj.houseTitleHi} में स्त्री जातक फल` : `${sj.planet} in ${sj.houseTitleEn} in Female Horoscope`}
+                </h2>
+
+                <div className="oj-dim-basis-box">
+                  <div className="oj-dim-basis-label">
+                    <BookOpen size={13} />
+                    <span>{isHi ? 'शास्त्रीय ग्रंथ संदर्भ:' : 'Classical Source:'}</span>
+                  </div>
+                  <div className="oj-dim-basis-text">
+                    {isHi
+                      ? `${sj.planetHi} जन्म कुंडली में ${sj.houseTitleHi} में स्थित है · फलदीपिका एवं बृहत्पाराशर स्त्री जातक अध्याय`
+                      : `${sj.planet} placed in ${sj.houseTitleEn} · Phaladeepika & BPHS Female Horoscopy Chapters`}
+                  </div>
+                </div>
+
+                <div className="oj-dim-verdict-box">
+                  <div className="oj-dim-verdict-label">
+                    <CheckCircle2 size={14} />
+                    <span>{isHi ? 'विशिष्ट फलादेश निष्कर्ष:' : 'Specific Classical Manifestation:'}</span>
+                  </div>
+                  <div className="oj-dim-verdict-text">
+                    {isHi ? sj.sutraHi : sj.sutraEn}
+                  </div>
+                </div>
+              </article>
+            ))}
+
+            {filteredStreeJataka.length === 0 && (
+              <div className="oj-no-results-card">
+                <AlertTriangle size={32} />
+                <p>
+                  {isHi
+                    ? 'कोई स्त्री जातक सूत्र नहीं मिला।'
+                    : 'No Stree Jataka sutras match your search filter.'}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* VIEW 3: 51 Master Dimensions (House-wise or Category-wise) */}
+        {(filterType === 'house' || filterType === 'category') && (
+          <>
+            {filteredDimensions.map((dim) => (
+              <article
+                key={dim.id}
+                className={`oj-dim-card oj-dim-${dim.auspiciousness}`}
+                id={`dimension-${dim.id}`}
+              >
+                {/* Header: Number, House Badge, Category Badge & Auspiciousness Pill */}
+                <div className="oj-dim-header">
+                  <div className="oj-dim-id-badge" style={{ gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="oj-dim-num">#{dim.id}</span>
+                    {dim.houseNumber && (
+                      <span className="oj-dim-house-badge">
+                        {isHi ? dim.houseTitleHi : dim.houseTitleEn}
+                      </span>
+                    )}
+                    <span className="oj-dim-cat-tag">
+                      {isHi ? dim.categoryTitleHi : dim.categoryTitleEn}
+                    </span>
+                  </div>
+                  <div className={`oj-dim-auspicious-pill ${dim.auspiciousness}`}>
+                    {dim.auspiciousness === 'highly_favorable' && (isHi ? 'अति शुभ (90%+)' : 'Highly Auspicious')}
+                    {dim.auspiciousness === 'favorable' && (isHi ? 'शुभ व अनुकूल' : 'Favorable')}
+                    {dim.auspiciousness === 'mixed_moderate' && (isHi ? 'संतुलित / मिश्रित' : 'Balanced / Mixed')}
+                    {dim.auspiciousness === 'challenging_caution' && (isHi ? 'सतर्कता अपेक्षित' : 'Needs Caution')}
+                  </div>
+                </div>
+
+                {/* Classical Attributions & Divisional Badges */}
+                <div className="oj-dim-badges-row">
+                  {dim.classicalRef && (
+                    <span className="oj-dim-classical-badge" title={isHi ? 'शास्त्रीय ग्रंथ एवं ऋषि मत' : 'Classical Astrological Source'}>
+                      <BookOpen size={11} />
+                      <span>{dim.classicalRef}</span>
+                    </span>
+                  )}
+                  {dim.divisionalRef && (
+                    <span className="oj-dim-varga-badge" title={isHi ? 'वर्ग कुंडली प्रमाण' : 'Divisional Chart Verification'}>
+                      <Compass size={11} />
+                      <span>{dim.divisionalRef}</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Retrograde / Vakri Dynamic Note (when present) */}
+                {dim.vakriNote && (
+                  <div className="oj-dim-vakri-badge">
+                    <Flame size={13} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>{dim.vakriNote}</span>
+                  </div>
+                )}
+
+                <h2 className="oj-dim-title">{isHi ? dim.titleHi : dim.titleEn}</h2>
+
+                {/* Astrological Determinants (Exact Basis) */}
+                <div className="oj-dim-basis-box">
+                  <div className="oj-dim-basis-label">
+                    <Compass size={13} />
+                    <span>{isHi ? 'ज्योतिषीय आधार (कुंडली सूत्र):' : 'Astrological Basis (Exact Placements):'}</span>
+                  </div>
+                  <div className="oj-dim-basis-text">
+                    {isHi ? dim.astroBasisHi : dim.astroBasisEn}
+                  </div>
+                </div>
+
+                {/* Clear Decisive Verdict */}
+                <div className="oj-dim-verdict-box">
+                  <div className="oj-dim-verdict-label">
+                    <CheckCircle2 size={14} />
+                    <span>{isHi ? 'स्पष्ट फलादेश निष्कर्ष:' : 'Concrete Verdict:'}</span>
+                  </div>
+                  <div className="oj-dim-verdict-text">
+                    {isHi ? dim.verdictHi : dim.verdictEn}
+                  </div>
+                </div>
+
+                {/* In-Depth Classical Vedic Analysis */}
+                <div className="oj-dim-analysis-box">
+                  <p className="oj-dim-analysis-text">
+                    {isHi ? dim.detailedAnalysisHi : dim.detailedAnalysisEn}
+                  </p>
+                </div>
+
+                {/* Authentic Classical Remedy */}
+                <div className="oj-dim-remedy-box">
+                  <div className="oj-dim-remedy-label">
+                    <Sparkles size={13} />
+                    <span>{isHi ? 'वैदिक शांति उपाय व मंत्र:' : 'Vedic Remedy & Protective Protocol:'}</span>
+                  </div>
+                  <div className="oj-dim-remedy-text">
+                    {isHi ? dim.remedyHi : dim.remedyEn}
+                  </div>
+                </div>
+              </article>
+            ))}
+
+            {filteredDimensions.length === 0 && (
+              <div className="oj-no-results-card">
+                <AlertTriangle size={32} />
+                <p>
+                  {isHi
+                    ? 'कोई फलकथन नहीं मिला। कृपया अन्य खोज शब्द का प्रयास करें।'
+                    : 'No dimensions match your search filter. Please try a different query.'}
+                </p>
+                <button
+                  type="button"
+                  className="oj-action-btn secondary"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedHouse('all');
+                    setSelectedCategory('all');
+                  }}
+                >
+                  {isHi ? 'सभी 51 आयाम दिखाएं' : 'Reset Filters & Show All 51'}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

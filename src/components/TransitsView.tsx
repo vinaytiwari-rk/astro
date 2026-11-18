@@ -6,6 +6,10 @@ import {
   evaluateAshtakavargaYogas,
 } from '../astro/panchaPakshiAndKaksha';
 import { computeDailyChoghadiyaAndGowri } from '../astro/panchangExtra';
+import {
+  getGocharaBookRecord,
+  type GocharaBookRecord,
+} from '../astro/predictions/classicalBookData';
 import { evaluateParamayusStatus } from '../astro/predictions/paramayus';
 import { formatDateDmy } from '../astro/time';
 import type { BirthInput, CalcSettings, ChartData, ChartStyle } from '../astro/types';
@@ -84,6 +88,37 @@ export const TransitsView: React.FC<TransitsViewProps> = ({
     () => (paramayus.exceeded ? [] : evaluateAshtakavargaYogas(natalChart)),
     [paramayus.exceeded, natalChart]
   );
+
+  const gocharaAnalysis = useMemo(() => {
+    if (paramayus.exceeded) return [];
+    return transitChart.planets.map((p) => {
+      const houseFromMoon = ((p.signIndex - natalMoon.signIndex + 12) % 12) + 1;
+      const rec = getGocharaBookRecord(p.id, houseFromMoon);
+
+      let vedhaBlockedBy: string[] = [];
+      if (rec && rec.vedhaHouse !== null) {
+        vedhaBlockedBy = transitChart.planets
+          .filter((tp) => {
+            if (tp.id === p.id) return false;
+            // Classical exception: Sun & Saturn do not cause mutual vedha
+            if ((p.id === 'Sun' && tp.id === 'Saturn') || (p.id === 'Saturn' && tp.id === 'Sun')) return false;
+            // Classical exception: Moon & Mercury do not cause mutual vedha
+            if ((p.id === 'Moon' && tp.id === 'Mercury') || (p.id === 'Mercury' && tp.id === 'Moon')) return false;
+            const h = ((tp.signIndex - natalMoon.signIndex + 12) % 12) + 1;
+            return h === rec.vedhaHouse;
+          })
+          .map((tp) => trPlanet(tp.id, lang));
+      }
+
+      return {
+        planet: p,
+        houseFromMoon,
+        rec,
+        vedhaBlockedBy,
+        hasVedha: vedhaBlockedBy.length > 0,
+      };
+    });
+  }, [paramayus.exceeded, transitChart.planets, natalMoon.signIndex, lang]);
   const refSignIndex =
     referenceMode === 'moon' ? natalMoon.signIndex : natalChart.ascendant.signIndex;
 
@@ -283,6 +318,100 @@ export const TransitsView: React.FC<TransitsViewProps> = ({
           </section>
         </div>
       </div>
+
+      {/* Classical Textbook Gochara Predictions (Ch. 12 - From Natal Moon with Vedha Analysis) */}
+      <section className="panel" style={{ marginTop: '16px' }}>
+        <div className="panel-header">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            <h3 style={{ margin: 0 }}>
+              {lang === 'hi'
+                ? `शास्त्रीय गोचर फलादेश (अध्याय 12 — जन्म चंद्र: ${trSign(natalMoon.signIndex, lang)} से गोचर व वेध विचार)`
+                : `Classical Textbook Gochara Predictions (Ch. 12 — From Natal Moon: ${natalMoon.signName} with Vedha Analysis)`}
+            </h3>
+            <span className="muted small-text">
+              {lang === 'hi'
+                ? 'गोचर का फल जन्म चंद्र राशि से देखा जाता है। वेध स्थान में ग्रह स्थित होने पर शुभ या अशुभ फल बाधित हो जाता है।'
+                : 'Transits are classically judged from natal Moon. A transiting planet in the Vedha house obstructs the transit result.'}
+            </span>
+          </div>
+        </div>
+        <div className="cards-list pad-14" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+          {gocharaAnalysis.map((item) => {
+            const p = item.planet;
+            const rec = item.rec;
+            if (!rec) return null;
+            const isFav = rec.isFavorable;
+            return (
+              <article
+                key={p.id}
+                className={`yoga-card ${
+                  isFav
+                    ? item.hasVedha ? 'tone-mixed' : 'tone-benefic'
+                    : item.hasVedha ? 'tone-mixed' : 'tone-dosha'
+                }`}
+                style={{ padding: '14px', borderRadius: '8px', border: '1px solid var(--border)' }}
+              >
+                <div className="yoga-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <strong style={{ fontSize: '15px' }}>{trPlanet(p.id, lang)}</strong>
+                    <span className="tag tag-karaka" style={{ fontSize: '11px' }}>
+                      {trSign(p.signIndex, lang)} {p.dms}
+                    </span>
+                    <span className="tag" style={{ fontSize: '11px', fontWeight: 600 }}>
+                      {lang === 'hi' ? `चंद्र से भाव ${item.houseFromMoon}` : `H${item.houseFromMoon} from Moon`}
+                    </span>
+                  </div>
+                  <div>
+                    {isFav ? (
+                      <span className={`tag ${item.hasVedha ? 'tag-combust' : 'tag-varg'}`}>
+                        {item.hasVedha
+                          ? (lang === 'hi' ? 'शुभ (वेध बाधित)' : 'Benefic (Vedha Blocked)')
+                          : (lang === 'hi' ? 'शुभ फलदायी' : 'Favorable')}
+                      </span>
+                    ) : (
+                      <span className={`tag ${item.hasVedha ? 'tag-karaka' : 'tag-combust'}`}>
+                        {item.hasVedha
+                          ? (lang === 'hi' ? 'अशुभ (विपरीत वेध)' : 'Unfavorable (Restrained)')
+                          : (lang === 'hi' ? 'अशुभ / सतर्कता' : 'Unfavorable')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '6px', fontSize: '12px', fontWeight: 600 }}>
+                  {rec.vedhaHouse !== null ? (
+                    item.hasVedha ? (
+                      <span style={{ color: '#dc2626' }}>
+                        {lang === 'hi'
+                          ? `वेध लगा: भाव ${rec.vedhaHouse} में ${item.vedhaBlockedBy.join(', ')} स्थित (फल निष्प्रभावी / बाधित)`
+                          : `Vedha active: ${item.vedhaBlockedBy.join(', ')} in H${rec.vedhaHouse} (Transit obstructed)`}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#059669' }}>
+                        {lang === 'hi'
+                          ? `वेध मुक्त: वेध स्थान (भाव ${rec.vedhaHouse}) रिक्त (फल पूर्ण प्रभावी)`
+                          : `Free from Vedha: H${rec.vedhaHouse} is vacant (Full effect)`}
+                      </span>
+                    )
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      {lang === 'hi' ? 'वेध रहित गोचर' : 'No Vedha house'}
+                    </span>
+                  )}
+                </div>
+
+                <p style={{ margin: '0 0 6px 0', fontSize: '13.5px', fontWeight: 600, color: 'var(--text)', lineHeight: 1.45 }}>
+                  {lang === 'hi' ? rec.summaryHi : rec.summaryEn}
+                </p>
+
+                <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+                  {lang === 'hi' ? rec.detailedHi : rec.detailedEn}
+                </p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Day & Night Choghadiya + Gowri Panchangam */}
       <div className="basics-bottom-grid">

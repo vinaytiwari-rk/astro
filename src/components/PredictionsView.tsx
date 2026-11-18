@@ -148,54 +148,46 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   );
 
   // Core Prediction Systems (Synchronized Navigation Pills)
-  const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string; icon: string }> = [
+  const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     {
       id: 'twelve_planets',
-      labelEn: '🌟 12 Planets Event Predictions',
-      labelHi: '🌟 द्वादश ग्रह घटना फलादेश',
-      icon: '🌟',
+      labelEn: '12 Planets Event Predictions',
+      labelHi: 'द्वादश ग्रह घटना फलादेश',
     },
     {
       id: 'active_yogas_yuti',
-      labelEn: '📜 Active Yogas & Conjunctions',
-      labelHi: '📜 सक्रिय राजयोग व ग्रह युति',
-      icon: '📜',
+      labelEn: 'Active Yogas & Conjunctions',
+      labelHi: 'सक्रिय राजयोग व ग्रह युति',
     },
     {
       id: 'deep_life',
-      labelEn: '🏛️ 6-Domain Life Predictions',
-      labelHi: '🏛️ समग्र जीवन फलादेश',
-      icon: '🏛️',
+      labelEn: '6-Domain Life Predictions',
+      labelHi: 'समग्र जीवन फलादेश',
     },
     {
       id: 'eventsLedger',
-      labelEn: '⏳ 120-Year Timeline',
-      labelHi: '⏳ 120-वर्षीय कालचक्र',
-      icon: '⏳',
+      labelEn: '120-Year Timeline',
+      labelHi: '120-वर्षीय कालचक्र',
     },
     {
       id: 'houseWise',
-      labelEn: '🏠 12 Bhavas Domains',
-      labelHi: '🏠 द्वादश भाव फल',
-      icon: '🏠',
+      labelEn: '12 Bhavas Domains',
+      labelHi: 'द्वादश भाव फल',
     },
     {
       id: 'bhriguNadi',
-      labelEn: '✨ Bhrigu Nandi Nadi',
-      labelHi: '✨ भृगु नंदी नाड़ी व BSP',
-      icon: '✨',
+      labelEn: 'Bhrigu Nandi Nadi',
+      labelHi: 'भृगु नंदी नाड़ी व BSP',
     },
     {
       id: 'pastFuture',
-      labelEn: '🔄 Past Life Karma D60',
-      labelHi: '🔄 पूर्व जन्म D60',
-      icon: '🔄',
+      labelEn: 'Past Life Karma D60',
+      labelHi: 'पूर्व जन्म D60',
     },
     {
       id: 'branchesNumerology',
-      labelEn: '🌿 KP & Lal Kitab',
-      labelHi: '🌿 KP व लाल किताब',
-      icon: '🌿',
+      labelEn: 'KP & Lal Kitab',
+      labelHi: 'KP व लाल किताब',
     },
   ];
 

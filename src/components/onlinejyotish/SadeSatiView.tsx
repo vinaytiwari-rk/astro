@@ -77,7 +77,7 @@ function moortiColor(moorti: string): string {
 const StatusCard: React.FC<{ status: SadeSatiCurrentStatus }> = ({ status }) => (
   <div className="sss-status-card">
     <div className="sss-status-header">
-      <span className="sss-status-title">🪐 Shani Gochar Status / शनि गोचर स्थिति</span>
+      <span className="sss-status-title">Shani Gochar Status / शनि गोचर स्थिति</span>
       <span className={statusBadgeClass(status)}>
         {statusBadgeText(status)}
         <br />
@@ -165,7 +165,6 @@ const RemedyCard: React.FC<{ status: SadeSatiCurrentStatus; report: SadeSatiRepo
   return (
     <div className="sss-moorti-card sss-remedy-card">
       <div className="sss-moorti-header">
-        <span className="sss-moorti-icon" style={{ color: '#10b981' }}>🙏</span>
         <div>
           <span className="sss-moorti-title">{titleEn}</span>
           <span className="sss-moorti-type" style={{ color: '#10b981' }}>{titleHi}</span>
@@ -289,7 +288,7 @@ const SadeSatiView: React.FC<SadeSatiViewProps> = ({ chart }) => {
 
       {/* ── Timeline Table ── */}
       <div className="sss-section">
-        <h3 className="sss-section-title">📅 Saturn Transit Timeline / शनि गोचर कालक्रम</h3>
+        <h3 className="sss-section-title">Saturn Transit Timeline / शनि गोचर कालक्रम</h3>
         <p className="sss-section-subtitle">
           Showing phases from last 10 years to next 20 years &nbsp;|&nbsp;
           <span className="sss-hindi">पिछले 10 वर्ष से अगले 20 वर्ष तक के चरण</span>
@@ -320,7 +319,7 @@ const SadeSatiView: React.FC<SadeSatiViewProps> = ({ chart }) => {
       {/* ── Affected Areas ── */}
       {(report.currentStatus.isInSadeSati || report.currentStatus.isInDhaiya || report.currentStatus.isInKantaka) && (
         <div className="sss-section">
-          <h3 className="sss-section-title">⚠️ Currently Affected Areas / प्रभावित क्षेत्र</h3>
+          <h3 className="sss-section-title">Currently Affected Areas / प्रभावित क्षेत्र</h3>
           <div className="sss-affected-areas">
             {(() => {
               const st = report.currentStatus;
