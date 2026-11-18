@@ -279,7 +279,7 @@ export function computeSuryasiddhantaTimeLords(ahargana: number): {
  */
 export function computeGrahaYuddhaAdjustments(
   planets: BodyPosition[],
-  baseRows: Pick<ShadbalaRow, 'planet' | 'totalVirupas'>[]
+  baseRows: ReadonlyArray<Pick<ShadbalaRow, 'planet' | 'totalVirupas'>>
 ): Record<SevenPlanetId, number> {
   const adjustments = Object.fromEntries(
     SEVEN_PLANETS.map((id) => [id, 0])
@@ -504,6 +504,7 @@ export function computeShadbala(params: {
       cheshtaBala: Math.round(cheshtaBala * 10) / 10,
       naisargikaBala: Math.round(naisargikaBala * 10) / 10,
       drikBala: Math.round(drikBala * 10) / 10,
+      yuddhaBala: 0,
       totalVirupas: Math.round(totalVirupas * 10) / 10,
       totalRupas: Math.round(totalRupas * 100) / 100,
       requiredRupas: req,
