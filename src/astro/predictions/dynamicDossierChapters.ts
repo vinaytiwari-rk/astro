@@ -1290,7 +1290,7 @@ export function computeDynamic12Epochs(chart: ChartData): ChapterSection[] {
         `पारंपरिक ज्योतिष में इन स्थितियों को ऐसे समय के संकेत के रूप में पढ़ा जा सकता है जब “${themeHi}” और संबंधित भावों के विषयों पर ध्यान जा सकता है। इससे विवाह, पदोन्नति, बीमारी, धन, हानि या किसी अन्य घटना का होना सिद्ध नहीं होता।`,
       ],
       astrologicalCauseEn: 'The dasha lords are read through their natal house placements at the midpoint of this age band. This layer does not include transit confirmation or event-specific combinations.',
-      astrologicalCauseHi: 'इस आयु-खंड के मध्य की दशा के स्वामियों को उनकी जन्मकुंडली में स्थित भावों से पढ़ा गया है। इस स्तर पर गोचर-पुष्टि या घटना-विशिष्ट योग शामिल नहीं हैं।',
+      astrologicalCauseHi: 'शास्त्रीय कारण (पारंपरिक पद्धति का संदर्भ): इस आयु-खंड के मध्य की दशा के स्वामियों को उनकी जन्मकुंडली में स्थित भावों से पढ़ा गया है। इस स्तर पर गोचर-पुष्टि या घटना-विशिष्ट योग शामिल नहीं हैं।',
       keyPointsEn: [
         `Age band: ${startAge}–${endAge}`,
         md ? `Mahadasha at midpoint: ${md}` : 'Mahadasha: unavailable',
