@@ -57,8 +57,10 @@ export interface LifeDimensionReading {
   detailedAnalysisHi: string;
   remedyEn: string;
   remedyHi: string;
-  strengthScore: number; // 0..100
+  strengthScore: number; // Legacy heuristic only; not a probability
   auspiciousness: AuspiciousnessLevel;
+  timingHi?: string;
+  timingEn?: string;
 }
 
 export interface SambhavitSummary {
@@ -460,14 +462,107 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
 
   const rawDims = build51LifeDimensions(corpusContext);
 
-  // 21 Supreme Life Dimensions: Pinpointed, unvarnished classical predictions
+  // 21 selected dimensions are re-interpreted from the actual house-lord,
+  // occupant, Ashtakavarga and Vimshottari data. The legacy corpus score is
+  // retained for compatibility only; it is not a probability or evidence.
+  const KARAKA_BY_DIMENSION: Record<number, string[]> = {
+    1: ['Sun'], 5: ['Jupiter'], 9: ['Mars'], 10: ['Mars'], 12: ['Moon'],
+    13: ['Moon'], 14: ['Moon'], 17: ['Mercury', 'Jupiter'], 19: ['Jupiter'],
+    20: ['Jupiter'], 22: ['Saturn'], 24: ['Mars', 'Saturn'], 26: ['Venus'],
+    27: ['Venus'], 31: ['Saturn'], 34: ['Ketu', 'Jupiter'], 37: ['Jupiter'],
+    39: ['Sun', 'Saturn', 'Mercury'], 44: ['Jupiter'], 48: ['Rahu', 'Moon'],
+    51: ['Ketu', 'Jupiter'],
+  };
+  const formatPeriodDate = (ms: number) => new Intl.DateTimeFormat('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  }).format(new Date(ms));
+  const allDashaPeriods = (chart.vimshottari ?? []).flatMap((period) => [
+    period,
+    ...(period.children ?? []),
+  ]);
   const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
   const dims = rawDims
     .filter((d) => MASTER_21_IDS.includes(d.id))
-    .map((d, idx) => ({
-      ...d,
-      id: idx + 1,
-    }));
+    .map((d, idx) => {
+      const house = d.houseNumber ?? 1;
+      const lord = getHLord(house);
+      const occupants = planets.filter((planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === house && planet.id !== 'Asc');
+      const aspects = lord.aspects as Array<{ planet: string; planetHi: string; isBenefic: boolean }>;
+      const dignityWeight: Record<string, number> = {
+        Exalted: 2, Moolatrikona: 2, 'Own Sign': 2, 'Great Friend': 1,
+        Friendly: 1, Neutral: 0, Enemy: -1, 'Great Enemy': -2, Debilitated: -2,
+      };
+      const bindus = sav[house - 1] ?? 28;
+      const evidenceBalance =
+        (dignityWeight[lord.dignity] ?? 0) +
+        (bindus >= 30 ? 1 : bindus <= 24 ? -1 : 0) +
+        Math.max(-2, Math.min(2, aspects.reduce((sum, aspect) => sum + (aspect.isBenefic ? 1 : -1), 0))) +
+        (lord.kartari === 'Subhakartari' ? 1 : lord.kartari === 'Papakartari' ? -1 : 0);
+      const auspiciousness: AuspiciousnessLevel = evidenceBalance >= 3
+        ? 'highly_favorable'
+        : evidenceBalance >= 1
+          ? 'favorable'
+          : evidenceBalance <= -2
+            ? 'challenging_caution'
+            : 'mixed_moderate';
+      const toneHi = auspiciousness === 'highly_favorable' || auspiciousness === 'favorable'
+        ? 'सहयोगी संकेत अपेक्षाकृत अधिक हैं'
+        : auspiciousness === 'challenging_caution'
+          ? 'इस विषय में अतिरिक्त सावधानी और प्रयास की जरूरत हो सकती है'
+          : 'इस विषय में मिले-जुले संकेत हैं';
+      const toneEn = auspiciousness === 'highly_favorable' || auspiciousness === 'favorable'
+        ? 'the chart has relatively more supportive indications'
+        : auspiciousness === 'challenging_caution'
+          ? 'this area may need extra care and effort'
+          : 'the chart shows mixed indications';
+      const occupantTextHi = occupants.length
+        ? occupants.map((planet) => HINDI_PLANETS[planet.id] || planet.id).join(', ')
+        : 'इस भाव में कोई ग्रह स्थित नहीं है';
+      const occupantTextEn = occupants.length
+        ? occupants.map((planet) => planet.id).join(', ')
+        : 'no planet occupies this house';
+      const aspectTextHi = aspects.length
+        ? aspects.map((aspect) => `${aspect.planetHi} की ${aspect.isBenefic ? 'शुभ' : 'कठोर'} दृष्टि`).join(', ')
+        : 'विशेष ग्रह-दृष्टि दर्ज नहीं है';
+      const aspectTextEn = aspects.length
+        ? aspects.map((aspect) => `${aspect.planet} (${aspect.isBenefic ? 'supportive' : 'challenging'} aspect)`).join(', ')
+        : 'no special planetary aspect is recorded';
+      const karakas = KARAKA_BY_DIMENSION[d.id] ?? [];
+      const relevantPlanets = new Set<string>([
+        lord.lord,
+        ...occupants.map((planet) => planet.id),
+        ...karakas,
+      ]);
+      const matchingPeriods = allDashaPeriods
+        .filter((period) => relevantPlanets.has(period.lord) && period.endMs > now)
+        .sort((a, b) => a.startMs - b.startMs);
+      const activeRelevant = matchingPeriods.find((period) => period.startMs <= now && now < period.endMs);
+      const nextRelevant = matchingPeriods.filter((period) => period.startMs > now).slice(0, 2);
+      let timingHi = 'उपलब्ध विंशोत्तरी दशा डेटा में इस विषय से जुड़ी निकट अवधि स्पष्ट नहीं है; इसलिए समय-सीमा बताना उचित नहीं होगा।';
+      let timingEn = 'The available Vimshottari data does not identify a clear near-term period for this topic, so no timing window is stated.';
+      if (activeRelevant) {
+        timingHi = `इस विषय से जुड़े ग्रह ${HINDI_PLANETS[activeRelevant.lord] || activeRelevant.lord} की ${activeRelevant.level === 1 ? 'महादशा' : activeRelevant.level === 2 ? 'अंतर्दशा' : 'सूक्ष्म दशा'} अभी सक्रिय है; उपलब्ध गणना के अनुसार यह ${formatPeriodDate(activeRelevant.endMs)} तक चलेगी। यह विषय के सक्रिय होने का पारंपरिक संकेत है, घटना की गारंटी नहीं।`;
+        timingEn = `${activeRelevant.lord}'s ${activeRelevant.level === 1 ? 'Mahadasha' : activeRelevant.level === 2 ? 'Antardasha' : 'sub-period'} linked to this topic is active until ${formatPeriodDate(activeRelevant.endMs)}. This is a traditional activation indicator, not a guaranteed event.`;
+      } else if (nextRelevant.length) {
+        timingHi = `अगली संबंधित दशा ${HINDI_PLANETS[nextRelevant[0].lord] || nextRelevant[0].lord} की ${formatPeriodDate(nextRelevant[0].startMs)} से ${formatPeriodDate(nextRelevant[0].endMs)} तक है। इसे संभावित सक्रियता-अवधि समझें, निश्चित घटना का समय नहीं।`;
+        timingEn = `The next related period is ${nextRelevant[0].lord}, from ${formatPeriodDate(nextRelevant[0].startMs)} to ${formatPeriodDate(nextRelevant[0].endMs)}. Treat this as a possible activation window, not a promised event date.`;
+      }
+      const verdictHi = `इस विषय का मुख्य आधार ${lord.lordHi} हैं। वे ${lord.placedHouse}वें भाव में ${lord.dignityHi} स्थिति में हैं। ${occupantTextHi}। भाव के ${bindus} सर्वाष्टकवर्ग बिंदु और ${aspectTextHi} को साथ पढ़ने पर ${toneHi}। इसे निश्चित घटना या प्रतिशत संभावना न समझें।`;
+      const verdictEn = `The main house-lord indicator is ${lord.lord} in House ${lord.placedHouse} with ${lord.dignity} dignity. The house has ${occupantTextEn}; its Sarvashtakavarga score is ${bindus}, with ${aspectTextEn}. Overall, ${toneEn}. This is not a probability or a guaranteed event.`;
+      const analysisHi = `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${lord.lordHi} की स्थिति, भाव में स्थित ग्रह, ${bindus} सर्वाष्टकवर्ग बिंदु, दृष्टियां और संबंधित दशा को एक साथ देखकर यह निष्कर्ष बनाया गया है।`;
+      const analysisEn = `${d.detailedAnalysisEn}\n\nChart-specific synthesis: this reading combines the house lord's placement, house occupants, ${bindus} Sarvashtakavarga bindus, aspects and the related dasha period.`;
+      return {
+        ...d,
+        id: idx + 1,
+        verdictHi,
+        verdictEn,
+        detailedAnalysisHi: analysisHi,
+        detailedAnalysisEn: analysisEn,
+        auspiciousness,
+        timingHi,
+        timingEn,
+      };
+    });
 
   // Summary counts across all 21 dimensions
   let hf = 0, f = 0, m = 0, c = 0;

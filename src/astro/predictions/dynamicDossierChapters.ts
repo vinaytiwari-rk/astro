@@ -543,46 +543,60 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
     sadeSatiStatusHi = `गोचर शनि चंद्र से भाव ${saturnHouseFromMoon} में (${[3, 6, 11].includes(saturnHouseFromMoon) ? 'शत्रु-हंता व प्रचंड धन लाभ का शुभ काल' : 'अनुशासन व धैर्य की मांग'})`;
   }
 
-  // Diagnostic of Past 6 to 12 Months
-  let pastDiagnosticEn = '';
-  let pastDiagnosticHi = '';
+  // Dasha relationships are symbolic themes, not proof of what the native
+  // actually experienced. Never narrate unverified past events as facts.
+  const houseThemesHi: Record<number, string> = {
+    1: 'स्वास्थ्य-जागरूकता, आत्मविश्वास और व्यक्तिगत दिशा',
+    2: 'बचत, परिवार, वाणी और वित्तीय निर्णय',
+    3: 'कौशल, संचार, छोटे प्रयास और भाई-बहन',
+    4: 'घर, माता, संपत्ति और मानसिक सुकून',
+    5: 'शिक्षा, रचनात्मकता, संतान और विवेकपूर्ण जोखिम',
+    6: 'नौकरी, दिनचर्या, प्रतिस्पर्धा और देनदारियां',
+    7: 'साझेदारी, विवाह और सार्वजनिक व्यवहार',
+    8: 'बदलाव, साझा संसाधन और अनिश्चितता से निपटना',
+    9: 'उच्च शिक्षा, मार्गदर्शन, विश्वास और लंबी यात्राएं',
+    10: 'काम, जिम्मेदारी, पद और सार्वजनिक प्रतिष्ठा',
+    11: 'आय, लक्ष्य, नेटवर्क और उपलब्धियां',
+    12: 'खर्च, विश्राम, विदेश-संपर्क और एकांत',
+  };
+  const houseThemesEn: Record<number, string> = {
+    1: 'wellbeing, confidence and personal direction',
+    2: 'savings, family, speech and financial decisions',
+    3: 'skills, communication, initiative and siblings',
+    4: 'home, mother, property and emotional rest',
+    5: 'education, creativity, children and considered risk',
+    6: 'employment, routine, competition and liabilities',
+    7: 'partnerships, marriage and public dealings',
+    8: 'change, shared resources and uncertainty management',
+    9: 'higher learning, mentors, beliefs and long journeys',
+    10: 'work, responsibility, position and public standing',
+    11: 'income, goals, networks and gains',
+    12: 'expenses, rest, overseas links and solitude',
+  };
+  const pastDiagnosticHi = `महादशा स्वामी ${PLANET_HI[mdLord] || mdLord} जन्मकुंडली के भाव ${mdHouse} से और अंतर्दशा स्वामी ${PLANET_HI[adLord] || adLord} भाव ${adHouse} से जुड़े हैं। इन भावों के पारंपरिक विषय क्रमशः ${houseThemesHi[mdHouse] || 'जीवन की प्राथमिकताएं'} और ${houseThemesHi[adHouse] || 'व्यावहारिक परिस्थितियां'} हैं। उनका ${isShadashtaka ? '6/8' : isDvidwadasa ? '2/12' : isKendra ? 'केंद्र' : isTrikona ? 'त्रिकोण' : 'अन्य'} संबंध दबाव, समन्वय या बदलाव की थीम दे सकता है। यह पिछले 6–12 महीनों की घटनाओं का दावा नहीं है; अपने वास्तविक अनुभव से ही इसका मिलान करें।`;
+  const pastDiagnosticEn = `The Mahadasha lord ${mdLord} is connected with natal House ${mdHouse}, and the Antardasha lord ${adLord} with House ${adHouse}. Their traditional topics are ${houseThemesEn[mdHouse] || 'personal priorities'} and ${houseThemesEn[adHouse] || 'practical circumstances'}. Their ${isShadashtaka ? '6/8' : isDvidwadasa ? '2/12' : isKendra ? 'Kendra' : isTrikona ? 'Trikona' : 'other'} relationship may describe themes of pressure, coordination or change. This is not a claim about events in the past 6–12 months; compare it with your actual experience.`;
 
-  if (isShadashtaka) {
-    pastDiagnosticEn = `Over the past 6 to 12 months, running the acute Shadashtaka (6/8 mutual position) between Mahadasha lord ${mdLord} and Antardasha lord ${adLord} has forced you through a crucible of friction. You experienced unexpected health scares, adversarial friction with colleagues or relatives, and the frustrating sensation that two steps forward triggered one step backward. Sleep was restless, and energy was burned on resolving problems created by others.`;
-    pastDiagnosticHi = `पिछले 6 से 12 महीनों में, महादशेश '${PLANET_HI[mdLord] || mdLord}' और अंतर्दशेश '${PLANET_HI[adLord] || adLord}' के मध्य 'षडाष्टक संबंध' (6/8 की परस्पर स्थिति) के कारण आपका जीवन एक कठिन अग्निपरीक्षा से गुजरा है। अनपेक्षित स्वास्थ्य चिंताएं, अपनों या सहकर्मियों से गुप्त विरोध, और दो कदम आगे बढ़ने पर एक कदम पीछे खिंचने जैसा अनुभव हुआ। आपकी ऊर्जा दूसरों द्वारा खड़ी की गई समस्याओं को सुलझाने में अधिक व्यय हुई।`;
-  } else if (isDvidwadasa) {
-    pastDiagnosticEn = `The past 6 to 12 months were dominated by Dvidwadasa (2/12 mutual axis) dynamics: heavy, unbudgeted capital outflows, relocation anxieties, and emotional depletion. You felt that money was entering through the front door and evaporating through the chimney. Promised institutional or familial support stalled at the eleventh hour.`;
-    pastDiagnosticHi = `विगत 6 से 12 माह में 'द्विर्द्वादश योग' (2/12 का संबंध) प्रभावी रहने से अत्यधिक अनपेक्षित खर्च, स्थान परिवर्तन की चिंता और संचित पूंजी में रिसाव का सामना करना पड़ा। धन आया तो सही, किंतु टिकने से पहले ही किसी न किसी आकस्मिक कार्य में बह गया। अंतिम समय पर अपनों का सहयोग रुकने से मन खिन्न रहा।`;
-  } else if (isKendra || isTrikona) {
-    pastDiagnosticEn = `The past 6 to 12 months placed heavy executive burdens on your shoulders under the Kendra/Trikona alignment of ${mdLord} and ${adLord}. While professional stature or social credibility expanded, your personal bandwidth was stretched to near-exhaustion. You had to make mature, non-negotiable decisions, shedding naive assumptions about fairness in the marketplace.`;
-    pastDiagnosticHi = `विगत 6 से 12 माह में '${PLANET_HI[mdLord] || mdLord}' और '${PLANET_HI[adLord] || adLord}' के केंद्र/त्रिकोण संबंध ने आपके कंधों पर भारी जिम्मेदारियां डालीं। सामाजिक प्रतिष्ठा और कार्यक्षेत्र का दायरा तो बढ़ा, किंतु मानसिक विश्राम लगभग समाप्त हो गया। आपको कठोर और व्यावहारिक निर्णय लेने पड़े और दुनिया के दोहरे चरित्र का स्पष्ट साक्षात्कार हुआ।`;
-  } else {
-    pastDiagnosticEn = `The past 6 to 12 months demanded steady perseverance under ${mdLord}-${adLord}. While dramatic disasters were averted, progress felt grind-heavy and plodding. You have been carrying a quiet, chronic fatigue born of keeping multiple responsibilities balanced without adequate rest.`;
-    pastDiagnosticHi = `विगत 6 से 12 माह में '${PLANET_HI[mdLord] || mdLord}-${PLANET_HI[adLord] || adLord}' के प्रभाव से परिस्थितियां अत्यंत धीमी गति से आगे बढ़ीं। कोई बड़ा अनिष्ट नहीं हुआ, किंतु निरंतर परिश्रम के अनुपात में तात्कालिक फल कम मिलने से मन में एक मौन थकावट संचित होती रही।`;
-  }
-
-  // Next 6-Month Inflexion Window
-  let next6MonthsEn = '';
-  let next6MonthsHi = '';
-
-  next6MonthsEn = `The upcoming 6 months represent a decisive astrological crossroad. Strictly avoid: (1) Lending significant funds on oral goodwill (this money will not return without permanent enmity); (2) Entering unwritten or ambiguous partnerships; and (3) Escalating verbal disputes into formal litigation. Crucial opportunities: A strategic window opens in the second half of this cycle to monetize specialized expertise, shed non-performing investments, and establish a consolidated professional base. Transit Saturn in Pisces demands ruthless discipline in daily routine.`;
-  next6MonthsHi = `आगामी 6 महीने जीवन में एक बड़ा मोड़ लेकर आ रहे हैं। इस अवधि में निम्नलिखित से पूर्णतः बचें: (1) मौखिक विश्वास पर किसी को बड़ा कर्ज देना (यह धन संबंध बिगाड़े बिना वापस नहीं आएगा); (2) बिना स्पष्ट अनुबंध के नई साझेदारी करना; और (3) वाणी के आवेश में आकर कानूनी विवाद में कूदना। स्वर्णिम अवसर: इस कालखंड के उत्तरार्ध में अपनी मूल विद्या से नया आय-स्रोत बनाने, व्यर्थ के खर्चों को छांटने और कार्यक्षेत्र में अपनी स्थिति को सुदृढ़ करने का श्रेष्ठ मार्ग खुलेगा।`;
+  const pdPlanet = chart.planets.find((p) => p.id === pdLord);
+  const pdHouse = pdPlanet?.rasiHouseNumber || pdPlanet?.houseNumber || 1;
+  const pdEnd = pdPeriod?.endMs ? formatDateDmy(pdPeriod.endMs) : '';
+  const next6MonthsHi = `आगामी अवधि में प्रत्यन्तर्दशा स्वामी ${PLANET_HI[pdLord] || pdLord} जन्मकुंडली के भाव ${pdHouse} से जुड़ा है। इस भाव के पारंपरिक विषय हैं: ${houseThemesHi[pdHouse] || 'व्यक्तिगत प्राथमिकताएं'}। उपलब्ध दशा-गणना के अनुसार यह उप-अवधि ${pdEnd || 'दर्ज समाप्ति तिथि तक'} सक्रिय है। यह व्यापक विषय-संकेत है; इससे नौकरी, विवाह, धन, मुकदमे या स्वास्थ्य की कोई निश्चित घटना/तारीख घोषित नहीं की जा सकती।`;
+  const next6MonthsEn = `The current Pratyantardasha lord ${pdLord} is connected with natal House ${pdHouse}, whose traditional topics include ${houseThemesEn[pdHouse] || 'personal priorities'}. The available dasha calculation lists this sub-period through ${pdEnd || 'its recorded end date'}. This is a broad thematic indication, not a definite prediction or date for a job, marriage, money, litigation or health event.`;
 
   const sec1: ChapterSection = {
-    titleEn: 'The Reality of the Past 6 to 12 Months: Mental & Circumstantial Fatigue',
-    titleHi: 'विगत 6 से 12 माह का यथार्थ: मानसिक थकावट एवं परिस्थितियों का दबाव',
-    leadEn: `A diagnostic of the running Vimshottari Mahadasha of ${mdLord} & Antardasha of ${adLord} combined with Saturn transit.`,
-    leadHi: `सक्रिय महादशेश '${PLANET_HI[mdLord] || mdLord}' व अंतर्दशेश '${PLANET_HI[adLord] || adLord}' तथा गोचर शनि के प्रभाव का यथार्थवादी विश्लेषण।`,
+    titleEn: 'Current Dasha Themes: Review Against Your Actual Experience',
+    titleHi: 'वर्तमान दशा के विषय: अपने वास्तविक अनुभव से मिलान करें',
+    leadEn: `A chart-based reading of the running Vimshottari Mahadasha of ${mdLord} and Antardasha of ${adLord}; no unverified past events are assumed.`,
+    leadHi: `सक्रिय महादशा '${PLANET_HI[mdLord] || mdLord}' और अंतर्दशा '${PLANET_HI[adLord] || adLord}' के भाव-आधारित विषय; इसमें पिछले अनुभवों को पहले से सच नहीं माना गया है।`,
     paragraphsEn: [
       pastDiagnosticEn,
-      `Concurrently, your cosmic weather is anchored by: ${sadeSatiStatusEn}. The cosmic grinder is testing your psychological endurance, pruning away superficial attachments so that only authentic, durable structures survive.`,
+      `Saturn transit is not included in this particular section; only the birth-chart dasha periods and natal house placements are used.`,
     ],
     paragraphsHi: [
       pastDiagnosticHi,
-      `इसके साथ ही गोचर का चक्र इस समय '${sadeSatiStatusHi}' से संचालित है। काल का यह चक्र आपकी मानसिक सहनशक्ति की परीक्षा ले रहा है, ताकि व्यर्थ के भ्रम छंट जाएं और जीवन की नींव ठोस पत्थरों पर रखी जा सके।`,
+      `इस अनुभाग में गोचर शनि की गणना शामिल नहीं है; निष्कर्ष केवल जन्मकुंडली की दशा और भाव-स्थितियों पर आधारित है।`,
     ],
-    astrologicalCauseEn: `Phaladeepika (Ch. 20, Shloka 12–15) & Brihat Parashara Hora Shastra (Ch. 52): Running Mahadasha of ${mdLord} (House ${mdHouse}) with Antardasha of ${adLord} (House ${adHouse}) in mutual ${mutualDistance}th house relation (${isShadashtaka ? 'Shadashtaka 6/8' : isDvidwadasa ? 'Dvidwadasa 2/12' : isKendra ? 'Kendra' : isTrikona ? 'Trikona' : 'Upachaya'}). Transit Saturn operates in sidereal Pisces (House ${saturnHouseFromMoon} from natal Moon).`,
-    astrologicalCauseHi: `शास्त्रीय कारण: फलदीपिका (अध्याय २०) एवं बृहत्पाराशर होराशास्त्र (अध्याय ५२): वर्तमान में '${PLANET_HI[mdLord] || mdLord}' (भाव ${mdHouse}) की महादशा में '${PLANET_HI[adLord] || adLord}' (भाव ${adHouse}) की अंतर्दशा गतिशील है, जिनका परस्पर संबंध ${mutualDistance}वें भाव का है (${isShadashtaka ? 'षडाष्टक 6/8' : isDvidwadasa ? 'द्विर्द्वादश 2/12' : 'केंद्र/त्रिकोण'})। गोचर में शनि देव मीन राशि में चंद्र से ${saturnHouseFromMoon}वें भाव में संचार कर रहे हैं।`,
+    astrologicalCauseEn: `Vimshottari dasha relationship: Mahadasha lord ${mdLord} (natal House ${mdHouse}) and Antardasha lord ${adLord} (natal House ${adHouse}); their relative house distance is ${mutualDistance}. Saturn transit is not assessed in this section.`,
+    astrologicalCauseHi: `शास्त्रीय कारण: वर्तमान विंशोत्तरी दशा में महादशा स्वामी ${PLANET_HI[mdLord] || mdLord} जन्मकुंडली के भाव ${mdHouse} से और अंतर्दशा स्वामी ${PLANET_HI[adLord] || adLord} भाव ${adHouse} से जुड़े हैं; दोनों के बीच भाव-दूरी ${mutualDistance} है। इस अनुभाग में गोचर शनि का आकलन शामिल नहीं है।`,
     keyPointsEn: [
       `Running Mahadasha: ${mdLord} (until ${mdPeriod?.endMs ? formatDateDmy(mdPeriod.endMs) : 'Active'})`,
       `Running Antardasha: ${adLord} (until ${adPeriod?.endMs ? formatDateDmy(adPeriod.endMs) : 'Active'})`,
@@ -598,10 +612,10 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
   };
 
   const sec2: ChapterSection = {
-    titleEn: 'Next 6-Month Inflexion Window: The Crucial Warning & Opportunity',
-    titleHi: 'आगामी 6 माह की चेतावनी, महत्वपूर्ण मोड़ व अवसर',
-    leadEn: `Actionable shastric guidelines for the upcoming 6-month cycle under Pratyantardasha of ${pdLord}.`,
-    leadHi: `प्रत्यन्तर्दशेश '${PLANET_HI[pdLord] || pdLord}' के प्रभाव में आगामी 6 माह की आचार संहिता व स्वर्णिम अवसर।`,
+    titleEn: 'Next Period: Dasha-Linked Life Themes',
+    titleHi: 'आगामी अवधि: दशा से जुड़े जीवन-विषय',
+    leadEn: `A limited thematic reading of the active Pratyantardasha of ${pdLord}; this is not a guaranteed event forecast.`,
+    leadHi: `प्रत्यन्तर्दशेश '${PLANET_HI[pdLord] || pdLord}' और उसकी जन्मकुंडली में स्थिति पर आधारित सीमित विषय-संकेत; निश्चित घटना का दावा नहीं।`,
     paragraphsEn: [
       next6MonthsEn,
       `Pratyantardasha Lord ${pdLord} indicates that mental breakthroughs will occur through practical self-discipline rather than speculative risks. Protect your physical immunity, avoid late-night road travel during retrograde phases, and maintain meticulous written records for all financial transactions.`,
