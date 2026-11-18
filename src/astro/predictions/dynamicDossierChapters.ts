@@ -373,119 +373,66 @@ const NAKSHATRA_PROFILES: Record<number, NakshatraPsychoProfile> = {
 // ============================================================================
 export function computeDynamicPsychologySections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
-  const ascElem = SIGNS[asc.signIndex].element;
-  const ascLord = asc.signLord;
-  const ascLordPlanet = chart.planets.find((p) => p.id === ascLord);
-  const moon = chart.planets.find((p) => p.id === 'Moon') ?? chart.planets[1];
-  const saturn = chart.planets.find((p) => p.id === 'Saturn')!;
-  const mars = chart.planets.find((p) => p.id === 'Mars')!;
-  const rahu = chart.planets.find((p) => p.id === 'Rahu')!;
-  const ketu = chart.planets.find((p) => p.id === 'Ketu')!;
-  const jupiter = chart.planets.find((p) => p.id === 'Jupiter')!;
-  const mercury = chart.planets.find((p) => p.id === 'Mercury')!;
-
-  const nakIdx = moon.nakshatraIndex ?? 0;
-  const profile = NAKSHATRA_PROFILES[nakIdx] ?? NAKSHATRA_PROFILES[0];
-
-  // Mental Yogas
-  const satToMoonDist = ((moon.rasiHouseNumber - saturn.rasiHouseNumber + 12) % 12) + 1;
-  const hasVisha = [saturn.rasiHouseNumber].includes(moon.rasiHouseNumber) ||
-    [3, 7, 10].includes(satToMoonDist);
-  const hasGrahan = [rahu.rasiHouseNumber, ketu.rasiHouseNumber].includes(moon.rasiHouseNumber);
-  const hasAngarak = mars.rasiHouseNumber === moon.rasiHouseNumber;
-  const hasGajakesari = [1, 4, 7, 10].includes(((jupiter.rasiHouseNumber - moon.rasiHouseNumber + 12) % 12) + 1);
-
-  // Outer Persona vs Inner Mind
-  let maskEn = '';
-  let maskHi = '';
-  if (ascElem === 'Fire') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the posture of an intrepid commander: dynamic, bold, and unfazed by chaos. Acquaintances perceive you as an unstoppable force who demands respect and gets things done without hand-wringing.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आप समाज में एक निर्भीक सेनापति की भांति दिखाई देते हैं: तेजस्वी, साहसी और संकट में तुरंत निर्णय लेने वाले। लोग आपको एक ऐसा व्यक्ति मानते हैं जो किसी भी चुनौती से भयभीत नहीं होता।`;
-  } else if (ascElem === 'Earth') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the demeanor of an unflinching bedrock: prudent, disciplined, and unshakable. People bring their chaotic problems to your door because you radiate pragmatic sanity and dependable silence.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आप समाज में एक शांत चट्टान की तरह दिखाई देते हैं: गंभीर, व्यावहारिक और विश्वसनीय। लोग अपनी उलझनें लेकर आपके पास आते हैं क्योंकि आपके पास हर समस्या का संतुलित समाधान होता है।`;
-  } else if (ascElem === 'Air') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the persona of an articulate, engaging intellectual: socially graceful, observant, and effortlessly diplomatic. People assume your mind is always breezy, cheerful, and unburdened.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आपका सामाजिक व्यक्तित्व अत्यंत वाक्पटु, मिलनसार और कूटनीतिक दिखाई देता है। लोग सोचते हैं कि आप सदैव प्रफुल्लित, तनावमुक्त और हर परिस्थिति में सामंजस्य बैठाने वाले हैं।`;
-  } else {
-    maskEn = `Born in ${asc.signName} Ascendant, you project the aura of a protective sanctuary: empathetic, receptive, and quietly dignified. People instinctively lean on you for emotional shelter, never guessing the profound turbulence beneath your surface.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आपका बाहरी रूप एक शांत आश्रयदाता जैसा है: संवेदनशील, मर्यादित और दूसरों के दुख को समझने वाला। लोग आप पर सहज विश्वास करते हैं, बिना यह जाने कि आपके भीतर कितना गहरा ज्वार-भाटा चल रहा है।`;
-  }
-
-  // Inner Mind derived from Moon Nakshatra & Yogas
-  let innerMindEn = `Yet in midnight solitude, under your birth constellation ${profile.name} (governed by ${profile.ruler}), a vastly different psychological current takes over. ${profile.midnightMindEn}`;
-  let innerMindHi = `किंतु अर्धरात्रि के सन्नाटे में, आपके जन्म नक्षत्र '${profile.name}' (स्वामी: ${PLANET_HI[profile.ruler] || profile.ruler}) के प्रभाववश मन के भीतर का सत्य बिल्कुल अलग होता है। ${profile.midnightMindHi}`;
-
-  if (hasVisha) {
-    innerMindEn += ` Concurrently, the heavy classical Visha Yoga (Saturn-Moon friction) casts a cold, melancholic shadow: you struggle to internalize praise, battle unexpressed grief, and feel that you must earn love through relentless self-sacrifice.`;
-    innerMindHi += ` इसके साथ ही कुंडली में 'विष योग' (चंद्र-शनि का संबंध) अवचेतन में एक गहरी उदासी और अकेलेपन की छाया बनाए रखता है: आपको प्रशंसा पर सहज विश्वास नहीं होता और लगता है कि प्रेम पाने के लिए स्वयं को खपाना ही होगा।`;
-  } else if (hasGrahan) {
-    innerMindEn += ` Concurrently, Grahan Yoga (Moon-Node axis) injects sudden waves of hyper-vigilance, unexplainable premonitions, and intense existential anxiety that defies conventional logic.`;
-    innerMindHi += ` इसके साथ ही 'ग्रहण योग' (चंद्र पर राहु/केतु का प्रभाव) मन में अचानक अज्ञात भय, विचित्र पूर्वाभास और तीव्र बेचैनी की तरंगें उत्पन्न करता है जो सामान्य तर्क से परे होती हैं।`;
-  } else if (hasAngarak) {
-    innerMindEn += ` Concurrently, Chandra-Mangala / Angarak dynamics generate a boiling inner urgency: you alternate between saintly patience and volcanic, righteous fury that burns your own nervous system.`;
-    innerMindHi += ` इसके साथ ही 'अंगारक प्रभाव' (चंद्र-मंगल युति/दृष्टि) मन में एक उबलती हुई अधीरता देता है: आप लंबे समय तक सहते हैं और फिर अचानक ज्वालामुखी बनकर फट पड़ते हैं।`;
-  } else if (hasGajakesari) {
-    innerMindEn += ` Fortunately, the noble Gajakesari Yoga provides an indestructible inner compass: no matter how dark the midnight despair, your inherent spiritual dignity and moral conscience pull you back from the brink.`;
-    innerMindHi += ` सौभाग्य से कुंडली में 'गजकेसरी योग' एक अटूट आत्मिक संबल प्रदान करता है: निराशा कितनी भी गहरी हो, आपका स्वाभिमान और अंतरात्मा की आवाज आपको पुनः खड़ा कर देती है।`;
-  }
-
-  const sec1: ChapterSection = {
-    titleEn: 'The Public Mask vs. The Midnight Reality',
-    titleHi: 'सामाजिक मुखौटा बनाम आधी रात का एकांत',
-    leadEn: `The psychological tension between your ${asc.signName} Ascendant persona and ${profile.name} Moon reality.`,
-    leadHi: `आपके '${SIGN_HI[asc.signIndex]}' लग्न के बाहरी आवरण और '${profile.name}' नक्षत्र के आंतरिक मानसिक सत्य का द्वंद्व।`,
-    paragraphsEn: [maskEn, innerMindEn],
-    paragraphsHi: [maskHi, innerMindHi],
-    astrologicalCauseEn: `Brihat Jataka (Ch. 21, Shloka 1–4) & Saravali (Ch. 23): Lagna in ${asc.signName} (${ascElem} element, lord: ${ascLord} in house ${ascLordPlanet?.rasiHouseNumber || 1}) creates the outer armor, while Moon in ${moon.signName} at ${moon.dms} in ${profile.name} Nakshatra (Pada ${moon.pada}) governs the subterranean psyche. ${hasVisha ? 'Affliction of Saturn induces classical Visha Yoga melancholy.' : hasGrahan ? 'Rahu/Ketu connection generates Grahan Yoga psychic agitation.' : 'Planetary dignities establish emotional equilibrium.'}`,
-    astrologicalCauseHi: `शास्त्रीय कारण: बृहज्जातक (अध्याय २१) एवं सारावली (अध्याय २३ - चन्द्रनक्षत्रफलाध्याय): लग्न '${SIGN_HI[asc.signIndex]}' (तत्व: ${ascElem}, लग्नेश: ${PLANET_HI[ascLord] || ascLord}) बाहरी व्यक्तित्व का निर्माण करता है, जबकि चंद्रमा '${SIGN_HI[moon.signIndex]}' में ${profile.name} नक्षत्र में मन के अवचेतन को संचालित करते हैं। ${hasVisha ? 'शनि-चंद्र संबंध से विष योग जनित उदासी फलित होती है।' : hasGrahan ? 'राहु/केतु अक्ष से ग्रहण योग जनित मानसिक बेचैनी उत्पन्न होती है।' : 'शुभ ग्रहों का प्रभाव मानसिक दृढ़ता प्रदान करता है।'}`,
-    keyPointsEn: [
-      `Outer Persona: ${asc.signName} (${ascElem} element) — Authoritative, disciplined boundary.`,
-      `Midnight Psyche: ${profile.name} (${profile.archetypeEn}) — ${profile.ruler} governed.`,
-      `Mental Core: ${hasVisha ? 'Visha Yoga (Stoic melancholy & unvoiced burden)' : hasGrahan ? 'Grahan Yoga (Visionary anxiety & psychic sensitivity)' : hasAngarak ? 'Angarak Fire (Boiling urgency & righteous anger)' : 'Gajakesari / Noble Dignity'}.`,
-    ],
-    keyPointsHi: [
-      `बाहरी व्यक्तित्व: '${SIGN_HI[asc.signIndex]}' लग्न — संतुलित एवं सुदृढ़ सामाजिक आवरण।`,
-      `आंतरिक चेतना: '${profile.name}' नक्षत्र (${profile.archetypeHi}) — स्वामी: ${PLANET_HI[profile.ruler] || profile.ruler}।`,
-      `मूल मनोदशा: ${hasVisha ? 'विष योग (गहन उदासी व एकाकीपन का बोझ)' : hasGrahan ? 'ग्रहण योग (अति-संवेदनशीलता व अज्ञात चिंता)' : hasAngarak ? 'अंगारक योग (आक्रोश व अधीरता की ज्वाला)' : 'गजकेसरी योग (अखंड स्वाभिमान व विवेक)'}।`,
-    ],
-  };
-
-  const sec2: ChapterSection = {
-    titleEn: 'Secret Triggers, Resentments & The Self-Sabotage Trap',
-    titleHi: 'आंतरिक ट्रिगर्स, गुप्त असंतोष एवं आत्म-विनाशकारी प्रवृत्तियां',
-    leadEn: `The subconscious vulnerabilities that trip your destiny: Rage Triggers, Chronic Fears, and Self-Sabotage.`,
-    leadHi: `वे अवचेतन कमजोरियां जो आपके बने-बनाए कार्यों में बाधा बनती हैं: क्रोध के ट्रिगर्स, गहरे भय और आत्म-घातक प्रवृत्तियां।`,
-    paragraphsEn: [
-      `Your Primary Rage Trigger: ${profile.rageTriggerEn} Mars placed in ${mars.signName} (House ${mars.rasiHouseNumber}) indicates that when you feel your boundaries breached or your competence patronized, anger does not simmer—it flashes with acute destructive potency. You withdraw into cold silence or issue an unsparing verbal execution that the other party never forgets.`,
-      `Your Chronic Psychological Insecurity: ${profile.chronicInsecurityEn} Under Saturn’s placement in ${saturn.signName} (House ${saturn.rasiHouseNumber}), you nurse a silent terror of falling behind or being discarded when your utility expires.`,
-      `The Self-Sabotage Trap: ${profile.selfSabotageEn} You must consciously recognize this loop: whenever life approaches sweet stability, your mind mistakes calm for complacency and manufactures an artificial crisis. Mastering this pattern is your master key to enduring triumph.`,
-    ],
-    paragraphsHi: [
-      `क्रोध का मुख्य ट्रिगर: ${profile.rageTriggerHi} मंगल देव की '${SIGN_HI[mars.signIndex]}' में स्थिति (भाव ${mars.rasiHouseNumber}) यह दर्शाती है कि जब आपकी मर्यादा का उल्लंघन होता है, तो आपका क्रोध धीरे-धीरे नहीं सुलगता, बल्कि बिजली की तरह कौंधता है। आप या तो एकदम मौन होकर सामने वाले को जीवन से काट देते हैं, या ऐसा कटु सत्य कह देते हैं जिसे दूसरा जीवन भर नहीं भूल पाता।`,
-      `अवचेतन का गहरा भय: ${profile.chronicInsecurityHi} शनि देव की '${SIGN_HI[saturn.signIndex]}' में स्थिति (भाव ${saturn.rasiHouseNumber}) के कारण मन में यह अज्ञात भय बना रहता है कि उपयोगिता समाप्त होते ही संसार आपको विस्मृत न कर दे।`,
-      `आत्म-विनाशकारी चक्र (Self-Sabotage): ${profile.selfSabotageHi} इस मनोवैज्ञानिक दुर्बलता को पहचानना अनिवार्य है: जब भी जीवन में सब कुछ शांत और व्यवस्थित होने लगता है, आपका मन उस शांति को 'सन्नाटा' मानकर कोई न कोई नया बखेड़ा या तनाव खड़ा कर लेता है। इस आदत पर विजय पाना ही आपकी परम सिद्धि होगी।`,
-    ],
-    astrologicalCauseEn: `Saravali (Ch. 31–33) & Brihat Jataka (Ch. 2): Mars in House ${mars.rasiHouseNumber} governs impulsive fight-or-flight triggers; Saturn in House ${saturn.rasiHouseNumber} anchors the deep existential dread; Rahu in House ${rahu.rasiHouseNumber} drives obsessive over-reaching.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय ३१-३३) एवं बृहज्जातक: मंगल (भाव ${mars.rasiHouseNumber}) क्रोध व प्रतिक्रिया के ट्रिगर हैं; शनि (भाव ${saturn.rasiHouseNumber}) जीवन के मूल भय के नियामक हैं; तथा राहु (भाव ${rahu.rasiHouseNumber}) भ्रम व अति-महत्वाकांक्षा के कारक हैं।`,
-    keyPointsEn: [
-      `Rage Trigger: ${profile.rageTriggerEn}`,
-      `Existential Insecurity: ${profile.chronicInsecurityEn}`,
-      `Self-Sabotage Loop: ${profile.selfSabotageEn}`,
-    ],
-    keyPointsHi: [
-      `क्रोध का ट्रिगर: ${profile.rageTriggerHi}`,
-      `गहरा अवचेतन भय: ${profile.chronicInsecurityHi}`,
-      `आत्म-घातक चक्र: ${profile.selfSabotageHi}`,
-    ],
-  };
-
-  return [sec1, sec2];
+  const moon = chart.planets.find((p) => p.id === 'Moon');
+  const ascSign = SIGNS[asc.signIndex];
+  const ascLord = chart.planets.find((p) => p.id === asc.signLord);
+  const planetName = (id: string) => PLANET_HI[id] || id;
+  const houseOf = (p: (typeof chart.planets)[number] | undefined) => p?.rasiHouseNumber ?? p?.houseNumber ?? 0;
+  const dignity = (p: (typeof chart.planets)[number] | undefined) => p?.dignity || 'उपलब्ध नहीं';
+  if (!moon) return [{ titleEn: 'Psychological Themes — Insufficient Data', titleHi: 'मनोभाव — कुंडली डेटा अपर्याप्त', paragraphsEn: ['Moon placement is unavailable, so a chart-specific interpretation cannot be generated.'], paragraphsHi: ['चंद्रमा की स्थिति उपलब्ध नहीं है; इसलिए व्यक्तिगत व्याख्या नहीं दी जा सकती।'] }];
+  const moonHouse = houseOf(moon);
+  const moonSign = SIGNS[moon.signIndex];
+  const moonLord = chart.planets.find((p) => p.id === moonSign.lord);
+  const others = chart.planets.filter((p) => p.id !== 'Asc' && p.id !== 'Moon');
+  const distance = (p: (typeof chart.planets)[number]) => ((houseOf(p) - moonHouse + 12) % 12) + 1;
+  const saturn = others.find((p) => p.id === 'Saturn');
+  const mars = others.find((p) => p.id === 'Mars');
+  const jupiter = others.find((p) => p.id === 'Jupiter');
+  const rahu = others.find((p) => p.id === 'Rahu');
+  const ketu = others.find((p) => p.id === 'Ketu');
+  const saturnContact = Boolean(saturn && [1, 3, 7, 10].includes(distance(saturn)));
+  const marsContact = Boolean(mars && [1, 4, 7, 8].includes(distance(mars)));
+  const jupiterContact = Boolean(jupiter && [1, 5, 7, 9].includes(distance(jupiter)));
+  const nodeContact = Boolean((rahu && rahu.signIndex === moon.signIndex) || (ketu && ketu.signIndex === moon.signIndex));
+  const conjunctions = others.filter((p) => p.signIndex === moon.signIndex);
+  const supportiveHi = [
+    jupiterContact ? 'चंद्रमा से गुरु का पारंपरिक संबंध सीखने, मार्गदर्शन और व्यापक दृष्टि का सहायक संकेत है।' : '',
+    moonLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(moonLord.dignity) ? `चंद्र राशि स्वामी ${planetName(moonSign.lord)} की ${dignity(moonLord)} स्थिति सहायक मानी जाती है।` : '',
+    ascLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(ascLord.dignity) ? `लग्नेश ${planetName(asc.signLord)} की ${dignity(ascLord)} स्थिति आत्म-प्रबंधन को समर्थन दे सकती है।` : '',
+  ].filter(Boolean);
+  const cautionHi = [
+    saturnContact ? 'चंद्रमा से शनि का संबंध जिम्मेदारी, देरी या आत्म-आलोचना की पारंपरिक थीम दिखा सकता है; यह मानसिक स्वास्थ्य का निदान नहीं है।' : '',
+    marsContact ? 'चंद्रमा से मंगल का संबंध प्रतिक्रिया में तेजी या अधीरता का संकेत हो सकता है; महत्वपूर्ण निर्णय से पहले ठहरना उपयोगी है।' : '',
+    nodeContact ? 'चंद्रमा के साथ राहु/केतु की युति विचारों में तीव्रता या बदलते दृष्टिकोण की पारंपरिक थीम है; इससे बीमारी या भय का निष्कर्ष न निकालें।' : '',
+    moonLord && ['Enemy', 'Great Enemy', 'Debilitated'].includes(moonLord.dignity) ? `चंद्र राशि स्वामी ${planetName(moonSign.lord)} की ${dignity(moonLord)} स्थिति भावनात्मक संतुलन पर अतिरिक्त ध्यान देने का संकेत देती है।` : '',
+  ].filter(Boolean);
+  const supportiveEn = [
+    jupiterContact ? 'Jupiter has a traditional relationship with the Moon, a supportive indication for learning, guidance and perspective.' : '',
+    moonLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(moonLord.dignity) ? `${planetName(moonSign.lord)}, ruler of the Moon sign, is ${dignity(moonLord)} and is traditionally considered supportive.` : '',
+    ascLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(ascLord.dignity) ? `The Ascendant ruler ${planetName(asc.signLord)} is ${dignity(ascLord)}, which may support self-management.` : '',
+  ].filter(Boolean);
+  const cautionEn = [
+    saturnContact ? 'Saturn has a traditional relationship with the Moon and may symbolize responsibility, delay or self-criticism; this is not a mental-health diagnosis.' : '',
+    marsContact ? 'Mars has a traditional relationship with the Moon and may symbolize quick reactions or impatience; pausing before important decisions can help.' : '',
+    nodeContact ? 'A Rahu/Ketu conjunction with the Moon is traditionally associated with intensity or changing perspectives; it does not establish illness or danger.' : '',
+    moonLord && ['Enemy', 'Great Enemy', 'Debilitated'].includes(moonLord.dignity) ? `${planetName(moonSign.lord)}, ruler of the Moon sign, is ${dignity(moonLord)}; emotional steadiness may deserve deliberate attention.` : '',
+  ].filter(Boolean);
+  const active = findActiveDashaPath(chart.vimshottari ?? [], Date.now());
+  const md = active[0];
+  const ad = active[1];
+  const mdPlanet = md ? chart.planets.find((p) => p.id === md.lord) : undefined;
+  const adPlanet = ad ? chart.planets.find((p) => p.id === ad.lord) : undefined;
+  const timingHi = md ? `वर्तमान में ${planetName(md.lord)} महादशा${ad ? ` और ${planetName(ad.lord)} अंतर्दशा` : ''} सक्रिय है। इनके स्वामी जन्मकुंडली के भाव ${houseOf(mdPlanet) || 'अज्ञात'}${ad ? ` और ${houseOf(adPlanet) || 'अज्ञात'}` : ''} से जुड़े हैं। यह समय का पारंपरिक विषय-संकेत है, घटना की गारंटी नहीं।` : 'उपलब्ध विंशोत्तरी दशा डेटा से वर्तमान अवधि निर्धारित नहीं हो सकी; समय-आधारित निष्कर्ष नहीं दिया गया।';
+  const timingEn = md ? `${planetName(md.lord)} Mahadasha${ad ? ` and ${planetName(ad.lord)} Antardasha` : ''} is active. Their lords occupy natal House ${houseOf(mdPlanet) || 'unknown'}${ad ? ` and House ${houseOf(adPlanet) || 'unknown'}` : ''}. This is a traditional timing theme, not a guaranteed event.` : 'The available Vimshottari data does not identify the current period; no timed conclusion is offered.';
+  const nakshatra = moon.nakshatraName || NAKSHATRAS[moon.nakshatraIndex ?? 0]?.name || 'अज्ञात';
+  const factsHi = `चंद्रमा ${moonSign.name} राशि, भाव ${moonHouse || 'अज्ञात'} और ${nakshatra} नक्षत्र में है। चंद्र राशि स्वामी ${planetName(moonSign.lord)} भाव ${houseOf(moonLord) || 'अज्ञात'} में तथा ${dignity(moonLord)} गरिमा में है।`;
+  const factsEn = `The Moon is in ${moonSign.name}, natal House ${moonHouse || 'unknown'}, Nakshatra ${nakshatra}. Its sign ruler ${planetName(moonSign.lord)} occupies House ${houseOf(moonLord) || 'unknown'} with dignity ${dignity(moonLord)}.`;
+  return [
+    { titleEn: 'Mind and Temperament — Chart Evidence', titleHi: 'मन और स्वभाव — कुंडली के वास्तविक संकेत', leadEn: 'A restrained interpretation from the Ascendant, Moon and their rulers; these are traditional Jyotish themes, not psychological diagnoses.', leadHi: 'लग्न, चंद्रमा और उनके स्वामियों से निकले सीमित ज्योतिषीय संकेत; इन्हें मनोवैज्ञानिक या चिकित्सकीय निदान न समझें।', paragraphsEn: [`The Ascendant is ${asc.signName} (${ascSign.element}); its traditional elemental style is ${ascSign.element.toLowerCase()}.`, factsEn], paragraphsHi: [`लग्न ${asc.signName} राशि (${ascSign.element} तत्व) है।`, factsHi], astrologicalCauseEn: `Ascendant lord ${planetName(asc.signLord)}: House ${houseOf(ascLord)}, ${dignity(ascLord)}. Moon: ${moonSign.name}, House ${moonHouse}; Moon-sign lord ${planetName(moonSign.lord)}: House ${houseOf(moonLord)}, ${dignity(moonLord)}.`, astrologicalCauseHi: `लग्नेश ${planetName(asc.signLord)} भाव ${houseOf(ascLord) || 'अज्ञात'} में (${dignity(ascLord)})। चंद्रमा ${moonSign.name} राशि के भाव ${moonHouse || 'अज्ञात'} में; राशि स्वामी ${planetName(moonSign.lord)} भाव ${houseOf(moonLord) || 'अज्ञात'} में (${dignity(moonLord)})।` },
+    { titleEn: 'Supportive Factors and Cautions', titleHi: 'सहायक संकेत और सावधानी के विषय', leadEn: 'Only contacts found in this chart are listed; absent combinations are not invented.', leadHi: 'केवल इसी कुंडली में मिले संबंध दिए गए हैं; अनुपस्थित योगों की कल्पना नहीं की गई है।', paragraphsEn: [supportiveEn.join(' ') || 'No major supportive Moon contact was identified in this limited rule set.', cautionEn.join(' ') || 'No major challenging Moon contact was identified in this limited rule set; this does not mean challenges are absent.'], paragraphsHi: [supportiveHi.join(' ') || 'इस सीमित नियम-समूह में चंद्रमा पर प्रमुख सहायक संबंध नहीं मिला।', cautionHi.join(' ') || 'इस सीमित नियम-समूह में प्रमुख चुनौतीपूर्ण संबंध नहीं मिला; इसका अर्थ चुनौतियों का पूर्ण अभाव नहीं है।'], astrologicalCauseEn: `Checked natal contacts: Saturn ${saturnContact ? 'present' : 'not identified'}, Mars ${marsContact ? 'present' : 'not identified'}, Jupiter ${jupiterContact ? 'present' : 'not identified'}, Rahu/Ketu conjunction ${nodeContact ? 'present' : 'not identified'}.`, astrologicalCauseHi: `जाँचे गए जन्मगत संबंध: शनि ${saturnContact ? 'संबंधित' : 'नहीं मिला'}, मंगल ${marsContact ? 'संबंधित' : 'नहीं मिला'}, गुरु ${jupiterContact ? 'संबंधित' : 'नहीं मिला'}, राहु/केतु युति ${nodeContact ? 'मिली' : 'नहीं मिली'}।`, keyPointsEn: [`Moon sign/house: ${moonSign.name} / ${moonHouse || 'unknown'}.`, `Moon-sign lord: ${planetName(moonSign.lord)}; House ${houseOf(moonLord)}; ${dignity(moonLord)}.`, `Planets conjunct the Moon by sign: ${conjunctions.length ? conjunctions.map((p) => planetName(p.id)).join(', ') : 'none identified'}.`], keyPointsHi: [`चंद्र राशि/भाव: ${moonSign.name} / ${moonHouse || 'अज्ञात'}।`, `चंद्र राशि स्वामी: ${planetName(moonSign.lord)}; भाव ${houseOf(moonLord) || 'अज्ञात'}; ${dignity(moonLord)}।`, `चंद्र राशि में युति: ${conjunctions.length ? conjunctions.map((p) => planetName(p.id)).join(', ') : 'कोई नहीं मिली'}।`] },
+    { titleEn: 'Current Period and Practical Reflection', titleHi: 'वर्तमान दशा और व्यावहारिक दिशा', leadEn: 'Dasha is a broad timing lens, not proof that a specific event will occur.', leadHi: 'दशा व्यापक समय-संकेत है, किसी निश्चित घटना का प्रमाण नहीं।', paragraphsEn: [timingEn, 'Use supportive factors as resources and caution themes as prompts for practical habits and measured decisions. For health concerns, rely on qualified professionals rather than horoscope interpretation.'], paragraphsHi: [timingHi, 'सहायक संकेतों को अपनी क्षमता और सावधानी के विषयों को बेहतर दिनचर्या तथा सोच-समझकर निर्णय लेने की याद दिलाने के रूप में लें। स्वास्थ्य संबंधी समस्या में योग्य विशेषज्ञ की सलाह लें।'], astrologicalCauseEn: `Active Vimshottari path: ${md ? `${md.lord}${ad ? ` / ${ad.lord}` : ''}` : 'not available'}. Natal Moon House ${moonHouse || 'unknown'}.`, astrologicalCauseHi: `सक्रिय विंशोत्तरी क्रम: ${md ? `${planetName(md.lord)}${ad ? ` / ${planetName(ad.lord)}` : ''}` : 'उपलब्ध नहीं'}। चंद्रमा जन्मकुंडली के भाव ${moonHouse || 'अज्ञात'} में है।` },
+  ];
 }
-
-// ============================================================================
-// DYNAMIC CHAPTER 3: REAL-TIME ACTIVE LIFE PHASE X-RAY
-// ============================================================================
 export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
   const moon = chart.planets.find((p) => p.id === 'Moon') ?? chart.planets[1];
