@@ -4,7 +4,7 @@
  *
  * Compares natal chart placements, Lagna, Moon sign, 10th house karma axis,
  * and classical Yogas against authentic Rodden AA/A-rated historical charts
- * from Astro-Databank with verified portraits and lifelong milestones.
+ * from Astro-Databank with verified lifelong milestones and royal monogram badges.
  */
 
 import type { ChartData, NineGrahaId } from './types';
@@ -22,13 +22,15 @@ export interface CelebrityProfile {
   id: string;
   nameEn: string;
   nameHi: string;
+  initials: string;
+  badgeBg: string;
   category: CelebrityCategory;
   categoryTitleEn: string;
   categoryTitleHi: string;
   birthDate: string; // DD-MM-YYYY
   birthPlace: string;
   roddenRating: 'AA' | 'A';
-  photoUrl: string; // Verified public domain CDN portrait
+  photoUrl?: string;
   ascSignIndex: number; // 0..11
   moonSignIndex: number;
   sunSignIndex: number;
@@ -55,21 +57,24 @@ export interface CelebrityTwinMatch {
 }
 
 export const CELEBRITY_DATABASE: CelebrityProfile[] = [
-  // 1. Aries Lagna (मेष लग्न)
+  // ==========================================
+  // 1. ARIES LAGNA (मेष लग्न - 0)
+  // ==========================================
   {
     id: 'leonardo-da-vinci',
     nameEn: 'Leonardo da Vinci',
     nameHi: 'लियोनार्डो दा विंची',
+    initials: 'LV',
+    badgeBg: '#854d0e',
     category: 'art_culture',
     categoryTitleEn: 'Universal Renaissance Polymath & Painter',
     categoryTitleHi: 'पुनर्जागरण कालीन सार्वभौमिक महाप्रतिभा व चित्रकार',
     birthDate: '15-04-1452',
     birthPlace: 'Vinci, Italy',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/440px-Leonardo_self.jpg',
     ascSignIndex: 0, // Aries
-    moonSignIndex: 1, // Taurus (Exalted Moon)
-    sunSignIndex: 0, // Aries (Exalted Sun)
+    moonSignIndex: 1, // Taurus
+    sunSignIndex: 0, // Aries
     prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Sunafa Yoga', 'Amala Yoga'],
     prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'सुनफा योग', 'अमला योग'],
     keyLifeMilestones: [
@@ -91,13 +96,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'henry-ford',
     nameEn: 'Henry Ford',
     nameHi: 'हेनरी फोर्ड',
+    initials: 'HF',
+    badgeBg: '#1e3a8a',
     category: 'business_wealth',
     categoryTitleEn: 'Industrial Pioneer & Assembly Line Innovator',
     categoryTitleHi: 'औद्योगिक क्रांति अग्रदूत व आधुनिक विनिर्माण जनक',
     birthDate: '30-07-1863',
     birthPlace: 'Dearborn, Michigan, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Henry_ford_1919.jpg/440px-Henry_ford_1919.jpg',
     ascSignIndex: 0, // Aries
     moonSignIndex: 9, // Capricorn
     sunSignIndex: 3, // Cancer
@@ -122,13 +128,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'charlie-chaplin',
     nameEn: 'Charlie Chaplin',
     nameHi: 'चार्ली चैपलिन',
+    initials: 'CC',
+    badgeBg: '#475569',
     category: 'art_culture',
     categoryTitleEn: 'Global Cinematic Genius & Actor-Director',
     categoryTitleHi: 'विश्व सिनेमा के कालजयी अभिनेता व निर्देशक',
     birthDate: '16-04-1889',
     birthPlace: 'London, United Kingdom',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Charlie_Chaplin.jpg/440px-Charlie_Chaplin.jpg',
     ascSignIndex: 0, // Aries
     moonSignIndex: 6, // Libra
     sunSignIndex: 0, // Aries
@@ -149,19 +156,86 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'A day without laughter is a day wasted.',
     quoteHi: 'हंसी के बिना बिताया हुआ दिन व्यर्थ गंवाया हुआ दिन है।',
   },
+  {
+    id: 'thomas-jefferson',
+    nameEn: 'Thomas Jefferson',
+    nameHi: 'थॉमस जेफरसन',
+    initials: 'TJ',
+    badgeBg: '#1e40af',
+    category: 'leadership',
+    categoryTitleEn: 'Founding Father & Declaration of Independence Author',
+    categoryTitleHi: 'अमेरिकी स्वतंत्रता घोषणापत्र के लेखक व ३रे राष्ट्रपति',
+    birthDate: '13-04-1743',
+    birthPlace: 'Shadwell, Virginia, USA',
+    roddenRating: 'AA',
+    ascSignIndex: 0, // Aries
+    moonSignIndex: 7, // Scorpio
+    sunSignIndex: 0, // Aries
+    prominentYogas: ['Ruchaka Yoga', 'Raja Yoga', 'Budhaditya Yoga', 'Saraswati Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'राजयोग', 'बुधादित्य योग', 'सरस्वती योग'],
+    keyLifeMilestones: [
+      { age: 33, eventHi: '1776 में अमेरिकी स्वतंत्रता घोषणापत्र की अमर रचना की', eventEn: 'Drafted the historic Declaration of Independence' },
+      { age: 57, eventHi: 'संयुक्त राज्य अमेरिका के तीसरे राष्ट्रपति निर्वाचित हुए', eventEn: 'Elected 3rd President of the United States' },
+      { age: 60, eventHi: 'लुइसियाना खरीद द्वारा अमेरिका के भूभाग को दोगुना किया', eventEn: 'Orchestrated Louisiana Purchase doubling US territory' },
+    ],
+    keyPlacements: [
+      { planet: 'Sun', house: 1, noteHi: 'लग्न में उच्च सूर्य मौलिक संवैधानिक दर्शन', noteEn: 'Exalted Sun in 1st articulating universal democratic rights' },
+      { planet: 'Mercury', house: 1, noteHi: 'लग्न में बुध कालजयी राजनीतिक गद्य लेखन', noteEn: 'Mercury in 1st composing immortal political prose' },
+      { planet: 'Mars', house: 10, noteHi: 'दशम में उच्च मंगल राष्ट्र निर्माण व प्रशासनिक प्रभुत्व', noteEn: 'Exalted Mars in 10th governing territorial expansion' },
+    ],
+    bioEn: 'American Founding Father, principal author of the Declaration of Independence and third president of the United States.',
+    bioHi: 'अमेरिकी स्वतंत्रता के मुख्य दार्शनिक जिन्होंने लोकतंत्र और मानवाधिकारों की अमर व्याख्या की।',
+    quoteEn: 'I like the dreams of the future better than the history of the past.',
+    quoteHi: 'मुझे अतीत के इतिहास से अधिक भविष्य के सपने प्रिय हैं।',
+  },
+  {
+    id: 'ayrton-senna',
+    nameEn: 'Ayrton Senna',
+    nameHi: 'आयर्टन सेना',
+    initials: 'AS',
+    badgeBg: '#047857',
+    category: 'sports_legend',
+    categoryTitleEn: '3-Time Formula One World Champion & Racing Legend',
+    categoryTitleHi: 'फॉर्मूला वन के महानतम रेसर व ३ बार के विश्व विजेता',
+    birthDate: '21-03-1960',
+    birthPlace: 'Sao Paulo, Brazil',
+    roddenRating: 'AA',
+    ascSignIndex: 0, // Aries
+    moonSignIndex: 8, // Sagittarius
+    sunSignIndex: 11, // Pisces
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Raja Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'राजयोग'],
+    keyLifeMilestones: [
+      { age: 28, eventHi: '1988 में प्रथम फॉर्मूला वन विश्व चैंपियनशिप का खिताब जीता', eventEn: 'Won first F1 World Championship with McLaren' },
+      { age: 30, eventHi: '1990 में दूसरी बार विश्व चैंपियन बनकर अजेय प्रतिष्ठा पाई', eventEn: 'Clinched second F1 World Championship' },
+      { age: 31, eventHi: '1991 में तीसरी बार विश्व चैंपियन बनकर ब्राजील के राष्ट्रीय नायक बने', eventEn: 'Won third World Title becoming national hero in Brazil' },
+    ],
+    keyPlacements: [
+      { planet: 'Mars', house: 11, noteHi: 'एकादश में मंगल ट्रैक पर बिजली जैसी प्रतिक्रिया गति', noteEn: 'Mars in 11th unleashing fearless competitive precision on wet tracks' },
+      { planet: 'Jupiter', house: 9, noteHi: 'नवम में स्वराशि गुरु गहरी आध्यात्मिक निष्ठा व आत्म-विश्वास', noteEn: 'Jupiter in 9th experiencing profound transcendental focus in racing cockpit' },
+      { planet: 'Sun', house: 12, noteHi: 'द्वादश में सूर्य अंतर्मुखी समर्पण व परोपकार ट्रस्ट', noteEn: 'Sun in 12th donating millions quietly to educate underprivileged children' },
+    ],
+    bioEn: 'Brazilian racing driver who won the Formula One World Drivers’ Championship in 1988, 1990, and 1991.',
+    bioHi: 'ब्राजील के अमर रेसर जिन्होंने अत्यधिक बारिश और कठिन मोड़ों पर अविश्वसनीय रफ्तार से इतिहास रचा।',
+    quoteEn: 'I have no idols. I admire work, dedication and competence.',
+    quoteHi: 'मेरा कोई आदर्श नहीं है। मैं केवल परिश्रम, समर्पण और सक्षमता की प्रशंसा करता हूं।',
+  },
 
-  // 2. Taurus Lagna (वृषभ लग्न)
+  // ==========================================
+  // 2. TAURUS LAGNA (वृषभ लग्न - 1)
+  // ==========================================
   {
     id: 'sri-ramakrishna',
     nameEn: 'Sri Ramakrishna Paramahamsa',
     nameHi: 'श्री रामकृष्ण परमहंस',
+    initials: 'SR',
+    badgeBg: '#c2410c',
     category: 'spiritual',
     categoryTitleEn: 'Supreme Mystic & Prophet of Harmony',
     categoryTitleHi: 'सर्वधर्म समन्वय के अवतार व दक्षिणेश्वर के परमहंस',
     birthDate: '18-02-1836',
     birthPlace: 'Kamarpukur, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Ramakrishna.jpg/440px-Ramakrishna.jpg',
     ascSignIndex: 1, // Taurus
     moonSignIndex: 10, // Aquarius
     sunSignIndex: 10, // Aquarius
@@ -186,13 +260,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'martin-luther-king',
     nameEn: 'Martin Luther King Jr.',
     nameHi: 'मार्टिन लूथर किंग जूनियर',
+    initials: 'ML',
+    badgeBg: '#1e3a8a',
     category: 'leadership',
     categoryTitleEn: 'Civil Rights Giant & Nobel Peace Laureate',
     categoryTitleHi: 'नागरिक अधिकार सेनानी व नोबेल शांति विजेता',
     birthDate: '15-01-1929',
     birthPlace: 'Atlanta, Georgia, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Martin_Luther_King%2C_Jr..jpg/440px-Martin_Luther_King%2C_Jr..jpg',
     ascSignIndex: 1, // Taurus
     moonSignIndex: 11, // Pisces
     sunSignIndex: 9, // Capricorn
@@ -217,13 +292,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'pele',
     nameEn: 'Pele (Edson Arantes do Nascimento)',
     nameHi: 'पेले (फुटबॉल सम्राट)',
+    initials: 'PE',
+    badgeBg: '#15803d',
     category: 'sports_legend',
     categoryTitleEn: 'The King of Football & 3-Time World Cup Champion',
     categoryTitleHi: 'फुटबॉल के निर्विवाद सम्राट व ३ बार के विश्व चैंपियन',
     birthDate: '23-10-1940',
     birthPlace: 'Tres Coracoes, Brazil',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Pele_by_John_Mathew_Smith_crop.jpg/440px-Pele_by_John_Mathew_Smith_crop.jpg',
     ascSignIndex: 1, // Taurus
     moonSignIndex: 3, // Cancer
     sunSignIndex: 6, // Libra
@@ -244,19 +320,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing.',
     quoteHi: 'सफलता कोई संयोग नहीं है। यह कठिन परिश्रम, निरंतरता, अध्ययन, त्याग और सबसे बढ़कर जो आप कर रहे हैं उससे प्रेम है।',
   },
+  {
+    id: 'karl-marx',
+    nameEn: 'Karl Marx',
+    nameHi: 'कार्ल मार्क्स',
+    initials: 'KM',
+    badgeBg: '#b91c1c',
+    category: 'leadership',
+    categoryTitleEn: 'Philosopher, Political Economist & Capital Author',
+    categoryTitleHi: 'दास कैपिटल के रचयिता व साम्यवादी विचारक',
+    birthDate: '05-05-1818',
+    birthPlace: 'Trier, Germany',
+    roddenRating: 'AA',
+    ascSignIndex: 1, // Taurus
+    moonSignIndex: 1, // Taurus
+    sunSignIndex: 1, // Taurus
+    prominentYogas: ['Raja Yoga', 'Dhana Yoga', 'Gajakesari Yoga', 'Sunafa Yoga'],
+    prominentYogasHi: ['राजयोग', 'धन योग', 'गजकेसरी योग', 'सुनफा योग'],
+    keyLifeMilestones: [
+      { age: 30, eventHi: 'फ्रेडरिक एंगेल्स संग कम्युनिस्ट मेनिफेस्टो प्रकाशित किया', eventEn: 'Co-authored The Communist Manifesto' },
+      { age: 49, eventHi: 'दास कैपिटल का प्रथम खंड प्रकाशित कर पूंजीवाद का विश्लेषण किया', eventEn: 'Published Das Kapital analyzing capitalist economic structures' },
+      { age: 53, eventHi: 'प्रथम इंटरनेशनल में ऐतिहासिक भाषण देकर श्रमिक एकता को बल दिया', eventEn: 'Led International Workingmen’s Association' },
+    ],
+    keyPlacements: [
+      { planet: 'Moon', house: 1, noteHi: 'लग्न में उच्च चंद्र सामाजिक पीड़ा की गहरी अनुभूति', noteEn: 'Exalted Moon in 1st feeling collective societal distress deeply' },
+      { planet: 'Saturn', house: 11, noteHi: 'एकादश में शनि विश्वभर के श्रमिक वर्गों का सशक्तिकरण', noteEn: 'Saturn in 11th mobilizing working-class solidarity globally' },
+      { planet: 'Mercury', house: 12, noteHi: 'द्वादश में बुध लंदन के ब्रिटिश म्यूजियम में 20 वर्ष गहन अध्ययन', noteEn: 'Mercury in 12th undertaking decades of solitary economic research' },
+    ],
+    bioEn: 'German philosopher, economist, historian, sociologist, political theorist, journalist, and socialist revolutionary.',
+    bioHi: 'महान दार्शनिक और अर्थशास्त्री जिन्होंने विश्व राजनीति और सामाजिक क्रांति को नई दिशा दी।',
+    quoteEn: 'The philosophers have only interpreted the world in various ways; the point, however, is to change it.',
+    quoteHi: 'दार्शनिकों ने केवल दुनिया की विभिन्न रूपों में व्याख्या की है; मुख्य बात तो इसे बदलना है।',
+  },
 
-  // 3. Gemini Lagna (मिथुन लग्न)
+  // ==========================================
+  // 3. GEMINI LAGNA (मिथुन लग्न - 2)
+  // ==========================================
   {
     id: 'albert-einstein',
     nameEn: 'Albert Einstein',
     nameHi: 'अल्बर्ट आइंस्टीन',
+    initials: 'AE',
+    badgeBg: '#4338ca',
     category: 'science_tech',
     categoryTitleEn: 'Father of Modern Physics & Relativity Pioneer',
     categoryTitleHi: 'महान सैद्धांतिक भौतिकविद् व सापेक्षता के जनक',
     birthDate: '14-03-1879',
     birthPlace: 'Ulm, Germany',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg/440px-Einstein_1921_by_F_Schmutzer_-_restoration.jpg',
     ascSignIndex: 2, // Gemini
     moonSignIndex: 8, // Sagittarius
     sunSignIndex: 10, // Aquarius
@@ -281,13 +392,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'nikola-tesla',
     nameEn: 'Nikola Tesla',
     nameHi: 'निकोला टेस्ला',
+    initials: 'NT',
+    badgeBg: '#0e7490',
     category: 'science_tech',
     categoryTitleEn: 'Electrical Visionary & Wireless Power Pioneer',
     categoryTitleHi: 'प्रत्यावर्ती धारा (AC) जनक व विद्युत युगद्रष्टा',
     birthDate: '10-07-1856',
     birthPlace: 'Smiljan, Croatia',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Tesla_circa_1890.jpeg/440px-Tesla_circa_1890.jpeg',
     ascSignIndex: 2, // Gemini
     moonSignIndex: 6, // Libra
     sunSignIndex: 2, // Gemini
@@ -312,13 +424,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'alan-turing',
     nameEn: 'Alan Turing',
     nameHi: 'एलन ट्यूरिंग',
+    initials: 'AT',
+    badgeBg: '#374151',
     category: 'science_tech',
     categoryTitleEn: 'Father of Modern Computing & Artificial Intelligence',
     categoryTitleHi: 'आधुनिक कंप्यूटर विज्ञान व कृत्रिम मेधा (AI) के जनक',
     birthDate: '23-06-1912',
     birthPlace: 'London, United Kingdom',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16.jpg/440px-Alan_Turing_Aged_16.jpg',
     ascSignIndex: 2, // Gemini
     moonSignIndex: 6, // Libra
     sunSignIndex: 2, // Gemini
@@ -339,19 +452,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Sometimes it is the people no one imagines anything of who do the things that no one can imagine.',
     quoteHi: 'कभी-कभी वे लोग जिनके बारे में कोई कुछ नहीं सोचता, वे ऐसे काम कर दिखाते हैं जिनकी कोई कल्पना भी नहीं कर सकता।',
   },
+  {
+    id: 'michael-jordan',
+    nameEn: 'Michael Jordan',
+    nameHi: 'माइकल जॉर्डन',
+    initials: 'MJ',
+    badgeBg: '#dc2626',
+    category: 'sports_legend',
+    categoryTitleEn: 'Basketball Icon & 6-Time NBA Champion',
+    categoryTitleHi: 'बास्केटबॉल के महानायक व ६ बार के NBA चैंपियन',
+    birthDate: '17-02-1963',
+    birthPlace: 'Brooklyn, New York, USA',
+    roddenRating: 'AA',
+    ascSignIndex: 2, // Gemini
+    moonSignIndex: 7, // Scorpio
+    sunSignIndex: 10, // Aquarius
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Sunafa Yoga', 'Raja Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'सुनफा योग', 'राजयोग'],
+    keyLifeMilestones: [
+      { age: 28, eventHi: 'शिकागो बुल्स के साथ प्रथम NBA चैंपियनशिप जीती', eventEn: 'Won first NBA Championship with Chicago Bulls' },
+      { age: 30, eventHi: 'लगातार 3 NBA खिताब (Three-peat) जीतकर वैश्विक ब्रांड बने', eventEn: 'Completed historic first three-peat' },
+      { age: 35, eventHi: '1998 में ऐतिहासिक अंतिम शॉट लगाकर 6ठी चैंपियनशिप जीती', eventEn: 'Hit "The Last Shot" securing 6th NBA Championship' },
+    ],
+    keyPlacements: [
+      { planet: 'Mars', house: 2, noteHi: 'द्वितीय में मंगल आक्रामक प्रतिस्पर्धा व जीतने की अदम्य भूख', noteEn: 'Mars in 2nd fueling relentless psychological will to dominate on court' },
+      { planet: 'Sun', house: 9, noteHi: 'नवम में सूर्य वैश्विक खेल आइकन व नाइकी जॉर्डन ब्रांड', noteEn: 'Sun in 9th elevating athletic image into multi-billion dollar cultural empire' },
+      { planet: 'Jupiter', house: 10, noteHi: 'दशम में गुरु खेल के इतिहास में सर्वकालिक महानतम (GOAT)', noteEn: 'Jupiter in 10th establishing universal consensus as basketball GOAT' },
+    ],
+    bioEn: 'American former professional basketball player and businessman regarded as the greatest player in NBA history.',
+    bioHi: 'बास्केटबॉल के महानतम खिलाड़ी जिन्होंने शिकागो बुल्स को 6 बार चैंपियन बनाया और खेल को वैश्विक ऊंचाइयों पर पहुंचाया।',
+    quoteEn: 'I’ve failed over and over and over again in my life. And that is why I succeed.',
+    quoteHi: 'मैं अपने जीवन में बार-बार असफल हुआ हूं। और यही कारण है कि मैं सफल होता हूं।',
+  },
 
-  // 4. Cancer Lagna (कर्क लग्न)
+  // ==========================================
+  // 4. CANCER LAGNA (कर्क लग्न - 3)
+  // ==========================================
   {
     id: 'sri-aurobindo',
     nameEn: 'Sri Aurobindo',
     nameHi: 'श्री अरविंद घोष',
+    initials: 'SA',
+    badgeBg: '#7c3aed',
     category: 'spiritual',
     categoryTitleEn: 'Integral Yoga Master & Evolutionary Sage',
     categoryTitleHi: 'पूर्ण योग के प्रणेता व अतिमानस चेतना के द्रष्टा',
     birthDate: '15-08-1872',
     birthPlace: 'Kolkata, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Sri_Aurobindo_in_1908.jpg/440px-Sri_Aurobindo_in_1908.jpg',
     ascSignIndex: 3, // Cancer
     moonSignIndex: 8, // Sagittarius
     sunSignIndex: 4, // Leo
@@ -376,13 +524,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'elon-musk',
     nameEn: 'Elon Musk',
     nameHi: 'एलन मस्क',
+    initials: 'EM',
+    badgeBg: '#0284c7',
     category: 'business_wealth',
     categoryTitleEn: 'Multi-Planetary Visionary & Tech Architect',
     categoryTitleHi: 'स्पेसएक्स व टेस्ला संस्थापक, बहु-ग्रहीय विजनरी',
     birthDate: '28-06-1971',
     birthPlace: 'Pretoria, South Africa',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/440px-Elon_Musk_Royal_Society_%28crop2%29.jpg',
     ascSignIndex: 3, // Cancer
     moonSignIndex: 4, // Leo
     sunSignIndex: 2, // Gemini
@@ -407,13 +556,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'nelson-mandela',
     nameEn: 'Nelson Mandela',
     nameHi: 'नेल्सन मंडेला',
+    initials: 'NM',
+    badgeBg: '#b45309',
     category: 'leadership',
     categoryTitleEn: 'Anti-Apartheid Icon & Father of Modern South Africa',
     categoryTitleHi: 'रंगभेद विरोधी महानायक व दक्षिण अफ्रीका के राष्ट्रपिता',
     birthDate: '18-07-1918',
     birthPlace: 'Mvezo, South Africa',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Nelson_Mandela_1994.jpg/440px-Nelson_Mandela_1994.jpg',
     ascSignIndex: 3, // Cancer
     moonSignIndex: 7, // Scorpio
     sunSignIndex: 3, // Cancer
@@ -434,19 +584,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'It always seems impossible until it is done.',
     quoteHi: 'जब तक कोई काम पूरा न हो जाए, वह असंभव ही लगता है।',
   },
+  {
+    id: 'dalai-lama',
+    nameEn: '14th Dalai Lama (Tenzin Gyatso)',
+    nameHi: '१४वें दलाई लामा',
+    initials: 'DL',
+    badgeBg: '#b91c1c',
+    category: 'spiritual',
+    categoryTitleEn: 'Spiritual Leader of Tibet & Nobel Peace Laureate',
+    categoryTitleHi: 'तिब्बती आध्यात्मिक प्रमुख व नोबेल शांति विजेता',
+    birthDate: '06-07-1935',
+    birthPlace: 'Taktser, Tibet',
+    roddenRating: 'AA',
+    ascSignIndex: 3, // Cancer
+    moonSignIndex: 4, // Leo
+    sunSignIndex: 2, // Gemini
+    prominentYogas: ['Hamsa Yoga', 'Raja Yoga', 'Gajakesari Yoga', 'Amala Yoga'],
+    prominentYogasHi: ['हंस महापुरुष योग', 'राजयोग', 'गजकेसरी योग', 'अमला योग'],
+    keyLifeMilestones: [
+      { age: 15, eventHi: 'तिब्बत के सर्वोच्च राजनीतिक व आध्यात्मिक प्रमुख का दायित्व संभाला', eventEn: 'Assumed full temporal power as political and spiritual head of Tibet' },
+      { age: 24, eventHi: '1959 में भारत में शरण लेकर धर्मशाला में केंद्रीय तिब्बती प्रशासन स्थापित किया', eventEn: 'Fled to India establishing Tibetan Government in Exile at Dharamshala' },
+      { age: 54, eventHi: 'अहिंसक करुणा व वैश्विक शांति के संदेश हेतु नोबेल शांति पुरस्कार', eventEn: 'Awarded Nobel Peace Prize for nonviolent campaign for Tibet liberation' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 4, noteHi: 'चतुर्थ में गुरु असीम करुणा, शांति और वैश्विक आदर', noteEn: 'Jupiter in 4th radiating oceanic compassion and warm universal love' },
+      { planet: 'Saturn', house: 8, noteHi: 'अष्टम में स्वराशि शनि निर्वासन के कष्टों को तपस्या में रूपांतरित करना', noteEn: 'Saturn in 8th enduring six decades of exile with pristine grace' },
+      { planet: 'Venus', house: 2, noteHi: 'द्वितीय में शुक्र मुस्कुराता चेहरा व हृदयस्पर्शी संवाद', noteEn: 'Venus in 2nd charming international audiences with radiant joy' },
+    ],
+    bioEn: 'Tibetan spiritual leader and Buddhist monk known globally for his advocacy of compassion, religious harmony, and peace.',
+    bioHi: 'तिब्बती बौद्ध धर्म के सर्वोच्च गुरु जिन्होंने करुणा, अहिंसा और धार्मिक सद्भाव का संदेश विश्वभर में फैलाया।',
+    quoteEn: 'My religion is very simple. My religion is kindness.',
+    quoteHi: 'मेरा धर्म बहुत सरल है। मेरा धर्म दया और करुणा है।',
+  },
 
-  // 5. Leo Lagna (सिंह लग्न)
+  // ==========================================
+  // 5. LEO LAGNA (सिंह लग्न - 4)
+  // ==========================================
   {
     id: 'steve-jobs',
     nameEn: 'Steve Jobs',
     nameHi: 'स्टीव जॉब्स',
+    initials: 'SJ',
+    badgeBg: '#1f2937',
     category: 'business_wealth',
     categoryTitleEn: 'Tech Visionary & Apple Co-Founder',
     categoryTitleHi: 'एप्पल संस्थापक एवं डिजिटल क्रांति के अग्रदूत',
     birthDate: '24-02-1955',
     birthPlace: 'San Francisco, California, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/440px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg',
     ascSignIndex: 4, // Leo
     moonSignIndex: 11, // Pisces
     sunSignIndex: 10, // Aquarius
@@ -471,13 +656,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'jrd-tata',
     nameEn: 'J.R.D. Tata',
     nameHi: 'जे.आर.डी. टाटा',
+    initials: 'JT',
+    badgeBg: '#1e40af',
     category: 'business_wealth',
     categoryTitleEn: 'Industrial Statesman & Father of Indian Aviation',
     categoryTitleHi: 'भारतीय विमानन के जनक व टाटा साम्राज्य के शिल्पकार',
     birthDate: '29-07-1904',
     birthPlace: 'Paris, France',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/J._R._D._Tata_1932.jpg/440px-J._R._D._Tata_1932.jpg',
     ascSignIndex: 4, // Leo
     moonSignIndex: 9, // Capricorn
     sunSignIndex: 3, // Cancer
@@ -502,13 +688,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'barack-obama',
     nameEn: 'Barack Obama',
     nameHi: 'बराक ओबामा',
+    initials: 'BO',
+    badgeBg: '#1e3a8a',
     category: 'leadership',
     categoryTitleEn: '44th US President & Nobel Peace Laureate',
     categoryTitleHi: 'संयुक्त राज्य अमेरिका के ४४वें राष्ट्रपति व नोबेल विजेता',
     birthDate: '04-08-1961',
     birthPlace: 'Honolulu, Hawaii, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/440px-President_Barack_Obama.jpg',
     ascSignIndex: 4, // Leo
     moonSignIndex: 1, // Taurus
     sunSignIndex: 3, // Cancer
@@ -529,19 +716,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Change will not come if we wait for some other person or some other time. We are the ones we’ve been waiting for.',
     quoteHi: 'परिवर्तन तब नहीं आएगा जब हम किसी और व्यक्ति या समय की प्रतीक्षा करेंगे। हम ही वे हैं जिनकी हम प्रतीक्षा कर रहे हैं।',
   },
+  {
+    id: 'roger-federer',
+    nameEn: 'Roger Federer',
+    nameHi: 'रोजर फेडरर',
+    initials: 'RF',
+    badgeBg: '#b45309',
+    category: 'sports_legend',
+    categoryTitleEn: '20-Time Grand Slam Tennis Maestro & Grace Icon',
+    categoryTitleHi: '२० बार के ग्रैंड स्लैम विजेता व टेनिस के सर्वकालिक सम्राट',
+    birthDate: '08-08-1981',
+    birthPlace: 'Basel, Switzerland',
+    roddenRating: 'AA',
+    ascSignIndex: 4, // Leo
+    moonSignIndex: 7, // Scorpio
+    sunSignIndex: 3, // Cancer
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Raja Yoga', 'Amala Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'राजयोग', 'अमला योग'],
+    keyLifeMilestones: [
+      { age: 21, eventHi: '2003 विंबलडन जीतकर प्रथम ग्रैंड स्लैम खिताब अपने नाम किया', eventEn: 'Won first Wimbledon Grand Slam title' },
+      { age: 28, eventHi: '2009 में करियर ग्रैंड स्लैम पूरा कर पीट संप्रास का रिकॉर्ड तोड़ा', eventEn: 'Completed Career Grand Slam at French Open' },
+      { age: 36, eventHi: '2018 ऑस्ट्रेलियन ओपन जीतकर 20 ग्रैंड स्लैम जीतने वाले प्रथम पुरुष बने', eventEn: 'Won 20th Grand Slam title in Melbourne' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 2, noteHi: 'द्वितीय में गुरु शांत स्वभाव, त्रुटिहीन खेल गरिमा व विनम्रता', noteEn: 'Jupiter in 2nd bestowing aristocratic court etiquette and global affection' },
+      { planet: 'Mars', house: 11, noteHi: 'एकादश में मंगल एक हाथ से खेला जाने वाला सम्मोहक बैकहैंड', noteEn: 'Mars in 11th unleashing peerless fluid offensive shotmaking' },
+      { planet: 'Venus', house: 1, noteHi: 'लग्न में शुक्र अप्रतिम कलात्मक लय व बैले डांसर जैसी गति', noteEn: 'Venus in 1st making tennis look effortless and majestic' },
+    ],
+    bioEn: 'Swiss former professional tennis player who won 20 Grand Slam men’s singles titles and held world No. 1 for 310 weeks.',
+    bioHi: 'टेनिस इतिहास के सर्वाधिक लोकप्रिय खिलाड़ी जिन्होंने अपनी सहज शैली और खेल भावना से करोड़ों दिलों पर राज किया।',
+    quoteEn: 'I fear no one, but I respect everyone.',
+    quoteHi: 'मैं किसी से डरता नहीं, परंतु मैं प्रत्येक व्यक्ति का सम्मान करता हूं।',
+  },
 
-  // 6. Virgo Lagna (कन्या लग्न)
+  // ==========================================
+  // 6. VIRGO LAGNA (कन्या लग्न - 5)
+  // ==========================================
   {
     id: 'warren-buffett',
     nameEn: 'Warren Buffett',
     nameHi: 'वॉरेन बफेट',
+    initials: 'WB',
+    badgeBg: '#15803d',
     category: 'business_wealth',
     categoryTitleEn: 'Oracle of Omaha & Supreme Value Investor',
     categoryTitleHi: 'ओमाहा के ओरेकल व मूल्य निवेश के महागुरु',
     birthDate: '30-08-1930',
     birthPlace: 'Omaha, Nebraska, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit.jpg/440px-Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit.jpg',
     ascSignIndex: 5, // Virgo
     moonSignIndex: 7, // Scorpio
     sunSignIndex: 4, // Leo
@@ -566,13 +788,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'bill-gates',
     nameEn: 'Bill Gates',
     nameHi: 'बिल गेट्स',
+    initials: 'BG',
+    badgeBg: '#0369a1',
     category: 'business_wealth',
     categoryTitleEn: 'PC Revolution Pioneer & Global Philanthropist',
     categoryTitleHi: 'माइक्रोसॉफ्ट संस्थापक, पीसी क्रांति दूत व परोपकारी',
     birthDate: '28-10-1955',
     birthPlace: 'Seattle, Washington, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Bill_Gates_2017_%28cropped%29.jpg/440px-Bill_Gates_2017_%28cropped%29.jpg',
     ascSignIndex: 5, // Virgo
     moonSignIndex: 0, // Aries
     sunSignIndex: 6, // Libra
@@ -597,13 +820,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'muhammad-ali',
     nameEn: 'Muhammad Ali',
     nameHi: 'मोहम्मद अली',
+    initials: 'MA',
+    badgeBg: '#b91c1c',
     category: 'sports_legend',
     categoryTitleEn: 'The Greatest Boxing Champion & Civil Rights Icon',
     categoryTitleHi: 'बॉक्सिंग के महानायक व नागरिक अधिकार सेनानी',
     birthDate: '17-01-1942',
     birthPlace: 'Louisville, Kentucky, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Muhammad_Ali_NYWTS.jpg/440px-Muhammad_Ali_NYWTS.jpg',
     ascSignIndex: 5, // Virgo
     moonSignIndex: 9, // Capricorn
     sunSignIndex: 9, // Capricorn
@@ -624,19 +848,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Don’t count the days; make the days count.',
     quoteHi: 'दिनों को गिनो मत; दिनों को सार्थक बनाओ।',
   },
+  {
+    id: 'mother-teresa',
+    nameEn: 'Mother Teresa',
+    nameHi: 'मदर टेरेसा',
+    initials: 'MT',
+    badgeBg: '#0f766e',
+    category: 'spiritual',
+    categoryTitleEn: 'Saint of the Gutters & Nobel Peace Laureate',
+    categoryTitleHi: 'दीन-दुखियों की सेविका, संत व नोबेल शांति विजेता',
+    birthDate: '26-08-1910',
+    birthPlace: 'Skopje, North Macedonia',
+    roddenRating: 'AA',
+    ascSignIndex: 5, // Virgo
+    moonSignIndex: 0, // Aries
+    sunSignIndex: 4, // Leo
+    prominentYogas: ['Bhadra Yoga', 'Pravrajya Yoga', 'Gajakesari Yoga', 'Amala Yoga'],
+    prominentYogasHi: ['भद्र महापुरुष योग', 'प्रव्रज्या योग', 'गजकेसरी योग', 'अमला योग'],
+    keyLifeMilestones: [
+      { age: 38, eventHi: 'कोलकाता की मलिन बस्तियों में असहाय रोगियों की सेवा का संकल्प लिया', eventEn: 'Started street mission serving destitute dying in slums of Kolkata' },
+      { age: 40, eventHi: 'मिशनरीज ऑफ चैरिटी की स्थापना कर वैश्विक सेवा कार्य प्रारंभ किया', eventEn: 'Founded Missionaries of Charity' },
+      { age: 69, eventHi: 'मानवता की निःस्वार्थ सेवा हेतु नोबेल शांति पुरस्कार से सम्मानित', eventEn: 'Awarded Nobel Peace Prize for humanitarian work' },
+    ],
+    keyPlacements: [
+      { planet: 'Mercury', house: 1, noteHi: 'लग्न में उच्च स्वराशि बुध सादगीपूर्ण संगठन कुशलता', noteEn: 'Exalted Mercury in Lagna managing vast worldwide hospice networks with austere simplicity' },
+      { planet: 'Jupiter', house: 1, noteHi: 'लग्न में गुरु असीम करुणा व ईश्वर-समर्पण', noteEn: 'Jupiter in 1st channeling pure divine compassion for the poorest of the poor' },
+      { planet: 'Sun', house: 12, noteHi: 'द्वादश में स्वराशि सूर्य निस्वार्थ सेवा व अहंशून्यता', noteEn: 'Sun in 12th surrendering all ego into selfless service of suffering humanity' },
+    ],
+    bioEn: 'Albanian-Indian Catholic nun who founded the Missionaries of Charity, dedicated to helping the poor, sick, and dying.',
+    bioHi: 'कोलकाता के कुष्ठ रोगियों और अनाथों की जीवनपर्यंत सेवा करने वाली भारत रत्न व नोबेल शांति विजेता संत।',
+    quoteEn: 'Peace begins with a smile.',
+    quoteHi: 'शांति की शुरुआत एक मुस्कान से होती है।',
+  },
 
-  // 7. Libra Lagna (तुला लग्न)
+  // ==========================================
+  // 7. LIBRA LAGNA (तुला लग्न - 6)
+  // ==========================================
   {
     id: 'mahatma-gandhi',
     nameEn: 'Mahatma Gandhi',
     nameHi: 'महात्मा गांधी',
+    initials: 'MG',
+    badgeBg: '#c2410c',
     category: 'leadership',
     categoryTitleEn: 'Father of the Nation & Apostle of Non-Violence',
     categoryTitleHi: 'राष्ट्रपिता एवं सत्य-अहिंसा के वैश्विक प्रणेता',
     birthDate: '02-10-1869',
     birthPlace: 'Porbandar, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Mahatma-Gandhi%2C_studio%2C_1931.jpg/440px-Mahatma-Gandhi%2C_studio%2C_1931.jpg',
     ascSignIndex: 6, // Libra
     moonSignIndex: 3, // Cancer
     sunSignIndex: 5, // Virgo
@@ -661,13 +920,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'winston-churchill',
     nameEn: 'Winston Churchill',
     nameHi: 'विंस्टन चर्चिल',
+    initials: 'WC',
+    badgeBg: '#334155',
     category: 'leadership',
     categoryTitleEn: 'Wartime Prime Minister & Nobel Laureate in Literature',
     categoryTitleHi: 'ब्रिटिश युद्धकालीन प्रधानमंत्री व नोबेल साहित्य विजेता',
     birthDate: '30-11-1874',
     birthPlace: 'Woodstock, United Kingdom',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Sir_Winston_Churchill_-_19086236948.jpg/440px-Sir_Winston_Churchill_-_19086236948.jpg',
     ascSignIndex: 6, // Libra
     moonSignIndex: 4, // Leo
     sunSignIndex: 7, // Scorpio
@@ -692,13 +952,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'oppenheimer',
     nameEn: 'J. Robert Oppenheimer',
     nameHi: 'जे. रॉबर्ट ओपेनहाइमर',
+    initials: 'RO',
+    badgeBg: '#475569',
     category: 'science_tech',
     categoryTitleEn: 'Father of the Atomic Bomb & Theoretical Physicist',
     categoryTitleHi: 'परमाणु बम के जनक व सैद्धांतिक भौतिकविद्',
     birthDate: '22-04-1904',
     birthPlace: 'New York City, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/JROppenheimer-LosAlamos.jpg/440px-JROppenheimer-LosAlamos.jpg',
     ascSignIndex: 6, // Libra
     moonSignIndex: 3, // Cancer
     sunSignIndex: 0, // Aries
@@ -719,19 +980,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Now I am become Death, the destroyer of worlds.',
     quoteHi: 'अब मैं काल बन गया हूं, लोकों का संहारक (भगवद्गीता से)।',
   },
+  {
+    id: 'john-lennon',
+    nameEn: 'John Lennon',
+    nameHi: 'जॉन लेनन',
+    initials: 'JL',
+    badgeBg: '#9333ea',
+    category: 'art_culture',
+    categoryTitleEn: 'The Beatles Legend & Universal Peace Bard',
+    categoryTitleHi: 'द बीटल्स संगीतकार व "इमेजिन" शांति गीतकार',
+    birthDate: '09-10-1940',
+    birthPlace: 'Liverpool, United Kingdom',
+    roddenRating: 'AA',
+    ascSignIndex: 6, // Libra
+    moonSignIndex: 9, // Capricorn
+    sunSignIndex: 5, // Virgo
+    prominentYogas: ['Malavya Yoga', 'Gajakesari Yoga', 'Saraswati Yoga', 'Raja Yoga'],
+    prominentYogasHi: ['मालव्य महापुरुष योग', 'गजकेसरी योग', 'सरस्वती योग', 'राजयोग'],
+    keyLifeMilestones: [
+      { age: 24, eventHi: 'बीटलमेनिया के दौर में पूरे विश्व के संगीत परिदृश्य को बदल दिया', eventEn: 'Conquered world pop culture with Beatlemania' },
+      { age: 28, eventHi: 'ऋषिकेश, भारत आकर महर्षि महेश योगी से ध्यान व संगीत सीखा', eventEn: 'Studied Transcendental Meditation in Rishikesh, India' },
+      { age: 31, eventHi: '"इमेजिन" गीत की रचना कर विश्व शांति का वैश्विक गान दिया', eventEn: 'Released Imagine, becoming global anthem of universal peace' },
+    ],
+    keyPlacements: [
+      { planet: 'Venus', house: 11, noteHi: 'एकादश में शुक्र संगीत से अकूत संपत्ति व विश्वभर में प्रेम', noteEn: 'Venus in 11th bringing global cultural devotion and artistic wealth' },
+      { planet: 'Jupiter', house: 7, noteHi: 'सप्तम में गुरु युति आधारित दार्शनिक संगीत रचनाएं', noteEn: 'Jupiter in 7th collaborating on timeless universal brotherhood songs' },
+      { planet: 'Moon', house: 4, noteHi: 'चतुर्थ में चंद्र गहरी अंतर्मुखी संवेदनशीलता', noteEn: 'Moon in 4th evoking deep emotional vulnerability in lyrics' },
+    ],
+    bioEn: 'English singer, songwriter, musician and peace activist who co-founded the Beatles, the most commercially successful band in history.',
+    bioHi: 'द बीटल्स के सह-संस्थापक और शांतिदूत जिन्होंने "इमेजिन" जैसे कालजयी गीतों से दुनिया को युद्धरहित भविष्य की कल्पना दी।',
+    quoteEn: 'Imagine all the people living life in peace.',
+    quoteHi: 'कल्पना करो कि सभी लोग शांति से जीवन जी रहे हैं।',
+  },
 
-  // 8. Scorpio Lagna (वृश्चिक लग्न)
+  // ==========================================
+  // 8. SCORPIO LAGNA (वृश्चिक लग्न - 7)
+  // ==========================================
   {
     id: 'abraham-lincoln',
     nameEn: 'Abraham Lincoln',
     nameHi: 'अब्राहम लिंकन',
+    initials: 'AL',
+    badgeBg: '#1e293b',
     category: 'leadership',
     categoryTitleEn: '16th US President & Emancipation Liberator',
     categoryTitleHi: 'अमेरिका के १६वें राष्ट्रपति व दासता उन्मूलक',
     birthDate: '12-02-1809',
     birthPlace: 'Hodgenville, Kentucky, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Abraham_Lincoln_O-77_matte_collodion_print.jpg/440px-Abraham_Lincoln_O-77_matte_collodion_print.jpg',
     ascSignIndex: 7, // Scorpio
     moonSignIndex: 9, // Capricorn
     sunSignIndex: 10, // Aquarius
@@ -756,13 +1052,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'isaac-newton',
     nameEn: 'Sir Isaac Newton',
     nameHi: 'सर आइजक न्यूटन',
+    initials: 'IN',
+    badgeBg: '#475569',
     category: 'science_tech',
     categoryTitleEn: 'Father of Classical Mechanics & Calculus Co-Creator',
     categoryTitleHi: 'शास्त्रीय भौतिकी के जनक व गुरुत्वाकर्षण के अन्वेषक',
     birthDate: '04-01-1643',
     birthPlace: 'Woolsthorpe, United Kingdom',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Portrait_of_Sir_Isaac_Newton%2C_1689.jpg/440px-Portrait_of_Sir_Isaac_Newton%2C_1689.jpg',
     ascSignIndex: 7, // Scorpio
     moonSignIndex: 3, // Cancer
     sunSignIndex: 8, // Sagittarius
@@ -787,13 +1084,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'marie-curie',
     nameEn: 'Marie Curie',
     nameHi: 'मैरी क्यूरी',
+    initials: 'MC',
+    badgeBg: '#0d9488',
     category: 'science_tech',
     categoryTitleEn: 'Double Nobel Laureate & Radioactivity Pioneer',
     categoryTitleHi: 'दोहरी नोबेल पुरस्कार विजेता व रेडियोधर्मिता की जनक',
     birthDate: '07-11-1867',
     birthPlace: 'Warsaw, Poland',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Marie_Curie_c._1920s.jpg/440px-Marie_Curie_c._1920s.jpg',
     ascSignIndex: 7, // Scorpio
     moonSignIndex: 11, // Pisces
     sunSignIndex: 7, // Scorpio
@@ -818,13 +1116,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'maradona',
     nameEn: 'Diego Maradona',
     nameHi: 'डिएगो माराडोना',
+    initials: 'DM',
+    badgeBg: '#0284c7',
     category: 'sports_legend',
     categoryTitleEn: 'Football Magician & 1986 World Cup Champion',
     categoryTitleHi: 'फुटबॉल के जादुई उस्ताद व १९८६ विश्व कप विजेता',
     birthDate: '30-10-1960',
     birthPlace: 'Lanús, Argentina',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Maradona-Mundial_86_con_la_copa.JPG/440px-Maradona-Mundial_86_con_la_copa.JPG',
     ascSignIndex: 7, // Scorpio
     moonSignIndex: 11, // Pisces
     sunSignIndex: 6, // Libra
@@ -845,19 +1144,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'When people succeed, it is because of hard work. Luck has nothing to do with success.',
     quoteHi: 'जब लोग सफल होते हैं, तो वह कठिन परिश्रम के कारण होता है। भाग्य का सफलता से कोई लेना-देना नहीं है।',
   },
+  {
+    id: 'indira-gandhi',
+    nameEn: 'Indira Gandhi',
+    nameHi: 'इंदिरा गांधी',
+    initials: 'IG',
+    badgeBg: '#1e3a8a',
+    category: 'leadership',
+    categoryTitleEn: 'Iron Lady of India & Prime Minister',
+    categoryTitleHi: 'भारत की प्रथम महिला प्रधानमंत्री व लौह महिला',
+    birthDate: '19-11-1917',
+    birthPlace: 'Prayagraj, India',
+    roddenRating: 'AA',
+    ascSignIndex: 7, // Scorpio
+    moonSignIndex: 9, // Capricorn
+    sunSignIndex: 7, // Scorpio
+    prominentYogas: ['Ruchaka Yoga', 'Raja Yoga', 'Parivartana Yoga', 'Dhana Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'राजयोग', 'परिवर्तन राजयोग', 'धन योग'],
+    keyLifeMilestones: [
+      { age: 48, eventHi: '1966 में भारत की प्रथम महिला प्रधानमंत्री निर्वाचित हुईं', eventEn: 'Elected first female Prime Minister of India' },
+      { age: 54, eventHi: '1971 युद्ध में निर्णायक विजय दिलाकर बांग्लादेश का निर्माण कराया', eventEn: 'Led India to historic 1971 victory and liberation of Bangladesh' },
+      { age: 56, eventHi: '1974 पोखरण में भारत का प्रथम भूमिगत परमाणु परीक्षण (स्माइलिंग बुद्धा) कराया', eventEn: 'Authorized India’s first nuclear test Smiling Buddha' },
+    ],
+    keyPlacements: [
+      { planet: 'Mars', house: 2, noteHi: 'द्वितीय में मंगल कठोर रणनीतिक निर्णय व फौलादी संकल्प', noteEn: 'Mars in 2nd endowing fearless iron-willed geopolitical decisions' },
+      { planet: 'Sun', house: 1, noteHi: 'लग्न में सूर्य अदम्य राजनीतिक सत्ता व प्रभुत्व', noteEn: 'Sun in Lagna commanding decisive sovereign political dominance' },
+      { planet: 'Saturn', house: 9, noteHi: 'नवम में शनि कठिन ऐतिहासिक चुनौतियों में अडिग रहना', noteEn: 'Saturn in 9th weathering severe domestic and foreign diplomatic storms' },
+    ],
+    bioEn: 'Indian politician and statesman who served as the third prime minister of India and was the first and to date only female prime minister.',
+    bioHi: 'भारत की प्रथम महिला प्रधानमंत्री जिन्होंने 1971 में पाकिस्तान को पराजित कर नए राष्ट्र बांग्लादेश के निर्माण में निर्णायक भूमिका निभाई।',
+    quoteEn: 'You must learn to be still in the midst of activity and to be vibrantly alive in repose.',
+    quoteHi: 'आपको सक्रियता के मध्य शांत रहना और एकांत में ऊर्जावान रहना सीखना होगा।',
+  },
 
-  // 9. Sagittarius Lagna (धनु लग्न)
+  // ==========================================
+  // 9. SAGITTARIUS LAGNA (धनु लग्न - 8)
+  // ==========================================
   {
     id: 'swami-vivekananda',
     nameEn: 'Swami Vivekananda',
     nameHi: 'स्वामी विवेकानंद',
+    initials: 'SV',
+    badgeBg: '#ea580c',
     category: 'spiritual',
     categoryTitleEn: 'Spiritual Master & Prophet of Vedanta',
     categoryTitleHi: 'आध्यात्मिक युगद्रष्टा एवं वेदांत के वैश्विक प्रणेता',
     birthDate: '12-01-1863',
     birthPlace: 'Kolkata, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Swami_Vivekananda-1893-09-signed.jpg/440px-Swami_Vivekananda-1893-09-signed.jpg',
     ascSignIndex: 8, // Sagittarius
     moonSignIndex: 5, // Virgo
     sunSignIndex: 8, // Sagittarius
@@ -882,13 +1216,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'srinivasa-ramanujan',
     nameEn: 'Srinivasa Ramanujan',
     nameHi: 'श्रीनिवास रामानुजन',
+    initials: 'SR',
+    badgeBg: '#4f46e5',
     category: 'science_tech',
     categoryTitleEn: 'Mathematical Mystic & Number Theory Seer',
     categoryTitleHi: 'दिव्य गणितज्ञ व संख्या सिद्धांत के रहस्यद्रष्टा',
     birthDate: '22-12-1887',
     birthPlace: 'Erode, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Srinivasa_Ramanujan_-_OPC_-_1.jpg/440px-Srinivasa_Ramanujan_-_OPC_-_1.jpg',
     ascSignIndex: 8, // Sagittarius
     moonSignIndex: 11, // Pisces
     sunSignIndex: 8, // Sagittarius
@@ -913,13 +1248,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'dhirubhai-ambani',
     nameEn: 'Dhirubhai Ambani',
     nameHi: 'धीरूभाई अंबानी',
+    initials: 'DA',
+    badgeBg: '#1e3a8a',
     category: 'business_wealth',
     categoryTitleEn: 'Industrial Tycoon & Reliance Founder',
     categoryTitleHi: 'रिलायंस इंडस्ट्रीज संस्थापक व औद्योगिक क्रांति दूत',
     birthDate: '28-12-1932',
     birthPlace: 'Chorwad, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Dhirubhai_Ambani_1990s.jpg/440px-Dhirubhai_Ambani_1990s.jpg',
     ascSignIndex: 8, // Sagittarius
     moonSignIndex: 8, // Sagittarius
     sunSignIndex: 8, // Sagittarius
@@ -944,13 +1280,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'sachin-tendulkar',
     nameEn: 'Sachin Tendulkar',
     nameHi: 'सचिन तेंदुलकर',
+    initials: 'ST',
+    badgeBg: '#047857',
     category: 'sports_legend',
     categoryTitleEn: 'God of Cricket & 100 International Centuries Master',
     categoryTitleHi: 'क्रिकेट के भगवान व १०० अंतर्राष्ट्रीय शतकों के महानायक',
     birthDate: '24-04-1973',
     birthPlace: 'Mumbai, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Sachin_Tendulkar_at_MRF_Promotion_Event.jpg/440px-Sachin_Tendulkar_at_MRF_Promotion_Event.jpg',
     ascSignIndex: 8, // Sagittarius
     moonSignIndex: 8, // Sagittarius
     sunSignIndex: 0, // Aries
@@ -971,19 +1308,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Chase your dreams. Dreams do come true. Don’t stop believing.',
     quoteHi: 'अपने सपनों का पीछा करो। सपने सच होते हैं। विश्वास करना कभी मत छोड़ो।',
   },
+  {
+    id: 'walt-disney',
+    nameEn: 'Walt Disney',
+    nameHi: 'वॉल्ट डिज्नी',
+    initials: 'WD',
+    badgeBg: '#6d28d9',
+    category: 'art_culture',
+    categoryTitleEn: 'Animation Pioneer & Entertainment Empire Creator',
+    categoryTitleHi: 'एनिमेशन के जनक, मिकी माउस व डिज्नीलैंड के निर्माता',
+    birthDate: '05-12-1901',
+    birthPlace: 'Chicago, Illinois, USA',
+    roddenRating: 'AA',
+    ascSignIndex: 8, // Sagittarius
+    moonSignIndex: 5, // Virgo
+    sunSignIndex: 8, // Sagittarius
+    prominentYogas: ['Hamsa Yoga', 'Raja Yoga', 'Bhadra Yoga', 'Saraswati Yoga'],
+    prominentYogasHi: ['हंस महापुरुष योग', 'राजयोग', 'भद्र महापुरुष योग', 'सरस्वती योग'],
+    keyLifeMilestones: [
+      { age: 27, eventHi: 'मिकी माउस चरित्र व प्रथम ध्वनि युक्त कार्टून "स्टीमबोट विली" बनाया', eventEn: 'Created Mickey Mouse and sound cartoon Steamboat Willie' },
+      { age: 36, eventHi: 'स्नो व्हाइट फिल्म बनाकर इतिहास की प्रथम फीचर-लेंथ एनिमेशन फिल्म रची', eventEn: 'Released Snow White pioneering feature-length animation' },
+      { age: 53, eventHi: 'कैलिफोर्निया में विश्व के प्रथम आधुनिक थीम पार्क "डिज्नीलैंड" का उद्घाटन', eventEn: 'Opened Disneyland theme park transforming global family leisure' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 1, noteHi: 'लग्न में स्वराशि गुरु बच्चों और परिवारों के चेहरों पर मुस्कान', noteEn: 'Jupiter in Lagna spreading universal wonder and imagination globally' },
+      { planet: 'Mercury', house: 12, noteHi: 'द्वादश में बुध असीम कल्पनालोक व कार्टून पात्रों का सृजन', noteEn: 'Mercury in 12th translating whimsical dreamscapes into cinematic reality' },
+      { planet: 'Venus', house: 11, noteHi: 'एकादश में शुक्र फिल्म मर्चेंडाइज व पार्क से अकूत समृद्धि', noteEn: 'Venus in 11th establishing multi-billion dollar entertainment merchandising' },
+    ],
+    bioEn: 'American animator, film producer and entrepreneur who revolutionized entertainment and won 22 Academy Awards.',
+    bioHi: 'एनिमेशन इतिहास के सबसे प्रभावशाली व्यक्तित्व जिन्होंने मिकी माउस, स्नो व्हाइट और डिज्नीलैंड बनाकर स्वप्नों को साकार किया।',
+    quoteEn: 'All our dreams can come true, if we have the courage to pursue them.',
+    quoteHi: 'हमारे सभी सपने सच हो सकते हैं, यदि हममें उनका पीछा करने का साहस हो।',
+  },
 
-  // 10. Capricorn Lagna (मकर लग्न)
+  // ==========================================
+  // 10. CAPRICORN LAGNA (मकर लग्न - 9)
+  // ==========================================
   {
     id: 'adi-shankara',
     nameEn: 'Adi Shankaracharya',
     nameHi: 'आदि शंकराचार्य',
+    initials: 'AS',
+    badgeBg: '#b45309',
     category: 'spiritual',
     categoryTitleEn: 'Reviver of Advaita Vedanta & Four Amnaya Peethas',
     categoryTitleHi: 'अद्वैत वेदांत के पुनरुद्धारक व चार आम्नाय पीठों के संस्थापक',
     birthDate: '11-05-0788',
     birthPlace: 'Kalady, India',
     roddenRating: 'A',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Adi_Shankara_with_Disciples.jpg/440px-Adi_Shankara_with_Disciples.jpg',
     ascSignIndex: 9, // Capricorn
     moonSignIndex: 1, // Taurus
     sunSignIndex: 1, // Taurus
@@ -1008,13 +1380,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'paramahansa-yogananda',
     nameEn: 'Paramahansa Yogananda',
     nameHi: 'परमहंस योगानंद',
+    initials: 'PY',
+    badgeBg: '#d97706',
     category: 'spiritual',
     categoryTitleEn: 'Father of Yoga in the West & Kriya Yoga Pioneer',
     categoryTitleHi: 'पश्चिम में योग के दूत व क्रिया योग के वैश्विक प्रणेता',
     birthDate: '05-01-1893',
     birthPlace: 'Gorakhpur, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Yogananda_c1915.jpg/440px-Yogananda_c1915.jpg',
     ascSignIndex: 9, // Capricorn
     moonSignIndex: 4, // Leo
     sunSignIndex: 8, // Sagittarius
@@ -1039,13 +1412,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'stephen-hawking',
     nameEn: 'Stephen Hawking',
     nameHi: 'स्टीफन हॉकिंग',
+    initials: 'SH',
+    badgeBg: '#1e3a8a',
     category: 'science_tech',
     categoryTitleEn: 'Theoretical Cosmologist & Black Hole Radiation Pioneer',
     categoryTitleHi: 'सैद्धांतिक ब्रह्मांड विज्ञानी व हॉकिंग विकिरण अन्वेषक',
     birthDate: '08-01-1942',
     birthPlace: 'Oxford, United Kingdom',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Stephen_Hawking.StarChild.jpg/440px-Stephen_Hawking.StarChild.jpg',
     ascSignIndex: 9, // Capricorn
     moonSignIndex: 5, // Virgo
     sunSignIndex: 8, // Sagittarius
@@ -1066,19 +1440,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'However difficult life may seem, there is always something you can do and succeed at.',
     quoteHi: 'जीवन चाहे कितना भी कठिन क्यों न लगे, हमेशा कुछ न कुछ ऐसा होता है जो आप कर सकते हैं और सफल हो सकते हैं।',
   },
+  {
+    id: 'cristiano-ronaldo',
+    nameEn: 'Cristiano Ronaldo',
+    nameHi: 'क्रिस्टियानो रोनाल्डो',
+    initials: 'CR',
+    badgeBg: '#b91c1c',
+    category: 'sports_legend',
+    categoryTitleEn: '5-Time Ballon d’Or Winner & All-Time Top Goalscorer',
+    categoryTitleHi: '५ बार के बैलोन डी’ओर विजेता व फुटबॉल इतिहास के शीर्ष गोल स्कोरर',
+    birthDate: '05-02-1985',
+    birthPlace: 'Funchal, Madeira, Portugal',
+    roddenRating: 'AA',
+    ascSignIndex: 9, // Capricorn
+    moonSignIndex: 4, // Leo
+    sunSignIndex: 9, // Capricorn
+    prominentYogas: ['Sasa Yoga', 'Ruchaka Yoga', 'Raja Yoga', 'Dhana Yoga'],
+    prominentYogasHi: ['शश महापुरुष योग', 'रुचक महापुरुष योग', 'राजयोग', 'धन योग'],
+    keyLifeMilestones: [
+      { age: 23, eventHi: '2008 में मैनचेस्टर यूनाइटेड संग प्रथम चैंपियंस लीग व बैलोन डी’ओर जीता', eventEn: 'Won first UEFA Champions League and Ballon d’Or with Manchester United' },
+      { age: 31, eventHi: 'पुर्तगाल को 2016 यूईएफए यूरो कप जिताकर प्रथम अंतर्राष्ट्रीय ट्रॉफी दिलाई', eventEn: 'Captained Portugal to historic UEFA Euro 2016 victory' },
+      { age: 36, eventHi: 'अंतर्राष्ट्रीय फुटबॉल में पुरुष वर्ग के सर्वाधिक 115+ गोल का विश्व रिकॉर्ड बनाया', eventEn: 'Broke all-time international scoring record in men’s football history' },
+    ],
+    keyPlacements: [
+      { planet: 'Saturn', house: 11, noteHi: 'एकादश में शनि अद्वितीय शारीरिक अनुशासन व फिटनेस', noteEn: 'Saturn in 11th driving obsessive athletic conditioning across two decades' },
+      { planet: 'Mars', house: 3, noteHi: 'तृतीय में स्वराशि मंगल अदम्य जंप, हेडर व शॉट पॉवर', noteEn: 'Own-sign Mars in 3rd conferring superhuman aerial leap and striking speed' },
+      { planet: 'Sun', house: 1, noteHi: 'लग्न में सूर्य अगाध आत्मविश्वास व वैश्विक ब्रांड CR7', noteEn: 'Sun in Lagna radiating self-belief and world’s most followed social media empire' },
+    ],
+    bioEn: 'Portuguese professional footballer who is widely regarded as one of the greatest players of all time with over 850 official career goals.',
+    bioHi: 'पुर्तगाल के महान फुटबॉल खिलाड़ी जिन्होंने कठोरतम अनुशासन और समर्पण से 5 चैंपियंस लीग और 5 बैलोन डी’ओर जीतकर इतिहास रचा।',
+    quoteEn: 'Your love makes me strong, your hate makes me unstoppable.',
+    quoteHi: 'आपका प्रेम मुझे मजबूत बनाता है, आपकी नफरत मुझे अजेय बनाती है।',
+  },
 
-  // 11. Aquarius Lagna (कुंभ लग्न)
+  // ==========================================
+  // 11. AQUARIUS LAGNA (कुंभ लग्न - 10)
+  // ==========================================
   {
     id: 'george-washington',
     nameEn: 'George Washington',
     nameHi: 'जॉर्ज वाशिंगटन',
+    initials: 'GW',
+    badgeBg: '#1e40af',
     category: 'leadership',
     categoryTitleEn: '1st US President & Father of the United States',
     categoryTitleHi: 'अमेरिका के प्रथम राष्ट्रपति व राष्ट्र निर्माता',
     birthDate: '22-02-1732',
     birthPlace: 'Westmoreland County, Virginia, USA',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg/440px-Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg',
     ascSignIndex: 10, // Aquarius
     moonSignIndex: 2, // Gemini
     sunSignIndex: 10, // Aquarius
@@ -1103,13 +1512,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'ludwig-van-beethoven',
     nameEn: 'Ludwig van Beethoven',
     nameHi: 'लुडविग वैन बीथोवेन',
+    initials: 'LB',
+    badgeBg: '#78350f',
     category: 'art_culture',
     categoryTitleEn: 'Titanic Classical Composer & Symphony Pioneer',
     categoryTitleHi: 'शास्त्रीय संगीत के महाशिल्पी व अमर सिम्फनी रचयिता',
     birthDate: '17-12-1770',
     birthPlace: 'Bonn, Germany',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/440px-Beethoven.jpg',
     ascSignIndex: 10, // Aquarius
     moonSignIndex: 0, // Aries
     sunSignIndex: 8, // Sagittarius
@@ -1134,13 +1544,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'usain-bolt',
     nameEn: 'Usain Bolt',
     nameHi: 'उसेन बोल्ट',
+    initials: 'UB',
+    badgeBg: '#ca8a04',
     category: 'sports_legend',
     categoryTitleEn: 'Fastest Man in History & 8-Time Olympic Gold Medalist',
     categoryTitleHi: 'इतिहास का सबसे तेज मानव व ८ बार का ओलंपिक स्वर्ण पदक विजेता',
     birthDate: '21-08-1986',
     birthPlace: 'Sherwood Content, Jamaica',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Usain_Bolt_after_4_%C3%97_100_m_relay_at_the_2012_Summer_Olympics.jpg/440px-Usain_Bolt_after_4_%C3%97_100_m_relay_at_the_2012_Summer_Olympics.jpg',
     ascSignIndex: 10, // Aquarius
     moonSignIndex: 10, // Aquarius
     sunSignIndex: 4, // Leo
@@ -1161,19 +1572,54 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'I don’t think limits. I told you all I was going to do it, and I did.',
     quoteHi: 'मैं सीमाओं के बारे में नहीं सोचता। मैंने आप सभी से कहा था कि मैं यह करूंगा, और मैंने कर दिखाया।',
   },
+  {
+    id: 'galileo-galilei',
+    nameEn: 'Galileo Galilei',
+    nameHi: 'गैलीलियो गैलीली',
+    initials: 'GG',
+    badgeBg: '#1e3a8a',
+    category: 'science_tech',
+    categoryTitleEn: 'Father of Observational Astronomy & Modern Science',
+    categoryTitleHi: 'आधुनिक प्रयोगात्मक विज्ञान व दूरबीन खगोलशास्त्र के जनक',
+    birthDate: '15-02-1564',
+    birthPlace: 'Pisa, Italy',
+    roddenRating: 'AA',
+    ascSignIndex: 10, // Aquarius
+    moonSignIndex: 0, // Aries
+    sunSignIndex: 10, // Aquarius
+    prominentYogas: ['Sasa Yoga', 'Budhaditya Yoga', 'Raja Yoga', 'Saraswati Yoga'],
+    prominentYogasHi: ['शश महापुरुष योग', 'बुधादित्य योग', 'राजयोग', 'सरस्वती योग'],
+    keyLifeMilestones: [
+      { age: 45, eventHi: 'दूरबीन का निर्माण कर बृहस्पति के ४ उपग्रहों व चंद्रमा के क्रेटरों की खोज की', eventEn: 'Constructed telescope discovering Jupiter’s four largest moons' },
+      { age: 68, eventHi: 'दो मुख्य विश्व प्रणालियों पर संवाद प्रकाशित कर सूर्यकेंद्रीय सिद्धांत सिद्ध किया', eventEn: 'Published Dialogue Concerning the Two Chief World Systems defending Copernicanism' },
+      { age: 69, eventHi: 'रोमन इनक्विजिशन के सामने भी "फिर भी यह घूमती है" का अडिग वैज्ञानिक सत्य', eventEn: 'Stood trial before Inquisition famously murmuring "And yet it moves"' },
+    ],
+    keyPlacements: [
+      { planet: 'Sun', house: 1, noteHi: 'लग्न में सूर्य सत्य की खोज में निर्भीक वैज्ञानिक चेतना', noteEn: 'Sun in Lagna defending observational truth against dogma' },
+      { planet: 'Saturn', house: 1, noteHi: 'लग्न में स्वराशि शनि जीवन के अंतिम दशक में नजरबंदी में भी शोध', noteEn: 'Saturn in 1st writing masterwork Two New Sciences under house arrest' },
+      { planet: 'Jupiter', house: 4, noteHi: 'चतुर्थ में गुरु खगोलीय पिंडों के गणितीय नियमों की सिद्धि', noteEn: 'Jupiter in 4th demonstrating acceleration of falling bodies in Pisa' },
+    ],
+    bioEn: 'Italian astronomer, physicist and engineer who pioneered observational astronomy and is called the father of modern science.',
+    bioHi: 'महान इतालवी वैज्ञानिक जिन्होंने दूरबीन से आकाश का अध्ययन कर सिद्ध किया कि पृथ्वी सूर्य की परिक्रमा करती है।',
+    quoteEn: 'E pur si muove (And yet it moves).',
+    quoteHi: 'और फिर भी यह (पृथ्वी) घूमती ही है।',
+  },
 
-  // 12. Pisces Lagna (मीन लग्न)
+  // ==========================================
+  // 12. PISCES LAGNA (मीन लग्न - 11)
+  // ==========================================
   {
     id: 'apj-abdul-kalam',
     nameEn: 'Dr. A.P.J. Abdul Kalam',
     nameHi: 'डॉ. ए.पी.जे. अब्दुल कलाम',
+    initials: 'AK',
+    badgeBg: '#1e3a8a',
     category: 'science_tech',
     categoryTitleEn: 'Missile Pioneer & People’s President',
     categoryTitleHi: 'मिसाइल मैन, वैज्ञानिक एवं भारत रत्न राष्ट्रपति',
     birthDate: '15-10-1931',
     birthPlace: 'Rameswaram, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/A._P._J._Abdul_Kalam_in_2008.jpg/440px-A._P._J._Abdul_Kalam_in_2008.jpg',
     ascSignIndex: 11, // Pisces
     moonSignIndex: 7, // Scorpio
     sunSignIndex: 5, // Virgo
@@ -1198,13 +1644,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'rabindranath-tagore',
     nameEn: 'Rabindranath Tagore',
     nameHi: 'रवींद्रनाथ ठाकुर',
+    initials: 'RT',
+    badgeBg: '#b45309',
     category: 'art_culture',
     categoryTitleEn: 'Nobel Laureate Poet & Universal Mystic',
     categoryTitleHi: 'नोबेल पुरस्कार विजेता कवि, दार्शनिक व संगीतकार',
     birthDate: '07-05-1861',
     birthPlace: 'Kolkata, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rabindranath_Tagore_in_1909.jpg/440px-Rabindranath_Tagore_in_1909.jpg',
     ascSignIndex: 11, // Pisces
     moonSignIndex: 11, // Pisces
     sunSignIndex: 0, // Aries
@@ -1229,13 +1676,14 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     id: 'satyajit-ray',
     nameEn: 'Satyajit Ray',
     nameHi: 'सत्यजीत रे',
+    initials: 'SR',
+    badgeBg: '#334155',
     category: 'art_culture',
     categoryTitleEn: 'Auteur Filmmaker & Academy Lifetime Achievement Winner',
     categoryTitleHi: 'कालजयी फिल्म निर्देशक व ऑस्कर लाइफटाइम अचीवमेंट विजेता',
     birthDate: '02-05-1921',
     birthPlace: 'Kolkata, India',
     roddenRating: 'AA',
-    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Satyajit_Ray_1981.jpg/440px-Satyajit_Ray_1981.jpg',
     ascSignIndex: 11, // Pisces
     moonSignIndex: 11, // Pisces
     sunSignIndex: 0, // Aries
@@ -1255,6 +1703,70 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     bioHi: 'विश्व सिनेमा के महानतम निर्देशकों में शुमार जिन्होंने पाथेर पांचाली, अपराजितो और अपूर संसार जैसी फिल्मों से भारतीय सिनेमा को विश्व में सर्वोच्च प्रतिष्ठा दिलाई।',
     quoteEn: 'The only modern medium which can be both an art and a science is the cinema.',
     quoteHi: 'सिनेमा ही एकमात्र ऐसा आधुनिक माध्यम है जो एक साथ कला भी हो सकता है और विज्ञान भी।',
+  },
+  {
+    id: 'osho',
+    nameEn: 'Osho (Bhagwan Shree Rajneesh)',
+    nameHi: 'ओशो (रजनीश)',
+    initials: 'OS',
+    badgeBg: '#7e22ce',
+    category: 'spiritual',
+    categoryTitleEn: 'Enlightened Mystic & Iconoclastic Master',
+    categoryTitleHi: 'प्रबुद्ध रहस्यदर्शी व ध्यान दर्शन के क्रांतिकारी प्रणेता',
+    birthDate: '11-12-1931',
+    birthPlace: 'Kuchwada, India',
+    roddenRating: 'AA',
+    ascSignIndex: 11, // Pisces
+    moonSignIndex: 8, // Sagittarius
+    sunSignIndex: 7, // Scorpio
+    prominentYogas: ['Hamsa Yoga', 'Saraswati Yoga', 'Pravrajya Yoga', 'Raja Yoga'],
+    prominentYogasHi: ['हंस महापुरुष योग', 'सरस्वती योग', 'प्रव्रज्या योग', 'राजयोग'],
+    keyLifeMilestones: [
+      { age: 21, eventHi: '21 वर्ष की आयु में जबलपुर में बोधि वृक्ष के नीचे आत्म-ज्ञान (संबोधि) उपलब्ध', eventEn: 'Attained spiritual enlightenment at age 21 in Jabalpur' },
+      { age: 39, eventHi: 'सक्रिय ध्यान (Dynamic Meditation) की क्रांतिकारी विधियां विश्व को दीं', eventEn: 'Introduced revolutionary Dynamic Meditation techniques' },
+      { age: 54, eventHi: 'पुणे आश्रम में विश्वभर के साधकों को 600+ पुस्तकों में समाहित प्रवचन दिए', eventEn: 'Delivered timeless discourses transcribed into over 600 global books' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 5, noteHi: 'पंचम में उच्च गुरु समस्त शास्त्रों का सहज, क्रांतिकारी विश्लेषण', noteEn: 'Exalted Jupiter in 5th expounding Zen, Sufi, Gita, and Upanishads effortlessly' },
+      { planet: 'Saturn', house: 10, noteHi: 'दशम में स्वराशि शनि स्थापित रूढ़ियों को हिला देने वाला वैश्विक प्रभाव', noteEn: 'Saturn in 10th challenging societal hypocrisies and rigid religious orthodoxies' },
+      { planet: 'Venus', house: 11, noteHi: 'एकादश में शुक्र कला, उत्सव, आनंद व जीवन-समग्रता', noteEn: 'Venus in 11th synthesizing Zorba the Greek and Gautam Buddha (Zorba the Buddha)' },
+    ],
+    bioEn: 'Indian mystic, guru and spiritual teacher who advocated for meditation, mindfulness, love, celebration, and spiritual rebelliousness.',
+    bioHi: '20वीं सदी के सबसे प्रखर आध्यात्मिक विद्रोही जिन्होंने ध्यान, प्रेम, मौन और जीवन के उत्सव को अध्यात्म की पराकाष्ठा बताया।',
+    quoteEn: 'Be realistic: plan for a miracle.',
+    quoteHi: 'यथार्थवादी बनो: किसी चमत्कार की योजना बनाओ।',
+  },
+  {
+    id: 'bruce-lee',
+    nameEn: 'Bruce Lee',
+    nameHi: 'ब्रूस ली',
+    initials: 'BL',
+    badgeBg: '#dc2626',
+    category: 'sports_legend',
+    categoryTitleEn: 'Martial Arts Philosopher & Global Cinema Icon',
+    categoryTitleHi: 'मार्शल आर्ट्स के दार्शनिक व वैश्विक सिनेमा महानायक',
+    birthDate: '27-11-1940',
+    birthPlace: 'San Francisco, California, USA',
+    roddenRating: 'AA',
+    ascSignIndex: 11, // Pisces
+    moonSignIndex: 6, // Libra
+    sunSignIndex: 7, // Scorpio
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Sunafa Yoga', 'Raja Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'सुनफा योग', 'राजयोग'],
+    keyLifeMilestones: [
+      { age: 26, eventHi: 'ग्रीन हॉर्नेट में काटो की भूमिका निभाकर हॉलीवुड में एशियाई छवि बदली', eventEn: 'Broke racial barriers in Hollywood as Kato in The Green Hornet' },
+      { age: 27, eventHi: 'जीत कुने दो (Jeet Kune Do) दर्शन की स्थापना कर मार्शल आर्ट्स में क्रांति की', eventEn: 'Founded the philosophy of Jeet Kune Do ("the style of no style")' },
+      { age: 32, eventHi: '"एंटर द ड्रैगन" बनाकर वैश्विक सिनेमा इतिहास में अमर कीर्तिमान स्थापित किया', eventEn: 'Starred in Enter the Dragon, sparking worldwide martial arts revolution' },
+    ],
+    keyPlacements: [
+      { planet: 'Mars', house: 8, noteHi: 'अष्टम में स्वराशि मंगल अद्वितीय गति, बिजली जैसा वन-इंच पंच', noteEn: 'Own-sign Mars in 8th delivering legendary explosive one-inch punch' },
+      { planet: 'Moon', house: 8, noteHi: 'अष्टम में चंद्र "पानी की तरह बनो" (Be water, my friend) का दार्शनिक प्रवाह', noteEn: 'Moon in 8th articulating deep Daoist fluidity ("Be like water, my friend")' },
+      { planet: 'Sun', house: 9, noteHi: 'नवम में सूर्य पूर्व और पश्चिम के दर्शन का अद्भुत संगम', noteEn: 'Sun in 9th uniting Eastern wisdom with Western athletic science' },
+    ],
+    bioEn: 'Hong Kong-American martial artist, actor, and philosopher who founded Jeet Kune Do and popularized martial arts films.',
+    bioHi: 'मार्शल आर्ट्स के महानतम प्रणेता और दार्शनिक जिन्होंने अपनी बिजली जैसी गति और "पानी बनो" के दर्शन से विश्व को प्रेरित किया।',
+    quoteEn: 'Be water, my friend. Empty your mind, be formless, shapeless, like water.',
+    quoteHi: 'मित्र, पानी की तरह बनो। अपने मन को रिक्त करो, पानी की तरह आकारहीन और लचीले बनो।',
   },
 ];
 
@@ -1329,9 +1841,9 @@ export function findCelebrityTwins(chart: ChartData): CelebrityTwinMatch[] {
 
     // 1. Lagna Match (Primary Ascendant Matrix)
     if (celeb.ascSignIndex === ascIdx) {
-      score += 26; // Exact Lagna match
+      score += 28; // Exact Lagna match
     } else if ((celeb.ascSignIndex % 4) === (ascIdx % 4)) {
-      score += 10; // Same elemental triplicity (Agni/Prithvi/Vayu/Jala)
+      score += 12; // Same elemental triplicity (Agni/Prithvi/Vayu/Jala)
     }
 
     // 2. Moon Sign Match (Chandra Rashi mental synergy)
@@ -1366,7 +1878,7 @@ export function findCelebrityTwins(chart: ChartData): CelebrityTwinMatch[] {
       }
     }
 
-    const finalScore = Math.min(97, Math.max(42, score));
+    const finalScore = Math.min(98, Math.max(40, score));
 
     matches.push({
       celebrity: celeb,

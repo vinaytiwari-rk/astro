@@ -1081,6 +1081,50 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <span>{isHi ? 'कोटा चक्र व आयुर्दाय देखें →' : 'Open Kota & Longevity →'}</span>
               </button>
             </article>
+
+            {/* Card 27: Fortune & Karmic Calculators */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #ec4899' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#ec4899', color: '#fff' }}>
+                  {isHi ? 'अंकज्योतिष व कार्मिक' : 'Fortune & Karma'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'अंकज्योतिष व कार्मिक कैलकुलेटर हब (Fortune Calculators)' : 'Fortune & Karmic Calculators Hub'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'प्रेम कम्पैटिबिलिटी (मूलांक-भाग्यांक), मित्रता स्कोर, गरुड़ पुराण व भृगु संहिता आधारित पूर्व जन्म संस्कार एवं आगामी जन्म सद्गति निर्धारण।'
+                  : 'Love compatibility, friendship synergy, past life karmic debts, and next reincarnation trajectory.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('fortune-calculators')}
+              >
+                <span>{isHi ? 'कैलकुलेटर खोलें →' : 'Open Fortune Calculators →'}</span>
+              </button>
+            </article>
+
+            {/* Card 28: Interactive Palmistry */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #8b5cf6' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#8b5cf6', color: '#fff' }}>
+                  {isHi ? 'सामुद्रिक प्रश्नावली' : 'Interactive Palmistry'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'इंटरैक्टिव हस्तरेखा प्रश्नावली ("पूछ-पूछ कर फलकथन")' : 'Interactive Samudrika Palmistry Q&A'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'हस्त प्रकार, जीवन, हृदय, मस्तिष्क, भाग्य व सूर्य रेखा के लक्षण चुनकर जानें अपना सम्पूर्ण भविष्य, भाग्योदय आयु एवं 4 प्रमुख जीवन पड़ाव।'
+                  : 'Select your palm line shapes and mounts to receive unvarnished Samudrika Shastra predictions, peak rise age, and 4 major turning points.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('interactive-palmistry')}
+              >
+                <span>{isHi ? 'हस्तरेखा प्रश्नावली शुरू करें →' : 'Start Palmistry Q&A →'}</span>
+              </button>
+            </article>
           </div>
         </div>
       </section>

@@ -12,6 +12,16 @@ import { computeNadiYogasAndKarma } from '../predictions/nadiYogasAndKarma';
 import { computeUpagrahas } from '../predictions/upagrahaEngine';
 import { computeKotaChakra } from '../predictions/kotaChakraEngine';
 import { CELEBRITY_DATABASE, findCelebrityTwins } from '../celebrityTwins';
+import {
+  computeLoveCompatibility,
+  computeFriendshipCompatibility,
+  computePastLifeReading,
+  computeFutureLifeReading,
+} from '../fortuneCalculators';
+import {
+  computePalmistryReading,
+  DEFAULT_PALMISTRY_ANSWERS,
+} from '../palmistryEngine';
 
 const sampleInput: BirthInput = {
   id: 'master-test-native',
@@ -124,8 +134,8 @@ describe('Master Classical & Modern Prediction Suites', () => {
     expect(maxEndAge).toBeLessThanOrEqual(121);
   });
 
-  it('validates global celebrity twins databank with 12 Lagnas, photos, milestones, and Rodden AA rating', () => {
-    expect(CELEBRITY_DATABASE.length).toBeGreaterThanOrEqual(18);
+  it('validates global celebrity twins databank with 12 Lagnas, initials badges, milestones, and Rodden AA rating', () => {
+    expect(CELEBRITY_DATABASE.length).toBeGreaterThanOrEqual(24);
 
     // Verify all 12 Lagnas (0..11) are represented
     const lagnasRepresented = new Set(CELEBRITY_DATABASE.map((c) => c.ascSignIndex));
@@ -133,9 +143,10 @@ describe('Master Classical & Modern Prediction Suites', () => {
       expect(lagnasRepresented.has(sign)).toBe(true);
     }
 
-    // Verify every celebrity has verified photo, Rodden rating, milestones, and quotes
+    // Verify every celebrity has verified initials, Rodden rating, milestones, and quotes
     for (const celeb of CELEBRITY_DATABASE) {
-      expect(celeb.photoUrl).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
+      expect(celeb.initials.length).toBeGreaterThanOrEqual(1);
+      expect(celeb.badgeBg).toBeDefined();
       expect(['AA', 'A']).toContain(celeb.roddenRating);
       expect(celeb.keyLifeMilestones.length).toBeGreaterThanOrEqual(3);
       expect(celeb.quoteHi.length).toBeGreaterThan(5);
@@ -147,6 +158,68 @@ describe('Master Classical & Modern Prediction Suites', () => {
     expect(matches.length).toBe(CELEBRITY_DATABASE.length);
     expect(matches[0].similarityScore).toBeGreaterThanOrEqual(matches[1].similarityScore);
     expect(matches[0].similarityScore).toBeLessThanOrEqual(100);
-    expect(matches[0].celebrity.photoUrl).toBeDefined();
+    expect(matches[0].celebrity.initials).toBeDefined();
+  });
+
+  it('computes Name & Date of Birth Love Compatibility with 4 numerology systems', () => {
+    const love = computeLoveCompatibility(
+      { name: 'Rohit Sharma', dob: '1987-04-30' },
+      { name: 'Ritika Sajdeh', dob: '1987-12-21' }
+    );
+    expect(love.overallLoveScore).toBeGreaterThanOrEqual(0);
+    expect(love.overallLoveScore).toBeLessThanOrEqual(100);
+    expect(love.attractionScore).toBeGreaterThanOrEqual(0);
+    expect(love.emotionalResonanceScore).toBeGreaterThanOrEqual(0);
+    expect(love.relationshipDynamicsHi).toBeDefined();
+    expect(love.potentialFrictionHi).toBeDefined();
+    expect(love.harmonizingRemediesHi).toBeDefined();
+    expect(love.auspiciousCoupleDates.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('computes Friendship Compatibility synergy, trust index and friction triggers', () => {
+    const friend = computeFriendshipCompatibility('Karan', 'Arjun', '1992-05-14', '1992-08-20');
+    expect(friend.friendshipScore).toBeGreaterThanOrEqual(0);
+    expect(friend.friendshipScore).toBeLessThanOrEqual(100);
+    expect(friend.trustIndex).toBeGreaterThanOrEqual(0);
+    expect(friend.sharedStrengthsHi).toBeDefined();
+    expect(friend.frictionTriggersHi).toBeDefined();
+    expect(friend.friendshipVerdictHi).toBeDefined();
+  });
+
+  it('computes Past Life Reading from 12th house, Ketu, D60 & Saturn karma', () => {
+    const past = computePastLifeReading(chart);
+    expect(past.pastLifeRoleHi).toBeDefined();
+    expect(past.geographicSoulCradleHi).toBeDefined();
+    expect(past.historicalEraHi).toBeDefined();
+    expect(past.sanchitaKarmaDebtHi).toBeDefined();
+    expect(past.unfinishedSoulMissionHi).toBeDefined();
+    expect(past.garudaPuranaRemedyHi).toBeDefined();
+  });
+
+  it('computes Future Life & Rebirth Trajectory from 9th/12th/Jupiter Moksha axis', () => {
+    const future = computeFutureLifeReading(chart);
+    expect([
+      'Urdhva Gati (Higher Realm / Devaloka)',
+      'Madhya Gati (Elevated Human Incarnation)',
+      'Adho Gati (Earthly Recycling for Desires)',
+    ]).toContain(future.soulGatiEn);
+    expect(future.mokshaProximityPercent).toBeGreaterThanOrEqual(0);
+    expect(future.mokshaProximityPercent).toBeLessThanOrEqual(100);
+    expect(future.anticipatedNextLifeDomainHi).toBeDefined();
+    expect(future.sadgatiPrescriptionHi).toBeDefined();
+  });
+
+  it('computes Interactive Samudrika Palmistry predictions from hand and line traits', () => {
+    const palmReport = computePalmistryReading(DEFAULT_PALMISTRY_ANSWERS);
+    expect(palmReport.handClassificationHi).toBeDefined();
+    expect(palmReport.handClassificationEn).toBeDefined();
+    expect(palmReport.primeDestinyRiseAge).toBeGreaterThanOrEqual(20);
+    expect(palmReport.primeDestinyRiseAge).toBeLessThanOrEqual(50);
+    expect(palmReport.careerAndDestinyHi).toBeDefined();
+    expect(palmReport.loveAndMaritalDestinyHi).toBeDefined();
+    expect(palmReport.healthAndVitalityIndexHi).toBeDefined();
+    expect(palmReport.majorTurningPoints.length).toBe(4);
+    expect(palmReport.samudrikaYogasIdentifiedHi.length).toBeGreaterThanOrEqual(1);
+    expect(palmReport.classicalRemediesHi).toBeDefined();
   });
 });

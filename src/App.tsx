@@ -39,6 +39,8 @@ import { LifeEventTimingView } from './components/predictions/LifeEventTimingVie
 import { ClassicalDoshasView } from './components/predictions/ClassicalDoshasView';
 import { DashaMatrix81View } from './components/predictions/DashaMatrix81View';
 import { KotaAndAyurdayaView } from './components/predictions/KotaAndAyurdayaView';
+import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalculatorsView';
+import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -607,6 +609,20 @@ export function App() {
 
             {currentView === 'kota-ayurdaya' && (
               <KotaAndAyurdayaView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'fortune-calculators' && (
+              <FortuneCalculatorsView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'interactive-palmistry' && (
+              <InteractivePalmistryView
                 chart={chart}
                 onNavigate={navigateTo}
               />

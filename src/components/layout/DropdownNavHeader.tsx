@@ -230,6 +230,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'medical-astrology',
     'financial-astrology',
     'samudrika-shastra',
+    'interactive-palmistry',
+    'fortune-calculators',
     'gemstones',
     'workstation',
     'client-diary',
@@ -682,6 +684,14 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('samudrika-shastra')}>
                     <strong>{isHi ? 'सामुद्रिक शास्त्र एवं हस्तरेखा' : 'Samudrika Shastra & Palmistry'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'हस्त रेखाएं, पर्वत व मत्स्य-त्रिशूल चिन्ह' : 'Palm Lines, Mounts & Sacred Marks'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('interactive-palmistry')}>
+                    <strong>{isHi ? 'इंटरैक्टिव हस्तरेखा प्रश्नावली' : 'Interactive Palmistry Q&A'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'पूछ-पूछ कर हस्तरेखा फलकथन एवं 4 जीवन पड़ाव' : 'Q&A-driven palmistry reading & 4 life milestones'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
+                    <strong>{isHi ? 'अंकज्योतिष व कार्मिक कैलकुलेटर' : 'Fortune & Karmic Calculators'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्रेम, मित्रता, पूर्व जन्म कर्म व अगला जन्म' : 'Love, Friendship, Past Life & Future Rebirth'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('gemstones')}>
                     <strong>{isHi ? 'वैदिक रत्न व रुद्राक्ष' : 'Gemstones & Rudraksha'}</strong>

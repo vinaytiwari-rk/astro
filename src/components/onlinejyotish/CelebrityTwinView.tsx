@@ -231,31 +231,27 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-              {/* Photo Avatar */}
+              {/* Royal Monogram Avatar */}
               <div
                 style={{
-                  width: '90px',
-                  height: '90px',
+                  width: '84px',
+                  height: '84px',
                   borderRadius: '50%',
-                  overflow: 'hidden',
-                  border: '3px solid #d97706',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-                  backgroundColor: '#ffffff',
+                  background: topMatch.celebrity.badgeBg || '#b45309',
+                  color: '#ffffff',
+                  border: '3px solid #f59e0b',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.18)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  fontSize: '28px',
+                  fontWeight: 900,
+                  letterSpacing: '1px',
                   flexShrink: 0,
+                  fontFamily: 'serif',
                 }}
               >
-                <img
-                  src={topMatch.celebrity.photoUrl}
-                  alt={topMatch.celebrity.nameEn}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    // Fallback to placeholder if image fails to load
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
+                {topMatch.celebrity.initials}
               </div>
 
               <div>
@@ -518,30 +514,27 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
               <div>
                 {/* Header with Avatar & Details */}
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '10px' }}>
-                  {/* Portrait Avatar */}
+                  {/* Monogram Avatar */}
                   <div
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      width: '56px',
+                      height: '56px',
                       borderRadius: '50%',
-                      overflow: 'hidden',
+                      background: m.celebrity.badgeBg || '#1e3a8a',
+                      color: '#ffffff',
                       border: '2px solid #cbd5e1',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      backgroundColor: '#f1f5f9',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      fontSize: '18px',
+                      fontWeight: 800,
+                      letterSpacing: '0.5px',
                       flexShrink: 0,
+                      fontFamily: 'serif',
                     }}
                   >
-                    <img
-                      src={m.celebrity.photoUrl}
-                      alt={m.celebrity.nameEn}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
+                    {m.celebrity.initials}
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -904,14 +897,25 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', borderBottom: '1px solid #fef08a', paddingBottom: '6px' }}>
-                  <img
-                    src={comparingMatch.celebrity.photoUrl}
-                    alt={comparingMatch.celebrity.nameEn}
-                    style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #d97706' }}
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
+                  <div
+                    style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      background: comparingMatch.celebrity.badgeBg || '#b45309',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '13px',
+                      fontWeight: 800,
+                      border: '1px solid #f59e0b',
+                      flexShrink: 0,
+                      fontFamily: 'serif',
                     }}
-                  />
+                  >
+                    {comparingMatch.celebrity.initials}
+                  </div>
                   <div>
                     <h4 style={{ margin: 0, fontSize: '14px', color: '#78350f' }}>
                       {isHi ? comparingMatch.celebrity.nameHi : comparingMatch.celebrity.nameEn}
