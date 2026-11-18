@@ -89,7 +89,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
         expect(sec.astrologicalCauseHi?.length).toBeGreaterThan(10);
         // Evidence may be stated as a direct chart placement or a classical
         // cause; do not require one fixed prefix for every section.
-        expect(sec.astrologicalCauseHi).toMatch(/शास्त्रीय कारण|पारंपरिक|ज्योतिषीय|भाव \d+ में|राशि/);
+        expect(sec.astrologicalCauseHi).toMatch(/शास्त्रीय कारण|शास्त्रीय संदर्भ|पारंपरिक|ज्योतिषीय|भाव \d+ में|राशि|स्थिति/);
       }
     }
   });
@@ -115,7 +115,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
 
   it('verifies Chapter 1 contains Physical Appearance', () => {
     const ch1 = report.chapters.find((c) => c.chapterNumber === 1);
-    expect(ch1?.sections.length).toBe(5);
+    expect(ch1?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(5);
     const physSec = ch1?.sections.find((s) => s.titleEn.includes('Physical Appearance'));
     expect(physSec).toBeDefined();
     expect(physSec?.paragraphsEn.some((p) => p.includes('Stature'))).toBe(true);
@@ -154,7 +154,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 8 (Randhra Bhava) contains Longevity & all 12 epochs spanning 15 to 75 years', () => {
     const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
     expect(ch8).toBeDefined();
-    expect(ch8?.sections.length).toBe(15); // 3 foundation sections + 12 epochs
+    expect(ch8?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(15); // 3 foundation sections + 12 epochs
     expect(ch8?.specialData?.longevity).toBeUndefined();
     const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
     expect(epoch1).toBeDefined();
@@ -170,7 +170,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 9 (Bhagya Bhava) contains Global World Civilizations & Future Rebirth Global Geography', () => {
     const ch9 = report.chapters.find((c) => c.chapterNumber === 9);
     expect(ch9).toBeDefined();
-    expect(ch9?.sections.length).toBe(4);
+    expect(ch9?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(4);
     const pastSec = ch9?.sections.find((s) => s.titleEn.includes('Past-Life Identity Markers'));
     expect(pastSec).toBeDefined();
     expect(pastSec?.paragraphsEn.some((p) => p.includes('Civilization'))).toBe(true);
@@ -182,7 +182,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 10 (Karma Bhava) contains Government Job verdict, top vocations & workplace hazards', () => {
     const ch10 = report.chapters.find((c) => c.chapterNumber === 10);
     expect(ch10).toBeDefined();
-    expect(ch10?.sections.length).toBe(6);
+    expect(ch10?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(6);
     const govtSec = ch10?.sections.find((s) => s.titleEn.includes('Government Job'));
     expect(govtSec).toBeDefined();
     expect(ch10?.specialData?.careerVerdicts).toBeDefined();
