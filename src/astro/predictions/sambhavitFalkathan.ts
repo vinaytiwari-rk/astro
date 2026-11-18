@@ -536,8 +536,13 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       const matchingPeriods = allDashaPeriods
         .filter((period) => relevantPlanets.has(period.lord) && period.endMs > now)
         .sort((a, b) => a.startMs - b.startMs);
-      const activeRelevant = matchingPeriods.find((period) => period.startMs <= now && now < period.endMs);
-      const nextRelevant = matchingPeriods.filter((period) => period.startMs > now).slice(0, 2);
+      const activeRelevant = matchingPeriods
+        .filter((period) => period.startMs <= now && now < period.endMs)
+        .sort((a, b) => b.level - a.level)[0];
+      const nextRelevant = matchingPeriods
+        .filter((period) => period.startMs > now)
+        .sort((a, b) => a.startMs - b.startMs || b.level - a.level)
+        .slice(0, 2);
       let timingHi = 'उपलब्ध विंशोत्तरी दशा डेटा में इस विषय से जुड़ी निकट अवधि स्पष्ट नहीं है; इसलिए समय-सीमा बताना उचित नहीं होगा।';
       let timingEn = 'The available Vimshottari data does not identify a clear near-term period for this topic, so no timing window is stated.';
       if (activeRelevant) {

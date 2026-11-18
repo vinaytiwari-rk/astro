@@ -600,14 +600,12 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
     keyPointsEn: [
       `Running Mahadasha: ${mdLord} (until ${mdPeriod?.endMs ? formatDateDmy(mdPeriod.endMs) : 'Active'})`,
       `Running Antardasha: ${adLord} (until ${adPeriod?.endMs ? formatDateDmy(adPeriod.endMs) : 'Active'})`,
-      `Saturn Transit Vector: ${sadeSatiStatusEn}`,
-      `MD-AD Relationship: ${isShadashtaka ? 'Shadashtaka 6/8 (Acute Friction & Health Alerts)' : isDvidwadasa ? 'Dvidwadasa 2/12 (High Outflow & Relocation)' : 'Kendra/Trikona (Executive Consolidation)'}`,
+      `MD-AD house relationship: ${mutualDistance}th from the Mahadasha lord; interpret as a traditional theme, not a factual event report.`,
     ],
     keyPointsHi: [
       `सक्रिय महादशा: '${PLANET_HI[mdLord] || mdLord}' (समाप्ति: ${mdPeriod?.endMs ? formatDateDmy(mdPeriod.endMs) : 'सक्रिय'})`,
       `सक्रिय अंतर्दशा: '${PLANET_HI[adLord] || adLord}' (समाप्ति: ${adPeriod?.endMs ? formatDateDmy(adPeriod.endMs) : 'सक्रिय'})`,
-      `गोचर शनि की स्थिति: ${sadeSatiStatusHi}`,
-      `दशा संबंध: ${isShadashtaka ? 'षडाष्टक 6/8 (संघर्ष व स्वास्थ्य सावधानी)' : isDvidwadasa ? 'द्विर्द्वादश 2/12 (अनपेक्षित व्यय)' : 'केंद्र/त्रिकोण (प्रतिष्ठा व दायित्व)'}`,
+      `महादशा-अंतर्दशा भाव-संबंध: महादशा स्वामी से ${mutualDistance}वां भाव; इसे पारंपरिक संकेत मानें, घटना का तथ्यात्मक विवरण नहीं।`,
     ],
   };
 
@@ -618,23 +616,27 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
     leadHi: `प्रत्यन्तर्दशेश '${PLANET_HI[pdLord] || pdLord}' और उसकी जन्मकुंडली में स्थिति पर आधारित सीमित विषय-संकेत; निश्चित घटना का दावा नहीं।`,
     paragraphsEn: [
       next6MonthsEn,
-      `Pratyantardasha Lord ${pdLord} indicates that mental breakthroughs will occur through practical self-discipline rather than speculative risks. Protect your physical immunity, avoid late-night road travel during retrograde phases, and maintain meticulous written records for all financial transactions.`,
+      `The Pratyantardasha lord ${pdLord} is placed in natal House ${pdHouse}, linking this period to ${houseThemesEn[pdHouse] || 'personal priorities'}. Use this as a planning prompt, not as a claim that a particular event will occur.`,
     ],
     paragraphsHi: [
       next6MonthsHi,
-      `प्रत्यन्तर्दशा स्वामी '${PLANET_HI[pdLord] || pdLord}' का स्पष्ट संकेत है कि सफलता किसी शॉर्टकट या सट्टे से नहीं, बल्कि कठोर आत्म-अनुशासन से प्राप्त होगी। स्वास्थ्य के प्रति सजग रहें, रात्रि में अनावश्यक लंबी यात्राओं से बचें, और सभी लेन-देन का लिखित हिसाब रखें।`,
+      `प्रत्यन्तर्दशा स्वामी '${PLANET_HI[pdLord] || pdLord}' जन्मकुंडली के भाव ${pdHouse} में स्थित हैं। इसलिए इस अवधि का पारंपरिक विषय ${houseThemesHi[pdHouse] || 'व्यक्तिगत प्राथमिकताएं'} है। इसे योजना बनाने का संकेत समझें, किसी निश्चित घटना का दावा नहीं।`,
     ],
-    astrologicalCauseEn: `Phaladeepika (Ch. 26 - Gocharaphala Nirupanam): Saturn and Jupiter transit vectors activate sensitive house axes, while Pratyantardasha of ${pdLord} directs immediate events.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: फलदीपिका (अध्याय २६ - गोचरफलनिरूपणम्): गोचर में शनि व गुरु का भ्रमण संवेदनशील भावों को प्रभावित कर रहा है, तथा प्रत्यन्तर्दशेश '${PLANET_HI[pdLord] || pdLord}' तात्कालिक घटनाओं को गति दे रहे हैं।`,
+    astrologicalCauseEn: `Vimshottari Pratyantardasha lord ${pdLord} is placed in natal House ${pdHouse}. Transit-based claims are not made in this section.`,
+    astrologicalCauseHi: `शास्त्रीय आधार: विंशोत्तरी प्रत्यन्तर्दशा स्वामी '${PLANET_HI[pdLord] || pdLord}' जन्मकुंडली के भाव ${pdHouse} में स्थित हैं। इस अनुभाग में गोचर-आधारित दावा नहीं किया गया है।`,
     keyPointsEn: [
-      `Strict Caution: No unwritten financial pacts, emotional lending, or rash confrontations.`,
-      `Strategic Opening: Monetize deep skillsets, clear legacy backlogs, restructure routines.`,
-      `Sub-Dasha Focus: Pratyantardasha of ${pdLord} demands practical precision.`,
+      `Pratyantardasha lord: ${pdLord}`,
+      `Natal placement: House ${pdHouse}`,
+      `Traditional theme: ${houseThemesEn[pdHouse] || 'personal priorities'}`,
+      `Recorded sub-period end: ${pdEnd || 'not available'}`,
+      'No event date or guaranteed outcome is inferred from this period alone.',
     ],
     keyPointsHi: [
-      `सख्त निषेध: बिना लिखित अनुबंध के साझेदारी, भावुक होकर कर्ज देना और क्रोध में विवाद।`,
-      `अनुकूल अवसर: अपने मूल हुनर का मुद्रीकरण, पुराने रुके कार्यों का निपटारा।`,
-      `सूक्ष्म दशा संकेत: प्रत्यन्तर्दशेश '${PLANET_HI[pdLord] || pdLord}' की व्यावहारिक अनुशासन की मांग।`,
+      `प्रत्यन्तर्दशा स्वामी: ${PLANET_HI[pdLord] || pdLord}`,
+      `जन्मकुंडली में स्थिति: भाव ${pdHouse}`,
+      `पारंपरिक विषय: ${houseThemesHi[pdHouse] || 'व्यक्तिगत प्राथमिकताएं'}`,
+      `दर्ज समाप्ति तिथि: ${pdEnd || 'उपलब्ध नहीं'}`,
+      'केवल इस दशा से किसी घटना की तारीख या निश्चित परिणाम नहीं निकाला गया है।',
     ],
   };
 
