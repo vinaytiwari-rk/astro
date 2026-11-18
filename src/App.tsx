@@ -9,7 +9,7 @@ import { OnlineJyotishVedicHoroscopeView } from './components/onlinejyotish/Onli
 import { OnlineJyotishKpView } from './components/onlinejyotish/OnlineJyotishKpView';
 import { OnlineJyotishMatchingView } from './components/onlinejyotish/OnlineJyotishMatchingView';
 import { OnlineJyotishPanchangView } from './components/onlinejyotish/OnlineJyotishPanchangView';
-import { OnlineJyotishSambhavitView } from './components/onlinejyotish/OnlineJyotishSambhavitView';
+
 import { OnlineJyotishFestivalsView } from './components/onlinejyotish/OnlineJyotishFestivalsView';
 import { OnlineJyotishToolsView, type AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
 import SadeSatiView from './components/onlinejyotish/SadeSatiView';
@@ -235,7 +235,7 @@ export function App() {
     } else if (view === 'panchang' || view === 'daily-panchanga' || view === 'daily-panchang') {
       target = 'daily-panchanga';
     } else if (view === 'sambhavit' || view === 'sambhavit-falkathan' || view === 'falkathan') {
-      target = 'sambhavit-falkathan';
+      target = 'life-dossier';
     } else if (view === 'vedic' || view === 'vedic-horoscope' || view === 'janam-kundli') {
       target = 'vedic-horoscope';
     } else if (view === 'festivals' || view === 'festival-calendar') {
@@ -371,16 +371,6 @@ export function App() {
                 activeInput={activeInput}
                 settings={settings}
                 onNavigate={navigateTo}
-              />
-            )}
-
-            {currentView === 'sambhavit-falkathan' && (
-              <OnlineJyotishSambhavitView
-                chart={chart}
-                activeInput={activeInput}
-                settings={settings}
-                onNavigate={navigateTo}
-                onOpenBooklet={() => setBookletOpen(true)}
               />
             )}
 
