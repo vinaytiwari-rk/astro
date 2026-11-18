@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeLifeDossierReport } from '../predictions/lifeDossierEngine';
+import { computeDynamicHealthSections } from '../predictions/dynamicDossierChapters';
 import { computePredictionFramework } from '../predictions/predictionFramework';
 
 describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
@@ -226,4 +227,44 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(vivEpoch1).toBeDefined();
     expect(einEpoch1).toBeDefined();
   });
+  it('keeps the health chapter symbolic and avoids unsupported medical predictions', () => {
+    const sections = computeDynamicHealthSections(chart);
+    expect(sections).toHaveLength(2);
+    const allText = sections.flatMap((section) => [
+      section.titleEn, section.titleHi,
+      ...section.paragraphsEn, ...section.paragraphsHi,
+      section.astrologicalCauseEn ?? '', section.astrologicalCauseHi ?? '',
+    ]).join(' ');
+    expect(allText).toContain('चिकित्सकीय');
+    expect(allText).not.toContain('Critical Health Years');
+    expect(allText).not.toContain('High-Risk Organs');
+    expect(allText).not.toContain('अंग-दोष');
+    expect(allText).not.toContain('जन्मजात शारीरिक अक्षमता से सुरक्षित');
+    expect(allText).not.toContain('मध्यम जोखिम');
+  });
+
 });
+
+  it('keeps health interpretations chart-specific and non-diagnostic across every sample chart', () => {
+    for (const sampleChart of SAMPLE_CHARTS) {
+      const sampleData = calculateChart(sampleChart, DEFAULT_SETTINGS);
+      const sections = computeDynamicHealthSections(sampleData);
+      expect(sections).toHaveLength(2);
+
+      const text = sections.flatMap((section) => [
+        section.titleEn, section.titleHi,
+        section.leadEn ?? '', section.leadHi ?? '',
+        ...section.paragraphsEn, ...section.paragraphsHi,
+        section.astrologicalCauseEn ?? '', section.astrologicalCauseHi ?? '',
+        ...(section.keyPointsEn ?? []), ...(section.keyPointsHi ?? []),
+      ]).join(' ');
+
+      // Each output must disclose the symbolic / non-clinical boundary.
+      expect(text).toMatch(/not a medical assessment|not clinical evidence|cannot identify a disease/i);
+      expect(text).toContain('चिकित्सकीय');
+
+      // Do not reintroduce deterministic disease, disability, accident or longevity claims.
+      expect(text).not.toMatch(/Critical Health Years|High-Risk Organs|will suffer from|will be diagnosed with|guaranteed illness|fixed lifespan/i);
+      expect(text).not.toMatch(/अंग-दोष|निश्चित रोग|अमुक वर्ष में बीमारी|दुर्घटना निश्चित|आयु निश्चित|जन्मजात शारीरिक अक्षमता से सुरक्षित/);
+    }
+  });

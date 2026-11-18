@@ -1093,133 +1093,86 @@ export function computeDynamicMarriageAndIntimacySections(chart: ChartData, isMa
 // ============================================================================
 export function computeDynamicHealthSections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
-  const ascElem = SIGNS[asc.signIndex].element;
-  const h6Sign = (asc.signIndex + 5) % 12;
-  const h6Lord = SIGNS[h6Sign].lord;
-  const h6LordPlanet = chart.planets.find((p) => p.id === h6Lord);
-  const h8Sign = (asc.signIndex + 7) % 12;
-  const h8Lord = SIGNS[h8Sign].lord;
-  const h8LordPlanet = chart.planets.find((p) => p.id === h8Lord);
-  const saturn = chart.planets.find((p) => p.id === 'Saturn')!;
-  const mars = chart.planets.find((p) => p.id === 'Mars')!;
-
-  // Ayurvedic Tridosha by Ascendant Element & Sign
-  let tridoshaEn = '';
-  let tridoshaHi = '';
-  if (ascElem === 'Fire') {
-    tridoshaEn = 'Pitta Dominant (High Metabolic Heat, Acidity, Inflammation, Blood Pressure Fluctuations)';
-    tridoshaHi = 'पित्त प्रधान प्रकृति (तीव्र जठराग्नि, अम्लता/एसिडिटी, रक्त विकार व दाह की संवेदनशीलता)';
-  } else if (ascElem === 'Earth') {
-    tridoshaEn = 'Vata-Kapha Dominant (Sluggish Digestion, Joint Stiffness, Dry Skin, Metabolic Inertia)';
-    tridoshaHi = 'वात-कफ प्रधान प्रकृति (पाचन का धीमा होना, जोड़ों में जकड़न, त्वचा का सूखापन व आलस्य)';
-  } else if (ascElem === 'Air') {
-    tridoshaEn = 'Vata Dominant (Nervous Exhaustion, Insomnia, Dry Cough, Anxiety Somatization)';
-    tridoshaHi = 'प्रचंड वात प्रधान प्रकृति (स्नायु दुर्बलता, अनिद्रा, अत्यधिक चिंता व मांसपेशियों में खिंचाव)';
-  } else {
-    tridoshaEn = 'Kapha-Pitta Dominant (Fluid Retention, Respiratory Allergies, Liver Congestion)';
-    tridoshaHi = 'कफ-पित्त प्रधान प्रकृति (जल संतुलन, कफ-एलर्जी, लिवर व हार्मोनल संवेदनशीलता)';
-  }
-
-  // Exact High-Risk Organs derived from 6th House Sign (Aries to Pisces)
-  const ORGAN_SYSTEMS: Record<number, { en: string; hi: string }> = {
-    0: { en: 'Cranial circulation, migraines, head injuries, fevers, and blood pressure.', hi: 'सिर, मस्तिष्क की नसें, माइग्रेन, सिर में चोट, बुखार और रक्तचाप।' },
-    1: { en: 'Throat, thyroid gland, vocal cords, tonsils, and cervical spine.', hi: 'गला, थायरॉयड ग्रंथि, स्वर तंत्रिकाएं, टॉन्सिल्स और गर्दन की नसें।' },
-    2: { en: 'Lungs, respiratory tract, nervous exhaustion, shoulders, and asthma.', hi: 'फेफड़े, श्वसन तंत्र, स्नायु दुर्बलता, कंधे और सांस की एलर्जी।' },
-    3: { en: 'Stomach, digestive juices, gastric lining, chest, and psychosomatic ulcers.', hi: 'पेट, पाचन रस, जठराग्नि, छाती और तनाव जनित अल्सर/एसिडिटी।' },
-    4: { en: 'Heart, cardiovascular rhythm, spine, eyesight, and metabolic vitality.', hi: 'हृदय, रक्त संचार, रीढ़ की हड्डी, आंखों की रोशनी और जीवन शक्ति।' },
-    5: { en: 'Intestines, gut microbiome, IBS, nervous digestion, and food intolerances.', hi: 'आंतें, गट माइक्रोबायोम, कोलाइटिस/IBS, पेट की गैस और भोजन से एलर्जी।' },
-    6: { en: 'Kidneys, lumbar vertebrae, urinary tract, and sugar metabolism (diabetes).', hi: 'गुर्दे (किडनी), कमर की रीढ़, मूत्र प्रणाली और शुगर/मधुमेह का संतुलन।' },
-    7: { en: 'Excretory organs, colon, pelvic circulation, piles/fistula, and prostate/secret ailments.', hi: 'मलाशय, गुप्त जननांग, बवासीर/फिस्टुला और पेल्विक क्षेत्र की संवेदनशीलता।' },
-    8: { en: 'Liver efficiency, arterial circulation, hips, thighs, and high cholesterol.', hi: 'यकृत (लिवर), धमनियों का रक्त प्रवाह, कूल्हे, जांघें और कोलेस्ट्रॉल।' },
-    9: { en: 'Knees, bones, joint stiffness, chronic rheumatism, teeth, and skin dryness.', hi: 'घुटने, हड्डियां, जोड़ों में दर्द, गठिया (आर्थराइटिस), दांत और त्वचा का रूखापन।' },
-    10: { en: 'Calves, shins, peripheral circulation, varicose veins, and nervous tremors.', hi: 'पिंडलियां, एड़ियां, रक्त वाहिकाएं (वेरिकोज वेन्स) और नसों में कंपन।' },
-    11: { en: 'Feet, lymphatic drainage, immune sluggishness, sleep apnea, and psychosomatic fatigue.', hi: 'पैर के पंजे, लसिका तंत्र (लिम्फैटिक), रोग प्रतिरोधक क्षमता और अनिद्रा।' },
+  const houseSign = (house: number) => (asc.signIndex + house - 1) % 12;
+  const houseLord = (house: number) => SIGNS[houseSign(house)].lord;
+  const planetName = (id: string) => PLANET_HI[id] || id;
+  const houseOccupants = (house: number) => chart.planets
+    .filter((planet) => planet.rasiHouseNumber === house)
+    .map((planet) => planetName(planet.id));
+  const lordPlacement = (lord: string) => {
+    const planet = chart.planets.find((item) => item.id === lord);
+    return planet?.rasiHouseNumber
+      ? `${planetName(lord)} जन्मकुंडली के भाव ${planet.rasiHouseNumber} में स्थित है`
+      : `${planetName(lord)} की जन्मकुंडली में स्थिति उपलब्ध नहीं है`;
   };
 
-  const organProfile = ORGAN_SYSTEMS[h6Sign] ?? ORGAN_SYSTEMS[5];
+  const sixthLord = houseLord(6);
+  const eighthLord = houseLord(8);
+  const twelfthLord = houseLord(12);
+  const sixthOccupants = houseOccupants(6);
+  const eighthOccupants = houseOccupants(8);
+  const twelfthOccupants = houseOccupants(12);
+  const sixthSign = SIGN_HI[houseSign(6)];
+  const eighthSign = SIGN_HI[houseSign(8)];
+  const twelfthSign = SIGN_HI[houseSign(12)];
 
-  // Dynamic Critical Health Years from 6th & 8th Lord Activation Ages
-  const lordAges: Record<string, number[]> = {
-    Sun: [22, 34, 46, 58],
-    Moon: [24, 36, 48, 60],
-    Mars: [28, 40, 52, 64],
-    Mercury: [17, 32, 45, 57],
-    Jupiter: [16, 32, 48, 62],
-    Venus: [25, 37, 49, 61],
-    Saturn: [19, 36, 54, 72],
-    Rahu: [18, 42, 60],
-    Ketu: [18, 48, 66],
-  };
-
-  const criticalYears = Array.from(
-    new Set([...(lordAges[h6Lord] || [28, 46]), ...(lordAges[h8Lord] || [36, 54])])
-  ).sort((a, b) => a - b).slice(0, 6);
-
-  // Anga-Bhanga (Physical Disability / Injury Risk) - Saravali Ch. 21
-  const hasAngaBhangaRisk = [6, 8, 12].includes(saturn.rasiHouseNumber) ||
-    [6, 8].includes(mars.rasiHouseNumber) ||
-    h6Lord === asc.signLord;
-
-  const sec1: ChapterSection = {
-    titleEn: 'Ayurvedic Constitution (Tridosha) & High-Risk Organ Systems',
-    titleHi: 'आयुर्वेदिक त्रिदोष संतुलन एवं संवेदनशील अंग प्रणालियां',
-    leadEn: `The elemental biological vulnerabilities of your ${asc.signName} Ascendant and 6th house in ${SIGNS[h6Sign].name}.`,
-    leadHi: `आपके '${SIGN_HI[asc.signIndex]}' लग्न के त्रिदोष एवं षष्ठ भाव ('${SIGN_HI[h6Sign]}') के आधार पर शारीरिक संवेदनशीलता।`,
+  const sectionOne: ChapterSection = {
+    titleEn: 'Health, Routine and the Sixth-House Reflection',
+    titleHi: 'स्वास्थ्य, दिनचर्या और षष्ठ भाव का ज्योतिषीय संकेत',
+    leadEn: 'A traditional symbolic reading of the sixth house; it is not a medical assessment.',
+    leadHi: 'षष्ठ भाव का पारंपरिक ज्योतिषीय एवं प्रतीकात्मक अध्ययन; यह चिकित्सकीय परीक्षण नहीं है।',
     paragraphsEn: [
-      `Your Constitutional Baseline: ${tridoshaEn}. When you undergo sustained emotional stress, your body converts mental anxiety directly into somatic illness.`,
-      `Your 6th house of ailments falls in ${SIGNS[h6Sign].name} governed by ${h6Lord}. The most sensitive organ networks in your biology are: ${organProfile.en} Preventative dietary habits and daily yogic alignment of these systems will save you from major medical interventions.`,
+      `The sixth house falls in ${SIGNS[houseSign(6)].name}. Its ruler is ${sixthLord}; ${lordPlacement(sixthLord)}. Planets occupying this house: ${sixthOccupants.length ? sixthOccupants.join(', ') : 'none recorded'}.`,
+      'In traditional Jyotish, the sixth house is associated with daily duties, routines, service, manageable obstacles and habits. These symbols may be used for reflection on maintaining balanced routines; they cannot identify a disease, vulnerable organ, injury, disability or medical outcome.',
     ],
     paragraphsHi: [
-      `आपकी मूल त्रिदोष प्रकृति: ${tridoshaHi}। जब भी आप लंबे समय तक मानसिक तनाव में रहते हैं, आपका शरीर उस तनाव को तुरंत शारीरिक व्याधियों में बदल देता है।`,
-      `रोग भाव (षष्ठ) '${SIGN_HI[h6Sign]}' राशि में है जिसके स्वामी '${PLANET_HI[h6Lord] || h6Lord}' हैं। आपके शरीर के सर्वाधिक संवेदनशील अंग: ${organProfile.hi} खान-पान में संयम और नियमित योग द्वारा इन अंगों को स्वस्थ रखना दीर्घायु की कुंजी है।`,
+      `षष्ठ भाव ${sixthSign} राशि में है और इसका स्वामी ${planetName(sixthLord)} है। ${lordPlacement(sixthLord)}। इस भाव में स्थित ग्रह: ${sixthOccupants.length ? sixthOccupants.join(', ') : 'कोई ग्रह दर्ज नहीं'}।`,
+      'पारंपरिक ज्योतिष में षष्ठ भाव को दैनिक कर्तव्य, दिनचर्या, सेवा, सामान्य बाधाओं और आदतों से जोड़ा जाता है। इसे संतुलित दिनचर्या पर आत्मचिंतन के लिए पढ़ें; इससे किसी रोग, अंग, चोट, अक्षमता या चिकित्सकीय परिणाम का निर्धारण नहीं किया जा सकता।',
     ],
-    astrologicalCauseEn: `Saravali (Ch. 21 - Anga Lakshana) & Phaladeepika (Ch. 14 - Roga Nirupanam): 6th house in ${SIGNS[h6Sign].name} ruled by ${h6Lord} (House ${h6LordPlanet?.rasiHouseNumber || 6}) determines bodily vulnerability.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय २१) एवं फलदीपिका (अध्याय १४ - रोगनिर्णयाध्यायः): षष्ठ भाव '${SIGN_HI[h6Sign]}' (स्वामी: ${PLANET_HI[h6Lord] || h6Lord}) शारीरिक व्याधियों के संवेदनशील अंगों का निर्धारण करता है।`,
+    astrologicalCauseEn: `Traditional house symbolism: the sixth sign is ${SIGNS[houseSign(6)].name}; its ruler is ${sixthLord}, with the recorded placement stated above. This is a symbolic Jyotish interpretation, not clinical evidence.`,
+    astrologicalCauseHi: `शास्त्रीय कारण (पारंपरिक भाव-संकेत): षष्ठ भाव की राशि ${sixthSign} है और स्वामी ${planetName(sixthLord)} है; उसकी उपलब्ध स्थिति ऊपर दी गई है। यह ज्योतिषीय प्रतीकात्मक व्याख्या है, चिकित्सकीय प्रमाण नहीं।`,
     keyPointsEn: [
-      `Ayurvedic Tridosha: ${tridoshaEn}`,
-      `High-Risk Organs: ${organProfile.en}`,
-      `6th House Lord: ${h6Lord} in House ${h6LordPlanet?.rasiHouseNumber || 6}`,
+      `Sixth-house sign: ${SIGNS[houseSign(6)].name}`,
+      `Sixth-house lord: ${sixthLord}`,
+      `Occupants: ${sixthOccupants.length ? sixthOccupants.join(', ') : 'none recorded'}`,
     ],
     keyPointsHi: [
-      `आयुर्वेदिक त्रिदोष: ${tridoshaHi}`,
-      `संवेदनशील अंग: ${organProfile.hi}`,
-      `षष्ठेश: '${PLANET_HI[h6Lord] || h6Lord}' (भाव ${h6LordPlanet?.rasiHouseNumber || 6})`,
+      `षष्ठ भाव की राशि: ${sixthSign}`,
+      `षष्ठेश: ${planetName(sixthLord)}`,
+      `भाव में ग्रह: ${sixthOccupants.length ? sixthOccupants.join(', ') : 'कोई ग्रह दर्ज नहीं'}`,
     ],
   };
 
-  const sec2: ChapterSection = {
-    titleEn: 'Physical Impairment (Anga-Bhanga) Diagnostic & Critical Health Years',
-    titleHi: 'अंग-दोष, शारीरिक अक्षमता परीक्षण एवं संकट के संवेदनशील वर्ष',
-    leadEn: `Classical Saravali assessment of vulnerability to permanent injury, surgeries, and milestone years.`,
-    leadHi: `सारावली सम्मत दुर्घटना, शल्यक्रिया व अंग-दोष का परीक्षण तथा जीवन के संवेदनशील स्वास्थ्य वर्ष।`,
+  const sectionTwo: ChapterSection = {
+    titleEn: 'Eighth and Twelfth Houses: Change, Recovery and Rest',
+    titleHi: 'अष्टम और द्वादश भाव: परिवर्तन, विश्राम और आत्मचिंतन',
+    leadEn: 'A restrained reading of traditional house themes without predicting illness, accidents or lifespan.',
+    leadHi: 'पारंपरिक भाव-विषयों का संयमित अध्ययन; इसमें रोग, दुर्घटना या आयु की भविष्यवाणी नहीं की जाती।',
     paragraphsEn: [
-      `Classical Anga-Bhanga Diagnostic: ${hasAngaBhangaRisk ? 'Your chart indicates moderate vulnerability to physical injuries, particularly to the lower limbs, spine, or head during high-velocity activities, sports, or falls. You must exercise strict caution while driving and avoid extreme, uncalculated physical risks during Mars and Saturn dasha cycles.' : 'Your chart is largely protected from congenital physical disability or permanent limb impairment. Normal health hygiene and active mobility preserve structural integrity.'}`,
-      `Critical Astrological Health Milestones: Ages ${criticalYears.join(', ')} represent sensitive planetary junctions when 6th lord (${h6Lord}), 8th lord (${h8Lord}), or nodal cycles activate health tests. During these specific age milestones, prioritize preventative medical checkups, clean satvik diet, and avoid reckless driving.`,
+      `The eighth house is in ${SIGNS[houseSign(8)].name}, ruled by ${eighthLord}; occupants recorded: ${eighthOccupants.length ? eighthOccupants.join(', ') : 'none'}. ${lordPlacement(eighthLord)}.`,
+      `The twelfth house is in ${SIGNS[houseSign(12)].name}, ruled by ${twelfthLord}; occupants recorded: ${twelfthOccupants.length ? twelfthOccupants.join(', ') : 'none'}. ${lordPlacement(twelfthLord)}. These houses are traditionally discussed through change, shared matters, retreat, rest and expenditure. Their placements do not establish a medical event or its timing.`,
     ],
     paragraphsHi: [
-      `अंग-दोष एवं शारीरिक अक्षमता परीक्षण: ${hasAngaBhangaRisk ? 'आपकी कुंडली में कमर से नीचे के अंगों, पैरों, अथवा रीढ़ की हड्डी के प्रति संवेदनशीलता और आकस्मिक चोट/सर्जरी का मध्यम जोखिम दिखाई देता है। वाहन चलाते समय, ऊंचाई पर कार्य करते समय अथवा खेलकूद में अतिरिक्त सावधानी बरतनी अनिवार्य है।' : 'आपकी कुंडली किसी जन्मजात शारीरिक अक्षमता से सुरक्षित है; नियमित व्यायाम और सात्विक दिनचर्या द्वारा आपका शरीर दीर्घकाल तक सुदृढ़ रहेगा।'}`,
-      `स्वास्थ्य व संकट के संवेदनशील वर्ष: ${criticalYears.join(', ')}वां वर्ष जीवन में स्वास्थ्य व दुर्घटना की दृष्टि से संवेदनशील कालखंड हैं। इन वर्षों में अपने स्वास्थ्य के प्रति रत्ती भर भी लापरवाही न बरतें और नियमित रूप से महामृत्युंजय मंत्र का स्मरण करें।`,
+      `अष्टम भाव ${eighthSign} राशि में है, इसका स्वामी ${planetName(eighthLord)} है और इसमें स्थित ग्रह: ${eighthOccupants.length ? eighthOccupants.join(', ') : 'कोई ग्रह दर्ज नहीं'}। ${lordPlacement(eighthLord)}।`,
+      `द्वादश भाव ${twelfthSign} राशि में है, इसका स्वामी ${planetName(twelfthLord)} है और इसमें स्थित ग्रह: ${twelfthOccupants.length ? twelfthOccupants.join(', ') : 'कोई ग्रह दर्ज नहीं'}। ${lordPlacement(twelfthLord)}। इन भावों को परंपरागत रूप से परिवर्तन, साझा विषयों, एकांत, विश्राम और व्यय से जोड़ा जाता है। इन स्थितियों से किसी चिकित्सकीय घटना या उसके समय का निष्कर्ष नहीं निकाला जा सकता।`,
     ],
-    astrologicalCauseEn: `Saravali (Ch. 21 - Anga Bhanga Adhyaya) & BPHS (Ch. 16): 6th lord ${h6Lord} and 8th lord ${h8Lord} define critical age markers: ${criticalYears.join(', ')}.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय २१ - अङ्गभङ्गाध्यायः) एवं बृहत्पाराशर होराशास्त्र: षष्ठेश '${PLANET_HI[h6Lord] || h6Lord}' व अष्टमेश '${PLANET_HI[h8Lord] || h8Lord}' संकट वर्षों (${criticalYears.join(', ')} वर्ष) को चिन्हित करते हैं।`,
+    astrologicalCauseEn: `Traditional house symbolism: eighth-house ruler ${eighthLord} and twelfth-house ruler ${twelfthLord}, read through their recorded natal placements. No longevity, disease or accident judgement is made here.`,
+    astrologicalCauseHi: `शास्त्रीय कारण (पारंपरिक भाव-संकेत): अष्टमेश ${planetName(eighthLord)} और द्वादशेश ${planetName(twelfthLord)} को उनकी उपलब्ध जन्मकुंडली स्थितियों के आधार पर पढ़ा गया है। यहाँ आयु, रोग या दुर्घटना का निर्णय नहीं दिया जाता।`,
     keyPointsEn: [
-      `Anga-Bhanga Status: ${hasAngaBhangaRisk ? 'Moderate Vulnerability (Caution in driving & high-velocity activity)' : 'Protected from congenital impairment'}`,
-      `Critical Health Years: Ages ${criticalYears.join(', ')}`,
-      `Protective Shield: Mahamrityunjaya Japa during active transit crossroads.`,
+      `Eighth-house ruler: ${eighthLord}`,
+      `Twelfth-house ruler: ${twelfthLord}`,
+      'No medical event or timing prediction is made',
     ],
     keyPointsHi: [
-      `अंग-दोष स्थिति: ${hasAngaBhangaRisk ? 'मध्यम संवेदनशीलता (वाहन व ऊंचाई पर सतर्कता आवश्यक)' : 'जन्मजात दोषों से पूर्णतः सुरक्षित'}`,
-      `संवेदनशील स्वास्थ्य वर्ष: ${criticalYears.join(', ')}वां वर्ष`,
-      `रक्षा कवच: महामृत्युंजय मंत्र का नित्य स्मरण।`,
+      `अष्टमेश: ${planetName(eighthLord)}`,
+      `द्वादशेश: ${planetName(twelfthLord)}`,
+      'किसी चिकित्सकीय घटना या समय की भविष्यवाणी नहीं',
     ],
   };
 
-  return [sec1, sec2];
+  return [sectionOne, sectionTwo];
 }
 
-// ============================================================================
-// DYNAMIC CHAPTER 8: 15 TO 75 YEARS CHRONOLOGY (12 INDIVIDUAL 5-YEAR EPOCHS)
-// ============================================================================
 export function computeDynamic12Epochs(chart: ChartData): ChapterSection[] {
   const birthDate = new Date(chart.input.date);
   const birthYear = Number.isNaN(birthDate.getTime()) ? null : birthDate.getFullYear();
