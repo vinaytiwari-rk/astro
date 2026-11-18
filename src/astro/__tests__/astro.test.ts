@@ -1207,10 +1207,10 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(pred.health.constitutionHi).toMatch(/[\u0900-\u097F]/);
     expect(pred.wealth.statusHi).toMatch(/[\u0900-\u097F]/);
 
-    // 51 Dynamic Dimensions Verification
+    // 21 Dynamic Dimensions Verification
     expect(pred.dimensions).toBeDefined();
-    expect(pred.dimensions.length).toBe(51);
-    expect(pred.summary.totalDimensions).toBe(51);
+    expect(pred.dimensions.length).toBe(21);
+    expect(pred.summary.totalDimensions).toBe(21);
     pred.dimensions.forEach((dim, idx) => {
       expect(dim.id).toBe(idx + 1);
       expect(dim.titleEn.length).toBeGreaterThan(3);
@@ -1240,10 +1240,10 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       timezone: 'Asia/Kolkata',
     }, DEFAULT_SETTINGS);
     const pred2 = computeSambhavitFalkathan(chart2);
-    expect(pred2.dimensions.length).toBe(51);
+    expect(pred2.dimensions.length).toBe(21);
     expect(pred2.dimensions[0].verdictEn).not.toBe(pred.dimensions[0].verdictEn);
     expect(pred2.dimensions[3].astroBasisEn).not.toBe(pred.dimensions[3].astroBasisEn);
     expect(pred2.dimensions[14].verdictEn).not.toBe(pred.dimensions[14].verdictEn);
-    expect(pred2.dimensions[26].verdictEn).not.toBe(pred.dimensions[26].verdictEn);
+    expect(pred2.dimensions[20].verdictEn).not.toBe(pred.dimensions[20].verdictEn);
   });
 });

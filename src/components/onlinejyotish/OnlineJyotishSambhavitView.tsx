@@ -76,7 +76,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
   );
 
   const houses = useMemo(() => [
-    { num: 'all', titleEn: 'All 51 Dimensions', titleHi: 'समस्त 51 आयाम', count: 51 },
+    { num: 'all', titleEn: 'All 21 Predictions', titleHi: 'समस्त 21 फलादेश', count: 21 },
     { num: 1, titleEn: 'H1: Tanu & Self', titleHi: 'भाव 1: तनु व देह', count: 4 },
     { num: 2, titleEn: 'H2: Dhana & Speech', titleHi: 'भाव 2: धन व वाणी', count: 4 },
     { num: 3, titleEn: 'H3: Sahaja & Valour', titleHi: 'भाव 3: सहज व पराक्रम', count: 4 },
@@ -193,7 +193,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </a>
         <span className="oj-bc-sep">/</span>
         <span className="oj-bc-current">
-          {isHi ? 'संभावित फलकथन (51 जीवन आयाम)' : 'Sambhavit Falkathan (51 Life Dimensions)'}
+          {isHi ? 'संभावित फलकथन (21 महा-सटीक फलादेश)' : 'Sambhavit Falkathan (21 Supreme Predictions)'}
         </span>
       </nav>
 
@@ -206,12 +206,12 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
         </div>
         <h1 className="oj-page-title">
           {isHi
-            ? 'संभावित फलकथन — जीवन के 51 शास्त्रीय आयामों का प्रामाणिक व सूक्ष्म महा-विश्लेषण'
-            : 'Sambhavit Falkathan — 51 Master Life Dimensions Classical Dossier'}
+            ? 'संभावित फलकथन — जीवन के 21 शास्त्रीय आयामों का प्रामाणिक व सूक्ष्म महा-विश्लेषण'
+            : 'Sambhavit Falkathan — 21 Master Life Dimensions Classical Dossier'}
         </h1>
         <p className="oj-page-subtitle">
           {isHi
-            ? 'समस्त 12 भावों, भावेश गरिमा, षोडशवर्ग पुष्टि, वक्री ग्रह चेष्टा बल एवं 1-सेकंड सूक्ष्म वेध काल-मान पर आधारित 51 बिंदुवार प्रामाणिक फलादेश।'
+            ? 'समस्त 12 भावों, भावेश गरिमा, षोडशवर्ग पुष्टि, वक्री ग्रह चेष्टा बल एवं 1-सेकंड सूक्ष्म वेध काल-मान पर आधारित 21 बिंदुवार प्रामाणिक फलादेश।'
             : 'Point-wise classical dossier covering all 12 houses, Shodashvargas, retrograde chesta bala, and 1-second micro-temporal astronomical sensitivity.'}
         </p>
 
@@ -223,7 +223,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
           </button>
           <button type="button" className="oj-action-btn secondary" onClick={() => window.print()}>
             <Printer size={14} />
-            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 51 Dimensions Dossier'}</span>
+            <span>{isHi ? 'फलकथन प्रिंट करें' : 'Print 21 Predictions Dossier'}</span>
           </button>
         </div>
       </div>
@@ -471,7 +471,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
                     : `Showing ${filteredStreeJataka.length} Stree Jataka Sutras`)
                 : (isHi
                     ? `कुल ${filteredDimensions.length} आयाम प्रदर्शित`
-                    : `Showing ${filteredDimensions.length} of 51 Dimensions`)}
+                    : `Showing ${filteredDimensions.length} of 21 Predictions`)}
           </div>
         </div>
 
@@ -925,7 +925,7 @@ export const OnlineJyotishSambhavitView: React.FC<OnlineJyotishSambhavitViewProp
                     setSelectedCategory('all');
                   }}
                 >
-                  {isHi ? 'सभी 51 आयाम दिखाएं' : 'Reset Filters & Show All 51'}
+                  {isHi ? 'सभी 21 आयाम दिखाएं' : 'Reset Filters & Show All 21'}
                 </button>
               </div>
             )}

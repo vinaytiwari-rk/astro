@@ -458,9 +458,18 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     getKartariOnHouse,
   };
 
-  const dims = build51LifeDimensions(corpusContext);
+  const rawDims = build51LifeDimensions(corpusContext);
 
-  // Summary counts across all 51 dimensions
+  // 21 Supreme Life Dimensions: Pinpointed, unvarnished classical predictions
+  const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
+  const dims = rawDims
+    .filter((d) => MASTER_21_IDS.includes(d.id))
+    .map((d, idx) => ({
+      ...d,
+      id: idx + 1,
+    }));
+
+  // Summary counts across all 21 dimensions
   let hf = 0, f = 0, m = 0, c = 0;
   for (const d of dims) {
     if (d.auspiciousness === 'highly_favorable') hf++;
@@ -470,7 +479,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   }
 
   const summary: SambhavitSummary = {
-    totalDimensions: dims.length, // 51
+    totalDimensions: dims.length, // 21
     highlyFavorableCount: hf,
     favorableCount: f,
     mixedCount: m,
@@ -481,8 +490,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     dominantLifeFocusHi: `${ascSignHi} लग्न, दशमेश ${h10.lordHi} के प्रभाव, दशम में ${sav[9]} एवं एकादश में ${sav[10]} अष्टकवर्ग बिंदुओं द्वारा संचालित।`,
   };
 
-  // Safe accessor helper
-  const getDim = (id: number) => dims.find((d) => d.id === id) || dims[0];
+  // Safe accessor helper (queries rawDims for complete corpus data)
+  const getDim = (id: number) => rawDims.find((d) => d.id === id) || rawDims[0];
 
   const d1 = getDim(1);
   const d2 = getDim(2);

@@ -202,40 +202,41 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const isTransitsActive = currentView === 'sade-sati' || currentView === 'dual-transit' || currentView === 'transit-calendar';
   const isAdvancedActive = [
-    'split-studio',
+    'numerology',
+    'multi-dasha',
+    'dasha-matrix-81',
+    'sudarshana',
     'sarvatobhadra',
-    'lal-kitab',
+    'kota-ayurdaya',
     'kp-enterprise',
     'jaimini',
+    'lal-kitab',
     'varshaphala',
     'nadi',
     'ashtakavarga',
     'shadbala',
-    'multi-dasha',
-    'sudarshana',
-    'astrocartography',
-    'celebrity-twins',
-    'human-design',
     'western-astrology',
-    'life-event-timing',
-    'classical-doshas',
-    'dasha-matrix-81',
-    'kota-ayurdaya',
+    'human-design',
+    'astrocartography',
   ].includes(currentView);
   const isToolsActive = [
-    'prashna',
+    'fortune-calculators',
+    'interactive-palmistry',
+    'samudrika-shastra',
+    'life-event-timing',
+    'classical-doshas',
     'muhurta',
+    'prashna',
     'synastry',
     'btr',
     'medical-astrology',
     'financial-astrology',
-    'samudrika-shastra',
-    'interactive-palmistry',
-    'fortune-calculators',
-    'gemstones',
+    'celebrity-twins',
+    'split-studio',
     'workstation',
     'client-diary',
   ].includes(currentView);
+  const isRemediesActive = ['holistic-remedies', 'gemstones'].includes(currentView);
   const isFestivalsActive = ['festivals', 'daily-panchanga', 'choghadiya'].includes(currentView);
 
   return (
@@ -459,7 +460,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('sambhavit-falkathan')}
               >
                 <BookOpen size={13} />
-                <span>{isHi ? '51 फलादेश' : '51 Predictions'}</span>
+                <span>{isHi ? '21 फलादेश' : '21 Predictions'}</span>
               </button>
             </li>
 
@@ -505,18 +506,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               )}
             </li>
 
-            {/* Holistic Remedies */}
-            <li className="oj-nav-item">
-              <button
-                type="button"
-                className={`oj-nav-link-btn ${currentView === 'holistic-remedies' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('holistic-remedies')}
-              >
-                <Heart size={13} />
-                <span>{isHi ? 'वैदिक समग्र उपचार' : 'Holistic Remedies'}</span>
-              </button>
-            </li>
-
             {/* 5. Advanced Astrology Dropdown */}
             <li
               className="oj-nav-item oj-dropdown-parent"
@@ -543,25 +532,29 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   onMouseLeave={handleMenuMouseLeave}
                   style={getDropdownMenuInlineStyle()}
                 >
+                  <button type="button" onClick={() => handleLinkClick('numerology')}>
+                    <strong>{isHi ? 'वैदिक व चालडियन अंकज्योतिष (Numerology)' : 'Vedic & Chaldean Numerology'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'मूलांक, भाग्यांक, नामांक, ३x३ लो-शू ग्रिड व कुआ अंक' : 'Mulank, Bhagyank, Lo Shu Grid, Kua & Name Number'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('multi-dasha')}>
                     <strong>{isHi ? 'त्रिवेणी दशा संगम (Multi-Dasha Matrix)' : 'Multi-Dasha Matrix (4 Dashas)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'विंशोत्तरी + योगिनी + चर + अष्टोत्तरी एक साथ' : 'Vimshottari, Yogini, Chara & Ashtottari'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('dasha-matrix-81')}>
+                    <strong>{isHi ? '८१ महादशा-अंतर्दशा फलकथन' : '81 Dasha Combinations Matrix'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'षडाष्टक (६/८), द्वि-द्वादश व नवपंचम संबंध' : 'Mutual Angular Axes & Specific Predictions'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('sudarshana')}>
                     <strong>{isHi ? 'सुदर्शन चक्र 3-इन-1 (Sudarshana Chakra)' : 'Sudarshana Chakra (3-in-1)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'लग्न + चंद्र + सूर्य 3-वलय व 100 वर्षीय आयु स्लाइडर' : 'Lagna + Moon + Sun Concentric Rings'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('split-studio')}>
-                    <strong>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'D1 + D9 + दशा + गोचर एक ही स्क्रीन पर' : 'D1 + D9 + Dashas + Live Transits'}</span>
-                  </button>
                   <button type="button" onClick={() => handleLinkClick('sarvatobhadra')}>
                     <strong>{isHi ? 'सर्वतोभद्र चक्र एवं वेध (9x9)' : 'Sarvatobhadra Chakra (9x9)'}</strong>
                     <span className="oj-dd-sub">{isHi ? '28 नक्षत्र, स्वर, व्यंजन व त्रि-दिशीय वेध' : '28 Nakshatras & Tri-Directional Vedha'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('lal-kitab')}>
-                    <strong>{isHi ? 'लाल किताब एवं 100-वर्षीय वर्षफल' : 'Lal Kitab & Annual Varshphal'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'सोए हुए ग्रह, 9 ऋण एवं वार्षिक टोटके' : 'Sleeping Planets, 9 Debts & Age Slider'}</span>
+                  <button type="button" onClick={() => handleLinkClick('kota-ayurdaya')}>
+                    <strong>{isHi ? 'कोटा चक्र, आयुर्दाय व उपग्रह' : 'Kota Chakra, Longevity & Upagrahas'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'दुर्ग वेध, जैमिनी आयु एवं गुलिक-मांदि' : 'Fort Defense, Jaimini Longevity & Gulika'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('kp-enterprise')}>
                     <strong>{isHi ? 'केपी सिस्टम (4-Fold & CSL)' : 'KP System (4-Fold & CSL)'}</strong>
@@ -570,6 +563,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('jaimini')}>
                     <strong>{isHi ? 'जैमिनी सूत्र (Jaimini Sutra)' : 'Jaimini Sutra Suite'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'चर कारक, आरूढ़ पद एवं चर दशा' : 'Chara Karakas, Arudhas & Chara Dasha'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('lal-kitab')}>
+                    <strong>{isHi ? 'लाल किताब एवं 100-वर्षीय वर्षफल' : 'Lal Kitab & Annual Varshphal'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'सोए हुए ग्रह, 9 ऋण एवं वार्षिक टोटके' : 'Sleeping Planets, 9 Debts & Age Slider'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('varshaphala')}>
                     <strong>{isHi ? 'ताजिक वर्षफल (Annual Solar Return)' : 'Tajika Varshaphala'}</strong>
@@ -580,44 +577,20 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <span className="oj-dd-sub">{isHi ? '14 कण्डम, नंदी त्रिकोण एवं शिव संवाद' : '14 Kandams & Nandi Trine Links'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('ashtakavarga')}>
-                    <strong>{isHi ? 'अष्टकवर्ग सारणी (SAV 337)' : 'Ashtakavarga (SAV 337)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'ग्रह बिंदु एवं 12 भाव फल' : 'Planetary Bindus & Houses'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('shadbala')}>
-                    <strong>{isHi ? 'षड्बल गणना (Shadbala)' : 'Shadbala Strengths'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'छह प्रकार के ग्रह बल' : 'Six-fold Planetary Balas'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('astrocartography')}>
-                    <strong>{isHi ? 'एस्ट्रोकार्टोग्राफी (विश्व मानचित्र)' : 'Astrocartography (World Lines)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('celebrity-twins')}>
-                    <strong>{isHi ? 'सेलिब्रिटी कुंडली ट्विन' : 'Celebrity Twin Matcher'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'ऐतिहासिक युगद्रष्टाओं से कुंडली सादृश्य' : 'Match with Historical Luminaries'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('human-design')}>
-                    <strong>{isHi ? 'ह्यूमन डिज़ाइन व ९ चक्र' : 'Human Design & 9 Centers'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '६४ आई-चिंग द्वार, आंतरिक सत्ता व बॉडीग्राफ़' : '64 I-Ching Gates & BodyGraph'}</span>
+                    <strong>{isHi ? 'अष्टकवर्ग व षड्बल (SAV 337)' : 'Ashtakavarga & Shadbala'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'ग्रह बिंदु, कक्षा गोचर एवं ६-प्रकार के बल' : 'Planetary Bindus, Kakshya & 6-fold Balas'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('western-astrology')}>
                     <strong>{isHi ? 'पाश्चात्य 360° राशि चक्र' : 'Western Tropical Wheel'}</strong>
                     <span className="oj-dd-sub">{isHi ? '360° सर्कुलर व्हील, दृष्टि व तत्व' : '360° Circular Wheel & Aspects'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('life-event-timing')}>
-                    <strong>{isHi ? 'सटीक घटना-काल (Life Event Timing)' : 'Life Event Timing Engine'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'विवाह, संतान, पदोन्नति, विदेश कब?' : 'Exact Marriage, Career & Progeny Windows'}</span>
+                  <button type="button" onClick={() => handleLinkClick('human-design')}>
+                    <strong>{isHi ? 'ह्यूमन डिज़ाइन व ९ चक्र' : 'Human Design & 9 Centers'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '६४ आई-चिंग द्वार, आंतरिक सत्ता व बॉडीग्राफ़' : '64 I-Ching Gates & BodyGraph'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('classical-doshas')}>
-                    <strong>{isHi ? '१८ शास्त्रीय दोष व भंग निर्णय' : '18 Classical Doshas & Cancellations'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कालसर्प, मांगलिक भंग (१६ नियम), पितृ दोष' : 'Kaal Sarp, Kuja Dosha Bhanga, Pitru Dosha'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('dasha-matrix-81')}>
-                    <strong>{isHi ? '८१ महादशा-अंतर्दशा फलकथन' : '81 Dasha Combinations Matrix'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'षडाष्टक (६/८), द्वि-द्वादश व नवपंचम फल' : 'Mutual Angular Axes & Specific Predictions'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('kota-ayurdaya')}>
-                    <strong>{isHi ? 'कोटा चक्र, आयुर्दाय व उपग्रह' : 'Kota Chakra, Longevity & Upagrahas'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'दुर्ग वेध, जैमिनी आयु एवं गुलिक-मांदि' : 'Fort Defense, Jaimini Longevity & Gulika'}</span>
+                  <button type="button" onClick={() => handleLinkClick('astrocartography')}>
+                    <strong>{isHi ? 'एस्ट्रोकार्टोग्राफी (विश्व मानचित्र)' : 'Astrocartography (World Lines)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
                   </button>
                 </div>
               )}
@@ -649,17 +622,33 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   onMouseLeave={handleMenuMouseLeave}
                   style={getDropdownMenuInlineStyle()}
                 >
-                  <button type="button" onClick={() => handleLinkClick('client-diary')}>
-                    <strong>{isHi ? 'ज्योतिषी परामर्श डायरी (Client Case Notes)' : 'Client Consultation Diary'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'जातक प्रश्न, समयसीमा, उपाय पर्ची व फॉलो-अप' : 'Case History, Predictions & Printable Slips'}</span>
+                  <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
+                    <strong>{isHi ? 'भाग्य एवं कार्मिक कैलकुलेटर' : 'Fortune & Karmic Calculators'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्रेम, मित्रता, पूर्व जन्म कर्म व अगला जन्म' : 'Love, Friendship, Past Life & Future Rebirth'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('prashna')}>
-                    <strong>{isHi ? 'केपी प्रश्न कुण्डली (1–249)' : 'KP Prashna Horary (1–249)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'तात्कालिक प्रश्न: हाँ/ना/सशर्त उत्तर' : 'Instant Yes/No/Conditional Outcome'}</span>
+                  <button type="button" onClick={() => handleLinkClick('interactive-palmistry')}>
+                    <strong>{isHi ? 'इंटरैक्टिव हस्तरेखा प्रश्नावली' : 'Interactive Palmistry Q&A'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'पूछ-पूछ कर हस्तरेखा फलकथन एवं 4 जीवन पड़ाव' : 'Visual Q&A-driven palmistry reading'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('samudrika-shastra')}>
+                    <strong>{isHi ? 'सामुद्रिक शास्त्र एवं हस्त लक्षण' : 'Samudrika Shastra & Signs'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'हस्त रेखाएं, पर्वत व मत्स्य-त्रिशूल चिन्ह' : 'Palm Lines, Mounts & Sacred Marks'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('life-event-timing')}>
+                    <strong>{isHi ? 'सटीक घटना-काल (Life Event Timing)' : 'Life Event Timing Engine'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'विवाह, संतान, पदोन्नति, विदेश कब?' : 'Exact Marriage, Career & Progeny Windows'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('classical-doshas')}>
+                    <strong>{isHi ? '१८ शास्त्रीय दोष व भंग निर्णय' : '18 Classical Doshas & Cancellations'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कालसर्प, मांगलिक भंग (१६ नियम), पितृ दोष' : 'Kaal Sarp, Kuja Dosha Bhanga, Pitru Dosha'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('muhurta')}>
                     <strong>{isHi ? 'शुभ मुहूर्त फाइंडर (90 Days)' : 'Auspicious Muhurta Finder'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'विवाह, गृह प्रवेश, वाहन, व्यापार मुहूर्त' : 'Marriage, House, Vehicle & Business'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('prashna')}>
+                    <strong>{isHi ? 'केपी प्रश्न कुण्डली (1–249)' : 'KP Prashna Horary (1–249)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'तात्कालिक प्रश्न: हाँ/ना/सशर्त उत्तर' : 'Instant Yes/No/Conditional Outcome'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('synastry')}>
                     <strong>{isHi ? 'कुण्डली मिलान व सिनैस्ट्री' : 'Matching & Synastry'}</strong>
@@ -669,10 +658,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'जन्म समय संशोधन (BTR)' : 'Birth Time Rectification (BTR)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जीवन घटनाओं से समय सुधार' : 'Event Timeline Calibration'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('holistic-remedies')}>
-                    <strong>{isHi ? 'समग्र वैदिक उपचार एवं टोटके' : 'Holistic Remedies & Totke'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'जड़ी-बूटी, रंग चिकित्सा, योग व स्तोत्र' : 'Herbal Roots, Colors & Stotras'}</span>
-                  </button>
                   <button type="button" onClick={() => handleLinkClick('medical-astrology')}>
                     <strong>{isHi ? 'चिकित्सा ज्योतिष व लाल किताब' : 'Medical Astrology & Lal Kitab'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'त्रिदोष, खरेश 22वां द्रेष्काण व फरमान' : 'Tridosha, Kharesh & Lal Kitab Upaya'}</span>
@@ -681,25 +666,59 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'वित्तीय व शेयर बाजार ज्योतिष' : 'Financial & Stock Market Astrology'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'इंदु लग्न, कुबेर संपदा व उद्योग क्षेत्र' : 'Indu Lagna, Dhana Yogas & Business'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('samudrika-shastra')}>
-                    <strong>{isHi ? 'सामुद्रिक शास्त्र एवं हस्तरेखा' : 'Samudrika Shastra & Palmistry'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'हस्त रेखाएं, पर्वत व मत्स्य-त्रिशूल चिन्ह' : 'Palm Lines, Mounts & Sacred Marks'}</span>
+                  <button type="button" onClick={() => handleLinkClick('celebrity-twins')}>
+                    <strong>{isHi ? 'सेलिब्रिटी कुंडली ट्विन' : 'Celebrity Twin Matcher'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'ऐतिहासिक युगद्रष्टाओं से कुंडली सादृश्य' : 'Match with Historical Luminaries'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('interactive-palmistry')}>
-                    <strong>{isHi ? 'इंटरैक्टिव हस्तरेखा प्रश्नावली' : 'Interactive Palmistry Q&A'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'पूछ-पूछ कर हस्तरेखा फलकथन एवं 4 जीवन पड़ाव' : 'Q&A-driven palmistry reading & 4 life milestones'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
-                    <strong>{isHi ? 'अंकज्योतिष व कार्मिक कैलकुलेटर' : 'Fortune & Karmic Calculators'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'प्रेम, मित्रता, पूर्व जन्म कर्म व अगला जन्म' : 'Love, Friendship, Past Life & Future Rebirth'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('gemstones')}>
-                    <strong>{isHi ? 'वैदिक रत्न व रुद्राक्ष' : 'Gemstones & Rudraksha'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'प्राण रत्न, भाग्य रत्न व इष्ट' : 'Life & Lucky Stones'}</span>
+                  <button type="button" onClick={() => handleLinkClick('split-studio')}>
+                    <strong>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'D1 + D9 + दशा + गोचर एक ही स्क्रीन पर' : 'D1 + D9 + Dashas + Live Transits'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('workstation')}>
                     <strong>{isHi ? '12-भाग विस्तृत वर्कस्टेशन' : '12-Division Workstation'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'उन्नत ज्योतिष अनुसंधान स्टूडियो' : 'Advanced Calculation Studio'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('client-diary')}>
+                    <strong>{isHi ? 'ज्योतिषी परामर्श डायरी (Client Case Notes)' : 'Client Consultation Diary'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जातक प्रश्न, समयसीमा, उपाय पर्ची व फॉलो-अप' : 'Case History, Predictions & Printable Slips'}</span>
+                  </button>
+                </div>
+              )}
+            </li>
+
+            {/* 7. Vedic Remedies & Gemstones Dropdown */}
+            <li
+              className="oj-nav-item oj-dropdown-parent"
+              onMouseEnter={(e) => handleMouseEnter('remedies-menu', e)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                type="button"
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'remedies-menu' ? 'is-open' : ''} ${isRemediesActive ? 'is-current' : ''}`}
+                onClick={(e) => toggleDropdown('remedies-menu', e)}
+                aria-expanded={openDropdown === 'remedies-menu'}
+                aria-haspopup="true"
+              >
+                <Heart size={13} />
+                <span>{isHi ? 'उपचार व रत्न' : 'Remedies & Gems'}</span>
+                <ChevronDown size={13} className="oj-chevron" />
+              </button>
+
+              {openDropdown === 'remedies-menu' && (
+                <div
+                  className="oj-dropdown-menu"
+                  role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
+                  style={getDropdownMenuInlineStyle()}
+                >
+                  <button type="button" onClick={() => handleLinkClick('holistic-remedies')}>
+                    <strong>{isHi ? 'समग्र वैदिक उपचार एवं टोटके' : 'Holistic Remedies & Totke'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जड़ी-बूटी, रंग चिकित्सा, योग, यंत्र व स्तोत्र' : 'Herbal Roots, Colors, Yantras & Stotras'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('gemstones')}>
+                    <strong>{isHi ? 'वैदिक रत्न एवं रुद्राक्ष' : 'Gemstones & Rudraksha'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्राण रत्न, भाग्य रत्न, कारक व इष्ट रत्न' : 'Life & Lucky Stones Prescription'}</span>
                   </button>
                 </div>
               )}

@@ -40,44 +40,44 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(report.prescriptionSlip.primaryRoot).toBeTruthy();
   });
 
-  it('computes Sambhavit Falkathan 51 Master Dimensions with age calibration and authentic Arishta logic', () => {
+  it('computes Sambhavit Falkathan 21 Master Dimensions with age calibration and authentic Arishta logic', () => {
     const report = computeSambhavitFalkathan(swamiChart);
 
-    expect(report.dimensions.length).toBe(51);
+    expect(report.dimensions.length).toBe(21);
 
-    // Dimension 14 (Mother's Lifespan)
-    const dim14 = report.dimensions.find((d) => d.id === 14);
+    // Mother's Lifespan
+    const dim14 = report.dimensions.find((d) => d.id === 7);
     expect(dim14).toBeDefined();
     expect(dim14?.verdictHi).toBeTruthy();
 
-    // Dimension 9 (Siblings)
-    const dim9 = report.dimensions.find((d) => d.id === 9);
+    // Siblings
+    const dim9 = report.dimensions.find((d) => d.id === 3);
     expect(dim9).toBeDefined();
     expect(dim9?.verdictHi).toBeTruthy();
 
-    // Dimension 26 (Marriage Timing)
-    const dim26 = report.dimensions.find((d) => d.id === 26);
+    // Marriage Timing
+    const dim26 = report.dimensions.find((d) => d.id === 13);
     expect(dim26).toBeDefined();
     expect(dim26?.verdictHi).toBeTruthy();
 
-    // Dimension 19 (Children Conception)
-    const dim19 = report.dimensions.find((d) => d.id === 19);
+    // Children Conception
+    const dim19 = report.dimensions.find((d) => d.id === 9);
     expect(dim19).toBeDefined();
     expect(dim19?.verdictHi).toBeTruthy();
 
-    // Dimension 20 (Children Challenges)
-    const dim20 = report.dimensions.find((d) => d.id === 20);
+    // Children Challenges
+    const dim20 = report.dimensions.find((d) => d.id === 10);
     expect(dim20).toBeDefined();
     expect(dim20?.verdictHi).toBeTruthy();
 
-    // Verify all 51 dimensions have distinct, non-repetitive remedies and detailed analyses
+    // Verify all 21 dimensions have distinct, non-repetitive remedies and detailed analyses
     const remediesHi = report.dimensions.map((d) => d.remedyHi);
     const uniqueRemedies = new Set(remediesHi);
-    expect(uniqueRemedies.size).toBe(51);
+    expect(uniqueRemedies.size).toBe(21);
 
     const detailedHi = report.dimensions.map((d) => d.detailedAnalysisHi);
     const uniqueDetailed = new Set(detailedHi);
-    expect(uniqueDetailed.size).toBe(51);
+    expect(uniqueDetailed.size).toBe(21);
   });
 
   it('correctly handles chart with severe 7th house delay for adult native', () => {
@@ -88,7 +88,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     };
     const adultChart = calculateChart(adultInput, DEFAULT_SETTINGS);
     const report = computeSambhavitFalkathan(adultChart);
-    const dim26 = report.dimensions.find((d) => d.id === 26);
+    const dim26 = report.dimensions.find((d) => d.id === 13);
 
     // For a 40-year old adult, prediction must NOT predict 24 to 28 years!
     expect(dim26?.verdictEn).not.toContain('24 to 28 years of age');
@@ -111,8 +111,8 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     const report1 = computeSambhavitFalkathan(chartTime1);
     const report2 = computeSambhavitFalkathan(chartTime2);
 
-    expect(report1.dimensions.length).toBe(51);
-    expect(report2.dimensions.length).toBe(51);
+    expect(report1.dimensions.length).toBe(21);
+    expect(report2.dimensions.length).toBe(21);
 
     // 1-Second micro-precision stamps must visibly and mathematically change
     expect(report1.dimensions[0].detailedAnalysisEn).not.toBe(report2.dimensions[0].detailedAnalysisEn);
