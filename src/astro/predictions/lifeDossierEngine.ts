@@ -6,6 +6,7 @@ import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './la
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
 import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
+import { computeSambhavitFalkathan, type LifeDimensionReading } from './sambhavitFalkathan';
 import {
   computePhysicalAppearance,
   computeEducationAcademics,
@@ -41,6 +42,8 @@ export interface ChapterSection {
     textHi: string;
     tone: 'positive' | 'warning' | 'critical' | 'neutral' | 'spiritual';
   };
+  /** Original selected 21-life-prediction identifier, when this is an embedded prediction. */
+  lifeDimensionId?: number;
 }
 
 export interface BhavaProfile {
@@ -591,6 +594,7 @@ export function computeLifeDossierReport(
   const pastFuture = computePastFutureLifeReading(chart);
   const lalKitab = computeLalKitabSystemReport(chart);
   const centralPredictionEvidence = computePredictionFramework(chart);
+  const selectedLifePredictions = computeSambhavitFalkathan(chart).dimensions;
 
   // Modular Deep Predictions & Relational Engines
   const physicalResult = computePhysicalAppearance(chart);
@@ -1546,6 +1550,50 @@ export function computeLifeDossierReport(
   for (const chapter of chapters) {
     const relevantIds = chapterEvidenceMap[chapter.chapterNumber] ?? [];
     chapter.predictionEvidence = centralPredictionEvidence.filter((item) => relevantIds.includes(item.id));
+  }
+
+  // The 21 selected life predictions are part of the 12-house dossier, not a
+  // second report or navigation destination. Preserve each original prediction
+  // and place it under the chapter matching its source bhava.
+  const embeddedPredictionIds = new Set<number>();
+  for (const dimension of selectedLifePredictions) {
+    const targetHouse = Number.isInteger(dimension.houseNumber)
+      && (dimension.houseNumber ?? 0) >= 1
+      && (dimension.houseNumber ?? 0) <= 12
+      ? dimension.houseNumber as number
+      : 1;
+    const chapter = chapters.find((item) => item.chapterNumber === targetHouse);
+    if (!chapter || embeddedPredictionIds.has(dimension.id)) continue;
+    embeddedPredictionIds.add(dimension.id);
+    chapter.sections.push({
+      lifeDimensionId: dimension.id,
+      titleEn: `Life prediction ${dimension.id}: ${dimension.titleEn}`,
+      titleHi: `जीवन फलादेश ${dimension.id}: ${dimension.titleHi}`,
+      leadEn: dimension.categoryTitleEn,
+      leadHi: dimension.categoryTitleHi,
+      paragraphsEn: [
+        dimension.verdictEn,
+        dimension.detailedAnalysisEn,
+        dimension.timingEn ?? 'No reliable timing window is available from the current chart data.',
+        dimension.remedyEn,
+      ],
+      paragraphsHi: [
+        dimension.verdictHi,
+        dimension.detailedAnalysisHi,
+        dimension.timingHi ?? 'उपलब्ध कुंडली डेटा से विश्वसनीय समय-सीमा निर्धारित नहीं है।',
+        dimension.remedyHi,
+      ],
+      astrologicalCauseEn: [
+        dimension.astroBasisEn,
+        dimension.classicalRef ? `Classical reference: ${dimension.classicalRef}` : '',
+        dimension.divisionalRef ? `Divisional reference: ${dimension.divisionalRef}` : '',
+      ].filter(Boolean).join(' | '),
+      astrologicalCauseHi: [
+        dimension.astroBasisHi,
+        dimension.classicalRef ? `शास्त्रीय संदर्भ: ${dimension.classicalRef}` : '',
+        dimension.divisionalRef ? `वर्ग-कुंडली संदर्भ: ${dimension.divisionalRef}` : '',
+      ].filter(Boolean).join(' | '),
+    });
   }
 
   return {
