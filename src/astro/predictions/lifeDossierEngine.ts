@@ -1361,14 +1361,14 @@ export function computeLifeDossierReport(
         leadEn: 'Comparative assessment of corporate employment vs. entrepreneurial autonomy.',
         leadHi: 'नौकरी की अनुकूलता बनाम स्वतंत्र व्यवसाय की संभावना तथा प्रतियोगी परीक्षा का स्वर्णिम समय।',
         paragraphsEn: [
-          `Job vs. Business Ratio: Your chart indicates ${careerVerdictsResult.data.jobVsBusinessRatio.businessPct}% Entrepreneurial drive vs. ${careerVerdictsResult.data.jobVsBusinessRatio.jobPct}% Corporate/Job orientation.`,
+          `Job vs. business: the chart offers qualitative comparative indicators only; no real-world probability or fixed percentage is inferred.`,
           `Verdict: ${careerVerdictsResult.data.jobVsBusinessRatio.verdictEn}`,
-          `Peak Competitive Exam / Breakthrough Window: ${careerVerdictsResult.data.examCrackingAgeWindowEn}. Concentrating resources during this age span yields maximal competitive breakthroughs.`,
+          `Timing limitation: ${careerVerdictsResult.data.examCrackingAgeWindowEn}`,
         ],
         paragraphsHi: [
-          `नौकरी बनाम व्यापार अनुपात: आपकी कुंडली में ${careerVerdictsResult.data.jobVsBusinessRatio.businessPct}% स्वतंत्र व्यवसाय की प्रवृत्ति तथा ${careerVerdictsResult.data.jobVsBusinessRatio.jobPct}% नौकरी की दिशा इंगित होती है।`,
+          `नौकरी बनाम व्यापार: कुंडली से केवल गुणात्मक तुलनात्मक संकेत पढ़े जा रहे हैं; वास्तविक प्रतिशत संभावना निर्धारित नहीं की जा रही है।`,
           `शास्त्रीय निर्णय: ${careerVerdictsResult.data.jobVsBusinessRatio.verdictHi}`,
-          `प्रतियोगी परीक्षा / करियर का निर्णायक मोड़ वर्ष: '${careerVerdictsResult.data.examCrackingAgeWindowHi}'। इस समयावधि में किया गया गंभीर प्रयास सर्वोच्च सफलता दिलाता है।`,
+          `समय संबंधी सीमा: ${careerVerdictsResult.data.examCrackingAgeWindowHi}`,
         ],
         astrologicalCauseEn: `10th Lord ${h10Profile.profile.lordNameEn} dignity, 6th house (service) vs 7th house (trade) strength.`,
         astrologicalCauseHi: `शास्त्रीय कारण: दशमेश '${h10Profile.profile.lordNameHi}', षष्ठ भाव (नौकरी) एवं सप्तम भाव (व्यापार) का पारस्परिक बलाबल।`,
