@@ -35,6 +35,10 @@ import { HumanDesignView } from './components/onlinejyotish/HumanDesignView';
 import { VarshaphalaView } from './components/onlinejyotish/VarshaphalaView';
 import { WesternAstrologyView } from './components/WesternAstrologyView';
 import { LifeDossierView } from './components/LifeDossierView';
+import { LifeEventTimingView } from './components/predictions/LifeEventTimingView';
+import { ClassicalDoshasView } from './components/predictions/ClassicalDoshasView';
+import { DashaMatrix81View } from './components/predictions/DashaMatrix81View';
+import { KotaAndAyurdayaView } from './components/predictions/KotaAndAyurdayaView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -577,6 +581,34 @@ export function App() {
             {currentView === 'western-astrology' && (
               <WesternAstrologyView
                 chart={chart}
+              />
+            )}
+
+            {currentView === 'life-event-timing' && (
+              <LifeEventTimingView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'classical-doshas' && (
+              <ClassicalDoshasView
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'dasha-matrix-81' && (
+              <DashaMatrix81View
+                chart={chart}
+                onNavigate={navigateTo}
+              />
+            )}
+
+            {currentView === 'kota-ayurdaya' && (
+              <KotaAndAyurdayaView
+                chart={chart}
+                onNavigate={navigateTo}
               />
             )}
 

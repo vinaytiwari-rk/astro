@@ -217,6 +217,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'celebrity-twins',
     'human-design',
     'western-astrology',
+    'life-event-timing',
+    'classical-doshas',
+    'dasha-matrix-81',
+    'kota-ayurdaya',
   ].includes(currentView);
   const isToolsActive = [
     'prashna',
@@ -596,6 +600,22 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('western-astrology')}>
                     <strong>{isHi ? 'पाश्चात्य 360° राशि चक्र' : 'Western Tropical Wheel'}</strong>
                     <span className="oj-dd-sub">{isHi ? '360° सर्कुलर व्हील, दृष्टि व तत्व' : '360° Circular Wheel & Aspects'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('life-event-timing')}>
+                    <strong>{isHi ? 'सटीक घटना-काल (Life Event Timing)' : 'Life Event Timing Engine'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'विवाह, संतान, पदोन्नति, विदेश कब?' : 'Exact Marriage, Career & Progeny Windows'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('classical-doshas')}>
+                    <strong>{isHi ? '१८ शास्त्रीय दोष व भंग निर्णय' : '18 Classical Doshas & Cancellations'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कालसर्प, मांगलिक भंग (१६ नियम), पितृ दोष' : 'Kaal Sarp, Kuja Dosha Bhanga, Pitru Dosha'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('dasha-matrix-81')}>
+                    <strong>{isHi ? '८१ महादशा-अंतर्दशा फलकथन' : '81 Dasha Combinations Matrix'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'षडाष्टक (६/८), द्वि-द्वादश व नवपंचम फल' : 'Mutual Angular Axes & Specific Predictions'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('kota-ayurdaya')}>
+                    <strong>{isHi ? 'कोटा चक्र, आयुर्दाय व उपग्रह' : 'Kota Chakra, Longevity & Upagrahas'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'दुर्ग वेध, जैमिनी आयु एवं गुलिक-मांदि' : 'Fort Defense, Jaimini Longevity & Gulika'}</span>
                   </button>
                 </div>
               )}

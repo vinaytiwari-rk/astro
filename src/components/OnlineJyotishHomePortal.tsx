@@ -993,6 +993,94 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <span>{isHi ? 'पाश्चात्य चक्र देखें →' : 'Open Western Wheel →'}</span>
               </button>
             </article>
+
+            {/* Card 23: Life Event Timing Engine */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #ec4899' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#ec4899', color: '#fff' }}>
+                  {isHi ? 'घटना-काल' : 'Event Timing'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'सटीक घटना-काल निर्धारण ("कब क्या होगा?")' : 'Life Event Timing ("When will it happen?")'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'विवाह, संतान, पदोन्नति, विदेश गमन, संपत्ति क्रय एवं स्वास्थ्य संकट के सटीक कालखंडों का विंशोत्तरी, वर्ग चक्र व गोचर आधारित त्रिकोणीय मिलान।'
+                  : 'Pinpointed chronological timing windows for marriage, childbirth, promotion, foreign relocation, property, and surgical vulnerabilities.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('life-event-timing')}
+              >
+                <span>{isHi ? 'घटना-काल देखें →' : 'Check Timing Windows →'}</span>
+              </button>
+            </article>
+
+            {/* Card 24: 18 Classical Doshas */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #ef4444' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#ef4444', color: '#fff' }}>
+                  {isHi ? 'शास्त्रीय दोष' : 'Dosha Audit'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? '१८ शास्त्रीय दोष व भंग निर्णय (Classical Doshas)' : '18 Classical Doshas & Cancellations'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'कालसर्प (12 भेद), मांगलिक दोष एवं 16 शास्त्रीय भंग (Kuja Dosha Bhanga), पितृ दोष, गुरु चांडाल, अंगारक व केमद्रुम का सक्रियता आयु विश्लेषण।'
+                  : 'Scientific auditing of 18 classical doshas, active age triggers, and genuine Parashari cancellations.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('classical-doshas')}
+              >
+                <span>{isHi ? 'दोष व भंग देखें →' : 'Check Doshas & Bhangas →'}</span>
+              </button>
+            </article>
+
+            {/* Card 25: 81 Dasha Combinations */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #0284c7' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#0284c7', color: '#fff' }}>
+                  {isHi ? '८१ दशा मैट्रिक्स' : '81 Dasha Matrix'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? '८१ महादशा-अंतर्दशा संयुक्त फलकथन' : '81 Mahadasha-Antardasha Combinations'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'महादशा व अंतर्दशा स्वामियों का परस्पर संबंध (षडाष्टक 6/8, द्वि-द्वादश 2/12, नवपंचम 5/9) — करियर, धन, स्वास्थ्य व यथार्थवादी परिणाम।'
+                  : 'Interactive deep matrix for all 81 MD-AD pairs, evaluating mutual angular axes, career impacts, and realistic unvarnished truths.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('dasha-matrix-81')}
+              >
+                <span>{isHi ? '८१ दशा फल खोलें →' : 'Open 81 Dasha Matrix →'}</span>
+              </button>
+            </article>
+
+            {/* Card 26: Kota Chakra & Ayurdaya */}
+            <article className="oj-service-card" style={{ borderLeft: '3px solid #10b981' }}>
+              <div className="oj-card-badge-row">
+                <span className="oj-card-tag" style={{ background: '#10b981', color: '#fff' }}>
+                  {isHi ? 'कोटा व आयुर्दाय' : 'Kota & Longevity'}
+                </span>
+              </div>
+              <h3 className="oj-card-title">{isHi ? 'कोटा चक्र, आयुर्दाय, अष्टकवर्ग कक्षा व उपग्रह' : 'Kota Chakra, Longevity & Upagrahas'}</h3>
+              <p className="oj-card-text">
+                {isHi
+                  ? 'संकट व मुकदमों में पराजय/विजय का दुर्ग वेध (कोटा चक्र), जैमिनी ३-युगल आयुर्दाय, ३°४५\' अष्टकवर्ग कक्षा गोचर, एवं गुलिक-मांदि उपग्रह फल।'
+                  : 'Fort Defense analysis for crises and contests, Jaimini 3-pair longevity determination, real-time Kakshya triggers, and Upagrahas.'}
+              </p>
+              <button
+                type="button"
+                className="oj-card-link-btn"
+                onClick={() => onNavigate('kota-ayurdaya')}
+              >
+                <span>{isHi ? 'कोटा चक्र व आयुर्दाय देखें →' : 'Open Kota & Longevity →'}</span>
+              </button>
+            </article>
           </div>
         </div>
       </section>

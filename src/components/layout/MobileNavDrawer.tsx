@@ -13,6 +13,8 @@ import {
   Layers,
   Plus,
   Settings,
+  Shield,
+  ShieldAlert,
   Sparkles,
   Star,
   UserCheck,
@@ -96,6 +98,10 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
     { view: 'human-design', labelEn: 'Human Design & 9 Centers', labelHi: 'ह्यूमन डिज़ाइन व ९ चक्र', icon: <Layers size={16} /> },
     { view: 'western-astrology', labelEn: 'Western Tropical Wheel', labelHi: 'पाश्चात्य 360° राशि चक्र', icon: <Compass size={16} /> },
     { view: 'varshaphala', labelEn: 'Tajika Varshaphala (Solar Return)', labelHi: 'ताजिक वर्षफल व सौर प्रवेश', icon: <Calendar size={16} /> },
+    { view: 'life-event-timing', labelEn: 'Life Event Timing ("When will it happen?")', labelHi: 'सटीक घटना-काल ("कब क्या होगा?")', icon: <Clock size={16} /> },
+    { view: 'classical-doshas', labelEn: '18 Classical Doshas & Cancellations', labelHi: '१८ शास्त्रीय दोष व सक्रियता आयु', icon: <ShieldAlert size={16} /> },
+    { view: 'dasha-matrix-81', labelEn: '81 Dasha Combinations Matrix', labelHi: '८१ महादशा-अंतर्दशा फलकथन', icon: <Sparkles size={16} /> },
+    { view: 'kota-ayurdaya', labelEn: 'Kota Chakra, Longevity & Upagrahas', labelHi: 'कोटा चक्र, आयुर्दाय व उपग्रह', icon: <Shield size={16} /> },
     { view: 'workstation', labelEn: '12-Division Workstation', labelHi: '12-भाग विस्तृत वर्कस्टेशन', icon: <Compass size={16} /> },
   ];
 
