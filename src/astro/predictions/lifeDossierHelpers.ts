@@ -670,7 +670,7 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
       `व्यावहारिक सुझाव: महत्वपूर्ण निर्णयों और अनुमोदनों का लिखित रिकॉर्ड रखें तथा कार्यभार संबंधी चिंता उचित प्रशासनिक प्रक्रिया से साझा करें।`,
     ],
     astrologicalCauseEn: `Practical workplace risk-management guidance; no transit-based event prediction is made.`,
-    astrologicalCauseHi: `आधार: सामान्य कार्यस्थल जोखिम-प्रबंधन; यहाँ किसी गोचर-आधारित घटना की भविष्यवाणी नहीं की गई है।`,
+    astrologicalCauseHi: `शास्त्रीय कारण: यह अनुभाग ज्योतिषीय घटना-निर्णय नहीं, बल्कि सामान्य कार्यस्थल जोखिम-प्रबंधन मार्गदर्शन है; कोई गोचर-आधारित दावा नहीं किया गया है।`,
     keyPointsEn: workplaceHazardsEn.map((h) => h.split(':')[0]),
     keyPointsHi: workplaceHazardsHi.map((h) => h.split(':')[0]),
   };
