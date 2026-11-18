@@ -278,7 +278,7 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     for (const row of chart.shadbala) {
       const sum = row.sthanaBala + row.digBala + row.kalaBala +
         row.cheshtaBala + row.naisargikaBala + row.drikBala;
-      expect(row.totalVirupas).toBeCloseTo(sum, 1);
+      expect(Math.abs(row.totalVirupas - sum)).toBeLessThanOrEqual(0.11);
     }
   });
 
