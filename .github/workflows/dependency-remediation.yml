@@ -3,7 +3,7 @@ name: One-time dependency remediation
 on:
   push:
     branches: ['audit/astronomy-accuracy-fixes']
-    paths: ['.github/workflows/dependency-remediation.yml']
+    paths: ['.github/workflows/dependency-remediation.yml', 'package.json']
 
 permissions:
   contents: write

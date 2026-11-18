@@ -33,5 +33,8 @@
     "typescript": "^7.0.2",
     "vite": "^6.4.6",
     "vitest": "^5.1.1"
+  },
+  "overrides": {
+    "picomatch": "github:micromatch/picomatch#7be3276fb8bd215a8c73fa066bcaf696c244ad88"
   }
 }
