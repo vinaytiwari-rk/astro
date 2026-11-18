@@ -5,36 +5,24 @@ import {
   Award,
   BookOpen,
   Bookmark,
-  Briefcase,
   Calendar,
-  CheckCircle,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
   Clock,
-  Coins,
   Compass,
-  Download,
   Edit3,
-  Eye,
   Flame,
-  Globe,
   Heart,
-  HelpCircle,
-  Hourglass,
   Layers,
   MapPin,
   Moon,
   Printer,
-  Scale,
   Shield,
-  ShieldAlert,
   ShieldCheck,
   Sparkles,
   Sun,
-  User,
-  Users,
 } from 'lucide-react';
 import type { ChartData, ChartStyle, NineGrahaId, SevenPlanetId } from '../astro/types';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -823,133 +811,6 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                         <div className="spec-item">
                           <span className="spec-label">{isHi ? 'तत्व' : 'Element'}</span>
                           <span className="spec-val">{isHi ? chapter.specialData?.avakahada?.tatvaHi : chapter.specialData?.avakahada?.tatvaEn}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 6 EXCLUSIVE: ADDICTIONS & LEGAL HAZARDS SENTINEL */}
-                  {!isCollapsed && chapter.chapterNumber === 6 && chapter.specialData?.addictionsAndVices && (
-                    <div className="dossier-vulnerabilities-box">
-                      <div className="vulnerability-strip-grid">
-                        <div className="vuln-item">
-                          <span className="vuln-label">{isHi ? 'रासायनिक नशा/व्यसन संवेदनशीलता:' : 'Substance Risk:'}</span>
-                          <span className="badge badge-neutral font-bold">{chapter.specialData.addictionsAndVices.substanceRiskHi.split('(')[0].trim()}</span>
-                        </div>
-                        <div className="vuln-item">
-                          <span className="vuln-label">{isHi ? 'बंधन योग (कारावास/दंड):' : 'Bandhana Yoga:'}</span>
-                          <span className="badge badge-subtle font-bold">{chapter.specialData.litigationAndAffairs.bandhanaYogaHi.split('(')[0].trim()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 8 EXCLUSIVE: LONGEVITY CATEGORY BADGE */}
-                  {!isCollapsed && chapter.chapterNumber === 8 && chapter.specialData?.longevity && (
-                    <div className="dossier-vulnerabilities-box" style={{ background: 'var(--bg-elevated)' }}>
-                      <div className="vulnerability-strip-grid">
-                        <div className="vuln-item">
-                          <Hourglass size={16} className="text-accent" />
-                          <span className="vuln-label">{isHi ? 'पाराशरी आयु वर्ग:' : 'Longevity Category:'}</span>
-                          <span className="badge badge-good font-bold">{isHi ? chapter.specialData.longevity.categoryHi : chapter.specialData.longevity.categoryEn}</span>
-                        </div>
-                        <div className="vuln-item">
-                          <ShieldCheck size={16} className="text-accent" />
-                          <span className="vuln-label">{isHi ? 'आयुर्दाय मर्यादा:' : 'Estimated Lifespan:'}</span>
-                          <span className="mono font-bold">{chapter.specialData.longevity.estimatedYears} {isHi ? 'वर्ष' : 'Years'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 9 EXCLUSIVE: WORLD CIVILIZATIONS ODYSSEY */}
-                  {!isCollapsed && chapter.chapterNumber === 9 && chapter.specialData?.pastLife && (
-                    <div className="dossier-global-odyssey-box">
-                      <div className="odyssey-grid">
-                        <div className="odyssey-card past-odyssey">
-                          <div className="odyssey-header">
-                            <Globe size={18} className="text-accent" />
-                            <span className="odyssey-title">{isHi ? 'पूर्व जन्म की विश्व सभ्यता व भूगोल' : 'Past Life World Civilization'}</span>
-                          </div>
-                          <div className="odyssey-val font-bold">
-                            {isHi ? chapter.specialData.pastLife.civilizationHi : chapter.specialData.pastLife.civilizationEn}
-                          </div>
-                          <div className="small text-muted">
-                            <MapPin size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-                            {isHi ? chapter.specialData.pastLife.birthPlaceOrCountryHi : chapter.specialData.pastLife.birthPlaceOrCountryEn}
-                          </div>
-                          <div className="odyssey-sub small">
-                            <Hourglass size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-                            {isHi ? chapter.specialData.pastLife.historicalEraHi : chapter.specialData.pastLife.historicalEraEn}
-                          </div>
-                        </div>
-
-                        <div className="odyssey-card future-odyssey">
-                          <div className="odyssey-header">
-                            <Sparkles size={18} className="text-accent" />
-                            <span className="odyssey-title">{isHi ? 'भावी पुनर्जन्म का महाद्वीप व स्वरूप' : 'Future Rebirth Continent & Station'}</span>
-                          </div>
-                          <div className="odyssey-val font-bold">
-                            {isHi ? chapter.specialData.futureBecoming.futureContinentHi : chapter.specialData.futureBecoming.futureContinentEn}
-                          </div>
-                          <div className="small text-muted">
-                            <Globe size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-                            {isHi ? chapter.specialData.futureBecoming.futureCountryHi : chapter.specialData.futureBecoming.futureCountryEn}
-                          </div>
-                          <div className="odyssey-sub small">
-                            <Sparkles size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-                            {isHi ? chapter.specialData.futureBecoming.futureYoniHi : chapter.specialData.futureBecoming.futureYoniEn}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHAPTER 10 EXCLUSIVE: CAREER VERDICTS & GOVT JOB METER */}
-                  {!isCollapsed && chapter.chapterNumber === 10 && chapter.specialData?.careerVerdicts && (
-                    <div className="dossier-career-verdicts-box">
-                      <div className="career-verdicts-grid">
-                        <div className="verdict-metric-card govt-job-metric">
-                          <div className="metric-header">
-                            <Award size={18} className="text-accent" />
-                            <span className="metric-title">{isHi ? 'सरकारी नौकरी संभावना' : 'Govt Job Probability'}</span>
-                          </div>
-                          <div className="metric-value-row">
-                            <span className="metric-large-pct">{chapter.specialData.careerVerdicts.govtJobLikelihoodPct}%</span>
-                            <span className={`badge ${chapter.specialData.careerVerdicts.govtJobLikelihoodPct >= 75 ? 'badge-good' : chapter.specialData.careerVerdicts.govtJobLikelihoodPct >= 50 ? 'badge-blue' : 'badge-neutral'}`}>
-                              {chapter.specialData.careerVerdicts.govtJobLikelihoodPct >= 75 ? (isHi ? 'प्रचंड राजयोग' : 'High Rajayoga') : chapter.specialData.careerVerdicts.govtJobLikelihoodPct >= 50 ? (isHi ? 'मध्यम योग' : 'Moderate') : (isHi ? 'निजी क्षेत्र' : 'Private Domain')}
-                            </span>
-                          </div>
-                          <p className="metric-desc small">
-                            {isHi ? (chapter.specialData.careerVerdicts.govtJobVerdictHi.split(':')[1]?.trim() || chapter.specialData.careerVerdicts.govtJobVerdictHi) : (chapter.specialData.careerVerdicts.govtJobVerdictEn.split(':')[1]?.trim() || chapter.specialData.careerVerdicts.govtJobVerdictEn)}
-                          </p>
-                          <div className="target-wings-strip">
-                            <span className="small text-muted">{isHi ? 'लक्षित विभाग:' : 'Target Wings:'}</span>
-                            <div className="chips-wrap">
-                              {(isHi ? chapter.specialData.careerVerdicts.targetWingsHi : chapter.specialData.careerVerdicts.targetWingsEn).map((w: string, i: number) => (
-                                <span key={i} className="chip-tag small">{w.split('(')[0].trim()}</span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="verdict-metric-card job-vs-biz-metric">
-                          <div className="metric-header">
-                            <Briefcase size={18} className="text-accent" />
-                            <span className="metric-title">{isHi ? 'नौकरी बनाम स्वतंत्र व्यवसाय' : 'Job vs Business Split'}</span>
-                          </div>
-                          <div className="metric-value-row">
-                            <span className="metric-large-pct">{chapter.specialData.careerVerdicts.jobVsBusinessRatio.businessPct}% {isHi ? 'व्यापार' : 'Biz'}</span>
-                            <span className="text-muted">/</span>
-                            <span className="metric-sub-pct">{chapter.specialData.careerVerdicts.jobVsBusinessRatio.jobPct}% {isHi ? 'नौकरी' : 'Job'}</span>
-                          </div>
-                          <p className="metric-desc small">
-                            {isHi ? chapter.specialData.careerVerdicts.jobVsBusinessRatio.verdictHi : chapter.specialData.careerVerdicts.jobVsBusinessRatio.verdictEn}
-                          </p>
-                          <div className="exam-window-note small">
-                            <Clock size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-                            {isHi ? 'परीक्षा स्वर्णिम काल:' : 'Peak Crack Window:'} <strong>{isHi ? chapter.specialData.careerVerdicts.examCrackingAgeWindowHi : chapter.specialData.careerVerdicts.examCrackingAgeWindowEn}</strong>
-                          </div>
                         </div>
                       </div>
                     </div>
