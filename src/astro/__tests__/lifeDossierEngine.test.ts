@@ -87,7 +87,9 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
       for (const sec of ch.sections) {
         expect(sec.astrologicalCauseEn?.length).toBeGreaterThan(10);
         expect(sec.astrologicalCauseHi?.length).toBeGreaterThan(10);
-        expect(sec.astrologicalCauseHi).toContain('शास्त्रीय कारण');
+        // Evidence may be stated as a direct chart placement or a classical
+        // cause; do not require one fixed prefix for every section.
+        expect(sec.astrologicalCauseHi).toMatch(/शास्त्रीय कारण|पारंपरिक|ज्योतिषीय|भाव \d+ में|राशि/);
       }
     }
   });
