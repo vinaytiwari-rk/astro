@@ -139,6 +139,23 @@ export function computeAyanaBalaVirupas(
 }
 
 /**
+ * BPHS 27.10–11 Paksha Bala in virupas. The Moon, Mercury, Venus and
+ * Jupiter receive the phase strength; the other grahas receive its complement.
+ */
+export function computePakshaBalaVirupas(
+  planet: SevenPlanetId,
+  pakshaAngleDeg: number,
+  isMoonWaxing: boolean
+): number {
+  const phaseStrength = Math.max(0, Math.min(60, pakshaAngleDeg / 3));
+  const benefic = planet === 'Jupiter' ||
+    planet === 'Venus' ||
+    planet === 'Mercury' ||
+    (planet === 'Moon' && isMoonWaxing);
+  return benefic ? phaseStrength : 60 - phaseStrength;
+}
+
+/**
  * BPHS Saptavargaja points for one of the seven dignity divisions.
  * The classical ladder is 45/30/20/15/10/4/2. Moolatrikona is
  * degree-specific in D1; in the other six vargas, dignity is based on
@@ -295,7 +312,7 @@ export function computeShadbala(params: {
   const moon = byId.get('Moon')!;
   const moonSunDiff = normalizeDeg(moon.longitude - sun.longitude);
   const pakshaAngle = moonSunDiff <= 180 ? moonSunDiff : 360 - moonSunDiff;
-  const isMoonWaxing = moonSunDiff < 180;
+  const isMoonWaxing = moonSunDiff <= 180;
 
   const icLon = normalizeDeg(mcLongitude + 180);
   const dscLon = normalizeDeg(ascendant.longitude + 180);
@@ -387,9 +404,7 @@ export function computeShadbala(params: {
           ? 60 * distFromMidnightNorm
           : 60 * (1 - distFromMidnightNorm);
 
-    const isNaturalBenefic = pId === 'Jupiter' || pId === 'Venus' || pId === 'Mercury' || (pId === 'Moon' && isMoonWaxing);
-    const pakshaBase = isNaturalBenefic ? pakshaAngle / 3 : (180 - pakshaAngle) / 3;
-    const pakshaBala = pId === 'Moon' ? pakshaBase * 2 : pakshaBase;
+    const pakshaBala = computePakshaBalaVirupas(pId, pakshaAngle, isMoonWaxing);
 
     const tribhagaBala = pId === 'Jupiter' || pId === activeTribhagaLord ? 60 : 0;
 
@@ -409,7 +424,7 @@ export function computeShadbala(params: {
     // 4. Cheshta Bala
     let cheshtaBala = 30;
     if (pId === 'Sun') cheshtaBala = ayanaBala;
-    else if (pId === 'Moon') cheshtaBala = pakshaAngle / 3;
+    else if (pId === 'Moon') cheshtaBala = pakshaBala;
     else {
       if (p.isRetrograde) {
         cheshtaBala = 50 + Math.min(10, Math.abs(p.speedDegPerDay) * 10);

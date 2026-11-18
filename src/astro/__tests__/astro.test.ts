@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
+import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -238,6 +238,15 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('uses undoubled Paksha Bala for the Moon and reuses it as Cheshta Bala', () => {
+    expect(computePakshaBalaVirupas('Moon', 90, true)).toBe(30);
+    expect(computePakshaBalaVirupas('Moon', 90, false)).toBe(30);
+    expect(computePakshaBalaVirupas('Moon', 180, true)).toBe(60);
+    expect(computePakshaBalaVirupas('Moon', 0, false)).toBe(60);
+    expect(computePakshaBalaVirupas('Jupiter', 120, false)).toBe(40);
+    expect(computePakshaBalaVirupas('Mars', 120, true)).toBe(20);
   });
 
   it('computes Surya Siddhanta Abda and Masa lords from Ahargana', () => {
