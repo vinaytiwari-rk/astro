@@ -460,35 +460,7 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
   const isKendra = [1, 4, 7, 10].includes(mutualDistance);
   const isTrikona = [5, 9].includes(mutualDistance);
 
-  // Saturn Transit relative to Moon (Pisces sidereal 2023-2025/2026)
-  // Pisces sign index = 11
-  const saturnTransitSignIdx = 11; // Pisces / Meena
-  const saturnHouseFromMoon = ((saturnTransitSignIdx - moon.signIndex + 12) % 12) + 1;
-
-  let sadeSatiStatusEn = '';
-  let sadeSatiStatusHi = '';
-  if (moon.signIndex === 11) {
-    sadeSatiStatusEn = 'Peak Janma Shani (Sade Sati Phase 2 — Core Mental Pressure & Total Restructuring)';
-    sadeSatiStatusHi = 'शिखर जन्म शनि (साढ़ेसाती का द्वितीय चरण — चरम मानसिक मंथन व जीवन का आमूलचूल पुनर्गठन)';
-  } else if (moon.signIndex === 10) {
-    sadeSatiStatusEn = 'Setting Sade Sati (Phase 3 — Settling Debts, Moving toward Stability)';
-    sadeSatiStatusHi = 'उतरती साढ़ेसाती (तृतीय चरण — पुराने कर्जों व विवादों का निस्तारण, स्थायित्व की ओर प्रयाण)';
-  } else if (moon.signIndex === 0) {
-    sadeSatiStatusEn = 'Rising Sade Sati (Phase 1 — Domestic Churn, Elderly Health & New Responsibilities)';
-    sadeSatiStatusHi = 'चढ़ती साढ़ेसाती (प्रथम चरण — पारिवारिक व्यय, बड़ों का स्वास्थ्य व नए दायित्वों का भार)';
-  } else if (saturnHouseFromMoon === 8) {
-    sadeSatiStatusEn = 'Ashtama Shani (Saturn in 8th from Moon — Critical Vigilance on Health, Litigation & Sudden Shocks)';
-    sadeSatiStatusHi = 'कंटक/अष्टम शनि (चंद्र से अष्टम शनि — स्वास्थ्य, मुकदमों व आकस्मिक झटकों के प्रति सचेत रहने का काल)';
-  } else if (saturnHouseFromMoon === 4) {
-    sadeSatiStatusEn = 'Kantaka Shani (Saturn in 4th from Moon — Domestic Disruption & Property Delays)';
-    sadeSatiStatusHi = 'कंटक शनि (चंद्र से चतुर्थ शनि — गृह-क्लेश, माता का स्वास्थ्य व संपत्ति में विलंब)';
-  } else if (saturnHouseFromMoon === 10) {
-    sadeSatiStatusEn = 'Kantaka Shani (Saturn in 10th from Moon — Workplace Restructuring & Heavy Executive Strain)';
-    sadeSatiStatusHi = 'कंटक शनि (चंद्र से दशम शनि — कार्यक्षेत्र में भारी फेरबदल व कठोर परिश्रम की परीक्षा)';
-  } else {
-    sadeSatiStatusEn = `Saturn Transiting House ${saturnHouseFromMoon} from Moon (${[3, 6, 11].includes(saturnHouseFromMoon) ? 'Highly Auspicious Victory & Gain Window' : 'Measured Growth with Discipline'})`;
-    sadeSatiStatusHi = `गोचर शनि चंद्र से भाव ${saturnHouseFromMoon} में (${[3, 6, 11].includes(saturnHouseFromMoon) ? 'शत्रु-हंता व प्रचंड धन लाभ का शुभ काल' : 'अनुशासन व धैर्य की मांग'})`;
-  }
+  // Transit positions are not supplied to this natal-chart section. Do not infer Sade Sati or Saturn transit from a fixed sign.
 
   // Dasha relationships are symbolic themes, not proof of what the native
   // actually experienced. Never narrate unverified past events as facts.
