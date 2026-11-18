@@ -433,50 +433,69 @@ export function computeHouseProfile(
   else if (score >= 36) verdictTone = 'challenging';
   else verdictTone = 'critical';
 
-  // Unvarnished Verdict summaries
-  let verdictSummaryHi = '';
-  let verdictSummaryEn = '';
-
-  const RAW_ADVERSE_HI: Record<number, string> = {
-    1: `लग्नेश '${lordNameHi}' की प्रतिकूल स्थिति (${lordDignity}, भाव ${lordPlacedHouse}) एवं क्रूर ग्रह प्रभाव के कारण स्वास्थ्य में अस्थिरता, शारीरिक दुर्बलता, आत्म-संदेह और निर्णयहीनता का स्पष्ट संकट।`,
-    2: `द्वितीयेश '${lordNameHi}' के पीड़ित होने से संचित धन का तीव्र क्षरण, पारिवारिक अशांति, वाणी में अनियंत्रित कटुता तथा गलत वित्तीय निर्णयों से गंभीर ऋण संकट का भय।`,
-    3: `तृतीयेश '${lordNameHi}' के निर्बल होने से अदम्य पराक्रम में भटकाव, छोटे भाई-बहनों से मतभेद व असहयोग, तथा कठिन प्रयासों के बाद भी उचित श्रेय न मिलने का यथार्थ।`,
-    4: `चतुर्थ भाव व चतुर्थेश '${lordNameHi}' पर पाप प्रभाव के कारण आंतरिक सुख-शांति का अभाव, मातृ कष्ट अथवा माता से वैचारिक दूरी, तथा भूमि-मकान-वाहन संबंधी विवाद व वित्तीय हानि।`,
-    5: `पंचमेश '${lordNameHi}' के त्रिक अथवा नीचस्थ होने से उच्च शिक्षा में व्यवधान, एकाग्रता की कमी, संतान सुख में विलंब अथवा संतान को लेकर निरंतर चिंता, तथा सट्टे/शेयर बाजार में भारी पूंजी डूबने का गंभीर खतरा।`,
-    6: `षष्ठेश '${lordNameHi}' की जटिल स्थिति से पुराने असाध्य रोगों (उदर/रक्त विकार), कोर्ट-कचहरी के मुकदमों में धन की बर्बादी, कर्ज के दुष्चक्र तथा षड्यंत्रकारी शत्रुओं से निरंतर सतर्क रहने की स्पष्ट आवश्यकता।`,
-    7: `सप्तमेश '${lordNameHi}' के पीड़ित होने अथवा कलत्र दोष से वैवाहिक जीवन में तनाव, पति-पत्नी में परस्पर अविश्वास, विवाह में अत्यधिक विलंब अथवा अलगाव व कानूनी विवाद की वास्तविक आशंका।`,
-    8: `अष्टमेश '${lordNameHi}' की प्रतिकूलता से आकस्मिक शारीरिक दुर्घटना, शल्यक्रिया (सर्जरी) का योग, पैतृक संपत्ति को लेकर कलह तथा जीवन में बिना पूर्व सूचना अचानक आने वाले गंभीर अवरोध।`,
-    9: `नवमेश '${lordNameHi}' के दुर्बल होने से भाग्य का ऐन मौके पर साथ न मिलना, पिता के साथ मतभेद, आध्यात्मिक भटकाव तथा योग्यता के अनुरूप सामाजिक पहचान न मिलने का संघर्ष।`,
-    10: `दशमेश '${lordNameHi}' के त्रिक भाव अथवा नीच राशि में होने से आजीविका में बार-बार उथल-पुथल, नौकरी छूटना अथवा व्यवसाय में भारी घाटा, उच्चाधिकारियों से वैमनस्य तथा पद-प्रतिष्ठा को आघात (राजभंग योग)।`,
-    11: `एकादशेश '${lordNameHi}' के पीड़ित होने से नियमित आय में भारी रुकावट, बड़े भाई-बहनों से कटुता, मित्रों द्वारा विश्वासघात तथा व्यापार में अपेक्षित लाभ मार्जिन का न मिलना।`,
-    12: `द्वादशेश '${lordNameHi}' की प्रतिकूलता से अनियंत्रित फिजूलखर्ची, गुप्त वित्तीय रिसाव, अस्पताल अथवा कानूनी दंड में भारी धन व्यय, अनिद्रा तथा मानसिक एकाकीपन व अवसाद का संकट।`,
+  // Reader-facing house conclusion: describe the actual chart factors without
+  // turning a heuristic score into guaranteed events, diagnoses or outcomes.
+  const dignityMeaningHi: Record<string, string> = {
+    Exalted: 'उच्च राशि में', Moolatrikona: 'मूलत्रिकोण में', 'Own Sign': 'स्वराशि में',
+    'Great Friend': 'मित्र राशि में', Friend: 'मित्र राशि में', Friendly: 'मित्र राशि में',
+    Neutral: 'सम राशि में', Enemy: 'शत्रु राशि में', 'Great Enemy': 'अति शत्रु राशि में',
+    Debilitated: 'नीच राशि में',
   };
-
-  const RAW_ADVERSE_EN: Record<number, string> = {
-    1: `Adverse disposition of Lagna Lord ${lordNameEn} (${lordDignity} in House ${lordPlacedHouse}) indicates physical vulnerability, self-doubt, decision paralysis, and recurring fluctuations in constitutional vitality.`,
-    2: `Afflicted 2nd Lord ${lordNameEn} triggers sudden erosion of accumulated wealth, domestic friction, harsh speech tendencies, and grave vulnerability to capital loss.`,
-    3: `Weakened 3rd Lord ${lordNameEn} signals fractured sibling rapport, lack of decisive initiative, and unrewarded toil despite sincere exertion.`,
-    4: `Papargala/affliction on 4th House and lord ${lordNameEn} indicates domestic turbulence, maternal health strains, property litigation, and lack of rooted peace.`,
-    5: `Compromised 5th Lord ${lordNameEn} warns of academic hurdles, child-related anxieties, intellectual burnout, and severe capital destruction in speculative ventures.`,
-    6: `Severe 6th House affliction warns of recurring illnesses, heavy debt spirals, litigation hazards, and relentless underground adversaries.`,
-    7: `Afflicted 7th Lord ${lordNameEn} brings marital friction, emotional distance, marriage delay, or threat of separation and legal settlement.`,
-    8: `Distressed 8th Lord ${lordNameEn} indicates vulnerability to sudden surgeries, accidents, inheritance disputes, and abrupt life upheavals.`,
-    9: `Debilitated or afflicted 9th Lord ${lordNameEn} denies timely luck, brings ideological friction with father/mentors, and demands double effort for every achievement.`,
-    10: `Faltering 10th Lord ${lordNameEn} in dusthana or debility indicates vocational instability, sudden demotion/job loss, clashes with superiors, and status blows.`,
-    11: `Afflicted 11th Lord ${lordNameEn} indicates irregular revenue streams, betrayal by elder associates/friends, and blocked profit pipelines.`,
-    12: `Compromised 12th Lord ${lordNameEn} exposes the native to runaway financial leakages, hospital expenses, penalties, insomnia, and deep psychological solitude.`,
+  const dignityMeaningEn: Record<string, string> = {
+    Exalted: 'exalted', Moolatrikona: 'in its Moolatrikona', 'Own Sign': 'in its own sign',
+    'Great Friend': 'in a great-friend sign', Friend: 'in a friendly sign',
+    Friendly: 'in a friendly sign', Neutral: 'in a neutral sign',
+    Enemy: 'in an enemy sign', 'Great Enemy': 'in a great-enemy sign',
+    Debilitated: 'debilitated',
   };
-
-  if (score < 48) {
-    verdictSummaryHi = RAW_ADVERSE_HI[houseNumber] || `इस भाव में क्रूर ग्रह प्रभाव व भावेश की कमजोरी से गंभीर संघर्ष व प्रतिकूलताओं का योग है।`;
-    verdictSummaryEn = RAW_ADVERSE_EN[houseNumber] || `Affliction in this house demands strict vigilance and protective discipline.`;
-  } else if (score >= 68) {
-    verdictSummaryHi = `भाव के स्वामी '${lordNameHi}' की सुदृढ़ स्थिति (${lordDignity}, भाव ${lordPlacedHouse}) एवं सर्वाष्टकवर्ग में ${savBindus} बिंदु इस भाव को शक्ति प्रदान करते हैं। इस क्षेत्र में प्राकृतिक रूप से स्थिरता, सफलता व शुभ फल प्राप्त होंगे।`;
-    verdictSummaryEn = `Strong placement of lord ${lordNameEn} (${lordDignity} in House ${lordPlacedHouse}) with ${savBindus} SAV bindus grants natural stability and favorable results.`;
-  } else {
-    verdictSummaryHi = `भाव के स्वामी '${lordNameHi}' मध्यम स्थिति में हैं। इस क्षेत्र में प्रारंभिक विलंब अथवा आंशिक संघर्ष के बाद संतुलित परिणाम प्राप्त होंगे।`;
-    verdictSummaryEn = `Lord ${lordNameEn} holds moderate dignity. Outcomes will feature initial delays and balanced success through sustained effort.`;
-  }
+  const placementMeaningHi = lordPlacedHouse === houseNumber
+    ? 'भावेश अपने ही भाव में स्थित हैं'
+    : `भावेश ${lordPlacedHouse}वें भाव में स्थित हैं`;
+  const placementMeaningEn = lordPlacedHouse === houseNumber
+    ? 'the house lord occupies its own house'
+    : `the house lord is placed in House ${lordPlacedHouse}`;
+  const occupantMeaningHi = occupantsHi.length
+    ? `इस भाव में ${occupantsHi.join(', ')} स्थित हैं`
+    : 'यह भाव ग्रहों से रिक्त है';
+  const occupantMeaningEn = occupantsEn.length
+    ? `${occupantsEn.join(', ')} occupy this house`
+    : 'this house has no planetary occupant';
+  const savMeaningHi = savBindus >= 30
+    ? 'अष्टकवर्ग के बिंदु अपेक्षाकृत सहयोगी हैं'
+    : savBindus <= 24
+      ? 'अष्टकवर्ग के बिंदु अपेक्षाकृत कम हैं'
+      : 'अष्टकवर्ग के बिंदु मध्यम स्तर पर हैं';
+  const savMeaningEn = savBindus >= 30
+    ? 'the Ashtakavarga bindus are relatively supportive'
+    : savBindus <= 24
+      ? 'the Ashtakavarga bindus are relatively low'
+      : 'the Ashtakavarga bindus are moderate';
+  const stateMeaningHi = isLordCombust
+    ? 'भावेश अस्त भी हैं, इसलिए इस कारक को सावधानी से पढ़ना चाहिए'
+    : isLordRetrograde
+      ? 'भावेश वक्री हैं; पारंपरिक व्याख्या में परिणामों की अभिव्यक्ति में पुनर्विचार या विलंब जोड़ा जाता है'
+      : '';
+  const stateMeaningEn = isLordCombust
+    ? 'the lord is also combust, so this factor should be read cautiously'
+    : isLordRetrograde
+      ? 'the lord is retrograde, traditionally associated with review or delay in how results unfold'
+      : '';
+  const combinedMeaningHi = verdictTone === 'favorable'
+    ? 'इन कारकों का संयुक्त संकेत इस जीवन-क्षेत्र को अपेक्षाकृत समर्थन देता है; अवसरों का लाभ फिर भी निर्णय और प्रयास पर निर्भर करेगा।'
+    : verdictTone === 'mixed'
+      ? 'यहां समर्थन और चुनौती दोनों हैं; परिणाम परिस्थिति, समय और आपके निर्णयों के अनुसार बदल सकते हैं।'
+      : verdictTone === 'challenging'
+        ? 'इस क्षेत्र में अतिरिक्त मेहनत, धैर्य और व्यावहारिक योजना की जरूरत हो सकती है; इसे निश्चित असफलता न मानें।'
+        : 'यह क्षेत्र अपेक्षाकृत संवेदनशील दिखता है; जल्दबाजी से बचें और जरूरत पड़ने पर संबंधित विशेषज्ञ की सलाह लें।';
+  const combinedMeaningEn = verdictTone === 'favorable'
+    ? 'Together, these factors offer relatively more support to this life area; outcomes still depend on choices and effort.'
+    : verdictTone === 'mixed'
+      ? 'Both supportive and challenging factors appear; outcomes can vary with circumstances, timing and decisions.'
+      : verdictTone === 'challenging'
+        ? 'This area may need extra effort, patience and practical planning; it does not mean certain failure.'
+        : 'This area appears comparatively sensitive; avoid haste and seek qualified advice where relevant.';
+  const verdictSummaryHi = `${BHAVA_NAMES[houseNumber].hi} का स्वामी ${lordNameHi} ${dignityMeaningHi[lordDignity] || 'सम स्थिति में'} हैं और ${placementMeaningHi}। ${occupantMeaningHi}। इस भाव के ${savBindus} सर्वाष्टकवर्ग बिंदु हैं; ${savMeaningHi}। ${stateMeaningHi}। निष्कर्ष: ${combinedMeaningHi}`;
+  const verdictSummaryEn = `${BHAVA_NAMES[houseNumber].en} is ruled by ${lordNameEn}, ${dignityMeaningEn[lordDignity] || 'in an unclassified dignity'}, and ${placementMeaningEn}. ${occupantMeaningEn}. The house has ${savBindus} Sarvashtakavarga bindus; ${savMeaningEn}. ${stateMeaningEn}. Conclusion: ${combinedMeaningEn}`;
 
   const profile: BhavaProfile = {
     houseNumber,

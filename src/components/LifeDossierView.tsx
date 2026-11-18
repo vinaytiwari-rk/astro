@@ -668,14 +668,8 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                       </div>
 
                       <div className={`bhava-unvarnished-verdict tone-${bp.verdictTone}`}>
-                        <strong>{isHi ? 'सरल अर्थ: ' : 'In everyday language: '}</strong>
-                        {bp.verdictTone === 'favorable'
-                          ? (isHi ? 'इस जीवन क्षेत्र में सहयोगी संकेत अधिक हैं। अवसरों का लाभ लेने के लिए योजना और निरंतर प्रयास जरूरी रहेंगे।' : 'This area has more supportive indications. Planning and consistent effort are still needed to make the most of opportunities.')
-                          : bp.verdictTone === 'mixed'
-                            ? (isHi ? 'इस क्षेत्र में अच्छे और चुनौतीपूर्ण दोनों संकेत हैं। परिणाम परिस्थिति और आपके निर्णयों के अनुसार बदल सकते हैं।' : 'Both supportive and challenging indications appear here. Outcomes can vary with circumstances and decisions.')
-                            : bp.verdictTone === 'challenging'
-                              ? (isHi ? 'इस क्षेत्र में अपेक्षाकृत अधिक मेहनत, धैर्य और व्यावहारिक तैयारी की जरूरत हो सकती है। इसे निश्चित असफलता न मानें।' : 'This area may require extra effort, patience and practical preparation. It does not mean certain failure.')
-                              : (isHi ? 'इस क्षेत्र में जल्दबाजी से बचें और जरूरी मामलों में विशेषज्ञ की सलाह लें। ज्योतिषीय संकेत को निश्चित घटना न समझें।' : 'Avoid rushing in this area and seek qualified advice where needed. An astrological indication is not a certain event.')}
+                        <strong>{isHi ? 'आपकी कुंडली का निष्कर्ष: ' : 'Your chart-specific conclusion: '}</strong>
+                        {isHi ? bp.verdictSummaryHi : bp.verdictSummaryEn}
                       </div>
                       <details className="dossier-technical-details" style={{ marginTop: '10px' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}>
@@ -694,9 +688,7 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                             {isHi ? 'स्थित ग्रह:' : 'Occupants:'} <strong>{(isHi ? bp.occupantsHi : bp.occupantsEn).length > 0 ? (isHi ? bp.occupantsHi : bp.occupantsEn).join(', ') : (isHi ? 'कोई ग्रह नहीं' : 'None')}</strong>
                           </span>
                         </div>
-                        <p style={{ margin: '8px 0 0', fontSize: '13px', lineHeight: 1.55 }}>
-                          {isHi ? bp.verdictSummaryHi : bp.verdictSummaryEn}
-                        </p>
+
                       </details>
                     </div>
                   )}
