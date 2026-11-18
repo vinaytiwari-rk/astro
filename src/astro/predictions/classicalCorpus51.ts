@@ -1,24 +1,10 @@
 /**
  * Classical Corpus 51 Master Life Dimensions Engine (वैदिक जीवन-विषयक 51 महा-आयाम)
- * AV Astro Vibe — High-Precision Shastra Synthesis & 1-Second Temporal Calibration
+ * AV Astro Vibe — Traditional Jyotish synthesis across the 12 Bhavas.
  *
- * Exhaustive synthesis covering all 12 Bhavas and 51 Master Life Dimensions across:
- * - Brihat Parashara Hora Shastra (महर्षि पराशर)
- * - Jaimini Upadesha Sutras (महर्षि जैमिनी)
- * - Brihat Jataka & Brihat Samhita (आचार्य वराहमिहिर)
- * - Saravali (कल्याण वर्मा)
- * - Phaladeepika (मंत्रेश्वर)
- * - Jataka Parijata (वैद्यनाथ दीक्षित)
- * - Sarvartha Chintamani (वेंकटेश शर्मा)
- * - Uttara Kalamrita (कालिदास)
- * - Lal Kitab 1952 (पं. रूपचंद जोशी)
- * - K.S. Krishnamurti (KP Readers 1 to 6 — Cuspal Sub-Sub Lords)
- * - Shodashvargas (D1, D2, D3, D4, D7, D8, D9, D10, D12, D16, D20, D24, D30, D60)
- *
- * 1-Second Precision Guarantee:
- * Every single second of birth time translates to 15 arcseconds of equatorial rotation.
- * The Lagna coordinate, D60 progression %, KP sub-sub lord, micro-score modulator,
- * and analysis text change visibly and mathematically with every 1-second change in birth time.
+ * The 51-dimension corpus is a rule-based interpretive aid, not a validated
+ * probability model. Birth-time sensitivity depends on the actual chart calculation;
+ * do not claim a universal one-second change or guaranteed predictive precision.
  */
 
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
@@ -246,12 +232,9 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
 
   // Helper to add dimension with 1-second precision modulation and strict unvarnished truths
   const addDim = (d: LifeDimensionReading) => {
-    // 1-Second micro-temporal modulation
-    const microMod = Math.sin((totalArcSec * 1.618 + d.id * 53.7) * (Math.PI / 180));
-    const microDelta = Math.round(microMod * 3);
-    const modulatedScore = Math.max(12, Math.min(98, d.strengthScore + microDelta));
-    d.strengthScore = modulatedScore;
-    d.auspiciousness = getAuspiciousness(modulatedScore);
+    // Keep the source rule's score unchanged. Do not inject synthetic birth-second
+    // modulation: a cosmetic sine-wave adjustment is not an astrological method.
+    d.auspiciousness = getAuspiciousness(d.strengthScore);
 
     // Integrate Dimension-Targeted Classical Shastra Sutras
     if (d.houseNumber) {
@@ -1052,16 +1035,8 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
     const score = Math.max(30, Math.min(95, 52 + getDignityBonus(h7.dignity) + getDignityBonus(venus.dignity) / 2));
     const delayPlanet = planets.find((p) => (p.rasiHouseNumber ?? p.houseNumber) === 7 && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu'));
     const isAdult = currentAge >= 35;
-    const timingVerdictHi = isAdult
-      ? `सप्तमेश ${h7.lordHi} (भाव ${h7.placedHouse}) के प्रभाव से परिपक्व आयु में वैवाहिक स्थिरता; जीवन में संबंधों का स्थायित्व।`
-      : delayPlanet
-      ? `सप्तम भाव में ग्रह प्रभाव से 27 से 31 वर्ष की परिपक्व आयु में विवाह का शास्त्रीय योग।`
-      : `सप्तमेश ${h7.lordHi} के शुभ प्रभाव से 24 से 28 वर्ष की आयु में शुभ विवाह के अनुकूल योग।`;
-    const timingVerdictEn = isAdult
-      ? `Mature relationship anchorage governed by 7th Lord ${h7.lord} in House ${h7.placedHouse}; critical marital consolidation and destiny milestones.`
-      : delayPlanet
-      ? `Classical marriage window at mature age between 27 to 31 years under 7th house planetary configurations.`
-      : `Promising marriage timing window between 24 to 28 years of age guided by 7th Lord ${h7.lord}.`;
+    const timingVerdictHi = `सप्तम भाव, सप्तमेश ${h7.lordHi} और शुक्र की स्थिति को संबंधों तथा साझेदारी के पारंपरिक संकेत के रूप में पढ़ा जाता है। केवल इन स्थितियों से विवाह की निश्चित आयु या तारीख तय नहीं की जा सकती।`;
+    const timingVerdictEn = `The 7th house, its lord ${h7.lord} and Venus are traditional indicators for relationships and partnerships. These placements alone cannot establish a definite marriage age or date.`;
 
     addDim({
       id: 26,

@@ -19,20 +19,6 @@ const CATEGORY_LABELS: Record<string, { hi: string; en: string }> = {
   wealth_fortune: { hi: 'धन व भाग्य', en: 'Wealth & fortune' },
 };
 
-const LEVEL_LABELS: Record<string, { hi: string; en: string }> = {
-  highly_favorable: { hi: 'अधिक अनुकूल संकेत', en: 'More supportive signs' },
-  favorable: { hi: 'अनुकूल संकेत', en: 'Supportive signs' },
-  mixed_moderate: { hi: 'मिले-जुले संकेत', en: 'Mixed indications' },
-  challenging_caution: { hi: 'सावधानी व अतिरिक्त प्रयास', en: 'Caution and extra effort' },
-};
-
-const LEVEL_EXPLANATIONS: Record<string, { hi: string; en: string }> = {
-  highly_favorable: { hi: 'इस विषय में कुंडली के संकेत अपेक्षाकृत सहयोगी हैं। अवसरों का लाभ लेने के लिए सही योजना और प्रयास जरूरी हैं।', en: 'The chart shows relatively supportive indications in this area. Good planning and effort are still required.' },
-  favorable: { hi: 'इस विषय में अनुकूल संकेत हैं, लेकिन परिणाम आपके प्रयासों और परिस्थितियों पर भी निर्भर करेंगे।', en: 'There are supportive indications, but outcomes also depend on effort and circumstances.' },
-  mixed_moderate: { hi: 'इस विषय में सकारात्मक और चुनौतीपूर्ण दोनों संकेत हैं। जल्दबाजी से बचें और संतुलित निर्णय लें।', en: 'Both supportive and challenging indications appear. Avoid haste and make balanced decisions.' },
-  challenging_caution: { hi: 'इस विषय में अधिक धैर्य, तैयारी और सावधानी की जरूरत हो सकती है। इसे निश्चित असफलता न समझें।', en: 'This area may need extra patience, preparation and care. It does not mean certain failure.' },
-};
-
 const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
 
 export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ report, isHi }) => {
@@ -83,8 +69,6 @@ export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ 
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '12px' }}>
         {visibleDimensions.map((item) => {
-          const level = LEVEL_LABELS[item.auspiciousness] || LEVEL_LABELS.mixed_moderate;
-          const explanation = LEVEL_EXPLANATIONS[item.auspiciousness] || LEVEL_EXPLANATIONS.mixed_moderate;
           const title = isHi ? item.titleHi : item.titleEn;
           const verdict = isHi ? item.verdictHi : item.verdictEn;
           const analysis = isHi ? item.detailedAnalysisHi : item.detailedAnalysisEn;
@@ -98,12 +82,10 @@ export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ 
                   <span className="muted" style={{ fontSize: '11px' }}>{isHi ? categoryLabel.hi : categoryLabel.en} · {isHi ? 'फलादेश' : 'Reading'} {item.id}</span>
                   <h3 style={{ margin: '4px 0 0', fontSize: '15px', lineHeight: 1.4 }}>{title}</h3>
                 </div>
-                <span className="tag tag-subtle" style={{ flexShrink: 0 }}>{isHi ? level.hi : level.en}</span>
               </div>
-              <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: 1.55 }}>
-                <strong>{isHi ? 'इसका सरल अर्थ: ' : 'In plain language: '}</strong>{isHi ? explanation.hi : explanation.en}
+              <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.6 }}>
+                <strong>{isHi ? 'कुंडली से निकला पारंपरिक निष्कर्ष: ' : 'Traditional chart interpretation: '}</strong>{verdict}
               </p>
-              <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.6 }}>{verdict}</p>
               <details style={{ marginTop: '10px', borderTop: '1px solid var(--border-subtle)', paddingTop: '8px' }}>
                 <summary style={{ cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
                   {isHi ? 'विस्तृत विश्लेषण व ज्योतिषीय आधार' : 'Detailed analysis and astrological basis'}

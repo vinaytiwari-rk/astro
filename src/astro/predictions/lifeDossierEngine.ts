@@ -712,20 +712,20 @@ export function computeLifeDossierReport(
   const ascLord = asc.signLord;
 
   const longevitySection: ChapterSection = {
-    titleEn: 'Longevity Category & Manner of Departure Diagnostic',
-    titleHi: 'आयु मर्यादा (Longevity Category) एवं देहावसान की परिस्थिति',
-    leadEn: 'Assessment of longevity spans (Alpayu, Madhyayu, Purnayu) and the nature of final exit.',
-    leadHi: 'पाराशरी तीन-युग्म विधि द्वारा आयु खंड एवं जीवन के अंतिम पड़ाव की शांतिमय स्थिति।',
+    titleEn: 'Long-Term Wellbeing & Health Responsibility (Not a Lifespan Estimate)',
+    titleHi: 'दीर्घकालीन स्वास्थ्य-जिम्मेदारी (आयु का अनुमान नहीं)',
+    leadEn: 'Traditional symbolism for resilience and responsibility; this section does not estimate lifespan or manner of death.',
+    leadHi: 'यह भाग केवल पारंपरिक प्रतीकों और स्वास्थ्य-अनुशासन की बात करता है; इससे आयु या मृत्यु का समय नहीं बताया जा सकता।',
     paragraphsEn: [
-      `Parashari 3-Pairs Longevity assessment places your chart in the category of: ${longevityInfo.categoryEn}. The vital life force (Jeeva Bala) is sustained by the strength of your Ascendant lord (${ascLord}) and Saturn (Ayushkaraka). There is no indication of premature termination (Alpayu) provided basic health hygiene is honored.`,
-      `Regarding the manner of departure (8th house in ${SIGNS[h8Sign].name}): The exit condition is indicated as dignified, concluding after full settlement of worldly duties, rather than a prolonged bedridden agony. The planetary configuration favors a conscious, peaceful transition in senior years.`,
+      `In traditional Jyotish, the Ascendant, 8th house and Saturn are discussed in connection with resilience, change and long-term responsibilities. These factors cannot reliably determine how long a person will live.`,
+      `No age range, date, cause or manner of death can be responsibly inferred from this chart. For health concerns, rely on qualified clinicians, preventive screening and evidence-based care.`,
     ],
     paragraphsHi: [
-      `पाराशरी तीन-युग्म (Three-Pairs) पद्धति के अनुसार आपकी कुंडली '${longevityInfo.categoryHi}' (पूर्णायु/दीर्घायु) वर्ग में आती है। लग्नेश '${PLANET_HI[ascLord] || ascLord}' तथा आयु कारक शनि देव की स्थिति जीवन शक्ति (जीव बल) को सुदृढ़ बनाए रखती है। कुंडली में अकाल मृत्यु (बालारिष्ट या अल्पायु) का कोई योग नहीं है।`,
-      `अष्टम भाव ('${SIGN_HI[h8Sign]}') के विश्लेषण के अनुसार जीवन का अंतिम पड़ाव वर्षों तक अशक्त होकर बिस्तर पर पड़े रहने के बजाय, सांसारिक दायित्वों की पूर्णता के पश्चात शांत व गरिमामय रूप से व्यतीत होगा। जातक अपने परिजनों को सुखी व संपन्न देखकर ही इस नश्वर देह का त्याग करेगा।`,
+      `परंपरागत ज्योतिष में लग्न, अष्टम भाव और शनि को जीवन की चुनौतियों, बदलाव तथा दीर्घकालीन जिम्मेदारियों के प्रतीक के रूप में देखा जाता है। इनसे किसी व्यक्ति की वास्तविक आयु या जीवनकाल विश्वसनीय रूप से तय नहीं किया जा सकता।`,
+      `इस कुंडली से मृत्यु की आयु, तारीख, कारण या परिस्थिति बताना उचित नहीं है। स्वास्थ्य संबंधी प्रश्नों में योग्य चिकित्सक, नियमित जांच और प्रमाण-आधारित उपचार को प्राथमिकता दें।`,
     ],
-    astrologicalCauseEn: `Computed via Parashari 3-pairs method: Lagna Lord + 8th Lord, Lagna + Moon, and Lagna + Hora Lagna.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: पाराशरी तीन-युग्म नियम (लग्नेश+अष्टमेश, लग्न+चंद्र, लग्न+होरा लग्न) द्वारा गणितीय आयु-खंड निर्धारण।`,
+    astrologicalCauseEn: `Traditional symbolic references: Ascendant, 8th house and Saturn. These are not a validated lifespan prediction method.`,
+    astrologicalCauseHi: `पारंपरिक प्रतीकात्मक आधार: लग्न, अष्टम भाव और शनि। यह आयु या मृत्यु की प्रमाणित भविष्यवाणी पद्धति नहीं है।`,
   };
 
   // Compile All 12 Chapters strictly mapping Bhavas 1 through 12
