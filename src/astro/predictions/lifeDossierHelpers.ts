@@ -572,7 +572,7 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
     });
   const selectedVocationalThemes = [...new Set(rankedD10Planets
     .map((placement) => vocationalThemes[String(placement.id)])
-    .filter(Boolean))].slice(0, 5);
+    .filter((theme): theme is { en: string; hi: string } => Boolean(theme)))].slice(0, 5);
   const fallbackThemes = Object.values(vocationalThemes).slice(0, 5);
   const vocationalThemesToShow = selectedVocationalThemes.length >= 3 ? selectedVocationalThemes : fallbackThemes;
   const topVocationsEn = vocationalThemesToShow.map((theme, index) => `${index + 1}. ${theme.en}`);
