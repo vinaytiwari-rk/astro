@@ -290,7 +290,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const [div11SubTab, setDiv11SubTab] = useState<'panchang' | 'festivals' | 'choghadiya' | 'muhurta' | 'rashifal'>('panchang');
   const [selectedRashifalSign, setSelectedRashifalSign] = useState<number>(0);
   const [rashifalPeriod, setRashifalPeriod] = useState<'daily' | 'monthly' | 'yearly'>('daily');
-  const [div12SubTab, setDiv12SubTab] = useState<'all' | 'identity' | 'family' | 'marriage' | 'career' | 'health_longevity' | 'caution_crisis'>('all');
+
 
   // External routing listener
   useEffect(() => {

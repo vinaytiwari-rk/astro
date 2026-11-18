@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import type { LifeDimensionReading } from '../../astro/predictions/sambhavitFalkathan';
 import type { SambhavitFalkathanReport } from '../../astro/predictions/sambhavitFalkathan';
 
 interface LifePredictions21PanelProps {
@@ -49,8 +48,6 @@ export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ 
     [report.dimensions, selectedCategory],
   );
 
-  const getText = (item: LifeDimensionReading, hi: string, en: string) => isHi ? item[hi as keyof LifeDimensionReading] : item[en as keyof LifeDimensionReading];
-
   return (
     <div className="view-stack">
       <section className="card" style={{ padding: '16px 20px', borderLeft: '4px solid var(--accent)' }}>
@@ -85,7 +82,7 @@ export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ 
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '12px' }}>
-        {visibleDimensions.map((item, index) => {
+        {visibleDimensions.map((item) => {
           const level = LEVEL_LABELS[item.auspiciousness] || LEVEL_LABELS.mixed_moderate;
           const explanation = LEVEL_EXPLANATIONS[item.auspiciousness] || LEVEL_EXPLANATIONS.mixed_moderate;
           const title = isHi ? item.titleHi : item.titleEn;
