@@ -443,9 +443,18 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
   const adPeriod = dashaPath[1];
   const pdPeriod = dashaPath[2];
 
-  const mdLord = (mdPeriod?.lord as NineGrahaId) || 'Saturn';
-  const adLord = (adPeriod?.lord as NineGrahaId) || 'Mercury';
-  const pdLord = (pdPeriod?.lord as NineGrahaId) || adLord;
+  if (!mdPeriod) {
+    return [{
+      titleEn: 'Current Dasha — Data Unavailable',
+      titleHi: 'वर्तमान दशा — डेटा उपलब्ध नहीं',
+      paragraphsEn: ['A current Vimshottari Mahadasha could not be resolved from the supplied chart. No fallback planet or timing claim is substituted.'],
+      paragraphsHi: ['दी गई कुंडली से वर्तमान विंशोत्तरी महादशा निर्धारित नहीं हो सकी। किसी काल्पनिक ग्रह या समय-सीमा को विकल्प के रूप में नहीं जोड़ा गया है।'],
+    }];
+  }
+
+  const mdLord = mdPeriod.lord as NineGrahaId;
+  const adLord = (adPeriod?.lord || mdPeriod.lord) as NineGrahaId;
+  const pdLord = (pdPeriod?.lord || adLord) as NineGrahaId;
 
   const mdPlanet = chart.planets.find((p) => p.id === mdLord);
   const adPlanet = chart.planets.find((p) => p.id === adLord);
