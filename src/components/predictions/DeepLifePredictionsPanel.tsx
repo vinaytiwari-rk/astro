@@ -44,7 +44,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
   return (
     <div className="view-stack">
-      {/* Top Banner with Life Score */}
+      {/* Top Banner: no fabricated aggregate probability */}
       <div className="card" style={{ borderLeft: '4px solid var(--accent)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           <div>
@@ -58,15 +58,17 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                 : 'Deep analysis across Personality, Wealth, Career, Marriage, Health & Spirituality'}
             </p>
           </div>
-
-          <div
-            className="badge badge-accent mono"
-            style={{ fontSize: '14px', padding: '6px 12px', fontWeight: 700 }}
-            title="Overall Life Auspiciousness Index"
-          >
-            Score: {report.overallLifeScore} / 100
-          </div>
+ 
+          <span className="badge badge-subtle">
+            {isHi ? 'पारंपरिक संकेत-आधारित व्याख्या' : 'Traditional indication-based reading'}
+          </span>
         </div>
+
+        <p className="muted small-text" style={{ margin: 0 }}>
+          {isHi
+            ? 'स्कोर या प्रतिशत नहीं दिखाए जाते, क्योंकि पारंपरिक ज्योतिषीय संकेत सांख्यिकीय संभावना नहीं होते। स्वास्थ्य, कानूनी और वित्तीय निर्णय विशेषज्ञ सलाह से लें।'
+            : 'Scores and percentages are omitted because traditional astrological indications are not statistical probabilities. Use qualified advice for health, legal and financial decisions.'}
+        </p>
 
         {/* Executive Summary */}
         <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--bg-subtle)', borderRadius: '8px', fontSize: '13.5px', lineHeight: 1.5 }}>
@@ -92,7 +94,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               <option value="all">{isHi ? 'सभी 6 जीवन क्षेत्र (View All)' : 'All 6 Life Spheres'}</option>
               {report.domains.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {isHi ? d.titleHi : d.titleEn} ({d.score}%)
+                  {isHi ? d.titleHi : d.titleEn}
                 </option>
               ))}
             </select>
@@ -121,14 +123,9 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                 </h3>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className={`badge ${domain.score >= 80 ? 'badge-good' : domain.score >= 70 ? 'badge-accent' : 'badge-warn'}`}>
-                  {isHi ? domain.ratingHi : domain.ratingEn}
-                </span>
-                <span className="mono" style={{ fontWeight: 700, fontSize: '13px' }}>
-                  {domain.score}%
-                </span>
-              </div>
+              <span className="badge badge-subtle">
+                {isHi ? 'संकेतात्मक विश्लेषण' : 'Indicative analysis'}
+              </span>
             </div>
 
             {/* In-depth Detailed Narrative */}
