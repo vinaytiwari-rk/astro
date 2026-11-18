@@ -156,6 +156,13 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(ch8?.specialData?.longevity).toBeUndefined();
     const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
     expect(epoch1).toBeDefined();
+    const epochs = ch8?.sections.filter((section) => section.titleEn.startsWith('Epoch ')) ?? [];
+    expect(epochs).toHaveLength(12);
+    for (const epoch of epochs) {
+      expect(epoch.paragraphsEn.join(' ')).toContain('does not establish');
+      expect(epoch.paragraphsHi.join(' ')).toContain('सिद्ध नहीं होता');
+      expect(epoch.paragraphsEn.join(' ')).not.toContain('Manner of Death');
+    }
   });
 
   it('verifies Chapter 9 (Bhagya Bhava) contains Global World Civilizations & Future Rebirth Global Geography', () => {

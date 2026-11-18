@@ -1220,148 +1220,91 @@ export function computeDynamicHealthSections(chart: ChartData): ChapterSection[]
 // ============================================================================
 // DYNAMIC CHAPTER 8: 15 TO 75 YEARS CHRONOLOGY (12 INDIVIDUAL 5-YEAR EPOCHS)
 // ============================================================================
-export function computeDynamic12Epochs(chart: ChartData, isMarriageDenial: boolean): ChapterSection[] {
+export function computeDynamic12Epochs(chart: ChartData): ChapterSection[] {
   const birthDate = new Date(chart.input.date);
-  const birthYear = isNaN(birthDate.getFullYear()) ? 1990 : birthDate.getFullYear();
+  const birthYear = Number.isNaN(birthDate.getTime()) ? null : birthDate.getFullYear();
   const birthMs = birthDate.getTime();
   const periods = chart.vimshottari ?? [];
-
-  const epochsConfig = [
-    { num: 1, startAge: 15, endAge: 20, themeEn: 'Adolescence, Academic Foundations & Early Identity', themeHi: 'किशोरावस्था, विद्या का द्वंद्व एवं पहचान की खोज' },
-    { num: 2, startAge: 21, endAge: 25, themeEn: 'First Independence, Career Launch & Practical Reality', themeHi: 'स्वावलंबन की तलाश, करियर की नींव एवं यथार्थ का आघात' },
-    { num: 3, startAge: 26, endAge: 30, themeEn: 'Crucible Milestone, Elevation & Major Alliances', themeHi: 'जीवन का निर्णायक मोड़, पदोन्नति व पहला बड़ा उत्थान' },
-    { num: 4, startAge: 31, endAge: 35, themeEn: 'Heavy Responsibilities, Asset Expansion & Relentless Grind', themeHi: 'भारी आर्थिक दायित्व, संपत्ति निर्माण एवं निरंतर भागदौड़' },
-    { num: 5, startAge: 36, endAge: 40, themeEn: 'The Zenith Acceleration, Leadership & Mid-Life Crucible', themeHi: 'उत्कर्ष का शिखर काल, नेतृत्व एवं जीवन का पुनर्गठन' },
-    { num: 6, startAge: 41, endAge: 45, themeEn: 'Material Consolidation, Societal Stature & Generational Legacy', themeHi: 'भौतिक संपदा का स्थायित्व, सामाजिक प्रतिष्ठा व कुल-गौरव' },
-    { num: 7, startAge: 46, endAge: 50, themeEn: 'Physical Recalibration, Introspection & Lifestyle Shifts', themeHi: 'शारीरिक संवेदनशीलता, अंतरावलोकन व स्वास्थ्य का घंटा' },
-    { num: 8, startAge: 51, endAge: 55, themeEn: 'Ascension of Lineage, Duty Fulfillment & Spiritual Maturation', themeHi: 'संतान का भाग्योदय, सामाजिक दायित्वों की पूर्णता व आत्मिक शांति' },
-    { num: 9, startAge: 56, endAge: 60, themeEn: 'Transition to Elder Statesmanship & Advisory Authority', themeHi: 'सक्रिय श्रम से निवृत्ति, वरिष्ठ मार्गदर्शक की भूमिका व सम्मान' },
-    { num: 10, startAge: 61, endAge: 65, themeEn: 'Pilgrimages, Domestic Peace & Detached Contemplation', themeHi: 'तीर्थाटन, पारिवारिक सुख-शांति एवं शांत चित्त' },
-    { num: 11, startAge: 66, endAge: 70, themeEn: 'Deep Sadhana, Shedding Worldly Ties & Transmission of Wisdom', themeHi: 'वैराग्य, गहन साधना एवं ज्ञान का संप्रेषण' },
-    { num: 12, startAge: 71, endAge: 75, themeEn: 'Reconciliation of Accounts, Sublime Surrender & Moksha Readiness', themeHi: 'सांसारिक लेखा-जोखा पूर्ण, शांत समर्पण व मोक्ष की तैयारी' },
-  ];
-
+  const epochs = [
+    [15, 20, 'Adolescence and foundations', 'किशोरावस्था और आधार निर्माण'],
+    [21, 25, 'Early adulthood and independence', 'प्रारंभिक वयस्कता और स्वावलंबन'],
+    [26, 30, 'Personal direction and choices', 'जीवन-दिशा और महत्वपूर्ण चयन'],
+    [31, 35, 'Responsibilities and consolidation', 'उत्तरदायित्व और स्थायित्व'],
+    [36, 40, 'Midlife review and priorities', 'मध्य आयु में प्राथमिकताओं का पुनर्मूल्यांकन'],
+    [41, 45, 'Resources and long-term planning', 'संसाधन और दीर्घकालीन योजना'],
+    [46, 50, 'Wellbeing and sustainable routines', 'कल्याण और संतुलित दिनचर्या'],
+    [51, 55, 'Mentoring and family responsibilities', 'मार्गदर्शन और पारिवारिक उत्तरदायित्व'],
+    [56, 60, 'Experience and changing roles', 'अनुभव और बदलती भूमिकाएँ'],
+    [61, 65, 'Reflection and purposeful activity', 'आत्मचिंतन और सार्थक गतिविधियाँ'],
+    [66, 70, 'Knowledge-sharing and simplicity', 'ज्ञान-साझाकरण और सरलता'],
+    [71, 75, 'Meaning, values and reflection', 'जीवनार्थ, मूल्य और आत्मचिंतन'],
+  ] as const;
+  const houseThemes: Record<number, { en: string; hi: string }> = {
+    1: { en: 'identity, vitality and personal direction', hi: 'व्यक्तित्व, ऊर्जा और व्यक्तिगत दिशा' },
+    2: { en: 'family, resources, speech and values', hi: 'परिवार, संसाधन, वाणी और मूल्य' },
+    3: { en: 'initiative, skills, communication and effort', hi: 'पहल, कौशल, संवाद और प्रयास' },
+    4: { en: 'home, education, emotional security and property', hi: 'घर, शिक्षा, भावनात्मक सुरक्षा और संपत्ति' },
+    5: { en: 'learning, creativity, discernment and children', hi: 'अध्ययन, रचनात्मकता, विवेक और संतान' },
+    6: { en: 'service, routines, competition and problem-solving', hi: 'सेवा, दिनचर्या, प्रतिस्पर्धा और समस्या-समाधान' },
+    7: { en: 'partnerships, agreements and public dealings', hi: 'साझेदारी, समझौते और सार्वजनिक व्यवहार' },
+    8: { en: 'change, shared resources, research and uncertainty', hi: 'परिवर्तन, साझा संसाधन, अनुसंधान और अनिश्चितता' },
+    9: { en: 'learning, mentors, principles and long journeys', hi: 'अध्ययन, गुरु, सिद्धांत और लंबी यात्राएँ' },
+    10: { en: 'career, responsibility, status and contribution', hi: 'करियर, उत्तरदायित्व, पद और योगदान' },
+    11: { en: 'networks, aspirations, gains and communities', hi: 'संपर्क, आकांक्षाएँ, लाभ और समुदाय' },
+    12: { en: 'expenses, rest, retreat, foreign links and spirituality', hi: 'व्यय, विश्राम, एकांत, विदेश-संबंध और अध्यात्म' },
+  };
   const sections: ChapterSection[] = [];
 
-  for (const ep of epochsConfig) {
-    const startCalendarYear = birthYear + ep.startAge;
-    const endCalendarYear = birthYear + ep.endAge;
-    const midAge = (ep.startAge + ep.endAge) / 2;
+  for (const [index, epoch] of epochs.entries()) {
+    const [startAge, endAge, themeEn, themeHi] = epoch;
+    const midAge = (startAge + endAge) / 2;
     const midMs = birthMs + midAge * 365.25 * 86400000;
+    const path = Number.isNaN(birthMs) ? [] : findActiveDashaPath(periods, midMs);
+    const md = path[0]?.lord;
+    const ad = path[1]?.lord;
+    const mdPlanet = md ? chart.planets.find((p) => p.id === md) : undefined;
+    const adPlanet = ad ? chart.planets.find((p) => p.id === ad) : undefined;
+    const mdHouse = mdPlanet?.rasiHouseNumber;
+    const adHouse = adPlanet?.rasiHouseNumber;
+    const yearSpanEn = birthYear === null ? '' : ` · ${birthYear + startAge}–${birthYear + endAge} CE`;
+    const yearSpanHi = birthYear === null ? '' : ` · ${birthYear + startAge}–${birthYear + endAge} ईस्वी`;
 
-    const path = findActiveDashaPath(periods, midMs);
-    const md = (path[0]?.lord as NineGrahaId) || 'Saturn';
-    const ad = (path[1]?.lord as NineGrahaId) || 'Mercury';
+    const activeTextEn = md && ad
+      ? `At the midpoint of this age band, the available Vimshottari sequence shows ${md} Mahadasha and ${ad} Antardasha. Their natal placements connect with ${mdHouse ? `house ${mdHouse} (${houseThemes[mdHouse]?.en ?? 'a chart-specific life area'})` : 'an unavailable natal house'} and ${adHouse ? `house ${adHouse} (${houseThemes[adHouse]?.en ?? 'a chart-specific life area'})` : 'an unavailable natal house'}.`
+      : 'The available Vimshottari data does not provide a complete period path for the midpoint of this age band; no timing claim is made.';
+    const activeTextHi = md && ad
+      ? `इस आयु-खंड के मध्य में उपलब्ध विंशोत्तरी क्रम के अनुसार ${PLANET_HI[md] || md} महादशा और ${PLANET_HI[ad] || ad} अंतर्दशा आती है। इनके जन्मकुंडली-स्थित भाव ${mdHouse ? `भाव ${mdHouse} (${houseThemes[mdHouse]?.hi ?? 'कुंडली का संबंधित जीवन क्षेत्र'})` : 'अज्ञात'} तथा ${adHouse ? `भाव ${adHouse} (${houseThemes[adHouse]?.hi ?? 'कुंडली का संबंधित जीवन क्षेत्र'})` : 'अज्ञात'} हैं।`
+      : 'उपलब्ध विंशोत्तरी डेटा में इस आयु-खंड के मध्य की पूरी दशा-श्रृंखला नहीं मिली; इसलिए समय-संबंधी दावा नहीं किया जा रहा है।';
 
-    const mdPlanet = chart.planets.find((p) => p.id === md);
-    const adPlanet = chart.planets.find((p) => p.id === ad);
-    const mdHouse = mdPlanet?.rasiHouseNumber || 1;
-    const adHouse = adPlanet?.rasiHouseNumber || 1;
-
-    // Narrative generation based on actual running dasha and age bracket
-    let p1En = '';
-    let p1Hi = '';
-    let p2En = '';
-    let p2Hi = '';
-
-    if (ep.num === 1) {
-      // 15-20
-      p1En = `Between ages 15 and 20 (${startCalendarYear}–${endCalendarYear} CE), your intellectual faculties expanded under the running Mahadasha of ${md} (House ${mdHouse}) and Antardasha of ${ad} (House ${adHouse}). You experienced a silent rebellion against rigid authoritarian instruction, seeking your own intellectual identity while feeling the heavy burden of parental expectations.`;
-      p1Hi = `15 से 20 वर्ष की आयु में (${startCalendarYear}–${endCalendarYear} ईस्वी), '${PLANET_HI[md] || md}' (भाव ${mdHouse}) की महादशा तथा '${PLANET_HI[ad] || ad}' (भाव ${adHouse}) की अंतर्दशा के प्रभाव से आपकी बौद्धिक क्षमता का तीव्र विकास हुआ। आपने पारंपरिक नियमों के प्रति मौन विद्रोह किया और पारिवारिक अपेक्षाओं के दबाव के बीच स्वयं की पहचान तलाशने का संघर्ष किया।`;
-      p2En = `A critical academic or vocational crossroads around age 17–18 laid the foundational stones of your career path. You battled youthful self-doubt, emotional crushes, and peer comparisons, yet your intrinsic mental resilience carried you across the threshold into young adulthood.`;
-      p2Hi = `17 से 18 वर्ष की आयु के आसपास विद्या अथवा विषय के चयन में एक बड़ा मोड़ आया जिसने आपके भविष्य की नींव रखी। युवावस्था के असमंजस, आकर्षण और साथियों से तुलना के द्वंद्व के बाद भी आपकी स्वाभाविक प्रतिभा ने आपको आगे बढ़ाया।`;
-    } else if (ep.num === 2) {
-      // 21-25
-      p1En = `Between ages 21 and 25 (${startCalendarYear}–${endCalendarYear} CE), the harsh realities of the competitive world arrived under ${md}-${ad}. College idealism dissolved as you confronted the necessity of earning independent livelihood. You acquired professional discipline, learned to navigate complex workplace hierarchies, and faced the reality that merit alone requires political savvy to survive.`;
-      p1Hi = `21 से 25 वर्ष की आयु में (${startCalendarYear}–${endCalendarYear} ईस्वी), '${PLANET_HI[md] || md}-${PLANET_HI[ad] || ad}' के प्रभाव से संसार के कठोर यथार्थ का सामना हुआ। कॉलेज के आदर्शवादी स्वप्नों की जगह स्वावलंबन और आजीविका की चिंता ने ली। आपने पहली स्वतंत्र कमाई अर्जित की और समझा कि दुनिया में केवल योग्यता नहीं, बल्कि धैर्य और कूटनीति भी अनिवार्य है।`;
-      p2En = `An intense personal or romantic trial during this epoch tested your emotional maturity. Sacrifices were demanded, shedding youthful naivety and teaching you irreplaceable lessons regarding whom to trust and where to draw boundaries.`;
-      p2Hi = `इस कालखंड में प्रेम अथवा मित्रता की एक गहरी परीक्षा हुई जिसमें या तो भारी त्याग करना पड़ा या गहरा विश्वासघात सहना पड़ा, जिसने आपको इंसानी फितरत को पहचानने की अचूक दृष्टि प्रदान की।`;
-    } else if (ep.num === 3) {
-      // 26-30
-      p1En = `Ages 26 to 30 (${startCalendarYear}–${endCalendarYear} CE) constituted a master turning point under ${md} (House ${mdHouse}) and ${ad} (House ${adHouse}). ${isMarriageDenial ? 'Instead of conventional domestic entanglements, this window brought profound intellectual consolidation, solitary creative breakthroughs, and setting up an independent enterprise or specialized mastery.' : 'For natives of your configuration, this epoch consolidated long-term personal partnerships or marriage, alongside a decisive breakthrough in career stature.'}`;
-      p1Hi = `26 से 30 वर्ष का कालखंड (${startCalendarYear}–${endCalendarYear} ईस्वी) जीवन का 'केंद्रीय मोड़' साबित हुआ जब '${PLANET_HI[md] || md}' व '${PLANET_HI[ad] || ad}' सक्रिय रहे। ${isMarriageDenial ? 'पारंपरिक दांपत्य के स्थान पर इस काल में जातक की बौद्धिक स्वाधीनता, स्वतंत्र शोध या व्यापारिक उद्यम की सुदृढ़ स्थापना हुई।' : 'इस पड़ाव पर गंभीर दीर्घकालिक साझेदारी अथवा विवाह संस्कार संपन्न हुआ, और करियर में सामान्य कर्मचारी से ऊपर उठकर ठोस अधिकार प्राप्त हुआ।'} `;
-      p2En = `Between ages 28 and 30, a major transition—relocation, promotion, or high-stakes project execution—elevated your public standing. You ceased asking for permission and began commanding operational responsibility.`;
-      p2Hi = `28 से 30 वर्ष के मध्य कार्यक्षेत्र में एक बड़ा उछाल आया—स्थान परिवर्तन अथवा नई पदोन्नति ने समाज में आपका एक स्वतंत्र कद स्थापित करना प्रारंभ कर दिया।`;
-    } else if (ep.num === 4) {
-      // 31-35
-      p1En = `Ages 31 to 35 (${startCalendarYear}–${endCalendarYear} CE) represented the most demanding operational phase under ${md}-${ad}. ${isMarriageDenial ? 'High professional demands, building long-term assets, and navigating competitive adversaries tested your endurance.' : 'Family expansion, children’s early upbringing, and acquiring or upgrading real estate created intense financial obligations.'} Every resource earned was directed toward building lasting security.`;
-      p1Hi = `31 से 35 वर्ष का कालखंड (${startCalendarYear}–${endCalendarYear} ईस्वी) जिम्मेदारियों से लदा अत्यंत व्यस्त दौर रहा। ${isMarriageDenial ? 'करियर में बड़े प्रोजेक्ट्स, अचल संपत्ति का निर्माण और प्रतिस्पर्धियों से निपटना आपकी सहनशक्ति की परीक्षा लेता रहा।' : 'संतान का सुख, घर-मकान बनाने की भागदौड़ और पारिवारिक खर्चों ने आर्थिक प्रबंधन की निरंतर परीक्षा ली।'} कमाया हुआ अधिकांश धन स्थायी संपत्ति और उत्तरदायित्वों में लगा।`;
-      p2En = `Physical fatigue and corporate pressures mounted, yet your inner fortitude solidified into steel. You served as an unshakeable shield for those depending on you.`;
-      p2Hi = `शारीरिक थकावट और भागदौड़ के बाद भी आपका संकल्प चट्टान की भांति दृढ़ बना रहा और आप अपनों के लिए एक अटूट रक्षा-कवच बने रहे।`;
-    } else if (ep.num === 5) {
-      // 36-40
-      p1En = `Ages 36 to 40 (${startCalendarYear}–${endCalendarYear} CE) unlocked the mature zenith acceleration previewed in Chapter 4 under ${md} and ${ad}. You stepped into executive leadership or independent business ownership, commanding authority across your ecosystem. You were no longer executing others’ visions; you were shaping policy.`;
-      p1Hi = `36 से 40 वर्ष की आयु (${startCalendarYear}–${endCalendarYear} ईस्वी) में आपके जीवन का स्वर्णिम उत्कर्ष काल प्रारंभ हुआ। '${PLANET_HI[md] || md}' और '${PLANET_HI[ad] || ad}' के पूर्ण परिपक्व होने से आप कार्यक्षेत्र में नीति-निर्धारक या बड़े व्यापार के स्थापित स्वामी बने। आपकी सलाह का वजन बढ़ा।`;
-      p2En = `Simultaneously, a mid-life psychological pruning took place: you ruthlessly excised transactional acquaintances and superficial socializing, fiercely guarding your peace of mind and health.`;
-      p2Hi = `साथ ही एक गंभीर मध्य-आयु मंथन हुआ: आपने चापलूसों और व्यर्थ के संपर्कों से दूरी बना ली और केवल चुनिंदा आत्मीय लोगों, स्वास्थ्य और मानसिक शांति को सर्वोच्च प्राथमिकता दी।`;
-    } else if (ep.num === 6) {
-      // 41-45
-      p1En = `Between ages 41 and 45 (${startCalendarYear}–${endCalendarYear} CE), frantic youth yielded to dignified assurance under ${md}-${ad}. You consolidated material reserves, retired legacy debts, and invested in generational assets. Extended family and junior peers sought your guidance as a living patriarch/matriarch.`;
-      p1Hi = `41 से 45 वर्ष की आयु (${startCalendarYear}–${endCalendarYear} ईस्वी) में युवावस्था की अधीरता शांत होकर गरिमामयी गंभीरता में बदल गई। आपने पुराने कर्जों का निस्तारण किया, संचित पूंजी को सुरक्षित संपत्तियों में बदला, और कुल में एक सम्मानित स्तंभ बने।`;
-      p2En = `A profound philanthropic instinct awakened: you began considering what moral, educational, and spiritual legacy you would leave behind beyond financial ledger balances.`;
-      p2Hi = `मन में 'विरासत' का विचार गहराया: केवल धन संचय के बजाय भावी पीढ़ी को श्रेष्ठ संस्कार, विद्या और धर्म का संबल देने की ओर स्वाभाविक रुझान बढ़ा।`;
-    } else if (ep.num === 7) {
-      // 46-50
-      p1En = `The 46 to 50 cycle (${startCalendarYear}–${endCalendarYear} CE) sounded an unambiguous health recalibration alarm under ${md} (House ${mdHouse}) and ${ad} (House ${adHouse}). Metabolic invulnerability passed; blood pressure, sugar, spine, or joints demanded strict daily yogic discipline.`;
-      p1Hi = `46 से 50 वर्ष का कालखंड (${startCalendarYear}–${endCalendarYear} ईस्वी) स्वास्थ्य की दृष्टि से शरीर का अलार्म बजाने वाला रहा। अत्यधिक तनाव और अनियमितता का प्रभाव रक्तचाप, पाचन अथवा रीढ़-जोड़ों पर पड़ा, जिसने दिनचर्या में तत्काल सुधार की मांग की।`;
-      p2En = `Spiritually, this was an illuminating awakening. You realized the ultimate emptiness of worldly rat-races, embracing morning meditation, sacred study, and detached witnessing over stressful expansions.`;
-      p2Hi = `आध्यात्मिक रूप से यह चित्त शुद्धि का काल रहा। संसार की अंधी दौड़ की व्यर्थता समझ में आई और आपका मन ध्यान, ईश्वर-भक्ति और एकांत साधना में शांति पाने लगा।`;
-    } else if (ep.num === 8) {
-      // 51-55
-      p1En = `Between ages 51 and 55 (${startCalendarYear}–${endCalendarYear} CE), under ${md}-${ad}, ${isMarriageDenial ? 'intellectual and philosophical mentoring reached full bloom; you guided disciples, younger associates, and institutions with detached wisdom.' : 'your primary focus shifted toward children’s higher education, career establishment, and marital alliances. Fulfilling these heavy parental milestones brought profound relief and satisfaction.'}`;
-      p1Hi = `51 से 55 वर्ष की अवस्था (${startCalendarYear}–${endCalendarYear} ईस्वी) में, ${isMarriageDenial ? 'आपकी बौद्धिक व दार्शनिक प्रतिष्ठा चरम पर पहुंची; आपने युवा पीढ़ी, शोधकर्ताओं अथवा शिष्यों को निष्काम भाव से मार्गदर्शन दिया।' : 'जीवन का केंद्र संतान बनी; उनकी उच्च शिक्षा, आजीविका और विवाह के पवित्र बंधनों को संपन्न कराने से मन पर से एक बहुत बड़ा भार उतरा और आत्म-संतोष मिला।'} `;
-      p2En = `Your Ishta Devata mantra became a constant subconscious accompaniment. Worldly storms were navigated with philosophical equilibrium, resting in divine cosmic order.`;
-      p2Hi = `इष्ट देव का नाम-जप श्वास-श्वास में समा गया। सांसारिक उतार-चढ़ावों को आपने एक साक्षी भाव से देखना प्रारंभ कर दिया।`;
-    } else if (ep.num === 9) {
-      // 56-60
-      p1En = `Ages 56 to 60 (${startCalendarYear}–${endCalendarYear} CE) marked the formal transition from daily operational exhaustion to elder statesmanship under ${md}-${ad}. You stepped back from frontline trenches, delegating executive duties to trusted successors.`;
-      p1Hi = `56 से 60 वर्ष की आयु (${startCalendarYear}–${endCalendarYear} ईस्वी) दैनिक कठोर भागदौड़ से विश्राम की ओर बढ़ने का समय रहा। सक्रिय कार्यभार युवा पीढ़ी या सहयोगियों को सौंपकर आप एक वरिष्ठ मार्गदर्शक (Advisor) की भूमिका में आ गए।`;
-      p2En = `Your authority elevated from raw power into moral reverence. You enjoyed the fruits of lifelong labor in domestic harmony, free from urgent workplace anxiety.`;
-      p2Hi = `आपका प्रभाव पद से बदलकर 'आदर और सम्मान' में रूपांतरित हो गया। आपने जीवन भर के संचित अनुभवों का लाभ समाज को दिया और मानसिक शांति का आनंद लिया।`;
-    } else if (ep.num === 10) {
-      // 61-65
-      p1En = `Between 61 and 65 (${startCalendarYear}–${endCalendarYear} CE), deep domestic peace and sacred wanderlust arrived under ${md}-${ad}. Extended pilgrimages to holy rivers and mountain shrines washed away accumulated karmic residue.`;
-      p1Hi = `61 से 65 वर्ष का पड़ाव (${startCalendarYear}–${endCalendarYear} ईस्वी) असीम शांति और तीर्थाटन का आनंद लेकर आया। पवित्र तीर्थों की यात्राओं ने मन को निर्मल और कृतार्थ किया।`;
-      p2En = `Financial security remained completely self-sufficient. You lived simply, enjoyed wholesome satvik food, and guarded your mental sanctity against domestic squabbles.`;
-      p2Hi = `आर्थिक स्थिति पूरी तरह आत्मनिर्भर रही। आपने सात्विक, संयमित दिनचर्या अपनाई और व्यर्थ के सांसारिक विवादों से चित्त को सर्वथा दूर रखा।`;
-    } else if (ep.num === 11) {
-      // 66-70
-      p1En = `Between ages 66 and 70 (${startCalendarYear}–${endCalendarYear} CE), natural Vairagya (healthy detachment) flowered under ${md}-${ad}. Material wealth and social applause ceased to hold allure; consciousness rested in pure spiritual presence.`;
-      p1Hi = `66 से 70 वर्ष की आयु (${startCalendarYear}–${endCalendarYear} ईस्वी) में स्वाभाविक वैराग्य का उदय हुआ। सांसारिक मान-प्रतिष्ठा की लालसा समाप्त हो गई और मन अंतरात्मा की अगाध शांति में स्थित हो गया।`;
-      p2En = `Family and community revered you as a living sage whose silent blessings held protective power. Daily hours flowed in contemplation, sacred chanting, and goodwill to all beings.`;
-      p2Hi = `समाज और परिवार में आपको एक ऋषि-तुल्य वंदनीय स्थान प्राप्त हुआ। आपका अधिकांश समय ध्यान, जप, और लोक-कल्याण की मंगल कामनाओं में व्यतीत होने लगा।`;
-    } else {
-      // 71-75
-      p1En = `Ages 71 to 75 (${startCalendarYear}–${endCalendarYear} CE) represent the sublime culmination of earthly obligations under ${md}-${ad}. Looking back upon seven decades, every trial is recognized as a crucible of soul growth, and every triumph as divine grace. All significant karmic accounts are reconciled.`;
-      p1Hi = `71 से 75 वर्ष का कालखंड (${startCalendarYear}–${endCalendarYear} ईस्वी) इस जन्म के महा-अध्याय की गौरवमयी पूर्णता का काल है। बीते हुए जीवन पर दृष्टि डालने पर कोई पछतावा शेष नहीं रहता; प्रत्येक कष्ट ने चेतना को मांजा और प्रत्येक सुख ने कृतज्ञता सिखाई। प्रारब्ध के सभी ऋण सम्यक रूप से चुक गए।`;
-      p2En = `Carrying no enmities and fearing neither disease nor death, the soul rests in calm surrender at the feet of the Ishta Devata, fully prepared for a luminous transition when the final cosmic call arrives.`;
-      p2Hi = `मन में किसी के प्रति कोई द्वेष नहीं, और मृत्यु का कोई भय नहीं। अपने इष्ट देव के चरणों में पूर्ण समर्पण के साथ, आत्मा एक पवित्र, शांत और मुक्त अवस्था में स्थित रहती है—दिव्य लोकों की ओर प्रयाण हेतु पूर्णतः तत्पर।`;
-    }
-
-    const sec: ChapterSection = {
-      titleEn: `Epoch ${ep.num} (Ages ${ep.startAge}–${ep.endAge} · ${startCalendarYear}–${endCalendarYear} CE): ${ep.themeEn}`,
-      titleHi: `${ep.themeHi} (आयु ${ep.startAge} से ${ep.endAge} वर्ष · ${startCalendarYear}–${endCalendarYear} ईस्वी)`,
-      leadEn: `Dasha Axis: Mahadasha Lord ${md} (House ${mdHouse}) & Antardasha Lord ${ad} (House ${adHouse}).`,
-      leadHi: `सक्रिय काल चक्र: महादशेश '${PLANET_HI[md] || md}' (भाव ${mdHouse}) एवं अंतर्दशेश '${PLANET_HI[ad] || ad}' (भाव ${adHouse})।`,
-      paragraphsEn: [p1En, p2En],
-      paragraphsHi: [p1Hi, p2Hi],
-      astrologicalCauseEn: `Brihat Parashara Hora Shastra (Ch. 52–60) & Hora Sara: Running Mahadasha of ${md} and Antardasha of ${ad} activating houses ${mdHouse} and ${adHouse} in natal chart.`,
-      astrologicalCauseHi: `शास्त्रीय कारण: बृहत्पाराशर होराशास्त्र (अध्याय ५२-६० - दशाफलाध्यायः) एवं होरासार: '${PLANET_HI[md] || md}' व '${PLANET_HI[ad] || ad}' की दशा द्वारा भाव ${mdHouse} व ${adHouse} का फलीभूत होना।`,
+    const section: ChapterSection = {
+      titleEn: `Epoch ${index + 1} (Ages ${startAge}–${endAge}${yearSpanEn}): ${themeEn}`,
+      titleHi: `पड़ाव ${index + 1} (आयु ${startAge}–${endAge} वर्ष${yearSpanHi}): ${themeHi}`,
+      leadEn: 'This is an age-band reflection, not a prediction that a specific event will occur.',
+      leadHi: 'यह आयु-खंड आधारित आत्मचिंतन है, किसी निश्चित घटना की भविष्यवाणी नहीं।',
+      paragraphsEn: [
+        activeTextEn,
+        `In traditional Jyotish, these placements can be read as periods when the themes of ${themeEn.toLowerCase()} and the connected house topics may receive attention. This does not establish marriage, promotion, illness, wealth, loss or any other event.`,
+      ],
+      paragraphsHi: [
+        activeTextHi,
+        `पारंपरिक ज्योतिष में इन स्थितियों को ऐसे समय के संकेत के रूप में पढ़ा जा सकता है जब “${themeHi}” और संबंधित भावों के विषयों पर ध्यान जा सकता है। इससे विवाह, पदोन्नति, बीमारी, धन, हानि या किसी अन्य घटना का होना सिद्ध नहीं होता।`,
+      ],
+      astrologicalCauseEn: 'The dasha lords are read through their natal house placements at the midpoint of this age band. This layer does not include transit confirmation or event-specific combinations.',
+      astrologicalCauseHi: 'इस आयु-खंड के मध्य की दशा के स्वामियों को उनकी जन्मकुंडली में स्थित भावों से पढ़ा गया है। इस स्तर पर गोचर-पुष्टि या घटना-विशिष्ट योग शामिल नहीं हैं।',
       keyPointsEn: [
-        `Epoch Span: Ages ${ep.startAge}–${ep.endAge} (${startCalendarYear}–${endCalendarYear} CE)`,
-        `Active Mahadasha: ${md} (House ${mdHouse})`,
-        `Active Antardasha: ${ad} (House ${adHouse})`,
-        `Core Milestone: ${ep.themeEn}`,
+        `Age band: ${startAge}–${endAge}`,
+        md ? `Mahadasha at midpoint: ${md}` : 'Mahadasha: unavailable',
+        ad ? `Antardasha at midpoint: ${ad}` : 'Antardasha: unavailable',
+        `Themes: ${mdHouse ? houseThemes[mdHouse]?.en ?? 'natal house theme' : 'not available'}; ${adHouse ? houseThemes[adHouse]?.en ?? 'natal house theme' : 'not available'}`,
       ],
       keyPointsHi: [
-        `आयु कालखंड: ${ep.startAge} से ${ep.endAge} वर्ष (${startCalendarYear}–${endCalendarYear} ईस्वी)`,
-        `सक्रिय महादशा: '${PLANET_HI[md] || md}' (भाव संख्या ${mdHouse})`,
-        `सक्रिय अंतर्दशा: '${PLANET_HI[ad] || ad}' (भाव संख्या ${adHouse})`,
-        `मुख्य जीवन पड़ाव: ${ep.themeHi}`,
+        `आयु-खंड: ${startAge}–${endAge} वर्ष`,
+        md ? `मध्य की महादशा: ${PLANET_HI[md] || md}` : 'महादशा: उपलब्ध नहीं',
+        ad ? `मध्य की अंतर्दशा: ${PLANET_HI[ad] || ad}` : 'अंतर्दशा: उपलब्ध नहीं',
+        `विषय: ${mdHouse ? houseThemes[mdHouse]?.hi ?? 'भाव विषय' : 'उपलब्ध नहीं'}; ${adHouse ? houseThemes[adHouse]?.hi ?? 'भाव विषय' : 'उपलब्ध नहीं'}`,
       ],
     };
-
-    sections.push(sec);
+    sections.push(section);
   }
 
   return sections;

@@ -718,7 +718,7 @@ export function computeLifeDossierReport(
 
   const [marriageSpouseSec, marriageSexualitySec] = computeDynamicMarriageAndIntimacySections(chart, isMarriageDenial);
   const [healthTridoshaSec, healthAngaBhangaSec] = computeDynamicHealthSections(chart);
-  const epochSections = computeDynamic12Epochs(chart, isMarriageDenial);
+  const epochSections = computeDynamic12Epochs(chart);
 
   const pastReading = pastFuture?.pastLife;
   const futureReading = pastFuture?.futureBecoming;
@@ -1189,19 +1189,19 @@ export function computeLifeDossierReport(
   });
 
   // =========================================================================
-  // CHAPTER 8: अष्टम भाव (रंध्र व आयु भाव) — आयु मर्यादा, आकस्मिक संकट व 15-75 वर्ष कालक्रम
+  // CHAPTER 8: अष्टम भाव (रंध्र भाव) — परिवर्तन, साझा संसाधन व दीर्घकालीन जिम्मेदारी
   // =========================================================================
   const h8Profile = computeHouseProfile(chart, 8);
   chapters.push({
     chapterNumber: 8,
     houseNumber: 8,
     id: 'chapter8_randhra_longevity',
-    titleEn: 'Chapter 8: Eighth House (Randhra Bhava) — Longevity, Crises & 15-75 Years Milestones',
-    titleHi: 'अध्याय 8: अष्टम भाव (रंध्र व आयु भाव) — आयु मर्यादा, आकस्मिक संकट व 15-75 वर्ष कालक्रम',
-    subtitleEn: 'Parashari 3-Pairs Longevity, Vulnerable Organs/Surgeries, Inheritance & 12 Five-Year Lifespan Epochs',
-    subtitleHi: 'पाराशरी तीन-युग्म आयु खंड, शल्यक्रिया-अंगदोष, पैतृक दायभाग व 15 से 75 वर्ष तक के 12 पंचवर्षीय जीवन पड़ाव',
+    titleEn: 'Chapter 8: Eighth House (Randhra Bhava) — Transformation, Shared Resources & Resilience',
+    titleHi: 'अध्याय 8: अष्टम भाव (रंध्र भाव) — परिवर्तन, साझा संसाधन और धैर्य',
+    subtitleEn: 'Traditional symbolism of change, shared assets, research and personal resilience',
+    subtitleHi: 'परिवर्तन, साझा संपत्ति, अनुसंधान और व्यक्तिगत धैर्य का पारंपरिक प्रतीकात्मक अध्ययन',
     icon: 'hourglass',
-    summaryQuoteEn: 'The mystery of the eighth house teaches that death is not the termination of life, but the master architect that gives urgency and depth to every breath.',
+    summaryQuoteEn: 'The eighth house is traditionally associated with change, shared resources and the need for resilience.',
     summaryQuoteHi: 'अष्टम भाव को परंपरागत रूप से परिवर्तन, साझा संसाधनों और धैर्य की आवश्यकता से जोड़ा जाता है।'
     bhavaProfile: h8Profile.profile,
     targetedRemedy: h8Profile.remedy,
