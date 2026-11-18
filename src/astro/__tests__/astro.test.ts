@@ -84,7 +84,7 @@ import {
 } from '../panchaPakshiAndKaksha';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
 import { DIVISIONAL_META, SEVEN_PLANETS, SIGNS } from '../constants';
-import { formatDateDmy, parseDateInputToIso, parseOffsetString } from '../time';
+import { formatDateDmy, parseDateInputToIso, parseOffsetString, resolveUtcFromBirth } from '../time';
 import { getDivisionalSignIndex } from '../vargas';
 import { computeEclipticDeclinationDeg } from '../strength';
 import {
@@ -95,6 +95,25 @@ import {
   searchCitiesExtended,
 } from '../../data/cities';
 import * as Astronomy from 'astronomy-engine';
+
+describe('IANA timezone resolution', () => {
+  it('uses the correct seasonal UTC offset for a valid IANA zone', () => {
+    const winter = resolveUtcFromBirth('2024-01-15', '12:00:00', 'America/New_York');
+    const summer = resolveUtcFromBirth('2024-07-15', '12:00:00', 'America/New_York');
+    expect(winter.utcMs).toBe(Date.UTC(2024, 0, 15, 17, 0, 0));
+    expect(winter.offsetMinutes).toBe(-300);
+    expect(summer.utcMs).toBe(Date.UTC(2024, 6, 15, 16, 0, 0));
+    expect(summer.offsetMinutes).toBe(-240);
+  });
+
+  it('rejects invalid time zones instead of silently treating them as UTC', () => {
+    expect(() => resolveUtcFromBirth('2024-01-15', '12:00:00', 'Not/A_Real_Zone')).toThrow(RangeError);
+  });
+
+  it('rejects local times that fall inside a daylight-saving gap', () => {
+    expect(() => resolveUtcFromBirth('2024-03-10', '02:30:00', 'America/New_York')).toThrow(RangeError);
+  });
+});
 
 describe('UTC offset parsing', () => {
   it('accepts valid offsets within the UTC range', () => {

@@ -133,8 +133,7 @@ export function resolveUtcFromBirth(
   for (let i = 0; i < 3; i++) {
     const wallAtGuess = getZonePartsMs(guessUtcMs, timezone);
     if (wallAtGuess === null) {
-      const fallback = manualOffsetMinutes ?? 0;
-      return { utcMs: targetWallMs - fallback * 60_000, offsetMinutes: fallback };
+      throw new RangeError(`Invalid IANA time zone: ${timezone}`);
     }
     const offsetMs = wallAtGuess - guessUtcMs;
     const nextUtcMs = targetWallMs - offsetMs;
@@ -146,9 +145,17 @@ export function resolveUtcFromBirth(
   }
 
   const finalWall = getZonePartsMs(guessUtcMs, timezone);
-  const offsetMinutes =
-    finalWall !== null ? Math.round((finalWall - guessUtcMs) / 60_000 * 100) / 100 : (manualOffsetMinutes ?? 0);
+  if (finalWall === null) {
+    throw new RangeError(`Invalid IANA time zone: ${timezone}`);
+  }
 
+  // A wall-clock time inside a DST spring-forward gap does not exist. Never
+  // silently normalize it to a different local time or fall back to UTC.
+  if (finalWall !== targetWallMs) {
+    throw new RangeError(`Local time ${dateStr} ${timeStr} does not exist in time zone ${timezone}`);
+  }
+
+  const offsetMinutes = Math.round(((finalWall - guessUtcMs) / 60_000) * 100) / 100;
   return { utcMs: guessUtcMs, offsetMinutes };
 }
 
