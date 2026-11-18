@@ -66,6 +66,32 @@ export const LifePredictions21Panel: React.FC<LifePredictions21PanelProps> = ({ 
         </div>
       </section>
 
+      <section className="card" style={{ padding: '14px' }}>
+        <h3 style={{ margin: '0 0 8px', fontSize: '15px' }}>
+          {isHi ? 'केंद्रीय विषय-आधारित विश्लेषण' : 'Central domain analysis'}
+        </h3>
+        <p className="muted" style={{ margin: '0 0 10px', fontSize: '12px', lineHeight: 1.5 }}>
+          {isHi
+            ? 'यह विश्लेषण संबंधित भाव, भावेश, ग्रहों की स्थिति, दृष्टि, सर्वाष्टकवर्ग और उपलब्ध वर्ग-कुंडली/दशा को साथ देखता है। गोचर अभी शामिल नहीं है।'
+            : 'This layer combines relevant houses, lords, placements, aspects, Sarvashtakavarga and available divisional-chart/dasha evidence. Transits are not included yet.'}
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '8px' }}>
+          {report.domainEvidence.map((domain) => (
+            <article key={domain.id} style={{ border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px' }}>
+              <strong style={{ fontSize: '13px' }}>{isHi ? domain.titleHi : domain.titleEn}</strong>
+              <p style={{ margin: '5px 0', fontSize: '12px', lineHeight: 1.5 }}>{isHi ? domain.summaryHi : domain.summaryEn}</p>
+              <p className="muted" style={{ margin: 0, fontSize: '11px', lineHeight: 1.5 }}>{isHi ? domain.timingHi : domain.timingEn}</p>
+              <details style={{ marginTop: '7px' }}>
+                <summary style={{ cursor: 'pointer', fontSize: '11px' }}>{isHi ? 'आधार और सीमाएँ' : 'Evidence and limitations'}</summary>
+                <p style={{ fontSize: '11px', lineHeight: 1.5 }}>{domain.houseFindings.map((h) => String(h.house) + ': ' + h.lord + ' (' + h.lordDignity + '), SAV ' + (h.savBindus ?? '—')).join(' · ')}</p>
+                <p style={{ fontSize: '11px', lineHeight: 1.5 }}>{domain.divisionalFinding}</p>
+                <p style={{ fontSize: '11px', lineHeight: 1.5 }}>{isHi ? domain.limitationsHi : domain.limitationsEn}</p>
+              </details>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
         <button type="button" className={`btn btn-sm ${selectedCategory === 'all' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setSelectedCategory('all')}>
           {isHi ? 'सभी 21' : 'All 21'}

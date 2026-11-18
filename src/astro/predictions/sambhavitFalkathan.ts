@@ -17,6 +17,7 @@ import { angularDiffDeg } from '../time';
 import { getNakshatraSyllable, getAllNakshatraSyllables } from '../avakahadaChalit';
 import { computeLifeEventsAndLedger } from './lifeEventsLedger';
 import { build51LifeDimensions, type Classical51Context } from './classicalCorpus51';
+import { computePredictionFramework, type PredictionDomainEvidence } from './predictionFramework';
 
 export type DimensionCategory =
   | 'identity'
@@ -77,6 +78,7 @@ export interface SambhavitSummary {
 
 export interface SambhavitFalkathanReport {
   dimensions: LifeDimensionReading[];
+  domainEvidence: PredictionDomainEvidence[];
   summary: SambhavitSummary;
 
   // Exact 25 Legacy Properties for 100% Backward Compatibility
@@ -331,6 +333,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
 
   // Current Vimshottari Mahadasha & Antardasha
   const now = Date.now();
+  const domainEvidence = computePredictionFramework(chart, now);
   const activeMD = chart.vimshottari?.find((d) => now >= d.startMs && now < d.endMs) || chart.vimshottari?.[0];
   const activeAD = activeMD?.children?.find((d) => now >= d.startMs && now < d.endMs) || activeMD?.children?.[0];
   const mdLord = activeMD?.lord || 'Jupiter';
@@ -628,6 +631,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   // Construct backward-compatible report structure
   const report: SambhavitFalkathanReport = {
     dimensions: dims,
+    domainEvidence,
     summary,
 
     namakshar: {
