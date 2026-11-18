@@ -723,7 +723,7 @@ export function computeLifeDossierReport(
       `इस कुंडली से मृत्यु की आयु, तारीख, कारण या परिस्थिति बताना उचित नहीं है। स्वास्थ्य संबंधी प्रश्नों में योग्य चिकित्सक, नियमित जांच और प्रमाण-आधारित उपचार को प्राथमिकता दें।`,
     ],
     astrologicalCauseEn: `Traditional symbolic references: Ascendant, 8th house and Saturn. These are not a validated lifespan prediction method.`,
-    astrologicalCauseHi: `पारंपरिक प्रतीकात्मक आधार: लग्न, अष्टम भाव और शनि। यह आयु या मृत्यु की प्रमाणित भविष्यवाणी पद्धति नहीं है।`,
+    astrologicalCauseHi: `शास्त्रीय कारण (पारंपरिक संकेत): लग्न, अष्टम भाव और शनि। यह आयु या मृत्यु की प्रमाणित भविष्यवाणी पद्धति नहीं है।`,
   };
 
   // Compile All 12 Chapters strictly mapping Bhavas 1 through 12
