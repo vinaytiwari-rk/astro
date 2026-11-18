@@ -481,7 +481,7 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
   const amk = chart.planets.find((p) => p.charaKaraka === 'AmK') ?? mercury;
 
   // 3a. Government Job Likelihood % Calculation
-  let govtScore = 30; // base
+  let govtScore = 0; // heuristic evidence index; not calibrated against real-world outcomes
   if ([1, 4, 7, 10].includes(sun.rasiHouseNumber)) govtScore += 25;
   else if ([5, 9].includes(sun.rasiHouseNumber)) govtScore += 20;
   else if ([3, 6, 11].includes(sun.rasiHouseNumber)) govtScore += 15;
@@ -495,19 +495,19 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
   if (['Sun', 'Mars', 'Jupiter'].includes(amk.id)) govtScore += 10;
   if ([5, 7, 9].includes(jupiter.rasiHouseNumber) || jupiter.rasiHouseNumber === 10) govtScore += 10;
 
-  const govtJobLikelihoodPct = Math.min(95, Math.max(22, govtScore));
+  const govtJobLikelihoodPct = Math.min(100, Math.max(0, govtScore));
 
   let govtJobVerdictEn = '';
   let govtJobVerdictHi = '';
-  let examCrackingAgeWindowEn = 'Ages 22 to 28 (Peak Focus: 23–26)';
-  let examCrackingAgeWindowHi = '22 से 28 वर्ष की आयु (सर्वोच्च स्वर्णिम काल: 23 से 26 वर्ष)';
+  let examCrackingAgeWindowEn = 'No age-specific window is stated. Timing requires verified Vimshottari periods and D10 analysis.';
+  let examCrackingAgeWindowHi = 'कोई निश्चित आयु-सीमा नहीं दी जा रही है। समय-निर्धारण के लिए सत्यापित विंशोत्तरी दशा और D10 विश्लेषण आवश्यक है।';
 
   const targetWingsEn: string[] = [];
   const targetWingsHi: string[] = [];
 
   if (govtJobLikelihoodPct >= 75) {
-    govtJobVerdictEn = `High State / Sovereign Authority Yoga (${govtJobLikelihoodPct}% Probability): The alignment of Sun, 10th lord, and Amatyakaraka bestows authentic Rajayoga for government service. You possess the executive dignity and competitive sharpness to enter state machinery with commanding rank.`;
-    govtJobVerdictHi = `प्रचंड सरकारी नौकरी एवं राजसत्ता योग (${govtJobLikelihoodPct}% संभावना): सूर्य, दशमेश व अमात्यकारक की युति-दृष्टि से कुंडली में ठोस राजयोग बनता है। आपके भीतर सरकारी तंत्र में उच्च पद, लाल-बत्ती/अधिकारी संवर्ग और प्रशासनिक सम्मान प्राप्त करने की पूर्ण शास्त्रीय पात्रता विद्यमान है।`;
+    govtJobVerdictEn = `High State / Sovereign Authority Yoga (evidence index ${govtJobLikelihoodPct}/100 (not a probability)): The alignment of Sun, 10th lord, and Amatyakaraka bestows authentic Rajayoga for government service. You possess the executive dignity and competitive sharpness to enter state machinery with commanding rank.`;
+    govtJobVerdictHi = `प्रचंड सरकारी नौकरी एवं राजसत्ता योग (संकेतांक ${govtJobLikelihoodPct}/100 (सांख्यिकीय संभावना नहीं)): सूर्य, दशमेश व अमात्यकारक की युति-दृष्टि से कुंडली में ठोस राजयोग बनता है। आपके भीतर सरकारी तंत्र में उच्च पद, लाल-बत्ती/अधिकारी संवर्ग और प्रशासनिक सम्मान प्राप्त करने की पूर्ण शास्त्रीय पात्रता विद्यमान है।`;
     targetWingsEn.push('Central & State Administrative Civil Services (IAS, IPS, State PCS, SDM, Deputy Collector)');
     targetWingsEn.push('Defense, Police & Paramilitary Officer Cadre (Army/Navy/Air Force Commissioned Officer)');
     targetWingsEn.push('Public Sector Undertakings (PSU Navratnas, ONGC, BHEL, Coal India) Executive Posts');
@@ -515,8 +515,8 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
     targetWingsHi.push('सैन्य, पुलिस एवं अर्धसैनिक बल अधिकारी संवर्ग (कमीशंड सैन्य अधिकारी, डीएसपी/कमांडेंट)');
     targetWingsHi.push('महारत्न/नवरत्न पीएसयू (ONGC, BHEL, NTPC) एवं केंद्रीय सार्वजनिक उपक्रमों में उच्च कार्यकारी पद');
   } else if (govtJobLikelihoodPct >= 50) {
-    govtJobVerdictEn = `Competitive Technical / Institutional Government Yoga (${govtJobLikelihoodPct}% Probability): High likelihood in specialized government wings, public sector financial institutions, banking, or semi-autonomous commissions rather than pure generalist administration. Dedicated multi-year preparation yields solid victory.`;
-    govtJobVerdictHi = `विशिष्ट तकनीकी, बैंकिंग व संस्थागत सरकारी योग (${govtJobLikelihoodPct}% संभावना): सामान्य प्रशासनिक पदों के बजाय सार्वजनिक क्षेत्र के बैंक (PO/Specialist Officer), रेलवे, स्वायत्त संस्थान, विश्वविद्यालय अथवा अर्ध-सरकारी उपक्रमों में स्थायी सेवा का प्रबल अवसर। सुव्यवस्थित तैयारी से परीक्षा उत्तीर्ण होती है।`;
+    govtJobVerdictEn = `Competitive Technical / Institutional Government Yoga (evidence index ${govtJobLikelihoodPct}/100 (not a probability)): High likelihood in specialized government wings, public sector financial institutions, banking, or semi-autonomous commissions rather than pure generalist administration. Dedicated multi-year preparation yields solid victory.`;
+    govtJobVerdictHi = `विशिष्ट तकनीकी, बैंकिंग व संस्थागत सरकारी योग (संकेतांक ${govtJobLikelihoodPct}/100 (सांख्यिकीय संभावना नहीं)): सामान्य प्रशासनिक पदों के बजाय सार्वजनिक क्षेत्र के बैंक (PO/Specialist Officer), रेलवे, स्वायत्त संस्थान, विश्वविद्यालय अथवा अर्ध-सरकारी उपक्रमों में स्थायी सेवा का प्रबल अवसर। सुव्यवस्थित तैयारी से परीक्षा उत्तीर्ण होती है।`;
     targetWingsEn.push('Nationalized Banking & Financial Institutions (RBI Grade B, SBI PO, NABARD, SEBI)');
     targetWingsEn.push('Indian Railways & Public Transport Engineering / Management Cadre');
     targetWingsEn.push('State Education Boards, University Professorship & Scientific Public Research Labs');
@@ -524,8 +524,8 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
     targetWingsHi.push('भारतीय रेलवे एवं सार्वजनिक परिवहन प्रबंधन / तकनीकी अधिकारी संवर्ग');
     targetWingsHi.push('राजकीय विश्वविद्यालय, उच्च शिक्षा आयोग, वैज्ञानिक अनुसंधान संस्थान (ISRO/DRDO/CSIR)');
   } else {
-    govtJobVerdictEn = `Private Sovereign Leadership & Autonomous Enterprise Favored (${govtJobLikelihoodPct}% Probability): While lower-tier government attempts are possible, the chart resists bureaucratic stagnation. Your destiny commands far greater wealth, executive autonomy, and global respect in independent business, corporate consulting, or private leadership.`;
-    govtJobVerdictHi = `स्वतंत्र व्यापार एवं निजी क्षेत्र में सर्वोच्च नेतृत्व योग (${govtJobLikelihoodPct}% संभावना): यद्यपि प्रयास करने पर सामान्य पद मिल सकता है, किंतु आपकी आत्मा सरकारी तंत्र की लालफीताशाही और धीमी पदोन्नति में घुटने लगेगी। आपका वास्तविक प्रारब्ध स्वतंत्र व्यापार, बड़े निजी उद्योग अथवा कॉर्पोरेट सत्ता में अपार धन व कीर्ति कमाने के लिए बना है।`;
+    govtJobVerdictEn = `Private Sovereign Leadership & Autonomous Enterprise Favored (evidence index ${govtJobLikelihoodPct}/100 (not a probability)): While lower-tier government attempts are possible, the chart resists bureaucratic stagnation. Your destiny commands far greater wealth, executive autonomy, and global respect in independent business, corporate consulting, or private leadership.`;
+    govtJobVerdictHi = `स्वतंत्र व्यापार एवं निजी क्षेत्र में सर्वोच्च नेतृत्व योग (संकेतांक ${govtJobLikelihoodPct}/100 (सांख्यिकीय संभावना नहीं)): यद्यपि प्रयास करने पर सामान्य पद मिल सकता है, किंतु आपकी आत्मा सरकारी तंत्र की लालफीताशाही और धीमी पदोन्नति में घुटने लगेगी। आपका वास्तविक प्रारब्ध स्वतंत्र व्यापार, बड़े निजी उद्योग अथवा कॉर्पोरेट सत्ता में अपार धन व कीर्ति कमाने के लिए बना है।`;
     targetWingsEn.push('High-Growth Technology Corporations & Private Multinational Leadership');
     targetWingsEn.push('Independent Commercial Enterprise & High-Volume Trading Ventures');
     targetWingsEn.push('Specialized Corporate Legal, Strategic Management & High-Stakes Consulting');
@@ -540,17 +540,44 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
     ([3, 10].includes(chart.planets.find((p) => p.id === h3Lord)?.rasiHouseNumber ?? 0) ? 20 : 10);
   const isBusinessDominant = bizScore >= 60;
 
-  const businessPct = isBusinessDominant ? 75 : 35;
+  const businessPct = Math.round((bizScore / 80) * 100);
   const jobPct = 100 - businessPct;
   const jobVsBizVerdictEn = isBusinessDominant
-    ? `Definite Verdict: ${businessPct}% Independent Enterprise / Business vs. ${jobPct}% Salaried Hierarchy. While you may hold jobs early to acquire trade secrets and capital, you will inevitably break out to found or lead your own commercial venture.`
-    : `Definite Verdict: ${jobPct}% High-Stature Salaried Command vs. ${businessPct}% Strategic Side-Ventures. You achieve peak authority inside structured corporate or governmental institutions where you control large teams without bearing sole enterprise risk.`;
+    ? `Indicative comparison only: business evidence index ${businessPct}/100 vs. salaried-work evidence index ${jobPct}/100. This heuristic is not a probability and cannot determine an inevitable career outcome.`
+    : `Indicative comparison only: salaried-work evidence index ${jobPct}/100 vs. business evidence index ${businessPct}/100. This heuristic is not a probability and cannot determine an inevitable career outcome.`;
   const jobVsBizVerdictHi = isBusinessDominant
-    ? `निर्णायक फैसला: ${businessPct}% स्वतंत्र व्यवसाय/उद्यम बनाम ${jobPct}% वेतनभोगी नौकरी। यद्यपि प्रारंभिक वर्षों में अनुभव व पूंजी हेतु नौकरी आवश्यक हो सकती है, किंतु अंततः आप किसी के अधीन न रहकर स्वयं के व्यापार व स्वतंत्र सत्ता के स्वामी बनेंगे।`
-    : `निर्णायक फैसला: ${jobPct}% उच्च पदस्थ वेतनभोगी सेवा बनाम ${businessPct}% स्वतंत्र व्यवसाय। आप बड़े सुव्यवस्थित कॉर्पोरेट तंत्र अथवा राज्य संस्थाओं में उच्च पद पर रहकर विशाल टीमों का नेतृत्व करने में सर्वाधिक सफल और तनाव-मुक्त रहेंगे।`;
+    ? `संकेतात्मक तुलना: व्यवसाय संकेतांक ${businessPct}/100 और नौकरी संकेतांक ${jobPct}/100। यह गणितीय ज्योतिषीय स्कोर है, वास्तविक सफलता की प्रतिशत संभावना या अनिवार्य भविष्य नहीं।`
+    : `संकेतात्मक तुलना: नौकरी संकेतांक ${jobPct}/100 और व्यवसाय संकेतांक ${businessPct}/100। यह गणितीय ज्योतिषीय स्कोर है, वास्तविक सफलता की प्रतिशत संभावना या अनिवार्य भविष्य नहीं।`;
 
-  // 3c. Top 5 Suitable Vocations
-  const topVocationsEn: string[] = [
+  // 3c. Chart-led vocational themes from D10 placements. These are exploratory
+  // themes, not a claim that a person is destined for one occupation.
+  const vocationalThemes: Record<string, { en: string; hi: string }> = {
+    Sun: { en: 'Public administration, governance and leadership', hi: 'लोक प्रशासन, शासन व्यवस्था और नेतृत्व' },
+    Moon: { en: 'Public-facing services, care and hospitality', hi: 'जनसेवा, देखभाल और आतिथ्य सेवाएँ' },
+    Mars: { en: 'Engineering, operations and technical execution', hi: 'अभियांत्रिकी, संचालन और तकनीकी कार्यान्वयन' },
+    Mercury: { en: 'Information technology, analytics, communication and commerce', hi: 'सूचना प्रौद्योगिकी, विश्लेषण, संचार और वाणिज्य' },
+    Jupiter: { en: 'Education, research, law and professional advisory', hi: 'शिक्षा, अनुसंधान, विधि और पेशेवर परामर्श' },
+    Venus: { en: 'Design, creative industries, client relations and finance', hi: 'डिजाइन, रचनात्मक उद्योग, ग्राहक संबंध और वित्त' },
+    Saturn: { en: 'Infrastructure, systems, compliance and institutional operations', hi: 'अवसंरचना, प्रणाली, अनुपालन और संस्थागत संचालन' },
+    Rahu: { en: 'Emerging technology, digital platforms and unconventional sectors', hi: 'उभरती तकनीक, डिजिटल प्लेटफॉर्म और नए कार्यक्षेत्र' },
+    Ketu: { en: 'Specialist research, diagnostics and focused technical work', hi: 'विशेषज्ञ अनुसंधान, निदान और केंद्रित तकनीकी कार्य' },
+  };
+  const d10Placements = chart.divisionalCharts.D10?.placements ?? [];
+  const rankedD10Planets = d10Placements
+    .filter((placement) => placement.id !== 'Asc' && vocationalThemes[String(placement.id)])
+    .sort((a, b) => {
+      const aAmk = a.id === amk.id ? -1 : 0;
+      const bAmk = b.id === amk.id ? -1 : 0;
+      return aAmk - bAmk || a.houseFromVargaLagna - b.houseFromVargaLagna;
+    });
+  const selectedVocationalThemes = [...new Set(rankedD10Planets
+    .map((placement) => vocationalThemes[String(placement.id)])
+    .filter(Boolean))].slice(0, 5);
+  const fallbackThemes = Object.values(vocationalThemes).slice(0, 5);
+  const vocationalThemesToShow = selectedVocationalThemes.length >= 3 ? selectedVocationalThemes : fallbackThemes;
+  const topVocationsEn = vocationalThemesToShow.map((theme, index) => `${index + 1}. ${theme.en}`);
+  const topVocationsHi = vocationalThemesToShow.map((theme, index) => `${index + 1}. ${theme.hi}`);
+
     '1. Enterprise Technology & Software Architecture (AI, Cloud, Systems Engineering & Digital Platforms)',
     '2. Wealth Portfolio Advisory & Strategic Financial Management (Investment Banking, Real Estate & Capital Markets)',
     '3. High-Stakes Corporate Legal Strategy, Regulatory Arbitration & Intellectual Property Counsel',
@@ -567,16 +594,16 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
 
   // 3d. Workplace Hazards & Politics
   const workplaceHazardsEn: string[] = [
-    'Envious Peer Factions: Colleagues who smile in public but secretly complain to superiors to dilute your promotions (6th house friction).',
-    'Toxic Micro-Managing Bosses: Superiors who feel threatened by your natural intellectual dominance and attempt to overload you with mundane administrative drudgery.',
-    'Contractual & Documentation Traps: Unwritten agreements or verbal promises of equity/bonuses that are dishonored when profits materialize.',
-    'Sudden Relocation or Structural Reorganizations: Periodic corporate restructuring that attempts to derail your established comfort zone.',
+    'Role ambiguity: Confirm responsibilities, reporting lines and measurable expectations in writing.',
+    'Workload imbalance: Keep a record of priorities, capacity and agreed deadlines; escalate conflicts early.',
+    'Unclear approvals: Preserve written approvals, handovers and decision records for important work.',
+    'Organizational change: Review official notices and document how role or location changes affect responsibilities.',
   ];
   const workplaceHazardsHi: string[] = [
-    'ईर्ष्यालु सहकर्मियों का गुप्त गुट: सामने प्रशंसा करने वाले किंतु पीठ पीछे उच्चाधिकारियों के कान भरकर पदोन्नति अटकाने वाले सहकर्मी (षष्ठ भाव का प्रभाव)।',
-    'असुरक्षित व अहंकारी उच्चाधिकारी: ऐसे अधिकारी जो आपकी प्रखर बुद्धि से स्वयं को असुरक्षित अनुभव करते हैं और आपको व्यर्थ की कागजी औपचारिकताओं में उलझाकर दबाने का प्रयास करते हैं।',
-    'मौखिक वादों व अनुबंधों का टूटना: बिना लिखित समझौते के किए गए कार्य, जहां लाभ होने पर वादे किए गए हिस्से या बोनस से मुकर जाने की प्रवृत्ति।',
-    'आकस्मिक स्थानांतरण अथवा विभागीय पुनर्गठन: समय-समय पर संस्थागत फेरबदल के कारण बनी-बनाई व्यवस्था में अप्रत्याशित व्यवधान।',
+    'भूमिका की अस्पष्टता: जिम्मेदारियों, रिपोर्टिंग व्यवस्था और अपेक्षित परिणामों को लिखित रूप में स्पष्ट रखें।',
+    'कार्यभार का असंतुलन: प्राथमिकताओं, उपलब्ध समय और तय समय-सीमा का रिकॉर्ड रखें; टकराव होने पर समय रहते चर्चा करें।',
+    'अनुमोदन की अस्पष्टता: महत्वपूर्ण कार्यों के लिखित अनुमोदन, हैंडओवर और निर्णयों का रिकॉर्ड सुरक्षित रखें।',
+    'संगठनात्मक बदलाव: आधिकारिक सूचना देखें और भूमिका या स्थान में बदलाव का जिम्मेदारियों पर प्रभाव दर्ज करें।',
   ];
 
   const govtCauseEn = `Classical Astrological Cause: Sun (Atmakaraka & Rajya Karaka) in House ${sun.rasiHouseNumber} (${sun.signName}, ${sun.dignity}), 10th House of Governance in ${SIGNS[h10Sign].name} (Lord: ${h10Lord} in H${h10LordObj?.rasiHouseNumber || 1}), Amatyakaraka ${amk.id}, and 6th House of competitive conquest in ${SIGNS[h6Sign].name}.`;
@@ -585,28 +612,28 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
   const govtJobSection: ChapterSection = {
     titleEn: 'Government Job (सरकारी नौकरी) Verdict, Target Wings & Exam Cracking Window',
     titleHi: 'सरकारी नौकरी का स्पष्ट फैसला, प्रशासनिक/सैन्य विंग एवं परीक्षा उत्तीर्ण करने का कालखंड',
-    leadEn: 'Definite probability score, high-probability state wings, and the peak golden age window to crack exams.',
-    leadHi: 'सूर्य, दशमेश व अमात्यकारक के आधार पर सरकारी सेवा की संभावना (%), अनुकूलतम विभाग व स्वर्णिम आयु सीमा।',
+    leadEn: 'A heuristic chart-evidence index and traditional indicators; not a statistical probability or guaranteed outcome.',
+    leadHi: 'सूर्य, दशमेश और अमात्यकारक के पारंपरिक संकेतों का अध्ययन; यह सांख्यिकीय संभावना या निश्चित परिणाम नहीं है।',
     paragraphsEn: [
       `The definitive verdict on State / Government Employment in your chart stands at: ${govtJobVerdictEn}`,
       `Most Favorable State Cadres & Target Wings: Based on the combined dignity of your 10th house, Sun, and Mars, the specific public sectors that align with your destiny are: (1) ${targetWingsEn[0]}; (2) ${targetWingsEn[1]}; and (3) ${targetWingsEn[2]}.`,
-      `Peak Chronological Window to Crack Competitive Government Exams: ${examCrackingAgeWindowEn}. Investing maximum disciplined labor during this specific age window yields the highest return on merit before planetary dasha sub-periods shift toward private or commercial pursuits.`,
+      `Timing limitation: ${examCrackingAgeWindowEn}`,
     ],
     paragraphsHi: [
       `आपकी जन्म कुंडली में सरकारी सेवा/नौकरी का निर्णायक फैसला: ${govtJobVerdictHi}`,
       `अनुकूलतम सरकारी विभाग एवं लक्षित संवर्ग: दशम भाव, सूर्य व मंगल के बलाबल के अनुसार आपके प्रारब्ध से मेल खाने वाले तीन मुख्य सरकारी क्षेत्र: (1) ${targetWingsHi[0]}; (2) ${targetWingsHi[1]}; तथा (3) ${targetWingsHi[2]} हैं।`,
-      `प्रतियोगी सरकारी परीक्षा निकालने का स्वर्णिम कालखंड: ${examCrackingAgeWindowHi}। इस निश्चित आयु सीमा में की गई एकाग्र तपस्या का फल सर्वाधिक तीव्रता से प्राप्त होता है, क्योंकि इसके उपरांत दशा-क्रम स्वतंत्र व्यापार की ओर अग्रसर होने लगता है।`,
+      `समय संबंधी सीमा: ${examCrackingAgeWindowHi}`,
     ],
     astrologicalCauseEn: govtCauseEn,
     astrologicalCauseHi: govtCauseHi,
     keyPointsEn: [
-      `Govt Job Likelihood: ${govtJobLikelihoodPct}%`,
+      `Government-service evidence index: ${govtJobLikelihoodPct}/100 (not a probability)`,
       `Verdict: ${govtJobVerdictEn.split('(')[0].trim()}`,
       `Primary Cadre: ${targetWingsEn[0].split('(')[0].trim()}`,
       `Cracking Window: ${examCrackingAgeWindowEn}`,
     ],
     keyPointsHi: [
-      `सरकारी नौकरी संभावना: ${govtJobLikelihoodPct}%`,
+      `सरकारी सेवा संकेतांक: ${govtJobLikelihoodPct}/100 (सांख्यिकीय संभावना नहीं)`,
       `निर्णय: ${govtJobVerdictHi.split('(')[0].trim()}`,
       `सर्वोत्तम विभाग: ${targetWingsHi[0].split('(')[0].trim()}`,
       `परीक्षा स्वर्णिम काल: ${examCrackingAgeWindowHi}`,
@@ -619,12 +646,12 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
     leadEn: 'Concrete professional domains where your cognitive wiring and karmic merit yield maximum authority.',
     leadHi: 'दशम भाव, दशमांश व अमात्यकारक के समन्वय से वे 5 आधुनिक कार्यक्षेत्र जहां आपका प्रभाव व समृद्धि चरम पर होगी।',
     paragraphsEn: [
-      `Your chart does not support generic, scattershot career experimentation. Guided by 10th Lord ${h10Lord}, Amatyakaraka ${amk.id}, and the D10 Dashamsha matrix, your professional authority materializes with supreme velocity inside these five concrete contemporary sectors:`,
+      `These are exploratory vocational themes, not fixed career instructions. Guided by 10th Lord ${h10Lord}, Amatyakaraka ${amk.id}, and the D10 Dashamsha matrix, the following areas may be worth exploring; actual suitability also depends on education, skills, interests and circumstances:`,
       `${topVocationsEn.join('\n\n')}`,
       `Job vs. Business Definitive Ratio: ${jobVsBizVerdictEn}`,
     ],
     paragraphsHi: [
-      `आपकी कुंडली किसी भी सामान्य या दिशाहीन करियर भटकाव का समर्थन नहीं करती। दशमेश '${PLANET_HI[h10Lord] || h10Lord}', अमात्यकारक '${PLANET_HI[amk.id] || amk.id}' तथा दशमांश चक्र के संयुक्त प्रभाव से निम्नलिखित 5 समकालीन क्षेत्रों में आपकी मेधा और आय सर्वोच्च शिखर पर पहुंचेगी:`,
+      `ये केवल विचार हेतु व्यावसायिक क्षेत्र हैं, निश्चित पेशा या भाग्यादेश नहीं। दशमेश '${PLANET_HI[h10Lord] || h10Lord}', अमात्यकारक '${PLANET_HI[amk.id] || amk.id}' तथा दशमांश चक्र के संयुक्त प्रभाव से निम्नलिखित क्षेत्रों को केवल विचार हेतु देखें; वास्तविक उपयुक्तता शिक्षा, कौशल, रुचि और परिस्थितियों पर भी निर्भर करती है:`,
       `${topVocationsHi.join('\n\n')}`,
       `नौकरी बनाम स्वतंत्र व्यवसाय का सटीक अनुपात: ${jobVsBizVerdictHi}`,
     ],
@@ -635,28 +662,28 @@ export function computeCareerVerdicts(chart: ChartData): CareerVerdictsResult {
   };
 
   const hazardsSection: ChapterSection = {
-    titleEn: 'Workplace Hazards: Office Politics, Treacherous Superiors & Sabotage Defense',
-    titleHi: 'कार्यक्षेत्र की गुप्त राजनीति, ईर्ष्यालु सहकर्मी, उच्चाधिकारियों का तनाव व षड्यंत्र से सुरक्षा',
-    leadEn: 'The specific professional hazards, contract traps, and interpersonal friction points you will encounter.',
-    leadHi: 'षष्ठ भाव व दशम भाव के पाप प्रभाव से कार्यक्षेत्र में उत्पन्न होने वाले गुप्त अवरोध और उनसे बचने के अचूक नियम।',
+    titleEn: 'Workplace Risks: Role Clarity, Workload & Documentation',
+    titleHi: 'कार्यक्षेत्र में भूमिका, कार्यभार और दस्तावेज़ी सावधानियाँ',
+    leadEn: 'Practical workplace risks to manage; these are general safeguards, not predictions about colleagues or supervisors.',
+    leadHi: 'कार्यक्षेत्र में ध्यान रखने योग्य व्यावहारिक सावधानियाँ; इन्हें सहकर्मियों या अधिकारियों के बारे में भविष्यवाणी न समझें।',
     paragraphsEn: [
-      `No matter how exemplary your talent, every high-achieving chart encounters institutional friction. In your professional journey, the four recurring hazards governed by your 6th house (Lord: ${h6Lord}) and 10th house afflictions are:`,
+      `The following four practical safeguards are useful in most workplaces. They are not claims that colleagues or supervisors will act against you:`,
       `(1) ${workplaceHazardsEn[0]}`,
       `(2) ${workplaceHazardsEn[1]}`,
       `(3) ${workplaceHazardsEn[2]}`,
       `(4) ${workplaceHazardsEn[3]}`,
-      `Shastric Defense Strategy: Maintain meticulous written trails for every project milestone. Never celebrate victories in front of peers before contracts are signed. Feed crows with mustard-oil roti on Saturdays to defuse hidden workplace enemies.`,
+      `Practical guidance: Maintain written records, clarify approvals and discuss workload concerns through the appropriate workplace process.`,
     ],
     paragraphsHi: [
-      `आपकी प्रतिभा चाहे कितनी भी असाधारण क्यों न हो, षष्ठ भाव (शत्रु/प्रतिस्पर्धा) और दशम भाव पर क्रूर ग्रहों के प्रभाव से कार्यक्षेत्र में समय-समय पर गुप्त राजनीति का सामना करना पड़ेगा। आपके पेशेवर जीवन में प्रकट होने वाले 4 प्रमुख अवरोध:`,
+      `निम्नलिखित चार व्यावहारिक सावधानियाँ अधिकांश कार्यस्थलों में उपयोगी हैं। इन्हें सहकर्मियों या अधिकारियों के विरुद्ध किसी निश्चित भविष्यवाणी के रूप में न लें:`,
       `(1) ${workplaceHazardsHi[0]}`,
       `(2) ${workplaceHazardsHi[1]}`,
       `(3) ${workplaceHazardsHi[2]}`,
       `(4) ${workplaceHazardsHi[3]}`,
-      `षड्यंत्रों से बचाव का अचूक शास्त्रीय नियम: कार्यक्षेत्र में कभी भी मौखिक वादों पर भरोसा न करें; प्रत्येक महत्वपूर्ण निर्णय का लिखित रिकॉर्ड रखें। किसी भी बड़ी सफलता का ढिंढोरा अनुबंध पर हस्ताक्षर होने से पूर्व न पीटें। शनिवार को कौओं अथवा कुत्तों को सरसों के तेल की चुपड़ी रोटी देने से गुप्त षड्यंत्र स्वतः निष्प्रभावी हो जाते हैं।`,
+      `व्यावहारिक सुझाव: महत्वपूर्ण निर्णयों और अनुमोदनों का लिखित रिकॉर्ड रखें तथा कार्यभार संबंधी चिंता उचित प्रशासनिक प्रक्रिया से साझा करें।`,
     ],
-    astrologicalCauseEn: `6th house of hidden workplace enemies ruled by ${h6Lord} in ${SIGNS[h6Sign].name}, combined with Saturn/Rahu transit aspects over the 10th house.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: षष्ठ भाव (गुप्त शत्रु/प्रतिस्पर्धा) के स्वामी '${PLANET_HI[h6Lord] || h6Lord}', तथा दशम भाव पर शनि/राहु की क्रूर दृष्टि का समय-समय पर सक्रिय होना।`,
+    astrologicalCauseEn: `Practical workplace risk-management guidance; no transit-based event prediction is made.`,
+    astrologicalCauseHi: `आधार: सामान्य कार्यस्थल जोखिम-प्रबंधन; यहाँ किसी गोचर-आधारित घटना की भविष्यवाणी नहीं की गई है।`,
     keyPointsEn: workplaceHazardsEn.map((h) => h.split(':')[0]),
     keyPointsHi: workplaceHazardsHi.map((h) => h.split(':')[0]),
   };
