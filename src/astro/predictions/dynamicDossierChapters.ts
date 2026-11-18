@@ -1,4 +1,4 @@
-import type { BodyPosition, ChartData, DashaPeriod, NineGrahaId, SevenPlanetId } from '../types';
+import type { ChartData, DashaPeriod, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS, NAKSHATRAS } from '../constants';
 import { findActiveDashaPath } from '../dasha';
 import { formatDateDmy } from '../time';
