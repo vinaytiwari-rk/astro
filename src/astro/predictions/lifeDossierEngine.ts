@@ -44,6 +44,7 @@ export interface ChapterSection {
   };
   /** Original selected 21-life-prediction identifier, when this is an embedded prediction. */
   lifeDimensionId?: number;
+  lifeDimensionHouse?: number;
 }
 
 export interface BhavaProfile {
@@ -1567,6 +1568,7 @@ export function computeLifeDossierReport(
     embeddedPredictionIds.add(dimension.id);
     chapter.sections.push({
       lifeDimensionId: dimension.id,
+      lifeDimensionHouse: targetHouse,
       titleEn: `Life prediction ${dimension.id}: ${dimension.titleEn}`,
       titleHi: `जीवन फलादेश ${dimension.id}: ${dimension.titleHi}`,
       leadEn: dimension.categoryTitleEn,
