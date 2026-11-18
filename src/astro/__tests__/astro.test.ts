@@ -84,7 +84,7 @@ import {
 } from '../panchaPakshiAndKaksha';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
 import { DIVISIONAL_META, SEVEN_PLANETS, SIGNS } from '../constants';
-import { formatDateDmy, parseDateInputToIso } from '../time';
+import { formatDateDmy, parseDateInputToIso, parseOffsetString } from '../time';
 import { getDivisionalSignIndex } from '../vargas';
 import { computeEclipticDeclinationDeg } from '../strength';
 import {
@@ -95,6 +95,23 @@ import {
   searchCitiesExtended,
 } from '../../data/cities';
 import * as Astronomy from 'astronomy-engine';
+
+describe('UTC offset parsing', () => {
+  it('accepts valid offsets within the UTC range', () => {
+    expect(parseOffsetString('+05:30')).toBe(330);
+    expect(parseOffsetString('-03:30')).toBe(-210);
+    expect(parseOffsetString('+14:00')).toBe(840);
+    expect(parseOffsetString('-14:00')).toBe(-840);
+  });
+
+  it('rejects offsets outside the UTC range or with invalid minutes', () => {
+    expect(parseOffsetString('+14:01')).toBeNull();
+    expect(parseOffsetString('-14:30')).toBeNull();
+    expect(parseOffsetString('+15:00')).toBeNull();
+    expect(parseOffsetString('+05:60')).toBeNull();
+    expect(parseOffsetString('not-an-offset')).toBeNull();
+  });
+});
 
 describe('Jyotish Hora Astronomical & Vedic Engine', () => {
   it('uses ecliptic latitude in declination and reports rashi varna separately from nakshatra yoni', () => {

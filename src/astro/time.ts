@@ -65,7 +65,7 @@ export function parseOffsetString(str: string): number | null {
   const sign = match[1] === '-' ? -1 : 1;
   const hrs = parseInt(match[2], 10);
   const mins = match[3] ? parseInt(match[3], 10) : 0;
-  if (hrs > 14 || mins >= 60) return null;
+  if (hrs > 14 || mins >= 60 || (hrs === 14 && mins !== 0)) return null;
   return sign * (hrs * 60 + mins);
 }
 
