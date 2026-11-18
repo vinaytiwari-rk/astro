@@ -17,13 +17,13 @@ export type LongevitySpanCategory =
   | 'Alpayu (Short Span: < 36 Years)'
   | 'Madhyayu (Medium Span: 36 - 72 Years)'
   | 'Deerghayu (Long Span: 72 - 108 Years)'
-  | 'Poornayu (Full Span: 108+ Years)';
+  | 'Poornayu (Full Paramayus: 108 - 120 Years)';
 
 export type LongevitySpanCategoryHi =
   | 'अल्पायु (अल्प जीवन काल: ३६ वर्ष से कम)'
   | 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)'
   | 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)'
-  | 'पूर्णायु (पूर्ण जीवन काल: १०८+ वर्ष)';
+  | 'पूर्णायु (पूर्ण परमायु काल: १०८ से १२० वर्ष)';
 
 export interface LongevityReport {
   category: LongevitySpanCategory;
@@ -150,10 +150,14 @@ export function computeAyurdaya(chart: ChartData): LongevityReport {
   let categoryHi: LongevitySpanCategoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
   let estimatedRange = '74 से 88 वर्ष';
 
-  if (scores.Deerghayu >= 2) {
+  if (scores.Deerghayu === 3) {
+    category = 'Poornayu (Full Paramayus: 108 - 120 Years)';
+    categoryHi = 'पूर्णायु (पूर्ण परमायु काल: १०८ से १२० वर्ष)';
+    estimatedRange = '96 से 120 वर्ष (शास्त्रीय पूर्ण परमायु)';
+  } else if (scores.Deerghayu >= 2) {
     category = 'Deerghayu (Long Span: 72 - 108 Years)';
     categoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
-    estimatedRange = '76 से 89 वर्ष';
+    estimatedRange = '76 से 96 वर्ष';
   } else if (scores.Madhyayu >= 2) {
     category = 'Madhyayu (Medium Span: 36 - 72 Years)';
     categoryHi = 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)';

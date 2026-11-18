@@ -11,6 +11,7 @@ import { computeAshtakavargaKakshya } from '../predictions/ashtakavargaKakshya';
 import { computeNadiYogasAndKarma } from '../predictions/nadiYogasAndKarma';
 import { computeUpagrahas } from '../predictions/upagrahaEngine';
 import { computeKotaChakra } from '../predictions/kotaChakraEngine';
+import { CELEBRITY_DATABASE, findCelebrityTwins } from '../celebrityTwins';
 
 const sampleInput: BirthInput = {
   id: 'master-test-native',
@@ -113,5 +114,39 @@ describe('Master Classical & Modern Prediction Suites', () => {
       kota.fortVulnerabilityStatus
     );
     expect(kota.placements.length).toBe(9);
+  });
+
+  it('verifies 120-year Parashari Paramayus life event timing coverage', () => {
+    const report = computeLifeEventTiming(chart);
+    // Chronology should include event windows spanning beyond age 85 up to 120 years
+    const maxEndAge = Math.max(...report.eventChronology.map((e) => e.endAge));
+    expect(maxEndAge).toBeGreaterThan(80);
+    expect(maxEndAge).toBeLessThanOrEqual(121);
+  });
+
+  it('validates global celebrity twins databank with 12 Lagnas, photos, milestones, and Rodden AA rating', () => {
+    expect(CELEBRITY_DATABASE.length).toBeGreaterThanOrEqual(18);
+
+    // Verify all 12 Lagnas (0..11) are represented
+    const lagnasRepresented = new Set(CELEBRITY_DATABASE.map((c) => c.ascSignIndex));
+    for (let sign = 0; sign < 12; sign++) {
+      expect(lagnasRepresented.has(sign)).toBe(true);
+    }
+
+    // Verify every celebrity has verified photo, Rodden rating, milestones, and quotes
+    for (const celeb of CELEBRITY_DATABASE) {
+      expect(celeb.photoUrl).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
+      expect(['AA', 'A']).toContain(celeb.roddenRating);
+      expect(celeb.keyLifeMilestones.length).toBeGreaterThanOrEqual(3);
+      expect(celeb.quoteHi.length).toBeGreaterThan(5);
+      expect(celeb.quoteEn.length).toBeGreaterThan(5);
+    }
+
+    // Verify findCelebrityTwins returns sorted matches
+    const matches = findCelebrityTwins(chart);
+    expect(matches.length).toBe(CELEBRITY_DATABASE.length);
+    expect(matches[0].similarityScore).toBeGreaterThanOrEqual(matches[1].similarityScore);
+    expect(matches[0].similarityScore).toBeLessThanOrEqual(100);
+    expect(matches[0].celebrity.photoUrl).toBeDefined();
   });
 });

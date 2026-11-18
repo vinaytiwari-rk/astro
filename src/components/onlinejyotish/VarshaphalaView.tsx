@@ -46,10 +46,10 @@ export const VarshaphalaView: React.FC<VarshaphalaViewProps> = ({ chart, onNavig
     return computeVarshaphala(chart, selectedYear);
   }, [chart, selectedYear]);
 
-  // Year choices from birth year up to birth year + 90
+  // Year choices from birth year up to birth year + 120 (Parashara Vimshottari 120-year cycle)
   const yearOptions = useMemo(() => {
     const list: number[] = [];
-    for (let y = birthYear; y <= birthYear + 90; y++) {
+    for (let y = birthYear; y <= birthYear + 120; y++) {
       list.push(y);
     }
     return list;

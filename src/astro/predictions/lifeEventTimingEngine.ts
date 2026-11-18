@@ -135,8 +135,8 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
       const startAge = (ad.startMs - birthMs) / (365.25 * 86_400_000);
       const endAge = (ad.endMs - birthMs) / (365.25 * 86_400_000);
 
-      // Only consider ages up to 85
-      if (startAge > 85) continue;
+      // Consider ages up to full 120-year Parashara Vimshottari cycle
+      if (startAge > 120) continue;
 
       const startDateStr = msToDmy(ad.startMs);
       const endDateStr = msToDmy(ad.endMs);
