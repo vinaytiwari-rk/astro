@@ -153,7 +153,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
     expect(ch8).toBeDefined();
     expect(ch8?.sections.length).toBe(15); // 3 foundation sections + 12 epochs
-    expect(ch8?.specialData?.longevity).toBeDefined();
+    expect(ch8?.specialData?.longevity).toBeUndefined();
     const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
     expect(epoch1).toBeDefined();
   });

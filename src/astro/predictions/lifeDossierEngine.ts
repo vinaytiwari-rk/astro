@@ -3,7 +3,6 @@ import { SIGNS, NAKSHATRAS } from '../constants';
 import { computeComprehensiveSensitivePoints, computeMrityuBhagaAnalysis, computePushkaraAnalysis } from '../specialSensitivities';
 import { computePastFutureLifeReading, type PastFutureLifeReport } from './pastFutureLife';
 import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './lalKitabSystem';
-import { computeLifeEventsAndLedger, type LifeEventsAndLedgerReport } from './lifeEventsLedger';
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
 import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
@@ -591,7 +590,6 @@ export function computeLifeDossierReport(
   const pushkaraList = computePushkaraAnalysis(chart);
   const pastFuture = computePastFutureLifeReading(chart);
   const lalKitab = computeLalKitabSystemReport(chart);
-  const ledgerReport = computeLifeEventsAndLedger(chart);
   const centralPredictionEvidence = computePredictionFramework(chart);
 
   // Modular Deep Predictions & Relational Engines
@@ -729,7 +727,6 @@ export function computeLifeDossierReport(
   const activeDebts = lalKitab?.karmicDebts.filter((d) => d.isTriggered) ?? [];
   const vedicRemedies = computeComprehensiveVedicRemedies(chart, lalKitab);
 
-  const longevityInfo = ledgerReport.longevity;
 
   const longevitySection: ChapterSection = {
     titleEn: 'Long-Term Wellbeing & Health Responsibility (Not a Lifespan Estimate)',
@@ -1205,7 +1202,7 @@ export function computeLifeDossierReport(
     subtitleHi: 'पाराशरी तीन-युग्म आयु खंड, शल्यक्रिया-अंगदोष, पैतृक दायभाग व 15 से 75 वर्ष तक के 12 पंचवर्षीय जीवन पड़ाव',
     icon: 'hourglass',
     summaryQuoteEn: 'The mystery of the eighth house teaches that death is not the termination of life, but the master architect that gives urgency and depth to every breath.',
-    summaryQuoteHi: 'अष्टम भाव का रहस्य सिखाता है कि मृत्यु जीवन का अंत नहीं, बल्कि वह महान सूत्रधार है जो प्रत्येक श्वास को गंभीरता और मूल्य प्रदान करता है।',
+    summaryQuoteHi: 'अष्टम भाव को परंपरागत रूप से परिवर्तन, साझा संसाधनों और धैर्य की आवश्यकता से जोड़ा जाता है।'
     bhavaProfile: h8Profile.profile,
     targetedRemedy: h8Profile.remedy,
     sections: [
@@ -1229,23 +1226,20 @@ export function computeLifeDossierReport(
       },
       ...epochSections,
     ],
-    specialData: {
-      longevity: longevityInfo,
-    },
   });
 
   // =========================================================================
-  // CHAPTER 9: नवम भाव (भाग्य व धर्म भाव) — भाग्य, पिता, गुरु कृपा, पूर्व जन्म व भावी गति
+  // CHAPTER 9: नवम भाव (भाग्य व धर्म भाव) — भाग्य, पिता, गुरु व आध्यात्मिक चिंतन
   // =========================================================================
   const h9Profile = computeHouseProfile(chart, 9);
   chapters.push({
     chapterNumber: 9,
     houseNumber: 9,
     id: 'chapter9_bhagya_past_life',
-    titleEn: 'Chapter 9: Ninth House (Bhagya Bhava) — Fortune, Father, Guru & Past Life Odyssey',
-    titleHi: 'अध्याय 9: नवम भाव (भाग्य व धर्म भाव) — भाग्य, पिता, गुरु कृपा, पूर्व जन्म व भावी गति',
-    subtitleEn: 'Divine Grace, Father Bond, Pilgrimages, 8 Classical Past-Life Civilizations & Future Rebirth Global Geography',
-    subtitleHi: 'भाग्य का संबल, पितृ सुख, गुरु सानिध्य, विश्व सभ्यताओं में पूर्व जन्म वृत्तांत व भावी पुनर्जन्म का महाद्वीप-देश',
+    titleEn: 'Chapter 9: Ninth House (Bhagya Bhava) — Fortune, Mentors & Spiritual Reflection',
+    titleHi: 'अध्याय 9: नवम भाव (भाग्य व धर्म भाव) — भाग्य, पिता, गुरु एवं आध्यात्मिक चिंतन',
+    subtitleEn: 'Dharma, mentors, pilgrimage, traditional karmic symbolism and spiritual reflection',
+    subtitleHi: 'धर्म, पितृ पक्ष, गुरु सानिध्य, तीर्थ, पारंपरिक कर्म-प्रतीक और आध्यात्मिक आत्मचिंतन',
     icon: 'globe',
     summaryQuoteEn: 'Fortune is the harvest of righteous actions sown in forgotten seasons, ripening when the soul is ready to receive.',
     summaryQuoteHi: 'भाग्य पूर्व जन्मों में बोए गए धर्म-कर्म की वह फसल है जो पकने पर अनायास ही कृपा बनकर बरसती है।',
