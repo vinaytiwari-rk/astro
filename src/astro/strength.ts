@@ -231,6 +231,26 @@ export function computeDrikBalaForPlanet(
   return total;
 }
 
+/**
+ * Surya Siddhanta I.51–52 time lords, using the traditional Srishtyadi
+ * Ahargana and 360-day year / 30-day month. The remainder is counted
+ * from Sunday (1=Sun ... 7=Sat).
+ */
+export function computeSuryasiddhantaTimeLords(ahargana: number): {
+  abdaLord: SevenPlanetId;
+  masaLord: SevenPlanetId;
+} {
+  const dayOrder: SevenPlanetId[] = [
+    'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn',
+  ];
+  const yearRemainder = (((Math.floor(ahargana / 360) * 3 + 1) % 7) + 7) % 7;
+  const monthRemainder = (((Math.floor(ahargana / 30) * 2 + 1) % 7) + 7) % 7;
+  return {
+    abdaLord: dayOrder[(yearRemainder + 6) % 7],
+    masaLord: dayOrder[(monthRemainder + 6) % 7],
+  };
+}
+
 export function computeShadbala(params: {
   planets: BodyPosition[];
   ascendant: BodyPosition;
@@ -241,6 +261,8 @@ export function computeShadbala(params: {
   sunriseMs: number | null;
   sunsetMs: number | null;
   nextSunriseMs?: number | null;
+  abdaLord: SevenPlanetId;
+  masaLord: SevenPlanetId;
   varaLord: SevenPlanetId;
   horaLord: SevenPlanetId;
   obliquityDeg: number;
@@ -255,6 +277,8 @@ export function computeShadbala(params: {
     sunriseMs,
     sunsetMs,
     nextSunriseMs,
+    abdaLord,
+    masaLord,
     varaLord,
     horaLord,
     obliquityDeg,
@@ -369,14 +393,18 @@ export function computeShadbala(params: {
 
     const tribhagaBala = pId === 'Jupiter' || pId === activeTribhagaLord ? 60 : 0;
 
-    const varaHoraBala = (varaLord === pId ? 45 : 0) + (horaLord === pId ? 60 : 0);
+    const abdaMasaVaraHoraBala =
+      (abdaLord === pId ? 15 : 0) +
+      (masaLord === pId ? 30 : 0) +
+      (varaLord === pId ? 45 : 0) +
+      (horaLord === pId ? 60 : 0);
 
     // Ayana Bala uses the full ecliptic-to-equatorial declination transform,
     // including the planet's ecliptic latitude (not just longitude).
     const declDeg = computeEclipticDeclinationDeg(p.tropicalLongitude, p.latitude, obliquityDeg);
     const ayanaBala = computeAyanaBalaVirupas(pId, declDeg);
 
-    const kalaBala = natonnata + pakshaBala + tribhagaBala + varaHoraBala + ayanaBala;
+    const kalaBala = natonnata + pakshaBala + tribhagaBala + abdaMasaVaraHoraBala + ayanaBala;
 
     // 4. Cheshta Bala
     let cheshtaBala = 30;

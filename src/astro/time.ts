@@ -180,6 +180,17 @@ export function formatLocalDateTimeFromUtc(utcMs: number, offsetMinutes: number)
   return `${y}-${m}-${d} ${formatLocalTimeFromUtc(utcMs, offsetMinutes, false)}`;
 }
 
+/**
+ * Integer Julian Day Number for a Gregorian civil date at local midnight.
+ * JDN 2,455,198 corresponds to 2010-01-01.
+ */
+export function julianDayNumberFromGregorianDate(year: number, month: number, day: number): number {
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  date.setUTCHours(0, 0, 0, 0);
+  return Math.floor(date.getTime() / 86_400_000 + 2_440_588);
+}
+
 export function julianDayFromJ2000Days(daysSinceJ2000: number): number {
   return 2451545.0 + daysSinceJ2000;
 }

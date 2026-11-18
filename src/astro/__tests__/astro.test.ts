@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeSaptavargajaPoints } from '../strength';
+import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -87,7 +87,7 @@ import {
 } from '../panchaPakshiAndKaksha';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
 import { DIVISIONAL_META, SEVEN_PLANETS, SIGNS } from '../constants';
-import { formatDateDmy, parseDateInputToIso, parseOffsetString, resolveUtcFromBirth } from '../time';
+import { formatDateDmy, julianDayNumberFromGregorianDate, parseDateInputToIso, parseOffsetString, resolveUtcFromBirth } from '../time';
 import { getDivisionalSignIndex } from '../vargas';
 import { computeEclipticDeclinationDeg } from '../strength';
 import {
@@ -238,6 +238,17 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('computes Surya Siddhanta Abda and Masa lords from Ahargana', () => {
+    const jdn = julianDayNumberFromGregorianDate(2010, 1, 1);
+    expect(jdn).toBe(2_455_198);
+    const ahargana = 714_402_296_627 + (jdn - 588_466);
+    expect(ahargana).toBe(714_404_163_359);
+    expect(computeSuryasiddhantaTimeLords(ahargana)).toEqual({
+      abdaLord: 'Venus',
+      masaLord: 'Jupiter',
+    });
   });
 
   it('calculates Ayana Bala from the classical 23°27′ declination scale', () => {
