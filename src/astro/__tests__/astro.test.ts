@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
+import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -238,6 +238,41 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('transfers Shadbala difference in Graha Yuddha to the victor', () => {
+    const pos = (id: string, longitude: number, latitude: number) =>
+      ({ id, longitude, latitude }) as BodyPosition;
+    const rows = [
+      { planet: 'Mars', totalVirupas: 100 },
+      { planet: 'Mercury', totalVirupas: 80 },
+      { planet: 'Venus', totalVirupas: 90 },
+      { planet: 'Jupiter', totalVirupas: 70 },
+      { planet: 'Saturn', totalVirupas: 60 },
+    ] as const;
+
+    const northWins = computeGrahaYuddhaAdjustments(
+      [pos('Mars', 100, 1.2), pos('Mercury', 100.4, -0.4)],
+      rows
+    );
+    expect(northWins.Mars).toBe(20);
+    expect(northWins.Mercury).toBe(-20);
+
+    // Venus prevails even when its ecliptic latitude is more southerly.
+    const venusWins = computeGrahaYuddhaAdjustments(
+      [pos('Venus', 200, -2), pos('Mars', 200.5, 2)],
+      rows
+    );
+    expect(venusWins.Venus).toBe(10);
+    expect(venusWins.Mars).toBe(-10);
+
+    // A separation over one degree and luminary pairings do not qualify.
+    const noWar = computeGrahaYuddhaAdjustments(
+      [pos('Mars', 10, 2), pos('Mercury', 11.01, -2), pos('Sun', 10.2, 3)],
+      rows
+    );
+    expect(noWar.Mars).toBe(0);
+    expect(noWar.Mercury).toBe(0);
   });
 
   it('uses undoubled Paksha Bala for the Moon and reuses it as Cheshta Bala', () => {

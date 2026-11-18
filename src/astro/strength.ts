@@ -268,6 +268,55 @@ export function computeSuryasiddhantaTimeLords(ahargana: number): {
   };
 }
 
+/**
+ * BPHS Graha Yuddha adjustment (Ch.27 v.20), using the BPHS winner
+ * convention: Venus prevails when involved; otherwise the more northerly
+ * graha (greater ecliptic latitude) wins. Only the five tara-grahas fight.
+ *
+ * Each pair's pre-war Shadbala difference is transferred to the winner
+ * and deducted from the loser. Pair differences are calculated from the
+ * unadjusted totals so results do not depend on iteration order.
+ */
+export function computeGrahaYuddhaAdjustments(
+  planets: BodyPosition[],
+  baseRows: Pick<ShadbalaRow, 'planet' | 'totalVirupas'>[]
+): Record<SevenPlanetId, number> {
+  const adjustments = Object.fromEntries(
+    SEVEN_PLANETS.map((id) => [id, 0])
+  ) as Record<SevenPlanetId, number>;
+  const candidates: SevenPlanetId[] = ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+  const positions = new Map(
+    planets.filter((p) => candidates.includes(p.id as SevenPlanetId))
+      .map((p) => [p.id as SevenPlanetId, p])
+  );
+  const totals = new Map(baseRows.map((r) => [r.planet, r.totalVirupas]));
+
+  for (let i = 0; i < candidates.length; i++) {
+    for (let j = i + 1; j < candidates.length; j++) {
+      const aId = candidates[i];
+      const bId = candidates[j];
+      const a = positions.get(aId);
+      const b = positions.get(bId);
+      if (!a || !b) continue;
+      if (angularDiffDeg(a.longitude, b.longitude) > 1) continue;
+
+      const winnerId: SevenPlanetId =
+        aId === 'Venus' || bId === 'Venus'
+          ? 'Venus'
+          : a.latitude >= b.latitude ? aId : bId;
+      const loserId = winnerId === aId ? bId : aId;
+      const aTotal = totals.get(aId);
+      const bTotal = totals.get(bId);
+      if (aTotal === undefined || bTotal === undefined) continue;
+      const transfer = Math.abs(aTotal - bTotal);
+      adjustments[winnerId] += transfer;
+      adjustments[loserId] -= transfer;
+    }
+  }
+
+  return adjustments;
+}
+
 export function computeShadbala(params: {
   planets: BodyPosition[];
   ascendant: BodyPosition;
@@ -465,7 +514,20 @@ export function computeShadbala(params: {
     });
   }
 
-  return rows;
+  const yuddhaAdjustments = computeGrahaYuddhaAdjustments(planets, rows);
+  return rows.map((row) => {
+    const yuddhaBala = yuddhaAdjustments[row.planet];
+    const totalVirupas = row.totalVirupas + yuddhaBala;
+    const totalRupas = totalVirupas / 60;
+    return {
+      ...row,
+      yuddhaBala: Math.round(yuddhaBala * 10) / 10,
+      totalVirupas: Math.round(totalVirupas * 10) / 10,
+      totalRupas: Math.round(totalRupas * 100) / 100,
+      ratio: Math.round((totalRupas / row.requiredRupas) * 100) / 100,
+      isStrong: totalRupas >= row.requiredRupas,
+    };
+  });
 }
 
 export function getPlanetSignLabel(p: BodyPosition): string {

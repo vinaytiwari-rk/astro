@@ -48,6 +48,7 @@ export const StrengthYogasView: React.FC<StrengthYogasViewProps> = ({ chart }) =
                 <th>{lang === 'hi' ? 'चेष्टा बल' : 'Cheshta'}</th>
                 <th>{lang === 'hi' ? 'नैसर्गिक' : 'Naisargika'}</th>
                 <th>{lang === 'hi' ? 'दृक् बल' : 'Drik'}</th>
+                <th>{lang === 'hi' ? 'युद्ध बल' : 'Yuddha'}</th>
                 <th>{lang === 'hi' ? 'कुल (विरुपा)' : 'Total (Vir)'}</th>
                 <th>{lang === 'hi' ? 'रूप' : 'Rupas'}</th>
                 <th>{lang === 'hi' ? 'न्यूनतम आवश्यक' : 'Min Req'}</th>
@@ -67,6 +68,7 @@ export const StrengthYogasView: React.FC<StrengthYogasViewProps> = ({ chart }) =
                   <td className="mono">{r.cheshtaBala.toFixed(1)}</td>
                   <td className="mono">{r.naisargikaBala.toFixed(1)}</td>
                   <td className="mono">{r.drikBala.toFixed(1)}</td>
+                  <td className="mono">{r.yuddhaBala.toFixed(1)}</td>
                   <td className="mono">
                     <strong>{r.totalVirupas.toFixed(1)}</strong>
                   </td>
