@@ -1033,8 +1033,6 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
   // 26. विवाह समय निर्धारण, वैवाहिक आयु व भाग्य
   {
     const score = Math.max(30, Math.min(95, 52 + getDignityBonus(h7.dignity) + getDignityBonus(venus.dignity) / 2));
-    const delayPlanet = planets.find((p) => (p.rasiHouseNumber ?? p.houseNumber) === 7 && (p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu'));
-    const isAdult = currentAge >= 35;
     const timingVerdictHi = `सप्तम भाव, सप्तमेश ${h7.lordHi} और शुक्र की स्थिति को संबंधों तथा साझेदारी के पारंपरिक संकेत के रूप में पढ़ा जाता है। केवल इन स्थितियों से विवाह की निश्चित आयु या तारीख तय नहीं की जा सकती।`;
     const timingVerdictEn = `The 7th house, its lord ${h7.lord} and Venus are traditional indicators for relationships and partnerships. These placements alone cannot establish a definite marriage age or date.`;
 

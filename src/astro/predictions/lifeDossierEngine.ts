@@ -707,9 +707,7 @@ export function computeLifeDossierReport(
   const activeDebts = lalKitab?.karmicDebts.filter((d) => d.isTriggered) ?? [];
   const vedicRemedies = computeComprehensiveVedicRemedies(chart, lalKitab);
 
-  const h8Sign = (asc.signIndex + 7) % 12;
   const longevityInfo = ledgerReport.longevity;
-  const ascLord = asc.signLord;
 
   const longevitySection: ChapterSection = {
     titleEn: 'Long-Term Wellbeing & Health Responsibility (Not a Lifespan Estimate)',
