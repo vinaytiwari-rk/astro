@@ -385,6 +385,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
                     <tr>
                       <th>{t.common.planet}</th>
                       <th>{isHi ? 'विरूप' : 'Virupas'}</th>
+                      <th>{isHi ? 'युद्ध' : 'Yuddha'}</th>
                       <th>{isHi ? 'रूप' : 'Rupas'}</th>
                       <th>{isHi ? 'न्यूनतम' : 'Req'}</th>
                       <th>{isHi ? 'अनुपात' : 'Ratio'}</th>
@@ -395,6 +396,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
                       <tr key={s.planet}>
                         <td><strong>{trPlanet(s.planet, language)}</strong></td>
                         <td className="mono">{s.totalVirupas.toFixed(1)}</td>
+                        <td className="mono">{s.yuddhaBala.toFixed(1)}</td>
                         <td className="mono">{s.totalRupas.toFixed(2)}</td>
                         <td className="mono">{s.requiredRupas.toFixed(1)}</td>
                         <td>

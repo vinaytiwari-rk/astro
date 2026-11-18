@@ -256,6 +256,7 @@ export interface ShadbalaRow {
   cheshtaBala: number;
   naisargikaBala: number;
   drikBala: number;
+  yuddhaBala: number;
   totalVirupas: number;
   totalRupas: number;
   requiredRupas: number;

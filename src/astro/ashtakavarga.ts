@@ -115,7 +115,7 @@ function applyTrikonaShodhana(bav: number[]): number[] {
   return out;
 }
 
-function applyEkadhipatyaShodhana(
+export function applyEkadhipatyaShodhana(
   trikona: number[],
   occupiedSigns: Set<number>
 ): number[] {
@@ -145,11 +145,12 @@ function applyEkadhipatyaShodhana(
         out[b] = minV;
       }
     } else if (occA && !occB) {
-      if (vb < va) out[b] = 0;
-      else if (vb >= va) out[b] = va;
+      // Keep the occupied sign unchanged; deduct its bindus from the
+      // unoccupied sign, flooring the result at zero.
+      out[b] = Math.max(0, vb - va);
     } else if (!occA && occB) {
-      if (va < vb) out[a] = 0;
-      else if (va >= vb) out[a] = vb;
+      // Symmetric case: the occupied sign is B, the empty sign is A.
+      out[a] = Math.max(0, va - vb);
     }
   }
   return out;

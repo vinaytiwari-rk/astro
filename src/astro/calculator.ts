@@ -15,8 +15,8 @@ import {
   isBodyCombust,
 } from './ephemeris';
 import { computePanchang } from './panchang';
-import { computeAspects, computeShadbala } from './strength';
-import { formatDms, julianDayFromJ2000Days, normalizeDeg, resolveUtcFromBirth } from './time';
+import { computeAspects, computeShadbala, computeSuryasiddhantaTimeLords } from './strength';
+import { formatDms, julianDayFromJ2000Days, julianDayNumberFromGregorianDate, normalizeDeg, resolveUtcFromBirth } from './time';
 import type {
   BirthInput,
   BodyPosition,
@@ -175,6 +175,17 @@ export function calculateChart(input: BirthInput, settings: CalcSettings): Chart
   });
 
   const aspects = computeAspects(planets, ascendant);
+  const vedicDayReferenceMs = sunRiseSet.vedicSunriseMs ?? utcMs;
+  const vedicLocalDate = new Date(vedicDayReferenceMs + offsetMinutes * 60_000);
+  const vedicDayJdn = julianDayNumberFromGregorianDate(
+    vedicLocalDate.getUTCFullYear(),
+    vedicLocalDate.getUTCMonth() + 1,
+    vedicLocalDate.getUTCDate()
+  );
+  // Srishtyadi Ahargana at Kali epoch from Surya Siddhanta I.51–52.
+  const ahargana = 714_402_296_627 + (vedicDayJdn - 588_466);
+  const { abdaLord, masaLord } = computeSuryasiddhantaTimeLords(ahargana);
+
   const shadbala = computeShadbala({
     planets,
     ascendant,
@@ -185,9 +196,12 @@ export function calculateChart(input: BirthInput, settings: CalcSettings): Chart
     sunriseMs: sunRiseSet.vedicSunriseMs,
     sunsetMs: sunRiseSet.vedicSunsetMs,
     nextSunriseMs: sunRiseSet.nextSunriseMs,
+    abdaLord,
+    masaLord,
     varaLord: panchang.vara.lord,
     horaLord: panchang.horaLord,
     obliquityDeg: ascMc.obliquityDeg,
+    observerLongitudeDeg: input.longitude,
   });
 
   const yogas = detectYogas(ascendant, planets);

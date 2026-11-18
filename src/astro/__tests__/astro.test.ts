@@ -17,6 +17,9 @@ import {
   HIGHER_VARGA_META,
   resolveHigherVargaPosition,
 } from '../higherVargas';
+import { applyEkadhipatyaShodhana } from '../ashtakavarga';
+import { computeAyanaBalaVirupas, computeCheshtaBalaFromLongitudes, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computeIshtaKashtaPhala, computeMeanSiderealLongitude, computeSunCheshtaBalaForIshta, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
+import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { computeTribhagiDasha, expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
@@ -84,9 +87,10 @@ import {
   getBirthBird,
 } from '../panchaPakshiAndKaksha';
 import { computeDeepPanchangMuhurta } from '../panchangMuhurtaDeep';
-import { DIVISIONAL_META, SEVEN_PLANETS } from '../constants';
-import { formatDateDmy, parseDateInputToIso } from '../time';
+import { DIVISIONAL_META, SEVEN_PLANETS, SIGNS } from '../constants';
+import { formatDateDmy, julianDayNumberFromGregorianDate, parseDateInputToIso, parseOffsetString, resolveUtcFromBirth } from '../time';
 import { getDivisionalSignIndex } from '../vargas';
+import { computeEclipticDeclinationDeg } from '../strength';
 import {
   DEFAULT_SETTINGS,
   SAMPLE_CHARTS,
@@ -96,7 +100,61 @@ import {
 } from '../../data/cities';
 import * as Astronomy from 'astronomy-engine';
 
+describe('IANA timezone resolution', () => {
+  it('uses the correct seasonal UTC offset for a valid IANA zone', () => {
+    const winter = resolveUtcFromBirth('2024-01-15', '12:00:00', 'America/New_York');
+    const summer = resolveUtcFromBirth('2024-07-15', '12:00:00', 'America/New_York');
+    expect(winter.utcMs).toBe(Date.UTC(2024, 0, 15, 17, 0, 0));
+    expect(winter.offsetMinutes).toBe(-300);
+    expect(summer.utcMs).toBe(Date.UTC(2024, 6, 15, 16, 0, 0));
+    expect(summer.offsetMinutes).toBe(-240);
+  });
+
+  it('rejects invalid time zones instead of silently treating them as UTC', () => {
+    expect(() => resolveUtcFromBirth('2024-01-15', '12:00:00', 'Not/A_Real_Zone')).toThrow(RangeError);
+  });
+
+  it('rejects local times that fall inside a daylight-saving gap', () => {
+    expect(() => resolveUtcFromBirth('2024-03-10', '02:30:00', 'America/New_York')).toThrow(RangeError);
+  });
+});
+
+describe('UTC offset parsing', () => {
+  it('accepts valid offsets within the UTC range', () => {
+    expect(parseOffsetString('+05:30')).toBe(330);
+    expect(parseOffsetString('-03:30')).toBe(-210);
+    expect(parseOffsetString('+14:00')).toBe(840);
+    expect(parseOffsetString('-14:00')).toBe(-840);
+  });
+
+  it('rejects offsets outside the UTC range or with invalid minutes', () => {
+    expect(parseOffsetString('+14:01')).toBeNull();
+    expect(parseOffsetString('-14:30')).toBeNull();
+    expect(parseOffsetString('+15:00')).toBeNull();
+    expect(parseOffsetString('+05:60')).toBeNull();
+    expect(parseOffsetString('not-an-offset')).toBeNull();
+  });
+});
+
 describe('Jyotish Hora Astronomical & Vedic Engine', () => {
+  it('uses ecliptic latitude in declination and reports rashi varna separately from nakshatra yoni', () => {
+    const obliquity = 23.4393;
+    const lon = 120;
+    const beta = 5;
+    const actual = computeEclipticDeclinationDeg(lon, beta, obliquity);
+    const lambda = (lon * Math.PI) / 180;
+    const b = (beta * Math.PI) / 180;
+    const eps = (obliquity * Math.PI) / 180;
+    const expected = Math.asin(Math.sin(b) * Math.cos(eps) + Math.cos(b) * Math.sin(eps) * Math.sin(lambda)) * 180 / Math.PI;
+    expect(actual).toBeCloseTo(expected, 10);
+    expect(actual).not.toBeCloseTo(Math.asin(Math.sin(eps) * Math.sin(lambda)) * 180 / Math.PI, 3);
+
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const moon = chart.planets.find((p) => p.id === 'Moon')!;
+    expect(chart.panchang.nakshatra.varna).toBe(SIGNS[moon.signIndex].varna);
+    expect(chart.panchang.nakshatra.varna).not.toContain('(');
+  });
+
   it('computes accurate benchmark chart for Swami Vivekananda (1863-01-12)', () => {
     const vivek = SAMPLE_CHARTS[0];
     const chart = calculateChart(vivek, DEFAULT_SETTINGS);
@@ -143,6 +201,24 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(lahiri).toBeLessThan(fagan);
   });
 
+  it('locks the documented Narasimha Rao Panchamsha (D5) odd/even sequence and boundaries', () => {
+    // D5 is an additional varga, not one of BPHS's classical sixteen.
+    // This project follows the Narasimha Rao sequence:
+    // odd: Aries, Aquarius, Sagittarius, Gemini, Libra;
+    // even: Taurus, Virgo, Pisces, Capricorn, Scorpio.
+    expect(getDivisionalSignIndex(0, 'D5')).toBe(0);
+    expect(getDivisionalSignIndex(6 - 1e-8, 'D5')).toBe(0);
+    expect(getDivisionalSignIndex(6, 'D5')).toBe(10);
+    expect(getDivisionalSignIndex(12, 'D5')).toBe(8);
+    expect(getDivisionalSignIndex(18, 'D5')).toBe(2);
+    expect(getDivisionalSignIndex(24, 'D5')).toBe(6);
+    expect(getDivisionalSignIndex(30, 'D5')).toBe(1);
+    expect(getDivisionalSignIndex(36, 'D5')).toBe(5);
+    expect(getDivisionalSignIndex(42, 'D5')).toBe(11);
+    expect(getDivisionalSignIndex(48, 'D5')).toBe(9);
+    expect(getDivisionalSignIndex(54, 'D5')).toBe(7);
+  });
+
   it('computes all 20 Divisional Charts (D1-D60) accurately', () => {
     // Navamsa spot checks
     expect(getDivisionalSignIndex(0.5, 'D9')).toBe(0);   // Aries 0.5° -> Aries
@@ -163,6 +239,203 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('doubles only the Sun Ayana Bala and calculates BPHS Cheshta Kendra from mean/true longitudes', () => {
+    const sunRaw = computeAyanaBalaVirupas('Sun', 0);
+    expect(sunRaw).toBeCloseTo(30, 10);
+    // The production Shadbala path doubles this raw value for the Sun.
+    expect(sunRaw * 2).toBeCloseTo(60, 10);
+
+    // Superior planets use their own mean longitude as the reference;
+    // Mercury and Venus use their mean longitude as sighrocca and Sun mean
+    // longitude as the midpoint's mean component.
+    expect(computeCheshtaBalaFromLongitudes('Mars', 130, 100, 10)).toBeCloseTo(35, 10);
+    expect(computeCheshtaBalaFromLongitudes('Mercury', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
+    expect(computeCheshtaBalaFromLongitudes('Venus', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
+    expect(computeCheshtaBalaFromLongitudes('Jupiter', 10, 350, 20)).toBeCloseTo(20 / 3, 10);
+  });
+
+  it('computes reproducible mean sidereal longitudes and BPHS ray-based Ishta/Kashta', () => {
+    expect(computeMeanSiderealLongitude('Sun', Date.UTC(1900, 0, 1), 76)).toBeCloseTo(257.4568, 6);
+    const full = computeIshtaKashtaPhala(60, 60);
+    expect(full.ishtaPhala).toBe(60);
+    expect(full.kashtaPhala).toBe(0);
+    const empty = computeIshtaKashtaPhala(0, 0);
+    expect(empty.ishtaPhala).toBe(0);
+    expect(empty.kashtaPhala).toBe(60);
+    const middle = computeIshtaKashtaPhala(30, 30);
+    expect(middle.ishtaPhala).toBeCloseTo(30, 10);
+    expect(middle.kashtaPhala).toBeCloseTo(30, 10);
+  });
+
+  it('uses the BPHS Sun Cheshta Kendra for Ishta Phala and keeps Shadbala components reconciled', () => {
+    expect(computeSunCheshtaBalaForIshta(270)).toBeCloseTo(0, 10);
+    expect(computeSunCheshtaBalaForIshta(0)).toBeCloseTo(30, 10);
+    expect(computeSunCheshtaBalaForIshta(90)).toBeCloseTo(60, 10);
+    expect(computeSunCheshtaBalaForIshta(180)).toBeCloseTo(30, 10);
+
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    for (const row of chart.shadbala) {
+      const sum = row.sthanaBala + row.digBala + row.kalaBala +
+        row.cheshtaBala + row.naisargikaBala + row.drikBala;
+      expect(Math.abs(row.totalVirupas - sum)).toBeLessThanOrEqual(0.11);
+    }
+  });
+
+  it('transfers Shadbala difference in Graha Yuddha to the victor', () => {
+    const pos = (id: string, longitude: number, latitude: number) =>
+      ({ id, longitude, latitude }) as BodyPosition;
+    const rows = [
+      { planet: 'Mars', totalVirupas: 100 },
+      { planet: 'Mercury', totalVirupas: 80 },
+      { planet: 'Venus', totalVirupas: 90 },
+      { planet: 'Jupiter', totalVirupas: 70 },
+      { planet: 'Saturn', totalVirupas: 60 },
+    ] as const;
+
+    const northWins = computeGrahaYuddhaAdjustments(
+      [pos('Mars', 100, 1.2), pos('Mercury', 100.4, -0.4)],
+      rows
+    );
+    expect(northWins.Mars).toBe(20);
+    expect(northWins.Mercury).toBe(-20);
+
+    // Venus prevails even when its ecliptic latitude is more southerly.
+    const venusWins = computeGrahaYuddhaAdjustments(
+      [pos('Venus', 200, -2), pos('Mars', 200.5, 2)],
+      rows
+    );
+    expect(venusWins.Venus).toBe(10);
+    expect(venusWins.Mars).toBe(-10);
+
+    // A separation over one degree and luminary pairings do not qualify.
+    const noWar = computeGrahaYuddhaAdjustments(
+      [pos('Mars', 10, 2), pos('Mercury', 11.01, -2), pos('Sun', 10.2, 3)],
+      rows
+    );
+    expect(noWar.Mars).toBe(0);
+    expect(noWar.Mercury).toBe(0);
+  });
+
+  it('uses undoubled Paksha Bala for the Moon and reuses it as Cheshta Bala', () => {
+    expect(computePakshaBalaVirupas('Moon', 90, true)).toBe(30);
+    expect(computePakshaBalaVirupas('Moon', 90, false)).toBe(30);
+    expect(computePakshaBalaVirupas('Moon', 180, true)).toBe(60);
+    expect(computePakshaBalaVirupas('Moon', 0, false)).toBe(60);
+    expect(computePakshaBalaVirupas('Jupiter', 120, false)).toBe(40);
+    expect(computePakshaBalaVirupas('Mars', 120, true)).toBe(20);
+  });
+
+  it('computes Surya Siddhanta Abda and Masa lords from Ahargana', () => {
+    const jdn = julianDayNumberFromGregorianDate(2010, 1, 1);
+    expect(jdn).toBe(2_455_198);
+    const ahargana = 714_402_296_627 + (jdn - 588_466);
+    expect(ahargana).toBe(714_404_163_359);
+    expect(computeSuryasiddhantaTimeLords(ahargana)).toEqual({
+      abdaLord: 'Venus',
+      masaLord: 'Jupiter',
+    });
+  });
+
+  it('calculates Ayana Bala from the classical 23°27′ declination scale', () => {
+    const maxDeclination = 23 + 27 / 60;
+    expect(computeAyanaBalaVirupas('Sun', maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Sun', -maxDeclination)).toBeCloseTo(0, 10);
+    expect(computeAyanaBalaVirupas('Moon', -maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Moon', maxDeclination)).toBeCloseTo(0, 10);
+    expect(computeAyanaBalaVirupas('Mercury', maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Mercury', -maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Jupiter', 0)).toBeCloseTo(30, 10);
+  });
+
+  it('adds full Mercury and Jupiter aspects in BPHS Drik Bala', () => {
+    const pos = (id: string, longitude: number, signIndex: number) =>
+      ({ id, longitude, signIndex }) as BodyPosition;
+
+    const saturn = pos('Saturn', 180, 6);
+    const jupiter = pos('Jupiter', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, jupiter], true)).toBe(75);
+
+    const mercury = pos('Mercury', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, mercury], true)).toBe(75);
+
+    // Mercury conjoined with the Sun is malefic: full aspect remains, but its
+    // quarter is deducted; the Sun's own malefic quarter is deducted too.
+    const sun = pos('Sun', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, mercury, sun], true)).toBe(30);
+  });
+
+  it('uses the classical BPHS Saptavargaja dignity ladder', () => {
+    const matrix = Object.fromEntries(
+      SEVEN_PLANETS.map((p) => [
+        p,
+        Object.fromEntries(SEVEN_PLANETS.map((q) => [q, 'Neutral'])),
+      ])
+    ) as Record<(typeof SEVEN_PLANETS)[number], Record<(typeof SEVEN_PLANETS)[number], string>>;
+
+    matrix.Sun.Mars = 'Great Friend';
+    matrix.Sun.Venus = 'Friend';
+    matrix.Sun.Mercury = 'Neutral';
+    matrix.Sun.Jupiter = 'Enemy';
+    matrix.Sun.Saturn = 'Great Enemy';
+
+    // Sun's Leo moolatrikona is degree-specific in D1; its remaining own-sign arc is 30.
+    expect(computeSaptavargajaPoints('Sun', 4, 10, true, matrix)).toBe(45);
+    expect(computeSaptavargajaPoints('Sun', 4, 20, true, matrix)).toBe(30);
+
+    // Exaltation is not a separate Saptavargaja category: use sign-lord maitri.
+    expect(computeSaptavargajaPoints('Sun', 0, 10, true, matrix)).toBe(20);
+    expect(computeSaptavargajaPoints('Sun', 0, 10, false, matrix)).toBe(20);
+
+    expect(computeSaptavargajaPoints('Sun', 1, 10, false, matrix)).toBe(15);
+    expect(computeSaptavargajaPoints('Sun', 2, 10, false, matrix)).toBe(10);
+    expect(computeSaptavargajaPoints('Sun', 8, 10, false, matrix)).toBe(4);
+    expect(computeSaptavargajaPoints('Sun', 9, 10, false, matrix)).toBe(2);
+    expect(computeSaptavargajaPoints('Sun', 4, 10, false, matrix)).toBe(30);
+  });
+
+  it('applies Ekadhipatya Shodhana by subtracting the occupied sign bindus', () => {
+    // Aries/Scorpio: occupied Aries has 4, empty Scorpio has 9 -> 5 remains.
+    const occupiedA = new Array(12).fill(0);
+    occupiedA[0] = 4;
+    occupiedA[7] = 9;
+    expect(applyEkadhipatyaShodhana(occupiedA, new Set([0])).slice(0, 12)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0]
+    );
+
+    // Taurus/Libra: occupied Libra has 3, empty Taurus has 8 -> 5 remains.
+    const occupiedB = new Array(12).fill(0);
+    occupiedB[1] = 8;
+    occupiedB[6] = 3;
+    expect(applyEkadhipatyaShodhana(occupiedB, new Set([6]))[1]).toBe(5);
+    expect(applyEkadhipatyaShodhana(occupiedB, new Set([6]))[6]).toBe(3);
+
+    // Equal values reduce the empty sign to zero; an empty sign with fewer
+    // bindus also becomes zero. The occupied sign is never reduced.
+    const equal = new Array(12).fill(0);
+    equal[0] = 4;
+    equal[7] = 4;
+    expect(applyEkadhipatyaShodhana(equal, new Set([0]))[7]).toBe(0);
+    const occupiedHigher = new Array(12).fill(0);
+    occupiedHigher[0] = 8;
+    occupiedHigher[7] = 3;
+    expect(applyEkadhipatyaShodhana(occupiedHigher, new Set([0]))[7]).toBe(0);
+    expect(applyEkadhipatyaShodhana(occupiedHigher, new Set([0]))[0]).toBe(8);
+
+    // Both occupied: no reduction. Both empty: retain the smaller value.
+    const bothOccupied = new Array(12).fill(0);
+    bothOccupied[0] = 4;
+    bothOccupied[7] = 9;
+    expect(applyEkadhipatyaShodhana(bothOccupied, new Set([0, 7])).slice(0, 8)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 9]
+    );
+    const bothEmpty = new Array(12).fill(0);
+    bothEmpty[0] = 4;
+    bothEmpty[7] = 9;
+    expect(applyEkadhipatyaShodhana(bothEmpty, new Set()).slice(0, 8)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 4]
+    );
   });
 
   it('maintains contiguous Vimshottari Dasha periods & exact SAV=337 bindus', () => {

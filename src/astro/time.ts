@@ -65,7 +65,7 @@ export function parseOffsetString(str: string): number | null {
   const sign = match[1] === '-' ? -1 : 1;
   const hrs = parseInt(match[2], 10);
   const mins = match[3] ? parseInt(match[3], 10) : 0;
-  if (hrs > 14 || mins >= 60) return null;
+  if (hrs > 14 || mins >= 60 || (hrs === 14 && mins !== 0)) return null;
   return sign * (hrs * 60 + mins);
 }
 
@@ -137,8 +137,7 @@ export function resolveUtcFromBirth(
   for (let i = 0; i < 3; i++) {
     const wallAtGuess = getZonePartsMs(guessUtcMs, safeTimezone);
     if (wallAtGuess === null) {
-      const fallback = manualOffsetMinutes ?? 0;
-      return { utcMs: targetWallMs - fallback * 60_000, offsetMinutes: fallback };
+      throw new RangeError(`Invalid IANA time zone: ${timezone}`);
     }
     const offsetMs = wallAtGuess - guessUtcMs;
     const nextUtcMs = targetWallMs - offsetMs;
@@ -150,9 +149,17 @@ export function resolveUtcFromBirth(
   }
 
   const finalWall = getZonePartsMs(guessUtcMs, timezone);
-  const offsetMinutes =
-    finalWall !== null ? Math.round((finalWall - guessUtcMs) / 60_000 * 100) / 100 : (manualOffsetMinutes ?? 0);
+  if (finalWall === null) {
+    throw new RangeError(`Invalid IANA time zone: ${timezone}`);
+  }
 
+  // A wall-clock time inside a DST spring-forward gap does not exist. Never
+  // silently normalize it to a different local time or fall back to UTC.
+  if (finalWall !== targetWallMs) {
+    throw new RangeError(`Local time ${dateStr} ${timeStr} does not exist in time zone ${timezone}`);
+  }
+
+  const offsetMinutes = Math.round(((finalWall - guessUtcMs) / 60_000) * 100) / 100;
   return { utcMs: guessUtcMs, offsetMinutes };
 }
 
@@ -175,6 +182,17 @@ export function formatLocalDateTimeFromUtc(utcMs: number, offsetMinutes: number)
   const m = String(local.getUTCMonth() + 1).padStart(2, '0');
   const d = String(local.getUTCDate()).padStart(2, '0');
   return `${y}-${m}-${d} ${formatLocalTimeFromUtc(utcMs, offsetMinutes, false)}`;
+}
+
+/**
+ * Integer Julian Day Number for a Gregorian civil date at local midnight.
+ * JDN 2,455,198 corresponds to 2010-01-01.
+ */
+export function julianDayNumberFromGregorianDate(year: number, month: number, day: number): number {
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  date.setUTCHours(0, 0, 0, 0);
+  return Math.floor(date.getTime() / 86_400_000 + 2_440_588);
 }
 
 export function julianDayFromJ2000Days(daysSinceJ2000: number): number {

@@ -129,8 +129,8 @@ export function computeAvasthasAndUpagrahas(chart: ChartData): AvasthaUpagrahaRe
           winner: winner.id as SevenPlanetId,
           loser: loser.id as SevenPlanetId,
           separationDeg: Math.round(sep * 1000) / 1000,
-          signName: p1.signName,
-          note: `${winner.id} and ${loser.id} are within ${sep.toFixed(2)}° in ${p1.signName} — ${winner.id} prevails in Graha Yuddha while ${loser.id} experiences competitive strain.`,
+          signName: winner.signName,
+          note: `${winner.id} (${winner.signName}) and ${loser.id} (${loser.signName}) are within ${sep.toFixed(2)}° — ${winner.id} prevails in Graha Yuddha while ${loser.id} experiences competitive strain.`,
         });
       }
     }

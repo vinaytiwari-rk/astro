@@ -35,6 +35,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
   const [form, setForm] = useState<BirthInput>(initial);
   const [cityModalOpen, setCityModalOpen] = useState(false);
   const [manualTz, setManualTz] = useState(initial.timezone === 'MANUAL');
+  const [offsetError, setOffsetError] = useState(false);
   const [offsetText, setOffsetText] = useState(() =>
     initial.timezone === 'MANUAL'
       ? formatOffsetString(initial.utcOffsetMinutes ?? 330)
@@ -47,6 +48,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
       void preloadExpandedAtlas();
       const isManual = initial.timezone === 'MANUAL';
       setManualTz(isManual);
+      setOffsetError(false);
       setOffsetText(
         isManual
           ? formatOffsetString(initial.utcOffsetMinutes ?? 330)
@@ -82,8 +84,13 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
     let finalForm = { ...form };
     if (manualTz) {
       const parsed = parseOffsetString(offsetText);
+      if (parsed === null) {
+        setOffsetError(true);
+        return;
+      }
+      setOffsetError(false);
       finalForm.timezone = 'MANUAL';
-      finalForm.utcOffsetMinutes = parsed ?? 0;
+      finalForm.utcOffsetMinutes = parsed;
     } else {
       finalForm.utcOffsetMinutes = undefined;
     }
@@ -255,7 +262,10 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                     type="text"
                     className="text-input mono"
                     value={offsetText}
-                    onChange={(e) => setOffsetText(e.target.value)}
+                    onChange={(e) => {
+                      setOffsetText(e.target.value);
+                      setOffsetError(false);
+                    }}
                     placeholder="+05:30 or -05:00"
                   />
                   <button
@@ -280,6 +290,13 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                   >
                     {lang === 'hi' ? 'अद्यतन' : 'Sync'}
                   </button>
+                </div>
+              )}
+              {offsetError && manualTz && (
+                <div className="hint-text" role="alert" style={{ color: 'var(--bad)', marginTop: 6 }}>
+                  {lang === 'hi'
+                    ? 'कृपया मान्य UTC अंतर दर्ज करें (−14:00 से +14:00)।'
+                    : 'Enter a valid UTC offset between −14:00 and +14:00.'}
                 </div>
               )}
             </div>
