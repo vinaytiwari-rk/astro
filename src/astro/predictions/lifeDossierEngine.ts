@@ -1202,7 +1202,7 @@ export function computeLifeDossierReport(
     subtitleHi: 'परिवर्तन, साझा संपत्ति, अनुसंधान और व्यक्तिगत धैर्य का पारंपरिक प्रतीकात्मक अध्ययन',
     icon: 'hourglass',
     summaryQuoteEn: 'The eighth house is traditionally associated with change, shared resources and the need for resilience.',
-    summaryQuoteHi: 'अष्टम भाव को परंपरागत रूप से परिवर्तन, साझा संसाधनों और धैर्य की आवश्यकता से जोड़ा जाता है।'
+    summaryQuoteHi: 'अष्टम भाव को परंपरागत रूप से परिवर्तन, साझा संसाधनों और धैर्य की आवश्यकता से जोड़ा जाता है।',
     bhavaProfile: h8Profile.profile,
     targetedRemedy: h8Profile.remedy,
     sections: [
