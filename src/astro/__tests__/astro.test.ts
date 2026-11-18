@@ -245,7 +245,7 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
         p,
         Object.fromEntries(SEVEN_PLANETS.map((q) => [q, 'Neutral'])),
       ])
-    ) as Record<SevenPlanetId, Record<SevenPlanetId, string>>;
+    ) as Record<(typeof SEVEN_PLANETS)[number], Record<(typeof SEVEN_PLANETS)[number], string>>;
 
     matrix.Sun.Mars = 'Great Friend';
     matrix.Sun.Venus = 'Friend';

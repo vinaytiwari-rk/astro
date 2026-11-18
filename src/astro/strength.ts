@@ -10,14 +10,12 @@ import { angularDiffDeg, normalizeDeg } from './time';
 import type {
   AspectInfo,
   BodyPosition,
-  DignityLevel,
   DivisionalChart,
   DivisionalChartId,
   PlanetId,
   SevenPlanetId,
   ShadbalaRow,
 } from './types';
-import { evaluateDignity } from './vargas';
 
 const NAISARGIKA_BALA: Record<SevenPlanetId, number> = {
   Sun: 60.0,
