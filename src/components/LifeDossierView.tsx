@@ -693,6 +693,41 @@ export const LifeDossierView: React.FC<LifeDossierViewProps> = ({
                     </div>
                   )}
 
+                  {!isCollapsed && (chapter.predictionEvidence?.length ?? 0) > 0 && (
+                    <div className="card" style={{ margin: '12px 0', padding: '14px' }}>
+                      <h4 style={{ margin: '0 0 8px', fontSize: '14px' }}>
+                        {isHi ? 'केंद्रीय विषय-आधारित फलादेश' : 'Central domain prediction'}
+                      </h4>
+                      {chapter.predictionEvidence?.map((evidence) => (
+                        <div key={evidence.id} style={{ padding: '8px 0', borderTop: '1px solid var(--border-subtle)' }}>
+                          <strong style={{ fontSize: '13px' }}>{isHi ? evidence.titleHi : evidence.titleEn}</strong>
+                          <p style={{ margin: '5px 0', fontSize: '12px', lineHeight: 1.55 }}>
+                            {isHi ? evidence.summaryHi : evidence.summaryEn}
+                          </p>
+                          <p className="text-muted" style={{ margin: '4px 0', fontSize: '11px', lineHeight: 1.55 }}>
+                            {isHi ? evidence.timingHi : evidence.timingEn}
+                          </p>
+                          <details style={{ marginTop: '6px' }}>
+                            <summary style={{ cursor: 'pointer', fontSize: '11px', fontWeight: 600 }}>
+                              {isHi ? 'ग्रह-भाव आधार और सीमाएँ' : 'House evidence and limitations'}
+                            </summary>
+                            <p style={{ fontSize: '11px', lineHeight: 1.5 }}>
+                              {evidence.houseFindings.map((finding) =>
+                                (isHi ? 'भाव ' : 'House ') + finding.house + ': ' + finding.lord +
+                                ' (' + finding.lordDignity + '), ' +
+                                (isHi ? 'स्वामी का भाव ' : 'lord in house ') + (finding.lordHouse || '—') +
+                                ', SAV ' + (finding.savBindus ?? '—') +
+                                (finding.occupants.length ? ', ' + (isHi ? 'स्थित ग्रह ' : 'occupants ') + finding.occupants.join(', ') : '')
+                              ).join(' · ')}
+                            </p>
+                            <p style={{ fontSize: '11px', lineHeight: 1.5 }}>{evidence.divisionalFinding}</p>
+                            <p style={{ fontSize: '11px', lineHeight: 1.5 }}>{isHi ? evidence.limitationsHi : evidence.limitationsEn}</p>
+                          </details>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* =================================================================
                       CHAPTER 1 EXCLUSIVE: TOP SACRED SPIRITUAL IDENTITY CARD
                      ================================================================= */}

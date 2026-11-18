@@ -6,6 +6,7 @@ import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './la
 import { computeLifeEventsAndLedger, type LifeEventsAndLedgerReport } from './lifeEventsLedger';
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
+import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
 import {
   computePhysicalAppearance,
   computeEducationAcademics,
@@ -95,6 +96,7 @@ export interface DossierChapter {
   targetedRemedy: TargetedRemedyBox;
   sections: ChapterSection[];
   specialData?: any;
+  predictionEvidence?: PredictionDomainEvidence[];
 }
 
 export interface LifeDossierReport {
@@ -590,6 +592,7 @@ export function computeLifeDossierReport(
   const pastFuture = computePastFutureLifeReading(chart);
   const lalKitab = computeLalKitabSystemReport(chart);
   const ledgerReport = computeLifeEventsAndLedger(chart);
+  const centralPredictionEvidence = computePredictionFramework(chart);
 
   // Modular Deep Predictions & Relational Engines
   const physicalResult = computePhysicalAppearance(chart);
@@ -1534,6 +1537,22 @@ export function computeLifeDossierReport(
       activeDebts,
     },
   });
+
+  const chapterEvidenceMap: Partial<Record<number, PredictionDomainId[]>> = {
+    2: ['wealth'],
+    4: ['property'],
+    5: ['education', 'children'],
+    6: ['litigation'],
+    7: ['marriage'],
+    9: ['foreign'],
+    10: ['career'],
+    11: ['wealth'],
+    12: ['foreign'],
+  };
+  for (const chapter of chapters) {
+    const relevantIds = chapterEvidenceMap[chapter.chapterNumber] ?? [];
+    chapter.predictionEvidence = centralPredictionEvidence.filter((item) => relevantIds.includes(item.id));
+  }
 
   return {
     generatedAt: new Date().toISOString(),

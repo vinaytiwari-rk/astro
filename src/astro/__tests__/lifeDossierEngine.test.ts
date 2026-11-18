@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeLifeDossierReport } from '../predictions/lifeDossierEngine';
+import { computePredictionFramework } from '../predictions/predictionFramework';
 
 describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   const sample = SAMPLE_CHARTS[0];
@@ -35,6 +36,20 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
         expect(sec.astrologicalCauseHi).toBeDefined();
       }
     }
+  });
+
+  it('uses the same central domain evidence in the 12-chapter dossier and 21-prediction engine', () => {
+    const central = computePredictionFramework(chart);
+    expect(central.map((item) => item.id)).toEqual([
+      'career', 'marriage', 'wealth', 'education', 'children', 'property', 'litigation', 'foreign',
+    ]);
+    const careerChapter = report.chapters.find((chapter) => chapter.chapterNumber === 10);
+    const marriageChapter = report.chapters.find((chapter) => chapter.chapterNumber === 7);
+    const educationChapter = report.chapters.find((chapter) => chapter.chapterNumber === 5);
+    expect(careerChapter?.predictionEvidence?.map((item) => item.id)).toEqual(['career']);
+    expect(marriageChapter?.predictionEvidence?.map((item) => item.id)).toEqual(['marriage']);
+    expect(educationChapter?.predictionEvidence?.map((item) => item.id)).toEqual(['education', 'children']);
+    expect(report.chapters.find((chapter) => chapter.chapterNumber === 8)?.predictionEvidence).toEqual([]);
   });
 
   it('correctly populates Top Spiritual Identity (Ishta Devata, Naamakshar, Paya) in Chapter 1 only', () => {
