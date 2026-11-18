@@ -259,7 +259,8 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(embedded.map((section) => section.lifeDimensionId).sort((a, b) => a! - b!))
       .toEqual(Array.from({ length: 21 }, (_, index) => index + 1));
     for (const chapter of report.chapters) {
-      expect(chapter.sections.filter((section) => section.lifeDimensionId !== undefined).length)
-        .toBeGreaterThanOrEqual(0);
+      for (const section of chapter.sections.filter((item) => item.lifeDimensionId !== undefined)) {
+        expect(section.lifeDimensionHouse).toBe(chapter.chapterNumber);
+      }
     }
   });
