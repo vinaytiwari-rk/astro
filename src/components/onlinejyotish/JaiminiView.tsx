@@ -38,13 +38,21 @@ function NetBadge({ net }: { net: 'positive' | 'negative' | 'neutral' }) {
     net === 'positive' ? 'jm-badge-pos' :
     net === 'negative' ? 'jm-badge-neg' :
     'jm-badge-neu';
-  const label = net === 'positive' ? '✓ Positive' : net === 'negative' ? '✗ Obstructed' : '~ Neutral';
+  const label = net === 'positive' ? 'Positive' : net === 'negative' ? 'Obstructed' : 'Neutral';
   return <span className={`jm-badge ${cls}`}>{label}</span>;
 }
 
 // ─── Tab 1: Chara Karakas ─────────────────────────────────────────────────────
 
 function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: boolean; lang: 'hi' | 'en' }) {
+  if (!karakas || karakas.length === 0) {
+    return (
+      <div className="jm-section">
+        <p className="jm-section-desc">{isHi ? 'चर कारक गणना उपलब्ध नहीं है।' : 'Chara Karakas calculation unavailable.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
@@ -67,28 +75,31 @@ function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: b
             </tr>
           </thead>
           <tbody>
-            {karakas.map((k) => (
-              <tr key={k.role} className={k.role === 'AK' ? 'jm-row-ak' : ''}>
-                <td>
-                  <span className={`jm-karaka-badge jm-karaka-${k.role.toLowerCase()}`}>
-                    {k.role}
-                  </span>
-                </td>
-                <td className="jm-planet-name">{trPlanet(k.planet, lang)}</td>
-                <td>{trSign(k.signIndex, lang)}</td>
-                <td>{fmtDeg(k.degreeInSign)}</td>
-                <td className="jm-interp">
-                  {isHi ? k.interpretationHi : k.interpretationEn}
-                </td>
-              </tr>
-            ))}
+            {karakas.map((k) => {
+              const roleKey = k.role ? k.role.toLowerCase() : 'ak';
+              return (
+                <tr key={k.role ?? k.planet} className={k.role === 'AK' ? 'jm-row-ak' : ''}>
+                  <td>
+                    <span className={`jm-karaka-badge jm-karaka-${roleKey}`}>
+                      {k.role ?? '—'}
+                    </span>
+                  </td>
+                  <td className="jm-planet-name">{trPlanet(k.planet, lang)}</td>
+                  <td>{trSign(k.signIndex, lang)}</td>
+                  <td>{fmtDeg(k.degreeInSign ?? 0)}</td>
+                  <td className="jm-interp">
+                    {isHi ? k.interpretationHi : k.interpretationEn}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
       <div className="jm-info-box">
         {isHi
-          ? '⚑ राहु के लिए प्रभावी डिग्री = 30 − वास्तविक डिग्री। 7-कारक पद्धति में केतु शामिल नहीं।'
-          : '⚑ For Rahu, effective degree = 30 − actual degree. Ketu is excluded in the 7-karaka system.'}
+          ? 'राहु के लिए प्रभावी डिग्री = 30 − वास्तविक डिग्री। 7-कारक पद्धति में केतु शामिल नहीं।'
+          : 'For Rahu, effective degree = 30 − actual degree. Ketu is excluded in the 7-karaka system.'}
       </div>
     </div>
   );
@@ -97,6 +108,14 @@ function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: b
 // ─── Tab 2: Arudha Padas ─────────────────────────────────────────────────────
 
 function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; lang: 'hi' | 'en' }) {
+  if (!padas || padas.length === 0) {
+    return (
+      <div className="jm-section">
+        <p className="jm-section-desc">{isHi ? 'अरुढ़ पद गणना उपलब्ध नहीं है।' : 'Arudha Padas calculation unavailable.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
@@ -130,7 +149,7 @@ function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; 
                     ? <span className="jm-special-label">{p.specialLabel}</span>
                     : '—'}
                 </td>
-                <td>{trSign(p.signIndex, lang)} <span className="jm-sign-skt">({SIGNS[p.signIndex].sanskrit})</span></td>
+                <td>{trSign(p.signIndex, lang)} <span className="jm-sign-skt">({SIGNS[p.signIndex]?.sanskrit ?? ''})</span></td>
                 <td>{isHi ? `${p.houseFromLagna}वां भाव` : `House ${p.houseFromLagna}`}</td>
                 <td className="jm-interp">
                   {isHi ? p.significanceHi : p.significanceEn}
@@ -147,6 +166,14 @@ function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; 
 // ─── Tab 3: Karakamsha ───────────────────────────────────────────────────────
 
 function KarakamshaTab({ data, isHi, lang }: { data: KarakamshaData; isHi: boolean; lang: 'hi' | 'en' }) {
+  if (!data) {
+    return (
+      <div className="jm-section">
+        <p className="jm-section-desc">{isHi ? 'कारकांश गणना उपलब्ध नहीं है।' : 'Karakamsha calculation unavailable.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
@@ -162,11 +189,11 @@ function KarakamshaTab({ data, isHi, lang }: { data: KarakamshaData; isHi: boole
         <div className="jm-kk-card">
           <div className="jm-kk-label">{isHi ? 'कारकांश राशि' : 'Karakamsha Sign'}</div>
           <div className="jm-kk-value">{trSign(data.karakamshaSignIndex, lang)}</div>
-          <div className="jm-kk-sub">{SIGNS[data.karakamshaSignIndex].sanskrit}</div>
+          <div className="jm-kk-sub">{SIGNS[data.karakamshaSignIndex]?.sanskrit ?? ''}</div>
         </div>
         <div className={`jm-kk-card ${data.isSwamsha ? 'jm-kk-active' : ''}`}>
           <div className="jm-kk-label">{isHi ? 'स्वांश' : 'Swamsha'}</div>
-          <div className="jm-kk-value">{data.isSwamsha ? (isHi ? 'हाँ ✓' : 'Yes ✓') : (isHi ? 'नहीं' : 'No')}</div>
+          <div className="jm-kk-value">{data.isSwamsha ? (isHi ? 'हाँ' : 'Yes') : (isHi ? 'नहीं' : 'No')}</div>
           <div className="jm-kk-sub">
             {data.isSwamsha
               ? (isHi ? 'AK नवांश लग्न का स्वामी भी है' : 'AK also lords D9 Lagna')
@@ -212,7 +239,8 @@ function DashaRow({ md, nowMs, isHi, lang }: {
   isHi: boolean;
   lang: 'hi' | 'en';
 }) {
-  const [expanded, setExpanded] = useState(md.isCurrentPeriod ?? false);
+  const [expanded, setExpanded] = useState(md?.isCurrentPeriod ?? false);
+  if (!md) return null;
   const isCurrent = md.isCurrentPeriod;
 
   return (
@@ -223,11 +251,11 @@ function DashaRow({ md, nowMs, isHi, lang }: {
         aria-expanded={expanded}
       >
         <span className="jm-dasha-sign">{trSign(md.signIndex, lang)}</span>
-        <span className="jm-dasha-sign-skt">{SIGNS[md.signIndex].sanskrit}</span>
-        <span className="jm-dasha-years">{md.years} {isHi ? 'वर्ष' : 'yr'}</span>
+        <span className="jm-dasha-sign-skt">{SIGNS[md.signIndex]?.sanskrit ?? ''}</span>
+        <span className="jm-dasha-years">{md.years ?? 0} {isHi ? 'वर्ष' : 'yr'}</span>
         <span className="jm-dasha-dates">{formatDateDmy(md.startDate)} → {formatDateDmy(md.endDate)}</span>
         {isCurrent && (
-          <span className="jm-dasha-active-badge">{isHi ? '▶ वर्तमान' : '▶ Current'}</span>
+          <span className="jm-dasha-active-badge">{isHi ? 'वर्तमान' : 'Current'}</span>
         )}
         <span className="jm-dasha-toggle">{expanded ? '▲' : '▼'}</span>
       </button>
@@ -240,10 +268,10 @@ function DashaRow({ md, nowMs, isHi, lang }: {
               className={`jm-ad-row ${ad.isCurrentPeriod ? 'jm-ad-current' : ''}`}
             >
               <span className="jm-ad-sign">{trSign(ad.signIndex, lang)}</span>
-              <span className="jm-ad-years">{ad.years.toFixed(1)} {isHi ? 'वर्ष' : 'yr'}</span>
+              <span className="jm-ad-years">{(ad.years ?? 0).toFixed(1)} {isHi ? 'वर्ष' : 'yr'}</span>
               <span className="jm-ad-dates">{formatDateDmy(ad.startDate)} → {formatDateDmy(ad.endDate)}</span>
               {ad.isCurrentPeriod && (
-                <span className="jm-ad-active">{isHi ? '◈ सक्रिय' : '◈ Active AD'}</span>
+                <span className="jm-ad-active">{isHi ? 'सक्रिय' : 'Active AD'}</span>
               )}
             </div>
           ))}
@@ -259,6 +287,14 @@ function DashaTab({ dasha, nowMs, isHi, lang }: {
   isHi: boolean;
   lang: 'hi' | 'en';
 }) {
+  if (!dasha || dasha.length === 0) {
+    return (
+      <div className="jm-section">
+        <p className="jm-section-desc">{isHi ? 'चर दशा गणना उपलब्ध नहीं है।' : 'Chara Dasha calculation unavailable.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
@@ -281,6 +317,14 @@ function DashaTab({ dasha, nowMs, isHi, lang }: {
 // ─── Tab 5: Argala ───────────────────────────────────────────────────────────
 
 function ArgalaTab({ argala, isHi, lang }: { argala: ArgalaEntry[]; isHi: boolean; lang: 'hi' | 'en' }) {
+  if (!argala || argala.length === 0) {
+    return (
+      <div className="jm-section">
+        <p className="jm-section-desc">{isHi ? 'अर्गला विश्लेषण उपलब्ध नहीं है।' : 'Argala analysis unavailable.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
@@ -303,7 +347,7 @@ function ArgalaTab({ argala, isHi, lang }: { argala: ArgalaEntry[]; isHi: boolea
                 {isHi ? 'अर्गला:' : 'Argala:'}
               </span>
               <span className="jm-argala-planets">
-                {a.argalaPlanets.length > 0 ? a.argalaPlanets.map(p => trPlanet(p, lang)).join(', ') : '—'}
+                {a.argalaPlanets && a.argalaPlanets.length > 0 ? a.argalaPlanets.map(p => trPlanet(p, lang)).join(', ') : '—'}
               </span>
             </div>
             <div className="jm-argala-row">
@@ -311,7 +355,7 @@ function ArgalaTab({ argala, isHi, lang }: { argala: ArgalaEntry[]; isHi: boolea
                 {isHi ? 'विरोध:' : 'Virodha:'}
               </span>
               <span className="jm-argala-planets">
-                {a.virodhaPlanets.length > 0 ? a.virodhaPlanets.map(p => trPlanet(p, lang)).join(', ') : '—'}
+                {a.virodhaPlanets && a.virodhaPlanets.length > 0 ? a.virodhaPlanets.map(p => trPlanet(p, lang)).join(', ') : '—'}
               </span>
             </div>
           </div>
@@ -401,16 +445,16 @@ export const JaiminiView: React.FC<JaiminiViewProps> = ({
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'लग्न' : 'Lagna'}:</span>
-            <span className="oj-meta-value"> {chart.ascendant.signName} ({SIGNS[chart.ascendant.signIndex].sanskrit})</span>
+            <span className="oj-meta-value"> {trSign(chart.ascendant.signIndex, lang)} ({SIGNS[chart.ascendant.signIndex]?.sanskrit ?? ''})</span>
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'कारक पद्धति' : 'Karaka System'}:</span>
-            <span className="oj-meta-value"> {settings.karakaCount}-{isHi ? 'कारक' : 'Karaka'}</span>
+            <span className="oj-meta-value"> {settings?.karakaCount ?? 7}-{isHi ? 'कारक' : 'Karaka'}</span>
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'आत्मकारक' : 'Atmakaraka'}:</span>
             <span className="oj-meta-value jm-ak-highlight">
-              {report.karakas[0]?.planet ?? '—'}
+              {report?.karakas?.[0]?.planet ? trPlanet(report.karakas[0].planet, lang) : '—'}
             </span>
           </div>
         </div>
@@ -492,16 +536,16 @@ export const JaiminiView: React.FC<JaiminiViewProps> = ({
                 <div key={s.index} className="jm-am-col-head">{s.short}</div>
               ))}
             </div>
-            {report.rashiAspects.map((row, fromIdx) => (
+            {report.rashiAspects?.map((row, fromIdx) => (
               <div key={fromIdx} className="jm-am-row">
-                <div className="jm-am-row-head">{SIGNS[fromIdx].short}</div>
-                {row.map((aspects, toIdx) => (
+                <div className="jm-am-row-head">{SIGNS[fromIdx]?.short ?? ''}</div>
+                {row?.map((aspects, toIdx) => (
                   <div
                     key={toIdx}
                     className={`jm-am-cell ${fromIdx === toIdx ? 'jm-am-self' : aspects ? 'jm-am-yes' : 'jm-am-no'}`}
-                    title={aspects ? `${SIGNS[fromIdx].name} aspects ${SIGNS[toIdx].name}` : ''}
+                    title={aspects ? `${SIGNS[fromIdx]?.name ?? ''} aspects ${SIGNS[toIdx]?.name ?? ''}` : ''}
                   >
-                    {fromIdx === toIdx ? '—' : aspects ? '✓' : ''}
+                    {fromIdx === toIdx ? '—' : aspects ? 'Yes' : ''}
                   </div>
                 ))}
               </div>

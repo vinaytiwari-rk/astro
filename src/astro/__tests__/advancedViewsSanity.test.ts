@@ -46,6 +46,27 @@ describe('Advanced Views and Calculation Engines Sanity Test', () => {
     // 5. Jaimini
     const jaimini = computeJaimini(chart);
     expect(jaimini).toBeDefined();
+    expect(jaimini.karakas.length).toBe(7);
+    for (const k of jaimini.karakas) {
+      expect(k.role).toBeDefined();
+      expect(typeof k.role.toLowerCase()).toBe('string');
+      expect(k.interpretationEn.length).toBeGreaterThan(0);
+      expect(k.interpretationHi.length).toBeGreaterThan(0);
+    }
+    expect(jaimini.arudhaPadas.length).toBe(12);
+    expect(jaimini.charaDasha.length).toBe(12);
+    expect(jaimini.argala.length).toBe(12);
+    expect(jaimini.karakamsha.akPlanet).toBe(jaimini.karakas[0].planet);
+
+    // 5b. Jaimini 8-Karaka Mode
+    const chart8 = calculateChart(DEFAULT_USER_PROFILE, { ...DEFAULT_SETTINGS, karakaCount: 8 });
+    const jaimini8 = computeJaimini(chart8);
+    expect(jaimini8.karakas.length).toBe(8);
+    for (const k of jaimini8.karakas) {
+      expect(k.role).toBeDefined();
+      expect(typeof k.role.toLowerCase()).toBe('string');
+      expect(k.interpretationEn.length).toBeGreaterThan(0);
+    }
 
     // 6. Full Lal Kitab Report
     const flk = computeFullLalKitabReport(chart, 2026);

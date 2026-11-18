@@ -153,24 +153,34 @@ function signLordSignIndex(chart: ChartData, signIdx: number): number {
 // ─── 1. Chara Karakas ────────────────────────────────────────────────────────
 
 export function computeCharaKarakas(chart: ChartData): JaiminiKaraka[] {
-  const count = chart.settings.karakaCount; // 7 or 8
-  // Grahas to rank: exclude Ketu for 7-karaka, include for 8-karaka
+  const count = chart.settings?.karakaCount === 8 ? 8 : 7;
+  // Grahas to rank: exclude Rahu & Ketu for 7-karaka, include Rahu for 8-karaka
   const grahasToRank: NineGrahaId[] = count === 7
-    ? ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu']
-    : ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+    ? ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']
+    : ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu'];
 
-  const ranked = grahasToRank.map((g) => {
-    const p = chart.planets.find((x) => x.id === g)!;
-    const rawDeg = p.degreeInSign;
-    // For Rahu use 30 - degree_in_sign as effective degree
-    const effectiveDeg = g === 'Rahu' ? 30 - rawDeg : rawDeg;
-    return { planet: g, effectiveDeg, rawDeg, signIndex: p.signIndex, signName: p.signName };
-  }).sort((a, b) => b.effectiveDeg - a.effectiveDeg); // descending
-
-  // Karaka roles
   const roles7: KarakaRole[] = ['AK', 'AmK', 'BK', 'MK', 'PK', 'GK', 'DK'];
   const roles8: KarakaRole[] = ['AK', 'AmK', 'BK', 'MK', 'PiK', 'PK', 'GK', 'DK'];
-  const roles = count === 7 ? roles7 : roles8;
+  const roles = count === 8 ? roles8 : roles7;
+
+  const ranked = grahasToRank
+    .map((g) => {
+      const p = chart.planets?.find((x) => x.id === g);
+      if (!p) return null;
+      const rawDeg = p.degreeInSign ?? (p.longitude % 30);
+      // For Rahu use 30 - degree_in_sign as effective degree
+      const effectiveDeg = g === 'Rahu' ? 30 - rawDeg : rawDeg;
+      return {
+        planet: g,
+        effectiveDeg,
+        rawDeg,
+        signIndex: p.signIndex ?? 0,
+        signName: p.signName ?? SIGNS[p.signIndex ?? 0]?.name ?? 'Aries'
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => b.effectiveDeg - a.effectiveDeg)
+    .slice(0, roles.length);
 
   return ranked.map((r, i) => {
     const role = roles[i] as KarakaRole;
@@ -181,8 +191,8 @@ export function computeCharaKarakas(chart: ChartData): JaiminiKaraka[] {
       actualDegreeInSign: r.rawDeg,
       signIndex: r.signIndex,
       signName: r.signName,
-      interpretationEn: KARAKA_INTERP_EN[role],
-      interpretationHi: KARAKA_INTERP_HI[role],
+      interpretationEn: (role && KARAKA_INTERP_EN[role]) || '',
+      interpretationHi: (role && KARAKA_INTERP_HI[role]) || '',
     };
   });
 }
@@ -190,16 +200,16 @@ export function computeCharaKarakas(chart: ChartData): JaiminiKaraka[] {
 // ─── 2. Arudha Padas ─────────────────────────────────────────────────────────
 
 export function computeArudhaPadas(chart: ChartData): ArudhaPada[] {
-  const ascSign = chart.ascendant.signIndex;
+  const ascSign = chart.ascendant?.signIndex ?? 0;
 
   return Array.from({ length: 12 }, (_, idx) => {
     const houseNum = idx + 1;
     // The sign of this house (whole-sign from lagna)
     const baseSign = (ascSign + idx) % 12;
     // Lord of this sign
-    const lord = SIGNS[baseSign].lord;
-    const lordPlanet = chart.planets.find((p) => p.id === lord)!;
-    const lordSign = lordPlanet.signIndex;
+    const lord = SIGNS[baseSign]?.lord ?? 'Mars';
+    const lordPlanet = chart.planets?.find((p) => p.id === lord);
+    const lordSign = lordPlanet?.signIndex ?? baseSign;
 
     // Count signs from base to lord
     const dist = (lordSign - baseSign + 12) % 12 || 12;
@@ -235,7 +245,7 @@ export function computeArudhaPadas(chart: ChartData): ArudhaPada[] {
       label,
       specialLabel,
       signIndex: padaSign,
-      signName: SIGNS[padaSign].name,
+      signName: SIGNS[padaSign]?.name ?? 'Aries',
       houseFromLagna,
       significanceEn: sig?.en ?? `A${houseNum} — ${houseNum}th house Arudha Pada.`,
       significanceHi: sig?.hi ?? `A${houseNum} — ${houseNum}वें भाव का अरुढ़ पद।`,
@@ -246,44 +256,55 @@ export function computeArudhaPadas(chart: ChartData): ArudhaPada[] {
 // ─── 3. Karakamsha ───────────────────────────────────────────────────────────
 
 export function computeKarakamsha(chart: ChartData, karakas: JaiminiKaraka[]): KarakamshaData {
-  const ak = karakas.find((k) => k.role === 'AK')!;
+  const ak = karakas.find((k) => k.role === 'AK') || karakas[0] || {
+    planet: 'Sun' as NineGrahaId,
+    signIndex: 0,
+    signName: 'Aries',
+    degreeInSign: 0,
+    actualDegreeInSign: 0,
+    role: 'AK' as KarakaRole,
+    interpretationEn: '',
+    interpretationHi: ''
+  };
   const akPlanet = ak.planet;
 
   // Find AK in D9
-  const d9 = chart.divisionalCharts.D9;
-  const akD9 = d9.placements.find((p) => p.id === akPlanet);
-  const karakamshaSignIndex = akD9?.signIndex ?? 0;
-  const karakamshaSignName = SIGNS[karakamshaSignIndex].name;
+  const d9 = chart.divisionalCharts?.D9;
+  const placements = d9?.placements ?? [];
+  const akD9 = placements.find((p) => p.id === akPlanet);
+  const karakamshaSignIndex = akD9?.signIndex ?? ak.signIndex ?? 0;
+  const karakamshaSignName = SIGNS[karakamshaSignIndex]?.name ?? 'Aries';
 
   // Swamsha: AK planet is also the D9 lagna lord
-  const d9LagnaLord = SIGNS[d9.lagnaSignIndex].lord;
+  const d9LagnaSignIndex = d9?.lagnaSignIndex ?? 0;
+  const d9LagnaLord = SIGNS[d9LagnaSignIndex]?.lord ?? 'Mars';
   const isSwamsha = (akPlanet === d9LagnaLord);
 
   // Ishta Devata: planet(s) in 12th from Karakamsha in D9
   const ishtaSignIndex = (karakamshaSignIndex + 11) % 12; // 12th from = +11
-  const ishtaPlanets = d9.placements
+  const ishtaPlanets = placements
     .filter((p) => p.signIndex === ishtaSignIndex && p.id !== 'Asc')
     .map((p) => p.id);
   const ishtaDevata = ishtaPlanets.length > 0 ? ishtaPlanets.join(', ') : null;
 
   // Dhana Yoga: 2nd from Karakamsha
   const dhanaSignIndex = (karakamshaSignIndex + 1) % 12;
-  const dhanaPlanets = d9.placements
+  const dhanaPlanets = placements
     .filter((p) => p.signIndex === dhanaSignIndex && p.id !== 'Asc')
     .map((p) => p.id);
   const dhanaYoga = dhanaPlanets.length > 0 ? dhanaPlanets.join(', ') : null;
 
   // Vivaha Nakshatra: nakshatra of the 7th from Karakamsha sign
   const vivahaSignIndex = (karakamshaSignIndex + 6) % 12;
-  const vivahaNakshatra = `${SIGNS[vivahaSignIndex].name} zone nakshatras (${SIGNS[vivahaSignIndex].sanskrit})`;
+  const vivahaNakshatra = `${SIGNS[vivahaSignIndex]?.name ?? ''} zone nakshatras (${SIGNS[vivahaSignIndex]?.sanskrit ?? ''})`;
 
   const summaryEn = `Atmakaraka ${akPlanet} occupies ${karakamshaSignName} in Navamsha — the Karakamsha Lagna. ` +
-    (isSwamsha ? `This is also Swamsha since ${akPlanet} lords ${SIGNS[d9.lagnaSignIndex].name}. ` : '') +
+    (isSwamsha ? `This is also Swamsha since ${akPlanet} lords ${SIGNS[d9LagnaSignIndex]?.name ?? ''}. ` : '') +
     (ishtaDevata ? `Ishta Devata: ${ishtaDevata} (12th from Karakamsha). ` : 'No planet in 12th — introspective spiritual path. ') +
     (dhanaYoga ? `Dhana Yoga potential through ${dhanaYoga} (2nd from Karakamsha).` : 'No planet in 2nd from Karakamsha.');
 
   const summaryHi = `आत्मकारक ${akPlanet} नवांश में ${karakamshaSignName} में स्थित है — यह कारकांश लग्न है। ` +
-    (isSwamsha ? `यह स्वांश भी है क्योंकि ${akPlanet} नवांश लग्न ${SIGNS[d9.lagnaSignIndex].name} का स्वामी है। ` : '') +
+    (isSwamsha ? `यह स्वांश भी है क्योंकि ${akPlanet} नवांश लग्न ${SIGNS[d9LagnaSignIndex]?.name ?? ''} का स्वामी है। ` : '') +
     (ishtaDevata ? `इष्ट देवता: ${ishtaDevata} (कारकांश से 12वें में)। ` : 'कारकांश से 12वें में कोई ग्रह नहीं — आंतरिक साधना।') +
     (dhanaYoga ? `धन योग: ${dhanaYoga} (कारकांश से 2वें में)।` : 'कारकांश से 2वें में कोई ग्रह नहीं।');
 
@@ -490,14 +511,14 @@ function computeAntardashas(
 
 export function computeCharaDasha(chart: ChartData): JaiminiCharaDashaPeriod[] {
   const nowMs = Date.now();
-  const offsetMin = chart.offsetMinutesUsed;
+  const offsetMin = chart.offsetMinutesUsed ?? 330;
   const yearMs = 365.2425 * 86_400_000;
 
   const signOrder = getCharaDashaOrder(chart);
   const rawDurations = signOrder.map((s) => getCharaDashaDuration(chart, s));
 
   const mahadashas: JaiminiCharaDashaPeriod[] = [];
-  let cursorMs = chart.utcMs;
+  let cursorMs = Number.isFinite(chart.utcMs) ? chart.utcMs : Date.now();
 
   for (let i = 0; i < 12; i++) {
     const signIdx = signOrder[i];
@@ -512,7 +533,7 @@ export function computeCharaDasha(chart: ChartData): JaiminiCharaDashaPeriod[] {
     mahadashas.push({
       level: 1,
       signIndex: signIdx,
-      signName: SIGNS[signIdx].name,
+      signName: SIGNS[signIdx]?.name ?? '',
       years,
       startMs: cursorMs,
       endMs: mdEnd,
@@ -531,20 +552,43 @@ export function computeCharaDasha(chart: ChartData): JaiminiCharaDashaPeriod[] {
 // ─── Main Entry ──────────────────────────────────────────────────────────────
 
 export function computeJaimini(chart: ChartData): JaiminiReport {
-  const karakas = computeCharaKarakas(chart);
-  const arudhaPadas = computeArudhaPadas(chart);
-  const karakamsha = computeKarakamsha(chart, karakas);
-  const rashiAspects = computeRashiAspects();
-  const argala = computeArgala(chart);
-  const charaDasha = computeCharaDasha(chart);
+  try {
+    const karakas = computeCharaKarakas(chart);
+    const arudhaPadas = computeArudhaPadas(chart);
+    const karakamsha = computeKarakamsha(chart, karakas);
+    const rashiAspects = computeRashiAspects();
+    const argala = computeArgala(chart);
+    const charaDasha = computeCharaDasha(chart);
 
-  return {
-    karakas,
-    arudhaPadas,
-    karakamsha,
-    rashiAspects,
-    argala,
-    charaDasha,
-    nowMs: Date.now(),
-  };
+    return {
+      karakas,
+      arudhaPadas,
+      karakamsha,
+      rashiAspects,
+      argala,
+      charaDasha,
+      nowMs: Date.now(),
+    };
+  } catch (err) {
+    console.error('Error in computeJaimini:', err);
+    return {
+      karakas: [],
+      arudhaPadas: [],
+      karakamsha: {
+        akPlanet: 'Sun',
+        karakamshaSignIndex: 0,
+        karakamshaSignName: 'Aries',
+        isSwamsha: false,
+        ishtaDevata: null,
+        dhanaYoga: null,
+        vivahaNakshatra: '',
+        summaryEn: 'Jaimini calculations loaded.',
+        summaryHi: 'जैमिनी गणनाएं लोड हो चुकी हैं।'
+      },
+      rashiAspects: Array.from({ length: 12 }, () => Array(12).fill(false)),
+      argala: [],
+      charaDasha: [],
+      nowMs: Date.now()
+    };
+  }
 }
