@@ -268,6 +268,80 @@ export function computeSuryasiddhantaTimeLords(ahargana: number): {
   };
 }
 
+const MEAN_EPOCH_UTC_MS = Date.UTC(1900, 0, 1);
+const MEAN_EPOCH_LONGITUDE: Record<SevenPlanetId, number> = {
+  Sun: 257.4568, Moon: 0, Mars: 270.22, Mercury: 164,
+  Jupiter: 220.04, Venus: 328.51, Saturn: 236.74,
+};
+const MEAN_DAILY_MOTION: Record<SevenPlanetId, number> = {
+  Sun: 0.9856, Moon: 0, Mars: 0.524, Mercury: 4.0923,
+  Jupiter: 0.0831, Venus: 1.60215, Saturn: 0.033439,
+};
+const MEAN_LONGITUDE_CORRECTION: Record<SevenPlanetId, readonly [number, number, number]> = {
+  Sun: [1, 0, 0], Moon: [1, 0, 0], Mars: [1, 0, 0],
+  Mercury: [1, 6.67, -0.00133], Jupiter: [-1, 3.3, 0.0067],
+  Venus: [-1, 5, 0.0001], Saturn: [1, 5, 0.001],
+};
+
+/**
+ * Approximate sidereal mean longitude from the Ujjain 1900 mean-motion
+ * epoch table. This is an explicit historical mean-motion model, not a
+ * replacement for a full Surya Siddhanta or JPL mean-element ephemeris.
+ */
+export function computeMeanSiderealLongitude(
+  planet: SevenPlanetId,
+  utcMs: number,
+  observerLongitudeDeg: number
+): number {
+  if (planet === 'Moon') return 0;
+  const daysFromEpoch =
+    (utcMs - MEAN_EPOCH_UTC_MS) / 86_400_000 +
+    (76.0 - observerLongitudeDeg) / 360;
+  const year = new Date(utcMs).getUTCFullYear();
+  const yearsSinceEpoch = year - 1900;
+  const [sign, constant, annual] = MEAN_LONGITUDE_CORRECTION[planet];
+  const correction = sign * (constant + annual * yearsSinceEpoch);
+  return normalizeDeg(
+    MEAN_EPOCH_LONGITUDE[planet] +
+    daysFromEpoch * MEAN_DAILY_MOTION[planet] +
+    correction
+  );
+}
+
+/** BPHS 27.24–25: mean/true longitude midpoint measured from the sighrocca. */
+export function computeCheshtaBalaFromLongitudes(
+  planet: SevenPlanetId,
+  trueLongitude: number,
+  meanPlanetLongitude: number,
+  meanSunLongitude: number
+): number {
+  if (planet === 'Sun' || planet === 'Moon') return 0;
+  const isInnerPlanet = planet === 'Mercury' || planet === 'Venus';
+  const meanLongitude = isInnerPlanet ? meanSunLongitude : meanPlanetLongitude;
+  const sighrocca = isInnerPlanet ? meanPlanetLongitude : meanSunLongitude;
+  const signedDifference = normalizeDeg(trueLongitude - meanLongitude + 180) - 180;
+  const midpoint = normalizeDeg(meanLongitude + signedDifference / 2);
+  return angularDiffDeg(sighrocca, midpoint) / 3;
+}
+
+/**
+ * BPHS Ch.28 ray-based Ishta/Kashta convention, normalizing the two
+ * virupa inputs to the 0..7 rasmi scale before applying verse 6.
+ * The Sun's Ishta input is its undoubled Ayana Bala.
+ */
+export function computeIshtaKashtaPhala(
+  uchchaBala: number,
+  cheshtaBala: number
+): { ishtaPhala: number; kashtaPhala: number } {
+  const uchchaRasmi = Math.max(0, Math.min(60, uchchaBala)) * 7 / 60;
+  const cheshtaRasmi = Math.max(0, Math.min(60, cheshtaBala)) * 7 / 60;
+  const ishtaPhala = Math.max(0, Math.min(60, 5 * (uchchaRasmi + cheshtaRasmi - 2)));
+  return {
+    ishtaPhala,
+    kashtaPhala: 60 - ishtaPhala,
+  };
+}
+
 /**
  * BPHS Graha Yuddha adjustment (Ch.27 v.20), using the BPHS winner
  * convention: Venus prevails when involved; otherwise the more northerly
@@ -332,6 +406,7 @@ export function computeShadbala(params: {
   varaLord: SevenPlanetId;
   horaLord: SevenPlanetId;
   obliquityDeg: number;
+  observerLongitudeDeg: number;
 }): ShadbalaRow[] {
   const {
     planets,
@@ -348,6 +423,7 @@ export function computeShadbala(params: {
     varaLord,
     horaLord,
     obliquityDeg,
+    observerLongitudeDeg,
   } = params;
 
   const byId = new Map<SevenPlanetId, BodyPosition>();
@@ -387,16 +463,6 @@ export function computeShadbala(params: {
   }
 
   const saptaVargas: DivisionalChartId[] = ['D1', 'D2', 'D3', 'D7', 'D9', 'D12', 'D30'];
-  const maxSpeedRef: Record<SevenPlanetId, number> = {
-    Sun: 1.02,
-    Moon: 15.0,
-    Mars: 0.78,
-    Mercury: 2.15,
-    Jupiter: 0.24,
-    Venus: 1.26,
-    Saturn: 0.13,
-  };
-
   const rows: ShadbalaRow[] = [];
 
   for (const pId of SEVEN_PLANETS) {
@@ -466,22 +532,25 @@ export function computeShadbala(params: {
     // Ayana Bala uses the full ecliptic-to-equatorial declination transform,
     // including the planet's ecliptic latitude (not just longitude).
     const declDeg = computeEclipticDeclinationDeg(p.tropicalLongitude, p.latitude, obliquityDeg);
-    const ayanaBala = computeAyanaBalaVirupas(pId, declDeg);
+    const ayanaBalaRaw = computeAyanaBalaVirupas(pId, declDeg);
+    // BPHS/Santhanam note: Sun's Ayana Bala is doubled; other planets are not.
+    const ayanaBala = pId === 'Sun' ? ayanaBalaRaw * 2 : ayanaBalaRaw;
+
+    // BPHS 27.24–25: derive Cheshta Kendra from mean/true longitude midpoint.
+    const meanSunLongitude = computeMeanSiderealLongitude('Sun', utcMs, observerLongitudeDeg);
+    const meanPlanetLongitude = computeMeanSiderealLongitude(pId, utcMs, observerLongitudeDeg);
+    let cheshtaBala = pId === 'Sun'
+      ? ayanaBala
+      : pId === 'Moon'
+        ? pakshaBala
+        : computeCheshtaBalaFromLongitudes(
+            pId,
+            p.longitude,
+            meanPlanetLongitude,
+            meanSunLongitude
+          );
 
     const kalaBala = natonnata + pakshaBala + tribhagaBala + abdaMasaVaraHoraBala + ayanaBala;
-
-    // 4. Cheshta Bala
-    let cheshtaBala = 30;
-    if (pId === 'Sun') cheshtaBala = ayanaBala;
-    else if (pId === 'Moon') cheshtaBala = pakshaBala;
-    else {
-      if (p.isRetrograde) {
-        cheshtaBala = 50 + Math.min(10, Math.abs(p.speedDegPerDay) * 10);
-      } else {
-        const ratio = Math.min(1, Math.max(0, p.speedDegPerDay / maxSpeedRef[pId]));
-        cheshtaBala = 45 * (1 - ratio) + 10;
-      }
-    }
 
     // 5. Naisargika Bala
     const naisargikaBala = NAISARGIKA_BALA[pId];
@@ -493,8 +562,10 @@ export function computeShadbala(params: {
     const totalRupas = totalVirupas / 60;
     const req = REQUIRED_RUPAS[pId];
 
-    const ishtaPhala = Math.sqrt(Math.max(0, uchchaBala) * Math.max(0, cheshtaBala));
-    const kashtaPhala = Math.sqrt(Math.max(0, 60 - uchchaBala) * Math.max(0, 60 - cheshtaBala));
+    const { ishtaPhala, kashtaPhala } = computeIshtaKashtaPhala(
+      uchchaBala,
+      pId === 'Sun' ? ayanaBalaRaw : cheshtaBala
+    );
 
     rows.push({
       planet: pId,
@@ -522,6 +593,7 @@ export function computeShadbala(params: {
     const totalRupas = totalVirupas / 60;
     return {
       ...row,
+      kalaBala: Math.round((row.kalaBala + yuddhaBala) * 10) / 10,
       yuddhaBala: Math.round(yuddhaBala * 10) / 10,
       totalVirupas: Math.round(totalVirupas * 10) / 10,
       totalRupas: Math.round(totalRupas * 100) / 100,

@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
+import { computeAyanaBalaVirupas, computeCheshtaBalaFromLongitudes, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computeIshtaKashtaPhala, computeMeanSiderealLongitude, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -238,6 +238,34 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('doubles only the Sun Ayana Bala and calculates BPHS Cheshta Kendra from mean/true longitudes', () => {
+    const sunRaw = computeAyanaBalaVirupas('Sun', 0);
+    expect(sunRaw).toBeCloseTo(30, 10);
+    // The production Shadbala path doubles this raw value for the Sun.
+    expect(sunRaw * 2).toBeCloseTo(60, 10);
+
+    // Superior planets use their own mean longitude as the reference;
+    // Mercury and Venus use their mean longitude as sighrocca and Sun mean
+    // longitude as the midpoint's mean component.
+    expect(computeCheshtaBalaFromLongitudes('Mars', 130, 100, 10)).toBeCloseTo(35, 10);
+    expect(computeCheshtaBalaFromLongitudes('Mercury', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
+    expect(computeCheshtaBalaFromLongitudes('Venus', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
+    expect(computeCheshtaBalaFromLongitudes('Jupiter', 10, 350, 20)).toBeCloseTo(0, 10);
+  });
+
+  it('computes reproducible mean sidereal longitudes and BPHS ray-based Ishta/Kashta', () => {
+    expect(computeMeanSiderealLongitude('Sun', Date.UTC(1900, 0, 1), 76)).toBeCloseTo(257.4568, 6);
+    const full = computeIshtaKashtaPhala(60, 60);
+    expect(full.ishtaPhala).toBe(60);
+    expect(full.kashtaPhala).toBe(0);
+    const empty = computeIshtaKashtaPhala(0, 0);
+    expect(empty.ishtaPhala).toBe(0);
+    expect(empty.kashtaPhala).toBe(60);
+    const middle = computeIshtaKashtaPhala(30, 30);
+    expect(middle.ishtaPhala).toBeCloseTo(25, 10);
+    expect(middle.kashtaPhala).toBeCloseTo(35, 10);
   });
 
   it('transfers Shadbala difference in Graha Yuddha to the victor', () => {

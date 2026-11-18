@@ -201,6 +201,7 @@ export function calculateChart(input: BirthInput, settings: CalcSettings): Chart
     varaLord: panchang.vara.lord,
     horaLord: panchang.horaLord,
     obliquityDeg: ascMc.obliquityDeg,
+    observerLongitudeDeg: input.longitude,
   });
 
   const yogas = detectYogas(ascendant, planets);
