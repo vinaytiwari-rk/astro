@@ -3,13 +3,17 @@ import {
   BookOpen,
   Calendar,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Compass,
   Edit3,
   FileText,
+  Grid,
   Heart,
   Home,
   Layers,
+  Menu,
   Moon,
   Plus,
   Settings,
@@ -32,6 +36,7 @@ export interface DropdownNavHeaderProps {
   onNewKundli: () => void;
   onOpenBooklet: () => void;
   onOpenSettings: () => void;
+  onOpenDrawer?: () => void;
   settings: CalcSettings;
   onChangeChartStyle: (style: ChartStyle) => void;
   theme: 'light' | 'dark';
@@ -48,6 +53,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   onNewKundli,
   onOpenBooklet,
   onOpenSettings,
+  onOpenDrawer,
   settings,
   onChangeChartStyle,
   theme,
@@ -58,6 +64,9 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number } | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   const navRef = useRef<HTMLDivElement | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -67,6 +76,21 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       hoverTimerRef.current = null;
     }
   };
+
+  const checkScrollState = () => {
+    if (navRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = navRef.current;
+      setCanScrollLeft(scrollLeft > 6);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollState();
+    const handleResize = () => checkScrollState();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
@@ -87,13 +111,13 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
   const calculateDropdownPos = (target: HTMLElement) => {
     const rect = target.getBoundingClientRect();
-    const menuWidth = 300;
+    const menuWidth = 320;
     let left = rect.left;
-    if (typeof window !== 'undefined' && left + menuWidth > window.innerWidth - 12) {
-      left = Math.max(12, window.innerWidth - menuWidth - 12);
+    if (typeof window !== 'undefined' && left + menuWidth > window.innerWidth - 14) {
+      left = Math.max(12, window.innerWidth - menuWidth - 14);
     }
     return {
-      top: Math.round(rect.bottom + 6),
+      top: Math.round(rect.bottom + 4),
       left: Math.round(Math.max(12, left)),
     };
   };
@@ -137,8 +161,17 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     handleMouseLeave();
   };
 
+  const scrollNav = (direction: 'left' | 'right') => {
+    if (navRef.current) {
+      const amount = direction === 'left' ? -280 : 280;
+      navRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+      setTimeout(checkScrollState, 350);
+    }
+  };
+
   const getDropdownMenuInlineStyle = () => {
     if (!dropdownCoords || typeof window === 'undefined') return undefined;
+    const maxH = Math.max(260, window.innerHeight - dropdownCoords.top - 20);
     if (window.innerWidth <= 768) {
       return {
         position: 'fixed' as const,
@@ -147,12 +180,16 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         right: 12,
         width: 'calc(100vw - 24px)',
         maxWidth: 'calc(100vw - 24px)',
+        maxHeight: `${maxH}px`,
+        overflowY: 'auto' as const,
       };
     }
     return {
       position: 'fixed' as const,
       top: dropdownCoords.top,
       left: dropdownCoords.left,
+      maxHeight: `${maxH}px`,
+      overflowY: 'auto' as const,
     };
   };
 
@@ -294,6 +331,20 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             <span className="hide-on-mobile">{isHi ? 'जन्म पत्रिका' : 'Birth Report'}</span>
           </button>
 
+          {/* All Menus Drawer Button (Desktop & Mobile) */}
+          {onOpenDrawer && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={onOpenDrawer}
+              title={isHi ? 'समस्त 38+ मुख्य विभाग (Master Hub)' : 'All 38+ Modules Hub'}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}
+            >
+              <Grid size={13} />
+              <span className="hide-on-mobile">{isHi ? 'समस्त मेनू' : 'All Menus'}</span>
+            </button>
+          )}
+
           {/* Settings */}
           <button
             type="button"
@@ -307,19 +358,53 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
       </div>
 
       {/* Row 2: Main Navigation Bar with Direct Links & Necessary Dropdowns Only */}
-      <div
-        className="oj-navbar-row"
-        ref={navRef}
-        onScroll={() => {
-          if (openDropdown) {
-            clearHoverTimer();
-            setOpenDropdown(null);
-            setDropdownCoords(null);
-          }
-        }}
-      >
-        <div className="oj-navbar-inner">
-          <ul className="oj-nav-links">
+      <div style={{ position: 'relative', width: '100%' }}>
+        {canScrollLeft && (
+          <button
+            type="button"
+            className="oj-nav-scroll-btn left"
+            onClick={() => scrollNav('left')}
+            aria-label="Scroll menu left"
+            title={isHi ? 'बाएं स्क्रॉल करें' : 'Scroll left'}
+          >
+            <ChevronLeft size={16} />
+          </button>
+        )}
+
+        <div
+          className="oj-navbar-row"
+          ref={navRef}
+          onScroll={() => {
+            checkScrollState();
+            if (openDropdown) {
+              clearHoverTimer();
+              setOpenDropdown(null);
+              setDropdownCoords(null);
+            }
+          }}
+        >
+          <div className="oj-navbar-inner">
+            <ul className="oj-nav-links">
+              {/* All Menus Drawer Pill */}
+              {onOpenDrawer && (
+                <li className="oj-nav-item">
+                  <button
+                    type="button"
+                    className="oj-nav-link-btn"
+                    onClick={onOpenDrawer}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.18) 0%, rgba(180, 83, 9, 0.28) 100%)',
+                      borderColor: 'var(--accent)',
+                      color: 'var(--accent)',
+                      fontWeight: 700,
+                    }}
+                    title={isHi ? 'समस्त 38+ मुख्य विभाग देखें' : 'View all 38+ sections'}
+                  >
+                    <Grid size={12} />
+                    <span>{isHi ? 'समस्त मेनू' : 'All Menus'}</span>
+                  </button>
+                </li>
+              )}
             {/* 1. Home — Direct Link (No Dropdown) */}
             <li className="oj-nav-item">
               <button
@@ -631,6 +716,19 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           </div>
         </div>
       </div>
-    </header>
+
+      {canScrollRight && (
+        <button
+          type="button"
+          className="oj-nav-scroll-btn right"
+          onClick={() => scrollNav('right')}
+          aria-label="Scroll menu right"
+          title={isHi ? 'दाएं स्क्रॉल करें' : 'Scroll right'}
+        >
+          <ChevronRight size={16} />
+        </button>
+      )}
+    </div>
+  </header>
   );
 };

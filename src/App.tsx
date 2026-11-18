@@ -274,6 +274,7 @@ export function App() {
           }}
           onOpenBooklet={() => setBookletOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
+          onOpenDrawer={() => setDrawerOpen(true)}
           settings={settings}
           onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
           theme={theme}
