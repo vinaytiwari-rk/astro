@@ -17,6 +17,7 @@ import {
   HIGHER_VARGA_META,
   resolveHigherVargaPosition,
 } from '../higherVargas';
+import { applyEkadhipatyaShodhana } from '../ashtakavarga';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
@@ -235,6 +236,49 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('applies Ekadhipatya Shodhana by subtracting the occupied sign bindus', () => {
+    // Aries/Scorpio: occupied Aries has 4, empty Scorpio has 9 -> 5 remains.
+    const occupiedA = new Array(12).fill(0);
+    occupiedA[0] = 4;
+    occupiedA[7] = 9;
+    expect(applyEkadhipatyaShodhana(occupiedA, new Set([0])).slice(0, 12)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0]
+    );
+
+    // Taurus/Libra: occupied Libra has 3, empty Taurus has 8 -> 5 remains.
+    const occupiedB = new Array(12).fill(0);
+    occupiedB[1] = 8;
+    occupiedB[6] = 3;
+    expect(applyEkadhipatyaShodhana(occupiedB, new Set([6]))[1]).toBe(5);
+    expect(applyEkadhipatyaShodhana(occupiedB, new Set([6]))[6]).toBe(3);
+
+    // Equal values reduce the empty sign to zero; an empty sign with fewer
+    // bindus also becomes zero. The occupied sign is never reduced.
+    const equal = new Array(12).fill(0);
+    equal[0] = 4;
+    equal[7] = 4;
+    expect(applyEkadhipatyaShodhana(equal, new Set([0]))[7]).toBe(0);
+    const occupiedHigher = new Array(12).fill(0);
+    occupiedHigher[0] = 8;
+    occupiedHigher[7] = 3;
+    expect(applyEkadhipatyaShodhana(occupiedHigher, new Set([0]))[7]).toBe(0);
+    expect(applyEkadhipatyaShodhana(occupiedHigher, new Set([0]))[0]).toBe(8);
+
+    // Both occupied: no reduction. Both empty: retain the smaller value.
+    const bothOccupied = new Array(12).fill(0);
+    bothOccupied[0] = 4;
+    bothOccupied[7] = 9;
+    expect(applyEkadhipatyaShodhana(bothOccupied, new Set([0, 7])).slice(0, 8)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 9]
+    );
+    const bothEmpty = new Array(12).fill(0);
+    bothEmpty[0] = 4;
+    bothEmpty[7] = 9;
+    expect(applyEkadhipatyaShodhana(bothEmpty, new Set()).slice(0, 8)).toEqual(
+      [4, 0, 0, 0, 0, 0, 0, 4]
+    );
   });
 
   it('maintains contiguous Vimshottari Dasha periods & exact SAV=337 bindus', () => {
