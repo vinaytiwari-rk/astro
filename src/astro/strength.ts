@@ -1,5 +1,7 @@
 import {
   EXALTATION_DEG,
+  MOOLATRIKONA,
+  OWN_SIGNS,
   PLANET_SHORT,
   SEVEN_PLANETS,
   SIGNS,
@@ -115,6 +117,44 @@ export function computeAspects(
   return results;
 }
 
+/**
+ * BPHS Saptavargaja points for one of the seven dignity divisions.
+ * The classical ladder is 45/30/20/15/10/4/2. Moolatrikona is
+ * degree-specific in D1; in the other six vargas, dignity is based on
+ * own-sign status or the D1 Panchadha Maitri relationship to the varga lord.
+ * Exaltation/debilitation are not separate Saptavargaja categories.
+ */
+export function computeSaptavargajaPoints(
+  planet: SevenPlanetId,
+  signIndex: number,
+  degreeInSign: number,
+  isRasi: boolean,
+  maitriMatrix: Record<SevenPlanetId, Record<SevenPlanetId, string>>
+): number {
+  const mt = MOOLATRIKONA[planet];
+  if (
+    isRasi &&
+    mt &&
+    mt.sign === signIndex &&
+    degreeInSign >= mt.start &&
+    degreeInSign < mt.end
+  ) {
+    return 45;
+  }
+
+  if (OWN_SIGNS[planet].includes(signIndex)) return 30;
+
+  const relation = maitriMatrix[planet][SIGNS[signIndex].lord];
+  switch (relation) {
+    case 'Great Friend': return 20;
+    case 'Friend': return 15;
+    case 'Neutral': return 10;
+    case 'Enemy': return 4;
+    case 'Great Enemy': return 2;
+    default: return 10;
+  }
+}
+
 export function computeShadbala(params: {
   planets: BodyPosition[];
   ascendant: BodyPosition;
@@ -181,19 +221,6 @@ export function computeShadbala(params: {
   }
 
   const saptaVargas: DivisionalChartId[] = ['D1', 'D2', 'D3', 'D7', 'D9', 'D12', 'D30'];
-  const saptaScore: Record<DignityLevel, number> = {
-    Exalted: 30,
-    Moolatrikona: 45,
-    'Own Sign': 30,
-    'Great Friend': 22.5,
-    Friend: 15,
-    Neutral: 7.5,
-    Enemy: 3.75,
-    'Great Enemy': 1.875,
-    Debilitated: 1.875,
-    '-': 7.5,
-  };
-
   const maxSpeedRef: Record<SevenPlanetId, number> = {
     Sun: 1.02,
     Moon: 15.0,
@@ -218,8 +245,13 @@ export function computeShadbala(params: {
     for (const vId of saptaVargas) {
       const pl = divisionalCharts[vId].placements.find((x) => x.id === pId);
       if (pl) {
-        const dig = evaluateDignity(pId, pl.signIndex, pl.degreeInSign, maitriMatrix);
-        saptavargajaBala += saptaScore[dig] ?? 7.5;
+        saptavargajaBala += computeSaptavargajaPoints(
+          pId,
+          pl.signIndex,
+          pl.degreeInSign,
+          vId === 'D1',
+          maitriMatrix
+        );
       }
     }
 

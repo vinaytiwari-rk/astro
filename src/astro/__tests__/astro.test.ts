@@ -18,6 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
+import { computeSaptavargajaPoints } from '../strength';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
@@ -236,6 +237,35 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('uses the classical BPHS Saptavargaja dignity ladder', () => {
+    const matrix = Object.fromEntries(
+      SEVEN_PLANETS.map((p) => [
+        p,
+        Object.fromEntries(SEVEN_PLANETS.map((q) => [q, 'Neutral'])),
+      ])
+    ) as Record<SevenPlanetId, Record<SevenPlanetId, string>>;
+
+    matrix.Sun.Mars = 'Great Friend';
+    matrix.Sun.Venus = 'Friend';
+    matrix.Sun.Mercury = 'Neutral';
+    matrix.Sun.Jupiter = 'Enemy';
+    matrix.Sun.Saturn = 'Great Enemy';
+
+    // Sun's Leo moolatrikona is degree-specific in D1; its remaining own-sign arc is 30.
+    expect(computeSaptavargajaPoints('Sun', 4, 10, true, matrix)).toBe(45);
+    expect(computeSaptavargajaPoints('Sun', 4, 20, true, matrix)).toBe(30);
+
+    // Exaltation is not a separate Saptavargaja category: use sign-lord maitri.
+    expect(computeSaptavargajaPoints('Sun', 0, 10, true, matrix)).toBe(20);
+    expect(computeSaptavargajaPoints('Sun', 0, 10, false, matrix)).toBe(20);
+
+    expect(computeSaptavargajaPoints('Sun', 1, 10, false, matrix)).toBe(15);
+    expect(computeSaptavargajaPoints('Sun', 2, 10, false, matrix)).toBe(10);
+    expect(computeSaptavargajaPoints('Sun', 8, 10, false, matrix)).toBe(4);
+    expect(computeSaptavargajaPoints('Sun', 9, 10, false, matrix)).toBe(2);
+    expect(computeSaptavargajaPoints('Sun', 4, 10, false, matrix)).toBe(30);
   });
 
   it('applies Ekadhipatya Shodhana by subtracting the occupied sign bindus', () => {
