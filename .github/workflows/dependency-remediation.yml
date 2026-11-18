@@ -28,7 +28,8 @@ jobs:
       - name: Apply npm's compatible security remediations
         run: |
           npm audit fix --force || true
-          npm install --save-dev vite@6.4.6 @vitejs/plugin-react@5.2.0 vitest@3.2.7 --force
+          npm install --save-dev vite@6.4.6 @vitejs/plugin-react@5.2.0 vitest@5.1.1 --force
+          npm audit fix --force
 
       - name: Require no high or critical advisories
         run: npm audit --audit-level=high
