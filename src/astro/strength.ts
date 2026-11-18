@@ -325,21 +325,29 @@ export function computeCheshtaBalaFromLongitudes(
 }
 
 /**
- * BPHS Ch.28 ray-based Ishta/Kashta convention, normalizing the two
- * virupa inputs to the 0..7 rasmi scale before applying verse 6.
- * The Sun's Ishta input is its undoubled Ayana Bala.
+ * BPHS Ch.28.2–6 ray-based Ishta/Kashta calculation.
+ * Uchcha/Cheshta Rasmi = 1 + (corresponding Bala / 10); verse 6's
+ * half-sum formula therefore equals (Uchcha Bala + Cheshta Bala) / 2.
+ * Unlike the geometric-mean convention used by some software, Kashta
+ * is the complement to 60 in this Parashari ray calculation.
  */
 export function computeIshtaKashtaPhala(
   uchchaBala: number,
   cheshtaBala: number
 ): { ishtaPhala: number; kashtaPhala: number } {
-  const uchchaRasmi = Math.max(0, Math.min(60, uchchaBala)) * 7 / 60;
-  const cheshtaRasmi = Math.max(0, Math.min(60, cheshtaBala)) * 7 / 60;
-  const ishtaPhala = Math.max(0, Math.min(60, 5 * (uchchaRasmi + cheshtaRasmi - 2)));
-  return {
-    ishtaPhala,
-    kashtaPhala: 60 - ishtaPhala,
-  };
+  const uchchaRasmi = 1 + Math.max(0, Math.min(60, uchchaBala)) / 10;
+  const cheshtaRasmi = 1 + Math.max(0, Math.min(60, cheshtaBala)) / 10;
+  const ishtaPhala = Math.max(0, Math.min(
+    60,
+    ((uchchaRasmi - 1) * 10 + (cheshtaRasmi - 1) * 10) / 2
+  ));
+  return { ishtaPhala, kashtaPhala: 60 - ishtaPhala };
+}
+
+/** BPHS Ch.28.3–4: the Sun's Ishta Cheshta Kendra is Sayana Sun + 3 signs. */
+export function computeSunCheshtaBalaForIshta(sayanaSunLongitude: number): number {
+  const cheshtaKendra = normalizeDeg(sayanaSunLongitude + 90);
+  return angularDiffDeg(cheshtaKendra, 0) / 3;
 }
 
 /**
@@ -562,9 +570,12 @@ export function computeShadbala(params: {
     const totalRupas = totalVirupas / 60;
     const req = REQUIRED_RUPAS[pId];
 
+    const ishtaCheshtaBala = pId === 'Sun'
+      ? computeSunCheshtaBalaForIshta(p.tropicalLongitude)
+      : cheshtaBala;
     const { ishtaPhala, kashtaPhala } = computeIshtaKashtaPhala(
       uchchaBala,
-      pId === 'Sun' ? ayanaBalaRaw : cheshtaBala
+      ishtaCheshtaBala
     );
 
     rows.push({

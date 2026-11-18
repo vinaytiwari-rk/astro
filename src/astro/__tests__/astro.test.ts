@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeAyanaBalaVirupas, computeCheshtaBalaFromLongitudes, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computeIshtaKashtaPhala, computeMeanSiderealLongitude, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
+import { computeAyanaBalaVirupas, computeCheshtaBalaFromLongitudes, computeDrikBalaForPlanet, computeGrahaYuddhaAdjustments, computeIshtaKashtaPhala, computeMeanSiderealLongitude, computeSunCheshtaBalaForIshta, computePakshaBalaVirupas, computeSaptavargajaPoints, computeSuryasiddhantaTimeLords } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -264,8 +264,22 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(empty.ishtaPhala).toBe(0);
     expect(empty.kashtaPhala).toBe(60);
     const middle = computeIshtaKashtaPhala(30, 30);
-    expect(middle.ishtaPhala).toBeCloseTo(25, 10);
-    expect(middle.kashtaPhala).toBeCloseTo(35, 10);
+    expect(middle.ishtaPhala).toBeCloseTo(30, 10);
+    expect(middle.kashtaPhala).toBeCloseTo(30, 10);
+  });
+
+  it('uses the BPHS Sun Cheshta Kendra for Ishta Phala and keeps Shadbala components reconciled', () => {
+    expect(computeSunCheshtaBalaForIshta(270)).toBeCloseTo(0, 10);
+    expect(computeSunCheshtaBalaForIshta(0)).toBeCloseTo(30, 10);
+    expect(computeSunCheshtaBalaForIshta(90)).toBeCloseTo(60, 10);
+    expect(computeSunCheshtaBalaForIshta(180)).toBeCloseTo(30, 10);
+
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    for (const row of chart.shadbala) {
+      const sum = row.sthanaBala + row.digBala + row.kalaBala +
+        row.cheshtaBala + row.naisargikaBala + row.drikBala;
+      expect(row.totalVirupas).toBeCloseTo(sum, 1);
+    }
   });
 
   it('transfers Shadbala difference in Graha Yuddha to the victor', () => {
