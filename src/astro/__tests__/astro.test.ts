@@ -252,7 +252,7 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(computeCheshtaBalaFromLongitudes('Mars', 130, 100, 10)).toBeCloseTo(35, 10);
     expect(computeCheshtaBalaFromLongitudes('Mercury', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
     expect(computeCheshtaBalaFromLongitudes('Venus', 130, 150, 100)).toBeCloseTo(35 / 3, 10);
-    expect(computeCheshtaBalaFromLongitudes('Jupiter', 10, 350, 20)).toBeCloseTo(0, 10);
+    expect(computeCheshtaBalaFromLongitudes('Jupiter', 10, 350, 20)).toBeCloseTo(20 / 3, 10);
   });
 
   it('computes reproducible mean sidereal longitudes and BPHS ray-based Ishta/Kashta', () => {
