@@ -153,6 +153,61 @@ export function computeSaptavargajaPoints(
   }
 }
 
+/**
+ * BPHS Drik Bala for one target graha. Mercury and Jupiter contribute their
+ * full sphuta aspect in addition to the quarter benefic/malefic adjustment.
+ * Mercury is treated as malefic when joined in the same rashi with a natural
+ * malefic (including a waning Moon or either node).
+ */
+export function computeDrikBalaForPlanet(
+  targetId: SevenPlanetId,
+  planets: BodyPosition[],
+  isMoonWaxing: boolean
+): number {
+  const target = planets.find((p) => p.id === targetId);
+  if (!target) return 0;
+
+  const mercury = planets.find((p) => p.id === 'Mercury');
+  const mercuryJoinedMalefic = Boolean(
+    mercury &&
+    planets.some((p) =>
+      p.id !== 'Mercury' &&
+      p.signIndex === mercury.signIndex &&
+      (
+        p.id === 'Sun' ||
+        p.id === 'Mars' ||
+        p.id === 'Saturn' ||
+        p.id === 'Rahu' ||
+        p.id === 'Ketu' ||
+        (p.id === 'Moon' && !isMoonWaxing)
+      )
+    )
+  );
+
+  let total = 0;
+  for (const otherId of SEVEN_PLANETS) {
+    if (otherId === targetId) continue;
+    const other = planets.find((p) => p.id === otherId);
+    if (!other) continue;
+
+    const otherBenefic =
+      otherId === 'Jupiter' ||
+      otherId === 'Venus' ||
+      (otherId === 'Moon' && isMoonWaxing) ||
+      (otherId === 'Mercury' && !mercuryJoinedMalefic);
+
+    const angle = normalizeDeg(target.longitude - other.longitude);
+    const aspect = parasharaAspectVirupas(otherId, angle);
+    total += (otherBenefic ? 0.25 : -0.25) * aspect;
+
+    if (otherId === 'Mercury' || otherId === 'Jupiter') {
+      total += aspect;
+    }
+  }
+
+  return total;
+}
+
 export function computeShadbala(params: {
   planets: BodyPosition[];
   ascendant: BodyPosition;
@@ -325,21 +380,8 @@ export function computeShadbala(params: {
     // 5. Naisargika Bala
     const naisargikaBala = NAISARGIKA_BALA[pId];
 
-    // 6. Drik Bala
-    let drikSum = 0;
-    for (const otherId of SEVEN_PLANETS) {
-      if (otherId === pId) continue;
-      const other = byId.get(otherId)!;
-      const d = normalizeDeg(p.longitude - other.longitude);
-      const vir = parasharaAspectVirupas(otherId, d);
-      const otherBenefic =
-        otherId === 'Jupiter' ||
-        otherId === 'Venus' ||
-        (otherId === 'Moon' && isMoonWaxing) ||
-        otherId === 'Mercury';
-      drikSum += (otherBenefic ? 0.25 : -0.25) * vir;
-    }
-    const drikBala = drikSum;
+    // 6. Drik Bala: full Mercury/Jupiter aspects plus quarter benefic/malefic drishti.
+    const drikBala = computeDrikBalaForPlanet(pId, planets, isMoonWaxing);
 
     const totalVirupas = sthanaBala + digBala + kalaBala + cheshtaBala + naisargikaBala + drikBala;
     const totalRupas = totalVirupas / 60;

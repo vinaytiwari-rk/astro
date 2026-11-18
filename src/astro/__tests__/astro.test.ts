@@ -18,7 +18,8 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeSaptavargajaPoints } from '../strength';
+import { computeDrikBalaForPlanet, computeSaptavargajaPoints } from '../strength';
+import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
 import { computeKpReport, computeLiveKpRulingPlanets } from '../kp';
@@ -237,6 +238,23 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('adds full Mercury and Jupiter aspects in BPHS Drik Bala', () => {
+    const pos = (id: string, longitude: number, signIndex: number) =>
+      ({ id, longitude, signIndex }) as BodyPosition;
+
+    const saturn = pos('Saturn', 180, 6);
+    const jupiter = pos('Jupiter', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, jupiter], true)).toBe(75);
+
+    const mercury = pos('Mercury', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, mercury], true)).toBe(75);
+
+    // Mercury conjoined with the Sun is malefic: full aspect remains, but its
+    // quarter is deducted; the Sun's own malefic quarter is deducted too.
+    const sun = pos('Sun', 0, 0);
+    expect(computeDrikBalaForPlanet('Saturn', [saturn, mercury, sun], true)).toBe(30);
   });
 
   it('uses the classical BPHS Saptavargaja dignity ladder', () => {
