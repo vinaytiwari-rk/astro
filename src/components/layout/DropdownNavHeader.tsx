@@ -440,7 +440,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* 3. Life Dossier (12-Chapter Master Dossier) */}
+            {/* Unified Life Dossier: 12 chapters containing all 21 selected predictions */}
             <li className="oj-nav-item">
               <button
                 type="button"
@@ -448,19 +448,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('life-dossier')}
               >
                 <Sparkles size={13} />
-                <span>{isHi ? '12-अध्याय डोजियर' : '12-Ch Dossier'}</span>
-              </button>
-            </li>
-
-            {/* 4. Life Predictions (Sambhavit Falkathan) */}
-            <li className="oj-nav-item">
-              <button
-                type="button"
-                className={`oj-nav-link-btn ${currentView === 'sambhavit-falkathan' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('sambhavit-falkathan')}
-              >
-                <BookOpen size={13} />
-                <span>{isHi ? '21 फलादेश' : '21 Predictions'}</span>
+                <span>{isHi ? '12 अध्याय · 21 फलादेश' : '12 Chapters · 21 Predictions'}</span>
               </button>
             </li>
 
