@@ -244,3 +244,27 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   });
 
 });
+
+  it('keeps health interpretations chart-specific and non-diagnostic across every sample chart', () => {
+    for (const sampleChart of SAMPLE_CHARTS) {
+      const sampleData = calculateChart(sampleChart, DEFAULT_SETTINGS);
+      const sections = computeDynamicHealthSections(sampleData);
+      expect(sections).toHaveLength(2);
+
+      const text = sections.flatMap((section) => [
+        section.titleEn, section.titleHi,
+        section.leadEn ?? '', section.leadHi ?? '',
+        ...section.paragraphsEn, ...section.paragraphsHi,
+        section.astrologicalCauseEn ?? '', section.astrologicalCauseHi ?? '',
+        ...(section.keyPointsEn ?? []), ...(section.keyPointsHi ?? []),
+      ]).join(' ');
+
+      // Each output must disclose the symbolic / non-clinical boundary.
+      expect(text).toMatch(/not a medical assessment|not clinical evidence|cannot identify a disease/i);
+      expect(text).toContain('चिकित्सकीय');
+
+      // Do not reintroduce deterministic disease, disability, accident or longevity claims.
+      expect(text).not.toMatch(/Critical Health Years|High-Risk Organs|will suffer from|will be diagnosed with|guaranteed illness|fixed lifespan/i);
+      expect(text).not.toMatch(/अंग-दोष|निश्चित रोग|अमुक वर्ष में बीमारी|दुर्घटना निश्चित|आयु निश्चित|जन्मजात शारीरिक अक्षमता से सुरक्षित/);
+    }
+  });
