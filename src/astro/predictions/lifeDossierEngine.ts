@@ -6,7 +6,7 @@ import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './la
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
 import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
-import { computeSambhavitFalkathan, type LifeDimensionReading } from './sambhavitFalkathan';
+import { computeSambhavitFalkathan } from './sambhavitFalkathan';
 import {
   computePhysicalAppearance,
   computeEducationAcademics,
