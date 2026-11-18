@@ -18,7 +18,7 @@ import {
   resolveHigherVargaPosition,
 } from '../higherVargas';
 import { applyEkadhipatyaShodhana } from '../ashtakavarga';
-import { computeDrikBalaForPlanet, computeSaptavargajaPoints } from '../strength';
+import { computeAyanaBalaVirupas, computeDrikBalaForPlanet, computeSaptavargajaPoints } from '../strength';
 import type { BodyPosition } from '../types';
 import { computeAyanamsaDeg } from '../ephemeris';
 import { expandSookshmaDasha, findActiveDashaPath } from '../dasha';
@@ -238,6 +238,17 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(dc.lagnaSignIndex).toBeGreaterThanOrEqual(0);
       expect(dc.lagnaSignIndex).toBeLessThan(12);
     }
+  });
+
+  it('calculates Ayana Bala from the classical 23°27′ declination scale', () => {
+    const maxDeclination = 23 + 27 / 60;
+    expect(computeAyanaBalaVirupas('Sun', maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Sun', -maxDeclination)).toBeCloseTo(0, 10);
+    expect(computeAyanaBalaVirupas('Moon', -maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Moon', maxDeclination)).toBeCloseTo(0, 10);
+    expect(computeAyanaBalaVirupas('Mercury', maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Mercury', -maxDeclination)).toBeCloseTo(60, 10);
+    expect(computeAyanaBalaVirupas('Jupiter', 0)).toBeCloseTo(30, 10);
   });
 
   it('adds full Mercury and Jupiter aspects in BPHS Drik Bala', () => {

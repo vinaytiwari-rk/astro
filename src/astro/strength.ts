@@ -116,6 +116,29 @@ export function computeAspects(
 }
 
 /**
+ * BPHS 27.15–17 / Santhanam's declination form of Ayana Bala.
+ * The traditional maximum declination is 23°27′ (23.45°).
+ * Sun, Mars, Jupiter and Venus favour north declination; Moon and Saturn
+ * favour south declination; Mercury favours either direction.
+ */
+export function computeAyanaBalaVirupas(
+  planet: SevenPlanetId,
+  declinationDeg: number
+): number {
+  const maximumDeclination = 23 + 27 / 60;
+  const favoredDeclination =
+    planet === 'Mercury'
+      ? Math.abs(declinationDeg)
+      : planet === 'Moon' || planet === 'Saturn'
+        ? -declinationDeg
+        : declinationDeg;
+  const virupas =
+    (60 * (maximumDeclination + favoredDeclination)) /
+    (2 * maximumDeclination);
+  return Math.max(0, Math.min(60, virupas));
+}
+
+/**
  * BPHS Saptavargaja points for one of the seven dignity divisions.
  * The classical ladder is 45/30/20/15/10/4/2. Moolatrikona is
  * degree-specific in D1; in the other six vargas, dignity is based on
@@ -351,16 +374,7 @@ export function computeShadbala(params: {
     // Ayana Bala uses the full ecliptic-to-equatorial declination transform,
     // including the planet's ecliptic latitude (not just longitude).
     const declDeg = computeEclipticDeclinationDeg(p.tropicalLongitude, p.latitude, obliquityDeg);
-    const northFavored = pId === 'Sun' || pId === 'Mars' || pId === 'Jupiter' || pId === 'Venus';
-    const southFavored = pId === 'Moon' || pId === 'Saturn';
-    const ayanaBala =
-      pId === 'Mercury'
-        ? 30 + Math.abs(declDeg) * 1.25
-        : northFavored
-          ? Math.max(0, Math.min(60, 30 + declDeg * 1.25))
-          : southFavored
-            ? Math.max(0, Math.min(60, 30 - declDeg * 1.25))
-            : 30;
+    const ayanaBala = computeAyanaBalaVirupas(pId, declDeg);
 
     const kalaBala = natonnata + pakshaBala + tribhagaBala + varaHoraBala + ayanaBala;
 
