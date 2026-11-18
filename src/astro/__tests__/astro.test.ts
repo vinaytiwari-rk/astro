@@ -197,6 +197,24 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(lahiri).toBeLessThan(fagan);
   });
 
+  it('locks the documented Narasimha Rao Panchamsha (D5) odd/even sequence and boundaries', () => {
+    // D5 is an additional varga, not one of BPHS's classical sixteen.
+    // This project follows the Narasimha Rao sequence:
+    // odd: Aries, Aquarius, Sagittarius, Gemini, Libra;
+    // even: Taurus, Virgo, Pisces, Capricorn, Scorpio.
+    expect(getDivisionalSignIndex(0, 'D5')).toBe(0);
+    expect(getDivisionalSignIndex(6 - 1e-8, 'D5')).toBe(0);
+    expect(getDivisionalSignIndex(6, 'D5')).toBe(10);
+    expect(getDivisionalSignIndex(12, 'D5')).toBe(8);
+    expect(getDivisionalSignIndex(18, 'D5')).toBe(2);
+    expect(getDivisionalSignIndex(24, 'D5')).toBe(6);
+    expect(getDivisionalSignIndex(30, 'D5')).toBe(1);
+    expect(getDivisionalSignIndex(36, 'D5')).toBe(5);
+    expect(getDivisionalSignIndex(42, 'D5')).toBe(11);
+    expect(getDivisionalSignIndex(48, 'D5')).toBe(9);
+    expect(getDivisionalSignIndex(54, 'D5')).toBe(7);
+  });
+
   it('computes all 20 Divisional Charts (D1-D60) accurately', () => {
     // Navamsa spot checks
     expect(getDivisionalSignIndex(0.5, 'D9')).toBe(0);   // Aries 0.5° -> Aries

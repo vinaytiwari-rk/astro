@@ -76,8 +76,12 @@ export function buildSignPlacement(siderealLon: number): SignPlacement {
 }
 
 /**
- * Computes the sign index (0..11) for a given sidereal longitude in a Divisional Chart (D1..D60).
- * Implements classical BPHS / Jagannatha Hora rules.
+ * Computes the sign index (0..11) for a given sidereal longitude in a divisional chart.
+ *
+ * The Shodashavarga rules follow the Parashari scheme. Additional charts outside
+ * the classical sixteen (including D5, D6, D8 and D11) use the explicitly
+ * encoded traditional conventions in this function; those conventions can
+ * differ between schools and should not be described as a single BPHS rule.
  */
 export function getDivisionalSignIndex(
   siderealLon: number,
