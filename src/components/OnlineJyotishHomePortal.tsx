@@ -237,10 +237,10 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigate('sambhavit-falkathan')}
+              onClick={() => onNavigate('life-dossier')}
             >
               <Star size={17} />
-              <span>{isHi ? 'संभावित फलादेश' : 'Life Predictions'}</span>
+              <span>{isHi ? '21 फलादेश · 12 अध्यायों में' : '21 Predictions · 12 Chapters'}</span>
             </button>
           </div>
 
@@ -267,8 +267,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
               {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigate('sambhavit-falkathan')}>
-              {isHi ? '२१ महा-सटीक फलादेश' : '21 Supreme Predictions'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('life-dossier')}>
+              {isHi ? '21 फलादेश · 12 अध्यायों में' : '21 Predictions · 12 Chapters'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
@@ -624,7 +624,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
-                  {isHi ? '२१ महा-सटीक फलादेश' : '21 Supreme Predictions'}
+                  {isHi ? '21 फलादेश · 12 अध्यायों में' : '21 Predictions · 12 Chapters'}
                 </span>
               </div>
               <h3 className="oj-card-title">{isHi ? '२१ महा-सटीक फलादेश (21 Supreme Predictions)' : '21 Supreme Predictions'}</h3>
@@ -636,9 +636,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigate('sambhavit-falkathan')}
+                onClick={() => onNavigate('life-dossier')}
               >
-                <span>{isHi ? '२१ फलादेश देखें →' : 'View 21 Predictions →'}</span>
+                <span>{isHi ? '12 अध्यायों में 21 फलादेश देखें →' : 'View 21 Predictions in 12 Chapters →'}</span>
               </button>
             </article>
 
@@ -1268,7 +1268,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
             </div>
             <div className="oj-popular-item" onClick={() => onNavigate('sambhavit')}>
-              <strong>{isHi ? '२१ महा-सटीक फलादेश' : '21 Supreme Predictions'}</strong>
+              <strong>{isHi ? '21 फलादेश · 12 अध्यायों में' : '21 Predictions · 12 Chapters'}</strong>
             </div>
           </div>
         </div>
@@ -1375,7 +1375,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigate('sambhavit-falkathan')}>{isHi ? '२१ महा-सटीक फलादेश' : '21 Supreme Predictions'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('life-dossier')}>{isHi ? '21 फलादेश · 12 अध्यायों में' : '21 Predictions · 12 Chapters'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('ashtakavarga')}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('transit-today')}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>
