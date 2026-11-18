@@ -249,3 +249,17 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(secondVocations).toBeDefined();
     expect(firstVocations!.paragraphsEn[1]).not.toBe(secondVocations!.paragraphsEn[1]);
   });
+  it('embeds all 21 selected life predictions within the existing 12 chapters', () => {
+    const report = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    expect(report.chapters).toHaveLength(12);
+    const embedded = report.chapters.flatMap((chapter) =>
+      chapter.sections.filter((section) => section.lifeDimensionId !== undefined),
+    );
+    expect(embedded).toHaveLength(21);
+    expect(embedded.map((section) => section.lifeDimensionId).sort((a, b) => a! - b!))
+      .toEqual(Array.from({ length: 21 }, (_, index) => index + 1));
+    for (const chapter of report.chapters) {
+      expect(chapter.sections.filter((section) => section.lifeDimensionId !== undefined).length)
+        .toBeGreaterThanOrEqual(0);
+    }
+  });
