@@ -227,3 +227,23 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(einEpoch1).toBeDefined();
   });
 });
+  it('keeps career chapter claims qualitative, chart-led and free of invented age windows', () => {
+    const first = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    const second = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[1], DEFAULT_SETTINGS));
+    const firstCareer = first.chapters.find((chapter) => chapter.chapterNumber === 10);
+    const secondCareer = second.chapters.find((chapter) => chapter.chapterNumber === 10);
+    expect(firstCareer).toBeDefined();
+    expect(secondCareer).toBeDefined();
+
+    const firstText = firstCareer!.sections.map((section) =>
+      [section.titleEn, section.titleHi, ...section.paragraphsEn, ...section.paragraphsHi].join(' '),
+    ).join(' ');
+    expect(firstText).not.toMatch(/% Probability|% संभावना|Ages 22 to 28|22 से 28 वर्ष/);
+    expect(firstText).toMatch(/not a probability|सांख्यिकीय संभावना नहीं/);
+
+    const firstVocations = firstCareer!.sections.find((section) => section.titleEn.includes('Vocations'));
+    const secondVocations = secondCareer!.sections.find((section) => section.titleEn.includes('Vocations'));
+    expect(firstVocations).toBeDefined();
+    expect(secondVocations).toBeDefined();
+    expect(firstVocations!.paragraphsEn[1]).not.toBe(secondVocations!.paragraphsEn[1]);
+  });
