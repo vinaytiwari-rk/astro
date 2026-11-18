@@ -76,6 +76,45 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
   const t = UI_TEXT[language];
   const isHi = language === 'hi';
 
+  // Reader-first wording: explain the traditional indication without presenting
+  // an internal synthesis score as a real-world probability.
+  const plainVerdict = (verdict: string) => {
+    if (isHi) {
+      switch (verdict) {
+        case 'Highly Auspicious':
+          return 'इस क्षेत्र में सहयोगी संकेत मजबूत हैं। अवसर मिलें तो तैयारी और सही निर्णय से उनका लाभ उठाएँ।';
+        case 'Favorable':
+          return 'इस क्षेत्र में अनुकूल संकेत हैं, लेकिन परिणाम प्रयास, परिस्थिति और निर्णयों पर भी निर्भर करेंगे।';
+        case 'Balanced / Mixed':
+          return 'इस क्षेत्र में अच्छे और चुनौतीपूर्ण—दोनों तरह के संकेत हैं। जल्दबाजी के बजाय संतुलित योजना रखें।';
+        default:
+          return 'इस क्षेत्र में अधिक धैर्य और व्यावहारिक तैयारी की जरूरत दिखती है। इसे निश्चित असफलता न समझें।';
+      }
+    }
+    switch (verdict) {
+      case 'Highly Auspicious':
+        return 'The chart shows comparatively supportive indications here. Prepare well and make use of opportunities when they arise.';
+      case 'Favorable':
+        return 'There are favorable indications, though outcomes also depend on effort, circumstances, and decisions.';
+      case 'Balanced / Mixed':
+        return 'Both supportive and challenging indications appear. Avoid rushing and use a balanced plan.';
+      default:
+        return 'This area may require more patience and practical preparation. This does not mean certain failure.';
+    }
+  };
+
+  const plainDashaNote = () => {
+    const f = report.dashaForecast.favorability;
+    if (isHi) {
+      if (f === 'Very Favorable' || f === 'Supportive') return 'इस समय को आगे बढ़ने, अवसर पहचानने और योजनाबद्ध प्रयास करने के लिए उपयोग करें।';
+      if (f === 'Challenging') return 'इस समय बड़े फैसलों में जल्दबाजी न करें; दस्तावेज, समय-सीमा और आर्थिक योजना पर विशेष ध्यान दें।';
+      return 'यह मिला-जुला समय हो सकता है। अच्छे अवसरों के साथ कुछ बदलाव या अतिरिक्त जिम्मेदारियाँ भी आ सकती हैं।';
+    }
+    if (f === 'Very Favorable' || f === 'Supportive') return 'Use this period to pursue opportunities and make steady, well-planned progress.';
+    if (f === 'Challenging') return 'Avoid rushed major decisions; pay extra attention to documents, deadlines, and financial planning.';
+    return 'This may be a mixed period, bringing opportunities alongside changes or added responsibilities.';
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -568,12 +607,23 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             <div className="pred-card-body">
               <p>{report.lagnaProfile.temperament}</p>
               <div className="pred-bullets">
+                <div className="reader-first-intro">
+                  <strong>{isHi ? 'आसान भाषा में आपकी कुंडली का संकेत' : 'Your chart, in everyday language'}</strong>
+                  <p>
+                    {isHi
+                      ? 'नीचे हर जीवन-क्षेत्र का निष्कर्ष सरल भाषा में दिया गया है। ये पारंपरिक ज्योतिषीय संकेत हैं—घटना की गारंटी या सफलता/असफलता का प्रतिशत नहीं।'
+                      : 'Each area is explained in plain language. These are traditional astrological indications—not guarantees or percentages of success or failure.'}
+                  </p>
+                </div>
                 {report.lifeDomains.map((d) => (
                   <div key={d.id}>
-                    <strong>
-                      {d.title} ({d.rating}/100):
-                    </strong>{' '}
-                    {d.summary}
+                    <strong>{d.title}:</strong>{' '}
+                    {plainVerdict(d.verdict)}
+                    <details className="prediction-technical-detail">
+                      <summary>{isHi ? 'ज्योतिषीय आधार देखें' : 'See astrological basis'}</summary>
+                      <p>{d.summary}</p>
+                      <p>{d.details.join(' ')}</p>
+                    </details>
                   </div>
                 ))}
                 <div>
@@ -599,6 +649,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
                       : `Active Dasha (${formatDateDmy(report.dashaForecast.targetDate)}):`}
                   </strong>{' '}
                   {report.dashaForecast.summary}
+                  <p>{plainDashaNote()}</p>
                 </div>
                 <div>
                   <strong>{isHi ? 'प्रमुख इष्टदेव व स्वामी ग्रह:' : 'Main Deity (Ishta Devata) & Governing Planet:'}</strong>{' '}
