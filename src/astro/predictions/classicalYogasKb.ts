@@ -3645,7 +3645,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     conditionHi: "A malefic devoid of benefic aspect in a kendra and Jupiter in the 8th house.",
     resultEn: "Gohanta Yoga indicates that you will go on to take up professions that involve cruelty against animals. You may end up as a butcher. While in some places this can bring a bad reputation for you, most places do not judge butchers due to the necessary role that they play in the food habits of most people. People will generally consider you to be humane, unless if you enjoy slaughtering animals just for the sake of it.",
     resultHi: "Gohanta Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
-  },,
+  },
   {
     id: 301,
     name: "Rajju Yoga",
