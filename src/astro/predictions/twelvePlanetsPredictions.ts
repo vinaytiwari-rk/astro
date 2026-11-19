@@ -1,5 +1,6 @@
 import * as Astronomy from 'astronomy-engine';
-import type { ChartData, DashaPeriod, PlanetId } from '../types';
+import type { ChartData, DashaPeriod, PlanetId, SevenPlanetId } from '../types';
+import { getFunctionalLordship } from './functionalLordship';
 import { NAKSHATRAS } from '../constants';
 import {
   buildBaseBodyPosition,
@@ -39,6 +40,10 @@ export interface PlanetEventPrediction {
   isCombust: boolean;
   isVargottama: boolean;
   ownedHouses: number[];
+  functionalRolesEn: string[];
+  functionalRolesHi: string[];
+  functionalLordshipNoteEn: string;
+  functionalLordshipNoteHi: string;
   conjoinedPlanets: PlanetId[];
   aspectingPlanets: PlanetId[];
 
@@ -157,20 +162,10 @@ function dashaDate(ms: number, hi: boolean): string {
 export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.now()): TwelvePlanetsPredictionsReport {
   const lagnaSignIndex = chart.ascendant.signIndex;
 
-  // Determine owned houses for Vedic planets
+  // Derive each classical planet's functional roles from the actual ascendant.
   function getOwnedHouses(pId: PlanetId): number[] {
-    const houses: number[] = [];
-    for (let h = 1; h <= 12; h++) {
-      const sign = (lagnaSignIndex + h - 1) % 12;
-      if (pId === 'Sun' && sign === 4) houses.push(h); // Leo
-      if (pId === 'Moon' && sign === 3) houses.push(h); // Cancer
-      if (pId === 'Mars' && (sign === 0 || sign === 7)) houses.push(h); // Aries, Scorpio
-      if (pId === 'Mercury' && (sign === 2 || sign === 5)) houses.push(h); // Gemini, Virgo
-      if (pId === 'Jupiter' && (sign === 8 || sign === 11)) houses.push(h); // Sagittarius, Pisces
-      if (pId === 'Venus' && (sign === 1 || sign === 6)) houses.push(h); // Taurus, Libra
-      if (pId === 'Saturn' && (sign === 9 || sign === 10)) houses.push(h); // Capricorn, Aquarius
-    }
-    return houses;
+    if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(pId)) return [];
+    return getFunctionalLordship(pId as SevenPlanetId, lagnaSignIndex).ownedHouses;
   }
 
   // Filter out any non-planet entries such as Ascendant
@@ -224,6 +219,9 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const signNameHi = SIGN_NAMES_HI[signIdx];
     const isOuter = p.id === 'Uranus' || p.id === 'Neptune' || p.id === 'Pluto';
     const owned = getOwnedHouses(p.id);
+    const lordship = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(p.id)
+      ? getFunctionalLordship(p.id as SevenPlanetId, lagnaSignIndex)
+      : null;
 
     const conjoined = (houseOccupantsMap.get(hNum) || []).filter((id) => id !== p.id);
 
@@ -1081,6 +1079,10 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       isCombust: p.isCombust,
       isVargottama: p.isVargottama,
       ownedHouses: owned,
+      functionalRolesEn: lordship?.rolesEn ?? [],
+      functionalRolesHi: lordship?.rolesHi ?? [],
+      functionalLordshipNoteEn: lordship?.noteEn ?? 'Outer planets are not assigned classical Parashari house lordship.',
+      functionalLordshipNoteHi: lordship?.noteHi ?? 'बाह्य ग्रहों को पारंपरिक पाराशरी भाव-स्वामित्व नहीं दिया गया है।',
       conjoinedPlanets: conjoined,
       aspectingPlanets: aspecting,
       placementSummaryEn,
