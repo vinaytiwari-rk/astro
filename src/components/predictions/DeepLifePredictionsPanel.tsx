@@ -76,6 +76,38 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </div>
       </div>
 
+      {/* Birth Panchang and Avakhada foundations used by General Prediction */}
+      <div className="card" style={{ padding: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <Sparkles size={18} style={{ color: 'var(--accent)' }} />
+          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
+            {isHi ? 'जन्म पंचांग एवं अवकहड़ा चक्र' : 'Birth Panchang & Avakhada Chakra'}
+          </h3>
+        </div>
+        <p className="muted small-text" style={{ margin: '0 0 12px', lineHeight: 1.5 }}>
+          {isHi
+            ? 'सामान्य फलादेश का प्रारंभ इन जन्म-आधारों से होगा। इन्हें लग्न, भावेश, ग्रह-स्थिति, योग और बल के साथ मिलाकर पढ़ा जाता है।'
+            : 'General Prediction starts with these birth foundations, then reads them together with the ascendant, houses, lords, planetary placements, yogas and strengths.'}
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '8px' }}>
+          {report.birthProfile.factors.map((factor) => (
+            <div key={factor.id} style={{ padding: '9px 11px', borderRadius: '7px', background: 'var(--bg-subtle)', minWidth: 0 }}>
+              <div className="muted" style={{ fontSize: '11px', marginBottom: '3px' }}>
+                {isHi ? factor.labelHi : factor.labelEn}
+              </div>
+              <div style={{ fontSize: '13px', fontWeight: 650, lineHeight: 1.4, overflowWrap: 'anywhere' }}>
+                {isHi ? factor.valueHi : factor.valueEn}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="muted small-text" style={{ margin: '12px 0 0', lineHeight: 1.5 }}>
+          {isHi
+            ? 'नोट: मास अमान्त पूर्णिमा-आधारित गणना से निकाला गया है; पाया लग्न से चंद्रमा की भाव-स्थिति के प्रचलित उत्तर भारतीय नियम पर है। इष्ट देव जैमिनी कारकांश (D9) के 12वें स्थान से निकाला गया संकेत है; परंपराओं में देवता-निर्धारण भिन्न हो सकता है।'
+            : 'Method note: Maas is estimated by the Amanta full-moon convention; Paya uses the commonly printed North Indian Moon-from-Lagna house rule. Ishta Dev is a Jaimini Karakamsha (D9), 12th-sign indication; deity mappings vary by tradition.'}
+        </p>
+      </div>
+
       {/* Domain Quick Dropdown Selector */}
       <div className="card" style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
