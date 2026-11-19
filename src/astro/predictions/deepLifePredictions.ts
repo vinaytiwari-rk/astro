@@ -222,8 +222,12 @@ function buildDomain(chart: ChartData, config: DomainConfig): DeepDomainPredicti
       : hasCaution
         ? 'उपलब्ध कुंडली-संकेत इस क्षेत्र में धैर्य और योजनाबद्ध प्रयास की मांग करते हैं; जल्दबाजी में महत्वपूर्ण निर्णय न लें।'
         : 'उपलब्ध कुंडली-प्रमाण इस क्षेत्र की स्पष्ट दिशा स्थापित नहीं करते; इसलिए निश्चित फलादेश देना उचित नहीं होगा।';
-  const predictionEn = outcomeTheme.en + ' ' + predictionToneEn;
-  const predictionHi = outcomeTheme.hi + ' ' + predictionToneHi;
+  const keySupportEn = strengthsEn[0] ? ' Key supportive chart factor: ' + strengthsEn[0] : '';
+  const keyCautionEn = watchoutsEn[0] ? ' Key caution: ' + watchoutsEn[0] : '';
+  const keySupportHi = strengthsHi[0] ? ' मुख्य अनुकूल कुंडली-आधार: ' + strengthsHi[0] : '';
+  const keyCautionHi = watchoutsHi[0] ? ' मुख्य सावधानी: ' + watchoutsHi[0] : '';
+  const predictionEn = outcomeTheme.en + ' ' + predictionToneEn + keySupportEn + keyCautionEn;
+  const predictionHi = outcomeTheme.hi + ' ' + predictionToneHi + keySupportHi + keyCautionHi;
   const score = Math.max(25, Math.min(75, Math.round(50 + (count ? (balance / count) * 14 : 0))));
   const ratingEn = score >= 64 ? 'Very Good' : score <= 40 ? 'Challenging' : 'Moderate';
   const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
