@@ -218,7 +218,7 @@ export const WORKSTATION_DIVISIONS: WorkstationDivisionDefinition[] = [
     descriptionEn: 'Separate Daily Drik Panchang, Hindu Festival Calendar, Day & Night Choghadiya, Shubh Muhurta & Planetary Horas, and Daily, Monthly & Yearly Rashifal for all 12 signs.',
     descriptionHi: 'दैनिक द्रिक पंचांग, हिन्दू व्रत व पर्व, दिन व रात्रि चौघड़िया, शुभ मुहूर्त व 24 होरा, तथा सभी 12 राशियों का दैनिक, मासिक व वार्षिक राशिफल।',
   },
-remove division 12 prediction screen];
+];
 
 export interface VedicMasterWorkstationProps {
   chart: ChartData;
