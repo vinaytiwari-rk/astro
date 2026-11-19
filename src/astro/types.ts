@@ -211,6 +211,8 @@ export interface PanchangInfo {
   horaLord: SevenPlanetId;
   sunriseUtc: string | null;
   sunsetUtc: string | null;
+  /** Next Vedic sunrise after the birth instant, used to classify night prahar. */
+  nextSunriseUtc?: string | null;
   sunriseLocal: string;
   sunsetLocal: string;
   moonriseLocal: string;
