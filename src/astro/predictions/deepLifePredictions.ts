@@ -1,4 +1,4 @@
-import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId } from '../types';
+import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS } from '../constants';
 import { getFunctionalLordship } from './functionalLordship';
 
@@ -37,7 +37,7 @@ const DOMAINS: DomainConfig[] = [
 const CLASSICAL_PLANETS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
 function functionalLordshipEvidence(chart: ChartData, planetId: string): { en: string; hi: string; adjustment: number } | null {
   if (!CLASSICAL_PLANETS.has(planetId)) return null;
-  const lordship = getFunctionalLordship(planetId as import('../types').SevenPlanetId, chart.ascendant.signIndex);
+  const lordship = getFunctionalLordship(planetId as SevenPlanetId, chart.ascendant.signIndex);
   const houses = lordship.ownedHouses;
   const ownsTrikona = houses.some((house) => [1, 5, 9].includes(house));
   const ownsDusthana = houses.some((house) => [6, 8, 12].includes(house));
