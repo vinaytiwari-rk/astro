@@ -1,5 +1,6 @@
 import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
-import { SIGNS } from '../constants';
+import { NAKSHATRAS, SIGNS } from '../constants';
+import { computeCharaKarakas } from '../jaimini';
 import { getFunctionalLordship } from './functionalLordship';
 
 export interface DeepDomainPrediction {
@@ -15,11 +16,26 @@ export interface DeepDomainPrediction {
   astrologicalFactorsEn: string; astrologicalFactorsHi: string;
   classicalAdviceEn: string; classicalAdviceHi: string;
 }
+
+export interface GeneralBirthFactor {
+  id: string;
+  labelEn: string;
+  labelHi: string;
+  valueEn: string;
+  valueHi: string;
+}
+export interface GeneralBirthProfile {
+  factors: GeneralBirthFactor[];
+  summaryEn: string;
+  summaryHi: string;
+}
+
 export interface DeepLifePredictionsReport {
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
   executiveSummaryEn: string; executiveSummaryHi: string;
   domains: DeepDomainPrediction[];
+  birthProfile: GeneralBirthProfile;
 }
 type DomainConfig = {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -244,12 +260,131 @@ function buildDomain(chart: ChartData, config: DomainConfig): DeepDomainPredicti
     classicalAdviceEn: config.adviceEn, classicalAdviceHi: config.adviceHi,
   };
 }
+
+const NAKSHATRA_NAME_AKSHAR: string[][] = [
+  ['चू', 'चे', 'चो', 'ला'], ['ली', 'लू', 'ले', 'लो'], ['अ', 'ई', 'उ', 'ए'],
+  ['ओ', 'वा', 'वी', 'वू'], ['वे', 'वो', 'का', 'की'], ['कू', 'घ', 'ङ', 'छ'],
+  ['के', 'को', 'हा', 'ही'], ['हू', 'हे', 'हो', 'डा'], ['डी', 'डू', 'डे', 'डो'],
+  ['मा', 'मी', 'मू', 'मे'], ['मो', 'टा', 'टी', 'टू'], ['टे', 'टो', 'पा', 'पी'],
+  ['पू', 'ष', 'ण', 'ठ'], ['पे', 'पो', 'रा', 'री'], ['रू', 'रे', 'रो', 'ता'],
+  ['ती', 'तू', 'ते', 'तो'], ['ना', 'नी', 'नू', 'ने'], ['नो', 'या', 'यी', 'यू'],
+  ['ये', 'यो', 'भा', 'भी'], ['भू', 'धा', 'फा', 'ढा'], ['भे', 'भो', 'जा', 'जी'],
+  ['खी', 'खू', 'खे', 'खो'], ['गा', 'गी', 'गू', 'गे'], ['गो', 'सा', 'सी', 'सू'],
+  ['से', 'सो', 'दा', 'दी'], ['दू', 'थ', 'झ', 'ञ'], ['दे', 'दो', 'चा', 'ची'],
+];
+const PLANET_ISHTA_DEVATA: Record<string, string> = {
+  Sun: 'Shiva', Moon: 'Gauri / Parvati', Mars: 'Skanda / Kartikeya',
+  Mercury: 'Vishnu', Jupiter: 'Narayana', Venus: 'Lakshmi',
+  Saturn: 'Hanuman / Brahma', Rahu: 'Durga', Ketu: 'Ganesha',
+};
+function normalize360(value: number): number { return ((value % 360) + 360) % 360; }
+function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
+  const moon = chart.planets.find((p) => p.id === 'Moon');
+  const sun = chart.planets.find((p) => p.id === 'Sun');
+  const moonSign = moon ? SIGNS[moon.signIndex] : undefined;
+  const nak = chart.panchang?.nakshatra;
+  const pada = Math.max(1, Math.min(4, nak?.pada ?? moon?.pada ?? 1));
+  const nakInfo = nak ? NAKSHATRAS[nak.index] : moon ? NAKSHATRAS[moon.nakshatraIndex] : undefined;
+  const moonHouse = moon?.rasiHouseNumber ?? (moon ? ((moon.signIndex - chart.ascendant.signIndex + 12) % 12) + 1 : 0);
+  const paya = moonHouse === 1 || moonHouse === 6 || moonHouse === 11
+    ? ['Swarna Paya', 'स्वर्ण पाया']
+    : moonHouse === 2 || moonHouse === 5 || moonHouse === 9
+      ? ['Rajat Paya', 'रजत पाया']
+      : moonHouse === 3 || moonHouse === 7 || moonHouse === 10
+        ? ['Tamra Paya', 'ताम्र पाया']
+        : ['Loha Paya', 'लौह पाया'];
+
+  // Amanta lunar month is named from the Sun's sign at the month's full moon.
+  // Estimate the full-moon instant from the current Sun-Moon elongation and daily speeds.
+  const relativeSpeed = (moon?.speedDegPerDay ?? 13) - (sun?.speedDegPerDay ?? 1);
+  const elongation = moon && sun ? normalize360(moon.longitude - sun.longitude) : 0;
+  const fullMoonDelta = relativeSpeed > 0
+    ? (elongation <= 180 ? (180 - elongation) : -(elongation - 180)) / relativeSpeed
+    : 0;
+  const fullMoonSunLongitude = sun ? normalize360(sun.longitude + sun.speedDegPerDay * fullMoonDelta) : 0;
+  const fullMoonSunSign = Math.floor(fullMoonSunLongitude / 30);
+  const lunarMonths = ['Chaitra', 'Vaishakha', 'Jyeshtha', 'Ashadha', 'Shravana', 'Bhadrapada', 'Ashwin', 'Kartika', 'Margashirsha', 'Pausha', 'Magha', 'Phalguna'];
+  const lunarMonth = lunarMonths[fullMoonSunSign] ?? 'Not available';
+  const elapsedSinceNewMoon = relativeSpeed > 0 ? elongation / relativeSpeed : 0;
+  const untilNextNewMoon = relativeSpeed > 0 ? (360 - elongation) / relativeSpeed : 0;
+  const previousNewMoonSun = sun ? normalize360(sun.longitude - sun.speedDegPerDay * elapsedSinceNewMoon) : 0;
+  const nextNewMoonSun = sun ? normalize360(sun.longitude + sun.speedDegPerDay * untilNextNewMoon) : 0;
+  const isAdhika = Math.floor(previousNewMoonSun / 30) === Math.floor(nextNewMoonSun / 30);
+  const monthName = (isAdhika ? 'Adhika ' : '') + lunarMonth;
+  const rituNames = ['Vasanta (वसंत)', 'Grishma (ग्रीष्म)', 'Varsha (वर्षा)', 'Sharad (शरद)', 'Hemanta (हेमंत)', 'Shishira (शिशिर)'];
+  const rituIndex = Math.floor((fullMoonSunSign % 12) / 2);
+  const ritu = rituNames[rituIndex];
+
+  let prahar = 'Not available';
+  let praharHi = 'उपलब्ध नहीं';
+  const birthMs = chart.utcMs;
+  const sunriseMs = chart.panchang?.sunriseUtc ? Date.parse(chart.panchang.sunriseUtc) : NaN;
+  const sunsetMs = chart.panchang?.sunsetUtc ? Date.parse(chart.panchang.sunsetUtc) : NaN;
+  const nextSunriseMs = chart.panchang?.nextSunriseUtc ? Date.parse(chart.panchang.nextSunriseUtc) : NaN;
+  if (Number.isFinite(sunriseMs) && Number.isFinite(sunsetMs) && Number.isFinite(nextSunriseMs)) {
+    if (birthMs >= sunriseMs && birthMs < sunsetMs && sunsetMs > sunriseMs) {
+      const part = Math.min(3, Math.floor(((birthMs - sunriseMs) / (sunsetMs - sunriseMs)) * 4));
+      prahar = `Day Prahar ${part + 1}`;
+      praharHi = `दिन का ${part + 1}वाँ प्रहर`;
+    } else if (birthMs >= sunsetMs && birthMs < nextSunriseMs && nextSunriseMs > sunsetMs) {
+      const part = Math.min(3, Math.floor(((birthMs - sunsetMs) / (nextSunriseMs - sunsetMs)) * 4));
+      prahar = `Night Prahar ${part + 1}`;
+      praharHi = `रात्रि का ${part + 1}वाँ प्रहर`;
+    }
+  }
+
+  const karakas = computeCharaKarakas(chart);
+  const ak = karakas.find((k) => k.role === 'AK');
+  const d9 = chart.divisionalCharts?.D9;
+  const akD9 = ak ? d9?.placements.find((p) => p.id === ak.planet) : undefined;
+  const karakamshaSign = akD9?.signIndex;
+  const ishtaSign = karakamshaSign === undefined ? undefined : (karakamshaSign + 11) % 12;
+  const d9Occupants = ishtaSign === undefined ? [] : d9?.placements.filter((p) => p.id !== 'Asc' && p.signIndex === ishtaSign) ?? [];
+  const ishtaPlanets = d9Occupants.length
+    ? d9Occupants.map((p) => String(p.id))
+    : ishtaSign === undefined ? [] : [SIGNS[ishtaSign].lord];
+  const ishtaNames = [...new Set(ishtaPlanets.map((p) => PLANET_ISHTA_DEVATA[p] ?? p))];
+  const ishtaMethod = d9Occupants.length ? '12th from Karakamsha (D9 occupant)' : '12th-house lord from Karakamsha (D9 fallback)';
+  const ishtaHi = d9Occupants.length ? 'कारकांश से 12वें नवांश में स्थित ग्रह के आधार पर' : 'कारकांश से 12वें नवांश के स्वामी के आधार पर';
+
+  const weekday = chart.panchang?.vara;
+  const tithi = chart.panchang?.tithi;
+  const yoga = chart.panchang?.yoga;
+  const karana = chart.panchang?.karana;
+  const factors: GeneralBirthFactor[] = [
+    { id: 'weekday', labelEn: 'Weekday / Vaar', labelHi: 'वार', valueEn: weekday ? `${weekday.name} (${weekday.lord})` : 'Not available', valueHi: weekday ? `${weekday.sanskrit} (${weekday.lord})` : 'उपलब्ध नहीं' },
+    { id: 'tithi', labelEn: 'Tithi', labelHi: 'तिथि', valueEn: tithi ? `${tithi.name} (Tithi ${tithi.number})` : 'Not available', valueHi: tithi ? `${tithi.name} (${tithi.number})` : 'उपलब्ध नहीं' },
+    { id: 'paksha', labelEn: 'Paksha', labelHi: 'पक्ष', valueEn: tithi?.paksha ?? 'Not available', valueHi: tithi?.paksha === 'Shukla' ? 'शुक्ल पक्ष' : tithi?.paksha === 'Krishna' ? 'कृष्ण पक्ष' : 'उपलब्ध नहीं' },
+    { id: 'maas', labelEn: 'Maas (Amanta)', labelHi: 'मास (अमान्त)', valueEn: monthName, valueHi: (isAdhika ? 'अधिक ' : '') + lunarMonth },
+    { id: 'ritu', labelEn: 'Ritu', labelHi: 'ऋतु', valueEn: ritu, valueHi: ritu.split(' (')[1]?.replace(')', '') ?? ritu },
+    { id: 'prahar', labelEn: 'Prahar (Day / Night)', labelHi: 'प्रहर (दिन / रात्रि)', valueEn: prahar, valueHi: praharHi },
+    { id: 'karana', labelEn: 'Karana', labelHi: 'करण', valueEn: karana ? `${karana.name} (${karana.type})` : 'Not available', valueHi: karana ? karana.name : 'उपलब्ध नहीं' },
+    { id: 'surya-yoga', labelEn: 'Surya Siddhanta Yoga (Nitya Yoga)', labelHi: 'सूर्य सिद्धांत योग (नित्य योग)', valueEn: yoga ? `${yoga.name} (#${yoga.number})` : 'Not available', valueHi: yoga ? `${yoga.name} (योग ${yoga.number})` : 'उपलब्ध नहीं' },
+    { id: 'varna', labelEn: 'Varna (Moon Rashi)', labelHi: 'वर्ण (चंद्र राशि)', valueEn: moonSign?.varna ?? 'Not available', valueHi: moonSign?.varna === 'Brahmin' ? 'ब्राह्मण' : moonSign?.varna === 'Kshatriya' ? 'क्षत्रिय' : moonSign?.varna === 'Vaishya' ? 'वैश्य' : moonSign?.varna === 'Shudra' ? 'शूद्र' : 'उपलब्ध नहीं' },
+    { id: 'vashya', labelEn: 'Vashya (Moon Rashi)', labelHi: 'वश्य (चंद्र राशि)', valueEn: moonSign?.vashya ?? 'Not available', valueHi: ({ Quadruped: 'चतुष्पद', Human: 'मानव', Aquatic: 'जलचर', Wild: 'वनचर', Insect: 'कीट' } as Record<string,string>)[moonSign?.vashya ?? ''] ?? 'उपलब्ध नहीं' },
+    { id: 'yoni', labelEn: 'Yoni', labelHi: 'योनि', valueEn: nakInfo?.yoni ?? 'Not available', valueHi: nakInfo?.yoni ?? 'उपलब्ध नहीं' },
+    { id: 'gana', labelEn: 'Gana', labelHi: 'गण', valueEn: nakInfo?.gana ?? 'Not available', valueHi: nakInfo?.gana === 'Deva' ? 'देव' : nakInfo?.gana === 'Manushya' ? 'मनुष्य' : nakInfo?.gana === 'Rakshasa' ? 'राक्षस' : 'उपलब्ध नहीं' },
+    { id: 'nadi', labelEn: 'Nadi', labelHi: 'नाड़ी', valueEn: nakInfo?.nadi ?? 'Not available', valueHi: nakInfo?.nadi === 'Adi' ? 'आदि' : nakInfo?.nadi === 'Madhya' ? 'मध्य' : nakInfo?.nadi === 'Antya' ? 'अंत्य' : 'उपलब्ध नहीं' },
+    { id: 'nadi-pad', labelEn: 'Nadi Pada', labelHi: 'नाड़ी पद', valueEn: nakInfo ? `${nakInfo.nadi} Nadi · Pada ${pada}` : 'Not available', valueHi: nakInfo ? `${nakInfo.nadi === 'Adi' ? 'आदि' : nakInfo.nadi === 'Madhya' ? 'मध्य' : 'अंत्य'} नाड़ी · पद ${pada}` : 'उपलब्ध नहीं' },
+    { id: 'tattva', labelEn: 'Tattva (Moon Rashi)', labelHi: 'तत्त्व (चंद्र राशि)', valueEn: moonSign?.element ?? 'Not available', valueHi: ({ Fire: 'अग्नि', Earth: 'पृथ्वी', Air: 'वायु', Water: 'जल' } as Record<string,string>)[moonSign?.element ?? ''] ?? 'उपलब्ध नहीं' },
+    { id: 'paya', labelEn: 'Paya (Moon from Lagna method)', labelHi: 'पाया (लग्न से चंद्र स्थिति)', valueEn: `${paya[0]} · Moon in H${moonHouse}`, valueHi: `${paya[1]} · चंद्रमा भाव ${moonHouse}` },
+    { id: 'naam-akshar', labelEn: 'Naamakshar', labelHi: 'नामाक्षर', valueEn: nakInfo ? NAKSHATRA_NAME_AKSHAR[nakInfo.index]?.[pada - 1] ?? 'Not available' : 'Not available', valueHi: nakInfo ? NAKSHATRA_NAME_AKSHAR[nakInfo.index]?.[pada - 1] ?? 'उपलब्ध नहीं' : 'उपलब्ध नहीं' },
+    { id: 'nakshatra-charan', labelEn: 'Nakshatra Charan', labelHi: 'नक्षत्र चरण', valueEn: nakInfo ? `${nakInfo.name} · Pada ${pada}` : 'Not available', valueHi: nakInfo ? `${nakInfo.name} · चरण ${pada}` : 'उपलब्ध नहीं' },
+    { id: 'atmakaraka', labelEn: 'Atmakaraka', labelHi: 'आत्मकारक', valueEn: ak ? `${ak.planet} · ${ak.signName} · ${ak.degreeInSign.toFixed(2)}°` : 'Not available', valueHi: ak ? `${ak.planet} · ${ak.signName} · ${ak.degreeInSign.toFixed(2)}°` : 'उपलब्ध नहीं' },
+    { id: 'ishta-dev', labelEn: 'Ishta Dev', labelHi: 'इष्ट देव', valueEn: ishtaNames.length ? `${ishtaNames.join(' / ')} (${ishtaMethod})` : 'Not available', valueHi: ishtaNames.length ? `${ishtaNames.join(' / ')} (${ishtaHi})` : 'उपलब्ध नहीं' },
+  ];
+  const summaryEn = `Birth foundation: ${weekday?.name ?? 'weekday unavailable'}, ${tithi?.name ?? 'tithi unavailable'} / ${tithi?.paksha ?? 'paksha unavailable'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'birth nakshatra unavailable'} Pada ${pada}, ${nakInfo?.gana ?? ''} Gana, ${nakInfo?.nadi ?? ''} Nadi. Moon-sign Varna/Vashya/Tattva, Moon-from-Lagna Paya, Chara Atmakaraka and the D9 Karakamsha-based Ishta Devata are treated as foundational context and read alongside the natal houses, lords, planets and yogas—not as standalone guarantees.`;
+  const summaryHi = `जन्म का आधार: ${weekday?.sanskrit ?? 'वार उपलब्ध नहीं'}, ${tithi?.name ?? 'तिथि उपलब्ध नहीं'} / ${tithi?.paksha === 'Shukla' ? 'शुक्ल पक्ष' : 'कृष्ण पक्ष'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'नक्षत्र उपलब्ध नहीं'} चरण ${pada}, ${nakInfo?.gana ?? ''} गण, ${nakInfo?.nadi ?? ''} नाड़ी। चंद्र राशि के वर्ण, वश्य और तत्त्व; लग्न से चंद्र स्थिति का पाया; जैमिनी आत्मकारक और D9 कारकांश से इष्ट देव को जन्म-कुंडली के भाव, भावेश, ग्रह और योगों के साथ मूल संदर्भ के रूप में पढ़ा जाएगा—अलग से निश्चित फल मानकर नहीं।`;
+  return { factors, summaryEn, summaryHi };
+}
+
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
   const domains = DOMAINS.map((config) => buildDomain(chart, config));
+  const birthProfile = buildGeneralBirthProfile(chart);
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
-  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
-  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
+  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + birthProfile.summaryEn + ' ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
+  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
-  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains };
+  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains, birthProfile };
 }
