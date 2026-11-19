@@ -350,7 +350,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     const list: Array<{ planet: NineGrahaId; planetHi: string; type: string; isBenefic: boolean }> = [];
     for (const p of planets) {
       if (p.id === 'Asc') continue;
-      const fromH = p.houseNumber;
+      const fromH = p.rasiHouseNumber ?? p.houseNumber;
       const step = (offset: number) => ((fromH - 1 + offset) % 12) + 1;
       const isBenefic = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id);
       const pHi = HINDI_PLANETS[p.id] || p.id;
@@ -379,8 +379,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const getKartariOnHouse = (targetHouse: number) => {
     const prevH = targetHouse === 1 ? 12 : targetHouse - 1;
     const nextH = targetHouse === 12 ? 1 : targetHouse + 1;
-    const prevMal = planets.some((p) => p.houseNumber === prevH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
-    const nextMal = planets.some((p) => p.houseNumber === nextH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    const prevMal = planets.some((p) => (p.rasiHouseNumber ?? p.houseNumber) === prevH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    const nextMal = planets.some((p) => (p.rasiHouseNumber ?? p.houseNumber) === nextH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
     if (prevMal && nextMal) return 'Papakartari';
     const prevBen = planets.some((p) => p.houseNumber === prevH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
     const nextBen = planets.some((p) => p.houseNumber === nextH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
@@ -396,7 +396,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     const nakIdx = planet.nakshatraIndex ?? Math.floor(planet.longitude / (360 / 27));
     const nak = NAKSHATRAS[nakIdx] ?? NAKSHATRAS[0];
     const aspects = getAspectsOnHouse(h);
-    const occupants = planets.filter((p) => p.houseNumber === h);
+    const occupants = planets.filter((p) => (p.rasiHouseNumber ?? p.houseNumber) === h);
     const kartari = getKartariOnHouse(h);
     const isCombust = planet.id !== 'Sun' && angularDiffDeg(planet.longitude, sun.longitude) <= (COMBUSTION_ORB[planet.id as SevenPlanetId]?.direct ?? 12);
     const degInSign = planet.degreeInSign ?? (planet.longitude % 30);
@@ -413,7 +413,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       signHi: HINDI_SIGNS[signIdx],
       lord,
       lordHi: HINDI_PLANETS[lord] || lord,
-      placedHouse: planet.houseNumber,
+      placedHouse: planet.rasiHouseNumber ?? planet.houseNumber,
       placedSignIdx: planet.signIndex,
       placedSignName: SIGNS[planet.signIndex].name,
       placedSignHi: HINDI_SIGNS[planet.signIndex],
