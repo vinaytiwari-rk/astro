@@ -128,6 +128,11 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </span>
             </div>
 
+            <div style={{ padding: '10px 12px', background: 'var(--accent-soft)', borderRadius: '8px', marginBottom: '12px', fontSize: '13.5px', lineHeight: 1.55 }}>
+              <strong>{isHi ? 'फलादेश: ' : 'Prediction: '}</strong>
+              {isHi ? domain.predictionHi : domain.predictionEn}
+            </div>
+
             {/* In-depth Detailed Narrative */}
             <p style={{ margin: '0 0 14px', fontSize: '13.5px', lineHeight: 1.55 }}>
               {isHi ? domain.summaryHi : domain.summaryEn}
