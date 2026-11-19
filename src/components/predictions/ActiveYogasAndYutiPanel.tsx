@@ -91,6 +91,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
     { id: 'Viparita', labelEn: 'Viparita Raja', labelHi: 'विपरीत राजयोग' },
     { id: 'Arishta', labelEn: 'Arishta / Ashubha', labelHi: 'अरिष्ट / कष्ट योग' },
     { id: 'Special', labelEn: 'Special Classical', labelHi: 'विशिष्ट योग' },
+    { id: 'Nabhasa', labelEn: 'Nabhasa Yogas', labelHi: 'नाभस योग' },
   ];
 
   const qualities: Array<{ id: string; labelEn: string; labelHi: string }> = [
@@ -128,8 +129,8 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
             <h3 style={{ margin: 0, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               {isHi
-                ? 'सक्रिय राजयोग व ग्रह युति फल (2-7 ग्रह युति, राजयोग, धनयोग व 300+ योग)'
-                : 'Active Yogas & Planetary Conjunctions (2-7 Planet Stelliums, Raja, Dhana & 300+ Yogas)'}
+                ? 'सक्रिय योग व ग्रह युति फल (शास्त्रीय योग संग्रह)'
+                : 'Active Yogas & Planetary Conjunctions (Classical Yoga Library)'}
             </h3>
             <p className="muted small-text" style={{ marginTop: '4px' }}>
               {isHi
@@ -169,7 +170,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
               className={`btn btn-sm ${activeTab === 'all' ? 'btn-primary' : ''}`}
               onClick={() => setActiveTab('all')}
             >
-              <BookOpen size={13} /> {isHi ? '300+ योग पुस्तकालय' : '300+ Corpus'}
+              <BookOpen size={13} /> {isHi ? 'शास्त्रीय योग संग्रह' : 'Classical Library'}
             </button>
           </div>
         </div>
