@@ -102,8 +102,8 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
           <div className="muted small-text">
             {isHi
-              ? 'प्रत्येक क्षेत्र में ग्रह कारक, फलित विश्लेषण, सावधानियां एवं शास्त्रीय उपाय सम्मिलित हैं।'
-              : 'Detailed planetary factors, strengths, watchouts and remedies for each sphere.'}
+              ? 'प्रत्येक क्षेत्र में स्पष्ट फलादेश, अनुकूल संकेत, चुनौतियां एवं शास्त्रीय परामर्श दिए गए हैं। दशा और गोचर का समय-फल उनके अलग अनुभागों में है।'
+              : 'Each sphere shows a clear reading, supporting factors, cautions and practical guidance. Dasha and transit timing are shown in their own sections.'}
           </div>
         </div>
       </div>
@@ -126,6 +126,11 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               <span className="badge badge-subtle">
                 {isHi ? 'संकेतात्मक विश्लेषण' : 'Indicative analysis'}
               </span>
+            </div>
+
+            <div style={{ padding: '10px 12px', background: 'var(--accent-soft)', borderRadius: '8px', marginBottom: '12px', fontSize: '13.5px', lineHeight: 1.55 }}>
+              <strong>{isHi ? 'फलादेश: ' : 'Prediction: '}</strong>
+              {isHi ? domain.predictionHi : domain.predictionEn}
             </div>
 
             {/* In-depth Detailed Narrative */}
@@ -171,14 +176,6 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               <div className="mono muted">
                 {isHi ? domain.astrologicalFactorsHi : domain.astrologicalFactorsEn}
               </div>
-            </div>
-
-            {/* Dasha-based timing, only when chart periods support it */}
-            <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px', marginBottom: '10px' }}>
-              <div style={{ fontWeight: 600, marginBottom: '3px' }}>
-                {isHi ? 'दशा-आधारित समय संकेत:' : 'Dasha-based timing:'}
-              </div>
-              <div>{isHi ? domain.timingHi : domain.timingEn}</div>
             </div>
 
             {/* Practical Guidance */}
