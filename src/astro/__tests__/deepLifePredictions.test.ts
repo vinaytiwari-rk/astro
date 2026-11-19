@@ -74,4 +74,21 @@ describe('Chart-specific General Prediction synthesis', () => {
     )).toBe(true);
   });
 
+
+  it('includes all requested birth Panchang and Avakhada factors in General Prediction', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    const ids = report.birthProfile.factors.map((factor) => factor.id);
+    expect(ids).toEqual([
+      'weekday', 'tithi', 'paksha', 'maas', 'ritu', 'prahar', 'karana',
+      'surya-yoga', 'varna', 'vashya', 'yoni', 'gana', 'nadi', 'nadi-pad',
+      'tattva', 'paya', 'naam-akshar', 'nakshatra-charan', 'atmakaraka', 'ishta-dev',
+    ]);
+    expect(report.birthProfile.factors).toHaveLength(20);
+    expect(report.birthProfile.factors.find((factor) => factor.id === 'atmakaraka')?.valueEn).not.toBe('Not available');
+    expect(report.birthProfile.factors.find((factor) => factor.id === 'ishta-dev')?.valueEn).not.toBe('Not available');
+    expect(report.executiveSummaryHi).toContain('जन्म का आधार');
+    expect(report.executiveSummaryEn).toContain('Birth foundation');
+  });
+
 });
