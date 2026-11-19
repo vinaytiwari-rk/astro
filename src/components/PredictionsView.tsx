@@ -147,24 +147,16 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     [rawReport, lang, chart]
   );
 
-  // Core Prediction Systems (Synchronized Navigation Pills)
+  // Seven independent prediction systems. Natal and timing-based readings stay separate.
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
-    {
-      id: 'deep_life',
-      labelEn: 'General Prediction',
-      labelHi: 'सामान्य फलादेश',
-    },
-    {
-      id: 'twelve_planets',
-      labelEn: 'Planets-wise Prediction',
-      labelHi: 'ग्रहवार फलादेश',
-    },
-    {
-      id: 'houseWise',
-      labelEn: 'House-wise Prediction',
-      labelHi: 'भाववार फलादेश',
-    },
-  ];;
+    { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
+    { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
+    { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
+    { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
+    { id: 'twelve_planets', labelEn: 'Planet-wise Prediction', labelHi: 'ग्रहवार फलादेश' },
+    { id: 'planetInNakshatra', labelEn: 'Nakshatra-wise Prediction', labelHi: 'नक्षत्रवार फलादेश' },
+    { id: 'planetInSign', labelEn: 'Sign-wise Prediction', labelHi: 'राशिवार फलादेश' },
+  ];
 
   return (
     <div className="view-stack">
@@ -217,20 +209,22 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
           })}
         </div>
 
-        {/* Forecast Date Picker */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-          <Calendar size={14} className="muted" />
-          <span className="muted small-text" style={{ whiteSpace: 'nowrap' }}>
-            {t.common.forecastDate}:
-          </span>
-          <DateDmyInput
-            compact
-            className="select-compact mono"
-            value={targetDate}
-            ariaLabel={t.common.forecastDate}
-            onChange={setTargetDate}
-          />
-        </div>
+        {/* Date selection is relevant only to timing-based prediction systems. */}
+        {(currentTab === 'dashaWise' || currentTab === 'gocharWise') && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+            <Calendar size={14} className="muted" />
+            <span className="muted small-text" style={{ whiteSpace: 'nowrap' }}>
+              {t.common.forecastDate}:
+            </span>
+            <DateDmyInput
+              compact
+              className="select-compact mono"
+              value={targetDate}
+              ariaLabel={t.common.forecastDate}
+              onChange={setTargetDate}
+            />
+          </div>
+        )}
       </div>
 
       {/* Direct Content Render (NO PATRIKA BOOK HIJACK! DIRECT PREDICTION DISPLAY) */}
@@ -260,6 +254,14 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
 
           {currentTab === 'houseWise' && (
             <HouseWisePanel houses={report.houseWisePredictions} report={report} />
+          )}
+
+          {currentTab === 'planetInNakshatra' && (
+            <PlanetInNakshatraPanel items={report.planetInNakshatras} />
+          )}
+
+          {currentTab === 'planetInSign' && (
+            <PlanetInSignPanel items={report.planetInSigns} />
           )}
 
           {currentTab === 'bhriguNadi' && (
