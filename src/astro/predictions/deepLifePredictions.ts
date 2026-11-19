@@ -457,8 +457,8 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
   const birthProfile = buildGeneralBirthProfile(chart);
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
-  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + birthProfile.summaryEn + ' ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
-  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
+  const executiveSummaryEn = 'Chart-specific synthesis: ' + birthProfile.summaryEn + ' ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
+  const executiveSummaryHi = 'उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण: ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
   return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains, birthProfile, classicalYogas };
 }
