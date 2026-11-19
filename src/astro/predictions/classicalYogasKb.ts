@@ -4186,6 +4186,22 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
     const source = def.source.includes('Classical Vedic Shastra') || def.source.includes('300 Classical Yogas')
       ? sourceByCategory[def.category]
       : def.source;
+    const genericHindiResult = def.resultHi.includes('जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता') ||
+      def.resultHi.includes('जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष');
+    const categoryReadingHi: Record<ClassicalYogaCategory, string> = {
+      Mahapurusha: 'यह योग संबंधित ग्रह के स्वभाव, गरिमा और केंद्र-स्थिति के अनुसार नेतृत्व, कार्य-कौशल, प्रभाव तथा प्रतिष्ठा के विषयों को उभारता है।',
+      Chandra: 'यह योग मन, निर्णय-शक्ति, सामाजिक व्यवहार, प्रतिष्ठा और संसाधनों से जुड़े विषयों को प्रभावित करता है। चंद्रमा तथा सहभागी ग्रहों की स्थिति इसके फल का स्वरूप तय करती है।',
+      Surya: 'यह योग आत्मविश्वास, प्रशासनिक क्षमता, कार्य-पहचान, प्रभाव और सार्वजनिक प्रतिष्ठा से जुड़े विषयों को सक्रिय करता है।',
+      Raja: 'यह योग संबंधित भावेशों के संबंध से अधिकार, जिम्मेदारी, पद, नेतृत्व और कर्मक्षेत्र में उन्नति के संकेत देता है।',
+      Dhana: 'यह योग आय, संचय, पारिवारिक संसाधन और आर्थिक अवसरों से जुड़े विषयों को सक्रिय करता है। धन का स्वरूप संबंधित भावेशों और ग्रहबल से समझा जाता है।',
+      Viparita: 'यह योग प्रतिस्पर्धा, ऋण, बाधाओं और परिवर्तनकारी परिस्थितियों से जूझकर आगे बढ़ने की क्षमता से जुड़ा है।',
+      Nabhasa: 'यह योग सात शास्त्रीय ग्रहों के राशि-भाव विन्यास से बनने वाली जीवन-शैली, कार्य-पद्धति और प्रमुख प्रवृत्तियों को दर्शाता है।',
+      Arishta: 'यह योग संबंधित भावों के विषयों में दबाव, रुकावट या अतिरिक्त सावधानी के संकेत देता है। वास्तविक प्रभाव सहभागी ग्रहों के बल और अन्य सहायक योगों से बदलता है।',
+      Special: 'इस योग का फल इसकी विशिष्ट शास्त्रीय शर्त, सहभागी ग्रहों और संबंधित भावों के अनुसार समझा जाता है।',
+    };
+    const resultHi = customResultHi || (genericHindiResult
+      ? `${def.nameHi}: ${categoryReadingHi[def.category]} संबंधित ग्रह ${participatingPlanets.join(', ')} तथा भाव ${participatingHouses.join(', ')} इसके फल का क्षेत्र स्पष्ट करते हैं।`
+      : def.resultHi);
 
     detected.push({
       id: def.id,
@@ -4199,7 +4215,7 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
       source,
       conditionEn: def.conditionEn,
       resultEn: customResultEn || def.resultEn,
-      resultHi: customResultHi || def.resultHi,
+      resultHi,
       bhangaStatus,
       bhangaReasonEn,
       bhangaReasonHi,
