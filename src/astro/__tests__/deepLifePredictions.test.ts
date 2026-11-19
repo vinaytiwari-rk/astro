@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeDeepLifePredictions } from '../predictions/deepLifePredictions';
+import type { DashaPeriod } from '../types';
 
 describe('Chart-specific General Prediction synthesis', () => {
   it('derives distinct domain evidence from three different natal charts', () => {
@@ -36,6 +37,25 @@ describe('Chart-specific General Prediction synthesis', () => {
     expect(report.domains.every((domain) =>
       domain.timingEn.includes('no timing is stated'),
     )).toBe(true);
+  });
+
+
+  it('reports the nested Mahadasha-Antardasha-Pratyantardasha sequence together', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const nestedPeriods: DashaPeriod[] = [{
+      lord: 'Saturn', level: 1, startMs: 0, endMs: 1000, durationDays: 1,
+      children: [{
+        lord: 'Jupiter', level: 2, startMs: 0, endMs: 1000, durationDays: 1,
+        children: [{
+          lord: 'Mercury', level: 3, startMs: 0, endMs: 1000, durationDays: 1,
+        }],
+      }],
+    }];
+    const report = computeDeepLifePredictions({ ...chart, vimshottari: nestedPeriods }, 500);
+    const career = report.domains.find((domain) => domain.id === 'career')!;
+    expect(career.timingEn).toContain('Saturn Mahadasha → Jupiter Antardasha → Mercury Pratyantardasha');
+    expect(career.timingHi).toContain('वर्तमान संयुक्त विंशोत्तरी क्रम');
+    expect(career.timingEn).toContain('Relevant lord(s)');
   });
 
   it('does not describe the internal evidence index as a probability', () => {
