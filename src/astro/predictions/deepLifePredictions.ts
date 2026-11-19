@@ -217,8 +217,18 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
       (doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर जन्म भाव ' + doubleTransit.map((item) => item.house).join(', ') + ' को सक्रिय करता है' : '') +
       '। गोचर सहायक प्रमाण है, घटना की गारंटी नहीं।'
     : ' ' + transitReport.targetDate + ' को इन भावों में कोई संबंधित गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं हुई।';
-  const timingWithTransitEn = timingEn + transitEvidenceEn;
-  const timingWithTransitHi = timingHi + transitEvidenceHi;
+  const activeDashaTransit = activePath.map((period) => ({
+    period,
+    transit: transitReport.items.find((item) => item.planet === period.lord),
+  })).filter((entry) => entry.transit);
+  const dashaTransitEvidenceEn = activeDashaTransit.length
+    ? ' Active dasha-lord transit cross-check: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pName(period.level) + ') is transiting ' + transit!.transitSign + ', H' + transit!.houseFromLagna + ' from natal Lagna and H' + transit!.houseFromMoon + ' from natal Moon; motion ' + transit!.motionLabel.toLowerCase() + ', ' + transit!.verdict + '.').join(' ')
+    : ' No active classical dasha-lord transit cross-check is available for this date.';
+  const dashaTransitEvidenceHi = activeDashaTransit.length
+    ? ' सक्रिय दशा-स्वामी गोचर मिलान: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pNameHi(period.level) + ') ' + transit!.transitSign + ' राशि में, जन्म लग्न से भाव ' + transit!.houseFromLagna + ' और चंद्र से भाव ' + transit!.houseFromMoon + ' में गोचर कर रहा है; गति ' + (transit!.motionLabel === 'Retrograde' ? 'वक्री' : transit!.motionLabel === 'Stationary' ? 'स्थिर' : 'मार्गी') + ', आकलन ' + transit!.verdict + '।').join(' ')
+    : ' इस तिथि के लिए सक्रिय नवग्रह दशा-स्वामी का गोचर मिलान उपलब्ध नहीं है।';
+  const timingWithTransitEn = timingEn + transitEvidenceEn + dashaTransitEvidenceEn;
+  const timingWithTransitHi = timingHi + transitEvidenceHi + dashaTransitEvidenceHi;
   const hasSupport = strengthsEn.length > 0, hasCaution = watchoutsEn.length > 0;
   const toneEn = hasSupport && hasCaution ? 'mixed' : hasSupport ? 'more supportive' : hasCaution ? 'more challenging' : 'insufficient';
   const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
