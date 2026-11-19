@@ -781,7 +781,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       professionEn: d35.detailedAnalysisEn,
       professionHi: d35.detailedAnalysisHi,
       lifespanEn: 'Astrology cannot assess a father’s health or lifespan.',
-      lifespanHi: 'ज्योतिष से पिता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।'
+      lifespanHi: 'ज्योतिष से पिता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।',
       relationshipEn: d35.verdictEn,
       relationshipHi: d35.verdictHi,
     },
@@ -811,21 +811,21 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       spouseNatureEn: getSelectedDim(27).verdictEn,
       spouseNatureHi: getSelectedDim(27).verdictHi,
       spouseAgeGapEn: 'A chart cannot reliably determine a spouse’s age or age gap.',
-      spouseAgeGapHi: 'कुंडली से जीवनसाथी की आयु या आयु-अंतर विश्वसनीय रूप से निर्धारित नहीं किया जा सकता।'
+      spouseAgeGapHi: 'कुंडली से जीवनसाथी की आयु या आयु-अंतर विश्वसनीय रूप से निर्धारित नहीं किया जा सकता।',
       relationshipEn: 'Relationship outcomes depend on mutual respect, communication, compatibility and consent; no outcome is guaranteed by a chart.',
-      relationshipHi: 'संबंधों का परिणाम आपसी सम्मान, संवाद, अनुकूलता और सहमति पर निर्भर करता है; कुंडली किसी परिणाम की गारंटी नहीं देती।'
+      relationshipHi: 'संबंधों का परिणाम आपसी सम्मान, संवाद, अनुकूलता और सहमति पर निर्भर करता है; कुंडली किसी परिणाम की गारंटी नहीं देती।',
     },
     children: {
       conceptionModeEn: 'No conception method, fertility or pregnancy outcome is predicted.',
-      conceptionModeHi: 'गर्भधारण की विधि, प्रजनन क्षमता या गर्भावस्था के परिणाम का कोई अनुमान नहीं दिया जाता।'
+      conceptionModeHi: 'गर्भधारण की विधि, प्रजनन क्षमता या गर्भावस्था के परिणाम का कोई अनुमान नहीं दिया जाता।',
       progenyCountEn: 'No prediction of number or sex of children is made.',
-      progenyCountHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
+      progenyCountHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।',
       miscarriageRiskEn: 'Astrology cannot assess miscarriage risk, fertility or pregnancy outcomes. Consult a qualified clinician for medical questions.',
-      miscarriageRiskHi: 'ज्योतिष से गर्भपात का जोखिम, प्रजनन क्षमता या गर्भावस्था का परिणाम निर्धारित नहीं किया जा सकता। चिकित्सकीय प्रश्नों के लिए योग्य चिकित्सक से सलाह लें।'
+      miscarriageRiskHi: 'ज्योतिष से गर्भपात का जोखिम, प्रजनन क्षमता या गर्भावस्था का परिणाम निर्धारित नहीं किया जा सकता। चिकित्सकीय प्रश्नों के लिए योग्य चिकित्सक से सलाह लें।',
       filialHappinessEn: getSelectedDim(19).detailedAnalysisEn,
       filialHappinessHi: getSelectedDim(19).detailedAnalysisHi,
       countAndGenderEn: 'No prediction of children’s number or gender is made.',
-      countAndGenderHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
+      countAndGenderHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।',
       filialJoyEn: d19.detailedAnalysisEn,
       filialJoyHi: d19.detailedAnalysisHi,
     },
@@ -855,11 +855,11 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     },
     longevity: {
       categoryEn: 'Traditional themes of change, shared responsibilities and resilience; not a lifespan assessment.',
-      categoryHi: 'परिवर्तन, साझा जिम्मेदारियों और धैर्य के पारंपरिक संकेत; यह जीवनकाल का आकलन नहीं है।'
+      categoryHi: 'परिवर्तन, साझा जिम्मेदारियों और धैर्य के पारंपरिक संकेत; यह जीवनकाल का आकलन नहीं है।',
       rangeEn: 'No lifespan range or age-at-death estimate is provided.',
-      rangeHi: 'जीवनकाल की सीमा या मृत्यु-आयु का कोई अनुमान नहीं दिया जाता।'
+      rangeHi: 'जीवनकाल की सीमा या मृत्यु-आयु का कोई अनुमान नहीं दिया जाता।',
       keyFactorsEn: 'Traditional eighth-house symbolism may be used for reflection on change and long-term responsibilities, not for lifespan assessment.',
-      keyFactorsHi: 'अष्टम भाव के पारंपरिक संकेतों को परिवर्तन और दीर्घकालीन जिम्मेदारियों पर चिंतन के लिए पढ़ें, जीवनकाल के आकलन के लिए नहीं।'
+      keyFactorsHi: 'अष्टम भाव के पारंपरिक संकेतों को परिवर्तन और दीर्घकालीन जिम्मेदारियों पर चिंतन के लिए पढ़ें, जीवनकाल के आकलन के लिए नहीं।',
     },
     bandhanaYoga: {
       hasRisk: false,
@@ -875,7 +875,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       vulnerableAreasEn: 'Astrology cannot identify vulnerable organs or body parts.',
       vulnerableAreasHi: 'ज्योतिष से कमजोर अंगों या शरीर के हिस्सों की पहचान नहीं की जा सकती।',
       timingEn: 'No medical or surgery timing is provided. Use clinical assessment and medical advice.',
-      timingHi: 'चिकित्सा या शल्यक्रिया का समय नहीं बताया जाता। चिकित्सकीय जांच और डॉक्टर की सलाह लें।'
+      timingHi: 'चिकित्सा या शल्यक्रिया का समय नहीं बताया जाता। चिकित्सकीय जांच और डॉक्टर की सलाह लें।',
     },
     physicalMarks: {
       identificationEn: d1.verdictEn,
@@ -885,7 +885,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     },
     addictions: {
       vulnerabilitiesEn: ['No psychological vulnerability is inferred from planetary placements.'],
-      vulnerabilitiesHi: ['ग्रह-स्थितियों से किसी मनोवैज्ञानिक कमजोरी का निष्कर्ष नहीं निकाला जाता।']
+      vulnerabilitiesHi: ['ग्रह-स्थितियों से किसी मनोवैज्ञानिक कमजोरी का निष्कर्ष नहीं निकाला जाता।'],
       adviceEn: 'Practice regular meditation and avoid late night stimulants.',
       adviceHi: 'नियमित ध्यान करें और देर रात उत्तेजक पदार्थों से बचें।',
     },
@@ -934,9 +934,9 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     },
     mentalHealth: {
       conditionEn: 'This section is not a mental-health assessment or diagnosis.',
-      conditionHi: 'यह भाग मानसिक स्वास्थ्य का आकलन या निदान नहीं है।'
+      conditionHi: 'यह भाग मानसिक स्वास्थ्य का आकलन या निदान नहीं है।',
       vulnerabilitiesEn: 'Astrology cannot diagnose mental-health conditions or psychological vulnerabilities.',
-      vulnerabilitiesHi: 'ज्योतिष से मानसिक स्वास्थ्य की स्थिति या मनोवैज्ञानिक कमजोरियों का निदान नहीं किया जा सकता।'
+      vulnerabilitiesHi: 'ज्योतिष से मानसिक स्वास्थ्य की स्थिति या मनोवैज्ञानिक कमजोरियों का निदान नहीं किया जा सकता।',
       remedyEn: d2.remedyEn,
       remedyHi: d2.remedyHi,
     },
