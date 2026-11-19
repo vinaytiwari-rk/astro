@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import type { ChartData } from '../astro/types';
-import { generatePredictionReport } from '../astro/predictions/engine';
+import { computeHouseWisePredictions } from '../astro/predictions/houseWise';
 import { useLanguage } from '../i18n/LanguageContext';
 import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { HouseWisePanel } from './predictions/HouseAndDegreePanels';
-import { ParamayusLockBanner } from './ParamayusLockBanner';
-import { DateDmyInput } from './DateDmyInput';
 
 export type SimplePredictionMode = 'general' | 'planets' | 'houses';
 
@@ -20,8 +18,7 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
   const isHi = lang === 'hi';
   const isGeneral = mode === 'general';
   const isPlanets = mode === 'planets';
-  const [targetDate, setTargetDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const houseReport = useMemo(() => generatePredictionReport(chart, targetDate), [chart, targetDate]);
+  const housePredictions = useMemo(() => computeHouseWisePredictions(chart), [chart]);
 
   const title = isGeneral
     ? (isHi ? 'सामान्य फलादेश' : 'General Prediction')
@@ -38,8 +35,8 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
         ? 'प्रत्येक ग्रह की राशि, भाव, नक्षत्र, गरिमा, वक्री/अस्त स्थिति और संबंधित संकेतों का अलग-अलग विश्लेषण।'
         : 'Separate analysis of each planet using its sign, house, nakshatra, dignity, retrograde/combust state and related indications.')
       : (isHi
-        ? 'प्रथम से द्वादश भाव तक प्रत्येक भाव की राशि, भावेश, भावेश की स्थिति, स्थित ग्रह, दृष्टि और सर्वाष्टकवर्ग संकेतों के आधार पर विश्लेषण।'
-        : 'A house-by-house reading of all twelve houses using sign, house lord, lord placement, occupants, aspects and Sarvashtakavarga indications.');
+        ? 'प्रथम से द्वादश भाव तक राशि, भावेश, स्थित ग्रह, दृष्टि और सर्वाष्टकवर्ग का जन्मकुंडली-आधारित विश्लेषण। इसमें दशा या गोचर के आधार पर समय-निर्धारण शामिल नहीं है।'
+        : 'A natal-chart reading of all twelve houses using sign, house lord, lord placement, occupants, aspects and Sarvashtakavarga. Dasha- or transit-based timing is not included in this view.');
 
   return (
     <div className="view-stack">
@@ -50,15 +47,7 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
       {isGeneral && <DeepLifePredictionsPanel chart={chart} />}
       {isPlanets && <TwelvePlanetsPanel chart={chart} />}
       {!isGeneral && !isPlanets && (
-        <>
-          <div className="card" style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <span className="muted small-text">{isHi ? 'फलादेश की संदर्भ तिथि:' : 'Prediction reference date:'}</span>
-            <DateDmyInput compact className="select-compact mono" value={targetDate} onChange={setTargetDate} ariaLabel={isHi ? 'फलादेश की तिथि' : 'Prediction date'} />
-          </div>
-          {houseReport.paramayus.exceeded
-            ? <ParamayusLockBanner status={houseReport.paramayus} />
-            : <HouseWisePanel houses={houseReport.houseWisePredictions} report={houseReport} />}
-        </>
+        <HouseWisePanel houses={housePredictions} simple />
       )}
     </div>
   );
