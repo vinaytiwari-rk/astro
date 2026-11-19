@@ -46,17 +46,17 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(report.dimensions.length).toBe(21);
 
     // Mother's Lifespan
-    const dim14 = report.dimensions.find((d) => d.id === 7);
+    const dim14 = report.dimensions.find((d) => d.id === 14);
     expect(dim14).toBeDefined();
     expect(dim14?.verdictHi).toBeTruthy();
 
     // Siblings
-    const dim9 = report.dimensions.find((d) => d.id === 3);
+    const dim9 = report.dimensions.find((d) => d.id === 19);
     expect(dim9).toBeDefined();
     expect(dim9?.verdictHi).toBeTruthy();
 
     // Marriage Timing
-    const dim26 = report.dimensions.find((d) => d.id === 13);
+    const dim26 = report.dimensions.find((d) => d.id === 26);
     expect(dim26).toBeDefined();
     expect(dim26?.verdictHi).toBeTruthy();
 
@@ -66,7 +66,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(dim19?.verdictHi).toBeTruthy();
 
     // Children Challenges
-    const dim20 = report.dimensions.find((d) => d.id === 10);
+    const dim20 = report.dimensions.find((d) => d.id === 20);
     expect(dim20).toBeDefined();
     expect(dim20?.verdictHi).toBeTruthy();
 
