@@ -35,7 +35,6 @@ export interface DropdownNavHeaderProps {
   onNewKundli: () => void;
   onOpenBooklet: () => void;
   onOpenSettings: () => void;
-  onOpenDrawer?: () => void;
   settings: CalcSettings;
   onChangeChartStyle: (style: ChartStyle) => void;
   theme: 'light' | 'dark';
@@ -52,7 +51,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   onNewKundli,
   onOpenBooklet,
   onOpenSettings,
-  onOpenDrawer,
   settings,
   onChangeChartStyle,
   theme,
