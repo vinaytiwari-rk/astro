@@ -39,4 +39,38 @@ describe('Chart-specific General Prediction synthesis', () => {
     expect(report.executiveSummaryEn).not.toMatch(/probability|%/i);
     expect(report.domains.every((domain) => domain.score >= 25 && domain.score <= 75)).toBe(true);
   });
+  it('does not count Moderate or Present yogas as supportive outcomes', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const nonStrongChart = {
+      ...chart,
+      yogas: chart.yogas.map((yoga) => ({ ...yoga, strength: 'Present' as const })),
+    };
+    const report = computeDeepLifePredictions(nonStrongChart, Date.UTC(2026, 10, 19));
+    for (const domain of report.domains) {
+      expect(domain.keyStrengthsEn.some((item) => item.startsWith('Related yoga:'))).toBe(false);
+    }
+  });
+
+  it('counts only Strong related yogas as supportive factors', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const strongYoga = {
+      name: 'Test Raja Yoga',
+      category: 'Raja' as const,
+      strength: 'Strong' as const,
+      planets: ['Sun'],
+      description: 'Synthetic test fixture',
+    };
+    const report = computeDeepLifePredictions(
+      { ...chart, yogas: [strongYoga] },
+      Date.UTC(2026, 10, 19),
+    );
+    const sunRelatedDomains = report.domains.filter((domain) =>
+      domain.astrologicalFactorsEn.includes('Test Raja Yoga'),
+    );
+    expect(sunRelatedDomains.length).toBeGreaterThan(0);
+    expect(sunRelatedDomains.some((domain) =>
+      domain.keyStrengthsEn.some((item) => item.includes('Test Raja Yoga')),
+    )).toBe(true);
+  });
+
 });
