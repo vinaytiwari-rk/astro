@@ -2,6 +2,7 @@ import * as Astronomy from 'astronomy-engine';
 import type { ChartData, DashaPeriod, PlanetId, SevenPlanetId } from '../types';
 import { getFunctionalLordship } from './functionalLordship';
 import { findActiveDashaPath } from '../dasha';
+import { computeDeepGochar } from './gocharDeep';
 import { NAKSHATRAS } from '../constants';
 import {
   buildBaseBodyPosition,
@@ -45,6 +46,8 @@ export interface PlanetEventPrediction {
   functionalRolesHi: string[];
   functionalLordshipNoteEn: string;
   functionalLordshipNoteHi: string;
+  transitEvidenceEn: string | null;
+  transitEvidenceHi: string | null;
   conjoinedPlanets: PlanetId[];
   aspectingPlanets: PlanetId[];
 
@@ -162,6 +165,9 @@ function dashaDate(ms: number, hi: boolean): string {
 
 export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.now()): TwelvePlanetsPredictionsReport {
   const lagnaSignIndex = chart.ascendant.signIndex;
+  const transitLocalDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
+  const transitReport = computeDeepGochar(chart, transitLocalDate);
+  const transitByPlanet = new Map(transitReport.items.map((item) => [item.planet, item]));
 
   // Derive each classical planet's functional roles from the actual ascendant.
   function getOwnedHouses(pId: PlanetId): number[] {
@@ -222,6 +228,13 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const owned = getOwnedHouses(p.id);
     const lordship = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(p.id)
       ? getFunctionalLordship(p.id as SevenPlanetId, lagnaSignIndex)
+      : null;
+    const transit = transitByPlanet.get(p.id as keyof typeof Object) as (typeof transitReport.items)[number] | undefined;
+    const transitEvidenceEn = transit
+      ? `Current transit (${transitLocalDate}): ${p.id} in ${transit.transitSign}, House ${transit.houseFromMoon} from natal Moon and House ${transit.houseFromLagna} from natal Ascendant. Gochar assessment: ${transit.verdict}. ${transit.hasVedha ? `Vedha by ${transit.vedhaPlanet ?? 'another transiting graha'} is recorded.` : 'No Vedha obstruction is recorded.'} This is a transit indicator, not an event guarantee.`
+      : null;
+    const transitEvidenceHi = transit
+      ? `वर्तमान गोचर (${transitLocalDate}): ${trPlanet(p.id, 'hi')} ${transit.transitSign} राशि में है; जन्म चंद्र से भाव ${transit.houseFromMoon} और जन्म लग्न से भाव ${transit.houseFromLagna} में। गोचर आकलन: ${transit.verdict === 'Strong & Auspicious' ? 'प्रबल अनुकूल' : transit.verdict === 'Auspicious' ? 'अनुकूल' : transit.verdict === 'Obstructed (Vedha)' ? 'वेध से बाधित' : transit.verdict === 'Mixed / Kakshya Supported' ? 'मिश्रित / कक्ष्या समर्थित' : 'परीक्षणकारी'}। ${transit.hasVedha ? `वेध ग्रह: ${transit.vedhaPlanet ?? 'उपलब्ध नहीं'}।` : 'वेध अवरोध दर्ज नहीं है।'} यह गोचर-संकेत है, किसी घटना की गारंटी नहीं।`
       : null;
 
     const conjoined = (houseOccupantsMap.get(hNum) || []).filter((id) => id !== p.id);
@@ -1087,6 +1100,8 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       functionalRolesHi: lordship?.rolesHi ?? [],
       functionalLordshipNoteEn: lordship?.noteEn ?? 'Outer planets are not assigned classical Parashari house lordship.',
       functionalLordshipNoteHi: lordship?.noteHi ?? 'बाह्य ग्रहों को पारंपरिक पाराशरी भाव-स्वामित्व नहीं दिया गया है।',
+      transitEvidenceEn,
+      transitEvidenceHi,
       conjoinedPlanets: conjoined,
       aspectingPlanets: aspecting,
       placementSummaryEn,
