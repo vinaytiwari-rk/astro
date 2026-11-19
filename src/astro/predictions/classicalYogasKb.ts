@@ -4029,6 +4029,90 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     conditionHi: "सातों शास्त्रीय ग्रह एक ही राशि में हों; अन्य नाभस योग बनने पर इसे न दिखाएँ।",
     resultEn: "Concentration, intensity and a narrow field of experience are traditional themes.",
     resultHi: "एकाग्रता, तीव्रता और सीमित अनुभव-क्षेत्र इसके पारंपरिक संकेत हैं।",
+  },
+  {
+    id: 333,
+    name: "Subha Yoga",
+    nameHi: "शुभ योग",
+    quality: 'Positive',
+    category: 'Special',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 1-2",
+    conditionEn: "A natural benefic occupies the ascendant, or natural benefics occupy both the 2nd and 12th houses.",
+    conditionHi: "लग्न में नैसर्गिक शुभ ग्रह हो, अथवा द्वितीय और द्वादश दोनों भावों में शुभ ग्रह हों।",
+    resultEn: "Traditional texts associate this formation with agreeable speech, conduct and supportive circumstances.",
+    resultHi: "शास्त्र इसे मधुर वाणी, सदाचरण और सहायक परिस्थितियों से जोड़ते हैं।",
+  },
+  {
+    id: 334,
+    name: "Asubha Yoga",
+    nameHi: "अशुभ योग",
+    quality: 'Negative',
+    category: 'Special',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 1-2",
+    conditionEn: "A natural malefic occupies the ascendant, or natural malefics occupy both the 2nd and 12th houses.",
+    conditionHi: "लग्न में नैसर्गिक पाप ग्रह हो, अथवा द्वितीय और द्वादश दोनों भावों में पाप ग्रह हों।",
+    resultEn: "Traditional texts associate this formation with strain in conduct, speech or circumstances; assess mitigating factors before judging.",
+    resultHi: "शास्त्र इसे आचरण, वाणी या परिस्थितियों में तनाव से जोड़ते हैं; निष्कर्ष से पहले शुभ प्रभाव भी देखें।",
+  },
+  {
+    id: 335,
+    name: "Chamara Yoga",
+    nameHi: "चामर योग",
+    quality: 'Positive',
+    category: 'Raja',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 11-12",
+    conditionEn: "The ascendant lord is exalted in a kendra and receives Jupiter's aspect; an alternative textual rule uses two benefics in a kendra or trikona.",
+    conditionHi: "लग्नेश केंद्र में उच्च होकर गुरु की दृष्टि पाए; वैकल्पिक नियम में दो शुभ ग्रह केंद्र या त्रिकोण में हों।",
+    resultEn: "Learning, recognition, eloquence and longevity are traditional indications.",
+    resultHi: "विद्या, प्रतिष्ठा, वाक्पटुता और दीर्घायु इसके पारंपरिक संकेत हैं।",
+  },
+  {
+    id: 336,
+    name: "Srinatha Yoga",
+    nameHi: "श्रीनाथ योग",
+    quality: 'Positive',
+    category: 'Raja',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 17-18",
+    conditionEn: "The 7th lord occupies the 10th, while the 10th lord is exalted and conjoined with the 9th lord.",
+    conditionHi: "सप्तमेश दशम भाव में हो तथा दशमेश उच्च होकर नवमेश से युत हो।",
+    resultEn: "High standing, authority and prosperity are traditional indications.",
+    resultHi: "उच्च प्रतिष्ठा, अधिकार और समृद्धि इसके पारंपरिक संकेत हैं।",
+  },
+  {
+    id: 337,
+    name: "Sarada Yoga",
+    nameHi: "शारद योग",
+    quality: 'Positive',
+    category: 'Raja',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 19-20",
+    conditionEn: "Either the 10th lord occupies the 5th, Mercury is in a kendra and Sun is strong in Leo; or Jupiter/Mercury is trinal to Moon while Mars occupies the 11th.",
+    conditionHi: "दशमेश पंचम में, बुध केंद्र में और सूर्य सिंह में बलवान हो; अथवा गुरु/बुध चंद्र से त्रिकोण में तथा मंगल एकादश में हो।",
+    resultEn: "Learning, reputation, prosperity and virtuous conduct are traditional indications.",
+    resultHi: "विद्या, प्रतिष्ठा, समृद्धि और सदाचरण इसके पारंपरिक संकेत हैं।",
+  },
+  {
+    id: 338,
+    name: "Khadga Yoga",
+    nameHi: "खड्ग योग",
+    quality: 'Positive',
+    category: 'Raja',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 25-26",
+    conditionEn: "The 2nd and 9th lords exchange signs, while the ascendant lord occupies a kendra or trikona.",
+    conditionHi: "द्वितीयेश और नवमेश राशि परिवर्तन करें तथा लग्नेश केंद्र या त्रिकोण में हो।",
+    resultEn: "Learning, discernment, resources and good fortune are traditional indications.",
+    resultHi: "ज्ञान, विवेक, संसाधन और सौभाग्य इसके पारंपरिक संकेत हैं।",
+  },
+  {
+    id: 339,
+    name: "Hara Yoga",
+    nameHi: "हर योग",
+    quality: 'Positive',
+    category: 'Raja',
+    source: "Brihat Parashara Hora Shastra, Chapter 36, verses 35-36",
+    conditionEn: "Benefic planets occupy the 4th, 9th and 8th houses counted from the sign occupied by the 7th lord.",
+    conditionHi: "सप्तमेश की राशि से चतुर्थ, नवम और अष्टम स्थानों में शुभ ग्रह हों।",
+    resultEn: "Happiness, learning and resources are traditional indications in the Trimurti yoga group.",
+    resultHi: "त्रिमूर्ति योग समूह में सुख, विद्या और संसाधन इसके पारंपरिक संकेत हैं।",
   }
 ];
 
@@ -4442,6 +4526,86 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
       if (id) addNabhasa(id, sankhyaNameByCount[occupiedSigns.size]);
     }
   }
+
+  // 14. Additional source-defined yogas from BPHS Chapter 36.
+  const beneficBase = chart.planets.filter((p) => ['Jupiter', 'Venus'].includes(p.id));
+  const maleficBase = chart.planets.filter((p) => ['Sun', 'Mars', 'Saturn'].includes(p.id));
+  const inHouse = (p: BodyPosition, h: number) => houseBetween(ascSign, p.signIndex) === h;
+  const ascBenefics = chart.planets.filter((p) => inHouse(p, 1) && ['Jupiter', 'Venus'].includes(p.id));
+  const ascMalefics = chart.planets.filter((p) => inHouse(p, 1) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
+  const secondBenefics = chart.planets.filter((p) => inHouse(p, 2) && ['Jupiter', 'Venus'].includes(p.id));
+  const twelfthBenefics = chart.planets.filter((p) => inHouse(p, 12) && ['Jupiter', 'Venus'].includes(p.id));
+  const secondMalefics = chart.planets.filter((p) => inHouse(p, 2) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
+  const twelfthMalefics = chart.planets.filter((p) => inHouse(p, 12) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
+  if (ascBenefics.length || (secondBenefics.length && twelfthBenefics.length)) {
+    const ps = [...ascBenefics, ...secondBenefics, ...twelfthBenefics];
+    addYoga(333, 'Moderate', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
+  }
+  if (ascMalefics.length || (secondMalefics.length && twelfthMalefics.length)) {
+    const ps = [...ascMalefics, ...secondMalefics, ...twelfthMalefics];
+    addYoga(334, 'Moderate', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
+  }
+
+  // Chamara: exalted ascendant lord in a kendra with Jupiter's classical 5/7/9 aspect,
+  // or two natural benefics in a kendra/trikona.
+  if (pL1) {
+    const hL1 = houseBetween(ascSign, pL1.signIndex);
+    const jupiterAspect = [5, 7, 9].includes(houseBetween(jupiter.signIndex, pL1.signIndex));
+    const beneficsInKendraTrikona = chart.planets.filter((p) =>
+      ['Jupiter', 'Venus'].includes(p.id) && (isKendra(houseBetween(ascSign, p.signIndex)) || isTrikona(houseBetween(ascSign, p.signIndex)))
+    );
+    if ((pL1.dignity === 'Exalted' && isKendra(hL1) && jupiterAspect) || beneficsInKendraTrikona.length >= 2) {
+      addYoga(335, 'Strong', [l1, ...beneficsInKendraTrikona.map((p) => p.id)], [hL1, ...beneficsInKendraTrikona.map((p) => houseBetween(ascSign, p.signIndex))]);
+    }
+  }
+
+  // Srinatha: 7th lord in 10th; 10th lord exalted and joined to 9th lord.
+  const l7 = signLordOf(7);
+  const pL7 = byId.get(l7 as PlanetId);
+  if (pL7 && pL9 && pL10 &&
+      houseBetween(ascSign, pL7.signIndex) === 10 &&
+      pL10.dignity === 'Exalted' &&
+      pL10.signIndex === pL9.signIndex) {
+    addYoga(336, 'Strong', [l7, l10, l9], [10, houseBetween(ascSign, pL9.signIndex)]);
+  }
+
+  // Sarada: either of the two BPHS Chapter 36 combinations.
+  const saradaFirst = !!pL10 &&
+    houseBetween(ascSign, pL10.signIndex) === 5 &&
+    isKendra(mercH) &&
+    sun.signIndex === 4; // Leo, Sun's own sign.
+  const jupTrineMoon = [5, 9].includes(houseBetween(moon.signIndex, jupiter.signIndex));
+  const mercTrineMoon = [5, 9].includes(houseBetween(moon.signIndex, mercury.signIndex));
+  const marsEleventh = houseBetween(ascSign, mars.signIndex) === 11;
+  if (saradaFirst || ((jupTrineMoon || mercTrineMoon) && marsEleventh)) {
+    const ps = saradaFirst ? [sun, mercury, pL10!].filter(Boolean) : [jupTrineMoon ? jupiter : mercury, mars, moon];
+    addYoga(337, 'Strong', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
+  }
+
+  // Khadga: exchange of 2nd/9th lords with lagna lord in kendra/trikona.
+  const l2 = signLordOf(2);
+  const pL2 = byId.get(l2 as PlanetId);
+  if (pL1 && pL2 && pL9) {
+    const secondHouseSign = (ascSign + 1) % 12;
+    const ninthHouseSign = (ascSign + 8) % 12;
+    const exchange = pL2.signIndex === ninthHouseSign && pL9.signIndex === secondHouseSign;
+    const hL1 = houseBetween(ascSign, pL1.signIndex);
+    if (exchange && (isKendra(hL1) || isTrikona(hL1))) {
+      addYoga(338, 'Strong', [l1, l2, l9], [hL1, houseBetween(ascSign, pL2.signIndex), houseBetween(ascSign, pL9.signIndex)]);
+    }
+  }
+
+  // Hara (Trimurti): benefics in 4th, 9th and 8th from the 7th lord's sign.
+  if (pL7) {
+    const relativeHouses = [4, 9, 8];
+    const haraPlanets = relativeHouses.map((h) => chart.planets.find((p) =>
+      ['Jupiter', 'Venus'].includes(p.id) && houseBetween(pL7.signIndex, p.signIndex) === h
+    )).filter(Boolean) as BodyPosition[];
+    if (haraPlanets.length === 3) {
+      addYoga(339, 'Strong', [l7, ...haraPlanets.map((p) => p.id)], haraPlanets.map((p) => houseBetween(ascSign, p.signIndex)));
+    }
+  }
+
 
   return detected;
 }
