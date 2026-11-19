@@ -90,6 +90,28 @@ describe('Chart-specific General Prediction synthesis', () => {
     if (report.classicalYogas.length > 0) expect(linked).toBe(true);
   });
 
+  it('provides an interpretation for every birth factor, including Thursday and Purnima examples', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(report.birthProfile.factors.every((factor) =>
+      factor.interpretationEn.length > 30 && factor.interpretationHi.length > 30,
+    )).toBe(true);
+
+    const thursdayPurnimaChart = {
+      ...chart,
+      panchang: {
+        ...chart.panchang!,
+        vara: { ...chart.panchang!.vara!, lord: 'Jupiter' },
+        tithi: { ...chart.panchang!.tithi!, number: 15, paksha: 'Shukla' },
+      },
+    };
+    const tailored = computeDeepLifePredictions(thursdayPurnimaChart);
+    expect(tailored.birthProfile.factors.find((factor) => factor.id === 'weekday')?.interpretationHi)
+      .toContain('गुरुवार');
+    expect(tailored.birthProfile.factors.find((factor) => factor.id === 'tithi')?.interpretationHi)
+      .toContain('पूर्णिमा');
+  });
+
   it('includes all requested birth Panchang and Avakhada factors in General Prediction', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeDeepLifePredictions(chart);
