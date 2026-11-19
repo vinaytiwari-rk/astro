@@ -128,7 +128,7 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
     if (!place) continue;
     vargaEvidence.push(id + ': ' + place.dignity + ', Varga H' + place.houseFromVargaLagna);
     const d = dignityPoints(place.dignity); balance += d * 0.5; count++;
-    if (d > 0) { strengthsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); strengthsHi.push(id + ' ' + config.varga + ' में ' + place.dignity + स्थिति में हैं।'); }
+    if (d > 0) { strengthsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); strengthsHi.push(id + ' ' + config.varga + ' में ' + place.dignity + ' स्थिति में हैं।'); }
     if (d < 0) { watchoutsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); watchoutsHi.push(id + ' की ' + config.varga + ' स्थिति ' + place.dignity + ' है।'); }
   }
   const relatedYogas = chart.yogas.filter((y) => y.planets.some((id) => related.has(id)));
