@@ -18,7 +18,7 @@ describe('House-wise evidence synthesis', () => {
     for (const house of report) {
       expect(house.lordPlanet).toBeTruthy();
       expect(house.lordFunctionalRolesEn.length).toBeGreaterThan(0);
-      expect(house.lordFunctionalLordshipNoteEn).toContain('not a standalone benefic/malefic label');
+      expect(house.lordFunctionalLordshipNoteEn).toContain('House ownership: evaluate the planet');
       expect(house.synthesisEn).toContain('Functional lordship:');
       expect(house.lordReadingEn.length).toBeGreaterThan(20);
       expect(house.synthesisEn).toContain('This reading combines');
