@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeTwelvePlanetsPredictions } from '../predictions/twelvePlanetsPredictions';
+import { computeDeepGochar } from '../predictions/gocharDeep';
 
 describe('Planet-wise prediction timing integrity', () => {
   it('does not publish generic fixed-age windows for any planet', () => {
@@ -43,6 +44,21 @@ describe('Planet-wise prediction timing integrity', () => {
     }
     const outer = report.planets.find((planet) => planet.id === 'Uranus');
     expect(outer?.transitEvidenceEn).toBeNull();
+  });
+
+  it('reports ephemeris-derived direct or retrograde motion for every classical transit item', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepGochar(chart, '2026-11-19');
+    expect(report.items).toHaveLength(9);
+    for (const item of report.items) {
+      const transitPosition = report.transitChart.planets.find((planet) => planet.id === item.planet);
+      expect(transitPosition).toBeDefined();
+      expect(item.speedDegPerDay).toBe(transitPosition?.speedDegPerDay);
+      expect(item.isRetrograde).toBe(transitPosition?.isRetrograde);
+      expect(['Direct', 'Retrograde', 'Stationary']).toContain(item.motionLabel);
+      expect(item.reading).toContain(item.motionLabel.toLowerCase());
+      expect(Number.isFinite(item.speedDegPerDay)).toBe(true);
+    }
   });
 
   it('shows the combined Mahadasha-Antardasha-Pratyantardasha path in planet-wise timing', () => {
