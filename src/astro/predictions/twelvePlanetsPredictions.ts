@@ -248,14 +248,16 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       // assigned classical 7th-house aspects by this engine.
       if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(other.id)) continue;
       if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(p.id)) continue;
-      const dist = (p.houseNumber - other.houseNumber + 12) % 12;
+      // Use whole-sign Rasi houses, matching General and House-wise predictions.
+      const dist = (p.rasiHouseNumber - other.rasiHouseNumber + 12) % 12;
       // 7th house aspect for the nine Vedic grahas
       if (dist === 6) aspecting.push(other.id);
       // Special Parashari aspects
       if (other.id === 'Mars' && (dist === 3 || dist === 7)) aspecting.push(other.id); // 4th, 8th
       if (other.id === 'Jupiter' && (dist === 4 || dist === 8)) aspecting.push(other.id); // 5th, 9th
       if (other.id === 'Saturn' && (dist === 2 || dist === 9)) aspecting.push(other.id); // 3rd, 10th
-      if ((other.id === 'Rahu' || other.id === 'Ketu') && (dist === 4 || dist === 8)) aspecting.push(other.id);
+      // Rahu/Ketu special aspects vary by tradition; apply only the 7th aspect
+      // here so all three prediction views use the same conservative rule.
     }
 
     const isExalted = p.dignity === 'Exalted';
