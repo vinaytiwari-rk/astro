@@ -209,6 +209,11 @@ export const HouseWisePanel: React.FC<{
                   <strong>{isHi ? 'भावेश फल:' : 'House Lord Placement:'}</strong>{' '}
                   {isHi ? h.lordReadingHi : h.lordReadingEn}
                 </p>
+                <div className="small-text muted" style={{ marginTop: 6, lineHeight: 1.5 }}>
+                  <strong>{isHi ? 'भावेश का कार्यात्मक स्वामित्व:' : 'Lord’s Functional House Ownership:'}</strong>{' '}
+                  {isHi ? h.lordFunctionalRolesHi.join(' · ') : h.lordFunctionalRolesEn.join(' · ')}
+                  <div>{isHi ? h.lordFunctionalLordshipNoteHi : h.lordFunctionalLordshipNoteEn}</div>
+                </div>
 
                 {(h.chalitShiftNoteHi || h.chalitShiftNoteEn) && (
                   <div className="gochar-banner is-info">
