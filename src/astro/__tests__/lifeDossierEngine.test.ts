@@ -279,6 +279,6 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
       expect(detailed[0].paragraphsHi.length).toBeGreaterThanOrEqual(6);
       expect(detailed[0].keyPointsEn?.length).toBeGreaterThanOrEqual(5);
       expect(detailed[0].keyPointsHi?.length).toBeGreaterThanOrEqual(5);
-      expect(chapter.sections.some((section) => /Life prediction \\d+:/i.test(section.titleEn))).toBe(false);
+      expect(chapter.sections.some((section) => /Life prediction \d+:/i.test(section.titleEn))).toBe(false);
     }
   });
