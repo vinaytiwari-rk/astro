@@ -14,7 +14,7 @@ describe('Ascendant-specific functional house lordship', () => {
     expect(mars.ownedHouses).toEqual([5, 10]);
     expect(mars.yogakarakaProfile).toBe(true);
     expect(mars.rolesEn.some((role) => role.includes('Yogakaraka'))).toBe(true);
-    expect(mars.noteEn).toContain('not a final benefic/malefic verdict');
+    expect(mars.noteEn).toContain('not a standalone benefic/malefic label');
   });
 
   it('records both owned houses for a planet with dual lordship', () => {
