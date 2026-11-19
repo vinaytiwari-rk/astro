@@ -78,6 +78,7 @@ import { inspectHypotheticalNakshatra } from '../predictions/planetInNakshatra';
 import { inspectHypotheticalPlanetInSign } from '../predictions/planetInSign';
 import { inspectCustomYuti } from '../predictions/yutiPredictions';
 import { computeTwelvePlanetsPredictions } from '../predictions/twelvePlanetsPredictions';
+import { computeHouseWisePredictions } from '../predictions/houseWise';
 import { computeSambhavitFalkathan } from '../predictions/sambhavitFalkathan';
 import { buildSpecializedAstrologySuite } from '../predictions/specialized';
 import {
@@ -1390,6 +1391,18 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(nov2026.find((d) => d.isoDate === '2026-11-11')?.highlightTagEn).toContain('Bhai Dooj');
 
     // 6. 12-Planets Comprehensive Event Prediction Engine (9 Vedic Grahas + 3 Outer Planets)
+    const houseReport = computeHouseWisePredictions(chart2026, Date.parse('2026-11-11T12:00:00Z'));
+    expect(houseReport).toHaveLength(12);
+    for (const house of houseReport) {
+      expect(house.primaryFactorsEn).toContain('Shadbala:');
+      expect(house.primaryFactorsEn).toContain('D9:');
+      expect(house.primaryFactorsEn).toContain('Star lord');
+      expect(house.primaryFactorsHi).toContain('षड्बल');
+      expect(house.primaryFactorsHi).toContain('नवांश');
+      expect(house.score).toBeGreaterThanOrEqual(25);
+      expect(house.score).toBeLessThanOrEqual(96);
+    }
+
     const twelveReport = computeTwelvePlanetsPredictions(chart2026);
     expect(twelveReport.planets.length).toBe(12);
 
