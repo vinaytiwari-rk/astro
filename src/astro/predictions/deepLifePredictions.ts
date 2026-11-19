@@ -1,8 +1,6 @@
-import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
+import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS } from '../constants';
 import { getFunctionalLordship } from './functionalLordship';
-import { findActiveDashaPath } from '../dasha';
-import { computeDeepGochar } from './gocharDeep';
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -15,7 +13,6 @@ export interface DeepDomainPrediction {
   keyStrengthsEn: string[]; keyStrengthsHi: string[];
   watchoutsEn: string[]; watchoutsHi: string[];
   astrologicalFactorsEn: string; astrologicalFactorsHi: string;
-  timingEn: string; timingHi: string;
   classicalAdviceEn: string; classicalAdviceHi: string;
 }
 export interface DeepLifePredictionsReport {
@@ -65,12 +62,6 @@ function dignityPoints(d: string): number {
   if (['Enemy', 'Great Enemy', 'Debilitated'].includes(d)) return -2;
   return 0;
 }
-function flattenDasha(periods: DashaPeriod[] = []): DashaPeriod[] {
-  const all: DashaPeriod[] = [];
-  const visit = (items: DashaPeriod[]) => items.forEach((p) => { all.push(p); if (p.children?.length) visit(p.children); });
-  visit(periods);
-  return all;
-}
 function houseSignIndex(chart: ChartData, house: number): number { return (chart.ascendant.signIndex + house - 1) % 12; }
 function planetHouse(chart: ChartData, p: { signIndex: number }): number { return ((p.signIndex - chart.ascendant.signIndex + 12) % 12) + 1; }
 function aspectsHouse(chart: ChartData, target: number): string[] {
@@ -83,10 +74,7 @@ function aspectsHouse(chart: ChartData, target: number): string[] {
   }
   return [...new Set(found)];
 }
-function dateLabel(ms: number, hi: boolean): string {
-  return new Date(ms).toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, transitReport: ReturnType<typeof computeDeepGochar>): DeepDomainPrediction {
+function buildDomain(chart: ChartData, config: DomainConfig): DeepDomainPrediction {
   const strengthsEn: string[] = [], strengthsHi: string[] = [], watchoutsEn: string[] = [], watchoutsHi: string[] = [];
   const houseEn: string[] = [], houseHi: string[] = [], yogaEvidence: string[] = [];
   const related = new Set<string>();
@@ -206,50 +194,6 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
     // not counted as supportive outcomes without a strong classification.
 
   }
-  const periods = flattenDasha(chart.vimshottari ?? []);
-  const activePath = findActiveDashaPath(chart.vimshottari ?? [], atMs);
-  const activeIsRelevant = activePath.some((period) => related.has(period.lord));
-  const next = periods.filter((p) => related.has(p.lord) && p.startMs > atMs).sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
-  const pName = (n: number) => n === 1 ? 'Mahadasha' : n === 2 ? 'Antardasha' : n === 3 ? 'Pratyantardasha' : 'sub-period';
-  const pNameHi = (n: number) => n === 1 ? 'महादशा' : n === 2 ? 'अंतर्दशा' : n === 3 ? 'प्रत्यंतर दशा' : 'उप-दशा';
-  const activeSequenceEn = activePath.map((p) => p.lord + ' ' + pName(p.level)).join(' → ');
-  const activeSequenceHi = activePath.map((p) => p.lord + ' ' + pNameHi(p.level)).join(' → ');
-  const relevantActive = activePath.filter((p) => related.has(p.lord));
-  const activeEnd = activePath[activePath.length - 1]?.endMs;
-  const timingEn = activeIsRelevant
-    ? 'Current combined Vimshottari sequence: ' + activeSequenceEn + '. Relevant lord(s) for this life area: ' + relevantActive.map((p) => p.lord).join(', ') + '. Current sub-period ends ' + dateLabel(activeEnd ?? atMs, false) + '. This is a traditional activation indicator, not an event guarantee.'
-    : next ? 'Next related Vimshottari period: ' + next.lord + ' ' + pName(next.level) + ' from ' + dateLabel(next.startMs, false) + '. This is not a promised event date.'
-    : 'No related active or upcoming Vimshottari period could be established from the supplied dasha data; no timing is stated.';
-  const timingHi = activeIsRelevant
-    ? 'वर्तमान संयुक्त विंशोत्तरी क्रम: ' + activeSequenceHi + '। इस जीवन-क्षेत्र से संबंधित स्वामी: ' + relevantActive.map((p) => p.lord).join(', ') + '। वर्तमान उप-अवधि ' + dateLabel(activeEnd ?? atMs, true) + ' को समाप्त होगी। यह पारंपरिक सक्रियता-संकेत है, घटना की गारंटी नहीं।'
-    : next ? 'अगली संबंधित विंशोत्तरी अवधि: ' + next.lord + ' की ' + pNameHi(next.level) + ' ' + dateLabel(next.startMs, true) + ' से। यह निश्चित घटना-समय नहीं है।'
-    : 'उपलब्ध विंशोत्तरी दशा डेटा में संबंधित अवधि स्थापित नहीं हुई; इसलिए समय-सीमा नहीं दी गई है।';
-  const transitOccupants = transitReport.items.filter((item) => config.houses.includes(item.houseFromLagna));
-  const doubleTransit = transitReport.doubleTransitHouses.filter((item) => config.houses.includes(item.house));
-  const transitEvidenceEn = transitOccupants.length || doubleTransit.length
-    ? ' Current transit evidence: ' +
-      (transitOccupants.length ? transitOccupants.map((item) => item.planet + ' transits natal H' + item.houseFromLagna + ' (H' + item.houseFromMoon + ' from Moon; ' + item.verdict + ')').join('; ') : '') +
-      (doubleTransit.length ? (transitOccupants.length ? '. ' : '') + 'Jupiter-Saturn double transit activates natal house(s) ' + doubleTransit.map((item) => item.house).join(', ') : '') +
-      '. Transit is a corroborating indicator, not an event guarantee.'
-    : ' No relevant transit occupancy or Jupiter-Saturn double-transit activation was identified for these houses on ' + transitReport.targetDate + '.';
-  const transitEvidenceHi = transitOccupants.length || doubleTransit.length
-    ? ' वर्तमान गोचर प्रमाण: ' +
-      (transitOccupants.length ? transitOccupants.map((item) => item.planet + ' जन्म लग्न से भाव ' + item.houseFromLagna + ' (चंद्र से भाव ' + item.houseFromMoon + '; ' + item.verdict + ') में').join('; ') : '') +
-      (doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर जन्म भाव ' + doubleTransit.map((item) => item.house).join(', ') + ' को सक्रिय करता है' : '') +
-      '। गोचर सहायक प्रमाण है, घटना की गारंटी नहीं।'
-    : ' ' + transitReport.targetDate + ' को इन भावों में कोई संबंधित गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं हुई।';
-  const activeDashaTransit = activePath.map((period) => ({
-    period,
-    transit: transitReport.items.find((item) => item.planet === period.lord),
-  })).filter((entry) => entry.transit);
-  const dashaTransitEvidenceEn = activeDashaTransit.length
-    ? ' Active dasha-lord transit cross-check: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pName(period.level) + ') is transiting ' + transit!.transitSign + ', H' + transit!.houseFromLagna + ' from natal Lagna and H' + transit!.houseFromMoon + ' from natal Moon; motion ' + transit!.motionLabel.toLowerCase() + ', ' + transit!.verdict + '.').join(' ')
-    : ' No active classical dasha-lord transit cross-check is available for this date.';
-  const dashaTransitEvidenceHi = activeDashaTransit.length
-    ? ' सक्रिय दशा-स्वामी गोचर मिलान: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pNameHi(period.level) + ') ' + transit!.transitSign + ' राशि में, जन्म लग्न से भाव ' + transit!.houseFromLagna + ' और चंद्र से भाव ' + transit!.houseFromMoon + ' में गोचर कर रहा है; गति ' + (transit!.motionLabel === 'Retrograde' ? 'वक्री' : transit!.motionLabel === 'Stationary' ? 'स्थिर' : 'मार्गी') + ', आकलन ' + transit!.verdict + '।').join(' ')
-    : ' इस तिथि के लिए सक्रिय नवग्रह दशा-स्वामी का गोचर मिलान उपलब्ध नहीं है।';
-  const timingWithTransitEn = timingEn + transitEvidenceEn + dashaTransitEvidenceEn;
-  const timingWithTransitHi = timingHi + transitEvidenceHi + dashaTransitEvidenceHi;
   const hasSupport = strengthsEn.length > 0, hasCaution = watchoutsEn.length > 0;
   const toneEn = hasSupport && hasCaution ? 'mixed' : hasSupport ? 'more supportive' : hasCaution ? 'more challenging' : 'insufficient';
   const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
@@ -292,14 +236,12 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
     keyStrengthsHi: strengthsHi.length ? [...new Set(strengthsHi)].slice(0, 6) : ['प्रदत्त कुंडली-डेटा से कोई स्पष्ट अनुकूल कारक स्थापित नहीं हुआ।'],
     watchoutsEn: watchoutsEn.length ? [...new Set(watchoutsEn)].slice(0, 6) : ['No major caution was established from available indicators; this does not mean difficulties are impossible.'],
     watchoutsHi: watchoutsHi.length ? [...new Set(watchoutsHi)].slice(0, 6) : ['उपलब्ध संकेतों से कोई प्रमुख सावधानी स्थापित नहीं हुई; इसका अर्थ यह नहीं कि कठिनाइयां असंभव हैं।'],
-    astrologicalFactorsEn: factorsEn, astrologicalFactorsHi: factorsHi, timingEn: timingWithTransitEn, timingHi: timingWithTransitHi,
+    astrologicalFactorsEn: factorsEn, astrologicalFactorsHi: factorsHi,
     classicalAdviceEn: config.adviceEn, classicalAdviceHi: config.adviceHi,
   };
 }
-export function computeDeepLifePredictions(chart: ChartData, atMs = Date.now()): DeepLifePredictionsReport {
-  const transitDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
-  const transitReport = computeDeepGochar(chart, transitDate);
-  const domains = DOMAINS.map((config) => buildDomain(chart, config, atMs, transitReport));
+export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
+  const domains = DOMAINS.map((config) => buildDomain(chart, config));
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
   const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
