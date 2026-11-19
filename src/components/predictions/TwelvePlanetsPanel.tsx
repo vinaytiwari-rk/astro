@@ -91,8 +91,8 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
             </p>
             <p className="muted small-text" style={{ margin: '6px 0 0', lineHeight: 1.45 }}>
               {isHi
-                ? 'नोट: पारंपरिक वैदिक फलादेश मुख्यतः नवग्रहों पर आधारित है। हर्षल, वरुण और यम को केवल आधुनिक पूरक संकेत के रूप में देखें। यहाँ समय केवल उपलब्ध विंशोत्तरी दशा से दिया जाता है; गोचर-आधारित समय-निर्धारण शामिल नहीं है।'
-                : 'Note: Classical Vedic interpretation primarily uses the nine grahas. Uranus, Neptune and Pluto are supplementary modern indicators only. Timing here uses supplied Vimshottari periods; transit-based timing is not included.'}
+                ? 'नोट: पारंपरिक वैदिक फलादेश मुख्यतः नवग्रहों पर आधारित है। हर्षल, वरुण और यम आधुनिक पूरक संकेत हैं। दशा के साथ वर्तमान दिनांक का गणितीय गोचर, जन्म चंद्र/लग्न से भाव और वेध भी दिखाए जाते हैं; इसे घटना की गारंटी न मानें।'
+                : 'Note: Classical Vedic interpretation primarily uses the nine grahas; Uranus, Neptune and Pluto are supplementary. Alongside dasha, this view calculates date-specific transits, houses from natal Moon/Ascendant and Vedha. These are indicators, not event guarantees.'}
             </p>
           </div>
 
@@ -420,6 +420,25 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               ))}
             </ul>
           </div>
+        </div>
+
+        {/* Date-specific transit evidence */}
+        <div
+          style={{
+            padding: '10px 14px',
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            fontSize: '13px',
+            lineHeight: 1.5,
+          }}
+        >
+          <strong>{isHi ? 'वर्तमान गोचर प्रमाण: ' : 'Current Transit Evidence: '}</strong>
+          {planet.transitEvidenceEn
+            ? (isHi ? planet.transitEvidenceHi : planet.transitEvidenceEn)
+            : (isHi
+                ? (planet.isOuterPlanet ? 'बाह्य ग्रहों के लिए पारंपरिक नवग्रह गोचर-वर्गीकरण लागू नहीं किया गया है।' : 'इस तिथि के लिए गोचर प्रमाण उपलब्ध नहीं है; कोई गोचर निष्कर्ष नहीं निकाला गया।')
+                : (planet.isOuterPlanet ? 'Classical nine-graha gochar classification is not applied to outer planets.' : 'Transit evidence is unavailable for this date; no transit conclusion is drawn.'))}
         </div>
 
         {/* Timing Triggers & Critical Age Windows */}
