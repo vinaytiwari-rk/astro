@@ -4089,7 +4089,7 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
     const hasDebilitated = pObjects.some((p) => p.dignity === 'Debilitated');
     const inDusthana = participatingHouses.some((h) => [6, 8, 12].includes(h));
 
-    if (hasDebilitated) {
+    if (def.category !== 'Nabhasa' && hasDebilitated) {
       const debPlanet = pObjects.find((p) => p.dignity === 'Debilitated')!;
       const rashiLordId = SIGNS[debPlanet.signIndex].lord;
       const rashiLord = byId.get(rashiLordId as PlanetId);
@@ -4103,11 +4103,11 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
         bhangaReasonEn = 'Yoga neutralized (Bhanga): Key participating planet is debilitated without cancellation.';
         bhangaReasonHi = 'योग-भंग: प्रमुख कारक ग्रह नीच राशि में है, जिससे शुभ फल निष्फल अथवा अत्यंत न्यून रहेगा।';
       }
-    } else if (hasCombust) {
+    } else if (def.category !== 'Nabhasa' && hasCombust) {
       bhangaStatus = 'Partial';
       bhangaReasonEn = 'Partially impaired: Participating planet is combust with Sun (Asta), reducing manifestation to 40-50%.';
       bhangaReasonHi = 'आंशिक प्रभावी: कारक ग्रह सूर्य की समीपता से अस्त (Combust) है, फल 40-50% तक सीमित रहेगा।';
-    } else if (inDusthana && def.category !== 'Viparita' && def.category !== 'Arishta') {
+    } else if (def.category !== 'Nabhasa' && inDusthana && def.category !== 'Viparita' && def.category !== 'Arishta') {
       bhangaStatus = 'Bhanga';
       bhangaReasonEn = 'Neutralized / Impaired: Formed in Dusthana (6, 8, 12th house), causing struggle before fruition.';
       bhangaReasonHi = 'त्रिक भाव (6, 8, 12) में स्थित होने से योग का फल अत्यधिक संघर्ष व बाधाओं के उपरांत ही मिलेगा।';
@@ -4356,12 +4356,26 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
     const kendraHouses = [1, 4, 7, 10];
     const kendraOccupants = seven.filter((p) => kendraHouses.includes(houseBetween(ascSign, p.signIndex)));
     const occupiedKendras = new Set(kendraOccupants.map((p) => houseBetween(ascSign, p.signIndex)));
-    const beneficIds = new Set(['Jupiter', 'Venus']);
-    const maleficIds = new Set(['Sun', 'Mars', 'Saturn']);
-    if (occupiedKendras.size >= 3 && kendraOccupants.every((p) => beneficIds.has(p.id))) {
+    const elongation = (moon.longitude - sun.longitude + 360) % 360;
+    const waxingMoon = elongation > 0 && elongation < 180;
+    const mercuryWithBenefic = chart.planets.some((p) =>
+      p.id !== 'Mercury' && p.signIndex === mercury.signIndex && ['Jupiter', 'Venus'].includes(p.id)
+    );
+    const mercuryWithMalefic = chart.planets.some((p) =>
+      p.id !== 'Mercury' && p.signIndex === mercury.signIndex && ['Sun', 'Mars', 'Saturn'].includes(p.id)
+    );
+    const naturalBenefic = (p: BodyPosition) =>
+      ['Jupiter', 'Venus'].includes(p.id) ||
+      (p.id === 'Moon' && waxingMoon) ||
+      (p.id === 'Mercury' && mercuryWithBenefic && !mercuryWithMalefic);
+    const naturalMalefic = (p: BodyPosition) =>
+      ['Sun', 'Mars', 'Saturn'].includes(p.id) ||
+      (p.id === 'Moon' && !waxingMoon) ||
+      (p.id === 'Mercury' && mercuryWithMalefic && !mercuryWithBenefic);
+    if (occupiedKendras.size >= 3 && kendraOccupants.every(naturalBenefic)) {
       mark(304, 'Mala Yoga', Array.from(occupiedKendras));
     }
-    if (occupiedKendras.size >= 3 && kendraOccupants.every((p) => maleficIds.has(p.id))) {
+    if (occupiedKendras.size >= 3 && kendraOccupants.every(naturalMalefic)) {
       mark(305, 'Sarpa Yoga', Array.from(occupiedKendras));
     }
 
@@ -4375,14 +4389,14 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
 
     // Vajra / Yava use the traditional benefic-malefic split. Mercury and Moon
     // are left out of the automatic classifier because their nature is conditional.
-    const classified = seven.filter((p) => beneficIds.has(p.id) || maleficIds.has(p.id));
-    const benefics = classified.filter((p) => beneficIds.has(p.id));
-    const malefics = classified.filter((p) => maleficIds.has(p.id));
+    const benefics = seven.filter(naturalBenefic);
+    const malefics = seven.filter(naturalMalefic);
+    const allClassified = benefics.length + malefics.length === seven.length;
     const inHouses = (ps: BodyPosition[], houses: number[]) =>
       ps.length > 0 && ps.every((p) => houses.includes(houseBetween(ascSign, p.signIndex)));
-    if (classified.length === seven.length && inHouses(benefics, [1, 7]) && inHouses(malefics, [4, 10])) {
+    if (allClassified && inHouses(benefics, [1, 7]) && inHouses(malefics, [4, 10])) {
       mark(311, 'Vajra Yoga');
-    } else if (classified.length === seven.length && inHouses(benefics, [4, 10]) && inHouses(malefics, [1, 7])) {
+    } else if (allClassified && inHouses(benefics, [4, 10]) && inHouses(malefics, [1, 7])) {
       mark(312, 'Yava Yoga');
     }
 
