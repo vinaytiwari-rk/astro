@@ -4165,12 +4165,8 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
 
     // A yoga is not cancelled merely because one participant is debilitated,
     // combust, or placed in a dusthana. Cancellation and neechabhanga are
-    // yoga-specific rules and must be evaluated by the corresponding sutra.
-    // Until that rule is implemented for a definition, do not manufacture a
-    // bhanga verdict or a numerical reduction.
-    const bhangaStatus: 'Full' | 'Partial' | 'Bhanga' | 'Neechabhanga' = 'Full';
-    const bhangaReasonEn = 'No yoga-specific cancellation rule was established by the current evaluation.';
-    const bhangaReasonHi = 'वर्तमान परीक्षण में इस योग के लिए कोई विशिष्ट भंग-नियम स्थापित नहीं हुआ।';
+    // yoga-specific rules. Until the relevant sutra is evaluated, leave the
+    // potency/cancellation fields unset rather than inventing a verdict.
 
     const sourceByCategory: Record<ClassicalYogaCategory, string> = {
       Mahapurusha: 'Brihat Parashara Hora Shastra (Mahapurusha Yoga rules); Saravali, Ch. 37',
@@ -4216,9 +4212,6 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
       conditionEn: def.conditionEn,
       resultEn: customResultEn || def.resultEn,
       resultHi,
-      bhangaStatus,
-      bhangaReasonEn,
-      bhangaReasonHi,
     });
   };
 
