@@ -30,4 +30,19 @@ describe('Planet-wise prediction timing integrity', () => {
       expect(planet.timingTriggersEn).toMatch(/no timing is stated/i);
     }
   });
+
+  it('shows the combined Mahadasha-Antardasha-Pratyantardasha path in planet-wise timing', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const nestedPeriods = [{
+      lord: 'Saturn', level: 1 as const, startMs: 0, endMs: 1000, durationDays: 1,
+      children: [{
+        lord: 'Jupiter', level: 2 as const, startMs: 0, endMs: 1000, durationDays: 1,
+        children: [{ lord: 'Mercury', level: 3 as const, startMs: 0, endMs: 1000, durationDays: 1 }],
+      }],
+    }];
+    const report = computeTwelvePlanetsPredictions({ ...chart, vimshottari: nestedPeriods }, 500);
+    const mercury = report.planets.find((planet) => planet.id === 'Mercury');
+    expect(mercury?.timingTriggersEn).toContain('Saturn Mahadasha → Jupiter Antardasha → Mercury Pratyantardasha');
+    expect(mercury?.timingTriggersHi).toContain('वर्तमान संयुक्त विंशोत्तरी क्रम');
+  });
 });
