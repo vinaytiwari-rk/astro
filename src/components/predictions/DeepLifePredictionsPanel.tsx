@@ -3,7 +3,6 @@ import {
   Briefcase,
   CheckCircle,
   Coins,
-  Compass,
   Heart,
   Shield,
   Sparkles,
@@ -164,17 +163,6 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                     <li key={wIdx}>{wo}</li>
                   ))}
                 </ul>
-              </div>
-            </div>
-
-            {/* Astrological Mechanics & Significators */}
-            <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px', marginBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--indigo)', fontWeight: 600, marginBottom: '2px' }}>
-                <Compass size={13} />
-                <span>{isHi ? 'शास्त्रीय ग्रह योग एवं कारक आधार (Astrological Factors):' : 'Astrological Mechanics & Significators:'}</span>
-              </div>
-              <div className="mono muted">
-                {isHi ? domain.astrologicalFactorsHi : domain.astrologicalFactorsEn}
               </div>
             </div>
 
