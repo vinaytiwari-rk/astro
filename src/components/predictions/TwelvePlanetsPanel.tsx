@@ -80,19 +80,19 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               <span>
                 {isHi
-                  ? 'ग्रह-वार कुंडली संकेत विश्लेषण'
-                  : 'Planet-wise Chart Evidence'}
+                  ? 'ग्रहवार फलादेश'
+                  : 'Planet-wise Predictions'}
               </span>
             </h2>
             <p className="muted" style={{ margin: '4px 0 0', fontSize: '13px' }}>
               {isHi
                 ? 'प्रत्येक ग्रह की राशि, भाव, स्वामित्व, गरिमा, दृष्टि, ग्रहबल और उपलब्ध दशा-संकेत का विश्लेषण।'
-                : 'Chart-specific analysis of sign, house, ownership, dignity, aspects, planetary strength and available dasha periods.'}
+                : 'Planet-wise फलादेश based on sign, house, lordship, dignity, aspects and planetary strength.'}
             </p>
             <p className="muted small-text" style={{ margin: '6px 0 0', lineHeight: 1.45 }}>
               {isHi
-                ? 'नोट: पारंपरिक वैदिक फलादेश मुख्यतः नवग्रहों पर आधारित है। हर्षल, वरुण और यम आधुनिक पूरक संकेत हैं। दशा के साथ वर्तमान दिनांक का गणितीय गोचर, जन्म चंद्र/लग्न से भाव और वेध भी दिखाए जाते हैं; इसे घटना की गारंटी न मानें।'
-                : 'Note: Classical Vedic interpretation primarily uses the nine grahas; Uranus, Neptune and Pluto are supplementary. Alongside dasha, this view calculates date-specific transits, houses from natal Moon/Ascendant and Vedha. These are indicators, not event guarantees.'}
+                ? 'नोट: इस अनुभाग में केवल जन्मकुंडली के ग्रह-आधारित फल दिए जाते हैं। दशा का समय-फल दशा अनुभाग में और वर्तमान गोचर का फल गोचर अनुभाग में अलग से देखें।'
+                : 'This section interprets natal planetary indications only. Dasha timing and date-specific transit results are kept in their own sections.'}
             </p>
           </div>
 
@@ -419,63 +419,6 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        {/* Date-specific transit evidence */}
-        <div
-          style={{
-            padding: '10px 14px',
-            background: 'var(--bg-subtle)',
-            border: '1px solid var(--border)',
-            borderRadius: '8px',
-            fontSize: '13px',
-            lineHeight: 1.5,
-          }}
-        >
-          <strong>{isHi ? 'वर्तमान गोचर प्रमाण: ' : 'Current Transit Evidence: '}</strong>
-          {planet.transitEvidenceEn
-            ? (isHi ? planet.transitEvidenceHi : planet.transitEvidenceEn)
-            : (isHi
-                ? (planet.isOuterPlanet ? 'बाह्य ग्रहों के लिए पारंपरिक नवग्रह गोचर-वर्गीकरण लागू नहीं किया गया है।' : 'इस तिथि के लिए गोचर प्रमाण उपलब्ध नहीं है; कोई गोचर निष्कर्ष नहीं निकाला गया।')
-                : (planet.isOuterPlanet ? 'Classical nine-graha gochar classification is not applied to outer planets.' : 'Transit evidence is unavailable for this date; no transit conclusion is drawn.'))}
-        </div>
-
-        {/* Timing Triggers & Critical Age Windows */}
-        <div
-          style={{
-            padding: '10px 14px',
-            background: 'rgba(59, 130, 246, 0.06)',
-            border: '1px solid rgba(59, 130, 246, 0.22)',
-            borderRadius: '8px',
-            fontSize: '13px',
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              color: '#2563eb',
-              marginBottom: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '8px',
-            }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Clock size={15} />
-              <span>{isHi ? 'घटना फलन समय व दशा/गोचर ट्रिगर:' : 'Event Materialization & Timing Triggers:'}</span>
-            </span>
-            {planet.keyAgeWindows.length > 0 && (
-              <span className="mono" style={{ fontSize: '12px', fontWeight: 600 }}>
-                {isHi ? 'सक्रिय आयु वर्ष:' : 'Critical Ages:'}{' '}
-                {planet.keyAgeWindows.map((age) => `${age}y`).join(', ')}
-              </span>
-            )}
-          </div>
-          <div style={{ lineHeight: 1.5 }}>
-            {isHi ? planet.timingTriggersHi : planet.timingTriggersEn}
           </div>
         </div>
 
