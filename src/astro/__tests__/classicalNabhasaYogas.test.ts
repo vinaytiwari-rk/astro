@@ -26,7 +26,11 @@ describe('BPHS Chapter 35 Nabhasa yoga catalogue and detection', () => {
 
   it('detects Rajju from seven planets in movable signs and suppresses Sankhya', () => {
     const detected = detectClassicalYogas(makeChart([0, 3, 6, 9, 0, 3, 6]));
-    expect(detected.some((y) => y.id === 301)).toBe(true);
+    const rajju = detected.find((y) => y.id === 301);
+    expect(rajju).toBeTruthy();
+    expect(rajju?.source).toContain('Brihat Parashara Hora Shastra, Ch. 35–36');
+    expect(rajju?.resultHi).toContain('राज्जु योग');
+    expect(rajju?.bhangaReasonHi).toContain('विशिष्ट भंग-नियम');
     expect(detected.some((y) => y.id >= 326 && y.id <= 332)).toBe(false);
   });
 
