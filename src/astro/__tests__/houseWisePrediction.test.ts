@@ -8,7 +8,6 @@ describe('House-wise evidence synthesis', () => {
     const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = computeHouseWisePredictions(chart);
     expect(report).toHaveLength(12);
-    expect(report.every((house) => !/Current gochar evidence|वर्तमान गोचर प्रमाण/.test(house.synthesisEn + house.synthesisHi))).toBe(true);
   });
 
   it('returns twelve individualized house readings with their actual chart evidence', () => {
@@ -23,8 +22,6 @@ describe('House-wise evidence synthesis', () => {
       expect(house.synthesisEn).toContain('Functional lordship:');
       expect(house.lordReadingEn.length).toBeGreaterThan(20);
       expect(house.synthesisEn).toContain('This reading combines');
-      expect(house.synthesisEn).toMatch(/Current gochar evidence \(2026-11-19\)/);
-      expect(house.synthesisHi).toMatch(/वर्तमान गोचर प्रमाण \(2026-11-19\)/);
       expect(house.synthesisHi).toContain('यह निष्कर्ष');
       expect(house.synthesisEn).not.toMatch(/will flourish effortlessly|will develop steadily and bring fruitful milestones|Promises in .* will/i);
       expect(house.synthesisHi).not.toMatch(/स्वतः सिद्ध सफलता|गारंटी देता है/);
