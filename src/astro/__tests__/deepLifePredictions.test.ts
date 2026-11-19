@@ -25,6 +25,9 @@ describe('Chart-specific General Prediction synthesis', () => {
     expect(reports.some((report) => report.domains.some((domain) =>
       domain.astrologicalFactorsHi.includes('कार्यात्मक स्वामित्व'),
     ))).toBe(true);
+    expect(reports.every((report) => report.domains.every((domain) =>
+      domain.astrologicalFactorsEn.includes('house-lord functional roles:'),
+    ))).toBe(true);
     const careerEvidence = reports.map((report) =>
       report.domains.find((domain) => domain.id === 'career')!.astrologicalFactorsEn,
     );
