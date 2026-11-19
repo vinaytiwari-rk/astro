@@ -134,8 +134,13 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
   const relatedYogas = chart.yogas.filter((y) => y.planets.some((id) => related.has(id)));
   for (const y of relatedYogas) {
     yogaEvidence.push(y.name + ' (' + y.strength + ')');
-    if (y.strength === 'Strong') { strengthsEn.push('Related yoga: ' + y.name + ' (strong).'); strengthsHi.push('संबंधित योग ' + y.name + ' मजबूत रूप में दर्ज है।'); }
-    else { strengthsEn.push('Related yoga: ' + y.name + ' (' + y.strength + ').'); strengthsHi.push('संबंधित योग ' + y.name + ' (' + y.strength + ') दर्ज है।'); }
+    if (y.strength === 'Strong') {
+      strengthsEn.push('Related yoga: ' + y.name + ' (strong).');
+      strengthsHi.push('संबंधित योग ' + y.name + ' मजबूत रूप में दर्ज है।');
+    }
+    // Moderate/Present yogas remain visible as corroborating evidence, but are
+    // not counted as supportive outcomes without a strong classification.
+
   }
   const periods = flattenDasha(chart.vimshottari ?? []);
   const active = periods.filter((p) => related.has(p.lord) && p.startMs <= atMs && atMs < p.endMs).sort((a, b) => b.level - a.level);
