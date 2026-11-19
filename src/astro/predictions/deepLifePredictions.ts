@@ -233,35 +233,26 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
   const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
   const summaryEn = config.titleEn + ': ' + toneEn + ' indications appear across houses ' + config.houses.join(', ') + '. House lords, occupants, aspects, Sarvashtakavarga, ' + config.varga + ' and relevant significators are weighed together; conflicting signals are retained.';
   const summaryHi = config.titleHi + ': भाव ' + config.houses.join(', ') + ' के संकेत ' + toneHi + ' हैं। भावेश, स्थित ग्रह, दृष्टि, सर्वाष्टकवर्ग, ' + config.varga + ' और संबंधित कारकों को साथ देखा गया है; विरोधी संकेतों को छिपाया नहीं गया है।';
-  const domainOutcome: Record<string, { en: string; hi: string }> = {
-    personality: { en: 'The main life theme is self-direction, confidence and steady personal development.', hi: 'मुख्य जीवन-विषय आत्मनिर्णय, आत्मविश्वास और निरंतर व्यक्तित्व-विकास रहेगा।' },
-    wealth: { en: 'The main outcome area is earning, savings and management of family resources.', hi: 'मुख्य फलित क्षेत्र आय, बचत और पारिवारिक संसाधनों का प्रबंधन है।' },
-    career: { en: 'The main outcome area is work responsibility, professional growth and public standing.', hi: 'मुख्य फलित क्षेत्र कार्य-जिम्मेदारी, पेशेवर उन्नति और सामाजिक प्रतिष्ठा है।' },
-    marriage: { en: 'The main outcome area is partnership, commitment and the quality of close relationships.', hi: 'मुख्य फलित क्षेत्र साझेदारी, प्रतिबद्धता और निकट संबंधों की गुणवत्ता है।' },
-    health: { en: 'The main outcome area is vitality, daily habits and the need for consistent self-care.', hi: 'मुख्य फलित क्षेत्र जीवन-शक्ति, दैनिक आदतें और नियमित स्वास्थ्य-संरक्षण है।' },
-    spirituality: { en: 'The main outcome area is learning, values, reflection and spiritual discipline.', hi: 'मुख्य फलित क्षेत्र अध्ययन, जीवन-मूल्य, आत्मचिंतन और आध्यात्मिक अनुशासन है।' },
-  };
-  const outcomeTheme = domainOutcome[config.id] ?? { en: 'This life area requires balanced judgement.', hi: 'इस जीवन-क्षेत्र में संतुलित विवेचन आवश्यक है।' };
-  const predictionToneEn = hasSupport && hasCaution
-    ? 'Supportive planetary factors create opportunities in this area, while the challenging placements indicate where delays, extra responsibility or uneven progress may arise.'
+  const supportSummaryEn = [...new Set(strengthsEn)].slice(0, 2).join(' ');
+  const cautionSummaryEn = [...new Set(watchoutsEn)].slice(0, 2).join(' ');
+  const supportSummaryHi = [...new Set(strengthsHi)].slice(0, 2).join(' ');
+  const cautionSummaryHi = [...new Set(watchoutsHi)].slice(0, 2).join(' ');
+  const evidenceToneEn = hasSupport && hasCaution
+    ? 'mixed, with both supportive and demanding factors'
     : hasSupport
-      ? 'The planetary pattern is supportive for progress and constructive outcomes in this area; the strongest results come through active use of the indicated strengths.'
+      ? 'supportive'
       : hasCaution
-        ? 'The planetary pattern places greater emphasis on patience, preparation and sustained effort in this area; progress may develop gradually.'
-        : 'The available planetary factors give a mixed or indistinct picture in this area, with no single dominant trend emerging.';
-  const predictionToneHi = hasSupport && hasCaution
-    ? 'ग्रहस्थितियां इस क्षेत्र में अवसर और चुनौतियां दोनों दिखाती हैं। अनुकूल ग्रह प्रगति के अवसर देते हैं, जबकि चुनौतीपूर्ण स्थितियां विलंब, अतिरिक्त जिम्मेदारी या उतार-चढ़ाव ला सकती हैं।'
+        ? 'demanding, calling for sustained effort'
+        : 'not yet clear from the available chart data';
+  const evidenceToneHi = hasSupport && hasCaution
+    ? 'अनुकूल और चुनौतीपूर्ण दोनों प्रकार के संकेत'
     : hasSupport
-      ? 'ग्रहस्थितियां इस क्षेत्र में प्रगति और अनुकूल परिणामों का समर्थन करती हैं। उपलब्ध क्षमताओं का सक्रिय उपयोग करने से अच्छे अवसर विकसित हो सकते हैं।'
+      ? 'अनुकूल'
       : hasCaution
-        ? 'ग्रहस्थितियां इस क्षेत्र में धैर्य, तैयारी और निरंतर प्रयास को अधिक महत्व देती हैं। प्रगति धीरे-धीरे विकसित हो सकती है।'
-        : 'इस क्षेत्र में ग्रहस्थितियों से कोई एक प्रमुख प्रवृत्ति स्पष्ट नहीं होती; संकेत मिले-जुले हैं और परिणाम परिस्थितियों के अनुसार बदल सकते हैं।';
-  const keySupportEn = strengthsEn[0] ? ' Key supportive chart factor: ' + strengthsEn[0] : '';
-  const keyCautionEn = watchoutsEn[0] ? ' Key caution: ' + watchoutsEn[0] : '';
-  const keySupportHi = strengthsHi[0] ? ' मुख्य अनुकूल कुंडली-आधार: ' + strengthsHi[0] : '';
-  const keyCautionHi = watchoutsHi[0] ? ' मुख्य सावधानी: ' + watchoutsHi[0] : '';
-  const predictionEn = outcomeTheme.en + ' ' + predictionToneEn + keySupportEn + keyCautionEn;
-  const predictionHi = outcomeTheme.hi + ' ' + predictionToneHi + keySupportHi + keyCautionHi;
+        ? 'अधिक प्रयास और धैर्य की अपेक्षा वाले'
+        : 'उपलब्ध कुंडली-डेटा से स्पष्ट नहीं';
+  const predictionEn = `${config.titleEn}: the chart shows ${evidenceToneEn}. ${supportSummaryEn ? 'The strongest supporting factors are: ' + supportSummaryEn : ''} ${cautionSummaryEn ? 'The main pressure points are: ' + cautionSummaryEn : ''}`.trim();
+  const predictionHi = `${config.titleHi}: कुंडली में ${evidenceToneHi} संकेत हैं। ${supportSummaryHi ? 'मुख्य अनुकूल आधार: ' + supportSummaryHi : ''} ${cautionSummaryHi ? 'मुख्य चुनौती के क्षेत्र: ' + cautionSummaryHi : ''}`.trim();
   const score = Math.max(25, Math.min(75, Math.round(50 + (count ? (balance / count) * 14 : 0))));
   const ratingEn = score >= 64 ? 'Very Good' : score <= 40 ? 'Challenging' : 'Moderate';
   const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
