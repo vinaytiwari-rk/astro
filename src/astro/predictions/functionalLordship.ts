@@ -6,7 +6,14 @@ export interface FunctionalLordship {
   ownedHouses: number[];
   rolesEn: string[];
   rolesHi: string[];
-  /** This is a lordship profile, not a single benefic/malefic verdict. */
+  /** A classical yoga-karaka ownership pattern: at least one non-Lagna kendra and one non-Lagna trikona. */
+  yogakarakaProfile: boolean;
+  /** Traditional kendradhipati caution for natural benefics owning kendras without Lagna/trikona lordship. */
+  kendradhipatiCaution: boolean;
+  ownsMarakaHouse: boolean;
+  ownsDusthana: boolean;
+  ownsTrikona: boolean;
+  ownsKendra: boolean;
   noteEn: string;
   noteHi: string;
 }
@@ -26,24 +33,64 @@ const ROLE_LABELS: Record<number, { en: string; hi: string }> = {
   12: { en: 'Dusthana lord (expenditure and release)', hi: 'दुष्थानेश (व्यय एवं मोक्ष)' },
 };
 
+const NATURAL_BENEFICS = new Set<SevenPlanetId>(['Jupiter', 'Venus', 'Mercury', 'Moon']);
+const KENDRA_HOUSES = [4, 7, 10];
+const TRIKONA_HOUSES = [5, 9];
+const DUSTHANA_HOUSES = [6, 8, 12];
+const MARAKA_HOUSES = [2, 7];
+
 export function getFunctionalLordship(planet: SevenPlanetId, ascendantSignIndex: number): FunctionalLordship {
+  if (!Number.isInteger(ascendantSignIndex) || ascendantSignIndex < 0 || ascendantSignIndex > 11) {
+    throw new RangeError('Ascendant sign index must be an integer from 0 to 11.');
+  }
+
   const ownedHouses: number[] = [];
   for (let house = 1; house <= 12; house++) {
     const signIndex = (ascendantSignIndex + house - 1) % 12;
     if (SIGNS[signIndex]?.lord === planet) ownedHouses.push(house);
   }
+
   const rolesEn = ownedHouses.map((house) => ROLE_LABELS[house].en);
   const rolesHi = ownedHouses.map((house) => ROLE_LABELS[house].hi);
+  const ownsKendra = ownedHouses.some((house) => KENDRA_HOUSES.includes(house));
+  const ownsTrikona = ownedHouses.some((house) => TRIKONA_HOUSES.includes(house));
+  const yogakarakaProfile = ownsKendra && ownsTrikona;
+  const kendradhipatiCaution = NATURAL_BENEFICS.has(planet)
+    && ownsKendra
+    && !ownsTrikona
+    && !ownedHouses.includes(1);
+  const ownsMarakaHouse = ownedHouses.some((house) => MARAKA_HOUSES.includes(house));
+  const ownsDusthana = ownedHouses.some((house) => DUSTHANA_HOUSES.includes(house));
+
+  if (yogakarakaProfile) {
+    rolesEn.push('Yogakaraka ownership pattern (Kendra + Trikona)');
+    rolesHi.push('योगकारक स्वामित्व-योग (केंद्र + त्रिकोण)');
+  }
+  if (kendradhipatiCaution) {
+    rolesEn.push('Kendradhipati caution (natural benefic owns a Kendra without Trikona/Lagna ownership)');
+    rolesHi.push('केंद्राधिपति विचार (स्वाभाविक शुभ ग्रह का केंद्र स्वामित्व, बिना त्रिकोण/लग्न स्वामित्व)');
+  }
+  if (ownsMarakaHouse) {
+    rolesEn.push('Maraka-house ownership (2nd/7th); not a prediction of harm');
+    rolesHi.push('मारक भाव स्वामित्व (2/7); इसे अनिष्ट की भविष्यवाणी न मानें');
+  }
+
   return {
     planet,
     ownedHouses,
     rolesEn,
     rolesHi,
+    yogakarakaProfile,
+    kendradhipatiCaution,
+    ownsMarakaHouse,
+    ownsDusthana,
+    ownsTrikona,
+    ownsKendra,
     noteEn: rolesEn.length
-      ? 'Functional role is described through house ownership. Where one planet owns different house types, their indications must be judged together with dignity, placement, aspects, strength and dasha; this is not a standalone benefic/malefic label.'
+      ? 'This is a house-ownership profile, not a final benefic/malefic verdict. Yogakaraka and Kendradhipati flags describe traditional rule patterns only; judge them with dignity, placement, aspects, strength, conjunctions and the running dasha. Maraka ownership alone does not predict illness or death.'
       : 'No classical house ownership was assigned.',
     noteHi: rolesHi.length
-      ? 'ग्रह की कार्यात्मक भूमिका उसके भाव-स्वामित्व से दिखाई गई है। एक ग्रह के अलग-अलग प्रकार के भावों का स्वामित्व हो तो गरिमा, स्थिति, दृष्टि, बल और दशा के साथ संयुक्त निर्णय करें; यह अपने-आप शुभ/अशुभ की अंतिम संज्ञा नहीं है।'
+      ? 'यह भाव-स्वामित्व का विवरण है, अंतिम शुभ/अशुभ निर्णय नहीं। योगकारक और केंद्राधिपति संकेत केवल पारंपरिक नियम-पैटर्न बताते हैं; अंतिम विचार राशि-गरिमा, स्थिति, दृष्टि, बल, युति और चल रही दशा से करें। केवल मारक भाव का स्वामित्व बीमारी या मृत्यु की भविष्यवाणी नहीं करता।'
       : 'इस ग्रह को कोई पारंपरिक भाव-स्वामित्व नहीं दिया गया है।',
   };
 }
