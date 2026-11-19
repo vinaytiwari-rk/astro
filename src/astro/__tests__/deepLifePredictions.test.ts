@@ -15,6 +15,8 @@ describe('Chart-specific General Prediction synthesis', () => {
         expect(domain.astrologicalFactorsEn.length).toBeGreaterThan(80);
         expect(domain.summaryEn).toMatch(/indications/);
         expect(domain.timingEn.length).toBeGreaterThan(20);
+        expect(domain.timingEn).toMatch(/Current transit evidence|No relevant transit occupancy/);
+        expect(domain.timingHi).toMatch(/वर्तमान गोचर प्रमाण|संबंधित गोचर स्थिति/);
         expect(domain.keyStrengthsEn.length).toBeGreaterThan(0);
         expect(domain.watchoutsEn.length).toBeGreaterThan(0);
       }
