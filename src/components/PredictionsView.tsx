@@ -69,7 +69,7 @@ export type PredSubTab =
   | 'divisional';
 
 function normalizeSubTab(id?: string): PredSubTab {
-  if (!id) return 'twelve_planets';
+  if (!id) return 'deep_life';
   if (id === 'twelve_planets') return 'twelve_planets';
   if (
     id === 'active_yogas_yuti' ||
@@ -123,7 +123,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   const [gocharRef, setGocharRef] = useState<'moon' | 'lagna'>('moon');
 
   // Internal fallback state if onSelectSubTab not provided
-  const [localSubTab, setLocalSubTab] = useState<PredSubTab>('twelve_planets');
+  const [localSubTab, setLocalSubTab] = useState<PredSubTab>('deep_life');
 
   // Master Resolved Active SubTab (100% in sync with top header)
   const currentTab = useMemo(() => {
@@ -150,46 +150,21 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   // Core Prediction Systems (Synchronized Navigation Pills)
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     {
-      id: 'twelve_planets',
-      labelEn: '12 Planets Event Predictions',
-      labelHi: 'द्वादश ग्रह घटना फलादेश',
-    },
-    {
-      id: 'active_yogas_yuti',
-      labelEn: 'Active Yogas & Conjunctions',
-      labelHi: 'सक्रिय राजयोग व ग्रह युति',
-    },
-    {
       id: 'deep_life',
-      labelEn: '6-Domain Life Predictions',
-      labelHi: 'समग्र जीवन फलादेश',
+      labelEn: 'General Prediction',
+      labelHi: 'सामान्य फलादेश',
     },
     {
-      id: 'eventsLedger',
-      labelEn: '120-Year Timeline',
-      labelHi: '120-वर्षीय कालचक्र',
+      id: 'twelve_planets',
+      labelEn: 'Planets-wise Prediction',
+      labelHi: 'ग्रहवार फलादेश',
     },
     {
       id: 'houseWise',
-      labelEn: '12 Bhavas Domains',
-      labelHi: 'द्वादश भाव फल',
+      labelEn: 'House-wise Prediction',
+      labelHi: 'भाववार फलादेश',
     },
-    {
-      id: 'bhriguNadi',
-      labelEn: 'Bhrigu Nandi Nadi',
-      labelHi: 'भृगु नंदी नाड़ी व BSP',
-    },
-    {
-      id: 'pastFuture',
-      labelEn: 'Past Life Karma D60',
-      labelHi: 'पूर्व जन्म D60',
-    },
-    {
-      id: 'branchesNumerology',
-      labelEn: 'KP & Lal Kitab',
-      labelHi: 'KP व लाल किताब',
-    },
-  ];
+  ];;
 
   return (
     <div className="view-stack">
