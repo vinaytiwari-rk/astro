@@ -336,7 +336,6 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
 
 प्राथमिक विश्लेषण (भावेश, राशि, नक्षत्र, युति व दृष्टि):
 - ${h}वें भाव के स्वामी ${PLANET_HI[lordPlanet]} कुंडली के ${lordH}वें भाव में ${DIGNITY_HI[lordPos.dignity]} हैं। वे ${lordNak.name} नक्षत्र (स्वामी: ${PLANET_HI[lordStarLord]}) में ${lordAvastha.hi} में विराजमान हैं। ${combustion.isCombust ? `सूर्य के सान्निध्य (${combustion.distDeg}°) के कारण अस्त होने से इस भाव के प्रत्यक्ष परिणामों में देरी व तपस्या का योग बनता है। ` : ''}
-- दशा-संदर्भ: ${dashaEvidenceHi}
 - भाव में स्थित ग्रह: ${occStrHi}।
 - दृष्टि संबंध: ${beneficAspects.length ? `शुभ ग्रहों की दृष्टि (${beneficAspStrHi}) भाव की सुरक्षा करती है। ` : ''}${maleficAspects.length ? `क्रूर ग्रहों की दृष्टि (${maleficAspStrHi}) चुनौतियां व संघर्ष उत्पन्न करती है। ` : ''}
 ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakartari' ? `- ${kartariHi}\n` : ''}
@@ -344,14 +343,13 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 - ${secondarySavHi}
 
 फलादेश-सार (${meta.areaHi}):
-यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.${transitSynthesisHi}`;
+यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.`;
 
     const synthesisEn = `${meta.titleEn}:
 Functional lordship: ${lordPlanet} owns house(s) ${lordship.ownedHouses.join(', ')}; roles: ${lordship.rolesEn.join('; ')}. ${lordship.noteEn}
 
 Primary Parashari Analysis (Lord, Dignity, Star Lord, Aspects & Yuti):
 - Ruled by ${lordPlanet} located in House ${lordH} (${lordPos.dignity}), under ${lordNak.name} Nakshatra (Star Lord: ${lordStarLord}), manifesting in ${lordAvastha.en}. ${combustion.isCombust ? `Combust with Sun within ${combustion.distDeg}°, demanding perseverance for material results. ` : ''}
-- Dasha timing context: ${dashaEvidenceEn}
 - Occupants: ${occStrEn}.
 - Planetary Aspects: Benefic Aspects — ${beneficAspStrEn}; Malefic Aspects — ${maleficAspStrEn}.
 ${kartariYoga === 'Papakartari' ? `- ${kartariEn}\n` : kartariYoga === 'Subhakartari' ? `- ${kartariEn}\n` : ''}
