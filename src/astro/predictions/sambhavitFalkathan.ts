@@ -583,7 +583,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       const verdictEn = `The main house-lord indicator is ${lord.lord} in House ${lord.placedHouse} with ${lord.dignity} dignity. The house has ${occupantTextEn}; its Sarvashtakavarga score is ${bindus}, with ${aspectTextEn}. Overall, ${toneEn}. This is not a probability or a guaranteed event.`;
       const chartBasisHi = `कुंडली में दर्ज आधार: ${lord.lordHi} भाव ${lord.placedHouse} में (${lord.dignityHi}); भाव में स्थित ग्रह: ${occupantTextHi}; सर्वाष्टकवर्ग: ${bindus} बिंदु; दृष्टि: ${aspectTextHi}; प्राकृतिक कारक ग्रह: ${karakaTextHi}।`;
       const chartBasisEn = `Recorded chart evidence: ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}.`;
-      const safetyOverrides: Record<number, { verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
+      const safetyOverrides: Record<number, { titleHi?: string; titleEn?: string; verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
         14: {
           titleHi: 'मातृ-संबंध, पारिवारिक वातावरण और देखभाल',
           titleEn: 'Maternal Relationship, Family Environment & Caregiving',
@@ -652,8 +652,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       const safety = safetyOverrides[d.id];
       const divisionalLimitHi = `विभागीय संदर्भ (${d.divisionalRef || 'परंपरागत संदर्भ'}) उल्लेखित है, लेकिन इस गणना में संबंधित वर्ग-कुंडली का स्वतंत्र सत्यापन नहीं किया गया है।`;
       const divisionalLimitEn = `The divisional reference (${d.divisionalRef || 'traditional reference'}) is listed for context, but the corresponding divisional chart has not been independently calculated in this reading.`;
-      const analysisHi = safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} ${divisionalLimitHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`;
-      const analysisEn = safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} ${divisionalLimitEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`;
+      const analysisHi = (safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`) + `\n\n${divisionalLimitHi}`;
+      const analysisEn = (safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`) + `\n\n${divisionalLimitEn}`;
       const suppressSensitiveTiming = [14, 22, 31].includes(d.id);
       return {
         ...d,
