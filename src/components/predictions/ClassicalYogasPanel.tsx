@@ -82,8 +82,8 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
             <h3>
               <Sparkles size={16} />{' '}
               {isHi
-                ? `300+ शास्त्रीय वैदिक योग पुस्तकालय`
-                : `300+ Classical Vedic Yogas Corpus`}
+                ? `शास्त्रीय वैदिक योग पुस्तकालय`
+                : `Classical Vedic Yoga Library`}
             </h3>
             <p className="muted small-text">
               {isHi
