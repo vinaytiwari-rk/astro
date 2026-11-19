@@ -1011,6 +1011,9 @@ function buildParamayusLockedReport(
 
 export function generatePredictionReport(chart: ChartData, targetDate?: string): PredictionReport {
   const dateStr = targetDate || new Date().toISOString().slice(0, 10);
+  // Interpret the selected calendar date at local noon in the chart's recorded
+  // timezone, then convert it to UTC for dasha interval comparisons.
+  const targetAtMs = Date.parse(`${dateStr}T12:00:00.000Z`) - chart.offsetMinutesUsed * 60_000;
   const targetYear = parseInt(dateStr.slice(0, 4), 10) || new Date().getFullYear();
   const paramayus = evaluateParamayusStatus(chart, dateStr);
   if (paramayus.exceeded) {
@@ -1081,7 +1084,7 @@ export function generatePredictionReport(chart: ChartData, targetDate?: string):
   const remedies = buildRemedies(chart, dashaForecast);
   const planetInSigns = computePlanetInSignPredictions(chart);
   const planetInNakshatras = computePlanetInNakshatraPredictions(chart);
-  const houseWisePredictions = computeHouseWisePredictions(chart);
+  const houseWisePredictions = computeHouseWisePredictions(chart, targetAtMs);
   const degreePredictions = computeDegreePredictions(chart);
   const yutiReport = computeChartYutiReport(chart);
   const lifeEventsLedger = computeLifeEventsAndLedger(chart);
