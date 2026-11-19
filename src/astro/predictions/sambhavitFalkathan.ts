@@ -487,7 +487,22 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const dims = rawDims
     .filter((d) => MASTER_21_IDS.includes(d.id))
     .map((d) => {
-      const house = d.houseNumber ?? 1;
+      const house = d.houseNumber;
+      if (!house || house < 1 || house > 12) {
+        const unavailableHi = 'इस फलादेश के लिए मूल भाव-संबंध उपलब्ध डेटा में स्पष्ट नहीं है। इसलिए व्यक्तिगत निष्कर्ष या समय-सीमा देना उचित नहीं होगा।';
+        const unavailableEn = 'The source-house mapping is unavailable in the supplied chart data. No personalized conclusion or timing window is stated.';
+        return {
+          ...d,
+          verdictHi: unavailableHi,
+          verdictEn: unavailableEn,
+          detailedAnalysisHi: unavailableHi,
+          detailedAnalysisEn: unavailableEn,
+          astroBasisHi: unavailableHi,
+          astroBasisEn: unavailableEn,
+          timingHi: unavailableHi,
+          timingEn: unavailableEn,
+        };
+      }
       const lord = getHLord(house);
       const occupants = planets.filter((planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === house && planet.id !== 'Asc');
       const aspects = lord.aspects as Array<{ planet: string; planetHi: string; isBenefic: boolean }>;
@@ -531,6 +546,15 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         ? aspects.map((aspect) => `${aspect.planet} (${aspect.isBenefic ? 'supportive' : 'challenging'} aspect)`).join(', ')
         : 'no special planetary aspect is recorded';
       const karakas = KARAKA_BY_DIMENSION[d.id] ?? [];
+      const karakaPlanets = karakas
+        .map((id) => planets.find((planet) => planet.id === id))
+        .filter((planet): planet is (typeof planets)[number] => Boolean(planet));
+      const karakaTextHi = karakaPlanets.length
+        ? karakaPlanets.map((planet) => `${HINDI_PLANETS[planet.id] || planet.id} भाव ${planet.rasiHouseNumber ?? planet.houseNumber} में (${DIGNITY_HI_MAP[planet.dignity || 'Neutral'] || planet.dignity || 'अज्ञात बल'} स्थिति)`).join('; ')
+        : 'इस विषय के कारक ग्रहों की स्थिति उपलब्ध डेटा में दर्ज नहीं है';
+      const karakaTextEn = karakaPlanets.length
+        ? karakaPlanets.map((planet) => `${planet.id} in House ${planet.rasiHouseNumber ?? planet.houseNumber} (${planet.dignity || 'unknown'} dignity)`).join('; ')
+        : 'the relevant natural significator placements are unavailable';
       const relevantPlanets = new Set<string>([
         lord.lord,
         ...occupants.map((planet) => planet.id),
@@ -557,13 +581,68 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       }
       const verdictHi = `इस विषय का मुख्य आधार ${lord.lordHi} हैं। वे ${lord.placedHouse}वें भाव में ${lord.dignityHi} स्थिति में हैं। ${occupantTextHi}। भाव के ${bindus} सर्वाष्टकवर्ग बिंदु और ${aspectTextHi} को साथ पढ़ने पर ${toneHi}। इसे निश्चित घटना या प्रतिशत संभावना न समझें।`;
       const verdictEn = `The main house-lord indicator is ${lord.lord} in House ${lord.placedHouse} with ${lord.dignity} dignity. The house has ${occupantTextEn}; its Sarvashtakavarga score is ${bindus}, with ${aspectTextEn}. Overall, ${toneEn}. This is not a probability or a guaranteed event.`;
-      const analysisHi = `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${lord.lordHi} की स्थिति, भाव में स्थित ग्रह, ${bindus} सर्वाष्टकवर्ग बिंदु, दृष्टियां और संबंधित दशा को एक साथ देखकर यह निष्कर्ष बनाया गया है।`;
-      const analysisEn = `${d.detailedAnalysisEn}\n\nChart-specific synthesis: this reading combines the house lord's placement, house occupants, ${bindus} Sarvashtakavarga bindus, aspects and the related dasha period.`;
+      const chartBasisHi = `कुंडली में दर्ज आधार: ${lord.lordHi} भाव ${lord.placedHouse} में (${lord.dignityHi}); भाव में स्थित ग्रह: ${occupantTextHi}; सर्वाष्टकवर्ग: ${bindus} बिंदु; दृष्टि: ${aspectTextHi}; प्राकृतिक कारक ग्रह: ${karakaTextHi}।`;
+      const chartBasisEn = `Recorded chart evidence: ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}.`;
+      const safetyOverrides: Record<number, { verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
+        14: {
+          verdictHi: 'चतुर्थ भाव, चंद्र और मातृ-संबंधित पारंपरिक संकेत परिवार, घरेलू वातावरण और देखभाल की थीम पर विचार करने में सहायक हो सकते हैं। इनसे माता की आयु, स्वास्थ्य या जीवनकाल का अनुमान नहीं लगाया जा सकता।',
+          verdictEn: 'The fourth house, Moon and traditional maternal indicators may be discussed in relation to family, home and caregiving themes. They cannot establish a mother’s health, lifespan or longevity.',
+          analysisHi: 'यह ज्योतिषीय विवेचन माता की आयु या स्वास्थ्य का आकलन नहीं है। वास्तविक स्वास्थ्य-संबंधी प्रश्नों के लिए चिकित्सकीय जानकारी और योग्य चिकित्सक की सलाह ही उपयुक्त आधार हैं।',
+          analysisEn: 'This is not an assessment of a mother’s health or lifespan. Real health questions should be addressed using medical information and qualified clinical advice.',
+        },
+        22: {
+          verdictHi: 'षष्ठ भाव के पारंपरिक संकेत दिनचर्या, सेवा, काम के दबाव और कठिनाइयों से निपटने की शैली पर विचार दे सकते हैं। इनसे रोग, अंग-विशेष की कमजोरी, प्रतिरोधक क्षमता या उपचार-परिणाम का निदान नहीं किया जा सकता।',
+          verdictEn: 'Traditional sixth-house symbolism may prompt reflection on routines, service, workload and ways of handling difficulties. It cannot diagnose disease, organ weakness, immunity or treatment outcomes.',
+          analysisHi: 'ग्रह-स्थिति किसी बीमारी या शारीरिक दुर्बलता का प्रमाण नहीं है। लक्षणों, जांच और उपचार के लिए योग्य चिकित्सक से संपर्क करें; ज्योतिष को चिकित्सा का विकल्प न मानें।',
+          analysisEn: 'Planetary placements are not evidence of disease or physical weakness. Consult a qualified clinician for symptoms, tests and treatment; astrology is not a substitute for medical care.',
+        },
+        24: {
+          verdictHi: 'षष्ठ भाव प्रतिस्पर्धा, विवाद और प्रक्रिया-संबंधी चुनौतियों का पारंपरिक संकेतक है। इससे किसी विरोधी की पहचान, षड्यंत्र, मुकदमे का परिणाम या निश्चित विजय घोषित नहीं की जा सकती।',
+          verdictEn: 'The sixth house is traditionally associated with competition, disputes and procedural challenges. It cannot identify an enemy, establish a conspiracy, or guarantee a legal outcome or victory.',
+          analysisHi: 'कानूनी विवाद में दस्तावेज, समय-सीमा, साक्ष्य और योग्य अधिवक्ता की सलाह निर्णायक व्यावहारिक आधार हैं। ज्योतिषीय संकेतों को कानूनी रणनीति या परिणाम का विकल्प न बनाएं।',
+          analysisEn: 'In legal matters, documents, deadlines, evidence and advice from a qualified lawyer are the practical basis for decisions. Astrological symbolism cannot replace legal strategy or predict a court outcome.',
+        },
+        26: {
+          verdictHi: 'सप्तम भाव, सप्तमेश और शुक्र विवाह-विषयक पारंपरिक अध्ययन के संकेतक हैं। उपलब्ध गणना में संबंधित दशा-अवधि को केवल संभावित सक्रियता के रूप में पढ़ें; इससे विवाह की निश्चित तारीख या आयु तय नहीं होती।',
+          verdictEn: 'The seventh house, its ruler and Venus are traditional marriage indicators. The related dasha period is only a possible activation window in this calculation; it does not determine a certain marriage date or age.',
+          analysisHi: 'विवाह का निर्णय व्यक्तिगत इच्छा, सहमति, संबंध की वास्तविक स्थिति और जीवन-परिस्थितियों पर निर्भर करता है। ज्योतिषीय समय-संकेत को निश्चित घटना न समझें।',
+          analysisEn: 'Marriage decisions depend on personal choice, consent, the actual relationship and life circumstances. Do not treat an astrological timing indicator as a certain event.',
+        },
+        31: {
+          verdictHi: 'अष्टम भाव, लग्नेश और शनि को परंपरागत रूप से परिवर्तन, धैर्य और दीर्घकालीन जिम्मेदारियों के संदर्भ में देखा जाता है। इनसे आयु-खंड, मृत्यु-समय, मृत्यु-कारण या जीवनकाल का विश्वसनीय अनुमान नहीं लगाया जा सकता।',
+          verdictEn: 'The eighth house, ascendant ruler and Saturn are traditionally discussed in relation to change, resilience and long-term responsibilities. They cannot reliably estimate lifespan, age at death, timing or cause of death.',
+          analysisHi: 'इस फलादेश में कोई आयु-सीमा या मृत्यु-संबंधी निष्कर्ष नहीं दिया जाता। स्वास्थ्य और जीवन-योजना के निर्णय वास्तविक परिस्थितियों, प्रमाण और योग्य विशेषज्ञों की सलाह पर आधारित होने चाहिए।',
+          analysisEn: 'This reading makes no lifespan or death-related estimate. Health and life-planning decisions should be based on real circumstances, evidence and qualified professional advice.',
+        },
+        39: {
+          verdictHi: 'दशम भाव और दशमेश कार्य, जिम्मेदारी, पेशेवर भूमिका और सार्वजनिक योगदान के पारंपरिक संकेतक हैं। उपलब्ध D1 आधार अकेले यह तय नहीं करता कि नौकरी या व्यवसाय में से कौन-सा मार्ग निश्चित रूप से सफल होगा।',
+          verdictEn: 'The tenth house and its ruler are traditional indicators of work, responsibility, professional role and public contribution. The available D1 evidence alone cannot determine whether employment or business will certainly succeed.',
+          analysisHi: 'करियर के निर्णय कौशल, अनुभव, अवसर, आर्थिक स्थिति, रुचि और वास्तविक कार्य-बाजार को देखकर लें। इस रिपोर्ट में नौकरी बनाम व्यवसाय का कोई निश्चित अनुपात या सांख्यिकीय संभावना नहीं दी जाती।',
+          analysisEn: 'Career decisions should consider skills, experience, opportunities, finances, preferences and the actual labor market. This report does not assign a fixed employment-versus-business split or statistical probability.',
+        },
+        48: {
+          verdictHi: 'द्वादश भाव दूरस्थ स्थान, खर्च, विश्राम और विदेश-संबंधी विषयों का पारंपरिक संकेतक है। यह अकेले विदेश यात्रा, स्थायी प्रवास, वीजा या विदेशी आय की गारंटी नहीं देता।',
+          verdictEn: 'The twelfth house is traditionally associated with distant places, expenditure, retreat and foreign-related themes. By itself it does not guarantee travel, permanent relocation, a visa or overseas income.',
+          analysisHi: 'विदेश जाने या बसने की वास्तविक संभावना योग्यता, वीजा नियम, रोजगार, वित्त और व्यक्तिगत विकल्पों पर निर्भर करती है। ज्योतिषीय संकेत को निश्चित प्रवास न समझें।',
+          analysisEn: 'Actual prospects for travel or relocation depend on eligibility, visa rules, employment, finances and personal choices. Do not interpret astrological symbolism as a guaranteed move.',
+        },
+        51: {
+          verdictHi: 'द्वादश भाव और केतु को पारंपरिक रूप से एकांत, ध्यान, त्याग और आध्यात्मिक अभ्यास से जोड़ा जाता है। मोक्ष या समाधि जैसी आध्यात्मिक उपलब्धि की गारंटी कुंडली से नहीं दी जा सकती।',
+          verdictEn: 'The twelfth house and Ketu are traditionally associated with solitude, meditation, renunciation and spiritual practice. A chart cannot guarantee moksha or samadhi.',
+          analysisHi: 'आध्यात्मिक प्रगति व्यक्तिगत साधना, नैतिक आचरण, अनुभव और परंपरा से जुड़ी है। इस फलादेश को प्रतीकात्मक चिंतन समझें, किसी आध्यात्मिक उपलब्धि का निश्चित दावा नहीं।',
+          analysisEn: 'Spiritual development involves personal practice, ethical conduct, experience and tradition. Treat this reading as symbolic reflection, not a guaranteed spiritual attainment.',
+        },
+      };
+      const safety = safetyOverrides[d.id];
+      const analysisHi = safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`;
+      const analysisEn = safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`;
       return {
         ...d,
         id: d.id,
-        verdictHi,
-        verdictEn,
+        astroBasisHi: chartBasisHi,
+        astroBasisEn: chartBasisEn,
+        verdictHi: safety?.verdictHi ?? verdictHi,
+        verdictEn: safety?.verdictEn ?? verdictEn,
         detailedAnalysisHi: analysisHi,
         detailedAnalysisEn: analysisEn,
         auspiciousness,
