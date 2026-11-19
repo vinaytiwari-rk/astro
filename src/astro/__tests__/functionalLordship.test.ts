@@ -17,7 +17,7 @@ describe('Ascendant-specific functional house lordship', () => {
     expect(mars.noteEn).toContain('not a standalone benefic/malefic label');
   });
 
-  it('does not assign classical house ownership to outer planets by type', () => {
+  it('records both owned houses for a planet with dual lordship', () => {
     const saturn = getFunctionalLordship('Saturn', 3);
     expect(saturn.ownedHouses).toEqual([7, 8]);
   });
