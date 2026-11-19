@@ -51,6 +51,8 @@ describe('Planet-wise prediction timing integrity', () => {
     const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = computeDeepGochar(chart, '2026-11-19');
     expect(report.items).toHaveLength(9);
+    expect(report.overallSummary).toMatch(/does not guarantee an event|no Double Transit conclusion is drawn/i);
+    expect(report.overallSummary).not.toMatch(/priming these life areas for concrete events|encouraging gradual preparation/i);
     for (const item of report.items) {
       const transitPosition = report.transitChart.planets.find((planet) => planet.id === item.planet);
       expect(transitPosition).toBeDefined();
