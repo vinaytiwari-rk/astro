@@ -4528,8 +4528,6 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   }
 
   // 14. Additional source-defined yogas from BPHS Chapter 36.
-  const beneficBase = chart.planets.filter((p) => ['Jupiter', 'Venus'].includes(p.id));
-  const maleficBase = chart.planets.filter((p) => ['Sun', 'Mars', 'Saturn'].includes(p.id));
   const inHouse = (p: BodyPosition, h: number) => houseBetween(ascSign, p.signIndex) === h;
   const ascBenefics = chart.planets.filter((p) => inHouse(p, 1) && ['Jupiter', 'Venus'].includes(p.id));
   const ascMalefics = chart.planets.filter((p) => inHouse(p, 1) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
@@ -4578,7 +4576,7 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   const mercTrineMoon = [5, 9].includes(houseBetween(moon.signIndex, mercury.signIndex));
   const marsEleventh = houseBetween(ascSign, mars.signIndex) === 11;
   if (saradaFirst || ((jupTrineMoon || mercTrineMoon) && marsEleventh)) {
-    const ps = saradaFirst ? [sun, mercury, pL10!].filter(Boolean) : [jupTrineMoon ? jupiter : mercury, mars, moon];
+    const ps: BodyPosition[] = saradaFirst ? [sun, mercury, pL10!] : [jupTrineMoon ? jupiter : mercury, mars, moon];
     addYoga(337, 'Strong', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
   }
 
