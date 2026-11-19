@@ -1,6 +1,7 @@
 import * as Astronomy from 'astronomy-engine';
 import type { ChartData, DashaPeriod, PlanetId, SevenPlanetId } from '../types';
 import { getFunctionalLordship } from './functionalLordship';
+import { findActiveDashaPath } from '../dasha';
 import { NAKSHATRAS } from '../constants';
 import {
   buildBaseBodyPosition,
@@ -956,12 +957,15 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const activePlanetPeriods = planetPeriods
       .filter((period) => period.startMs <= atMs && atMs < period.endMs)
       .sort((a, b) => b.level - a.level);
+    const activeDashaPath = findActiveDashaPath(chart.vimshottari ?? [], atMs);
+    const activeDashaSequenceEn = activeDashaPath.map((period) => period.lord + ' ' + dashaLevelName(period.level, false)).join(' → ');
+    const activeDashaSequenceHi = activeDashaPath.map((period) => period.lord + ' ' + dashaLevelName(period.level, true)).join(' → ');
     const nextPlanetPeriod = planetPeriods
       .filter((period) => period.startMs > atMs)
       .sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
     if (activePlanetPeriods.length) {
-      timingEn = 'This planet’s ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, false) + ' is active until ' + dashaDate(period.endMs, false)).join('; ') + '. Dasha activation is not a guaranteed event.';
-      timingHi = 'इस ग्रह की ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, true) + ' ' + dashaDate(period.endMs, true) + ' तक सक्रिय है').join('; ') + '। दशा सक्रियता किसी घटना की गारंटी नहीं है।';
+      timingEn = 'Current combined Vimshottari sequence: ' + (activeDashaSequenceEn || 'active period unavailable') + '. This planet is active at ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, false) + ' until ' + dashaDate(period.endMs, false)).join('; ') + '. Dasha activation is not a guaranteed event.';
+      timingHi = 'वर्तमान संयुक्त विंशोत्तरी क्रम: ' + (activeDashaSequenceHi || 'सक्रिय अवधि उपलब्ध नहीं') + '। यह ग्रह ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, true) + ' ' + dashaDate(period.endMs, true) + ' तक सक्रिय है').join('; ') + '। दशा सक्रियता किसी घटना की गारंटी नहीं है।';
     } else if (nextPlanetPeriod) {
       timingEn = 'The next supplied period for this planet is ' + dashaLevelName(nextPlanetPeriod.level, false) + ', beginning ' + dashaDate(nextPlanetPeriod.startMs, false) + '. This is an activation window, not a promised event.';
       timingHi = 'इस ग्रह की अगली उपलब्ध अवधि ' + dashaLevelName(nextPlanetPeriod.level, true) + ' ' + dashaDate(nextPlanetPeriod.startMs, true) + ' से शुरू होगी। यह सक्रियता-संकेत है, निश्चित घटना-समय नहीं।';
