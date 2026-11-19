@@ -28,7 +28,7 @@ describe('BPHS Chapter 35 Nabhasa yoga catalogue and detection', () => {
     const detected = detectClassicalYogas(makeChart([0, 3, 6, 9, 0, 3, 6]));
     const rajju = detected.find((y) => y.id === 301);
     expect(rajju).toBeTruthy();
-    expect(rajju?.source).toContain('Brihat Parashara Hora Shastra, Ch. 35–36');
+    expect(rajju?.source).toContain('Brihat Parashara Hora Shastra, Chapter 35');
     expect(rajju?.resultHi).toContain('Rajju Yoga');
     expect(rajju?.bhangaStatus).toBeUndefined();
     expect(rajju?.bhangaReasonHi).toBeUndefined();
