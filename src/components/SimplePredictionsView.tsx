@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { ChartData } from '../astro/types';
 import { computeHouseWisePredictions } from '../astro/predictions/houseWise';
 import { useLanguage } from '../i18n/LanguageContext';
