@@ -101,7 +101,7 @@ describe('Chart-specific General Prediction synthesis', () => {
       ...chart,
       panchang: {
         ...chart.panchang!,
-        vara: { ...chart.panchang!.vara!, lord: 'Jupiter' },
+        vara: { ...chart.panchang!.vara!, lord: 'Jupiter' as const },
         tithi: { ...chart.panchang!.tithi!, number: 15, paksha: 'Shukla' },
       },
     };
