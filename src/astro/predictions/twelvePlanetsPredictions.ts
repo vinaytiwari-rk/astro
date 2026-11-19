@@ -3,7 +3,7 @@ import type { ChartData, DashaPeriod, PlanetId, SevenPlanetId } from '../types';
 import { getFunctionalLordship } from './functionalLordship';
 import { findActiveDashaPath } from '../dasha';
 import { computeDeepGochar } from './gocharDeep';
-import { NAKSHATRAS } from '../constants';
+import { NAKSHATRAS, SIGNS } from '../constants';
 import {
   buildBaseBodyPosition,
   getTropicalPosition,
@@ -243,10 +243,15 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const aspecting: PlanetId[] = [];
     for (const other of validPlanets) {
       if (other.id === p.id) continue;
+      // Parashari graha drishti is limited here to the nine Vedic grahas.
+      // Modern outer planets remain supplementary placements and are not
+      // assigned classical 7th-house aspects by this engine.
+      if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(other.id)) continue;
+      if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(p.id)) continue;
       const dist = (p.houseNumber - other.houseNumber + 12) % 12;
-      // 7th house mutual aspect for all
+      // 7th house aspect for the nine Vedic grahas
       if (dist === 6) aspecting.push(other.id);
-      // Special aspects
+      // Special Parashari aspects
       if (other.id === 'Mars' && (dist === 3 || dist === 7)) aspecting.push(other.id); // 4th, 8th
       if (other.id === 'Jupiter' && (dist === 4 || dist === 8)) aspecting.push(other.id); // 5th, 9th
       if (other.id === 'Saturn' && (dist === 2 || dist === 9)) aspecting.push(other.id); // 3rd, 10th
@@ -1005,6 +1010,10 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const dignityChallenge = ['Debilitated', 'Great Enemy', 'Enemy'].includes(p.dignity);
     const shadbalaRow = chart.shadbala?.find((row) => row.planet === p.id);
     const d9Placement = chart.divisionalCharts?.D9?.placements.find((placement) => placement.id === p.id);
+    const dispositorId = SIGNS[p.signIndex]?.lord;
+    const dispositor = chart.planets.find((placement) => placement.id === dispositorId);
+    const nakshatraLord = chart.planets.find((placement) => placement.id === p.nakshatraLord);
+
     const beneficInfluences = [...new Set([
       ...aspecting.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
       ...conjoined.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
@@ -1025,6 +1034,28 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     if (p.isVargottama) {
       positiveEventsEn.push('The planet is Vargottama (same sign in D1 and D9), adding a consistency factor.');
       positiveEventsHi.push('ग्रह वर्गोत्तम है (D1 और D9 में समान राशि), जो स्थिति में निरंतरता का संकेत है।');
+    }
+    if (dispositor) {
+      const noteEn = 'Sign dispositor ' + dispositor.id + ' is placed in House ' + dispositor.rasiHouseNumber + ' (' + dispositor.signName + ', ' + dispositor.dignity + ').';
+      const noteHi = 'राशि स्वामी ' + trPlanet(dispositor.id, 'hi') + ' भाव ' + dispositor.rasiHouseNumber + ' में ' + trSign(dispositor.signName, 'hi') + ' राशि में (' + trTerm(dispositor.dignity, 'hi') + ') स्थित है।';
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(dispositor.dignity)) {
+        positiveEventsEn.push(noteEn);
+        positiveEventsHi.push(noteHi);
+      } else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(dispositor.dignity)) {
+        negativeEventsEn.push(noteEn);
+        negativeEventsHi.push(noteHi);
+      }
+    }
+    if (nakshatraLord) {
+      const noteEn = 'Nakshatra dispositor ' + nakshatraLord.id + ' is placed in House ' + nakshatraLord.rasiHouseNumber + ' (' + nakshatraLord.signName + ', ' + nakshatraLord.dignity + ').';
+      const noteHi = 'नक्षत्र स्वामी ' + trPlanet(nakshatraLord.id, 'hi') + ' भाव ' + nakshatraLord.rasiHouseNumber + ' में ' + trSign(nakshatraLord.signName, 'hi') + ' राशि में (' + trTerm(nakshatraLord.dignity, 'hi') + ') स्थित है।';
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(nakshatraLord.dignity)) {
+        positiveEventsEn.push(noteEn);
+        positiveEventsHi.push(noteHi);
+      } else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(nakshatraLord.dignity)) {
+        negativeEventsEn.push(noteEn);
+        negativeEventsHi.push(noteHi);
+      }
     }
     if (d9Placement && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(d9Placement.dignity)) {
       positiveEventsEn.push('D9 placement is ' + d9Placement.dignity + ' in Varga House ' + d9Placement.houseFromVargaLagna + '.');
@@ -1075,7 +1106,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const houseTheme = HOUSE_THEMES[hNum - 1];
 
     const placementSummaryEn = `${PLANET_NAMES_EN[p.id]} is placed in House ${hNum} (${signNameEn} at ${p.dms}), occupying ${p.nakshatraName} Nakshatra (Pada ${p.pada}, ruled by ${p.nakshatraLord}). Dignity: ${dignTxtEn}.${p.isRetrograde ? ' (Retrograde).' : ''}${p.isCombust ? ' (Combust).' : ''} Affects ${houseTheme.en}.${owned.length ? ` Rules House(s) ${owned.join(' & ')}.` : ''}${conjoined.length ? ` Conjoined with: ${conjoined.join(', ')}.` : ''}${aspecting.length ? ` Aspected by: ${aspecting.join(', ')}.` : ''}`;
-    const placementSummaryHi = `${PLANET_NAMES_HI[p.id]} कुंडली के ${hNum}वें भाव (${signNameHi} राशि, ${p.dms}) में स्थित है, और ${p.nakshatraName} नक्षत्र के चरण ${p.pada} (स्वामी: ${p.nakshatraLord}) में गोचरस्थ है। ग्रह अवस्था: ${dignTxtHi}।${p.isRetrograde ? ' (वक्री)' : ''}${p.isCombust ? ' (अस्त)' : ''} मुख्य प्रभाव क्षेत्र: ${houseTheme.hi}।${owned.length ? ` स्वामित्व: भाव ${owned.join(' व ')}।` : ''}${conjoined.length ? ` युति: ${conjoined.map(x => trPlanet(x, 'hi')).join(', ')} के साथ।` : ''}${aspecting.length ? ` दृष्टि: ${aspecting.map(x => trPlanet(x, 'hi')).join(', ')} द्वारा।` : ''}`;
+    const placementSummaryHi = `${PLANET_NAMES_HI[p.id]} कुंडली के ${hNum}वें भाव (${signNameHi} राशि, ${p.dms}) में स्थित है, और ${p.nakshatraName} नक्षत्र के चरण ${p.pada} (स्वामी: ${p.nakshatraLord}) में स्थित है। ग्रह अवस्था: ${dignTxtHi}।${p.isRetrograde ? ' (वक्री)' : ''}${p.isCombust ? ' (अस्त)' : ''} मुख्य प्रभाव क्षेत्र: ${houseTheme.hi}।${owned.length ? ` स्वामित्व: भाव ${owned.join(' व ')}।` : ''}${conjoined.length ? ` युति: ${conjoined.map(x => trPlanet(x, 'hi')).join(', ')} के साथ।` : ''}${aspecting.length ? ` दृष्टि: ${aspecting.map(x => trPlanet(x, 'hi')).join(', ')} द्वारा।` : ''}`;
 
     results.push({
       id: p.id,
