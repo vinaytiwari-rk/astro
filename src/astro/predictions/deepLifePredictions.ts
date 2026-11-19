@@ -37,6 +37,7 @@ const DOMAINS: DomainConfig[] = [
   { id: 'spirituality', titleEn: 'Dharma, Learning & Spirituality', titleHi: 'धर्म, अध्ययन एवं आध्यात्म', icon: 'sparkles', houses: [9, 12, 5, 8], karakas: ['Jupiter', 'Ketu'], varga: 'D20', adviceEn: 'Develop a consistent study or contemplative practice that fits your beliefs and circumstances; no spiritual outcome is guaranteed by a placement.', adviceHi: 'अपनी मान्यताओं और परिस्थितियों के अनुरूप अध्ययन या साधना की नियमितता विकसित करें; कोई ग्रह-स्थिति आध्यात्मिक उपलब्धि की गारंटी नहीं देती।' },
 ];
 const CLASSICAL_PLANETS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
+const CLASSICAL_GRAHAS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
 function functionalLordshipEvidence(chart: ChartData, planetId: string): { en: string; hi: string; adjustment: number } | null {
   if (!CLASSICAL_PLANETS.has(planetId)) return null;
   const lordship = getFunctionalLordship(planetId as SevenPlanetId, chart.ascendant.signIndex);
@@ -74,7 +75,7 @@ function planetHouse(chart: ChartData, p: { signIndex: number }): number { retur
 function aspectsHouse(chart: ChartData, target: number): string[] {
   const found: string[] = [];
   for (const p of chart.planets) {
-    if (p.id === 'Asc') continue;
+    if (!CLASSICAL_GRAHAS.has(String(p.id))) continue;
     const from = planetHouse(chart, p);
     const offsets = p.id === 'Mars' ? [3, 6, 7] : p.id === 'Jupiter' ? [4, 6, 8] : p.id === 'Saturn' ? [2, 6, 9] : [6];
     if (offsets.some((n) => ((from - 1 + n) % 12) + 1 === target)) found.push(String(p.id));
@@ -128,11 +129,27 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
       if (sav <= 24) { watchoutsEn.push(house + 'th-house sign has ' + sav + ' Sarvashtakavarga bindus, a lower-support indicator.'); watchoutsHi.push(house + 'वें भाव की राशि में ' + sav + ' सर्वाष्टकवर्ग बिंदु अपेक्षाकृत कम समर्थन दर्शाते हैं।'); }
     }
     if (occupants.length) {
-      count++;
       const occupantEvidence = occupants.map((p) => {
         related.add(String(p.id));
+        // Each occupant contributes one dignity observation and, where applicable,
+        // one modest functional-lordship modifier. Keep the denominator at the
+        // same evidence grain so crowded houses cannot distort the balance.
+        const dignity = dignityPoints(p.dignity);
+        local += dignity;
+        count++;
+        if (dignity > 0) {
+          strengthsEn.push(p.id + ' occupies house ' + house + ' with ' + p.dignity + ' dignity.');
+          strengthsHi.push(p.id + ' भाव ' + house + ' में ' + p.dignity + ' गरिमा के साथ स्थित है।');
+        } else if (dignity < 0) {
+          watchoutsEn.push(p.id + ' occupies house ' + house + ' with ' + p.dignity + ' dignity; weigh this with its strength and relationships.');
+          watchoutsHi.push(p.id + ' भाव ' + house + ' में ' + p.dignity + ' स्थिति में है; इसे ग्रहबल और संबंधों के साथ तौलें।');
+        }
         const role = functionalLordshipEvidence(chart, String(p.id));
-        if (role) { local += role.adjustment; return role.en; }
+        if (role) {
+          local += role.adjustment;
+          count++;
+          return role.en;
+        }
         return String(p.id) + ' has no assigned classical house lordship in this synthesis';
       });
       en.push('occupants ' + occupants.map((p) => p.id + ' (' + p.dignity + ')').join(', '));
@@ -141,11 +158,14 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
       hi.push('स्थित ग्रहों का कार्यात्मक स्वामित्व: ' + occupants.map((p) => functionalLordshipEvidence(chart, String(p.id))?.hi ?? String(p.id) + ' का पारंपरिक भाव-स्वामित्व नहीं').join('; '));
     } else { en.push('no classical graha occupant'); hi.push('कोई पारंपरिक ग्रह स्थित नहीं'); }
     if (aspects.length) {
-      count++;
       const aspectEvidence = aspects.map((id) => {
         related.add(id);
         const role = functionalLordshipEvidence(chart, id);
-        if (role) { local += role.adjustment; return role.en; }
+        if (role) {
+          local += role.adjustment;
+          count++;
+          return role.en;
+        }
         return id + ' has no assigned classical house lordship in this synthesis';
       });
       en.push('graha aspects ' + aspects.join(', '));
