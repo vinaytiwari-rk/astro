@@ -4329,16 +4329,6 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
         `${label} सात शास्त्रीय ग्रहों के जन्मकालीन स्थान-विन्यास से बनता है।`
       );
     };
-    const addNabhasa = (id: number, label: string, houses = Array.from(occupiedHouses)) => {
-      addYoga(
-        id,
-        'Present',
-        seven.map((p) => p.id),
-        houses,
-        `${label} is formed by the seven classical planets' natal placement pattern.`,
-        `${label} सात शास्त्रीय ग्रहों के जन्मकालीन स्थान-विन्यास से बनता है।`
-      );
-    };
     let nonSankhyaFormed = false;
     const mark = (id: number, label: string, houses?: number[]) => {
       addNabhasa(id, label, houses);
