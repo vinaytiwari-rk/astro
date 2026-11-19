@@ -1,6 +1,7 @@
 import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS } from '../constants';
 import { getFunctionalLordship } from './functionalLordship';
+import { findActiveDashaPath } from '../dasha';
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -39,9 +40,16 @@ function functionalLordshipEvidence(chart: ChartData, planetId: string): { en: s
   if (!CLASSICAL_PLANETS.has(planetId)) return null;
   const lordship = getFunctionalLordship(planetId as SevenPlanetId, chart.ascendant.signIndex);
   const houses = lordship.ownedHouses;
-  const ownsTrikona = houses.some((house) => [1, 5, 9].includes(house));
-  const ownsDusthana = houses.some((house) => [6, 8, 12].includes(house));
-  const adjustment = ownsTrikona === ownsDusthana ? 0 : ownsTrikona ? 0.5 : -0.5;
+  // Keep the influence deliberately modest: ownership is one layer, never a verdict.
+  const adjustment = lordship.yogakarakaProfile
+    ? 0.75
+    : lordship.kendradhipatiCaution
+      ? -0.25
+      : lordship.ownsDusthana && !lordship.ownsTrikona
+        ? -0.5
+        : lordship.ownsTrikona && !lordship.ownsDusthana
+          ? 0.5
+          : 0;
   return {
     en: planetId + ' owns houses ' + houses.join(', ') + ' (' + lordship.rolesEn.join('; ') + ')',
     hi: planetId + ' भाव ' + houses.join(', ') + ' का स्वामी है (' + lordship.rolesHi.join('; ') + ')',
@@ -171,15 +179,22 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
 
   }
   const periods = flattenDasha(chart.vimshottari ?? []);
-  const active = periods.filter((p) => related.has(p.lord) && p.startMs <= atMs && atMs < p.endMs).sort((a, b) => b.level - a.level);
+  const activePath = findActiveDashaPath(chart.vimshottari ?? [], atMs);
+  const activeIsRelevant = activePath.some((period) => related.has(period.lord));
   const next = periods.filter((p) => related.has(p.lord) && p.startMs > atMs).sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
   const pName = (n: number) => n === 1 ? 'Mahadasha' : n === 2 ? 'Antardasha' : n === 3 ? 'Pratyantardasha' : 'sub-period';
   const pNameHi = (n: number) => n === 1 ? 'महादशा' : n === 2 ? 'अंतर्दशा' : n === 3 ? 'प्रत्यंतर दशा' : 'उप-दशा';
-  const timingEn = active.length ? 'Related period active: ' + active.map((p) => p.lord + ' ' + pName(p.level) + ' until ' + dateLabel(p.endMs, false)).join('; ') + '. Traditional activation indicator only, not an event guarantee.'
-    : next ? 'Next related period: ' + next.lord + ' ' + pName(next.level) + ' from ' + dateLabel(next.startMs, false) + '. This is not a promised event date.'
+  const activeSequenceEn = activePath.map((p) => p.lord + ' ' + pName(p.level)).join(' → ');
+  const activeSequenceHi = activePath.map((p) => p.lord + ' ' + pNameHi(p.level)).join(' → ');
+  const relevantActive = activePath.filter((p) => related.has(p.lord));
+  const activeEnd = activePath[activePath.length - 1]?.endMs;
+  const timingEn = activeIsRelevant
+    ? 'Current combined Vimshottari sequence: ' + activeSequenceEn + '. Relevant lord(s) for this life area: ' + relevantActive.map((p) => p.lord).join(', ') + '. Current sub-period ends ' + dateLabel(activeEnd ?? atMs, false) + '. This is a traditional activation indicator, not an event guarantee.'
+    : next ? 'Next related Vimshottari period: ' + next.lord + ' ' + pName(next.level) + ' from ' + dateLabel(next.startMs, false) + '. This is not a promised event date.'
     : 'No related active or upcoming Vimshottari period could be established from the supplied dasha data; no timing is stated.';
-  const timingHi = active.length ? 'संबंधित दशा सक्रिय है: ' + active.map((p) => p.lord + ' की ' + pNameHi(p.level) + ' ' + dateLabel(p.endMs, true) + ' तक').join('; ') + '। यह सक्रियता-संकेत है, घटना की गारंटी नहीं।'
-    : next ? 'अगली संबंधित अवधि: ' + next.lord + ' की ' + pNameHi(next.level) + ' ' + dateLabel(next.startMs, true) + ' से। यह निश्चित घटना-समय नहीं है।'
+  const timingHi = activeIsRelevant
+    ? 'वर्तमान संयुक्त विंशोत्तरी क्रम: ' + activeSequenceHi + '। इस जीवन-क्षेत्र से संबंधित स्वामी: ' + relevantActive.map((p) => p.lord).join(', ') + '। वर्तमान उप-अवधि ' + dateLabel(activeEnd ?? atMs, true) + ' को समाप्त होगी। यह पारंपरिक सक्रियता-संकेत है, घटना की गारंटी नहीं।'
+    : next ? 'अगली संबंधित विंशोत्तरी अवधि: ' + next.lord + ' की ' + pNameHi(next.level) + ' ' + dateLabel(next.startMs, true) + ' से। यह निश्चित घटना-समय नहीं है।'
     : 'उपलब्ध विंशोत्तरी दशा डेटा में संबंधित अवधि स्थापित नहीं हुई; इसलिए समय-सीमा नहीं दी गई है।';
   const hasSupport = strengthsEn.length > 0, hasCaution = watchoutsEn.length > 0;
   const toneEn = hasSupport && hasCaution ? 'mixed' : hasSupport ? 'more supportive' : hasCaution ? 'more challenging' : 'insufficient';
