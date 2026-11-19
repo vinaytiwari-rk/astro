@@ -87,7 +87,7 @@ export function getFunctionalLordship(planet: SevenPlanetId, ascendantSignIndex:
     ownsTrikona,
     ownsKendra,
     noteEn: rolesEn.length
-      ? 'This is a house-ownership profile, not a final benefic/malefic verdict. Yogakaraka and Kendradhipati flags describe traditional rule patterns only; judge them with dignity, placement, aspects, strength, conjunctions and the running dasha. Maraka ownership alone does not predict illness or death.'
+      ? 'This is a house-ownership profile, not a standalone benefic/malefic label or final verdict. Yogakaraka and Kendradhipati flags describe traditional rule patterns only; judge them with dignity, placement, aspects, strength, conjunctions and the running dasha. Maraka ownership alone does not predict illness or death.'
       : 'No classical house ownership was assigned.',
     noteHi: rolesHi.length
       ? 'यह भाव-स्वामित्व का विवरण है, अंतिम शुभ/अशुभ निर्णय नहीं। योगकारक और केंद्राधिपति संकेत केवल पारंपरिक नियम-पैटर्न बताते हैं; अंतिम विचार राशि-गरिमा, स्थिति, दृष्टि, बल, युति और चल रही दशा से करें। केवल मारक भाव का स्वामित्व बीमारी या मृत्यु की भविष्यवाणी नहीं करता।'
