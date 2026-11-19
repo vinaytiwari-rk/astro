@@ -32,4 +32,25 @@ describe('House-wise evidence synthesis', () => {
       expect(house.synthesisHi).not.toMatch(/स्वतः सिद्ध सफलता|गारंटी देता है/);
     }
   });
+
+  it('produces individualized readings for the same house across different natal charts', () => {
+    const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
+      computeHouseWisePredictions(calculateChart(sample, DEFAULT_SETTINGS), Date.UTC(2026, 10, 19)),
+    );
+    const tenthHouseReadings = reports.map((report) => {
+      const tenth = report.find((house) => house.houseNumber === 10);
+      expect(tenth).toBeDefined();
+      return JSON.stringify({
+        sign: tenth?.signNameEn,
+        lord: tenth?.lordPlanet,
+        lordPlacement: tenth?.lordPlacedHouse,
+        dignity: tenth?.lordDignity,
+        occupants: tenth?.occupants,
+        aspects: tenth?.aspectingPlanets,
+        sav: tenth?.savBindus,
+        synthesis: tenth?.synthesisEn,
+      });
+    });
+    expect(new Set(tenthHouseReadings).size).toBeGreaterThan(1);
+  });
 });
