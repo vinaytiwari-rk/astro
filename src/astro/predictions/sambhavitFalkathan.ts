@@ -486,7 +486,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
   const dims = rawDims
     .filter((d) => MASTER_21_IDS.includes(d.id))
-    .map((d, idx) => {
+    .map((d) => {
       const house = d.houseNumber ?? 1;
       const lord = getHLord(house);
       const occupants = planets.filter((planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === house && planet.id !== 'Asc');
@@ -561,7 +561,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       const analysisEn = `${d.detailedAnalysisEn}\n\nChart-specific synthesis: this reading combines the house lord's placement, house occupants, ${bindus} Sarvashtakavarga bindus, aspects and the related dasha period.`;
       return {
         ...d,
-        id: idx + 1,
+        id: d.id,
         verdictHi,
         verdictEn,
         detailedAnalysisHi: analysisHi,
