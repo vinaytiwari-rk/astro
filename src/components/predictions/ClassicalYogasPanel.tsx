@@ -43,6 +43,7 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
     { id: 'Viparita', labelEn: 'Viparita Raja', labelHi: 'विपरीत राजयोग' },
     { id: 'Arishta', labelEn: 'Arishta / Ashubha', labelHi: 'अरिष्ट / कष्ट योग' },
     { id: 'Special', labelEn: 'Special Classical', labelHi: 'विशिष्ट योग' },
+    { id: 'Nabhasa', labelEn: 'Nabhasa Yogas', labelHi: 'नाभस योग' },
   ];
 
   const qualities: Array<{ id: string; labelEn: string; labelHi: string }> = [
@@ -88,7 +89,7 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
             <p className="muted small-text">
               {isHi
                 ? `आपकी जन्मकुंडली में ${detectedYogas.length} शास्त्रीय योग प्रत्यक्ष रूप से सक्रिय पाए गए हैं।`
-                : `Comprehensive canonical database of 300 classical Vedic yogas with ${detectedYogas.length} actively formed in native's chart.`}
+                : `${CLASSICAL_YOGAS_KB.length} yoga entries in the current library; ${detectedYogas.length} detected in this natal chart.`}
             </p>
           </div>
           <div className="toolbar-group">
@@ -106,7 +107,7 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
               onClick={() => setActiveTab('all')}
             >
               <BookOpen size={13} />{' '}
-              {isHi ? `समस्त 300 योग कोश` : `All 300 Yogas Corpus`}
+              {isHi ? `समस्त योग संग्रह (${CLASSICAL_YOGAS_KB.length})` : `All Yoga Entries (${CLASSICAL_YOGAS_KB.length})`}
             </button>
           </div>
         </div>
