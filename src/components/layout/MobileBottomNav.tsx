@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Compass, FileText, Heart, Home, Menu } from 'lucide-react';
+import { Calendar, FileText, Heart, Home, Menu, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 interface MobileBottomNavProps {
@@ -38,11 +38,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
       <button
         type="button"
-        className={`pro-mob-btn ${currentView === 'kp-horoscope' ? 'is-active' : ''}`}
-        onClick={() => onNavigate('kp-horoscope')}
+        className={`pro-mob-btn ${currentView === 'predictions' ? 'is-active' : ''}`}
+        onClick={() => onNavigate('predictions', 'deep_life')}
       >
-        <Compass size={18} />
-        <span className="pro-mob-label">{isHi ? 'केपी' : 'KP'}</span>
+        <Sparkles size={18} />
+        <span className="pro-mob-label">{isHi ? 'फलादेश' : 'Prediction'}</span>
       </button>
 
       <button
