@@ -256,14 +256,6 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
             <HouseWisePanel houses={report.houseWisePredictions} report={report} />
           )}
 
-          {currentTab === 'planetInNakshatra' && (
-            <PlanetInNakshatraPanel items={report.planetInNakshatras} />
-          )}
-
-          {currentTab === 'planetInSign' && (
-            <PlanetInSignPanel items={report.planetInSigns} />
-          )}
-
           {currentTab === 'bhriguNadi' && (
             <BhriguNadiPanel report={report.bhriguNandiNadi} chart={chart} />
           )}
