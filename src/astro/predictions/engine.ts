@@ -1084,7 +1084,7 @@ export function generatePredictionReport(chart: ChartData, targetDate?: string):
   const remedies = buildRemedies(chart, dashaForecast);
   const planetInSigns = computePlanetInSignPredictions(chart);
   const planetInNakshatras = computePlanetInNakshatraPredictions(chart);
-  const houseWisePredictions = computeHouseWisePredictions(chart, targetAtMs);
+  const houseWisePredictions = computeHouseWisePredictions(chart);
   const degreePredictions = computeDegreePredictions(chart);
   const yutiReport = computeChartYutiReport(chart);
   const lifeEventsLedger = computeLifeEventsAndLedger(chart);

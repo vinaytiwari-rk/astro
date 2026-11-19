@@ -4,7 +4,6 @@ import { angularDiffDeg } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { buildHouseLordReading } from './bhavaKb';
 import { getFunctionalLordship } from './functionalLordship';
-import { computeDeepGochar } from './gocharDeep';
 
 export interface HouseWisePrediction {
   houseNumber: number; // 1..12
@@ -35,6 +34,8 @@ export interface HouseWisePrediction {
   lordReadingHi: string;
   synthesisEn: string;
   synthesisHi: string;
+  predictionEn: string;
+  predictionHi: string;
   source: string;
   // Extended Parashari Hierarchy details (Drishti, Sthan, Rashi, Nakshatra, Yuti, Degree, Avastha, Kartari)
   lordNakshatraName?: string;
@@ -50,8 +51,6 @@ export interface HouseWisePrediction {
   primaryFactorsEn?: string;
   secondarySavHi?: string;
   secondarySavEn?: string;
-  dashaEvidenceHi?: string;
-  dashaEvidenceEn?: string;
 }
 
 const SIGN_HI = [
@@ -100,17 +99,6 @@ function scoreDignity(dig: string): number {
     Neutral: 0, Enemy: -8, 'Great Enemy': -12, Debilitated: -18,
   };
   return m[dig] ?? 0;
-}
-
-function getActiveDashaPeriods(periods: ChartData['vimshottari'], atMs: number): ChartData['vimshottari'] {
-  const active: ChartData['vimshottari'] = [];
-  const visit = (period: ChartData['vimshottari'][number]) => {
-    if (atMs < period.startMs || atMs >= period.endMs) return;
-    active.push(period);
-    period.children?.forEach(visit);
-  };
-  periods.forEach(visit);
-  return active;
 }
 
 // Full Parashari aspects calculation with exact special angles
@@ -167,14 +155,11 @@ function checkCombustion(planetId: SevenPlanetId, planetLon: number, sunLon: num
   return { isCombust: dist <= maxOrb, distDeg: Math.round(dist * 10) / 10 };
 }
 
-export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now()): HouseWisePrediction[] {
-  const transitDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
-  const transitReport = computeDeepGochar(chart, transitDate);
+export function computeHouseWisePredictions(chart: ChartData): HouseWisePrediction[] {
   const byId = new Map(chart.planets.map((p) => [p.id, p]));
   const sunPos = byId.get('Sun')!;
   const ascSign = chart.ascendant.signIndex;
   const chalit = computeBhavaChalitPlacements(chart);
-  const activeDashaPeriods = getActiveDashaPeriods(chart.vimshottari, atMs);
 
   // Precompute Parashari aspects per house with aspect details
   const aspectMap = new Map<number, Array<{ planet: NineGrahaId; type: string }>>();
@@ -203,15 +188,6 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
     const occupants = NINE_GRAHAS.filter((g) => byId.get(g)?.rasiHouseNumber === h);
     const aspectEntries = aspectMap.get(h) ?? [];
     const aspectingPlanets = aspectEntries.map((a) => a.planet);
-    const dashaRelevantPlanets = new Set<NineGrahaId>([lordPlanet, ...occupants, ...aspectingPlanets, meta.karaka]);
-    const relevantDasha = activeDashaPeriods.filter((period) => dashaRelevantPlanets.has(period.lord as NineGrahaId));
-    const dashaEvidenceEn = relevantDasha.length
-      ? `Active Vimshottari period(s) relevant to this house: ${relevantDasha.map((period) => period.lord + ' (level ' + period.level + ')').join(', ')}. This is timing context, not an event guarantee.`
-      : 'No currently active Vimshottari period directly matches this house lord, occupants, aspectors or natural karaka.';
-    const dashaEvidenceHi = relevantDasha.length
-      ? `इस भाव से संबंधित सक्रिय विंशोत्तरी दशा: ${relevantDasha.map((period) => PLANET_HI[period.lord] ?? period.lord).join(', ')}। यह समय-संदर्भ है, घटना की गारंटी नहीं।`
-      : 'वर्तमान सक्रिय विंशोत्तरी दशा में इस भाव के भावेश, स्थित ग्रह, दृष्टा ग्रह या नैसर्गिक कारक का सीधा संबंध नहीं मिला।';
-
     // 1. Lord's Nakshatra & Star Lord
     const lordNakIdx = lordPos.nakshatraIndex ?? Math.floor(lordPos.longitude / (360 / 27));
     const lordNak = NAKSHATRAS[lordNakIdx] ?? NAKSHATRAS[0];
@@ -319,6 +295,16 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
     else if (savBindus <= 22) score -= 5;
 
     const finalScore = Math.max(25, Math.min(96, Math.round(score)));
+    const predictionEn = finalScore >= 70
+      ? `The indications for ${meta.areaEn} are comparatively supportive. Constructive outcomes are possible when the house lord's strengths are used consistently; this is a tendency, not a guarantee.`
+      : finalScore >= 50
+        ? `The indications for ${meta.areaEn} are mixed. Some support is present, but results may depend on timing, circumstances and sustained effort.`
+        : `The indications for ${meta.areaEn} call for patience and careful effort. Avoid assuming quick results; weigh the house lord, occupants and aspects together.`;
+    const predictionHi = finalScore >= 70
+      ? `${meta.areaHi} के विषयों में अपेक्षाकृत अनुकूल संकेत हैं। भावेश की क्षमता का निरंतर उपयोग करने पर रचनात्मक परिणाम मिल सकते हैं; इसे निश्चित गारंटी न मानें।`
+      : finalScore >= 50
+        ? `${meta.areaHi} के विषयों में मिले-जुले संकेत हैं। कुछ सहायक योग हैं, पर परिणाम परिस्थितियों और निरंतर प्रयास पर निर्भर रहेंगे।`
+        : `${meta.areaHi} के विषयों में धैर्य और सावधानीपूर्वक प्रयास अपेक्षित हैं। शीघ्र परिणाम मानकर न चलें; भावेश, स्थित ग्रह और दृष्टियों को साथ तौलें।`;
     const verdictEn =
       finalScore >= 78 ? 'Highly Auspicious & Potent' : finalScore >= 62 ? 'Strong & Supportive' : finalScore >= 46 ? 'Mixed / Demands Effort' : 'Severely Afflicted / Requires Remediation';
     const verdictHi =
@@ -350,20 +336,11 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
     const shadbalaEvidenceEn = lordShadbala ? `Shadbala: ${lordShadbala.ratio.toFixed(2)}× (${lordShadbala.isStrong ? 'above' : 'below'} required strength)` : 'Shadbala unavailable';
     const starLordEvidenceHi = starLordPos ? `नक्षत्र स्वामी ${PLANET_HI[lordStarLord]} भाव ${starLordPos.rasiHouseNumber} में (${DIGNITY_HI[starLordPos.dignity] ?? starLordPos.dignity})` : 'नक्षत्र स्वामी की स्थिति उपलब्ध नहीं';
     const starLordEvidenceEn = starLordPos ? `Star lord ${lordStarLord} in House ${starLordPos.rasiHouseNumber} (${starLordPos.dignity})` : 'Star-lord placement unavailable';
-    const primaryFactorsHi = `1. दशा-संदर्भ: ${dashaEvidenceHi}\\n2. भावेश स्थिति: ${PLANET_HI[lordPlanet]} भाव ${lordPos.rasiHouseNumber} में (${DIGNITY_HI[lordPos.dignity]}), नक्षत्र: ${lordNak.name} (स्वामी ${PLANET_HI[lordStarLord]}), अवस्था: ${lordAvastha.hi}${combustion.isCombust ? ' (अस्त)' : ''}।\n2. नक्षत्र स्वामी: ${starLordEvidenceHi}।\n3. ${d9EvidenceHi}; ${shadbalaEvidenceHi}।\n4. स्थित ग्रह: ${occStrHi}।\n5. दृष्टि प्रभाव: शुभ दृष्टि — ${beneficAspStrHi}; क्रूर दृष्टि — ${maleficAspStrHi}।${kartariHi ? `\n6. कर्तरी प्रभाव: ${kartariHi}` : ''}`;
-    const primaryFactorsEn = `1. Dasha context: ${dashaEvidenceEn}\\n2. House Lord: ${lordPlanet} in House ${lordPos.rasiHouseNumber} (${lordPos.dignity}), Nakshatra ${lordNak.name} (Star Lord ${lordStarLord}), Avastha: ${lordAvastha.en}${combustion.isCombust ? ` (Combust within ${combustion.distDeg}°)` : ''}.\n2. ${starLordEvidenceEn}.\n3. ${d9EvidenceEn}; ${shadbalaEvidenceEn}.\n4. Occupants: ${occStrEn}.\n5. Aspects: Benefic — ${beneficAspStrEn}; Malefic — ${maleficAspStrEn}.${kartariEn ? `\n6. Kartari: ${kartariEn}` : ''}`;
+    const primaryFactorsHi = `1. भावेश स्थिति: ${PLANET_HI[lordPlanet]} भाव ${lordPos.rasiHouseNumber} में (${DIGNITY_HI[lordPos.dignity]}), नक्षत्र: ${lordNak.name} (स्वामी ${PLANET_HI[lordStarLord]}), अवस्था: ${lordAvastha.hi}${combustion.isCombust ? ' (अस्त)' : ''}।\n2. नक्षत्र स्वामी: ${starLordEvidenceHi}।\n3. ${d9EvidenceHi}; ${shadbalaEvidenceHi}।\n4. स्थित ग्रह: ${occStrHi}।\n5. दृष्टि प्रभाव: शुभ दृष्टि — ${beneficAspStrHi}; क्रूर दृष्टि — ${maleficAspStrHi}।${kartariHi ? `\n6. कर्तरी प्रभाव: ${kartariHi}` : ''}`;
+    const primaryFactorsEn = `1. House Lord: ${lordPlanet} in House ${lordPos.rasiHouseNumber} (${lordPos.dignity}), Nakshatra ${lordNak.name} (Star Lord ${lordStarLord}), Avastha: ${lordAvastha.en}${combustion.isCombust ? ` (Combust within ${combustion.distDeg}°)` : ''}.\n2. ${starLordEvidenceEn}.\n3. ${d9EvidenceEn}; ${shadbalaEvidenceEn}.\n4. Occupants: ${occStrEn}.\n5. Aspects: Benefic — ${beneficAspStrEn}; Malefic — ${maleficAspStrEn}.${kartariEn ? `\n6. Kartari: ${kartariEn}` : ''}`;
 
     const secondarySavHi = `अष्टकवर्ग (गौण/सहायक): ${savBindus} बिंदु — यह भाव को सहायक ऊर्जा व संसाधन प्रदान करता है (${savBindus >= 30 ? 'प्रचुर पोषक ऊर्जा' : savBindus >= 25 ? 'संतुलित ऊर्जा' : 'अवरोधक/न्यून ऊर्जा'})।`;
     const secondarySavEn = `Ashtakavarga (Secondary/Corroborative): ${savBindus} bindus — provides background resource support (${savBindus >= 30 ? 'abundant reserve' : savBindus >= 25 ? 'steady resource' : 'low reserve, requiring conscious effort'})`;
-
-    const transitOccupants = transitReport.items.filter((item) => item.houseFromLagna === h);
-    const doubleTransit = transitReport.doubleTransitHouses.filter((item) => item.house === h);
-    const transitSynthesisEn = transitOccupants.length || doubleTransit.length
-      ? `\n\nCurrent gochar evidence (${transitDate}): ${transitOccupants.map((item) => item.planet + ' transits this natal house (H' + item.houseFromMoon + ' from Moon; ' + item.motionLabel.toLowerCase() + ' at ' + item.speedDegPerDay.toFixed(4) + '°/day; ' + item.verdict + ')').join('; ')}${doubleTransit.length ? (transitOccupants.length ? '; ' : '') + 'Jupiter-Saturn double transit also activates this house' : ''}. This is corroborative timing context, not an event guarantee.`
-      : `\n\nCurrent gochar evidence (${transitDate}): no classical graha transit occupancy or Jupiter-Saturn double-transit activation is recorded for this house.`;
-    const transitSynthesisHi = transitOccupants.length || doubleTransit.length
-      ? `\n\nवर्तमान गोचर प्रमाण (${transitDate}): ${transitOccupants.map((item) => item.planet + ' इस जन्म भाव से गोचर कर रहा है (चंद्र से भाव ' + item.houseFromMoon + '; गति ' + (item.motionLabel === 'Retrograde' ? 'वक्री' : item.motionLabel === 'Stationary' ? 'स्थिर' : 'मार्गी') + ' ' + item.speedDegPerDay.toFixed(4) + '° प्रतिदिन; ' + item.verdict + ')').join('; ')}${doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर भी इस भाव को सक्रिय करता है' : ''}। यह सहायक समय-संदर्भ है, घटना की गारंटी नहीं।`
-      : `\n\nवर्तमान गोचर प्रमाण (${transitDate}): इस भाव के लिए कोई नवग्रह गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं है।`;
 
     // Deep Structured Synthesis
     const synthesisHi = `${meta.titleHi}:
@@ -371,7 +348,6 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
 
 प्राथमिक विश्लेषण (भावेश, राशि, नक्षत्र, युति व दृष्टि):
 - ${h}वें भाव के स्वामी ${PLANET_HI[lordPlanet]} कुंडली के ${lordH}वें भाव में ${DIGNITY_HI[lordPos.dignity]} हैं। वे ${lordNak.name} नक्षत्र (स्वामी: ${PLANET_HI[lordStarLord]}) में ${lordAvastha.hi} में विराजमान हैं। ${combustion.isCombust ? `सूर्य के सान्निध्य (${combustion.distDeg}°) के कारण अस्त होने से इस भाव के प्रत्यक्ष परिणामों में देरी व तपस्या का योग बनता है। ` : ''}
-- दशा-संदर्भ: ${dashaEvidenceHi}
 - भाव में स्थित ग्रह: ${occStrHi}।
 - दृष्टि संबंध: ${beneficAspects.length ? `शुभ ग्रहों की दृष्टि (${beneficAspStrHi}) भाव की सुरक्षा करती है। ` : ''}${maleficAspects.length ? `क्रूर ग्रहों की दृष्टि (${maleficAspStrHi}) चुनौतियां व संघर्ष उत्पन्न करती है। ` : ''}
 ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakartari' ? `- ${kartariHi}\n` : ''}
@@ -379,14 +355,13 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 - ${secondarySavHi}
 
 फलादेश-सार (${meta.areaHi}):
-यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.${transitSynthesisHi}`;
+यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.`;
 
     const synthesisEn = `${meta.titleEn}:
 Functional lordship: ${lordPlanet} owns house(s) ${lordship.ownedHouses.join(', ')}; roles: ${lordship.rolesEn.join('; ')}. ${lordship.noteEn}
 
 Primary Parashari Analysis (Lord, Dignity, Star Lord, Aspects & Yuti):
 - Ruled by ${lordPlanet} located in House ${lordH} (${lordPos.dignity}), under ${lordNak.name} Nakshatra (Star Lord: ${lordStarLord}), manifesting in ${lordAvastha.en}. ${combustion.isCombust ? `Combust with Sun within ${combustion.distDeg}°, demanding perseverance for material results. ` : ''}
-- Dasha timing context: ${dashaEvidenceEn}
 - Occupants: ${occStrEn}.
 - Planetary Aspects: Benefic Aspects — ${beneficAspStrEn}; Malefic Aspects — ${maleficAspStrEn}.
 ${kartariYoga === 'Papakartari' ? `- ${kartariEn}\n` : kartariYoga === 'Subhakartari' ? `- ${kartariEn}\n` : ''}
@@ -394,7 +369,7 @@ Secondary Corroborative Capacity:
 - ${secondarySavEn}.
 
 Synthesis (${meta.areaEn}):
-This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.${transitSynthesisEn}`;
+This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.`;
 
     const shiftsInHouse = chalit.shiftedBodies.filter(
       (s) => s.rasiHouse === h || s.chalitHouse === h
@@ -435,6 +410,8 @@ This reading combines the house lord’s placement and dignity, nakshatra/avasth
       lordReadingHi,
       synthesisEn,
       synthesisHi,
+      predictionEn,
+      predictionHi,
       source: 'Brihat Parashara Hora Shastra (Ch. 11–24) · Phaladeepika · Sarvashtakavarga',
       lordNakshatraName: lordNak.name,
       lordPada,
@@ -449,8 +426,6 @@ This reading combines the house lord’s placement and dignity, nakshatra/avasth
       primaryFactorsEn,
       secondarySavHi,
       secondarySavEn,
-      dashaEvidenceHi,
-      dashaEvidenceEn,
     };
   });
 }

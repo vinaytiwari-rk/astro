@@ -204,6 +204,10 @@ export const HouseWisePanel: React.FC<{
                   </span>
                 </div>
 
+                <div className="gochar-banner is-info" style={{ marginTop: 8 }}>
+                  <strong>{isHi ? 'भाव फलादेश: ' : 'House Prediction: '}</strong>
+                  {isHi ? h.predictionHi : h.predictionEn}
+                </div>
                 <p className="domain-summary">{isHi ? h.synthesisHi : h.synthesisEn}</p>
                 <p className="yoga-desc">
                   <strong>{isHi ? 'भावेश फल:' : 'House Lord Placement:'}</strong>{' '}
