@@ -102,7 +102,7 @@ describe('Chart-specific General Prediction synthesis', () => {
       panchang: {
         ...chart.panchang!,
         vara: { ...chart.panchang!.vara!, lord: 'Jupiter' as const },
-        tithi: { ...chart.panchang!.tithi!, number: 15, paksha: 'Shukla' },
+        tithi: { ...chart.panchang!.tithi!, number: 15, paksha: 'Shukla' as const },
       },
     };
     const tailored = computeDeepLifePredictions(thursdayPurnimaChart);
