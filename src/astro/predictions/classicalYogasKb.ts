@@ -763,7 +763,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The 10th lord is in the Kama Thrikona, the lord of Lagna and Jupiter are in association, the Sun being strong is exalted and the Moon occupies the 9th.",
     conditionHi: "The 10th lord is in the Kama Thrikona, the lord of Lagna and Jupiter are in association, the Sun being strong is exalted and the Moon occupies the 9th.",
-    resultEn: "The Gandharva Yoga specifies various traits that exist in a person. The Gandharva Yoga in your chart shows that you will attain unparalleled skills in fine arts and similar subjects. You tend to be strong both mentally as well as physically. Your personality is such that you love all types of pleasures. Your dressing sense is much better than other people and you dress up as if it is the last day of your life. Further, it is believed that you will gain loads of fame and it is also believed that you will live upto 68 years.",
+    resultEn: "Gandharva Yoga is traditionally associated with artistic ability, performance, refinement and appreciation of music or the fine arts. Its expression is strengthened by supportive Venus, Mercury and the relevant houses, with disciplined practice turning talent into visible accomplishment.",
     resultHi: "गन्धर्व योग जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -811,7 +811,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lords of the 5th and the 11th interchange their houses and the Moon is in the 5th.",
     conditionHi: "The lords of the 5th and the 11th interchange their houses and the Moon is in the 5th.",
-    resultEn: "The person having the Indra Yoga in their chart indicates that they are probably going to lead a supreme life. You are most likely to be highly courageous in whichever deeds you perform. You are pretty famous among your peers and other people too, and will be having that fame until you die. You are also believed to be the King of the Kings and further, have superior enjoyments in your life. However, you are most likely to live upto just 36 years.",
+    resultEn: "Indra Yoga is traditionally associated with authority, initiative, recognition and access to resources. The quality of its results depends on the strength and dignity of the participating planets, house ownership and benefic support; leadership and responsible use of influence are its central themes.",
     resultHi: "Indra Yoga (वैदिक योग) जातक के जीवन में मिश्रित फल देता है; आत्म-प्रयास और सही दिशा से संघर्ष को बड़ी सफलता में परिवर्तित करने की क्षमता प्रदान करता है।",
   },
   {
@@ -1291,8 +1291,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lord of the 11th in the 6th, 8th or 12th.",
     conditionHi: "The lord of the 11th in the 6th, 8th or 12th.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 105,
@@ -1459,7 +1459,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The 5th from the Ascendant happen to be a sign of Venus, and Venus and Saturn are situated in the 5th and 11th respectively.",
     conditionHi: "The 5th from the Ascendant happen to be a sign of Venus, and Venus and Saturn are situated in the 5th and 11th respectively.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1471,7 +1471,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Mercury occupies his own sign which should be in the 5th from Lagna and the Moon and Mars should be in 11th.",
     conditionHi: "Mercury occupies his own sign which should be in the 5th from Lagna and the Moon and Mars should be in 11th.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1483,7 +1483,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Saturn should occupy his own sign which should be in the 5th from Lagna, and Mercury and Mars should be positioned in 11th.",
     conditionHi: "Saturn should occupy his own sign which should be in the 5th from Lagna, and Mercury and Mars should be positioned in 11th.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1495,7 +1495,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Sun must occupy his 5th identical with his own sign and Jupiter and Moon should be in 11th.",
     conditionHi: "The Sun must occupy his 5th identical with his own sign and Jupiter and Moon should be in 11th.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1507,7 +1507,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The 5th from the Lagna happens to be a house of Jupiter with Jupiter there and Mars and the Moon in the 11th.",
     conditionHi: "The 5th from the Lagna happens to be a house of Jupiter with Jupiter there and Mars and the Moon in the 11th.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1519,7 +1519,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Sun is in Lagna, identical with Leo, and aspected or joined by Mars and Jupiter.",
     conditionHi: "The Sun is in Lagna, identical with Leo, and aspected or joined by Mars and Jupiter.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1531,7 +1531,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Moon is in Lagna identical with Cancer and aspected by Jupiter and Mars.",
     conditionHi: "The Moon is in Lagna identical with Cancer and aspected by Jupiter and Mars.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1543,7 +1543,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Mars should be in Lagna identical with Aries or Scorpio and joined or aspected by the Moon.",
     conditionHi: "Mars should be in Lagna identical with Aries or Scorpio and joined or aspected by the Moon.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1555,7 +1555,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Mercury should be in Lagna identical with his own sign and joined or aspected by Saturn or Venus.",
     conditionHi: "Mercury should be in Lagna identical with his own sign and joined or aspected by Saturn or Venus.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1567,7 +1567,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Jupiter should be in Lagna identical with his own sign and joined or aspected by Mercury and Mars.",
     conditionHi: "Jupiter should be in Lagna identical with his own sign and joined or aspected by Mercury and Mars.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1579,7 +1579,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Venus should be in Lagna identical with his own sign and joined or aspected by Saturn and Mercury.",
     conditionHi: "Venus should be in Lagna identical with his own sign and joined or aspected by Saturn and Mercury.",
-    resultEn: "The Dhana Yoga in your chart indicates how much amount of wealth you will be gaining throughout your life. You have seen lots of wealth since you were young and you will see a lot more until you die. You will have a luxurious living and you are not an ordinary and middle-class person. You like your things to be Royal.",
+    resultEn: "Dhana Yoga indicates combinations that support earning capacity, resource development and financial stability. The strength of the 2nd and 11th houses, their lords, Jupiter, Venus and the wider chart determine how effectively these combinations can be expressed.",
     resultHi: "Dhana Yoga (वैदिक योग) जातक को ऐश्वर्य, प्रतिष्ठा, सुयश, बौद्धिक कुशाग्रता और दीर्घायु प्रदान करता है। यह योग जीवन में स्थिरता और उन्नति का कारक है।",
   },
   {
@@ -1771,8 +1771,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lords of the 12th and Lagna should exchange their positions and conjoined or br aspected by the lord of the 7th.",
     conditionHi: "The lords of the 12th and Lagna should exchange their positions and conjoined or br aspected by the lord of the 7th.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 145,
@@ -1783,8 +1783,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lords of the 6th and Lagna interchange their positions and the Moon is aspected by the 2nd or 7th lord.",
     conditionHi: "The lords of the 6th and Lagna interchange their positions and the Moon is aspected by the 2nd or 7th lord.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 146,
@@ -1795,8 +1795,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Kethu and the Moon should be in Lagna.",
     conditionHi: "Kethu and the Moon should be in Lagna.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 147,
@@ -1807,8 +1807,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lord of the Lagna is in 8th aspected by or in conjunction with the 2nd or 7th lord.",
     conditionHi: "The lord of the Lagna is in 8th aspected by or in conjunction with the 2nd or 7th lord.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 148,
@@ -1819,8 +1819,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lord of the Lagna joins the 6th, 8th and 12th with beneficial aspects or conjunctions.",
     conditionHi: "The lord of the Lagna joins the 6th, 8th and 12th with beneficial aspects or conjunctions.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 149,
@@ -1831,8 +1831,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lord of Lagna is associated with the 6th, 8th or 12th lord and subjected to malefic aspects.",
     conditionHi: "The lord of Lagna is associated with the 6th, 8th or 12th lord and subjected to malefic aspects.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 150,
@@ -1843,8 +1843,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The lord of the 5th joins with the lord of 6th, 8th or 12th without beneficial aspects or conjunctions.",
     conditionHi: "The lord of the 5th joins with the lord of 6th, 8th or 12th without beneficial aspects or conjunctions.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 151,
@@ -1855,8 +1855,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Lord of the fifth house is in the sixth or tenth aspected by Lords of the second, sixth, seventh, eighth or twelfth house.",
     conditionHi: "The Lord of the fifth house is in the sixth or tenth aspected by Lords of the second, sixth, seventh, eighth or twelfth house.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 152,
@@ -1867,8 +1867,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Natural malefics, who do not own the ninth or tenth house, occupy Lagna and associate with or is aspected by the maraka Lords.",
     conditionHi: "Natural malefics, who do not own the ninth or tenth house, occupy Lagna and associate with or is aspected by the maraka Lords.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 153,
@@ -1879,8 +1879,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Lords of the Lagna and Navamsa Lagna occupies the sixth, eighth or twelfth house and have the aspect or conjunction of the Lords of the second and seventh house.",
     conditionHi: "The Lords of the Lagna and Navamsa Lagna occupies the sixth, eighth or twelfth house and have the aspect or conjunction of the Lords of the second and seventh house.",
-    resultEn: "Daridra Yoga indicates that the native has the misfortunes of being extremely poor. You will fail to accumulate wealth throughout your life even after desperately trying to acquire some. You might have extreme financial straits which will always haunt you. Your life might be full of wretchedness and miseries owing to your dire financial conditions. You will likely end up dying in poverty as well.",
-    resultHi: "दरिद्र योग जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
+    resultEn: "Daridra Yoga is traditionally associated with pressure on income, savings and the ability to retain resources. Its practical expression is assessed through the strength of the 2nd and 11th lords, benefic support, and the wider Dhana-yoga pattern; disciplined budgeting and long-term planning are constructive responses.",
+    resultHi: "दरिद्र योग धन-संचय, आय के प्रवाह और संसाधनों को बनाए रखने में दबाव का पारंपरिक संकेत है। इसके फल का आकलन द्वितीय एवं एकादश भावेश, शुभ ग्रहों के सहयोग और अन्य धनयोगों के साथ किया जाता है।",
   },
   {
     id: 154,
@@ -2131,7 +2131,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Rahu joins the second house with Mandi.",
     conditionHi: "Rahu joins the second house with Mandi.",
-    resultEn: "Sarpaganda Yoga indicates that the native has a high chance of getting bit by a snake. While you might get bitten by any kind of snake, chances are that the snake will be a cobra. Even though other people will move around carelessly near a snake, you will find that they might not get bitten. However, when it comes to you, despite your precautions and your vigilance, you might get bitten by a snake out of nowhere.",
+    resultEn: "Sarpaganda Yoga is a traditional cautionary label associated with exposure to hidden hazards and the need for alertness in unfamiliar environments. Its practical reading should focus on ordinary safety awareness and the relevant planetary and house conditions.",
     resultHi: "Sarpaganda Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2419,7 +2419,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Moon is hemmed in between, associated with or aspected by evil planets.",
     conditionHi: "The Moon is hemmed in between, associated with or aspected by evil planets.",
-    resultEn: "Matrunasa Yoga indicates that you will have the misfortune of losing your mother quite early in your life. The time of your mother’s death depends a lot on your natal chart. Depending on that, your mother might even die while giving you birth. In other cases, she will die a few months or years after your birth. You can have a difficult childhood due to this as you might need to grow up without the love and warmth of a mother.",
+    resultEn: "Matrunasa Yoga is traditionally read as strain, distance or reduced ease in matters connected with the mother, maternal support and domestic peace. The 4th house, its lord, Moon and Dwadashamsha should be assessed together; nurturing relationships and a stable home environment become important themes.",
     resultHi: "Matrunasa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2431,7 +2431,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The planet owning the navamsa, in which the Lord of the navamsa occupied by the fourth Lord is situated is disposed in the sixth, eighth or twelfth house.",
     conditionHi: "The planet owning the navamsa, in which the Lord of the navamsa occupied by the fourth Lord is situated is disposed in the sixth, eighth or twelfth house.",
-    resultEn: "Matrunasa Yoga indicates that you will have the misfortune of losing your mother quite early in your life. The time of your mother’s death depends a lot on your natal chart. Depending on that, your mother might even die while giving you birth. In other cases, she will die a few months or years after your birth. You can have a difficult childhood due to this as you might need to grow up without the love and warmth of a mother.",
+    resultEn: "Matrunasa Yoga is traditionally read as strain, distance or reduced ease in matters connected with the mother, maternal support and domestic peace. The 4th house, its lord, Moon and Dwadashamsha should be assessed together; nurturing relationships and a stable home environment become important themes.",
     resultHi: "Matrunasa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2443,7 +2443,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Moon or Venus joins a kendra in conjunction with or aspected by a malefic, and an evil planet occupies the fourth house.",
     conditionHi: "The Moon or Venus joins a kendra in conjunction with or aspected by a malefic, and an evil planet occupies the fourth house.",
-    resultEn: "Matrunasa Yoga indicates that you will have the misfortune of losing your mother quite early in your life. The time of your mother’s death depends a lot on your natal chart. Depending on that, your mother might even die while giving you birth. In other cases, she will die a few months or years after your birth. You can have a difficult childhood due to this as you might need to grow up without the love and warmth of a mother.",
+    resultEn: "Matrunasa Yoga is traditionally read as strain, distance or reduced ease in matters connected with the mother, maternal support and domestic peace. The 4th house, its lord, Moon and Dwadashamsha should be assessed together; nurturing relationships and a stable home environment become important themes.",
     resultHi: "Matrugami Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2587,7 +2587,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The fifth house is occupied by Rahu and aspected by Kuja, or the fifth house being a sign of Mars, is occupied by Rahu.",
     conditionHi: "The fifth house is occupied by Rahu and aspected by Kuja, or the fifth house being a sign of Mars, is occupied by Rahu.",
-    resultEn: "Sarpasapa Yoga indicates that you will have the misfortune of losing your children. It is highly probable that your children’s death will come from accidents related to serpents. It is important you keep your children away from snakes. Unfortunately, however, all your efforts at safeguarding your children might come to nothing. It is also possible that you will lose your children before birth and thus have stillbirths due to the curse of serpents and not because of a snake bite.",
+    resultEn: "Sarpasapa Yoga is described in some traditional compilations as a challenging combination for the 5th-house themes of children, learning and continuity. Its interpretation depends on the 5th lord, Jupiter, benefic protection and Saptamsha; the constructive focus is care, sound judgement and supportive family conditions.",
     resultHi: "Sarpasapa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2599,7 +2599,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The fifth Lord is in conjunction with Rahu, and Saturn is in the fifth house aspected by or asssociated with the Moon.",
     conditionHi: "The fifth Lord is in conjunction with Rahu, and Saturn is in the fifth house aspected by or asssociated with the Moon.",
-    resultEn: "Sarpasapa Yoga indicates that you will have the misfortune of losing your children. It is highly probable that your children’s death will come from accidents related to serpents. It is important you keep your children away from snakes. Unfortunately, however, all your efforts at safeguarding your children might come to nothing. It is also possible that you will lose your children before birth and thus have stillbirths due to the curse of serpents and not because of a snake bite.",
+    resultEn: "Sarpasapa Yoga is described in some traditional compilations as a challenging combination for the 5th-house themes of children, learning and continuity. Its interpretation depends on the 5th lord, Jupiter, benefic protection and Saptamsha; the constructive focus is care, sound judgement and supportive family conditions.",
     resultHi: "Sarpasapa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2611,7 +2611,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The karaka of children in association with Mars, Rahu in Lagna, and the fifth Lord in a dusthana.",
     conditionHi: "The karaka of children in association with Mars, Rahu in Lagna, and the fifth Lord in a dusthana.",
-    resultEn: "Sarpasapa Yoga indicates that you will have the misfortune of losing your children. It is highly probable that your children’s death will come from accidents related to serpents. It is important you keep your children away from snakes. Unfortunately, however, all your efforts at safeguarding your children might come to nothing. It is also possible that you will lose your children before birth and thus have stillbirths due to the curse of serpents and not because of a snake bite.",
+    resultEn: "Sarpasapa Yoga is described in some traditional compilations as a challenging combination for the 5th-house themes of children, learning and continuity. Its interpretation depends on the 5th lord, Jupiter, benefic protection and Saptamsha; the constructive focus is care, sound judgement and supportive family conditions.",
     resultHi: "Sarpasapa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -2623,7 +2623,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The fifth house, being a sign of Mars, is conjoined by Rahu and aspected by or associated with Mercury.",
     conditionHi: "The fifth house, being a sign of Mars, is conjoined by Rahu and aspected by or associated with Mercury.",
-    resultEn: "Sarpasapa Yoga indicates that you will have the misfortune of losing your children. It is highly probable that your children’s death will come from accidents related to serpents. It is important you keep your children away from snakes. Unfortunately, however, all your efforts at safeguarding your children might come to nothing. It is also possible that you will lose your children before birth and thus have stillbirths due to the curse of serpents and not because of a snake bite.",
+    resultEn: "Sarpasapa Yoga is described in some traditional compilations as a challenging combination for the 5th-house themes of children, learning and continuity. Its interpretation depends on the 5th lord, Jupiter, benefic protection and Saptamsha; the constructive focus is care, sound judgement and supportive family conditions.",
     resultHi: "Sarpasapa Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -3487,7 +3487,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Rahu is in Lagna which is in conjunction with the Moon and the malefics join trines.",
     conditionHi: "Rahu is in Lagna which is in conjunction with the Moon and the malefics join trines.",
-    resultEn: "Pisacha Grastha Yoga indicates that you might experience negative encounters with ‘spirits’. They will likely attack you sometimes, making it difficult for you to carry on with your daily chores. You might even be pushed towards insanity because of the undesirable experiences with them. Your problems, however, can either root in the fact that you are possessed by spirits at times, or it might just be a mental disorder. Your unsavoury experiences might also push you to your eventual death.",
+    resultEn: "Pisacha Grastha Yoga belongs to traditional descriptions of fear, disturbed sleep, apprehension and mental unease. Its astrological discussion centres on the Moon, 4th and 12th houses and their afflictions; calm routines, supportive relationships and appropriate wellbeing support are constructive priorities.",
     resultHi: "Pisacha Grastha Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -3535,7 +3535,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Jupiter and Mars occupy the Lagna and the seventh house respectively.",
     conditionHi: "Jupiter and Mars occupy the Lagna and the seventh house respectively.",
-    resultEn: "Matibhramana Yoga indicates that you might have a difficult time controlling your mind. You likely turn insane in your life owing to various reasons. Your insanity might root from your haphazard lifestyle or stress. It can also be due to poisoning or because of karma from your bad deeds. The insanity can creep in suddenly or gradually depending upon your natal chart as well as your actions. As insanity approaches, your vision will become stale, your actions purposeless and your speech, incoherent.",
+    resultEn: "Matibhramana Yoga is traditionally associated with mental restlessness, scattered attention and difficulty maintaining clarity under pressure. The Moon, Mercury, 5th house and their benefic support shape this theme; steady routines, rest and thoughtful decision-making help cultivate balance.",
     resultHi: "Matibhramana Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -3547,7 +3547,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Saturn is in Lagna and Mars joins the ninth, fifth or seventh house.",
     conditionHi: "Saturn is in Lagna and Mars joins the ninth, fifth or seventh house.",
-    resultEn: "Matibhramana Yoga indicates that you might have a difficult time controlling your mind. You likely turn insane in your life owing to various reasons. Your insanity might root from your haphazard lifestyle or stress. It can also be due to poisoning or because of karma from your bad deeds. The insanity can creep in suddenly or gradually depending upon your natal chart as well as your actions. As insanity approaches, your vision will become stale, your actions purposeless and your speech, incoherent.",
+    resultEn: "Matibhramana Yoga is traditionally associated with mental restlessness, scattered attention and difficulty maintaining clarity under pressure. The Moon, Mercury, 5th house and their benefic support shape this theme; steady routines, rest and thoughtful decision-making help cultivate balance.",
     resultHi: "Matibhramana Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -3559,7 +3559,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "Saturn occupies the twelfth house with the waning Moon.",
     conditionHi: "Saturn occupies the twelfth house with the waning Moon.",
-    resultEn: "Matibhramana Yoga indicates that you might have a difficult time controlling your mind. You likely turn insane in your life owing to various reasons. Your insanity might root from your haphazard lifestyle or stress. It can also be due to poisoning or because of karma from your bad deeds. The insanity can creep in suddenly or gradually depending upon your natal chart as well as your actions. As insanity approaches, your vision will become stale, your actions purposeless and your speech, incoherent.",
+    resultEn: "Matibhramana Yoga is traditionally associated with mental restlessness, scattered attention and difficulty maintaining clarity under pressure. The Moon, Mercury, 5th house and their benefic support shape this theme; steady routines, rest and thoughtful decision-making help cultivate balance.",
     resultHi: "Matibhramana Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
@@ -3571,7 +3571,7 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     source: "Traditional yoga compilation — primary-text citation not verified",
     conditionEn: "The Moon and Mercury are in a kendra, aspected by, or conjoined with any other planet.",
     conditionHi: "The Moon and Mercury are in a kendra, aspected by, or conjoined with any other planet.",
-    resultEn: "Matibhramana Yoga indicates that you might have a difficult time controlling your mind. You likely turn insane in your life owing to various reasons. Your insanity might root from your haphazard lifestyle or stress. It can also be due to poisoning or because of karma from your bad deeds. The insanity can creep in suddenly or gradually depending upon your natal chart as well as your actions. As insanity approaches, your vision will become stale, your actions purposeless and your speech, incoherent.",
+    resultEn: "Matibhramana Yoga is traditionally associated with mental restlessness, scattered attention and difficulty maintaining clarity under pressure. The Moon, Mercury, 5th house and their benefic support shape this theme; steady routines, rest and thoughtful decision-making help cultivate balance.",
     resultHi: "Matibhramana Yoga (वैदिक योग) जीवन में आकस्मिक चुनौतियां, मानसिक उद्वेग अथवा संघर्ष की स्थिति उत्पन्न कर सकता है। इसके शमन हेतु शास्त्रोक्त उपाय व जप फलदायी होते हैं।",
   },
   {
