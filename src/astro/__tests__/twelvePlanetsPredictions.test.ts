@@ -59,7 +59,12 @@ describe('Planet-wise prediction timing integrity', () => {
       expect(['Direct', 'Retrograde', 'Stationary']).toContain(item.motionLabel);
       expect(item.reading).toContain(item.motionLabel.toLowerCase());
       expect(Number.isFinite(item.speedDegPerDay)).toBe(true);
+      expect(item.isRetrograde).toBe(item.speedDegPerDay < 0);
     }
+    const planetReport = computeTwelvePlanetsPredictions(chart, Date.UTC(2026, 10, 19));
+    const jupiter = planetReport.planets.find((planet) => planet.id === 'Jupiter');
+    expect(jupiter?.transitEvidenceEn).toMatch(/Motion: (direct|retrograde|stationary) at [-0-9.]+°\/day/);
+    expect(jupiter?.transitEvidenceHi).toMatch(/गति: (वक्री|स्थिर|मार्गी)/);
   });
 
   it('shows the combined Mahadasha-Antardasha-Pratyantardasha path in planet-wise timing', () => {
