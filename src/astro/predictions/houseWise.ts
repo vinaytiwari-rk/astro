@@ -286,10 +286,6 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
       h,
       lordPos.rasiHouseNumber,
       lordPlanet,
-      lordFunctionalRolesEn: lordship.rolesEn,
-      lordFunctionalRolesHi: lordship.rolesHi,
-      lordFunctionalLordshipNoteEn: lordship.noteEn,
-      lordFunctionalLordshipNoteHi: lordship.noteHi,
       lordPos.dignity
     ).reading;
 
@@ -358,6 +354,10 @@ This reading combines the house lord’s placement and dignity, nakshatra/avasth
       signNameEn: signInfo.name,
       signNameHi: SIGN_HI[signIndex],
       lordPlanet,
+      lordFunctionalRolesEn: lordship.rolesEn,
+      lordFunctionalRolesHi: lordship.rolesHi,
+      lordFunctionalLordshipNoteEn: lordship.noteEn,
+      lordFunctionalLordshipNoteHi: lordship.noteHi,
       lordPlacedHouse: lordPos.rasiHouseNumber,
       lordPlacedSignIndex: lordPos.signIndex,
       lordDignity: lordPos.dignity,
