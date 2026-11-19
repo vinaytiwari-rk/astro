@@ -44,7 +44,6 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
     { id: 'Arishta', labelEn: 'Arishta / Ashubha', labelHi: 'अरिष्ट / कष्ट योग' },
     { id: 'Special', labelEn: 'Special Classical', labelHi: 'विशिष्ट योग' },
     { id: 'Nabhasa', labelEn: 'Nabhasa (32 classical formations)', labelHi: 'नाभस (32 शास्त्रीय विन्यास)' },
-    { id: 'Nabhasa', labelEn: 'Nabhasa Yogas', labelHi: 'नाभस योग' },
   ];
 
   const qualities: Array<{ id: string; labelEn: string; labelHi: string }> = [
@@ -271,8 +270,9 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
                     </div>
                   )}
                   <p className="lead-text" style={{ marginTop: 6, fontSize: '0.88rem' }}>
-                    {isHi ? y.resultHi : y.resultEn}
+                    {isHi ? (det?.resultHi ?? y.resultHi) : (det?.resultEn ?? y.resultEn)}
                   </p>
+                  <div className="muted small-text" style={{ marginTop: 6 }}><strong>{isHi ? 'ग्रंथ-संदर्भ:' : 'Text reference:'}</strong> {y.source}</div>
                 </div>
               </article>
             );
