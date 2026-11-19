@@ -11,7 +11,7 @@
  * Retrograde (Vakri) Chesta Bala, and Bhava Chalit displacement.
  */
 
-import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import { getNakshatraSyllable, getAllNakshatraSyllables } from '../avakahadaChalit';
@@ -483,6 +483,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     period,
     ...(period.children ?? []),
   ]);
+  const VARGA_BY_DIMENSION: Record<number, DivisionalChartId> = {
+    1: 'D9', 5: 'D2', 9: 'D3', 10: 'D3', 12: 'D3',
+    13: 'D12', 14: 'D12', 17: 'D24', 19: 'D7', 20: 'D7',
+    22: 'D30', 24: 'D1', 26: 'D9', 27: 'D9', 31: 'D8',
+    34: 'D20', 37: 'D9', 39: 'D10', 44: 'D1', 48: 'D1', 51: 'D20',
+  };
   const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
   const dims = rawDims
     .filter((d) => MASTER_21_IDS.includes(d.id))
@@ -560,6 +566,17 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         ...occupants.map((planet) => planet.id),
         ...karakas,
       ]);
+      const vargaId = VARGA_BY_DIMENSION[d.id] ?? 'D1';
+      const varga = chart.divisionalCharts?.[vargaId];
+      const vargaPlacements = varga?.placements.filter(
+        (placement) => placement.id === 'Asc' || relevantPlanets.has(placement.id),
+      ) ?? [];
+      const vargaTextHi = varga && vargaPlacements.length
+        ? `${vargaId} ${varga.sanskritName}: ${vargaPlacements.map((placement) => `${placement.id === 'Asc' ? 'वर्ग लग्न' : HINDI_PLANETS[placement.id] || placement.id} ${placement.signName}, वर्ग लग्न से भाव ${placement.houseFromVargaLagna}, ${DIGNITY_HI_MAP[placement.dignity] || placement.dignity}`).join('; ')}`
+        : `${vargaId} वर्ग-कुंडली का संबंधित ग्रह-डेटा उपलब्ध नहीं है`;
+      const vargaTextEn = varga && vargaPlacements.length
+        ? `${vargaId} ${varga.name}: ${vargaPlacements.map((placement) => `${placement.id} in ${placement.signName}, House ${placement.houseFromVargaLagna} from varga ascendant, ${placement.dignity}`).join('; ')}`
+        : `the relevant ${vargaId} divisional placements are unavailable`;
       const matchingPeriods = allDashaPeriods
         .filter((period) => relevantPlanets.has(period.lord) && period.endMs > now)
         .sort((a, b) => a.startMs - b.startMs);
@@ -581,8 +598,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       }
       const verdictHi = `इस विषय का मुख्य आधार ${lord.lordHi} हैं। वे ${lord.placedHouse}वें भाव में ${lord.dignityHi} स्थिति में हैं। ${occupantTextHi}। भाव के ${bindus} सर्वाष्टकवर्ग बिंदु और ${aspectTextHi} को साथ पढ़ने पर ${toneHi}। इसे निश्चित घटना या प्रतिशत संभावना न समझें।`;
       const verdictEn = `The main house-lord indicator is ${lord.lord} in House ${lord.placedHouse} with ${lord.dignity} dignity. The house has ${occupantTextEn}; its Sarvashtakavarga score is ${bindus}, with ${aspectTextEn}. Overall, ${toneEn}. This is not a probability or a guaranteed event.`;
-      const chartBasisHi = `कुंडली में दर्ज आधार: ${lord.lordHi} भाव ${lord.placedHouse} में (${lord.dignityHi}); भाव में स्थित ग्रह: ${occupantTextHi}; सर्वाष्टकवर्ग: ${bindus} बिंदु; दृष्टि: ${aspectTextHi}; प्राकृतिक कारक ग्रह: ${karakaTextHi}।`;
-      const chartBasisEn = `Recorded chart evidence: ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}.`;
+      const chartBasisHi = `कुंडली में दर्ज आधार: D1 लग्न ${chart.ascendant.signName} ${chart.ascendant.dms}; ${lord.lordHi} भाव ${lord.placedHouse} में (${lord.dignityHi}); भाव में स्थित ग्रह: ${occupantTextHi}; सर्वाष्टकवर्ग: ${bindus} बिंदु; दृष्टि: ${aspectTextHi}; प्राकृतिक कारक ग्रह: ${karakaTextHi}; वर्ग-कुंडली प्रमाण: ${vargaTextHi}।`;
+      const chartBasisEn = `Recorded chart evidence: D1 ascendant ${chart.ascendant.signName} ${chart.ascendant.dms}; ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}; divisional evidence: ${vargaTextEn}.`;
       const safetyOverrides: Record<number, { titleHi?: string; titleEn?: string; verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
         14: {
           titleHi: 'मातृ-संबंध, पारिवारिक वातावरण और देखभाल',
@@ -650,10 +667,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         },
       };
       const safety = safetyOverrides[d.id];
-      const divisionalLimitHi = `विभागीय संदर्भ (${d.divisionalRef || 'परंपरागत संदर्भ'}) उल्लेखित है, लेकिन इस गणना में संबंधित वर्ग-कुंडली का स्वतंत्र सत्यापन नहीं किया गया है।`;
-      const divisionalLimitEn = `The divisional reference (${d.divisionalRef || 'traditional reference'}) is listed for context, but the corresponding divisional chart has not been independently calculated in this reading.`;
-      const analysisHi = (safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`) + `\n\n${divisionalLimitHi}`;
-      const analysisEn = (safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`) + `\n\n${divisionalLimitEn}`;
+      const analysisHi = (safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`) + `\n\n${chartBasisHi}`;
+      const analysisEn = (safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`) + `\n\n${chartBasisEn}`;
       const suppressSensitiveTiming = [14, 22, 31].includes(d.id);
       return {
         ...d,
@@ -662,8 +677,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         titleEn: safety?.titleEn ?? d.titleEn,
         astroBasisHi: chartBasisHi,
         astroBasisEn: chartBasisEn,
-        verdictHi: safety?.verdictHi ?? verdictHi,
-        verdictEn: safety?.verdictEn ?? verdictEn,
+        verdictHi: `${safety?.verdictHi ?? verdictHi} ${chartBasisHi}`,
+        verdictEn: `${safety?.verdictEn ?? verdictEn} ${chartBasisEn}`,
         detailedAnalysisHi: analysisHi,
         detailedAnalysisEn: analysisEn,
         auspiciousness,
