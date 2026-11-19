@@ -1704,7 +1704,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                 <article className="domain-card">
                   <div className="domain-top">
                     <h4>{isHi ? '4. पिता का फलित' : '4. Father Heritage & Bond'}</h4>
-                    <span className="tag tag-subtle">{isHi ? sambhavit.father.lifespanHi : sambhavit.father.lifespanEn}</span>
+                    <span className="tag tag-subtle">{isHi ? 'आयु का अनुमान नहीं' : 'No lifespan estimate'}</span>
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
                     <div><strong>{isHi ? 'स्वभाव:' : 'Nature:'}</strong> {isHi ? sambhavit.father.temperamentHi : sambhavit.father.temperamentEn}</div>
@@ -1717,7 +1717,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                 <article className="domain-card">
                   <div className="domain-top">
                     <h4>{isHi ? '5. माता का फलित' : '5. Mother Heritage & Bond'}</h4>
-                    <span className="tag tag-subtle">{isHi ? sambhavit.mother.lifespanHi : sambhavit.mother.lifespanEn}</span>
+                    <span className="tag tag-subtle">{isHi ? 'आयु का अनुमान नहीं' : 'No lifespan estimate'}</span>
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
                     <div><strong>{isHi ? 'स्वभाव:' : 'Nature:'}</strong> {isHi ? sambhavit.mother.temperamentHi : sambhavit.mother.temperamentEn}</div>
