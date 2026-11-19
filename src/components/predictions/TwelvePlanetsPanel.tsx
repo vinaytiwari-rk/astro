@@ -80,14 +80,14 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               <span>
                 {isHi
-                  ? 'द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक ग्रह + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)'
-                  : '12-Planets Comprehensive Event Predictions (9 Vedic Grahas + Uranus, Neptune, Pluto)'}
+                  ? 'ग्रह-वार कुंडली संकेत विश्लेषण'
+                  : 'Planet-wise Chart Evidence'}
               </span>
             </h2>
             <p className="muted" style={{ margin: '4px 0 0', fontSize: '13px' }}>
               {isHi
-                ? 'प्रत्येक ग्रह का कुंडली-सम्मत सटीक विश्लेषण: सकारात्मक उपलब्धियां, नकारात्मक खतरे, फलन काल व अचूक उपाय।'
-                : 'House, sign, nakshatra, dignity-based concrete positive events, hazard warnings, timing triggers & remedies for all 12 bodies.'}
+                ? 'प्रत्येक ग्रह की राशि, भाव, स्वामित्व, गरिमा, दृष्टि, ग्रहबल और उपलब्ध दशा-संकेत का विश्लेषण।'
+                : 'Chart-specific analysis of sign, house, ownership, dignity, aspects, planetary strength and available dasha periods.'}
             </p>
           </div>
 
@@ -365,7 +365,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               }}
             >
               <CheckCircle size={15} />
-              <span>{isHi ? 'सकारात्मक जीवन घटनाएँ व उपलब्धियां' : 'Concrete Positive Events & Milestones'}</span>
+              <span>{isHi ? 'अनुकूल ग्रह-संकेत' : 'Supportive Planetary Indicators'}</span>
             </div>
             <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.55 }}>
               {(isHi ? planet.positiveEventsHi : planet.positiveEventsEn).map((event, idx) => (
@@ -397,7 +397,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               }}
             >
               <AlertTriangle size={15} />
-              <span>{isHi ? 'नकारात्मक घटनाएँ, खतरे व सावधानियाँ' : 'Concrete Negative Events & Hazard Alerts'}</span>
+              <span>{isHi ? 'चुनौतीपूर्ण संकेत एवं सावधानियां' : 'Challenging Indicators & Cautions'}</span>
             </div>
             <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.55 }}>
               {(isHi ? planet.negativeEventsHi : planet.negativeEventsEn).map((hazard, idx) => (
@@ -468,7 +468,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
             }}
           >
             <Shield size={14} />
-            <span>{isHi ? 'अचूक शास्त्रीय व व्यावहारिक उपाय (Remedies):' : 'Classical & Practical Remedies:'}</span>
+            <span>{isHi ? 'व्यावहारिक परामर्श:' : 'Practical Guidance:'}</span>
           </div>
           <ul style={{ margin: 0, paddingLeft: '18px', lineHeight: 1.5 }}>
             {(isHi ? planet.remediesHi : planet.remediesEn).map((rem, idx) => (
