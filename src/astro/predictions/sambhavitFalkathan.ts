@@ -710,6 +710,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
 
   // Safe accessor helper (queries rawDims for complete corpus data)
   const getDim = (id: number) => rawDims.find((d) => d.id === id) || rawDims[0];
+  const getSelectedDim = (id: number) => dims.find((d) => d.id === id) || getDim(id);
 
   const d1 = getDim(1);
   const d2 = getDim(2);
@@ -803,26 +804,26 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       harmonyHi: d9.detailedAnalysisHi,
     },
     marriage: {
-      timingAgeWindowEn: d26.verdictEn,
-      timingAgeWindowHi: d26.verdictHi,
-      marriageYogasEn: d28.verdictEn,
-      marriageYogasHi: d28.verdictHi,
-      spouseNatureEn: d27.verdictEn,
-      spouseNatureHi: d27.verdictHi,
+      timingAgeWindowEn: getSelectedDim(26).verdictEn,
+      timingAgeWindowHi: getSelectedDim(26).verdictHi,
+      marriageYogasEn: 'Traditional indicators are interpretive themes, not a guarantee of marriage or relationship success.',
+      marriageYogasHi: 'पारंपरिक योग केवल व्याख्यात्मक संकेत हैं, विवाह या संबंध की सफलता की गारंटी नहीं।',
+      spouseNatureEn: getSelectedDim(27).verdictEn,
+      spouseNatureHi: getSelectedDim(27).verdictHi,
       spouseAgeGapEn: 'A chart cannot reliably determine a spouse’s age or age gap.',
       spouseAgeGapHi: 'कुंडली से जीवनसाथी की आयु या आयु-अंतर विश्वसनीय रूप से निर्धारित नहीं किया जा सकता।'
-      relationshipEn: d28.detailedAnalysisEn,
-      relationshipHi: d28.detailedAnalysisHi,
+      relationshipEn: 'Relationship outcomes depend on mutual respect, communication, compatibility and consent; no outcome is guaranteed by a chart.',
+      relationshipHi: 'संबंधों का परिणाम आपसी सम्मान, संवाद, अनुकूलता और सहमति पर निर्भर करता है; कुंडली किसी परिणाम की गारंटी नहीं देती।'
     },
     children: {
-      conceptionModeEn: d19.verdictEn,
-      conceptionModeHi: d19.verdictHi,
+      conceptionModeEn: 'No conception method, fertility or pregnancy outcome is predicted.',
+      conceptionModeHi: 'गर्भधारण की विधि, प्रजनन क्षमता या गर्भावस्था के परिणाम का कोई अनुमान नहीं दिया जाता।'
       progenyCountEn: 'No prediction of number or sex of children is made.',
       progenyCountHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
       miscarriageRiskEn: 'Astrology cannot assess miscarriage risk, fertility or pregnancy outcomes. Consult a qualified clinician for medical questions.',
       miscarriageRiskHi: 'ज्योतिष से गर्भपात का जोखिम, प्रजनन क्षमता या गर्भावस्था का परिणाम निर्धारित नहीं किया जा सकता। चिकित्सकीय प्रश्नों के लिए योग्य चिकित्सक से सलाह लें।'
-      filialHappinessEn: d19.detailedAnalysisEn,
-      filialHappinessHi: d19.detailedAnalysisHi,
+      filialHappinessEn: getSelectedDim(19).detailedAnalysisEn,
+      filialHappinessHi: getSelectedDim(19).detailedAnalysisHi,
       countAndGenderEn: 'No prediction of children’s number or gender is made.',
       countAndGenderHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
       filialJoyEn: d19.detailedAnalysisEn,
@@ -841,20 +842,20 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       suitableFieldsHi: [d17.verdictHi],
     },
     career: {
-      jobVsBusinessEn: d39.verdictEn,
-      jobVsBusinessHi: d39.verdictHi,
-      govtVsPrivateEn: d40.verdictEn,
-      govtVsPrivateHi: d40.verdictHi,
-      suitableProfessionsEn: [d41.verdictEn],
-      suitableProfessionsHi: [d41.verdictHi],
-      foreignTravelEn: d48.verdictEn,
-      foreignTravelHi: d48.verdictHi,
-      foreignSettlementEn: d48.detailedAnalysisEn,
-      foreignSettlementHi: d48.detailedAnalysisHi,
+      jobVsBusinessEn: getSelectedDim(39).verdictEn,
+      jobVsBusinessHi: getSelectedDim(39).verdictHi,
+      govtVsPrivateEn: 'A horoscope cannot reliably determine government versus private employment. Consider eligibility, skills, vacancies and preferences.',
+      govtVsPrivateHi: 'कुंडली से सरकारी या निजी नौकरी का विश्वसनीय निर्णय नहीं किया जा सकता। पात्रता, कौशल, रिक्तियां और रुचि देखें।',
+      suitableProfessionsEn: ['Explore roles that match demonstrated skills, qualifications, interests and actual opportunities; no profession is guaranteed.'],
+      suitableProfessionsHi: ['प्रमाणित कौशल, योग्यता, रुचि और वास्तविक अवसरों के अनुरूप कार्यक्षेत्र चुनें; किसी पेशे की गारंटी नहीं।'],
+      foreignTravelEn: getSelectedDim(48).verdictEn,
+      foreignTravelHi: getSelectedDim(48).verdictHi,
+      foreignSettlementEn: getSelectedDim(48).detailedAnalysisEn,
+      foreignSettlementHi: getSelectedDim(48).detailedAnalysisHi,
     },
     longevity: {
-      categoryEn: d31.verdictEn,
-      categoryHi: d31.verdictHi,
+      categoryEn: 'Traditional themes of change, shared responsibilities and resilience; not a lifespan assessment.',
+      categoryHi: 'परिवर्तन, साझा जिम्मेदारियों और धैर्य के पारंपरिक संकेत; यह जीवनकाल का आकलन नहीं है।'
       rangeEn: 'No lifespan range or age-at-death estimate is provided.',
       rangeHi: 'जीवनकाल की सीमा या मृत्यु-आयु का कोई अनुमान नहीं दिया जाता।'
       keyFactorsEn: 'Traditional eighth-house symbolism may be used for reflection on change and long-term responsibilities, not for lifespan assessment.',
@@ -883,8 +884,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       locationsHi: [d1.verdictHi],
     },
     addictions: {
-      vulnerabilitiesEn: ['Sensory overindulgence during high stress'],
-      vulnerabilitiesHi: ['अत्यधिक तनाव में खानपान या दिनचर्या में असंतुलन'],
+      vulnerabilitiesEn: ['No psychological vulnerability is inferred from planetary placements.'],
+      vulnerabilitiesHi: ['ग्रह-स्थितियों से किसी मनोवैज्ञानिक कमजोरी का निष्कर्ष नहीं निकाला जाता।']
       adviceEn: 'Practice regular meditation and avoid late night stimulants.',
       adviceHi: 'नियमित ध्यान करें और देर रात उत्तेजक पदार्थों से बचें।',
     },
@@ -932,8 +933,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       marriageTypeHi: d21.detailedAnalysisHi,
     },
     mentalHealth: {
-      conditionEn: d2.verdictEn,
-      conditionHi: d2.verdictHi,
+      conditionEn: 'This section is not a mental-health assessment or diagnosis.',
+      conditionHi: 'यह भाग मानसिक स्वास्थ्य का आकलन या निदान नहीं है।'
       vulnerabilitiesEn: 'Astrology cannot diagnose mental-health conditions or psychological vulnerabilities.',
       vulnerabilitiesHi: 'ज्योतिष से मानसिक स्वास्थ्य की स्थिति या मनोवैज्ञानिक कमजोरियों का निदान नहीं किया जा सकता।'
       remedyEn: d2.remedyEn,
@@ -946,10 +947,10 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       vulnerableOrgansHi: 'ज्योतिष से कमजोर अंगों की पहचान या रोग की भविष्यवाणी नहीं की जा सकती।'
     },
     wealth: {
-      statusEn: d5.verdictEn,
-      statusHi: d5.verdictHi,
-      activeYogasEn: [d5.verdictEn, d44.verdictEn],
-      activeYogasHi: [d5.verdictHi, d44.verdictHi],
+      statusEn: getSelectedDim(5).verdictEn,
+      statusHi: getSelectedDim(5).verdictHi,
+      activeYogasEn: [getSelectedDim(5).verdictEn, getSelectedDim(44).verdictEn],
+      activeYogasHi: [getSelectedDim(5).verdictHi, getSelectedDim(44).verdictHi],
       peakAgeWindowEn: 'No fixed age window or guaranteed period of prosperity is assigned.',
       peakAgeWindowHi: 'समृद्धि के लिए कोई निश्चित आयु-सीमा या गारंटीकृत अवधि निर्धारित नहीं की जाती।'
     },
