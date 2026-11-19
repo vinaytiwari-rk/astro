@@ -45,8 +45,8 @@ describe('Chart-specific General Prediction synthesis', () => {
   });
 
 
-  it('reports the nested Mahadasha-Antardasha-Pratyantardasha sequence together', () => {
-    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+  it('reports the nested Mahadasha-Antardasha-Pratyantardasha sequence together and cross-checks active lords with gochar', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const nestedPeriods: DashaPeriod[] = [{
       lord: 'Saturn', level: 1, startMs: 0, endMs: 1000, durationDays: 1,
       children: [{
@@ -61,6 +61,9 @@ describe('Chart-specific General Prediction synthesis', () => {
     expect(career.timingEn).toContain('Saturn Mahadasha → Jupiter Antardasha → Mercury Pratyantardasha');
     expect(career.timingHi).toContain('वर्तमान संयुक्त विंशोत्तरी क्रम');
     expect(career.timingEn).toContain('Relevant lord(s)');
+    expect(career.timingEn).toContain('Active dasha-lord transit cross-check');
+    expect(career.timingEn).toContain('Saturn (Mahadasha) is transiting');
+    expect(career.timingHi).toContain('सक्रिय दशा-स्वामी गोचर मिलान');
   });
 
   it('does not describe the internal evidence index as a probability', () => {
