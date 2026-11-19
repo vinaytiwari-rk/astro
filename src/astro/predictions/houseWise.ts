@@ -195,6 +195,9 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
     const lordNak = NAKSHATRAS[lordNakIdx] ?? NAKSHATRAS[0];
     const lordPada = lordPos.pada || 1;
     const lordStarLord = lordNak.lord;
+    const starLordPos = byId.get(lordStarLord);
+    const lordD9 = chart.divisionalCharts.D9.placements.find((placement) => placement.id === lordPlanet);
+    const lordShadbala = chart.shadbala.find((row) => row.planet === lordPlanet);
 
     // 2. Lord's Baladi Avastha and Degree
     const lordDegInSign = lordPos.degreeInSign ?? (lordPos.longitude % 30);
@@ -245,6 +248,21 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
 
     // Lord Rashi Dignity
     score += scoreDignity(lordPos.dignity) * 0.8;
+
+    // Corroborative strength from Shadbala, D9 and the nakshatra dispositor.
+    // These remain secondary modifiers and cannot overpower core house evidence.
+    if (lordShadbala) {
+      if (lordShadbala.ratio >= 1.2) score += 4;
+      else if (lordShadbala.ratio < 0.8) score -= 4;
+    }
+    if (lordD9) {
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(lordD9.dignity)) score += 3;
+      else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(lordD9.dignity)) score -= 3;
+    }
+    if (starLordPos) {
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(starLordPos.dignity)) score += 2;
+      else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(starLordPos.dignity)) score -= 2;
+    }
 
     // Lord Baladi Avastha
     if (lordAvastha.pct >= 80) score += 6;
@@ -304,8 +322,14 @@ export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now())
     const beneficAspStrEn = beneficAspects.length ? beneficAspects.map((b) => `${b.planet} (${b.type})`).join(', ') : 'None';
     const maleficAspStrEn = maleficAspects.length ? maleficAspects.map((m) => `${m.planet} (${m.type})`).join(', ') : 'None';
 
-    const primaryFactorsHi = `1. भावेश स्थिति: ${PLANET_HI[lordPlanet]} भाव ${lordPos.rasiHouseNumber} में (${DIGNITY_HI[lordPos.dignity]}), नक्षत्र: ${lordNak.name} (स्वामी ${PLANET_HI[lordStarLord]}), अवस्था: ${lordAvastha.hi}${combustion.isCombust ? ' (अस्त)' : ''}।\n2. स्थित ग्रह: ${occStrHi}।\n3. दृष्टि प्रभाव: शुभ दृष्टि — ${beneficAspStrHi}; क्रूर दृष्टि — ${maleficAspStrHi}।${kartariHi ? `\n4. कर्तरी प्रभाव: ${kartariHi}` : ''}`;
-    const primaryFactorsEn = `1. House Lord: ${lordPlanet} in House ${lordPos.rasiHouseNumber} (${lordPos.dignity}), Nakshatra ${lordNak.name} (Star Lord ${lordStarLord}), Avastha: ${lordAvastha.en}${combustion.isCombust ? ` (Combust within ${combustion.distDeg}°)` : ''}.\n2. Occupants: ${occStrEn}.\n3. Aspects: Benefic — ${beneficAspStrEn}; Malefic — ${maleficAspStrEn}.${kartariEn ? `\n4. Kartari: ${kartariEn}` : ''}`;
+    const d9EvidenceHi = lordD9 ? `नवांश (D9): ${DIGNITY_HI[lordD9.dignity] ?? lordD9.dignity}, वर्ग भाव ${lordD9.houseFromVargaLagna}` : 'नवांश स्थिति उपलब्ध नहीं';
+    const d9EvidenceEn = lordD9 ? `D9: ${lordD9.dignity}, Varga House ${lordD9.houseFromVargaLagna}` : 'D9 placement unavailable';
+    const shadbalaEvidenceHi = lordShadbala ? `षड्बल: ${lordShadbala.ratio.toFixed(2)}× (${lordShadbala.isStrong ? 'आवश्यक बल से अधिक' : 'आवश्यक बल से कम'})` : 'षड्बल डेटा उपलब्ध नहीं';
+    const shadbalaEvidenceEn = lordShadbala ? `Shadbala: ${lordShadbala.ratio.toFixed(2)}× (${lordShadbala.isStrong ? 'above' : 'below'} required strength)` : 'Shadbala unavailable';
+    const starLordEvidenceHi = starLordPos ? `नक्षत्र स्वामी ${PLANET_HI[lordStarLord]} भाव ${starLordPos.rasiHouseNumber} में (${DIGNITY_HI[starLordPos.dignity] ?? starLordPos.dignity})` : 'नक्षत्र स्वामी की स्थिति उपलब्ध नहीं';
+    const starLordEvidenceEn = starLordPos ? `Star lord ${lordStarLord} in House ${starLordPos.rasiHouseNumber} (${starLordPos.dignity})` : 'Star-lord placement unavailable';
+    const primaryFactorsHi = `1. भावेश स्थिति: ${PLANET_HI[lordPlanet]} भाव ${lordPos.rasiHouseNumber} में (${DIGNITY_HI[lordPos.dignity]}), नक्षत्र: ${lordNak.name} (स्वामी ${PLANET_HI[lordStarLord]}), अवस्था: ${lordAvastha.hi}${combustion.isCombust ? ' (अस्त)' : ''}।\\n2. नक्षत्र स्वामी: ${starLordEvidenceHi}।\\n3. ${d9EvidenceHi}; ${shadbalaEvidenceHi}।\\n4. स्थित ग्रह: ${occStrHi}।\\n5. दृष्टि प्रभाव: शुभ दृष्टि — ${beneficAspStrHi}; क्रूर दृष्टि — ${maleficAspStrHi}।${kartariHi ? `\\n6. कर्तरी प्रभाव: ${kartariHi}` : ''}`;
+    const primaryFactorsEn = `1. House Lord: ${lordPlanet} in House ${lordPos.rasiHouseNumber} (${lordPos.dignity}), Nakshatra ${lordNak.name} (Star Lord ${lordStarLord}), Avastha: ${lordAvastha.en}${combustion.isCombust ? ` (Combust within ${combustion.distDeg}°)` : ''}.\\n2. ${starLordEvidenceEn}.\\n3. ${d9EvidenceEn}; ${shadbalaEvidenceEn}.\\n4. Occupants: ${occStrEn}.\\n5. Aspects: Benefic — ${beneficAspStrEn}; Malefic — ${maleficAspStrEn}.${kartariEn ? `\\n6. Kartari: ${kartariEn}` : ''}`;
 
     const secondarySavHi = `अष्टकवर्ग (गौण/सहायक): ${savBindus} बिंदु — यह भाव को सहायक ऊर्जा व संसाधन प्रदान करता है (${savBindus >= 30 ? 'प्रचुर पोषक ऊर्जा' : savBindus >= 25 ? 'संतुलित ऊर्जा' : 'अवरोधक/न्यून ऊर्जा'})।`;
     const secondarySavEn = `Ashtakavarga (Secondary/Corroborative): ${savBindus} bindus — provides background resource support (${savBindus >= 30 ? 'abundant reserve' : savBindus >= 25 ? 'steady resource' : 'low reserve, requiring conscious effort'})`;
