@@ -36,3 +36,28 @@ describe('BPHS Chapter 35 Nabhasa yoga catalogue and detection', () => {
     expect(detected.some((y) => y.id === 323)).toBe(false);
   });
 });
+
+describe('BPHS Chapter 36 special yoga detection', () => {
+  it('detects Subha when a benefic is in the 2nd house alone', () => {
+    const detected = detectClassicalYogas(makeChart([0, 3, 6, 9, 1, 3, 6]));
+    expect(detected.some((y) => y.id === 333)).toBe(true);
+  });
+
+  it('detects Asubha when a malefic is in the 12th house alone', () => {
+    const detected = detectClassicalYogas(makeChart([0, 3, 11, 9, 0, 3, 6]));
+    expect(detected.some((y) => y.id === 334)).toBe(true);
+  });
+
+  it('detects the alternative Chamara rule only from the specified houses', () => {
+    const detected = detectClassicalYogas(makeChart([0, 3, 6, 9, 8, 9, 6]));
+    expect(detected.some((y) => y.id === 335)).toBe(true);
+  });
+
+  it('requires the shared base conditions and one qualifying alternative for Sarada', () => {
+    const detected = detectClassicalYogas(makeChart([4, 0, 2, 0, 6, 7, 4]));
+    expect(detected.some((y) => y.id === 337)).toBe(true);
+
+    const missingBase = detectClassicalYogas(makeChart([4, 0, 2, 0, 6, 7, 5]));
+    expect(missingBase.some((y) => y.id === 337)).toBe(false);
+  });
+});
