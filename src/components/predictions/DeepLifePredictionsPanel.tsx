@@ -98,6 +98,9 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               <div style={{ fontSize: '13px', fontWeight: 650, lineHeight: 1.4, overflowWrap: 'anywhere' }}>
                 {isHi ? factor.valueHi : factor.valueEn}
               </div>
+              <div style={{ fontSize: '12px', lineHeight: 1.5, marginTop: '6px' }}>
+                {isHi ? factor.interpretationHi : factor.interpretationEn}
+              </div>
             </div>
           ))}
         </div>
@@ -108,29 +111,20 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </p>
       </div>
 
-      {/* Classical natal yogas are evaluated from the chart, including strength and bhanga. */}
-      <div className="card" style={{ padding: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <Sparkles size={18} style={{ color: 'var(--accent)' }} />
-          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
-            {isHi ? 'जन्मकुंडली के शास्त्रीय योग' : 'Classical Natal Yogas'}
-          </h3>
-          <span className="badge badge-subtle">{report.classicalYogas.length}</span>
-        </div>
-        <p className="muted small-text" style={{ margin: '0 0 10px', lineHeight: 1.5 }}>
-          {isHi
-            ? 'योगों की वास्तविक ग्रह-स्थिति, शक्ति और उपलब्ध योग-भंग संकेतों के आधार पर जांच की गई है। केवल नाम मौजूद होने से पूर्ण फल नहीं माना गया है।'
-            : 'Yogas are checked against natal planetary conditions, strength and available cancellation indicators. A name match alone is not treated as full fruition.'}
-        </p>
-        {report.classicalYogas.length === 0 ? (
-          <p className="muted small-text">{isHi ? 'दिए गए जन्म-डेटा में सूचीबद्ध शास्त्रीय योग की शर्तें पूरी नहीं हुईं।' : 'No listed classical yoga conditions were met by the supplied natal chart.'}</p>
-        ) : (
+      {report.classicalYogas.length > 0 && (
+        <div className="card" style={{ padding: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <Sparkles size={18} style={{ color: 'var(--accent)' }} />
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
+              {isHi ? 'आपकी जन्मकुंडली में बने योग' : 'Yogas Formed in Your Birth Chart'}
+            </h3>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '8px' }}>
             {report.classicalYogas.map((yoga) => (
               <div key={yoga.id} style={{ padding: '10px 12px', borderRadius: '7px', background: 'var(--bg-subtle)' }}>
                 <div style={{ fontWeight: 700, fontSize: '13px' }}>{isHi ? yoga.nameHi : yoga.name}</div>
                 <div className="muted small-text" style={{ marginTop: '3px' }}>
-                  {isHi ? 'शक्ति: ' : 'Strength: '}{yoga.strength}
+                  {isHi ? 'योग-बल: ' : 'Yoga strength: '}{yoga.strength}
                   {yoga.bhangaStatus ? ' · ' + (isHi ? 'भंग स्थिति: ' : 'Bhanga: ') + yoga.bhangaStatus : ''}
                 </div>
                 <div style={{ fontSize: '12px', lineHeight: 1.45, marginTop: '5px' }}>
@@ -144,9 +138,9 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </div>
             ))}
           </div>
-        )}
-      </div>
-
+        </div>
+      )}
+      
       {/* Domain Quick Dropdown Selector */}
       <div className="card" style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
