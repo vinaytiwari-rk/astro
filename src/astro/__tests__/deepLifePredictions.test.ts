@@ -18,6 +18,12 @@ describe('Chart-specific General Prediction synthesis', () => {
         expect(domain.watchoutsEn.length).toBeGreaterThan(0);
       }
     }
+    expect(reports.some((report) => report.domains.some((domain) =>
+      domain.astrologicalFactorsEn.includes('functional roles:'),
+    ))).toBe(true);
+    expect(reports.some((report) => report.domains.some((domain) =>
+      domain.astrologicalFactorsHi.includes('कार्यात्मक स्वामित्व'),
+    ))).toBe(true);
     const careerEvidence = reports.map((report) =>
       report.domains.find((domain) => domain.id === 'career')!.astrologicalFactorsEn,
     );
