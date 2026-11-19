@@ -1427,6 +1427,22 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     // are supplementary and must not be assigned Parashari aspects.
     const classicalGrahas = new Set(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
     for (const p of twelveReport.planets) {
+      const natalPlanet = chart2026.planets.find((planet) => planet.id === p.id);
+      if (natalPlanet && classicalGrahas.has(p.id)) {
+        const expectedAspectors = chart2026.planets
+          .filter((other) => other.id !== p.id && classicalGrahas.has(other.id))
+          .filter((other) => {
+            const distance = (natalPlanet.rasiHouseNumber - other.rasiHouseNumber + 12) % 12;
+            const offsets = other.id === 'Mars' ? [3, 6, 7]
+              : other.id === 'Jupiter' ? [4, 6, 8]
+              : other.id === 'Saturn' ? [2, 6, 9]
+              : [6];
+            return offsets.includes(distance);
+          })
+          .map((other) => other.id)
+          .sort();
+        expect([...p.aspectingPlanets].sort()).toEqual(expectedAspectors);
+      }
       expect(p.aspectingPlanets.every((id) => classicalGrahas.has(id))).toBe(true);
       expect(p.placementSummaryHi).not.toContain('गोचरस्थ');
       expect(p.positiveEventsEn.length).toBeGreaterThan(0);
