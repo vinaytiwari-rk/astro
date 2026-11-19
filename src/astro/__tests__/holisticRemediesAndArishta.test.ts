@@ -93,6 +93,17 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
       expect(dimension.astroBasisHi).toContain('कुंडली में दर्ज आधार');
     }
 
+    expect(byId(1).astroBasisEn).toContain('D1');
+    expect(byId(5).astroBasisEn).toContain('D2');
+    expect(byId(9).astroBasisEn).toContain('D3');
+    expect(byId(13).astroBasisEn).toContain('D12');
+    expect(byId(19).astroBasisEn).toContain('D7');
+    expect(byId(22).astroBasisEn).toContain('D6');
+    expect(byId(26).astroBasisEn).toContain('D9');
+    expect(byId(39).astroBasisEn).toContain('D10');
+    expect(byId(44).astroBasisEn).toContain('D2');
+    expect(byId(51).astroBasisEn).toContain('D20');
+
     const maternal = byId(14);
     const health = byId(22);
     const disputes = byId(24);
