@@ -1747,7 +1747,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
                     <div><strong>{isHi ? 'विवाह योग स्वरूप:' : 'Marriage Yogas:'}</strong> {isHi ? sambhavit.marriage.marriageYogasHi : sambhavit.marriage.marriageYogasEn}</div>
                     <div><strong>{isHi ? 'जीवनसाथी का स्वभाव:' : 'Spouse Nature:'}</strong> {isHi ? sambhavit.marriage.spouseNatureHi : sambhavit.marriage.spouseNatureEn}</div>
-                    <div><strong>{isHi ? 'आयु अंतर व दांपत्य संबंध:' : 'Age Gap & Bond:'}</strong> {isHi ? `${sambhavit.marriage.spouseAgeGapHi} • ${sambhavit.marriage.relationshipHi}` : `${sambhavit.marriage.spouseAgeGapEn} • ${sambhavit.marriage.relationshipEn}`}</div>
+                    <div><strong>{isHi ? 'आयु अंतर व दांपत्य संबंध:' : 'Age-gap limits & Bond:'}</strong> {isHi ? `${sambhavit.marriage.spouseAgeGapHi} • ${sambhavit.marriage.relationshipHi}` : `${sambhavit.marriage.spouseAgeGapEn} • ${sambhavit.marriage.relationshipEn}`}</div>
                   </div>
                 </article>
 
@@ -1758,8 +1758,8 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                     <span className="tag tag-good">{isHi ? sambhavit.children.conceptionModeHi : sambhavit.children.conceptionModeEn}</span>
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
-                    <div><strong>{isHi ? 'संतान संख्या व लिंग:' : 'Progeny Projection:'}</strong> {isHi ? sambhavit.children.progenyCountHi : sambhavit.children.progenyCountEn}</div>
-                    <div><strong>{isHi ? 'गर्भपात जोखिम:' : 'Miscarriage Risk:'}</strong> {isHi ? sambhavit.children.miscarriageRiskHi : sambhavit.children.miscarriageRiskEn}</div>
+                    <div><strong>{isHi ? 'संतान संख्या/लिंग अनुमान:' : 'Children Count/Gender Estimate:'}</strong> {isHi ? sambhavit.children.progenyCountHi : sambhavit.children.progenyCountEn}</div>
+                    <div><strong>{isHi ? 'चिकित्सकीय सीमा:' : 'Medical Limits:'}</strong> {isHi ? sambhavit.children.miscarriageRiskHi : sambhavit.children.miscarriageRiskEn}</div>
                     <div><strong>{isHi ? 'संतान से सुख:' : 'Filial Joy:'}</strong> {isHi ? sambhavit.children.filialHappinessHi : sambhavit.children.filialHappinessEn}</div>
                   </div>
                 </article>
@@ -1795,8 +1795,8 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                     <span className="tag tag-subtle">{isHi ? sambhavit.longevity.categoryHi : sambhavit.longevity.categoryEn}</span>
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
-                    <div><strong>{isHi ? 'संभावित आयु सीमा:' : 'Estimated Range:'}</strong> {isHi ? sambhavit.longevity.rangeHi : sambhavit.longevity.rangeEn}</div>
-                    <div><strong>{isHi ? 'आयु रक्षा कारक:' : 'Key Factors:'}</strong> {isHi ? sambhavit.longevity.keyFactorsHi : sambhavit.longevity.keyFactorsEn}</div>
+                    <div><strong>{isHi ? 'आयु अनुमान:' : 'Lifespan Estimate:'}</strong> {isHi ? sambhavit.longevity.rangeHi : sambhavit.longevity.rangeEn}</div>
+                    <div><strong>{isHi ? 'पारंपरिक संदर्भ:' : 'Traditional Context:'}</strong> {isHi ? sambhavit.longevity.keyFactorsHi : sambhavit.longevity.keyFactorsEn}</div>
                   </div>
                 </article>
 
@@ -1938,7 +1938,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
                     <div><strong>{isHi ? 'मानसिक स्थिति:' : 'Condition:'}</strong> {isHi ? sambhavit.mentalHealth.conditionHi : sambhavit.mentalHealth.conditionEn}</div>
-                    <div><strong>{isHi ? 'संभावित संवेदनशीलता:' : 'Sensitivities:'}</strong> {isHi ? sambhavit.mentalHealth.vulnerabilitiesHi : sambhavit.mentalHealth.vulnerabilitiesEn}</div>
+                    <div><strong>{isHi ? 'व्याख्या की सीमा:' : 'Interpretive Limits:'}</strong> {isHi ? sambhavit.mentalHealth.vulnerabilitiesHi : sambhavit.mentalHealth.vulnerabilitiesEn}</div>
                     <div><strong>{isHi ? 'मानसिक शांति उपाय:' : 'Mind Calm Protocol:'}</strong> {isHi ? sambhavit.mentalHealth.remedyHi : sambhavit.mentalHealth.remedyEn}</div>
                   </div>
                 </article>
@@ -1951,7 +1951,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                   </div>
                   <div className="pred-bullets" style={{ marginTop: 4 }}>
                     <div><strong>{isHi ? 'प्रकृति:' : 'Constitution:'}</strong> {isHi ? sambhavit.health.constitutionHi : sambhavit.health.constitutionEn}</div>
-                    <div><strong>{isHi ? 'संवेदनशील अंग:' : 'Vulnerable Organs:'}</strong> {isHi ? sambhavit.health.vulnerableOrgansHi : sambhavit.health.vulnerableOrgansEn}</div>
+                    <div><strong>{isHi ? 'चिकित्सकीय सीमा:' : 'Medical Limits:'}</strong> {isHi ? sambhavit.health.vulnerableOrgansHi : sambhavit.health.vulnerableOrgansEn}</div>
                   </div>
                 </article>
 
@@ -1966,7 +1966,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
                     {sambhavit.wealth.activeYogasHi.length > 0 && (
                       <div><strong>{isHi ? 'सक्रिय धन योग:' : 'Active Dhana Yogas:'}</strong> {(isHi ? sambhavit.wealth.activeYogasHi : sambhavit.wealth.activeYogasEn).join(', ')}</div>
                     )}
-                    <div><strong>{isHi ? 'समृद्धि का स्वर्ण काल:' : 'Peak Prosperity Window:'}</strong> {isHi ? sambhavit.wealth.peakAgeWindowHi : sambhavit.wealth.peakAgeWindowEn}</div>
+                    <div><strong>{isHi ? 'निश्चित आयु-आधारित अवधि:' : 'Fixed Age-based Window:'}</strong> {isHi ? sambhavit.wealth.peakAgeWindowHi : sambhavit.wealth.peakAgeWindowEn}</div>
                   </div>
                 </article>
               </div>
