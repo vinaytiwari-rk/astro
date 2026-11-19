@@ -214,7 +214,7 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
   const transitEvidenceHi = transitOccupants.length || doubleTransit.length
     ? ' वर्तमान गोचर प्रमाण: ' +
       (transitOccupants.length ? transitOccupants.map((item) => item.planet + ' जन्म लग्न से भाव ' + item.houseFromLagna + ' (चंद्र से भाव ' + item.houseFromMoon + '; ' + item.verdict + ') में').join('; ') : '') +
-      (doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर जन्म भाव ' + doubleTransit.map((item) => item.house).join(', ') को सक्रिय करता है' : '') +
+      (doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर जन्म भाव ' + doubleTransit.map((item) => item.house).join(', ') + ' को सक्रिय करता है' : '') +
       '। गोचर सहायक प्रमाण है, घटना की गारंटी नहीं।'
     : ' ' + transitReport.targetDate + ' को इन भावों में कोई संबंधित गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं हुई।';
   const timingWithTransitEn = timingEn + transitEvidenceEn;
