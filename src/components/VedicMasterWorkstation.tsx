@@ -88,7 +88,6 @@ import { computeBhavatBhavamReport } from '../astro/predictions/bhavatBhavam';
 import { getBhavesha144Entry } from '../astro/predictions/bhavesha144';
 import { computeTribhagiDasha, computeYoginiDasha } from '../astro/dasha';
 import { computeAdvancedDashas } from '../astro/advancedDashas';
-import { computeSambhavitFalkathan, type SambhavitFalkathanReport } from '../astro/predictions/sambhavitFalkathan';
 import { computeReferencePdfPredictions, type ReferencePdfReport } from '../astro/predictions/referencePdfPredictions';
 import { SIGN_HI, PLANET_HI } from '../astro/predictions/dynamicDossierChapters';
 import { AshtakavargaView } from './AshtakavargaView';
@@ -96,7 +95,6 @@ import { DashaView } from './DashaView';
 import { MatchMakingView } from './MatchMakingView';
 import { ToolsSuiteView } from './ToolsSuiteView';
 import { VedicChartSvg, type ChartBadgeItem } from './VedicChartSvg';
-import { LifePredictions21Panel } from './predictions/LifePredictions21Panel';
 
 export interface WorkstationDivisionDefinition {
   divisionNumber: number;
@@ -220,17 +218,7 @@ export const WORKSTATION_DIVISIONS: WorkstationDivisionDefinition[] = [
     descriptionEn: 'Separate Daily Drik Panchang, Hindu Festival Calendar, Day & Night Choghadiya, Shubh Muhurta & Planetary Horas, and Daily, Monthly & Yearly Rashifal for all 12 signs.',
     descriptionHi: 'दैनिक द्रिक पंचांग, हिन्दू व्रत व पर्व, दिन व रात्रि चौघड़िया, शुभ मुहूर्त व 24 होरा, तथा सभी 12 राशियों का दैनिक, मासिक व वार्षिक राशिफल।',
   },
-  {
-    divisionNumber: 12,
-    id: 'div_12_sambhavit_falkathan',
-    labelEn: 'Division 12: Probable Life Predictions (Sambhavit Falkathan — All-Varga Synthesis)',
-    labelHi: 'भाग 12: संभावित फलकथन (समस्त कुंडलियों का संश्लेषित फलादेश)',
-    shortLabelEn: '12. Probable Predictions',
-    shortLabelHi: '12. संभावित फलकथन',
-    descriptionEn: 'Point-wise concrete life predictions synthesized across all divisional charts: Name initials, Ishta Devata, Father/Mother, Siblings, Marriage/Spouse, Progeny/IVF, Education, Career/Govt Job, Longevity, Incarceration, Surgery, Marks, Addictions, Bed Pleasure, Friends, Cautions, Crisis Strategy, Sports, Temperament, Love Life, Psychology, Health & Wealth.',
-    descriptionHi: 'समस्त वर्ग कुंडलियों के संपूर्ण विश्लेषणोपरांत बिंदुवार प्रमाणिक फलादेश: नामाक्षर, इष्ट देवता, मुख्य ग्रह, माता-पिता, भाई-बहन, विवाह व जीवनसाथी, संतान (प्राकृतिक/IVF), शिक्षा, आजीविका/सरकारी सेवा, आयु, बंधन/कारावास, सर्जरी, शारीरिक चिन्ह, व्यसन, शय्या सुख, मित्र, सावधानियां, संकट निवारण, खेल, स्वभाव, प्रेम, मानसिक स्वास्थ्य, आरोग्य व धन योग।',
-  },
-];
+remove division 12 prediction screen];
 
 export interface VedicMasterWorkstationProps {
   chart: ChartData;
@@ -290,7 +278,6 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const [div11SubTab, setDiv11SubTab] = useState<'panchang' | 'festivals' | 'choghadiya' | 'muhurta' | 'rashifal'>('panchang');
   const [selectedRashifalSign, setSelectedRashifalSign] = useState<number>(0);
   const [rashifalPeriod, setRashifalPeriod] = useState<'daily' | 'monthly' | 'yearly'>('daily');
-  const [div12SubTab, setDiv12SubTab] = useState<'all' | 'identity' | 'family' | 'marriage' | 'career' | 'health_longevity' | 'caution_crisis'>('all');
 
   // External routing listener
   useEffect(() => {
@@ -298,8 +285,12 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
     if (!id) return;
 
     const num = parseInt(id, 10);
-    if (!isNaN(num) && num >= 1 && num <= 12) {
+    if (!isNaN(num) && num >= 1 && num <= 11) {
       setActiveDivision(num);
+      return;
+    }
+    if (num === 12) {
+      setActiveDivision(8);
       return;
     }
 
@@ -321,7 +312,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
     else if (id === 'kp_system' || id === 'kp' || id === 'lal_kitab' || id === 'western' || id === 'nadi') setActiveDivision(9);
     else if (id === 'matchmaking' || id === 'match') setActiveDivision(10);
     else if (id === 'panchang' || id === 'tools' || id === 'rashifal' || id === 'muhurta') setActiveDivision(11);
-    else if (id === 'sambhavit_falkathan' || id === 'falkathan' || id === 'falan' || id === 'probable_predictions') setActiveDivision(12);
+    else if (id === 'sambhavit_falkathan' || id === 'falkathan' || id === 'falan' || id === 'probable_predictions') setActiveDivision(8);
   }, [requestedMenu?.nonce, requestedMenu?.id]);
 
   // Live Gochar Chart Computation
@@ -357,7 +348,6 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
   const lalKitabReport = useMemo(() => computeLalKitabSystemReport(chart), [chart]);
   const gemstoneData = useMemo(() => computeGemstoneAndRudraksha(chart), [chart]);
   const rashifalReport = useMemo(() => computeRashifalReport(chart, nowDateAndTime().date), [chart]);
-  const sambhavitReport = useMemo(() => computeSambhavitFalkathan(chart), [chart]);
   const refPdfPred = useMemo(() => computeReferencePdfPredictions(chart), [chart]);
 
   // Selected Varga Chart Data for Division 3
@@ -3008,9 +2998,6 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
         </div>
       )}
 
-      {activeDivision === 12 && (
-        <LifePredictions21Panel report={sambhavitReport} isHi={isHi} />
-      )}
     </div>
   );
 };
