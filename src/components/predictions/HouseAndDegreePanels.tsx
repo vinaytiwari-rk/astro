@@ -55,8 +55,9 @@ export const PlanetInHousePanel: React.FC<{ report: PredictionReport }> = ({ rep
 
 export const HouseWisePanel: React.FC<{
   houses: HouseWisePrediction[];
-  report: PredictionReport;
-}> = ({ houses, report }) => {
+  report?: PredictionReport;
+  simple?: boolean;
+}> = ({ houses, report, simple = false }) => {
   const { lang, t } = useLanguage();
   const isHi = lang === 'hi';
   const [selectedHouse, setSelectedHouse] = useState<number | 'all'>('all');
@@ -66,6 +67,8 @@ export const HouseWisePanel: React.FC<{
 
   return (
     <div className="view-stack">
+      {!simple && report && (
+        <>
       {/* Quick Lagna + Nakshatra + Atmakaraka Overview Banner */}
       <div className="pred-top-grid">
         <section className="panel pred-hero-card">
@@ -131,6 +134,9 @@ export const HouseWisePanel: React.FC<{
         </section>
       </div>
 
+        </>
+      )}
+
       {/* 12 Houses Holistic Synthesizer */}
       <section className="panel">
         <div className="panel-header">
@@ -166,29 +172,33 @@ export const HouseWisePanel: React.FC<{
                   <div>
                     <h4>{isHi ? h.titleHi : h.titleEn}</h4>
                     <div className="muted small-text">
-                      {trSign(h.signIndex, lang)} · {isHi ? 'भावेष:' : 'Lord:'}{' '}
+                      {trSign(h.signIndex, lang)} · {isHi ? 'भावेश:' : 'Lord:'}{' '}
                       {trPlanet(h.lordPlanet, lang)} → {t.common.house}{h.lordPlacedHouse} (
                       {trTerm(h.lordDignity, lang)})
                     </div>
                   </div>
-                  <div className="domain-score-badge">
-                    <strong className={`mono tone-text-${tone}`}>{h.score}</strong>
-                    <span>/100</span>
-                  </div>
+                  {!simple && (
+                    <div className="domain-score-badge">
+                      <strong className={`mono tone-text-${tone}`}>{h.score}</strong>
+                      <span>/100</span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="bar-track">
-                  <div className={`bar-fill tone-${tone}`} style={{ width: `${h.score}%` }} />
-                </div>
+                {!simple && (
+                  <div className="bar-track">
+                    <div className={`bar-fill tone-${tone}`} style={{ width: `${h.score}%` }} />
+                  </div>
+                )}
 
                 <div className="domain-verdict-row">
-                  <span
-                    className={`tag ${
+                  {!simple && (
+                    <span className={`tag ${
                       h.score >= 70 ? 'tag-varg' : h.score >= 55 ? 'tag-karaka' : 'tag-combust'
-                    }`}
-                  >
-                    {isHi ? h.verdictHi : h.verdictEn}
-                  </span>
+                    }`}>
+                      {isHi ? h.verdictHi : h.verdictEn}
+                    </span>
+                  )}
                   <span className="muted small-text mono">
                     SAV: {h.savBindus} · {isHi ? 'कारक:' : 'Karaka:'} {trPlanet(h.naturalKaraka, lang)}
                   </span>
@@ -221,10 +231,10 @@ export const HouseWisePanel: React.FC<{
                   </span>
                 </div>
                 <div className="small-text muted" style={{ marginTop: 6 }}>
-                  <strong>{isHi ? 'उपाय:' : 'Upay / Guidance:'}</strong>{' '}
+                  <strong>{isHi ? 'पठन-सिद्धांत:' : 'Reading principle:'}</strong>{' '}
                   {isHi
-                    ? `${trPlanet(h.lordPlanet, lang)} के मंत्र-जप एवं सात्विक दान से ${h.houseNumber}वें भाव का शुभत्व बढ़ता है।`
-                    : `Honor ${h.lordPlanet} on its weekday and cultivate discipline in House ${h.houseNumber} affairs.`}
+                    ? 'केवल एक ग्रह या संकेत से निष्कर्ष न निकालें; भावेश, स्थित ग्रह, दृष्टि, कारक और अष्टकवर्ग को साथ देखें।'
+                    : 'Do not judge from one planet or factor alone; weigh the lord, occupants, aspects, karaka and Ashtakavarga together.'}
                 </div>
               </article>
             );
