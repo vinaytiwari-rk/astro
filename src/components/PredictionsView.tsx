@@ -50,6 +50,8 @@ interface PredictionsViewProps {
 export type PredSubTab =
   | 'twelve_planets'
   | 'active_yogas_yuti'
+  | 'yutiWise'
+  | 'yogaWise'
   | 'deep_life'
   | 'eventsLedger'
   | 'houseWise'
@@ -80,6 +82,8 @@ function normalizeSubTab(id?: string): PredSubTab {
   ) {
     return 'active_yogas_yuti';
   }
+  if (id === 'yutiWise' || id === 'yuti') return 'yutiWise';
+  if (id === 'yogaWise' || id === 'yoga') return 'yogaWise';
   if (id === 'deep_life') return 'deep_life';
   if (id === 'eventsLedger' || id === 'timeline_120yr' || id === 'timeline') return 'eventsLedger';
   if (id === 'houseWise' || id === 'bhavas_12' || id === 'bhavas12' || id === 'bhavas') return 'houseWise';
@@ -156,6 +160,9 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     { id: 'twelve_planets', labelEn: 'Planet-wise Prediction', labelHi: 'ग्रहवार फलादेश' },
     { id: 'planetInNakshatra', labelEn: 'Nakshatra-wise Prediction', labelHi: 'नक्षत्रवार फलादेश' },
     { id: 'planetInSign', labelEn: 'Sign-wise Prediction', labelHi: 'राशिवार फलादेश' },
+    { id: 'yutiWise', labelEn: 'Yuti (Conjunction) Prediction', labelHi: 'युति फलादेश' },
+    { id: 'drishtiWise', labelEn: 'Drishti (Aspect) Prediction', labelHi: 'दृष्टि फलादेश' },
+    { id: 'yogaWise', labelEn: 'Yoga-wise Prediction', labelHi: 'योगवार फलादेश' },
   ];
 
   return (
@@ -236,11 +243,13 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
             <TwelvePlanetsPanel chart={chart} />
           )}
 
-          {currentTab === 'active_yogas_yuti' && (
+          {(currentTab === 'active_yogas_yuti' || currentTab === 'yutiWise' || currentTab === 'yogaWise') && (
             <ActiveYogasAndYutiPanel
+              key={currentTab}
               chart={chart}
               yutiReport={report.yutiReport}
               detectedYogas={report.classicalYogas}
+              initialTab={currentTab === 'yogaWise' ? 'detected' : 'yuti'}
             />
           )}
 
