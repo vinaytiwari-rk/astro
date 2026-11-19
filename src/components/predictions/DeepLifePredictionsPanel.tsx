@@ -173,14 +173,6 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </div>
             </div>
 
-            {/* Dasha-based timing, only when chart periods support it */}
-            <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', fontSize: '12px', marginBottom: '10px' }}>
-              <div style={{ fontWeight: 600, marginBottom: '3px' }}>
-                {isHi ? 'दशा-आधारित समय संकेत:' : 'Dasha-based timing:'}
-              </div>
-              <div>{isHi ? domain.timingHi : domain.timingEn}</div>
-            </div>
-
             {/* Practical Guidance */}
 
             <div style={{ padding: '8px 12px', background: 'var(--accent-soft)', borderRadius: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
