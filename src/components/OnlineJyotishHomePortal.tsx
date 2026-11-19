@@ -620,7 +620,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </button>
             </article>
 
-            {/* Card 8: Sambhavit Falkathan (Probable Predictions) */}
+            {/* Card 8: Detailed 12-Bhava Life Dossier */}
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
