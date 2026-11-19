@@ -977,6 +977,83 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     }
     ageWindows.length = 0;
 
+    // Replace legacy fixed-event templates with chart-evidence indicators.
+    // These are interpretive factors, not predictions of specific incidents.
+    positiveEventsEn.length = 0;
+    positiveEventsHi.length = 0;
+    negativeEventsEn.length = 0;
+    negativeEventsHi.length = 0;
+    remediesEn.length = 0;
+    remediesHi.length = 0;
+
+    const dignitySupport = ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(p.dignity);
+    const dignityChallenge = ['Debilitated', 'Great Enemy', 'Enemy'].includes(p.dignity);
+    const shadbalaRow = chart.shadbala?.find((row) => row.planet === p.id);
+    const d9Placement = chart.divisionalCharts?.D9?.placements.find((placement) => placement.id === p.id);
+    const beneficInfluences = [...new Set([
+      ...aspecting.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
+      ...conjoined.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
+    ])];
+    const challengingInfluences = [...new Set([
+      ...aspecting.filter((id) => ['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu'].includes(id)),
+      ...conjoined.filter((id) => ['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu'].includes(id)),
+    ])];
+
+    if (dignitySupport) {
+      positiveEventsEn.push(p.id + ' has ' + p.dignity + ' dignity in the natal sign.');
+      positiveEventsHi.push(p.id + ' की जन्म राशि में ' + p.dignity + ' गरिमा सहायक संकेत है।');
+    }
+    if (shadbalaRow && shadbalaRow.ratio >= 1.2) {
+      positiveEventsEn.push('Shadbala is above the stated minimum threshold (' + shadbalaRow.ratio.toFixed(2) + '×).');
+      positiveEventsHi.push('षड्बल निर्धारित न्यूनतम स्तर से अधिक (' + shadbalaRow.ratio.toFixed(2) + '×) है।');
+    }
+    if (p.isVargottama) {
+      positiveEventsEn.push('The planet is Vargottama (same sign in D1 and D9), adding a consistency factor.');
+      positiveEventsHi.push('ग्रह वर्गोत्तम है (D1 और D9 में समान राशि), जो स्थिति में निरंतरता का संकेत है।');
+    }
+    if (d9Placement && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(d9Placement.dignity)) {
+      positiveEventsEn.push('D9 placement is ' + d9Placement.dignity + ' in Varga House ' + d9Placement.houseFromVargaLagna + '.');
+      positiveEventsHi.push('नवांश में ग्रह ' + d9Placement.dignity + ' गरिमा के साथ वर्ग भाव ' + d9Placement.houseFromVargaLagna + ' में है।');
+    }
+    if (beneficInfluences.length) {
+      positiveEventsEn.push('Receives traditional benefic influence from ' + beneficInfluences.join(', ') + '.');
+      positiveEventsHi.push('इस पर ' + beneficInfluences.join(', ') + ' का पारंपरिक शुभ प्रभाव है।');
+    }
+    if ([1, 4, 5, 7, 9, 10].includes(hNum)) {
+      positiveEventsEn.push('Placement in a Kendra/Trikona house makes this planet prominent in the chart; prominence alone does not determine whether results are favourable.');
+      positiveEventsHi.push('केंद्र/त्रिकोण भाव में स्थिति ग्रह को कुंडली में प्रमुख बनाती है; केवल प्रमुखता से फल शुभ या अशुभ तय नहीं होता।');
+    }
+    if (dignityChallenge) {
+      negativeEventsEn.push(p.id + ' has ' + p.dignity + ' dignity; judge this alongside house lordship, strength and aspects.');
+      negativeEventsHi.push(p.id + ' की ' + p.dignity + ' गरिमा को भाव-स्वामित्व, ग्रहबल और दृष्टियों के साथ देखना चाहिए।');
+    }
+    if (shadbalaRow && shadbalaRow.ratio < 0.8) {
+      negativeEventsEn.push('Shadbala is below the comparison threshold (' + shadbalaRow.ratio.toFixed(2) + '×); related matters may need sustained attention.');
+      negativeEventsHi.push('षड्बल तुलना-स्तर से कम (' + shadbalaRow.ratio.toFixed(2) + '×) है; संबंधित विषयों पर निरंतर ध्यान देना पड़ सकता है।');
+    }
+    if (p.isCombust) {
+      negativeEventsEn.push('Combustion is a modifying factor; its effect should be judged with the planet’s dignity, strength and house ownership.');
+      negativeEventsHi.push('अस्त स्थिति एक संशोधक कारक है; इसका प्रभाव ग्रह की गरिमा, बल और भाव-स्वामित्व के साथ देखना चाहिए।');
+    }
+    if (d9Placement && ['Debilitated', 'Great Enemy', 'Enemy'].includes(d9Placement.dignity)) {
+      negativeEventsEn.push('D9 placement is ' + d9Placement.dignity + '; this is a secondary caution, not a standalone verdict.');
+      negativeEventsHi.push('नवांश में ग्रह ' + d9Placement.dignity + ' स्थिति में है; यह सहायक सावधानी है, अपने-आप अंतिम निर्णय नहीं।');
+    }
+    if (challengingInfluences.length) {
+      negativeEventsEn.push('Receives traditional challenging influence from ' + challengingInfluences.join(', ') + '.');
+      negativeEventsHi.push('इस पर ' + challengingInfluences.join(', ') + ' का पारंपरिक चुनौतीपूर्ण प्रभाव है।');
+    }
+    if (!positiveEventsEn.length) {
+      positiveEventsEn.push('No strong supportive factor was established from the available dignity, strength and relationship data.');
+      positiveEventsHi.push('उपलब्ध गरिमा, ग्रहबल और संबंध-डेटा से कोई मजबूत अनुकूल कारक स्थापित नहीं हुआ।');
+    }
+    if (!negativeEventsEn.length) {
+      negativeEventsEn.push('No major challenging factor was established from the available indicators; this does not rule out ordinary life difficulties.');
+      negativeEventsHi.push('उपलब्ध संकेतों से कोई प्रमुख चुनौती स्थापित नहीं हुई; इसका अर्थ सामान्य जीवन-कठिनाइयों का अभाव नहीं है।');
+    }
+    remediesEn.push('Use the house themes and planetary factors as a prompt for practical planning; verify important decisions with evidence and qualified advice.');
+    remediesHi.push('भाव के विषयों और ग्रह-संकेतों को व्यावहारिक योजना बनाने का आधार मानें; महत्वपूर्ण निर्णय प्रमाण और योग्य सलाह के आधार पर लें।');
+
     // Compose Placement Summary
     const dignTxtEn = isExalted ? 'Exalted' : isDebilitated ? 'Debilitated' : isOwn ? 'Own/Moolatrikona' : p.dignity;
     const dignTxtHi = isExalted ? 'उच्च' : isDebilitated ? 'नीच' : isOwn ? 'स्वराशि/मूलत्रिकोण' : trTerm(p.dignity, 'hi');
