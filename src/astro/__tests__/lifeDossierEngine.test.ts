@@ -87,7 +87,9 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
       for (const sec of ch.sections) {
         expect(sec.astrologicalCauseEn?.length).toBeGreaterThan(10);
         expect(sec.astrologicalCauseHi?.length).toBeGreaterThan(10);
-        expect(sec.astrologicalCauseHi).toContain('शास्त्रीय कारण');
+        // Evidence may be stated as a direct chart placement or a classical
+        // cause; do not require one fixed prefix for every section.
+        expect(sec.astrologicalCauseHi).toMatch(/शास्त्रीय कारण|शास्त्रीय संदर्भ|पारंपरिक|ज्योतिषीय|भाव \d+ में|राशि|स्थिति/);
       }
     }
   });
@@ -113,7 +115,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
 
   it('verifies Chapter 1 contains Physical Appearance', () => {
     const ch1 = report.chapters.find((c) => c.chapterNumber === 1);
-    expect(ch1?.sections.length).toBe(5);
+    expect(ch1?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(5);
     const physSec = ch1?.sections.find((s) => s.titleEn.includes('Physical Appearance'));
     expect(physSec).toBeDefined();
     expect(physSec?.paragraphsEn.some((p) => p.includes('Stature'))).toBe(true);
@@ -152,7 +154,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 8 (Randhra Bhava) contains Longevity & all 12 epochs spanning 15 to 75 years', () => {
     const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
     expect(ch8).toBeDefined();
-    expect(ch8?.sections.length).toBe(15); // 3 foundation sections + 12 epochs
+    expect(ch8?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(15); // 3 foundation sections + 12 epochs
     expect(ch8?.specialData?.longevity).toBeUndefined();
     const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
     expect(epoch1).toBeDefined();
@@ -168,7 +170,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 9 (Bhagya Bhava) contains Global World Civilizations & Future Rebirth Global Geography', () => {
     const ch9 = report.chapters.find((c) => c.chapterNumber === 9);
     expect(ch9).toBeDefined();
-    expect(ch9?.sections.length).toBe(4);
+    expect(ch9?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(4);
     const pastSec = ch9?.sections.find((s) => s.titleEn.includes('Past-Life Identity Markers'));
     expect(pastSec).toBeDefined();
     expect(pastSec?.paragraphsEn.some((p) => p.includes('Civilization'))).toBe(true);
@@ -180,7 +182,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 10 (Karma Bhava) contains Government Job verdict, top vocations & workplace hazards', () => {
     const ch10 = report.chapters.find((c) => c.chapterNumber === 10);
     expect(ch10).toBeDefined();
-    expect(ch10?.sections.length).toBe(6);
+    expect(ch10?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(6);
     const govtSec = ch10?.sections.find((s) => s.titleEn.includes('Government Job'));
     expect(govtSec).toBeDefined();
     expect(ch10?.specialData?.careerVerdicts).toBeDefined();
@@ -226,4 +228,59 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(vivEpoch1).toBeDefined();
     expect(einEpoch1).toBeDefined();
   });
+  it('keeps sixth- and eighth-house sections non-diagnostic and chart-evidence based', () => {
+    const sixth = report.chapters.find((chapter) => chapter.chapterNumber === 6);
+    const eighth = report.chapters.find((chapter) => chapter.chapterNumber === 8);
+    const sixthSection = sixth?.sections.find((section) => section.titleEn.includes('Sixth House: Daily Work'));
+    const eighthSection = eighth?.sections.find((section) => section.titleEn.includes('Eighth House: Change'));
+    expect(sixthSection).toBeDefined();
+    expect(eighthSection).toBeDefined();
+
+    for (const section of [sixthSection!, eighthSection!]) {
+      const text = [
+        section.titleEn, section.titleHi,
+        ...section.paragraphsEn, ...section.paragraphsHi,
+        section.astrologicalCauseEn, section.astrologicalCauseHi,
+        ...(section.keyPointsEn ?? []), ...(section.keyPointsHi ?? []),
+      ].join(' ');
+      expect(text).toMatch(/Chart evidence|कुंडली-साक्ष्य/);
+      expect(text).not.toMatch(/high-risk organs|critical health years|physical impairment|anga-bhanga|moderate vulnerability|diabetes|मधुमेह|अंग-दोष|संवेदनशील स्वास्थ्य वर्ष|जन्मजात शारीरिक अक्षमता/i);
+    }
+  });
+
 });
+  it('keeps career chapter claims qualitative, chart-led and free of invented age windows', () => {
+    const first = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    const second = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[1], DEFAULT_SETTINGS));
+    const firstCareer = first.chapters.find((chapter) => chapter.chapterNumber === 10);
+    const secondCareer = second.chapters.find((chapter) => chapter.chapterNumber === 10);
+    expect(firstCareer).toBeDefined();
+    expect(secondCareer).toBeDefined();
+
+    const firstText = firstCareer!.sections.map((section) =>
+      [section.titleEn, section.titleHi, ...section.paragraphsEn, ...section.paragraphsHi].join(' '),
+    ).join(' ');
+    expect(firstText).not.toMatch(/% Probability|% संभावना|Ages 22 to 28|22 से 28 वर्ष/);
+    expect(firstText).toMatch(/not a probability|सांख्यिकीय संभावना नहीं/);
+
+    const firstVocations = firstCareer!.sections.find((section) => section.titleEn.includes('Vocations'));
+    const secondVocations = secondCareer!.sections.find((section) => section.titleEn.includes('Vocations'));
+    expect(firstVocations).toBeDefined();
+    expect(secondVocations).toBeDefined();
+    expect(firstVocations!.paragraphsEn[1]).not.toBe(secondVocations!.paragraphsEn[1]);
+  });
+  it('embeds all 21 selected life predictions within the existing 12 chapters', () => {
+    const report = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    expect(report.chapters).toHaveLength(12);
+    const embedded = report.chapters.flatMap((chapter) =>
+      chapter.sections.filter((section) => section.lifeDimensionId !== undefined),
+    );
+    expect(embedded).toHaveLength(21);
+    expect(embedded.map((section) => section.lifeDimensionId).sort((a, b) => a! - b!))
+      .toEqual([1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51]);
+    for (const chapter of report.chapters) {
+      for (const section of chapter.sections.filter((item) => item.lifeDimensionId !== undefined)) {
+        expect(section.lifeDimensionHouse).toBe(chapter.chapterNumber);
+      }
+    }
+  });

@@ -6,6 +6,7 @@ import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './la
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
 import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
+import { computeSambhavitFalkathan } from './sambhavitFalkathan';
 import {
   computePhysicalAppearance,
   computeEducationAcademics,
@@ -41,6 +42,9 @@ export interface ChapterSection {
     textHi: string;
     tone: 'positive' | 'warning' | 'critical' | 'neutral' | 'spiritual';
   };
+  /** Original selected 21-life-prediction identifier, when this is an embedded prediction. */
+  lifeDimensionId?: number;
+  lifeDimensionHouse?: number;
 }
 
 export interface BhavaProfile {
@@ -591,6 +595,7 @@ export function computeLifeDossierReport(
   const pastFuture = computePastFutureLifeReading(chart);
   const lalKitab = computeLalKitabSystemReport(chart);
   const centralPredictionEvidence = computePredictionFramework(chart);
+  const selectedLifePredictions = computeSambhavitFalkathan(chart).dimensions;
 
   // Modular Deep Predictions & Relational Engines
   const physicalResult = computePhysicalAppearance(chart);
@@ -1361,14 +1366,14 @@ export function computeLifeDossierReport(
         leadEn: 'Comparative assessment of corporate employment vs. entrepreneurial autonomy.',
         leadHi: 'नौकरी की अनुकूलता बनाम स्वतंत्र व्यवसाय की संभावना तथा प्रतियोगी परीक्षा का स्वर्णिम समय।',
         paragraphsEn: [
-          `Job vs. Business Ratio: Your chart indicates ${careerVerdictsResult.data.jobVsBusinessRatio.businessPct}% Entrepreneurial drive vs. ${careerVerdictsResult.data.jobVsBusinessRatio.jobPct}% Corporate/Job orientation.`,
+          `Job vs. business: the chart offers qualitative comparative indicators only; no real-world probability or fixed percentage is inferred.`,
           `Verdict: ${careerVerdictsResult.data.jobVsBusinessRatio.verdictEn}`,
-          `Peak Competitive Exam / Breakthrough Window: ${careerVerdictsResult.data.examCrackingAgeWindowEn}. Concentrating resources during this age span yields maximal competitive breakthroughs.`,
+          `Timing limitation: ${careerVerdictsResult.data.examCrackingAgeWindowEn}`,
         ],
         paragraphsHi: [
-          `नौकरी बनाम व्यापार अनुपात: आपकी कुंडली में ${careerVerdictsResult.data.jobVsBusinessRatio.businessPct}% स्वतंत्र व्यवसाय की प्रवृत्ति तथा ${careerVerdictsResult.data.jobVsBusinessRatio.jobPct}% नौकरी की दिशा इंगित होती है।`,
+          `नौकरी बनाम व्यापार: कुंडली से केवल गुणात्मक तुलनात्मक संकेत पढ़े जा रहे हैं; वास्तविक प्रतिशत संभावना निर्धारित नहीं की जा रही है।`,
           `शास्त्रीय निर्णय: ${careerVerdictsResult.data.jobVsBusinessRatio.verdictHi}`,
-          `प्रतियोगी परीक्षा / करियर का निर्णायक मोड़ वर्ष: '${careerVerdictsResult.data.examCrackingAgeWindowHi}'। इस समयावधि में किया गया गंभीर प्रयास सर्वोच्च सफलता दिलाता है।`,
+          `समय संबंधी सीमा: ${careerVerdictsResult.data.examCrackingAgeWindowHi}`,
         ],
         astrologicalCauseEn: `10th Lord ${h10Profile.profile.lordNameEn} dignity, 6th house (service) vs 7th house (trade) strength.`,
         astrologicalCauseHi: `शास्त्रीय कारण: दशमेश '${h10Profile.profile.lordNameHi}', षष्ठ भाव (नौकरी) एवं सप्तम भाव (व्यापार) का पारस्परिक बलाबल।`,
@@ -1546,6 +1551,51 @@ export function computeLifeDossierReport(
   for (const chapter of chapters) {
     const relevantIds = chapterEvidenceMap[chapter.chapterNumber] ?? [];
     chapter.predictionEvidence = centralPredictionEvidence.filter((item) => relevantIds.includes(item.id));
+  }
+
+  // The 21 selected life predictions are part of the 12-house dossier, not a
+  // second report or navigation destination. Preserve each original prediction
+  // and place it under the chapter matching its source bhava.
+  const embeddedPredictionIds = new Set<number>();
+  for (const dimension of selectedLifePredictions) {
+    const targetHouse = Number.isInteger(dimension.houseNumber)
+      && (dimension.houseNumber ?? 0) >= 1
+      && (dimension.houseNumber ?? 0) <= 12
+      ? dimension.houseNumber as number
+      : 1;
+    const chapter = chapters.find((item) => item.chapterNumber === targetHouse);
+    if (!chapter || embeddedPredictionIds.has(dimension.id)) continue;
+    embeddedPredictionIds.add(dimension.id);
+    chapter.sections.push({
+      lifeDimensionId: dimension.id,
+      lifeDimensionHouse: targetHouse,
+      titleEn: `Life prediction ${dimension.id}: ${dimension.titleEn}`,
+      titleHi: `जीवन फलादेश ${dimension.id}: ${dimension.titleHi}`,
+      leadEn: dimension.categoryTitleEn,
+      leadHi: dimension.categoryTitleHi,
+      paragraphsEn: [
+        dimension.verdictEn,
+        dimension.detailedAnalysisEn,
+        dimension.timingEn ?? 'No reliable timing window is available from the current chart data.',
+        dimension.remedyEn,
+      ],
+      paragraphsHi: [
+        dimension.verdictHi,
+        dimension.detailedAnalysisHi,
+        dimension.timingHi ?? 'उपलब्ध कुंडली डेटा से विश्वसनीय समय-सीमा निर्धारित नहीं है।',
+        dimension.remedyHi,
+      ],
+      astrologicalCauseEn: [
+        dimension.astroBasisEn,
+        dimension.classicalRef ? `Classical reference: ${dimension.classicalRef}` : '',
+        dimension.divisionalRef ? `Divisional reference: ${dimension.divisionalRef}` : '',
+      ].filter(Boolean).join(' | '),
+      astrologicalCauseHi: [
+        dimension.astroBasisHi,
+        dimension.classicalRef ? `शास्त्रीय संदर्भ: ${dimension.classicalRef}` : '',
+        dimension.divisionalRef ? `वर्ग-कुंडली संदर्भ: ${dimension.divisionalRef}` : '',
+      ].filter(Boolean).join(' | '),
+    });
   }
 
   return {

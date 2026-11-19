@@ -1,4 +1,4 @@
-import type { BodyPosition, ChartData, DashaPeriod, NineGrahaId, SevenPlanetId } from '../types';
+import type { ChartData, DashaPeriod, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS, NAKSHATRAS } from '../constants';
 import { findActiveDashaPath } from '../dasha';
 import { formatDateDmy } from '../time';
@@ -23,469 +23,68 @@ export const PLANET_HI: Record<string, string> = {
 };
 
 // ============================================================================
-// NAKSHATRA PSYCHOLOGY REPERTORY (All 27 Constellations)
-// Authentic classical psychodynamics from Saravali Ch. 23 & Mansagari
-// ============================================================================
-interface NakshatraPsychoProfile {
-  name: string;
-  ruler: string;
-  archetypeEn: string;
-  archetypeHi: string;
-  midnightMindEn: string;
-  midnightMindHi: string;
-  rageTriggerEn: string;
-  rageTriggerHi: string;
-  chronicInsecurityEn: string;
-  chronicInsecurityHi: string;
-  selfSabotageEn: string;
-  selfSabotageHi: string;
-}
-
-const NAKSHATRA_PROFILES: Record<number, NakshatraPsychoProfile> = {
-  0: {
-    name: 'Ashwini', ruler: 'Ketu',
-    archetypeEn: 'The Primal Pioneer & Swift Healer', archetypeHi: 'आद्य अश्वारोही एवं द्रुत चिकित्सक',
-    midnightMindEn: 'Your mind operates at hyper-speed, craving immediate momentum and panicking when stalled in bureaucratic limbo. In solitude, you obsess over unfinished race lines and fear irrelevance.',
-    midnightMindHi: 'आपका मन प्रचंड वेग से दौड़ता है; किसी भी कार्य में तनिक सा ठहराव या लालफीताशाही आपको विचलित कर देती है। एकांत में आप अधूरी दौड़ों और समय बीतने के अज्ञात भय से जूझते हैं।',
-    rageTriggerEn: 'Sluggishness, unnecessary red tape, and being held back by indecisive authorities.',
-    rageTriggerHi: 'धीमापन, व्यर्थ की औपचारिकताएं और ढुलमुल रवैये वाले अधिकारियों द्वारा रोका जाना।',
-    chronicInsecurityEn: 'Dread of being physically or professionally crippled before achieving your zenith.',
-    chronicInsecurityHi: 'अपने चरम पर पहुंचने से पूर्व ही शारीरिक अथवा व्यावसायिक रूप से अक्षम हो जाने का भय।',
-    selfSabotageEn: 'Abandoning projects at 85% completion because the initial adrenaline rush has evaporated.',
-    selfSabotageHi: 'प्रारंभिक रोमांच समाप्त होते ही 85% पूर्ण हो चुके कार्यों को बीच में छोड़कर नई दिशा में कूद पड़ना।',
-  },
-  1: {
-    name: 'Bharani', ruler: 'Venus',
-    archetypeEn: 'The Bearer of Sacred Burdens & Extremes', archetypeHi: 'प्रचंड संवेगात्मक भार एवं पुनर्जन्म का साधक',
-    midnightMindEn: 'You carry volcanic emotional extremes. You bear heavy psychological burdens for loved ones until you reach a breaking point of fierce renunciation.',
-    midnightMindHi: 'आप गहरे संवेगात्मक अंतर्द्वंद्व और अतिवाद को जीते हैं। आप अपनों का भारी मानसिक बोझ तब तक ढोते हैं जब तक कि अचानक सब कुछ त्यागने का आक्रोश न भड़क जाए।',
-    rageTriggerEn: 'Hypocrisy, emotional manipulation, and having your non-negotiable boundaries breached.',
-    rageTriggerHi: 'पाखंड, भावनात्मक ब्लैकमेल और अपनी मर्यादा सीमाओं का जबरन उल्लंघन किया जाना।',
-    chronicInsecurityEn: 'Deep-seated terror of betrayal after investing unconditional loyalty.',
-    chronicInsecurityHi: 'सर्वस्व निष्ठा समर्पित करने के उपरांत पीठ में छुरा घोंपे जाने का अवचेतन भय।',
-    selfSabotageEn: 'Holding extreme grudges in suffocating silence until an atomic bridge-burning explosion occurs.',
-    selfSabotageHi: 'मन ही मन कड़वाहट को दबाए रखना और फिर अचानक संबंध की सारी पुलिया एक क्षण में जला देना।',
-  },
-  2: {
-    name: 'Krittika', ruler: 'Sun',
-    archetypeEn: 'The Razor Flame & Incisive Critic', archetypeHi: 'अग्नि की तीक्ष्ण ज्वाला एवं निर्मम सत्यवादी',
-    midnightMindEn: 'You possess a searing intellect that cuts through deception like a laser. In midnight solitude, your own critical blade turns inward, torturing you over past imperfections.',
-    midnightMindHi: 'आपकी बुद्धि लेजर किरण की भांति असत्य को चीर देती है। आधी रात के सन्नाटे में आपकी यही आलोचनात्मक छुरी अपने ही भीतर मुड़कर आत्म-ग्लानि उत्पन्न करती है।',
-    rageTriggerEn: 'Falsity, incompetent sycophancy, and being commanded by individuals you do not respect.',
-    rageTriggerHi: 'झूठ, अयोग्य लोगों की चापलूसी और ऐसे व्यक्तियों द्वारा शासित होना जिनका आप सम्मान नहीं करते।',
-    chronicInsecurityEn: 'Fear of losing intellectual supremacy or appearing foolish in public forums.',
-    chronicInsecurityHi: 'बौद्धिक वर्चस्व खोने अथवा सार्वजनिक मंच पर मूर्ख सिद्ध हो जाने का गहरा संकोच।',
-    selfSabotageEn: 'Unleashing caustic, unfiltered verbal truths that permanently alienate crucial allies.',
-    selfSabotageHi: 'कड़वे और तीखे सच को बिना किसी कूटनीति के बोलकर अपने ही विश्वस्त सहयोगियों को दूर कर देना।',
-  },
-  3: {
-    name: 'Rohini', ruler: 'Moon',
-    archetypeEn: 'The Luminous Creator & Magnetic Sensualist', archetypeHi: 'सृजन का कांतिमान केंद्र एवं सौंदर्य-उपासक',
-    midnightMindEn: 'Hungry for visual elegance, artistic perfection, and tender devotion. At night, you battle possessiveness, comparing your material/aesthetic standing with others.',
-    midnightMindHi: 'सौंदर्य, कलात्मक पूर्णता और अनन्य आत्मीयता की गहरी भूख। एकांत में मन ईर्ष्या, असुरक्षा और दूसरों से अपनी तुलना के भंवर में फंस जाता है।',
-    rageTriggerEn: 'Crude vulgarity, aesthetic deprivation, and feeling unappreciated or emotionally starved.',
-    rageTriggerHi: 'फूहड़पन, सौंदर्यहीनता और अपने समर्पण की उपेक्षा या भावनात्मक उपेक्षा किया जाना।',
-    chronicInsecurityEn: 'Dread of physical decay, fading youth, and being replaced by someone more charming.',
-    chronicInsecurityHi: 'शारीरिक आकर्षण क्षीण होने, बुढ़ापे और अपनी जगह किसी अन्य को प्राथमिकता मिलने का भय।',
-    selfSabotageEn: 'Over-indulging in luxurious escapism or emotional manipulation to retain control.',
-    selfSabotageHi: 'नियंत्रण बनाए रखने के लिए भावनात्मक रूठना-मनाना अथवा विलासिता में पलायन करना।',
-  },
-  4: {
-    name: 'Mrigashira', ruler: 'Mars',
-    archetypeEn: 'The Questing Deer & Eternal Seeker', archetypeHi: 'सत्य का खोजी मृग एवं बेचैन अन्वेषक',
-    midnightMindEn: 'Your mind is a tireless detective, sniffing out clues, researching anomalies, and wandering restlessly. In solitude, you suffer from the curse of insatiable curiosity.',
-    midnightMindHi: 'आपका मन एक चतुर जासूस की तरह लगातार खोज करता रहता है। एकांत में आप कभी एक विचार पर टिक नहीं पाते; अतृप्त जिज्ञासा आपको बेचैन रखती है।',
-    rageTriggerEn: 'Being kept in the dark, dogmatic censorship, and people who refuse to answer direct questions.',
-    rageTriggerHi: 'सच्चाई छिपाया जाना, अंधविश्वास थोपना और सीधे प्रश्नों का गोलमोल उत्तर दिया जाना।',
-    chronicInsecurityEn: 'Terror of intellectual stagnancy or making an irreversible commitment to the wrong choice.',
-    chronicInsecurityHi: 'गलत विकल्प चुनकर स्थायी रूप से फंस जाने अथवा मानसिक जड़ता का गहरा भय।',
-    selfSabotageEn: 'Second-guessing decisions at the eleventh hour, abandoning solid reality for greener pastures.',
-    selfSabotageHi: 'अंतिम क्षण में अपने ही निर्णयों पर संदेह करना और हाथ आए अवसर को छोड़कर नई मृगतृष्णा के पीछे भागना।',
-  },
-  5: {
-    name: 'Ardra', ruler: 'Rahu',
-    archetypeEn: 'The Storm Bringer & Diamond of Truth', archetypeHi: 'रुद्र का झंझावात एवं अश्रुओं से तराशा हीरा',
-    midnightMindEn: 'You dwell amidst lightning and thunder. Your midnight mind experiences profound existential sorrow, dissecting collective trauma and human duplicity with chilling lucidity.',
-    midnightMindHi: 'आप तूफानों के बीच जीते हैं। आधी रात को आपका मन गहरे अस्तित्वगत शोक, सांसारिक छल-प्रपंच और एकाकीपन को बड़ी निर्ममता से महसूस करता है।',
-    rageTriggerEn: 'Arbitrary authority, sanctimonious moralizing, and systemic injustice.',
-    rageTriggerHi: 'अहंकारी सत्ता, पाखंडी उपदेश और व्यवस्थागत अन्याय को देखकर भीतर ज्वालामुखी धधकता है।',
-    chronicInsecurityEn: 'Dread of psychic disintegration, chaos, and being misunderstood as permanently toxic.',
-    chronicInsecurityHi: 'मानसिक संतुलन बिखरने और समाज द्वारा सदैव गलत समझे जाने की गहरी कचोट।',
-    selfSabotageEn: 'Blowing up stable situations preemptively because peace feels unnaturally suspicious.',
-    selfSabotageHi: 'स्थिर और शांत परिस्थितियों को पहले ही तहस-नहस कर देना क्योंकि शांति आपको संदिग्ध लगती है।',
-  },
-  6: {
-    name: 'Punarvasu', ruler: 'Jupiter',
-    archetypeEn: 'The Returning Arrow of Renewal', archetypeHi: 'पुनरुत्थान का अक्षय बाण एवं दयालु आश्रयदाता',
-    midnightMindEn: 'Blessed with resilience, yet haunted by past losses. At night, you replay how often you gave your last grain of wheat only to be discarded when the recipient prospered.',
-    midnightMindHi: 'बार-बार शून्य से उठ खड़े होने की शक्ति, किंतु पुरानी वंचनाओं की टीस। एकांत में आप सोचते हैं कि कैसे आपने दूसरों को सहारा दिया और वे समर्थ होते ही आपको भूल गए।',
-    rageTriggerEn: 'Ungrateful entitlement, desecration of sacred principles, and betrayal of hospitality.',
-    rageTriggerHi: 'अहसानफरामोशी, मर्यादाओं का हनन और आपके द्वारा दिए गए आश्रय का दुरुपयोग।',
-    chronicInsecurityEn: 'Fear of having to rebuild from scratch yet again in advanced years.',
-    chronicInsecurityHi: 'उम्र के किसी भी पड़ाव पर पुनः शून्य से शुरुआत करने की विवशता का अवचेतन भय।',
-    selfSabotageEn: 'Excessive leniency toward repeat offenders, letting parasites drain your resources twice.',
-    selfSabotageHi: 'धोखेबाजों को बार-बार क्षमादान देना और परजीवियों को अपनी संचित ऊर्जा दोबारा चूसने देना।',
-  },
-  7: {
-    name: 'Pushya', ruler: 'Saturn',
-    archetypeEn: 'The Nurturing High Priest & Guardian', archetypeHi: 'दैवीय पोषणकर्ता एवं कर्तव्यनिष्ठ संरक्षक',
-    midnightMindEn: 'You act as everyone’s foster parent, keeping sorrows hidden behind a stoic smile. In midnight stillness, a cold loneliness whispers that no one will ever care for you the way you care for them.',
-    midnightMindHi: 'आप सबका पोषण करते हैं किंतु स्वयं के आंसू पी जाते हैं। रात के सन्नाटे में यह टीस सालती है कि जितना आपने संसार को दिया, उसका दसवां हिस्सा भी आपको कभी नहीं मिलेगा।',
-    rageTriggerEn: 'Neglect of dependents, mockery of duty, and irreverence toward foundational traditions.',
-    rageTriggerHi: 'कर्तव्य से मुंह मोड़ना, कमजोरों की उपेक्षा और मर्यादाओं का उपहास उड़ाना।',
-    chronicInsecurityEn: 'Terror of becoming an emotional or physical burden on others in old age.',
-    chronicInsecurityHi: 'वृद्धावस्था में किसी पर बोझ बन जाने अथवा अपनी स्वायत्तता खोने का भय।',
-    selfSabotageEn: 'Suffocating over-protectiveness, martyring yourself to cultivate indebtedness in others.',
-    selfSabotageHi: 'अत्यधिक त्याग का नाटक कर अनजाने में दूसरों को अपराधी जैसा महसूस कराना।',
-  },
-  8: {
-    name: 'Ashlesha', ruler: 'Mercury',
-    archetypeEn: 'The Coiled Kundalini & Hypnotic Psychologist', archetypeHi: 'कुण्डलिनी का गूढ़ सर्प एवं सम्मोहनकारी मनोवैज्ञानिक',
-    midnightMindEn: 'Your intuition reads micro-expressions and unvoiced jealousies with terrifying precision. At night, paranoia coils around your spine, calculating defenses against invisible daggers.',
-    midnightMindHi: 'आपकी दृष्टि दूसरों के छिपे इरादों को भांप लेती है। आधी रात को अविश्वास का सर्प आपको घेर लेता है और आप अदृश्य शत्रुओं से बचने की रणनीतियां बुनते रहते हैं।',
-    rageTriggerEn: 'Disrespect to your intelligence, overt surveillance, and cornering your autonomy.',
-    rageTriggerHi: 'आपकी बुद्धि को कम आंकना, जासूसी करना और आपकी स्वाधीनता को घेरने की चेष्टा।',
-    chronicInsecurityEn: 'Dread of emotional vulnerability; fear that surrendering control will destroy you.',
-    chronicInsecurityHi: 'भावनात्मक समर्पण का भय; यह डर कि यदि नियंत्रण छोड़ा तो दूसरा आपको नष्ट कर देगा।',
-    selfSabotageEn: 'Injecting subtle poison or passive-aggressive tests into relations until they actually fracture.',
-    selfSabotageHi: 'संबंधों में सूक्ष्म संदेह का विष घोलना और ऐसी परीक्षाएं लेना जो अंततः संबंध को तोड़ दें।',
-  },
-  9: {
-    name: 'Magha', ruler: 'Ketu',
-    archetypeEn: 'The Ancestral Monarch & Throne Bearer', archetypeHi: 'पितरों का कुलीन सम्राट एवं वंश-गौरव',
-    midnightMindEn: 'You carry the heavy weight of lineage expectations and royal pride. In darkness, you agonize over whether your worldly achievements match the majestic standards of your ancestors.',
-    midnightMindHi: 'आपके भीतर कुल-गौरव और राजसी स्वाभिमान का भारी भार है। एकांत में आप इस चिंता में घुलते हैं कि क्या आपकी उपलब्धियां आपके पूर्वजों के मान के अनुरूप हैं।',
-    rageTriggerEn: 'Being treated as ordinary, disrespect to ancestry, and casual public dismissal.',
-    rageTriggerHi: 'साधारण व्यक्ति जैसा बर्ताव किया जाना, कुल का अपमान और सार्वजनिक उपेक्षा।',
-    chronicInsecurityEn: 'Horror of public disgrace, fallen status, or lineage extinction.',
-    chronicInsecurityHi: 'सार्वजनिक रूप से अपमानित होने, पद से गिरने अथवा कुल की प्रतिष्ठा धूमिल होने का भय।',
-    selfSabotageEn: 'Rigid aristocratic arrogance that prevents asking for timely help when drowning.',
-    selfSabotageHi: 'अहंकार में डूबकर संकट के समय भी किसी से हाथ फैलाने या सहायता मांगने से इनकार कर देना।',
-  },
-  10: {
-    name: 'Purva Phalguni', ruler: 'Venus',
-    archetypeEn: 'The Royal Reveler & Romantic Benefactor', archetypeHi: 'आनंद का राजसी उत्सव एवं सुरुचिपूर्ण प्रेमी',
-    midnightMindEn: 'You hunger for life to be an exquisite feast of affection, luxury, and art. At night, you feel desolate when the applause fades, dreading the monotony of dry obligations.',
-    midnightMindHi: 'आप जीवन को प्रेम, विलास और उत्सव का मंच बनाना चाहते हैं। रात को जब तालियों की गूंज शांत होती है, तो एकाकीपन और नीरस जिम्मेदारियों का भय आपको घेर लेता है।',
-    rageTriggerEn: 'Emotional coldness, joyless austerity, and stinginess in romance or generosity.',
-    rageTriggerHi: 'रूखापन, नीरस कंजूसी और प्रेम अथवा उपहारों में संकीर्णता का प्रदर्शन।',
-    chronicInsecurityEn: 'Fear of unrequited adoration or ending up unloved in a sterile domestic cage.',
-    chronicInsecurityHi: 'प्रेमविहीन नीरस दांपत्य में कैद हो जाने अथवा अपनी चमक खोने का डर।',
-    selfSabotageEn: 'Procrastinating on arduous technical labor, seeking comfort over disciplined execution.',
-    selfSabotageHi: 'कठिन परिश्रम को टालकर तात्कालिक सुख-सुविधाओं और विलासिता में समय नष्ट करना।',
-  },
-  11: {
-    name: 'Uttara Phalguni', ruler: 'Sun',
-    archetypeEn: 'The Noble Patron & Pillar of Covenants', archetypeHi: 'धर्म का संरक्षक स्तंभ एवं मैत्री का दूत',
-    midnightMindEn: 'The natural patron who holds treaties and friendships together. At night, the loneliness of leadership bites deep; you wonder who will stand with you when you run out of favors.',
-    midnightMindHi: 'मित्रता और वचनों के पक्के संरक्षक। एकांत में यह प्रश्न सालता है कि जब आप दूसरों को लाभ देने की स्थिति में नहीं रहेंगे, तब कौन आपका साथ निभाएगा।',
-    rageTriggerEn: 'Broken contracts, ingratitude after patronage, and public breaches of decorum.',
-    rageTriggerHi: 'वचनों से मुकरना, उपकार के बदले दगाबाजी और मर्यादाहीन सार्वजनिक आचरण।',
-    chronicInsecurityEn: 'Terror of failing those who rely on your guardianship or going bankrupt privately.',
-    chronicInsecurityHi: 'आश्रितों की रक्षा करने में असमर्थ होने अथवा गोपनीय रूप से दिवालिया दिखने का संकोच।',
-    selfSabotageEn: 'Sacrificing personal wealth to preserve a dignified public façade long past sustainability.',
-    selfSabotageHi: 'झूठी सामाजिक प्रतिष्ठा और दिखावे को बनाए रखने के लिए अपनी निजी संपत्ति लुटा देना।',
-  },
-  12: {
-    name: 'Hasta', ruler: 'Moon',
-    archetypeEn: 'The Dexterous Alchemist & Anxious Craftsperson', archetypeHi: 'हस्तशिल्प का सिद्ध जादूगर एवं संवेदनशील शिल्पी',
-    midnightMindEn: 'Your hands and mind are constantly working, calculating, scheming, or creating. In the dark, a nervous vibration hums through your limbs—fearing loss of precision and micro-control.',
-    midnightMindHi: 'हाथ और मन निरंतर किसी उधेड़बुन, योजना या शिल्प में लगे रहते हैं। रात को स्नायुओं में एक अज्ञात तनाव रहता है—हर छोटी बात पर नियंत्रण खोने का भय सताता है।',
-    rageTriggerEn: 'Clumsiness, sloppy execution, and having your carefully organized systems disordered.',
-    rageTriggerHi: 'फूहड़ काम, लापरवाही और आपकी सुव्यवस्थित व्यवस्था को अस्त-व्यस्त कर देना।',
-    chronicInsecurityEn: 'Dread of mental decline, trembling hands, and being rendered useless.',
-    chronicInsecurityHi: 'मानसिक तीक्ष्णता क्षीण होने और किसी काम का न रह जाने का अवचेतन भय।',
-    selfSabotageEn: 'Micro-managing details until collaborators revolt, paralyzed by endless edits.',
-    selfSabotageHi: 'हर छोटी बात में मीन-मेख निकालना और परफेक्शन के चक्कर में काम को कभी पूरा न होने देना।',
-  },
-  13: {
-    name: 'Chitra', ruler: 'Mars',
-    archetypeEn: 'The Celestial Architect & Lone Sculptor', archetypeHi: 'विश्वकर्मा का दिव्य शिल्पी एवं अनूठा सर्जक',
-    midnightMindEn: 'You see the geometric flaws in everything and everyone. In midnight isolation, your brutal internal critic dismantles your own creations, demanding superhuman perfection.',
-    midnightMindHi: 'आप हर वस्तु और व्यक्ति में कमियां तुरंत देख लेते हैं। एकांत में आपकी अपनी ही आलोचनात्मक बुद्धि आपकी बनाई कृतियों को तोड़कर पुनः गढ़ने के उन्माद में लग जाती है।',
-    rageTriggerEn: 'Ugliness, mediocre compromise, and someone claiming credit for your design.',
-    rageTriggerHi: 'कुरुपता, घटिया समझौता और आपकी मौलिक रचना का श्रेय किसी और द्वारा ले जाना।',
-    chronicInsecurityEn: 'Fear of creating something flawed, derivative, or aesthetically forgotten.',
-    chronicInsecurityHi: 'साधारण दिखने, विस्मृत हो जाने अथवा किसी अधूरी रचना के साथ जीने का भय।',
-    selfSabotageEn: 'Destroying brilliant half-finished work in fits of dissatisfaction, starting from scratch repeatedly.',
-    selfSabotageHi: 'असंतोष के उन्माद में अपने ही श्रेष्ठ कार्यों को नष्ट कर पुनः नए सिरे से शुरुआत करना।',
-  },
-  14: {
-    name: 'Swati', ruler: 'Rahu',
-    archetypeEn: 'The Independent Pearl in the Gale', archetypeHi: 'झंझावात में तैरता स्वाधीन मोती एवं वायु-पुत्र',
-    midnightMindEn: 'You value freedom above life itself. In the quiet of night, you fear emotional cages; the moment someone builds a fence around you, your instinct is to fly into the storm.',
-    midnightMindHi: 'आप स्वाधीनता को प्राणों से अधिक प्रिय मानते हैं। आधी रात को यह डर सताता है कि कोई आपको किसी सामाजिक या पारिवारिक पिंजरे में न बांध दे।',
-    rageTriggerEn: 'Possessive jealousy, micromanagement, and arbitrary restrictions on your mobility.',
-    rageTriggerHi: 'शक, आधिपत्य जमाने की चेष्टा और आपकी गति पर पाबंदियां लगाना।',
-    chronicInsecurityEn: 'Horror of being trapped in suffocating conformity or domestic stagnation.',
-    chronicInsecurityHi: 'दकियानूसी बंधनों में घुटकर अपनी पहचान और गतिशीलता खो देने का भय।',
-    selfSabotageEn: 'Scattering energy in ten directions at once, refusing to anchor roots in fertile soil.',
-    selfSabotageHi: 'एक साथ दस दिशाओं में भटकना और किसी एक मजबूत आधार पर जड़ें जमाने से कतराना।',
-  },
-  15: {
-    name: 'Vishakha', ruler: 'Jupiter',
-    archetypeEn: 'The Triumphant Conqueror & Fixated Archer', archetypeHi: 'लक्ष्यवेधी इंद्र-अग्नि एवं अदम्य विजेता',
-    midnightMindEn: 'Driven by intense ambition and relentless focus on the trophy. In midnight solitude, burning envy or obsession over competitors keeps you awake, measuring the distance to the goal.',
-    midnightMindHi: 'प्रचंड महत्वाकांक्षा और लक्ष्य पर अर्जुन जैसी दृष्टि। एकांत में प्रतिस्पर्धियों से आगे निकलने की धुन और ईर्ष्या की आग नींद उड़ा देती है।',
-    rageTriggerEn: 'Being denied your earned prize, obstruction by gatekeepers, and rivals gloating.',
-    rageTriggerHi: 'मेहनत के फल से वंचित किया जाना, बाधाएं खड़ी करना और विरोधियों का उपहास।',
-    chronicInsecurityEn: 'Terror of coming in second place or seeing lesser minds inherit the victory.',
-    chronicInsecurityHi: 'द्वितीय स्थान पर रह जाने अथवा कम योग्य व्यक्तियों को बाजी मारते देखने की कचोट।',
-    selfSabotageEn: 'Obsessing over a single narrow victory while your broader life and relationships burn.',
-    selfSabotageHi: 'एक संकीर्ण जीत की धुन में अपने स्वास्थ्य, परिवार और शांति की बलि चढ़ा देना।',
-  },
-  16: {
-    name: 'Anuradha', ruler: 'Saturn',
-    archetypeEn: 'The Devoted Lotus of Exile & Cosmic Harmony', archetypeHi: 'विरह में खिला पावन कमल एवं निष्ठावान मित्र',
-    midnightMindEn: 'Capable of profound loyalty through adversity, yet familiar with deep inner exile. At night, you feel homesick for an unearthly sanctuary, yearning for pure brotherhood.',
-    midnightMindHi: 'कठिनाइयों में अडिग निष्ठा, किंतु भीतर एक गहरा विरह। आधी रात को मन इस संसार में परायापन महसूस करता है और किसी आत्मिक सत्य की खोज में तड़पता है।',
-    rageTriggerEn: 'Betrayal of fraternity, malicious gossip behind friends’ backs, and cruelty to loyal souls.',
-    rageTriggerHi: 'मित्रता में दगा, पीठ पीछे चुगली और सच्चे वफादारों के साथ किया गया दुर्व्यवहार।',
-    chronicInsecurityEn: 'Dread of dying alone in spiritual or physical exile without true companions.',
-    chronicInsecurityHi: 'जीवन के अंत में सर्वथा एकाकी रह जाने और अपनों द्वारा विस्मृत कर दिए जाने का भय।',
-    selfSabotageEn: 'Staying loyal to toxic organizations or abusive partners decades past all reason.',
-    selfSabotageHi: 'कष्टकारी संबंधों या संस्थाओं से अंध निष्ठा के कारण वर्षों तक चिपके रहना।',
-  },
-  17: {
-    name: 'Jyeshtha', ruler: 'Mercury',
-    archetypeEn: 'The Sovereign Eldest & Hidden Talisman', archetypeHi: 'ज्येष्ठ पद का उत्तराधिकारी एवं रहस्यमयी रक्षक',
-    midnightMindEn: 'You hold supreme protective authority, yet battle a fragile inner child. In darkness, you fear humiliation, constantly guarding against junior upstarts challenging your throne.',
-    midnightMindHi: 'आप वरिष्ठता का अधिकार रखते हैं किंतु भीतर एक असुरक्षित बालक छिपा है। रात के सन्नाटे में अपमान और नए लोगों द्वारा आपका स्थान छीन लिए जाने का भय सताता है।',
-    rageTriggerEn: 'Insolence from juniors, disrespect to your rank, and condescending lectures.',
-    rageTriggerHi: 'कनिष्ठों की धृष्टता, पद की अवहेलना और किसी का आपको सिखाने का प्रयास करना।',
-    chronicInsecurityEn: 'Horror of public dethronement, senility, or having your secrets weaponized.',
-    chronicInsecurityHi: 'सार्वजनिक रूप से पदच्युत होने अथवा अपने गुप्त रहस्यों के उजागर होने का डर।',
-    selfSabotageEn: 'Becoming isolated in paranoid defensiveness, driving away natural successors.',
-    selfSabotageHi: 'अति-संदेह में घिरकर एकाकी हो जाना और योग्य उत्तराधिकारियों को शत्रु मानकर दूर भगाना।',
-  },
-  18: {
-    name: 'Mula', ruler: 'Ketu',
-    archetypeEn: 'The Root Destroyer & Alchemical Destroyer of Illusions', archetypeHi: 'मूल-उच्छेदन की शक्ति एवं संचित बंधनों का संहारक',
-    midnightMindEn: 'You possess the power to uproot rotten trees and demolish fake facades. In midnight hours, you face the abyss—existential void, ancestral curses, and radical impermanence.',
-    midnightMindHi: 'सड़े-गले ढांचों को जड़ से उखाड़ फेंकने की शक्ति। रात को मन महा-शून्य के सामने खड़ा होता है—अस्तित्व का भयंकर सत्य और सब कुछ मिट जाने का अहसास।',
-    rageTriggerEn: 'Superficial band-aids on rotting problems, ancestral guilt, and moral cowardice.',
-    rageTriggerHi: 'गंभीर समस्याओं पर लीपापोती करना, कायरता और झूठी परंपराओं का ढोंग।',
-    chronicInsecurityEn: 'Terror of sudden catastrophic total loss—home, wealth, or sanity—overnight.',
-    chronicInsecurityHi: 'रातों-रात सब कुछ लुट जाने, घर-द्वार अथवा मानसिक संतुलन छिन जाने का अवचेतन भय।',
-    selfSabotageEn: 'Pulling the emergency cord and demolishing flourishing setups when things get too comfortable.',
-    selfSabotageHi: 'जब जीवन में सब कुछ शांत और सुगम होने लगे, तो स्वयं ही विस्फोट कर सब नष्ट कर देना।',
-  },
-  19: {
-    name: 'Purva Ashadha', ruler: 'Venus',
-    archetypeEn: 'The Invincible Wave & Proud Purifier', archetypeHi: 'अपराजित जल-तरंग एवं गर्वोन्मत्त विजेता',
-    midnightMindEn: 'You believe firmly in your moral rightness and destiny of triumph. At night, you struggle to admit error, convincing yourself that the world simply lacks the vision to comprehend you.',
-    midnightMindHi: 'अपने सत्य और विजय पर अटूट विश्वास। एकांत में अपनी गलती स्वीकार करने में भारी कठिनाई होती है; आप मानते हैं कि दुनिया आपको समझने में असमर्थ है।',
-    rageTriggerEn: 'Being proven wrong publicly, condescension, and being told you cannot accomplish something.',
-    rageTriggerHi: 'सार्वजनिक रूप से गलत साबित होना, उपेक्षा और यह कहा जाना कि यह तुम्हारे बस का नहीं है।',
-    chronicInsecurityEn: 'Dread of being seen as ordinary, defeated, or morally compromised.',
-    chronicInsecurityHi: 'पराजित, साधारण अथवा नैतिक रूप से कलंकित दिखने का असहनीय भय।',
-    selfSabotageEn: 'Doubling down on flawed strategies out of sheer obstinate pride rather than pivoting.',
-    selfSabotageHi: 'हठधर्मिता और झूठी शान में आकर गलत रणनीति पर अड़े रहना और समय पर मार्ग न बदलना।',
-  },
-  20: {
-    name: 'Uttara Ashadha', ruler: 'Sun',
-    archetypeEn: 'The Universal Sovereign of Lasting Victory', archetypeHi: 'विश्वेदेवों का शाश्वत धर्म-स्तंभ एवं धीर विजेता',
-    midnightMindEn: 'Endowed with quiet endurance and stately patience. In midnight silence, the heavy burden of solitary responsibility presses on your chest; you bear duties with solemn stoicism.',
-    midnightMindHi: 'धैर्य और मर्यादा की प्रतिमूर्ति। आधी रात को अकेलेपन और जिम्मेदारियों का भारी पत्थर छाती पर महसूस होता है; आप चुपचाप सब कुछ सहते हैं।',
-    rageTriggerEn: 'Anarchy, unprincipled opportunism, and lack of seriousness in solemn matters.',
-    rageTriggerHi: 'अराजकता, अवसरवादिता और गंभीर कार्यों में छिछोरापन व ढिलाई।',
-    chronicInsecurityEn: 'Fear of exhausting all patience and breaking down in front of those who lean on you.',
-    chronicInsecurityHi: 'धैर्य की सीमा टूट जाने और आश्रितों के सामने कमजोर पड़ जाने का भय।',
-    selfSabotageEn: 'Excessive solemnity and emotional austerity that starves relationships of warmth.',
-    selfSabotageHi: 'इतने अधिक गंभीर और कठोर बन जाना कि संबंधों में प्रेम की गरमाहट ही सूख जाए।',
-  },
-  21: {
-    name: 'Shravana', ruler: 'Moon',
-    archetypeEn: 'The Cosmic Listener & Keeper of Wisdom', archetypeHi: 'ब्रह्मांडीय श्रोता एवं शास्त्रों का पावन भंडार',
-    midnightMindEn: 'Your ears catch whispers, tones, and hidden malice before words are completed. In solitude, your mind replays audio recordings of past conflicts, deciphering double meanings.',
-    midnightMindHi: 'आप दूसरों के कहे बिना उनके मन की ध्वनि सुन लेते हैं। एकांत में पुरानी बातचीत, कटाक्ष और दोहरे अर्थों को बार-बार याद कर मन को व्यथित करते हैं।',
-    rageTriggerEn: 'Being talked over, intentional distortion of your words, and vulgar noise.',
-    rageTriggerHi: 'बात काट देना, आपके शब्दों का गलत अर्थ निकालना और कर्कश कोलाहल।',
-    chronicInsecurityEn: 'Dread of deafness, mental confusion, or being discredited by false rumors.',
-    chronicInsecurityHi: 'झूठे अपवादों द्वारा छवि धूमिल किए जाने अथवा अपनी अंतर्दृष्टि खोने का डर।',
-    selfSabotageEn: 'Over-interpreting casual remarks as deliberate insults, retreating into cold silence.',
-    selfSabotageHi: 'अनजाने में कही गई बातों में भी षड्यंत्र ढूंढना और रूठकर मौन साध लेना।',
-  },
-  22: {
-    name: 'Dhanishta', ruler: 'Mars',
-    archetypeEn: 'The Rhythmic Flute of Abundance & Solitary Lion', archetypeHi: 'अष्टवसुओं की ऐश्वर्य-बांसुरी एवं एकाकी सिंह',
-    midnightMindEn: 'Attuned to rhythm, high wealth, and fame, yet deeply lonely inside. At night, an empty echo reminds you that external applause cannot warm the cold chambers of your inner temple.',
-    midnightMindHi: 'यश, वैभव और संगीत की साधना, किंतु भीतर एक गहरा शून्य। तालियों की गूंज के बाद भी एकांत में मन एक अजीब खोखलेपन का अनुभव करता है।',
-    rageTriggerEn: 'Rhythm disruption, betrayal of confidence, and partners seeking to dim your spotlight.',
-    rageTriggerHi: 'व्यवस्था भंग करना, विश्वासघात और आपके प्रभाव को कमतर आंकने का प्रयास।',
-    chronicInsecurityEn: 'Fear that beneath the glamorous accomplishments, you are fundamentally unlovable.',
-    chronicInsecurityHi: 'यह अवचेतन डर कि सारी उपलब्धियों के बाद भी कोई आपको सच्चा प्रेम नहीं करता।',
-    selfSabotageEn: 'Prioritizing status symbols and public reputation over raw human vulnerability.',
-    selfSabotageHi: 'सच्चे रिश्तों के स्थान पर प्रतिष्ठा और दिखावे को प्राथमिकता देकर अपनों को खो देना।',
-  },
-  23: {
-    name: 'Shatabhisha', ruler: 'Rahu',
-    archetypeEn: 'The Hundred Healers & Veiled Enigma', archetypeHi: 'शत-भिषजों का रहस्यमयी पर्दा एवं एकांत वैद्य',
-    midnightMindEn: 'You live behind a hundred concentric veils. In the midnight laboratory of your mind, you dissect human frailty, astronomy, or medicine, terrified of exposing your soft underbelly.',
-    midnightMindHi: 'आप सौ पर्दों के पीछे जीते हैं। रात की प्रयोगशाला में आप संसार के रहस्यों और मानव की कमजोरियों का विश्लेषण करते हैं, अपनी कमजोरी कभी बाहर नहीं आने देते।',
-    rageTriggerEn: 'Breach of medical/personal privacy, intrusive interrogations, and forced vulnerability.',
-    rageTriggerHi: 'गोपनीयता का हनन, अवांछित पूछताछ और जबरन दिल की बात उगलवाने की चेष्टा।',
-    chronicInsecurityEn: 'Horror of total exposure, public scandal, or incurable chronic malady.',
-    chronicInsecurityHi: 'सार्वजनिक कलंक, रहस्यों का खुलना अथवा किसी असाध्य रोग की चपेट में आने का डर।',
-    selfSabotageEn: 'Hermetic total withdrawal, shutting out genuine healers and lovers in chronic cynicism.',
-    selfSabotageHi: 'इतना अधिक एकांतवासी और संशयी बन जाना कि सच्चे शुभचिंतक भी निराश होकर लौट जाएं।',
-  },
-  24: {
-    name: 'Purva Bhadrapada', ruler: 'Jupiter',
-    archetypeEn: 'The Two-Faced Fire of Tapasya & Thunder', archetypeHi: 'तपस्या की दोमुखी ज्वाला एवं अज-एकपाद का रुद्र',
-    midnightMindEn: 'You carry a fierce dual nature—saintly scholar by day, dark ascetic warrior at night. Your midnight mind grapples with apocalyptic visions, radical sacrifices, and intense passions.',
-    midnightMindHi: 'दोहरा व्यक्तित्व—दिन में सौम्य विद्वान, रात में कठोर संन्यासी या तांत्रिक साधक। आधी रात को मन में प्रलयंकारी विचार, त्याग और तीव्र वैराग्य का ज्वार उठता है।',
-    rageTriggerEn: 'Hypocritical piety, shallow materialism, and trivial gossip about sacred truths.',
-    rageTriggerHi: 'ढोंगी साधुता, ओछा भौतिकवाद और गंभीर विषयों पर ओछी टिप्पणियां।',
-    chronicInsecurityEn: 'Fear of succumbing to hidden dark obsessions or madness of the solitary soul.',
-    chronicInsecurityHi: 'अपनी ही दमित वासनाओं के वेग में बह जाने अथवा पागलपन की हद तक अकेले पड़ जाने का डर।',
-    selfSabotageEn: 'Extreme self-mortification or suddenly burning your worldly life down to become an ascetic.',
-    selfSabotageHi: 'अतिवादी वैराग्य में आकर अपनी जमी-जमाई गृहस्थी या करियर को अचानक ठोकर मार देना।',
-  },
-  25: {
-    name: 'Uttara Bhadrapada', ruler: 'Saturn',
-    archetypeEn: 'The Serpent of the Cosmic Deep & Master of Stillness', archetypeHi: 'अहिर्बुध्न्य का पाताल-सर्प एवं ध्यानस्थ महायोगी',
-    midnightMindEn: 'Endowed with deep oceanic stillness. At night, you descend into profound contemplation; you can absorb immense pain without a ripple on the surface, yet risk emotional numbness.',
-    midnightMindHi: 'गंभीर समुद्र जैसी अगाध शांति। आप भारी से भारी आघात को बिना हिले पी जाते हैं, किंतु एकांत में इस बात का खतरा रहता है कि भावनाएं पूरी तरह सुन्न न हो जाएं।',
-    rageTriggerEn: 'Cruelty to animals or innocent beings, desecration of water/sanctuaries, and cheap emotional tantrums.',
-    rageTriggerHi: 'निर्दोषों पर अत्याचार, पावन स्थलों का अपमान और दूसरों के ओछे नखरे।',
-    chronicInsecurityEn: 'Dread of being swept away by chaotic emotional floods or losing mental equilibrium.',
-    chronicInsecurityHi: 'भावुकता के तूफान में अपनी बौद्धिक स्थिरता और संयम खो देने का भय।',
-    selfSabotageEn: 'Becoming so emotionally unmovable that loved ones feel they are speaking to a stone wall.',
-    selfSabotageHi: 'इतना भावहीन और तटस्थ हो जाना कि परिजन आपके सामने पत्थर की दीवार जैसा महसूस करें।',
-  },
-  26: {
-    name: 'Revati', ruler: 'Mercury',
-    archetypeEn: 'The Compassionate Ferryman of Lost Souls', archetypeHi: 'पूषा का दयालु नाविक एवं भवसागर का तारणहार',
-    midnightMindEn: 'You feel the suffering of the entire universe. At night, you absorb others’ psychic burdens, weeping over stray animals, forgotten children, and the painful passage of time.',
-    midnightMindHi: 'आप पूरे ब्रह्मांड की पीड़ा अपने हृदय में महसूस करते हैं। रात को दूसरों के दुख, बेसहारा जीवों की व्यथा और समय के बीतने का दर्द आपकी आंखों में आंसू ला देता है।',
-    rageTriggerEn: 'Cruelty to the defenseless, petty greed, and hard-hearted mockery of kindness.',
-    rageTriggerHi: 'असमर्थों पर जुल्म, संकीर्ण लालच और किसी की दयालुता का उपहास उड़ाना।',
-    chronicInsecurityEn: 'Terror of being left behind on the shore after safely ferrying everyone else across.',
-    chronicInsecurityHi: 'सबको भवसागर पार कराकर स्वयं अकेले किनारे पर छूट जाने का गहरा दर्द।',
-    selfSabotageEn: 'Total boundarylessness—bankrupting yourself emotionally and financially for ungrateful strays.',
-    selfSabotageHi: 'मर्यादा का अभाव—अयोग्य और धूर्त लोगों की सहायता में अपना सर्वस्व लुटाकर कंगाल हो जाना।',
-  },
-};
-
-// ============================================================================
-// DYNAMIC CHAPTER 2: PSYCHOLOGY & HIDDEN TURMOIL
-// ============================================================================
 export function computeDynamicPsychologySections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
-  const ascElem = SIGNS[asc.signIndex].element;
-  const ascLord = asc.signLord;
-  const ascLordPlanet = chart.planets.find((p) => p.id === ascLord);
-  const moon = chart.planets.find((p) => p.id === 'Moon') ?? chart.planets[1];
-  const saturn = chart.planets.find((p) => p.id === 'Saturn')!;
-  const mars = chart.planets.find((p) => p.id === 'Mars')!;
-  const rahu = chart.planets.find((p) => p.id === 'Rahu')!;
-  const ketu = chart.planets.find((p) => p.id === 'Ketu')!;
-  const jupiter = chart.planets.find((p) => p.id === 'Jupiter')!;
-  const mercury = chart.planets.find((p) => p.id === 'Mercury')!;
-
-  const nakIdx = moon.nakshatraIndex ?? 0;
-  const profile = NAKSHATRA_PROFILES[nakIdx] ?? NAKSHATRA_PROFILES[0];
-
-  // Mental Yogas
-  const satToMoonDist = ((moon.rasiHouseNumber - saturn.rasiHouseNumber + 12) % 12) + 1;
-  const hasVisha = [saturn.rasiHouseNumber].includes(moon.rasiHouseNumber) ||
-    [3, 7, 10].includes(satToMoonDist);
-  const hasGrahan = [rahu.rasiHouseNumber, ketu.rasiHouseNumber].includes(moon.rasiHouseNumber);
-  const hasAngarak = mars.rasiHouseNumber === moon.rasiHouseNumber;
-  const hasGajakesari = [1, 4, 7, 10].includes(((jupiter.rasiHouseNumber - moon.rasiHouseNumber + 12) % 12) + 1);
-
-  // Outer Persona vs Inner Mind
-  let maskEn = '';
-  let maskHi = '';
-  if (ascElem === 'Fire') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the posture of an intrepid commander: dynamic, bold, and unfazed by chaos. Acquaintances perceive you as an unstoppable force who demands respect and gets things done without hand-wringing.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आप समाज में एक निर्भीक सेनापति की भांति दिखाई देते हैं: तेजस्वी, साहसी और संकट में तुरंत निर्णय लेने वाले। लोग आपको एक ऐसा व्यक्ति मानते हैं जो किसी भी चुनौती से भयभीत नहीं होता।`;
-  } else if (ascElem === 'Earth') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the demeanor of an unflinching bedrock: prudent, disciplined, and unshakable. People bring their chaotic problems to your door because you radiate pragmatic sanity and dependable silence.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आप समाज में एक शांत चट्टान की तरह दिखाई देते हैं: गंभीर, व्यावहारिक और विश्वसनीय। लोग अपनी उलझनें लेकर आपके पास आते हैं क्योंकि आपके पास हर समस्या का संतुलित समाधान होता है।`;
-  } else if (ascElem === 'Air') {
-    maskEn = `Born in ${asc.signName} Ascendant, you present the persona of an articulate, engaging intellectual: socially graceful, observant, and effortlessly diplomatic. People assume your mind is always breezy, cheerful, and unburdened.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आपका सामाजिक व्यक्तित्व अत्यंत वाक्पटु, मिलनसार और कूटनीतिक दिखाई देता है। लोग सोचते हैं कि आप सदैव प्रफुल्लित, तनावमुक्त और हर परिस्थिति में सामंजस्य बैठाने वाले हैं।`;
-  } else {
-    maskEn = `Born in ${asc.signName} Ascendant, you project the aura of a protective sanctuary: empathetic, receptive, and quietly dignified. People instinctively lean on you for emotional shelter, never guessing the profound turbulence beneath your surface.`;
-    maskHi = `'${SIGN_HI[asc.signIndex]}' लग्न में जन्म होने से आपका बाहरी रूप एक शांत आश्रयदाता जैसा है: संवेदनशील, मर्यादित और दूसरों के दुख को समझने वाला। लोग आप पर सहज विश्वास करते हैं, बिना यह जाने कि आपके भीतर कितना गहरा ज्वार-भाटा चल रहा है।`;
-  }
-
-  // Inner Mind derived from Moon Nakshatra & Yogas
-  let innerMindEn = `Yet in midnight solitude, under your birth constellation ${profile.name} (governed by ${profile.ruler}), a vastly different psychological current takes over. ${profile.midnightMindEn}`;
-  let innerMindHi = `किंतु अर्धरात्रि के सन्नाटे में, आपके जन्म नक्षत्र '${profile.name}' (स्वामी: ${PLANET_HI[profile.ruler] || profile.ruler}) के प्रभाववश मन के भीतर का सत्य बिल्कुल अलग होता है। ${profile.midnightMindHi}`;
-
-  if (hasVisha) {
-    innerMindEn += ` Concurrently, the heavy classical Visha Yoga (Saturn-Moon friction) casts a cold, melancholic shadow: you struggle to internalize praise, battle unexpressed grief, and feel that you must earn love through relentless self-sacrifice.`;
-    innerMindHi += ` इसके साथ ही कुंडली में 'विष योग' (चंद्र-शनि का संबंध) अवचेतन में एक गहरी उदासी और अकेलेपन की छाया बनाए रखता है: आपको प्रशंसा पर सहज विश्वास नहीं होता और लगता है कि प्रेम पाने के लिए स्वयं को खपाना ही होगा।`;
-  } else if (hasGrahan) {
-    innerMindEn += ` Concurrently, Grahan Yoga (Moon-Node axis) injects sudden waves of hyper-vigilance, unexplainable premonitions, and intense existential anxiety that defies conventional logic.`;
-    innerMindHi += ` इसके साथ ही 'ग्रहण योग' (चंद्र पर राहु/केतु का प्रभाव) मन में अचानक अज्ञात भय, विचित्र पूर्वाभास और तीव्र बेचैनी की तरंगें उत्पन्न करता है जो सामान्य तर्क से परे होती हैं।`;
-  } else if (hasAngarak) {
-    innerMindEn += ` Concurrently, Chandra-Mangala / Angarak dynamics generate a boiling inner urgency: you alternate between saintly patience and volcanic, righteous fury that burns your own nervous system.`;
-    innerMindHi += ` इसके साथ ही 'अंगारक प्रभाव' (चंद्र-मंगल युति/दृष्टि) मन में एक उबलती हुई अधीरता देता है: आप लंबे समय तक सहते हैं और फिर अचानक ज्वालामुखी बनकर फट पड़ते हैं।`;
-  } else if (hasGajakesari) {
-    innerMindEn += ` Fortunately, the noble Gajakesari Yoga provides an indestructible inner compass: no matter how dark the midnight despair, your inherent spiritual dignity and moral conscience pull you back from the brink.`;
-    innerMindHi += ` सौभाग्य से कुंडली में 'गजकेसरी योग' एक अटूट आत्मिक संबल प्रदान करता है: निराशा कितनी भी गहरी हो, आपका स्वाभिमान और अंतरात्मा की आवाज आपको पुनः खड़ा कर देती है।`;
-  }
-
-  const sec1: ChapterSection = {
-    titleEn: 'The Public Mask vs. The Midnight Reality',
-    titleHi: 'सामाजिक मुखौटा बनाम आधी रात का एकांत',
-    leadEn: `The psychological tension between your ${asc.signName} Ascendant persona and ${profile.name} Moon reality.`,
-    leadHi: `आपके '${SIGN_HI[asc.signIndex]}' लग्न के बाहरी आवरण और '${profile.name}' नक्षत्र के आंतरिक मानसिक सत्य का द्वंद्व।`,
-    paragraphsEn: [maskEn, innerMindEn],
-    paragraphsHi: [maskHi, innerMindHi],
-    astrologicalCauseEn: `Brihat Jataka (Ch. 21, Shloka 1–4) & Saravali (Ch. 23): Lagna in ${asc.signName} (${ascElem} element, lord: ${ascLord} in house ${ascLordPlanet?.rasiHouseNumber || 1}) creates the outer armor, while Moon in ${moon.signName} at ${moon.dms} in ${profile.name} Nakshatra (Pada ${moon.pada}) governs the subterranean psyche. ${hasVisha ? 'Affliction of Saturn induces classical Visha Yoga melancholy.' : hasGrahan ? 'Rahu/Ketu connection generates Grahan Yoga psychic agitation.' : 'Planetary dignities establish emotional equilibrium.'}`,
-    astrologicalCauseHi: `शास्त्रीय कारण: बृहज्जातक (अध्याय २१) एवं सारावली (अध्याय २३ - चन्द्रनक्षत्रफलाध्याय): लग्न '${SIGN_HI[asc.signIndex]}' (तत्व: ${ascElem}, लग्नेश: ${PLANET_HI[ascLord] || ascLord}) बाहरी व्यक्तित्व का निर्माण करता है, जबकि चंद्रमा '${SIGN_HI[moon.signIndex]}' में ${profile.name} नक्षत्र में मन के अवचेतन को संचालित करते हैं। ${hasVisha ? 'शनि-चंद्र संबंध से विष योग जनित उदासी फलित होती है।' : hasGrahan ? 'राहु/केतु अक्ष से ग्रहण योग जनित मानसिक बेचैनी उत्पन्न होती है।' : 'शुभ ग्रहों का प्रभाव मानसिक दृढ़ता प्रदान करता है।'}`,
-    keyPointsEn: [
-      `Outer Persona: ${asc.signName} (${ascElem} element) — Authoritative, disciplined boundary.`,
-      `Midnight Psyche: ${profile.name} (${profile.archetypeEn}) — ${profile.ruler} governed.`,
-      `Mental Core: ${hasVisha ? 'Visha Yoga (Stoic melancholy & unvoiced burden)' : hasGrahan ? 'Grahan Yoga (Visionary anxiety & psychic sensitivity)' : hasAngarak ? 'Angarak Fire (Boiling urgency & righteous anger)' : 'Gajakesari / Noble Dignity'}.`,
-    ],
-    keyPointsHi: [
-      `बाहरी व्यक्तित्व: '${SIGN_HI[asc.signIndex]}' लग्न — संतुलित एवं सुदृढ़ सामाजिक आवरण।`,
-      `आंतरिक चेतना: '${profile.name}' नक्षत्र (${profile.archetypeHi}) — स्वामी: ${PLANET_HI[profile.ruler] || profile.ruler}।`,
-      `मूल मनोदशा: ${hasVisha ? 'विष योग (गहन उदासी व एकाकीपन का बोझ)' : hasGrahan ? 'ग्रहण योग (अति-संवेदनशीलता व अज्ञात चिंता)' : hasAngarak ? 'अंगारक योग (आक्रोश व अधीरता की ज्वाला)' : 'गजकेसरी योग (अखंड स्वाभिमान व विवेक)'}।`,
-    ],
-  };
-
-  const sec2: ChapterSection = {
-    titleEn: 'Secret Triggers, Resentments & The Self-Sabotage Trap',
-    titleHi: 'आंतरिक ट्रिगर्स, गुप्त असंतोष एवं आत्म-विनाशकारी प्रवृत्तियां',
-    leadEn: `The subconscious vulnerabilities that trip your destiny: Rage Triggers, Chronic Fears, and Self-Sabotage.`,
-    leadHi: `वे अवचेतन कमजोरियां जो आपके बने-बनाए कार्यों में बाधा बनती हैं: क्रोध के ट्रिगर्स, गहरे भय और आत्म-घातक प्रवृत्तियां।`,
-    paragraphsEn: [
-      `Your Primary Rage Trigger: ${profile.rageTriggerEn} Mars placed in ${mars.signName} (House ${mars.rasiHouseNumber}) indicates that when you feel your boundaries breached or your competence patronized, anger does not simmer—it flashes with acute destructive potency. You withdraw into cold silence or issue an unsparing verbal execution that the other party never forgets.`,
-      `Your Chronic Psychological Insecurity: ${profile.chronicInsecurityEn} Under Saturn’s placement in ${saturn.signName} (House ${saturn.rasiHouseNumber}), you nurse a silent terror of falling behind or being discarded when your utility expires.`,
-      `The Self-Sabotage Trap: ${profile.selfSabotageEn} You must consciously recognize this loop: whenever life approaches sweet stability, your mind mistakes calm for complacency and manufactures an artificial crisis. Mastering this pattern is your master key to enduring triumph.`,
-    ],
-    paragraphsHi: [
-      `क्रोध का मुख्य ट्रिगर: ${profile.rageTriggerHi} मंगल देव की '${SIGN_HI[mars.signIndex]}' में स्थिति (भाव ${mars.rasiHouseNumber}) यह दर्शाती है कि जब आपकी मर्यादा का उल्लंघन होता है, तो आपका क्रोध धीरे-धीरे नहीं सुलगता, बल्कि बिजली की तरह कौंधता है। आप या तो एकदम मौन होकर सामने वाले को जीवन से काट देते हैं, या ऐसा कटु सत्य कह देते हैं जिसे दूसरा जीवन भर नहीं भूल पाता।`,
-      `अवचेतन का गहरा भय: ${profile.chronicInsecurityHi} शनि देव की '${SIGN_HI[saturn.signIndex]}' में स्थिति (भाव ${saturn.rasiHouseNumber}) के कारण मन में यह अज्ञात भय बना रहता है कि उपयोगिता समाप्त होते ही संसार आपको विस्मृत न कर दे।`,
-      `आत्म-विनाशकारी चक्र (Self-Sabotage): ${profile.selfSabotageHi} इस मनोवैज्ञानिक दुर्बलता को पहचानना अनिवार्य है: जब भी जीवन में सब कुछ शांत और व्यवस्थित होने लगता है, आपका मन उस शांति को 'सन्नाटा' मानकर कोई न कोई नया बखेड़ा या तनाव खड़ा कर लेता है। इस आदत पर विजय पाना ही आपकी परम सिद्धि होगी।`,
-    ],
-    astrologicalCauseEn: `Saravali (Ch. 31–33) & Brihat Jataka (Ch. 2): Mars in House ${mars.rasiHouseNumber} governs impulsive fight-or-flight triggers; Saturn in House ${saturn.rasiHouseNumber} anchors the deep existential dread; Rahu in House ${rahu.rasiHouseNumber} drives obsessive over-reaching.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय ३१-३३) एवं बृहज्जातक: मंगल (भाव ${mars.rasiHouseNumber}) क्रोध व प्रतिक्रिया के ट्रिगर हैं; शनि (भाव ${saturn.rasiHouseNumber}) जीवन के मूल भय के नियामक हैं; तथा राहु (भाव ${rahu.rasiHouseNumber}) भ्रम व अति-महत्वाकांक्षा के कारक हैं।`,
-    keyPointsEn: [
-      `Rage Trigger: ${profile.rageTriggerEn}`,
-      `Existential Insecurity: ${profile.chronicInsecurityEn}`,
-      `Self-Sabotage Loop: ${profile.selfSabotageEn}`,
-    ],
-    keyPointsHi: [
-      `क्रोध का ट्रिगर: ${profile.rageTriggerHi}`,
-      `गहरा अवचेतन भय: ${profile.chronicInsecurityHi}`,
-      `आत्म-घातक चक्र: ${profile.selfSabotageHi}`,
-    ],
-  };
-
-  return [sec1, sec2];
+  const moon = chart.planets.find((p) => p.id === 'Moon');
+  const ascSign = SIGNS[asc.signIndex];
+  const ascLord = chart.planets.find((p) => p.id === asc.signLord);
+  const planetName = (id: string) => PLANET_HI[id] || id;
+  const houseOf = (p: (typeof chart.planets)[number] | undefined) => p?.rasiHouseNumber ?? p?.houseNumber ?? 0;
+  const dignity = (p: (typeof chart.planets)[number] | undefined) => p?.dignity || 'उपलब्ध नहीं';
+  if (!moon) return [{ titleEn: 'Psychological Themes — Insufficient Data', titleHi: 'मनोभाव — कुंडली डेटा अपर्याप्त', paragraphsEn: ['Moon placement is unavailable, so a chart-specific interpretation cannot be generated.'], paragraphsHi: ['चंद्रमा की स्थिति उपलब्ध नहीं है; इसलिए व्यक्तिगत व्याख्या नहीं दी जा सकती।'] }];
+  const moonHouse = houseOf(moon);
+  const moonSign = SIGNS[moon.signIndex];
+  const moonLord = chart.planets.find((p) => p.id === moonSign.lord);
+  const others = chart.planets.filter((p) => p.id !== 'Asc' && p.id !== 'Moon');
+  const distance = (p: (typeof chart.planets)[number]) => ((moonHouse - houseOf(p) + 12) % 12) + 1;
+  const saturn = others.find((p) => p.id === 'Saturn');
+  const mars = others.find((p) => p.id === 'Mars');
+  const jupiter = others.find((p) => p.id === 'Jupiter');
+  const rahu = others.find((p) => p.id === 'Rahu');
+  const ketu = others.find((p) => p.id === 'Ketu');
+  const saturnContact = Boolean(saturn && [1, 3, 7, 10].includes(distance(saturn)));
+  const marsContact = Boolean(mars && [1, 4, 7, 8].includes(distance(mars)));
+  const jupiterContact = Boolean(jupiter && [1, 5, 7, 9].includes(distance(jupiter)));
+  const nodeContact = Boolean((rahu && rahu.signIndex === moon.signIndex) || (ketu && ketu.signIndex === moon.signIndex));
+  const conjunctions = others.filter((p) => p.signIndex === moon.signIndex);
+  const supportiveHi = [
+    jupiterContact ? 'चंद्रमा से गुरु का पारंपरिक संबंध सीखने, मार्गदर्शन और व्यापक दृष्टि का सहायक संकेत है।' : '',
+    moonLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(moonLord.dignity) ? `चंद्र राशि स्वामी ${planetName(moonSign.lord)} की ${dignity(moonLord)} स्थिति सहायक मानी जाती है।` : '',
+    ascLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(ascLord.dignity) ? `लग्नेश ${planetName(asc.signLord)} की ${dignity(ascLord)} स्थिति आत्म-प्रबंधन को समर्थन दे सकती है।` : '',
+  ].filter(Boolean);
+  const cautionHi = [
+    saturnContact ? 'चंद्रमा से शनि का संबंध जिम्मेदारी, देरी या आत्म-आलोचना की पारंपरिक थीम दिखा सकता है; यह मानसिक स्वास्थ्य का निदान नहीं है।' : '',
+    marsContact ? 'चंद्रमा से मंगल का संबंध प्रतिक्रिया में तेजी या अधीरता का संकेत हो सकता है; महत्वपूर्ण निर्णय से पहले ठहरना उपयोगी है।' : '',
+    nodeContact ? 'चंद्रमा के साथ राहु/केतु की युति विचारों में तीव्रता या बदलते दृष्टिकोण की पारंपरिक थीम है; इससे बीमारी या भय का निष्कर्ष न निकालें।' : '',
+    moonLord && ['Enemy', 'Great Enemy', 'Debilitated'].includes(moonLord.dignity) ? `चंद्र राशि स्वामी ${planetName(moonSign.lord)} की ${dignity(moonLord)} स्थिति भावनात्मक संतुलन पर अतिरिक्त ध्यान देने का संकेत देती है।` : '',
+  ].filter(Boolean);
+  const supportiveEn = [
+    jupiterContact ? 'Jupiter has a traditional relationship with the Moon, a supportive indication for learning, guidance and perspective.' : '',
+    moonLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(moonLord.dignity) ? `${planetName(moonSign.lord)}, ruler of the Moon sign, is ${dignity(moonLord)} and is traditionally considered supportive.` : '',
+    ascLord && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friendly'].includes(ascLord.dignity) ? `The Ascendant ruler ${planetName(asc.signLord)} is ${dignity(ascLord)}, which may support self-management.` : '',
+  ].filter(Boolean);
+  const cautionEn = [
+    saturnContact ? 'Saturn has a traditional relationship with the Moon and may symbolize responsibility, delay or self-criticism; this is not a mental-health diagnosis.' : '',
+    marsContact ? 'Mars has a traditional relationship with the Moon and may symbolize quick reactions or impatience; pausing before important decisions can help.' : '',
+    nodeContact ? 'A Rahu/Ketu conjunction with the Moon is traditionally associated with intensity or changing perspectives; it does not establish illness or danger.' : '',
+    moonLord && ['Enemy', 'Great Enemy', 'Debilitated'].includes(moonLord.dignity) ? `${planetName(moonSign.lord)}, ruler of the Moon sign, is ${dignity(moonLord)}; emotional steadiness may deserve deliberate attention.` : '',
+  ].filter(Boolean);
+  const active = findActiveDashaPath(chart.vimshottari ?? [], Date.now());
+  const md = active[0];
+  const ad = active[1];
+  const mdPlanet = md ? chart.planets.find((p) => p.id === md.lord) : undefined;
+  const adPlanet = ad ? chart.planets.find((p) => p.id === ad.lord) : undefined;
+  const timingHi = md ? `वर्तमान में ${planetName(md.lord)} महादशा${ad ? ` और ${planetName(ad.lord)} अंतर्दशा` : ''} सक्रिय है। इनके स्वामी जन्मकुंडली के भाव ${houseOf(mdPlanet) || 'अज्ञात'}${ad ? ` और ${houseOf(adPlanet) || 'अज्ञात'}` : ''} से जुड़े हैं। यह समय का पारंपरिक विषय-संकेत है, घटना की गारंटी नहीं।` : 'उपलब्ध विंशोत्तरी दशा डेटा से वर्तमान अवधि निर्धारित नहीं हो सकी; समय-आधारित निष्कर्ष नहीं दिया गया।';
+  const timingEn = md ? `${planetName(md.lord)} Mahadasha${ad ? ` and ${planetName(ad.lord)} Antardasha` : ''} is active. Their lords occupy natal House ${houseOf(mdPlanet) || 'unknown'}${ad ? ` and House ${houseOf(adPlanet) || 'unknown'}` : ''}. This is a traditional timing theme, not a guaranteed event.` : 'The available Vimshottari data does not identify the current period; no timed conclusion is offered.';
+  const nakshatra = moon.nakshatraName || NAKSHATRAS[moon.nakshatraIndex ?? 0]?.name || 'अज्ञात';
+  const factsHi = `चंद्रमा ${moonSign.name} राशि, भाव ${moonHouse || 'अज्ञात'} और ${nakshatra} नक्षत्र में है। चंद्र राशि स्वामी ${planetName(moonSign.lord)} भाव ${houseOf(moonLord) || 'अज्ञात'} में तथा ${dignity(moonLord)} गरिमा में है।`;
+  const factsEn = `The Moon is in ${moonSign.name}, natal House ${moonHouse || 'unknown'}, Nakshatra ${nakshatra}. Its sign ruler ${planetName(moonSign.lord)} occupies House ${houseOf(moonLord) || 'unknown'} with dignity ${dignity(moonLord)}.`;
+  return [
+    { titleEn: 'Mind and Temperament — Chart Evidence', titleHi: 'मन और स्वभाव — कुंडली के वास्तविक संकेत', leadEn: 'A restrained interpretation from the Ascendant, Moon and their rulers; these are traditional Jyotish themes, not psychological diagnoses.', leadHi: 'लग्न, चंद्रमा और उनके स्वामियों से निकले सीमित ज्योतिषीय संकेत; इन्हें मनोवैज्ञानिक या चिकित्सकीय निदान न समझें।', paragraphsEn: [`The Ascendant is ${asc.signName} (${ascSign.element}); its traditional elemental style is ${ascSign.element.toLowerCase()}.`, factsEn], paragraphsHi: [`लग्न ${asc.signName} राशि (${ascSign.element} तत्व) है।`, factsHi], astrologicalCauseEn: `Ascendant lord ${planetName(asc.signLord)}: House ${houseOf(ascLord)}, ${dignity(ascLord)}. Moon: ${moonSign.name}, House ${moonHouse}; Moon-sign lord ${planetName(moonSign.lord)}: House ${houseOf(moonLord)}, ${dignity(moonLord)}.`, astrologicalCauseHi: `लग्नेश ${planetName(asc.signLord)} भाव ${houseOf(ascLord) || 'अज्ञात'} में (${dignity(ascLord)})। चंद्रमा ${moonSign.name} राशि के भाव ${moonHouse || 'अज्ञात'} में; राशि स्वामी ${planetName(moonSign.lord)} भाव ${houseOf(moonLord) || 'अज्ञात'} में (${dignity(moonLord)})।` },
+    { titleEn: 'Supportive Factors and Cautions', titleHi: 'सहायक संकेत और सावधानी के विषय', leadEn: 'Only contacts found in this chart are listed; absent combinations are not invented.', leadHi: 'केवल इसी कुंडली में मिले संबंध दिए गए हैं; अनुपस्थित योगों की कल्पना नहीं की गई है।', paragraphsEn: [supportiveEn.join(' ') || 'No major supportive Moon contact was identified in this limited rule set.', cautionEn.join(' ') || 'No major challenging Moon contact was identified in this limited rule set; this does not mean challenges are absent.'], paragraphsHi: [supportiveHi.join(' ') || 'इस सीमित नियम-समूह में चंद्रमा पर प्रमुख सहायक संबंध नहीं मिला।', cautionHi.join(' ') || 'इस सीमित नियम-समूह में प्रमुख चुनौतीपूर्ण संबंध नहीं मिला; इसका अर्थ चुनौतियों का पूर्ण अभाव नहीं है।'], astrologicalCauseEn: `Checked natal contacts: Saturn ${saturnContact ? 'present' : 'not identified'}, Mars ${marsContact ? 'present' : 'not identified'}, Jupiter ${jupiterContact ? 'present' : 'not identified'}, Rahu/Ketu conjunction ${nodeContact ? 'present' : 'not identified'}.`, astrologicalCauseHi: `जाँचे गए जन्मगत संबंध: शनि ${saturnContact ? 'संबंधित' : 'नहीं मिला'}, मंगल ${marsContact ? 'संबंधित' : 'नहीं मिला'}, गुरु ${jupiterContact ? 'संबंधित' : 'नहीं मिला'}, राहु/केतु युति ${nodeContact ? 'मिली' : 'नहीं मिली'}।`, keyPointsEn: [`Moon sign/house: ${moonSign.name} / ${moonHouse || 'unknown'}.`, `Moon-sign lord: ${planetName(moonSign.lord)}; House ${houseOf(moonLord)}; ${dignity(moonLord)}.`, `Planets conjunct the Moon by sign: ${conjunctions.length ? conjunctions.map((p) => planetName(p.id)).join(', ') : 'none identified'}.`], keyPointsHi: [`चंद्र राशि/भाव: ${moonSign.name} / ${moonHouse || 'अज्ञात'}।`, `चंद्र राशि स्वामी: ${planetName(moonSign.lord)}; भाव ${houseOf(moonLord) || 'अज्ञात'}; ${dignity(moonLord)}।`, `चंद्र राशि में युति: ${conjunctions.length ? conjunctions.map((p) => planetName(p.id)).join(', ') : 'कोई नहीं मिली'}।`] },
+    { titleEn: 'Current Period and Practical Reflection', titleHi: 'वर्तमान दशा और व्यावहारिक दिशा', leadEn: 'Dasha is a broad timing lens, not proof that a specific event will occur.', leadHi: 'दशा व्यापक समय-संकेत है, किसी निश्चित घटना का प्रमाण नहीं।', paragraphsEn: [timingEn, 'Use supportive factors as resources and caution themes as prompts for practical habits and measured decisions. For health concerns, rely on qualified professionals rather than horoscope interpretation.'], paragraphsHi: [timingHi, 'सहायक संकेतों को अपनी क्षमता और सावधानी के विषयों को बेहतर दिनचर्या तथा सोच-समझकर निर्णय लेने की याद दिलाने के रूप में लें। स्वास्थ्य संबंधी समस्या में योग्य विशेषज्ञ की सलाह लें।'], astrologicalCauseEn: `Active Vimshottari path: ${md ? `${md.lord}${ad ? ` / ${ad.lord}` : ''}` : 'not available'}. Natal Moon House ${moonHouse || 'unknown'}.`, astrologicalCauseHi: `सक्रिय विंशोत्तरी क्रम: ${md ? `${planetName(md.lord)}${ad ? ` / ${planetName(ad.lord)}` : ''}` : 'उपलब्ध नहीं'}। चंद्रमा जन्मकुंडली के भाव ${moonHouse || 'अज्ञात'} में है।` },
+  ];
 }
-
-// ============================================================================
-// DYNAMIC CHAPTER 3: REAL-TIME ACTIVE LIFE PHASE X-RAY
-// ============================================================================
 export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
   const moon = chart.planets.find((p) => p.id === 'Moon') ?? chart.planets[1];
@@ -496,9 +95,18 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
   const adPeriod = dashaPath[1];
   const pdPeriod = dashaPath[2];
 
-  const mdLord = (mdPeriod?.lord as NineGrahaId) || 'Saturn';
-  const adLord = (adPeriod?.lord as NineGrahaId) || 'Mercury';
-  const pdLord = (pdPeriod?.lord as NineGrahaId) || adLord;
+  if (!mdPeriod) {
+    return [{
+      titleEn: 'Current Dasha — Data Unavailable',
+      titleHi: 'वर्तमान दशा — डेटा उपलब्ध नहीं',
+      paragraphsEn: ['A current Vimshottari Mahadasha could not be resolved from the supplied chart. No fallback planet or timing claim is substituted.'],
+      paragraphsHi: ['दी गई कुंडली से वर्तमान विंशोत्तरी महादशा निर्धारित नहीं हो सकी। किसी काल्पनिक ग्रह या समय-सीमा को विकल्प के रूप में नहीं जोड़ा गया है।'],
+    }];
+  }
+
+  const mdLord = mdPeriod.lord as NineGrahaId;
+  const adLord = (adPeriod?.lord || mdPeriod.lord) as NineGrahaId;
+  const pdLord = (pdPeriod?.lord || adLord) as NineGrahaId;
 
   const mdPlanet = chart.planets.find((p) => p.id === mdLord);
   const adPlanet = chart.planets.find((p) => p.id === adLord);
@@ -513,35 +121,7 @@ export function computeDynamicActivePhaseSections(chart: ChartData): ChapterSect
   const isKendra = [1, 4, 7, 10].includes(mutualDistance);
   const isTrikona = [5, 9].includes(mutualDistance);
 
-  // Saturn Transit relative to Moon (Pisces sidereal 2023-2025/2026)
-  // Pisces sign index = 11
-  const saturnTransitSignIdx = 11; // Pisces / Meena
-  const saturnHouseFromMoon = ((saturnTransitSignIdx - moon.signIndex + 12) % 12) + 1;
-
-  let sadeSatiStatusEn = '';
-  let sadeSatiStatusHi = '';
-  if (moon.signIndex === 11) {
-    sadeSatiStatusEn = 'Peak Janma Shani (Sade Sati Phase 2 — Core Mental Pressure & Total Restructuring)';
-    sadeSatiStatusHi = 'शिखर जन्म शनि (साढ़ेसाती का द्वितीय चरण — चरम मानसिक मंथन व जीवन का आमूलचूल पुनर्गठन)';
-  } else if (moon.signIndex === 10) {
-    sadeSatiStatusEn = 'Setting Sade Sati (Phase 3 — Settling Debts, Moving toward Stability)';
-    sadeSatiStatusHi = 'उतरती साढ़ेसाती (तृतीय चरण — पुराने कर्जों व विवादों का निस्तारण, स्थायित्व की ओर प्रयाण)';
-  } else if (moon.signIndex === 0) {
-    sadeSatiStatusEn = 'Rising Sade Sati (Phase 1 — Domestic Churn, Elderly Health & New Responsibilities)';
-    sadeSatiStatusHi = 'चढ़ती साढ़ेसाती (प्रथम चरण — पारिवारिक व्यय, बड़ों का स्वास्थ्य व नए दायित्वों का भार)';
-  } else if (saturnHouseFromMoon === 8) {
-    sadeSatiStatusEn = 'Ashtama Shani (Saturn in 8th from Moon — Critical Vigilance on Health, Litigation & Sudden Shocks)';
-    sadeSatiStatusHi = 'कंटक/अष्टम शनि (चंद्र से अष्टम शनि — स्वास्थ्य, मुकदमों व आकस्मिक झटकों के प्रति सचेत रहने का काल)';
-  } else if (saturnHouseFromMoon === 4) {
-    sadeSatiStatusEn = 'Kantaka Shani (Saturn in 4th from Moon — Domestic Disruption & Property Delays)';
-    sadeSatiStatusHi = 'कंटक शनि (चंद्र से चतुर्थ शनि — गृह-क्लेश, माता का स्वास्थ्य व संपत्ति में विलंब)';
-  } else if (saturnHouseFromMoon === 10) {
-    sadeSatiStatusEn = 'Kantaka Shani (Saturn in 10th from Moon — Workplace Restructuring & Heavy Executive Strain)';
-    sadeSatiStatusHi = 'कंटक शनि (चंद्र से दशम शनि — कार्यक्षेत्र में भारी फेरबदल व कठोर परिश्रम की परीक्षा)';
-  } else {
-    sadeSatiStatusEn = `Saturn Transiting House ${saturnHouseFromMoon} from Moon (${[3, 6, 11].includes(saturnHouseFromMoon) ? 'Highly Auspicious Victory & Gain Window' : 'Measured Growth with Discipline'})`;
-    sadeSatiStatusHi = `गोचर शनि चंद्र से भाव ${saturnHouseFromMoon} में (${[3, 6, 11].includes(saturnHouseFromMoon) ? 'शत्रु-हंता व प्रचंड धन लाभ का शुभ काल' : 'अनुशासन व धैर्य की मांग'})`;
-  }
+  // Transit positions are not supplied to this natal-chart section. Do not infer Sade Sati or Saturn transit from a fixed sign.
 
   // Dasha relationships are symbolic themes, not proof of what the native
   // actually experienced. Never narrate unverified past events as facts.
@@ -1093,124 +673,95 @@ export function computeDynamicMarriageAndIntimacySections(chart: ChartData, isMa
 // ============================================================================
 export function computeDynamicHealthSections(chart: ChartData): ChapterSection[] {
   const asc = chart.ascendant;
-  const ascElem = SIGNS[asc.signIndex].element;
   const h6Sign = (asc.signIndex + 5) % 12;
-  const h6Lord = SIGNS[h6Sign].lord;
-  const h6LordPlanet = chart.planets.find((p) => p.id === h6Lord);
   const h8Sign = (asc.signIndex + 7) % 12;
+  const h6Lord = SIGNS[h6Sign].lord;
   const h8Lord = SIGNS[h8Sign].lord;
-  const h8LordPlanet = chart.planets.find((p) => p.id === h8Lord);
-  const saturn = chart.planets.find((p) => p.id === 'Saturn')!;
-  const mars = chart.planets.find((p) => p.id === 'Mars')!;
-
-  // Ayurvedic Tridosha by Ascendant Element & Sign
-  let tridoshaEn = '';
-  let tridoshaHi = '';
-  if (ascElem === 'Fire') {
-    tridoshaEn = 'Pitta Dominant (High Metabolic Heat, Acidity, Inflammation, Blood Pressure Fluctuations)';
-    tridoshaHi = 'पित्त प्रधान प्रकृति (तीव्र जठराग्नि, अम्लता/एसिडिटी, रक्त विकार व दाह की संवेदनशीलता)';
-  } else if (ascElem === 'Earth') {
-    tridoshaEn = 'Vata-Kapha Dominant (Sluggish Digestion, Joint Stiffness, Dry Skin, Metabolic Inertia)';
-    tridoshaHi = 'वात-कफ प्रधान प्रकृति (पाचन का धीमा होना, जोड़ों में जकड़न, त्वचा का सूखापन व आलस्य)';
-  } else if (ascElem === 'Air') {
-    tridoshaEn = 'Vata Dominant (Nervous Exhaustion, Insomnia, Dry Cough, Anxiety Somatization)';
-    tridoshaHi = 'प्रचंड वात प्रधान प्रकृति (स्नायु दुर्बलता, अनिद्रा, अत्यधिक चिंता व मांसपेशियों में खिंचाव)';
-  } else {
-    tridoshaEn = 'Kapha-Pitta Dominant (Fluid Retention, Respiratory Allergies, Liver Congestion)';
-    tridoshaHi = 'कफ-पित्त प्रधान प्रकृति (जल संतुलन, कफ-एलर्जी, लिवर व हार्मोनल संवेदनशीलता)';
-  }
-
-  // Exact High-Risk Organs derived from 6th House Sign (Aries to Pisces)
-  const ORGAN_SYSTEMS: Record<number, { en: string; hi: string }> = {
-    0: { en: 'Cranial circulation, migraines, head injuries, fevers, and blood pressure.', hi: 'सिर, मस्तिष्क की नसें, माइग्रेन, सिर में चोट, बुखार और रक्तचाप।' },
-    1: { en: 'Throat, thyroid gland, vocal cords, tonsils, and cervical spine.', hi: 'गला, थायरॉयड ग्रंथि, स्वर तंत्रिकाएं, टॉन्सिल्स और गर्दन की नसें।' },
-    2: { en: 'Lungs, respiratory tract, nervous exhaustion, shoulders, and asthma.', hi: 'फेफड़े, श्वसन तंत्र, स्नायु दुर्बलता, कंधे और सांस की एलर्जी।' },
-    3: { en: 'Stomach, digestive juices, gastric lining, chest, and psychosomatic ulcers.', hi: 'पेट, पाचन रस, जठराग्नि, छाती और तनाव जनित अल्सर/एसिडिटी।' },
-    4: { en: 'Heart, cardiovascular rhythm, spine, eyesight, and metabolic vitality.', hi: 'हृदय, रक्त संचार, रीढ़ की हड्डी, आंखों की रोशनी और जीवन शक्ति।' },
-    5: { en: 'Intestines, gut microbiome, IBS, nervous digestion, and food intolerances.', hi: 'आंतें, गट माइक्रोबायोम, कोलाइटिस/IBS, पेट की गैस और भोजन से एलर्जी।' },
-    6: { en: 'Kidneys, lumbar vertebrae, urinary tract, and sugar metabolism (diabetes).', hi: 'गुर्दे (किडनी), कमर की रीढ़, मूत्र प्रणाली और शुगर/मधुमेह का संतुलन।' },
-    7: { en: 'Excretory organs, colon, pelvic circulation, piles/fistula, and prostate/secret ailments.', hi: 'मलाशय, गुप्त जननांग, बवासीर/फिस्टुला और पेल्विक क्षेत्र की संवेदनशीलता।' },
-    8: { en: 'Liver efficiency, arterial circulation, hips, thighs, and high cholesterol.', hi: 'यकृत (लिवर), धमनियों का रक्त प्रवाह, कूल्हे, जांघें और कोलेस्ट्रॉल।' },
-    9: { en: 'Knees, bones, joint stiffness, chronic rheumatism, teeth, and skin dryness.', hi: 'घुटने, हड्डियां, जोड़ों में दर्द, गठिया (आर्थराइटिस), दांत और त्वचा का रूखापन।' },
-    10: { en: 'Calves, shins, peripheral circulation, varicose veins, and nervous tremors.', hi: 'पिंडलियां, एड़ियां, रक्त वाहिकाएं (वेरिकोज वेन्स) और नसों में कंपन।' },
-    11: { en: 'Feet, lymphatic drainage, immune sluggishness, sleep apnea, and psychosomatic fatigue.', hi: 'पैर के पंजे, लसिका तंत्र (लिम्फैटिक), रोग प्रतिरोधक क्षमता और अनिद्रा।' },
-  };
-
-  const organProfile = ORGAN_SYSTEMS[h6Sign] ?? ORGAN_SYSTEMS[5];
-
-  // Dynamic Critical Health Years from 6th & 8th Lord Activation Ages
-  const lordAges: Record<string, number[]> = {
-    Sun: [22, 34, 46, 58],
-    Moon: [24, 36, 48, 60],
-    Mars: [28, 40, 52, 64],
-    Mercury: [17, 32, 45, 57],
-    Jupiter: [16, 32, 48, 62],
-    Venus: [25, 37, 49, 61],
-    Saturn: [19, 36, 54, 72],
-    Rahu: [18, 42, 60],
-    Ketu: [18, 48, 66],
-  };
-
-  const criticalYears = Array.from(
-    new Set([...(lordAges[h6Lord] || [28, 46]), ...(lordAges[h8Lord] || [36, 54])])
-  ).sort((a, b) => a - b).slice(0, 6);
-
-  // Anga-Bhanga (Physical Disability / Injury Risk) - Saravali Ch. 21
-  const hasAngaBhangaRisk = [6, 8, 12].includes(saturn.rasiHouseNumber) ||
-    [6, 8].includes(mars.rasiHouseNumber) ||
-    h6Lord === asc.signLord;
+  const h6LordPlanet = chart.planets.find((planet) => planet.id === h6Lord);
+  const h8LordPlanet = chart.planets.find((planet) => planet.id === h8Lord);
+  const h6Occupants = chart.planets.filter(
+    (planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === 6 && planet.id !== 'Asc',
+  );
+  const h8Occupants = chart.planets.filter(
+    (planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === 8 && planet.id !== 'Asc',
+  );
+  const planetName = (id: string) => PLANET_HI[id] || id;
+  const occupantsEn = (items: typeof chart.planets) =>
+    items.length ? items.map((planet) => planet.id).join(', ') : 'no classical planet is recorded in this house';
+  const occupantsHi = (items: typeof chart.planets) =>
+    items.length ? items.map((planet) => planetName(planet.id)).join('、') : 'इस भाव में कोई ग्रह स्थित दर्ज नहीं है';
+  const h6PlacementEn = h6LordPlanet
+    ? `${h6Lord} is placed in House ${h6LordPlanet.rasiHouseNumber ?? h6LordPlanet.houseNumber}.`
+    : `The placement of ${h6Lord} is unavailable in the supplied chart data.`;
+  const h6PlacementHi = h6LordPlanet
+    ? `${planetName(h6Lord)} भाव ${h6LordPlanet.rasiHouseNumber ?? h6LordPlanet.houseNumber} में स्थित हैं।`
+    : `उपलब्ध कुंडली डेटा में ${planetName(h6Lord)} की स्थिति दर्ज नहीं है।`;
+  const h8PlacementEn = h8LordPlanet
+    ? `${h8Lord} is placed in House ${h8LordPlanet.rasiHouseNumber ?? h8LordPlanet.houseNumber}.`
+    : `The placement of ${h8Lord} is unavailable in the supplied chart data.`;
+  const h8PlacementHi = h8LordPlanet
+    ? `${planetName(h8Lord)} भाव ${h8LordPlanet.rasiHouseNumber ?? h8LordPlanet.houseNumber} में स्थित हैं।`
+    : `उपलब्ध कुंडली डेटा में ${planetName(h8Lord)} की स्थिति दर्ज नहीं है।`;
 
   const sec1: ChapterSection = {
-    titleEn: 'Ayurvedic Constitution (Tridosha) & High-Risk Organ Systems',
-    titleHi: 'आयुर्वेदिक त्रिदोष संतुलन एवं संवेदनशील अंग प्रणालियां',
-    leadEn: `The elemental biological vulnerabilities of your ${asc.signName} Ascendant and 6th house in ${SIGNS[h6Sign].name}.`,
-    leadHi: `आपके '${SIGN_HI[asc.signIndex]}' लग्न के त्रिदोष एवं षष्ठ भाव ('${SIGN_HI[h6Sign]}') के आधार पर शारीरिक संवेदनशीलता।`,
+    titleEn: 'Sixth House: Daily Work, Service & Problem-Solving',
+    titleHi: 'षष्ठ भाव: दैनिक कार्य, सेवा और समस्याओं का समाधान',
+    leadEn: 'A traditional, non-medical reading of the sixth house based on its sign, ruler and recorded occupants.',
+    leadHi: 'षष्ठ भाव की राशि, स्वामी और उसमें स्थित ग्रहों पर आधारित पारंपरिक ज्योतिषीय विवेचन; यह स्वास्थ्य या रोग का आकलन नहीं है।',
     paragraphsEn: [
-      `Your Constitutional Baseline: ${tridoshaEn}. When you undergo sustained emotional stress, your body converts mental anxiety directly into somatic illness.`,
-      `Your 6th house of ailments falls in ${SIGNS[h6Sign].name} governed by ${h6Lord}. The most sensitive organ networks in your biology are: ${organProfile.en} Preventative dietary habits and daily yogic alignment of these systems will save you from major medical interventions.`,
+      `The sixth house falls in ${SIGNS[h6Sign].name} and is ruled by ${h6Lord}. ${h6PlacementEn} The recorded occupants are: ${occupantsEn(h6Occupants)}.`,
+      'In traditional Jyotish, this house is also considered in relation to service, daily responsibilities, routines, competition, disputes and practical problem-solving. These symbols do not establish a medical condition, diagnosis, injury, or future event. Use ordinary evidence and qualified professional advice for health or legal decisions.',
     ],
     paragraphsHi: [
-      `आपकी मूल त्रिदोष प्रकृति: ${tridoshaHi}। जब भी आप लंबे समय तक मानसिक तनाव में रहते हैं, आपका शरीर उस तनाव को तुरंत शारीरिक व्याधियों में बदल देता है।`,
-      `रोग भाव (षष्ठ) '${SIGN_HI[h6Sign]}' राशि में है जिसके स्वामी '${PLANET_HI[h6Lord] || h6Lord}' हैं। आपके शरीर के सर्वाधिक संवेदनशील अंग: ${organProfile.hi} खान-पान में संयम और नियमित योग द्वारा इन अंगों को स्वस्थ रखना दीर्घायु की कुंजी है।`,
+      `षष्ठ भाव ${SIGN_HI[h6Sign]} राशि में है और इसके स्वामी ${planetName(h6Lord)} हैं। ${h6PlacementHi} इस भाव में दर्ज ग्रह: ${occupantsHi(h6Occupants)}।`,
+      'पारंपरिक ज्योतिष में षष्ठ भाव को सेवा, दैनिक उत्तरदायित्व, दिनचर्या, प्रतिस्पर्धा, विवाद और व्यावहारिक समस्या-समाधान से भी जोड़ा जाता है। इन प्रतीकों से किसी रोग, चिकित्सकीय निदान, चोट या भविष्य की निश्चित घटना का निष्कर्ष नहीं निकाला जा सकता। स्वास्थ्य अथवा कानूनी निर्णय वास्तविक प्रमाण और योग्य विशेषज्ञ की सलाह से लें।',
     ],
-    astrologicalCauseEn: `Saravali (Ch. 21 - Anga Lakshana) & Phaladeepika (Ch. 14 - Roga Nirupanam): 6th house in ${SIGNS[h6Sign].name} ruled by ${h6Lord} (House ${h6LordPlanet?.rasiHouseNumber || 6}) determines bodily vulnerability.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय २१) एवं फलदीपिका (अध्याय १४ - रोगनिर्णयाध्यायः): षष्ठ भाव '${SIGN_HI[h6Sign]}' (स्वामी: ${PLANET_HI[h6Lord] || h6Lord}) शारीरिक व्याधियों के संवेदनशील अंगों का निर्धारण करता है।`,
+    astrologicalCauseEn: `Chart evidence: sixth-house sign ${SIGNS[h6Sign].name}; ruler ${h6Lord}; ${h6PlacementEn} Occupants: ${occupantsEn(h6Occupants)}. The interpretation is limited to traditional sixth-house themes.`,
+    astrologicalCauseHi: `कुंडली-साक्ष्य: षष्ठ भाव की राशि ${SIGN_HI[h6Sign]}, भावेश ${planetName(h6Lord)}; ${h6PlacementHi} स्थित ग्रह: ${occupantsHi(h6Occupants)}। विवेचन केवल षष्ठ भाव के पारंपरिक विषयों तक सीमित है।`,
     keyPointsEn: [
-      `Ayurvedic Tridosha: ${tridoshaEn}`,
-      `High-Risk Organs: ${organProfile.en}`,
-      `6th House Lord: ${h6Lord} in House ${h6LordPlanet?.rasiHouseNumber || 6}`,
+      `Sixth-house sign: ${SIGNS[h6Sign].name}`,
+      `Sixth-house ruler: ${h6Lord}`,
+      h6PlacementEn,
+      `Recorded occupants: ${occupantsEn(h6Occupants)}`,
+      'No medical or event prediction is made.',
     ],
     keyPointsHi: [
-      `आयुर्वेदिक त्रिदोष: ${tridoshaHi}`,
-      `संवेदनशील अंग: ${organProfile.hi}`,
-      `षष्ठेश: '${PLANET_HI[h6Lord] || h6Lord}' (भाव ${h6LordPlanet?.rasiHouseNumber || 6})`,
+      `षष्ठ भाव राशि: ${SIGN_HI[h6Sign]}`,
+      `षष्ठेश: ${planetName(h6Lord)}`,
+      h6PlacementHi,
+      `स्थित ग्रह: ${occupantsHi(h6Occupants)}`,
+      'कोई चिकित्सकीय या निश्चित घटना-संबंधी भविष्यवाणी नहीं।',
     ],
   };
 
   const sec2: ChapterSection = {
-    titleEn: 'Physical Impairment (Anga-Bhanga) Diagnostic & Critical Health Years',
-    titleHi: 'अंग-दोष, शारीरिक अक्षमता परीक्षण एवं संकट के संवेदनशील वर्ष',
-    leadEn: `Classical Saravali assessment of vulnerability to permanent injury, surgeries, and milestone years.`,
-    leadHi: `सारावली सम्मत दुर्घटना, शल्यक्रिया व अंग-दोष का परीक्षण तथा जीवन के संवेदनशील स्वास्थ्य वर्ष।`,
+    titleEn: 'Eighth House: Change, Shared Matters & Resilience',
+    titleHi: 'अष्टम भाव: परिवर्तन, साझा विषय और धैर्य',
+    leadEn: 'A traditional interpretation of eighth-house symbolism without lifespan, accident or illness claims.',
+    leadHi: 'आयु, दुर्घटना या रोग संबंधी दावे किए बिना अष्टम भाव के पारंपरिक प्रतीकों का विवेचन।',
     paragraphsEn: [
-      `Classical Anga-Bhanga Diagnostic: ${hasAngaBhangaRisk ? 'Your chart indicates moderate vulnerability to physical injuries, particularly to the lower limbs, spine, or head during high-velocity activities, sports, or falls. You must exercise strict caution while driving and avoid extreme, uncalculated physical risks during Mars and Saturn dasha cycles.' : 'Your chart is largely protected from congenital physical disability or permanent limb impairment. Normal health hygiene and active mobility preserve structural integrity.'}`,
-      `Critical Astrological Health Milestones: Ages ${criticalYears.join(', ')} represent sensitive planetary junctions when 6th lord (${h6Lord}), 8th lord (${h8Lord}), or nodal cycles activate health tests. During these specific age milestones, prioritize preventative medical checkups, clean satvik diet, and avoid reckless driving.`,
+      `The eighth house falls in ${SIGNS[h8Sign].name} and is ruled by ${h8Lord}. ${h8PlacementEn} The recorded occupants are: ${occupantsEn(h8Occupants)}.`,
+      'Traditional Jyotish associates this house with change, shared resources, inheritance matters, research, uncertainty and the need to adapt. These associations are symbolic interpretations, not evidence that a particular loss, inheritance, illness, accident or lifespan outcome will occur.',
     ],
     paragraphsHi: [
-      `अंग-दोष एवं शारीरिक अक्षमता परीक्षण: ${hasAngaBhangaRisk ? 'आपकी कुंडली में कमर से नीचे के अंगों, पैरों, अथवा रीढ़ की हड्डी के प्रति संवेदनशीलता और आकस्मिक चोट/सर्जरी का मध्यम जोखिम दिखाई देता है। वाहन चलाते समय, ऊंचाई पर कार्य करते समय अथवा खेलकूद में अतिरिक्त सावधानी बरतनी अनिवार्य है।' : 'आपकी कुंडली किसी जन्मजात शारीरिक अक्षमता से सुरक्षित है; नियमित व्यायाम और सात्विक दिनचर्या द्वारा आपका शरीर दीर्घकाल तक सुदृढ़ रहेगा।'}`,
-      `स्वास्थ्य व संकट के संवेदनशील वर्ष: ${criticalYears.join(', ')}वां वर्ष जीवन में स्वास्थ्य व दुर्घटना की दृष्टि से संवेदनशील कालखंड हैं। इन वर्षों में अपने स्वास्थ्य के प्रति रत्ती भर भी लापरवाही न बरतें और नियमित रूप से महामृत्युंजय मंत्र का स्मरण करें।`,
+      `अष्टम भाव ${SIGN_HI[h8Sign]} राशि में है और इसके स्वामी ${planetName(h8Lord)} हैं। ${h8PlacementHi} इस भाव में दर्ज ग्रह: ${occupantsHi(h8Occupants)}।`,
+      'पारंपरिक ज्योतिष अष्टम भाव को परिवर्तन, साझा संसाधन, विरासत से जुड़े विषय, अनुसंधान, अनिश्चितता और परिस्थितियों के अनुरूप ढलने की क्षमता से जोड़ता है। ये प्रतीकात्मक व्याख्याएँ हैं; इनसे किसी हानि, विरासत, बीमारी, दुर्घटना या आयु-परिणाम का होना सिद्ध नहीं होता।',
     ],
-    astrologicalCauseEn: `Saravali (Ch. 21 - Anga Bhanga Adhyaya) & BPHS (Ch. 16): 6th lord ${h6Lord} and 8th lord ${h8Lord} define critical age markers: ${criticalYears.join(', ')}.`,
-    astrologicalCauseHi: `शास्त्रीय कारण: सारावली (अध्याय २१ - अङ्गभङ्गाध्यायः) एवं बृहत्पाराशर होराशास्त्र: षष्ठेश '${PLANET_HI[h6Lord] || h6Lord}' व अष्टमेश '${PLANET_HI[h8Lord] || h8Lord}' संकट वर्षों (${criticalYears.join(', ')} वर्ष) को चिन्हित करते हैं।`,
+    astrologicalCauseEn: `Chart evidence: eighth-house sign ${SIGNS[h8Sign].name}; ruler ${h8Lord}; ${h8PlacementEn} Occupants: ${occupantsEn(h8Occupants)}. No longevity or medical inference is drawn.`,
+    astrologicalCauseHi: `कुंडली-साक्ष्य: अष्टम भाव की राशि ${SIGN_HI[h8Sign]}, भावेश ${planetName(h8Lord)}; ${h8PlacementHi} स्थित ग्रह: ${occupantsHi(h8Occupants)}। आयु या चिकित्सकीय निष्कर्ष नहीं निकाला गया है।`,
     keyPointsEn: [
-      `Anga-Bhanga Status: ${hasAngaBhangaRisk ? 'Moderate Vulnerability (Caution in driving & high-velocity activity)' : 'Protected from congenital impairment'}`,
-      `Critical Health Years: Ages ${criticalYears.join(', ')}`,
-      `Protective Shield: Mahamrityunjaya Japa during active transit crossroads.`,
+      `Eighth-house sign: ${SIGNS[h8Sign].name}`,
+      `Eighth-house ruler: ${h8Lord}`,
+      h8PlacementEn,
+      `Recorded occupants: ${occupantsEn(h8Occupants)}`,
+      'No lifespan, accident or illness prediction is made.',
     ],
     keyPointsHi: [
-      `अंग-दोष स्थिति: ${hasAngaBhangaRisk ? 'मध्यम संवेदनशीलता (वाहन व ऊंचाई पर सतर्कता आवश्यक)' : 'जन्मजात दोषों से पूर्णतः सुरक्षित'}`,
-      `संवेदनशील स्वास्थ्य वर्ष: ${criticalYears.join(', ')}वां वर्ष`,
-      `रक्षा कवच: महामृत्युंजय मंत्र का नित्य स्मरण।`,
+      `अष्टम भाव राशि: ${SIGN_HI[h8Sign]}`,
+      `अष्टमेश: ${planetName(h8Lord)}`,
+      h8PlacementHi,
+      `स्थित ग्रह: ${occupantsHi(h8Occupants)}`,
+      'आयु, दुर्घटना या बीमारी की भविष्यवाणी नहीं की गई है।',
     ],
   };
 

@@ -11,7 +11,7 @@
  * Retrograde (Vakri) Chesta Bala, and Bhava Chalit displacement.
  */
 
-import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import { getNakshatraSyllable, getAllNakshatraSyllables } from '../avakahadaChalit';
@@ -350,7 +350,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     const list: Array<{ planet: NineGrahaId; planetHi: string; type: string; isBenefic: boolean }> = [];
     for (const p of planets) {
       if (p.id === 'Asc') continue;
-      const fromH = p.houseNumber;
+      const fromH = p.rasiHouseNumber ?? p.houseNumber;
       const step = (offset: number) => ((fromH - 1 + offset) % 12) + 1;
       const isBenefic = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id);
       const pHi = HINDI_PLANETS[p.id] || p.id;
@@ -379,8 +379,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
   const getKartariOnHouse = (targetHouse: number) => {
     const prevH = targetHouse === 1 ? 12 : targetHouse - 1;
     const nextH = targetHouse === 12 ? 1 : targetHouse + 1;
-    const prevMal = planets.some((p) => p.houseNumber === prevH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
-    const nextMal = planets.some((p) => p.houseNumber === nextH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    const prevMal = planets.some((p) => (p.rasiHouseNumber ?? p.houseNumber) === prevH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+    const nextMal = planets.some((p) => (p.rasiHouseNumber ?? p.houseNumber) === nextH && ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
     if (prevMal && nextMal) return 'Papakartari';
     const prevBen = planets.some((p) => p.houseNumber === prevH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
     const nextBen = planets.some((p) => p.houseNumber === nextH && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
@@ -396,7 +396,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     const nakIdx = planet.nakshatraIndex ?? Math.floor(planet.longitude / (360 / 27));
     const nak = NAKSHATRAS[nakIdx] ?? NAKSHATRAS[0];
     const aspects = getAspectsOnHouse(h);
-    const occupants = planets.filter((p) => p.houseNumber === h);
+    const occupants = planets.filter((p) => (p.rasiHouseNumber ?? p.houseNumber) === h);
     const kartari = getKartariOnHouse(h);
     const isCombust = planet.id !== 'Sun' && angularDiffDeg(planet.longitude, sun.longitude) <= (COMBUSTION_ORB[planet.id as SevenPlanetId]?.direct ?? 12);
     const degInSign = planet.degreeInSign ?? (planet.longitude % 30);
@@ -413,7 +413,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       signHi: HINDI_SIGNS[signIdx],
       lord,
       lordHi: HINDI_PLANETS[lord] || lord,
-      placedHouse: planet.houseNumber,
+      placedHouse: planet.rasiHouseNumber ?? planet.houseNumber,
       placedSignIdx: planet.signIndex,
       placedSignName: SIGNS[planet.signIndex].name,
       placedSignHi: HINDI_SIGNS[planet.signIndex],
@@ -483,11 +483,32 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     period,
     ...(period.children ?? []),
   ]);
+  const VARGA_BY_DIMENSION: Record<number, DivisionalChartId> = {
+    1: 'D1', 5: 'D2', 9: 'D3', 10: 'D3', 12: 'D3',
+    13: 'D12', 14: 'D12', 17: 'D24', 19: 'D7', 20: 'D7',
+    22: 'D6', 24: 'D1', 26: 'D9', 27: 'D9', 31: 'D8',
+    34: 'D20', 37: 'D9', 39: 'D10', 44: 'D2', 48: 'D1', 51: 'D20',
+  };
   const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
   const dims = rawDims
     .filter((d) => MASTER_21_IDS.includes(d.id))
-    .map((d, idx) => {
-      const house = d.houseNumber ?? 1;
+    .map((d) => {
+      const house = d.houseNumber;
+      if (!house || house < 1 || house > 12) {
+        const unavailableHi = 'इस फलादेश के लिए मूल भाव-संबंध उपलब्ध डेटा में स्पष्ट नहीं है। इसलिए व्यक्तिगत निष्कर्ष या समय-सीमा देना उचित नहीं होगा।';
+        const unavailableEn = 'The source-house mapping is unavailable in the supplied chart data. No personalized conclusion or timing window is stated.';
+        return {
+          ...d,
+          verdictHi: unavailableHi,
+          verdictEn: unavailableEn,
+          detailedAnalysisHi: unavailableHi,
+          detailedAnalysisEn: unavailableEn,
+          astroBasisHi: unavailableHi,
+          astroBasisEn: unavailableEn,
+          timingHi: unavailableHi,
+          timingEn: unavailableEn,
+        };
+      }
       const lord = getHLord(house);
       const occupants = planets.filter((planet) => (planet.rasiHouseNumber ?? planet.houseNumber) === house && planet.id !== 'Asc');
       const aspects = lord.aspects as Array<{ planet: string; planetHi: string; isBenefic: boolean }>;
@@ -531,11 +552,31 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         ? aspects.map((aspect) => `${aspect.planet} (${aspect.isBenefic ? 'supportive' : 'challenging'} aspect)`).join(', ')
         : 'no special planetary aspect is recorded';
       const karakas = KARAKA_BY_DIMENSION[d.id] ?? [];
+      const karakaPlanets = karakas
+        .map((id) => planets.find((planet) => planet.id === id))
+        .filter((planet): planet is (typeof planets)[number] => Boolean(planet));
+      const karakaTextHi = karakaPlanets.length
+        ? karakaPlanets.map((planet) => `${HINDI_PLANETS[planet.id] || planet.id} भाव ${planet.rasiHouseNumber ?? planet.houseNumber} में (${DIGNITY_HI_MAP[planet.dignity || 'Neutral'] || planet.dignity || 'अज्ञात बल'} स्थिति)`).join('; ')
+        : 'इस विषय के कारक ग्रहों की स्थिति उपलब्ध डेटा में दर्ज नहीं है';
+      const karakaTextEn = karakaPlanets.length
+        ? karakaPlanets.map((planet) => `${planet.id} in House ${planet.rasiHouseNumber ?? planet.houseNumber} (${planet.dignity || 'unknown'} dignity)`).join('; ')
+        : 'the relevant natural significator placements are unavailable';
       const relevantPlanets = new Set<string>([
         lord.lord,
         ...occupants.map((planet) => planet.id),
         ...karakas,
       ]);
+      const vargaId = VARGA_BY_DIMENSION[d.id] ?? 'D1';
+      const varga = chart.divisionalCharts?.[vargaId];
+      const vargaPlacements = varga?.placements.filter(
+        (placement) => placement.id === 'Asc' || relevantPlanets.has(placement.id),
+      ) ?? [];
+      const vargaTextHi = varga && vargaPlacements.length
+        ? `${vargaId} ${varga.sanskritName}: ${vargaPlacements.map((placement) => `${placement.id === 'Asc' ? 'वर्ग लग्न' : HINDI_PLANETS[placement.id] || placement.id} ${placement.signName}, वर्ग लग्न से भाव ${placement.houseFromVargaLagna}, ${DIGNITY_HI_MAP[placement.dignity] || placement.dignity}`).join('; ')}`
+        : `${vargaId} वर्ग-कुंडली का संबंधित ग्रह-डेटा उपलब्ध नहीं है`;
+      const vargaTextEn = varga && vargaPlacements.length
+        ? `${vargaId} ${varga.name}: ${vargaPlacements.map((placement) => `${placement.id} in ${placement.signName}, House ${placement.houseFromVargaLagna} from varga ascendant, ${placement.dignity}`).join('; ')}`
+        : `the relevant ${vargaId} divisional placements are unavailable`;
       const matchingPeriods = allDashaPeriods
         .filter((period) => relevantPlanets.has(period.lord) && period.endMs > now)
         .sort((a, b) => a.startMs - b.startMs);
@@ -557,18 +598,92 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       }
       const verdictHi = `इस विषय का मुख्य आधार ${lord.lordHi} हैं। वे ${lord.placedHouse}वें भाव में ${lord.dignityHi} स्थिति में हैं। ${occupantTextHi}। भाव के ${bindus} सर्वाष्टकवर्ग बिंदु और ${aspectTextHi} को साथ पढ़ने पर ${toneHi}। इसे निश्चित घटना या प्रतिशत संभावना न समझें।`;
       const verdictEn = `The main house-lord indicator is ${lord.lord} in House ${lord.placedHouse} with ${lord.dignity} dignity. The house has ${occupantTextEn}; its Sarvashtakavarga score is ${bindus}, with ${aspectTextEn}. Overall, ${toneEn}. This is not a probability or a guaranteed event.`;
-      const analysisHi = `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${lord.lordHi} की स्थिति, भाव में स्थित ग्रह, ${bindus} सर्वाष्टकवर्ग बिंदु, दृष्टियां और संबंधित दशा को एक साथ देखकर यह निष्कर्ष बनाया गया है।`;
-      const analysisEn = `${d.detailedAnalysisEn}\n\nChart-specific synthesis: this reading combines the house lord's placement, house occupants, ${bindus} Sarvashtakavarga bindus, aspects and the related dasha period.`;
+      const chartBasisHi = `कुंडली में दर्ज आधार: D1 लग्न ${chart.ascendant.signName} ${chart.ascendant.dms}; ${lord.lordHi} भाव ${lord.placedHouse} में (${lord.dignityHi}); भाव में स्थित ग्रह: ${occupantTextHi}; सर्वाष्टकवर्ग: ${bindus} बिंदु; दृष्टि: ${aspectTextHi}; प्राकृतिक कारक ग्रह: ${karakaTextHi}; वर्ग-कुंडली प्रमाण: ${vargaTextHi}।`;
+      const chartBasisEn = `Recorded chart evidence: D1 ascendant ${chart.ascendant.signName} ${chart.ascendant.dms}; ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}; divisional evidence: ${vargaTextEn}.`;
+      const safetyOverrides: Record<number, { titleHi?: string; titleEn?: string; verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
+        14: {
+          titleHi: 'मातृ-संबंध, पारिवारिक वातावरण और देखभाल',
+          titleEn: 'Maternal Relationship, Family Environment & Caregiving',
+          verdictHi: 'चतुर्थ भाव, चंद्र और मातृ-संबंधित पारंपरिक संकेत परिवार, घरेलू वातावरण और देखभाल की थीम पर विचार करने में सहायक हो सकते हैं। इनसे माता की आयु, स्वास्थ्य या जीवनकाल का अनुमान नहीं लगाया जा सकता।',
+          verdictEn: 'The fourth house, Moon and traditional maternal indicators may be discussed in relation to family, home and caregiving themes. They cannot establish a mother’s health, lifespan or longevity.',
+          analysisHi: 'यह ज्योतिषीय विवेचन माता की आयु या स्वास्थ्य का आकलन नहीं है। वास्तविक स्वास्थ्य-संबंधी प्रश्नों के लिए चिकित्सकीय जानकारी और योग्य चिकित्सक की सलाह ही उपयुक्त आधार हैं।',
+          analysisEn: 'This is not an assessment of a mother’s health or lifespan. Real health questions should be addressed using medical information and qualified clinical advice.',
+        },
+        22: {
+          titleHi: 'दिनचर्या, कार्यभार और व्यावहारिक स्वास्थ्य-जिम्मेदारी',
+          titleEn: 'Daily Routines, Workload & Practical Wellbeing',
+          verdictHi: 'षष्ठ भाव के पारंपरिक संकेत दिनचर्या, सेवा, काम के दबाव और कठिनाइयों से निपटने की शैली पर विचार दे सकते हैं। इनसे रोग, अंग-विशेष की कमजोरी, प्रतिरोधक क्षमता या उपचार-परिणाम का निदान नहीं किया जा सकता।',
+          verdictEn: 'Traditional sixth-house symbolism may prompt reflection on routines, service, workload and ways of handling difficulties. It cannot diagnose disease, organ weakness, immunity or treatment outcomes.',
+          analysisHi: 'ग्रह-स्थिति किसी बीमारी या शारीरिक दुर्बलता का प्रमाण नहीं है। लक्षणों, जांच और उपचार के लिए योग्य चिकित्सक से संपर्क करें; ज्योतिष को चिकित्सा का विकल्प न मानें।',
+          analysisEn: 'Planetary placements are not evidence of disease or physical weakness. Consult a qualified clinician for symptoms, tests and treatment; astrology is not a substitute for medical care.',
+        },
+        24: {
+          titleHi: 'प्रतिस्पर्धा, विवाद और कानूनी प्रक्रिया में सावधानी',
+          titleEn: 'Competition, Disputes & Legal Process Awareness',
+          verdictHi: 'षष्ठ भाव प्रतिस्पर्धा, विवाद और प्रक्रिया-संबंधी चुनौतियों का पारंपरिक संकेतक है। इससे किसी विरोधी की पहचान, षड्यंत्र, मुकदमे का परिणाम या निश्चित विजय घोषित नहीं की जा सकती।',
+          verdictEn: 'The sixth house is traditionally associated with competition, disputes and procedural challenges. It cannot identify an enemy, establish a conspiracy, or guarantee a legal outcome or victory.',
+          analysisHi: 'कानूनी विवाद में दस्तावेज, समय-सीमा, साक्ष्य और योग्य अधिवक्ता की सलाह निर्णायक व्यावहारिक आधार हैं। ज्योतिषीय संकेतों को कानूनी रणनीति या परिणाम का विकल्प न बनाएं।',
+          analysisEn: 'In legal matters, documents, deadlines, evidence and advice from a qualified lawyer are the practical basis for decisions. Astrological symbolism cannot replace legal strategy or predict a court outcome.',
+        },
+        26: {
+          titleHi: 'विवाह-विषयक संकेत और संभावित दशा-अवधियां',
+          titleEn: 'Marriage Themes & Possible Dasha Activation Periods',
+          verdictHi: 'सप्तम भाव, सप्तमेश और शुक्र विवाह-विषयक पारंपरिक अध्ययन के संकेतक हैं। उपलब्ध गणना में संबंधित दशा-अवधि को केवल संभावित सक्रियता के रूप में पढ़ें; इससे विवाह की निश्चित तारीख या आयु तय नहीं होती।',
+          verdictEn: 'The seventh house, its ruler and Venus are traditional marriage indicators. The related dasha period is only a possible activation window in this calculation; it does not determine a certain marriage date or age.',
+          analysisHi: 'विवाह का निर्णय व्यक्तिगत इच्छा, सहमति, संबंध की वास्तविक स्थिति और जीवन-परिस्थितियों पर निर्भर करता है। ज्योतिषीय समय-संकेत को निश्चित घटना न समझें।',
+          analysisEn: 'Marriage decisions depend on personal choice, consent, the actual relationship and life circumstances. Do not treat an astrological timing indicator as a certain event.',
+        },
+        31: {
+          titleHi: 'परिवर्तन, धैर्य और दीर्घकालीन जिम्मेदारियां',
+          titleEn: 'Change, Resilience & Long-Term Responsibilities',
+          verdictHi: 'अष्टम भाव, लग्नेश और शनि को परंपरागत रूप से परिवर्तन, धैर्य और दीर्घकालीन जिम्मेदारियों के संदर्भ में देखा जाता है। इनसे आयु-खंड, मृत्यु-समय, मृत्यु-कारण या जीवनकाल का विश्वसनीय अनुमान नहीं लगाया जा सकता।',
+          verdictEn: 'The eighth house, ascendant ruler and Saturn are traditionally discussed in relation to change, resilience and long-term responsibilities. They cannot reliably estimate lifespan, age at death, timing or cause of death.',
+          analysisHi: 'इस फलादेश में कोई आयु-सीमा या मृत्यु-संबंधी निष्कर्ष नहीं दिया जाता। स्वास्थ्य और जीवन-योजना के निर्णय वास्तविक परिस्थितियों, प्रमाण और योग्य विशेषज्ञों की सलाह पर आधारित होने चाहिए।',
+          analysisEn: 'This reading makes no lifespan or death-related estimate. Health and life-planning decisions should be based on real circumstances, evidence and qualified professional advice.',
+        },
+        39: {
+          titleHi: 'पेशेवर दिशा, कार्य-भूमिका और आजीविका विकल्प',
+          titleEn: 'Professional Direction, Work Roles & Livelihood Options',
+          verdictHi: 'दशम भाव और दशमेश कार्य, जिम्मेदारी, पेशेवर भूमिका और सार्वजनिक योगदान के पारंपरिक संकेतक हैं। उपलब्ध D1 आधार अकेले यह तय नहीं करता कि नौकरी या व्यवसाय में से कौन-सा मार्ग निश्चित रूप से सफल होगा।',
+          verdictEn: 'The tenth house and its ruler are traditional indicators of work, responsibility, professional role and public contribution. The available D1 evidence alone cannot determine whether employment or business will certainly succeed.',
+          analysisHi: 'करियर के निर्णय कौशल, अनुभव, अवसर, आर्थिक स्थिति, रुचि और वास्तविक कार्य-बाजार को देखकर लें। इस रिपोर्ट में नौकरी बनाम व्यवसाय का कोई निश्चित अनुपात या सांख्यिकीय संभावना नहीं दी जाती।',
+          analysisEn: 'Career decisions should consider skills, experience, opportunities, finances, preferences and the actual labor market. This report does not assign a fixed employment-versus-business split or statistical probability.',
+        },
+        48: {
+          titleHi: 'दूरस्थ स्थान, विदेश-संबंधी विषय और व्यय',
+          titleEn: 'Distant Places, Foreign-Related Themes & Expenditure',
+          verdictHi: 'द्वादश भाव दूरस्थ स्थान, खर्च, विश्राम और विदेश-संबंधी विषयों का पारंपरिक संकेतक है। यह अकेले विदेश यात्रा, स्थायी प्रवास, वीजा या विदेशी आय की गारंटी नहीं देता।',
+          verdictEn: 'The twelfth house is traditionally associated with distant places, expenditure, retreat and foreign-related themes. By itself it does not guarantee travel, permanent relocation, a visa or overseas income.',
+          analysisHi: 'विदेश जाने या बसने की वास्तविक संभावना योग्यता, वीजा नियम, रोजगार, वित्त और व्यक्तिगत विकल्पों पर निर्भर करती है। ज्योतिषीय संकेत को निश्चित प्रवास न समझें।',
+          analysisEn: 'Actual prospects for travel or relocation depend on eligibility, visa rules, employment, finances and personal choices. Do not interpret astrological symbolism as a guaranteed move.',
+        },
+        51: {
+          titleHi: 'आध्यात्मिक अभ्यास, एकांत और आत्मचिंतन',
+          titleEn: 'Spiritual Practice, Solitude & Reflection',
+          verdictHi: 'द्वादश भाव और केतु को पारंपरिक रूप से एकांत, ध्यान, त्याग और आध्यात्मिक अभ्यास से जोड़ा जाता है। मोक्ष या समाधि जैसी आध्यात्मिक उपलब्धि की गारंटी कुंडली से नहीं दी जा सकती।',
+          verdictEn: 'The twelfth house and Ketu are traditionally associated with solitude, meditation, renunciation and spiritual practice. A chart cannot guarantee moksha or samadhi.',
+          analysisHi: 'आध्यात्मिक प्रगति व्यक्तिगत साधना, नैतिक आचरण, अनुभव और परंपरा से जुड़ी है। इस फलादेश को प्रतीकात्मक चिंतन समझें, किसी आध्यात्मिक उपलब्धि का निश्चित दावा नहीं।',
+          analysisEn: 'Spiritual development involves personal practice, ethical conduct, experience and tradition. Treat this reading as symbolic reflection, not a guaranteed spiritual attainment.',
+        },
+      };
+      const safety = safetyOverrides[d.id];
+      const analysisHi = (safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`) + `\n\n${chartBasisHi}`;
+      const analysisEn = (safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`) + `\n\n${chartBasisEn}`;
+      const suppressSensitiveTiming = [14, 22, 31].includes(d.id);
       return {
         ...d,
-        id: idx + 1,
-        verdictHi,
-        verdictEn,
+        id: d.id,
+        titleHi: safety?.titleHi ?? d.titleHi,
+        titleEn: safety?.titleEn ?? d.titleEn,
+        astroBasisHi: chartBasisHi,
+        astroBasisEn: chartBasisEn,
+        verdictHi: `${safety?.verdictHi ?? verdictHi} ${chartBasisHi}`,
+        verdictEn: `${safety?.verdictEn ?? verdictEn} ${chartBasisEn}`,
         detailedAnalysisHi: analysisHi,
         detailedAnalysisEn: analysisEn,
         auspiciousness,
-        timingHi,
-        timingEn,
+        timingHi: suppressSensitiveTiming ? 'इस विषय में स्वास्थ्य या आयु से संबंधित समय-सीमा बताना उचित नहीं है।' : timingHi,
+        timingEn: suppressSensitiveTiming ? 'No health- or lifespan-related timing window is stated for this topic.' : timingEn,
       };
     });
 
@@ -595,6 +710,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
 
   // Safe accessor helper (queries rawDims for complete corpus data)
   const getDim = (id: number) => rawDims.find((d) => d.id === id) || rawDims[0];
+  const getSelectedDim = (id: number) => dims.find((d) => d.id === id) || getDim(id);
 
   const d1 = getDim(1);
   const d2 = getDim(2);
@@ -664,8 +780,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       temperamentHi: d35.verdictHi,
       professionEn: d35.detailedAnalysisEn,
       professionHi: d35.detailedAnalysisHi,
-      lifespanEn: d36.verdictEn,
-      lifespanHi: d36.verdictHi,
+      lifespanEn: 'Astrology cannot assess a father’s health or lifespan.',
+      lifespanHi: 'ज्योतिष से पिता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।',
       relationshipEn: d35.verdictEn,
       relationshipHi: d35.verdictHi,
     },
@@ -674,8 +790,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       temperamentHi: d13.verdictHi,
       professionEn: d13.detailedAnalysisEn,
       professionHi: d13.detailedAnalysisHi,
-      lifespanEn: d14.verdictEn,
-      lifespanHi: d14.verdictHi,
+      lifespanEn: 'Astrology cannot assess a mother’s health or lifespan.',
+      lifespanHi: 'ज्योतिष से माता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।',
       relationshipEn: d13.verdictEn,
       relationshipHi: d13.verdictHi,
     },
@@ -688,28 +804,28 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       harmonyHi: d9.detailedAnalysisHi,
     },
     marriage: {
-      timingAgeWindowEn: d26.verdictEn,
-      timingAgeWindowHi: d26.verdictHi,
-      marriageYogasEn: d28.verdictEn,
-      marriageYogasHi: d28.verdictHi,
-      spouseNatureEn: d27.verdictEn,
-      spouseNatureHi: d27.verdictHi,
-      spouseAgeGapEn: d26.verdictEn,
-      spouseAgeGapHi: d26.verdictHi,
-      relationshipEn: d28.detailedAnalysisEn,
-      relationshipHi: d28.detailedAnalysisHi,
+      timingAgeWindowEn: getSelectedDim(26).verdictEn,
+      timingAgeWindowHi: getSelectedDim(26).verdictHi,
+      marriageYogasEn: 'Traditional indicators are interpretive themes, not a guarantee of marriage or relationship success.',
+      marriageYogasHi: 'पारंपरिक योग केवल व्याख्यात्मक संकेत हैं, विवाह या संबंध की सफलता की गारंटी नहीं।',
+      spouseNatureEn: getSelectedDim(27).verdictEn,
+      spouseNatureHi: getSelectedDim(27).verdictHi,
+      spouseAgeGapEn: 'A chart cannot reliably determine a spouse’s age or age gap.',
+      spouseAgeGapHi: 'कुंडली से जीवनसाथी की आयु या आयु-अंतर विश्वसनीय रूप से निर्धारित नहीं किया जा सकता।',
+      relationshipEn: 'Relationship outcomes depend on mutual respect, communication, compatibility and consent; no outcome is guaranteed by a chart.',
+      relationshipHi: 'संबंधों का परिणाम आपसी सम्मान, संवाद, अनुकूलता और सहमति पर निर्भर करता है; कुंडली किसी परिणाम की गारंटी नहीं देती।',
     },
     children: {
-      conceptionModeEn: d19.verdictEn,
-      conceptionModeHi: d19.verdictHi,
-      progenyCountEn: d19.verdictEn,
-      progenyCountHi: d19.verdictHi,
-      miscarriageRiskEn: d20.verdictEn,
-      miscarriageRiskHi: d20.verdictHi,
-      filialHappinessEn: d19.detailedAnalysisEn,
-      filialHappinessHi: d19.detailedAnalysisHi,
-      countAndGenderEn: d19.verdictEn,
-      countAndGenderHi: d19.verdictHi,
+      conceptionModeEn: 'No conception method, fertility or pregnancy outcome is predicted.',
+      conceptionModeHi: 'गर्भधारण की विधि, प्रजनन क्षमता या गर्भावस्था के परिणाम का कोई अनुमान नहीं दिया जाता।',
+      progenyCountEn: 'No prediction of number or sex of children is made.',
+      progenyCountHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।',
+      miscarriageRiskEn: 'Astrology cannot assess miscarriage risk, fertility or pregnancy outcomes. Consult a qualified clinician for medical questions.',
+      miscarriageRiskHi: 'ज्योतिष से गर्भपात का जोखिम, प्रजनन क्षमता या गर्भावस्था का परिणाम निर्धारित नहीं किया जा सकता। चिकित्सकीय प्रश्नों के लिए योग्य चिकित्सक से सलाह लें।',
+      filialHappinessEn: getSelectedDim(19).detailedAnalysisEn,
+      filialHappinessHi: getSelectedDim(19).detailedAnalysisHi,
+      countAndGenderEn: 'No prediction of children’s number or gender is made.',
+      countAndGenderHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।',
       filialJoyEn: d19.detailedAnalysisEn,
       filialJoyHi: d19.detailedAnalysisHi,
     },
@@ -726,24 +842,24 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       suitableFieldsHi: [d17.verdictHi],
     },
     career: {
-      jobVsBusinessEn: d39.verdictEn,
-      jobVsBusinessHi: d39.verdictHi,
-      govtVsPrivateEn: d40.verdictEn,
-      govtVsPrivateHi: d40.verdictHi,
-      suitableProfessionsEn: [d41.verdictEn],
-      suitableProfessionsHi: [d41.verdictHi],
-      foreignTravelEn: d48.verdictEn,
-      foreignTravelHi: d48.verdictHi,
-      foreignSettlementEn: d48.detailedAnalysisEn,
-      foreignSettlementHi: d48.detailedAnalysisHi,
+      jobVsBusinessEn: getSelectedDim(39).verdictEn,
+      jobVsBusinessHi: getSelectedDim(39).verdictHi,
+      govtVsPrivateEn: 'A horoscope cannot reliably determine government versus private employment. Consider eligibility, skills, vacancies and preferences.',
+      govtVsPrivateHi: 'कुंडली से सरकारी या निजी नौकरी का विश्वसनीय निर्णय नहीं किया जा सकता। पात्रता, कौशल, रिक्तियां और रुचि देखें।',
+      suitableProfessionsEn: ['Explore roles that match demonstrated skills, qualifications, interests and actual opportunities; no profession is guaranteed.'],
+      suitableProfessionsHi: ['प्रमाणित कौशल, योग्यता, रुचि और वास्तविक अवसरों के अनुरूप कार्यक्षेत्र चुनें; किसी पेशे की गारंटी नहीं।'],
+      foreignTravelEn: getSelectedDim(48).verdictEn,
+      foreignTravelHi: getSelectedDim(48).verdictHi,
+      foreignSettlementEn: getSelectedDim(48).detailedAnalysisEn,
+      foreignSettlementHi: getSelectedDim(48).detailedAnalysisHi,
     },
     longevity: {
-      categoryEn: d31.verdictEn,
-      categoryHi: d31.verdictHi,
-      rangeEn: d31.detailedAnalysisEn,
-      rangeHi: d31.detailedAnalysisHi,
-      keyFactorsEn: d31.astroBasisEn,
-      keyFactorsHi: d31.astroBasisHi,
+      categoryEn: 'Traditional themes of change, shared responsibilities and resilience; not a lifespan assessment.',
+      categoryHi: 'परिवर्तन, साझा जिम्मेदारियों और धैर्य के पारंपरिक संकेत; यह जीवनकाल का आकलन नहीं है।',
+      rangeEn: 'No lifespan range or age-at-death estimate is provided.',
+      rangeHi: 'जीवनकाल की सीमा या मृत्यु-आयु का कोई अनुमान नहीं दिया जाता।',
+      keyFactorsEn: 'Traditional eighth-house symbolism may be used for reflection on change and long-term responsibilities, not for lifespan assessment.',
+      keyFactorsHi: 'अष्टम भाव के पारंपरिक संकेतों को परिवर्तन और दीर्घकालीन जिम्मेदारियों पर चिंतन के लिए पढ़ें, जीवनकाल के आकलन के लिए नहीं।',
     },
     bandhanaYoga: {
       hasRisk: false,
@@ -754,12 +870,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     },
     surgeryYoga: {
       hasRisk: false,
-      riskLevelEn: d33.verdictEn,
-      riskLevelHi: d33.verdictHi,
-      vulnerableAreasEn: d33.astroBasisEn,
-      vulnerableAreasHi: d33.astroBasisHi,
-      timingEn: d33.detailedAnalysisEn,
-      timingHi: d33.detailedAnalysisHi,
+      riskLevelEn: 'No surgery or medical-risk prediction is made from astrology.',
+      riskLevelHi: 'ज्योतिष के आधार पर शल्यक्रिया या चिकित्सकीय जोखिम का अनुमान नहीं दिया जाता।',
+      vulnerableAreasEn: 'Astrology cannot identify vulnerable organs or body parts.',
+      vulnerableAreasHi: 'ज्योतिष से कमजोर अंगों या शरीर के हिस्सों की पहचान नहीं की जा सकती।',
+      timingEn: 'No medical or surgery timing is provided. Use clinical assessment and medical advice.',
+      timingHi: 'चिकित्सा या शल्यक्रिया का समय नहीं बताया जाता। चिकित्सकीय जांच और डॉक्टर की सलाह लें।',
     },
     physicalMarks: {
       identificationEn: d1.verdictEn,
@@ -768,8 +884,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       locationsHi: [d1.verdictHi],
     },
     addictions: {
-      vulnerabilitiesEn: ['Sensory overindulgence during high stress'],
-      vulnerabilitiesHi: ['अत्यधिक तनाव में खानपान या दिनचर्या में असंतुलन'],
+      vulnerabilitiesEn: ['No psychological vulnerability is inferred from planetary placements.'],
+      vulnerabilitiesHi: ['ग्रह-स्थितियों से किसी मनोवैज्ञानिक कमजोरी का निष्कर्ष नहीं निकाला जाता।'],
       adviceEn: 'Practice regular meditation and avoid late night stimulants.',
       adviceHi: 'नियमित ध्यान करें और देर रात उत्तेजक पदार्थों से बचें।',
     },
@@ -817,26 +933,26 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       marriageTypeHi: d21.detailedAnalysisHi,
     },
     mentalHealth: {
-      conditionEn: d2.verdictEn,
-      conditionHi: d2.verdictHi,
-      vulnerabilitiesEn: d2.astroBasisEn,
-      vulnerabilitiesHi: d2.astroBasisHi,
+      conditionEn: 'This section is not a mental-health assessment or diagnosis.',
+      conditionHi: 'यह भाग मानसिक स्वास्थ्य का आकलन या निदान नहीं है।',
+      vulnerabilitiesEn: 'Astrology cannot diagnose mental-health conditions or psychological vulnerabilities.',
+      vulnerabilitiesHi: 'ज्योतिष से मानसिक स्वास्थ्य की स्थिति या मनोवैज्ञानिक कमजोरियों का निदान नहीं किया जा सकता।',
       remedyEn: d2.remedyEn,
       remedyHi: d2.remedyHi,
     },
     health: {
       constitutionEn: d1.verdictEn,
       constitutionHi: d1.verdictHi,
-      vulnerableOrgansEn: d22.astroBasisEn,
-      vulnerableOrgansHi: d22.astroBasisHi,
+      vulnerableOrgansEn: 'Astrology cannot identify vulnerable organs or predict disease.',
+      vulnerableOrgansHi: 'ज्योतिष से कमजोर अंगों की पहचान या रोग की भविष्यवाणी नहीं की जा सकती।',
     },
     wealth: {
-      statusEn: d5.verdictEn,
-      statusHi: d5.verdictHi,
-      activeYogasEn: [d5.verdictEn, d44.verdictEn],
-      activeYogasHi: [d5.verdictHi, d44.verdictHi],
-      peakAgeWindowEn: 'Major prosperity surges between age 28 and 42',
-      peakAgeWindowHi: '28 से 42 वर्ष की आयु के मध्य विशेष वित्तीय समृद्धि',
+      statusEn: getSelectedDim(5).verdictEn,
+      statusHi: getSelectedDim(5).verdictHi,
+      activeYogasEn: [getSelectedDim(5).verdictEn, getSelectedDim(44).verdictEn],
+      activeYogasHi: [getSelectedDim(5).verdictHi, getSelectedDim(44).verdictHi],
+      peakAgeWindowEn: 'No fixed age window or guaranteed period of prosperity is assigned.',
+      peakAgeWindowHi: 'समृद्धि के लिए कोई निश्चित आयु-सीमा या गारंटीकृत अवधि निर्धारित नहीं की जाती।'
     },
   };
 

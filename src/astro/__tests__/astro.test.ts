@@ -1484,8 +1484,9 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(pred.dimensions).toBeDefined();
     expect(pred.dimensions.length).toBe(21);
     expect(pred.summary.totalDimensions).toBe(21);
-    pred.dimensions.forEach((dim, idx) => {
-      expect(dim.id).toBe(idx + 1);
+    expect(pred.dimensions.map((dim) => dim.id).sort((a, b) => a - b))
+      .toEqual([1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51]);
+    pred.dimensions.forEach((dim) => {
       expect(dim.titleEn.length).toBeGreaterThan(3);
       expect(dim.titleHi).toMatch(/[\u0900-\u097F]/);
       expect(dim.astroBasisEn.length).toBeGreaterThan(5);
