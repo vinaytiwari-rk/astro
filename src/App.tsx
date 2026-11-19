@@ -239,6 +239,8 @@ export function App() {
       target = 'general-prediction';
     } else if (view === 'planet-wise-prediction' || view === 'planets-prediction') {
       target = 'planet-wise-prediction';
+    } else if (view === 'house-wise-prediction' || view === 'bhava-wise-prediction') {
+      target = 'house-wise-prediction';
     } else if (view === 'vedic' || view === 'vedic-horoscope' || view === 'janam-kundli') {
       target = 'vedic-horoscope';
     } else if (view === 'festivals' || view === 'festival-calendar') {
@@ -377,10 +379,10 @@ export function App() {
               />
             )}
 
-            {(currentView === 'general-prediction' || currentView === 'planet-wise-prediction') && (
+            {(currentView === 'general-prediction' || currentView === 'planet-wise-prediction' || currentView === 'house-wise-prediction') && (
               <SimplePredictionsView
                 chart={chart}
-                mode={currentView === 'planet-wise-prediction' ? 'planets' : 'general'}
+                mode={currentView === 'planet-wise-prediction' ? 'planets' : currentView === 'house-wise-prediction' ? 'houses' : 'general'}
               />
             )}
 
