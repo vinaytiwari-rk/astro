@@ -103,7 +103,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     const spirituality = byId(51);
 
     expect(maternal.titleEn).not.toMatch(/longevity/i);
-    expect(maternal.verdictEn).not.toMatch(/lifespan|long life|longevity/i);
+    expect(maternal.verdictEn).toMatch(/cannot establish.*health, lifespan or longevity/i);
     expect(health.titleEn).not.toMatch(/disease|vulnerabilit|recovery speed/i);
     expect(health.verdictEn).toMatch(/cannot diagnose/i);
     expect(disputes.titleEn).not.toMatch(/adversar|court triumph/i);
