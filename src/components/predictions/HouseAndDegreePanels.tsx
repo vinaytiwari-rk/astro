@@ -221,6 +221,13 @@ export const HouseWisePanel: React.FC<{
                   </div>
                 )}
 
+                {(h.primaryFactorsHi || h.primaryFactorsEn) && (
+                  <div className="small-text" style={{ marginTop: 8, lineHeight: 1.55, whiteSpace: 'pre-line' }}>
+                    <strong>{isHi ? 'विस्तृत ग्रह-प्रमाण:' : 'Detailed Planetary Evidence:'}</strong>{' '}
+                    {isHi ? h.primaryFactorsHi : h.primaryFactorsEn}
+                  </div>
+                )}
+
                 <div className="domain-factors">
                   <span className="factor-chip">
                     {isHi ? 'स्थित ग्रह:' : 'Occupants:'}{' '}
