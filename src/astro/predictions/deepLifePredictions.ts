@@ -1,5 +1,6 @@
 import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId } from '../types';
 import { SIGNS } from '../constants';
+import { getFunctionalLordship } from './functionalLordship';
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -33,8 +34,20 @@ const DOMAINS: DomainConfig[] = [
   { id: 'health', titleEn: 'Health, Habits & Resilience', titleHi: 'स्वास्थ्य, आदतें एवं सहनशक्ति', icon: 'shield', houses: [1, 6, 8, 12], karakas: ['Sun', 'Moon', 'Saturn'], varga: 'D30', adviceEn: 'Use this section only for traditional reflection on habits and resilience. It is not a diagnosis; consult a qualified clinician about symptoms or treatment.', adviceHi: 'इस भाग को केवल पारंपरिक जीवनशैली-चिंतन के रूप में लें। यह चिकित्सकीय निदान नहीं है; लक्षण या उपचार के लिए योग्य चिकित्सक से सलाह लें।' },
   { id: 'spirituality', titleEn: 'Dharma, Learning & Spirituality', titleHi: 'धर्म, अध्ययन एवं आध्यात्म', icon: 'sparkles', houses: [9, 12, 5, 8], karakas: ['Jupiter', 'Ketu'], varga: 'D20', adviceEn: 'Develop a consistent study or contemplative practice that fits your beliefs and circumstances; no spiritual outcome is guaranteed by a placement.', adviceHi: 'अपनी मान्यताओं और परिस्थितियों के अनुरूप अध्ययन या साधना की नियमितता विकसित करें; कोई ग्रह-स्थिति आध्यात्मिक उपलब्धि की गारंटी नहीं देती।' },
 ];
-const BENEFICS = new Set<string>(['Jupiter', 'Venus', 'Mercury']);
-const MALEFICS = new Set<string>(['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu']);
+const CLASSICAL_PLANETS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
+function functionalLordshipEvidence(chart: ChartData, planetId: string): { en: string; hi: string; adjustment: number } | null {
+  if (!CLASSICAL_PLANETS.has(planetId)) return null;
+  const lordship = getFunctionalLordship(planetId as import('../types').SevenPlanetId, chart.ascendant.signIndex);
+  const houses = lordship.ownedHouses;
+  const ownsTrikona = houses.some((house) => [1, 5, 9].includes(house));
+  const ownsDusthana = houses.some((house) => [6, 8, 12].includes(house));
+  const adjustment = ownsTrikona === ownsDusthana ? 0 : ownsTrikona ? 0.5 : -0.5;
+  return {
+    en: planetId + ' owns houses ' + houses.join(', ') + ' (' + lordship.rolesEn.join('; ') + ')',
+    hi: planetId + ' भाव ' + houses.join(', ') + ' का स्वामी है (' + lordship.rolesHi.join('; ') + ')',
+    adjustment,
+  };
+}
 function dignityPoints(d: string): number {
   if (['Exalted', 'Moolatrikona', 'Own Sign'].includes(d)) return 2;
   if (['Great Friend', 'Friend'].includes(d)) return 1;
@@ -101,14 +114,29 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
     }
     if (occupants.length) {
       count++;
-      for (const p of occupants) { related.add(String(p.id)); if (BENEFICS.has(String(p.id))) local += 0.5; if (MALEFICS.has(String(p.id))) local -= 0.5; }
+      const occupantEvidence = occupants.map((p) => {
+        related.add(String(p.id));
+        const role = functionalLordshipEvidence(chart, String(p.id));
+        if (role) { local += role.adjustment; return role.en; }
+        return String(p.id) + ' has no assigned classical house lordship in this synthesis';
+      });
       en.push('occupants ' + occupants.map((p) => p.id + ' (' + p.dignity + ')').join(', '));
+      en.push('occupant functional roles: ' + occupantEvidence.join('; '));
       hi.push('स्थित ग्रह ' + occupants.map((p) => p.id + ' (' + p.dignity + ')').join(', '));
+      hi.push('स्थित ग्रहों का कार्यात्मक स्वामित्व: ' + occupants.map((p) => functionalLordshipEvidence(chart, String(p.id))?.hi ?? String(p.id) + ' का पारंपरिक भाव-स्वामित्व नहीं').join('; '));
     } else { en.push('no classical graha occupant'); hi.push('कोई पारंपरिक ग्रह स्थित नहीं'); }
     if (aspects.length) {
       count++;
-      for (const id of aspects) { if (BENEFICS.has(id)) local += 0.5; if (MALEFICS.has(id)) local -= 0.5; }
-      en.push('graha aspects ' + aspects.join(', ')); hi.push('ग्रह-दृष्टि ' + aspects.join(', '));
+      const aspectEvidence = aspects.map((id) => {
+        related.add(id);
+        const role = functionalLordshipEvidence(chart, id);
+        if (role) { local += role.adjustment; return role.en; }
+        return id + ' has no assigned classical house lordship in this synthesis';
+      });
+      en.push('graha aspects ' + aspects.join(', '));
+      en.push('aspecting planets functional roles: ' + aspectEvidence.join('; '));
+      hi.push('ग्रह-दृष्टि ' + aspects.join(', '));
+      hi.push('दृष्टि डालने वाले ग्रहों का कार्यात्मक स्वामित्व: ' + aspects.map((id) => functionalLordshipEvidence(chart, id)?.hi ?? id + ' का पारंपरिक भाव-स्वामित्व नहीं').join('; '));
     }
     balance += local;
     houseEn.push('H' + house + ' (' + sign.name + '): ' + en.join('; ') + '.');
