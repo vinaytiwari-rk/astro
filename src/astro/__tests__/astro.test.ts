@@ -589,10 +589,6 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const vivekChart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const livingChart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = generatePredictionReport(livingChart, '2026-11-10');
-    const targetAtMs = Date.parse('2026-11-10T12:00:00.000Z') - livingChart.offsetMinutesUsed * 60_000;
-    const expectedHouseDasha = computeHouseWisePredictions(livingChart, targetAtMs);
-    expect(report.houseWisePredictions.map((house) => house.dashaEvidenceEn))
-      .toEqual(expectedHouseDasha.map((house) => house.dashaEvidenceEn));
 
     expect(report.paramayus.exceeded).toBe(false);
     expect(report.lagnaProfile.signName).toBe(livingChart.ascendant.signName);
@@ -1395,7 +1391,7 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(nov2026.find((d) => d.isoDate === '2026-11-11')?.highlightTagEn).toContain('Bhai Dooj');
 
     // 6. 12-Planets Comprehensive Event Prediction Engine (9 Vedic Grahas + 3 Outer Planets)
-    const houseReport = computeHouseWisePredictions(chart2026, Date.parse('2026-11-11T12:00:00Z'));
+    const houseReport = computeHouseWisePredictions(chart2026);
     expect(houseReport).toHaveLength(12);
     const classicalAspectPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
     for (const house of houseReport) {
@@ -1415,8 +1411,10 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(house.primaryFactorsEn).toContain('Shadbala:');
       expect(house.primaryFactorsEn).toContain('D9:');
       expect(house.primaryFactorsEn).toContain('Star lord');
-      expect(house.primaryFactorsEn).toContain('Dasha context:');
-      expect(house.primaryFactorsHi).toContain('दशा-संदर्भ');
+      expect(house.primaryFactorsEn).not.toContain('Dasha context:');
+      expect(house.primaryFactorsHi).not.toContain('दशा-संदर्भ');
+      expect(house.synthesisEn).not.toContain('Current gochar evidence');
+      expect(house.synthesisHi).not.toContain('वर्तमान गोचर प्रमाण');
       expect(house.primaryFactorsHi).toContain('षड्बल');
       expect(house.primaryFactorsHi).toContain('नवांश');
       expect(house.score).toBeGreaterThanOrEqual(25);
