@@ -138,6 +138,14 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(report.father.lifespanEn).toMatch(/cannot assess.*health or lifespan/i);
     expect(report.mother.lifespanEn).toMatch(/cannot assess.*health or lifespan/i);
     expect(report.marriage.spouseAgeGapEn).toMatch(/cannot reliably determine/i);
+    expect(report.marriage.marriageYogasEn).toMatch(/not a guarantee/i);
+    expect(report.marriage.relationshipEn).toMatch(/no outcome is guaranteed/i);
+    expect(report.children.conceptionModeEn).toMatch(/No conception method/i);
+    expect(report.career.govtVsPrivateEn).toMatch(/cannot reliably determine/i);
+    expect(report.career.suitableProfessionsEn[0]).toMatch(/no profession is guaranteed/i);
+    expect(report.career.jobVsBusinessEn).toMatch(/cannot determine whether employment or business/i);
+    expect(report.mentalHealth.conditionEn).toMatch(/not a mental-health assessment/i);
+    expect(report.addictions.vulnerabilitiesEn[0]).toMatch(/No psychological vulnerability/i);
     expect(report.children.progenyCountEn).toMatch(/No prediction of number or sex/i);
     expect(report.children.miscarriageRiskEn).toMatch(/cannot assess miscarriage risk/i);
     expect(report.children.countAndGenderEn).toMatch(/No prediction.*number or gender/i);
