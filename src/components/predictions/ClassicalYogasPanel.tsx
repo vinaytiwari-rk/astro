@@ -43,6 +43,7 @@ export const ClassicalYogasPanel: React.FC<ClassicalYogasPanelProps> = ({
     { id: 'Viparita', labelEn: 'Viparita Raja', labelHi: 'विपरीत राजयोग' },
     { id: 'Arishta', labelEn: 'Arishta / Ashubha', labelHi: 'अरिष्ट / कष्ट योग' },
     { id: 'Special', labelEn: 'Special Classical', labelHi: 'विशिष्ट योग' },
+    { id: 'Nabhasa', labelEn: 'Nabhasa (32 classical formations)', labelHi: 'नाभस (32 शास्त्रीय विन्यास)' },
     { id: 'Nabhasa', labelEn: 'Nabhasa Yogas', labelHi: 'नाभस योग' },
   ];
 
