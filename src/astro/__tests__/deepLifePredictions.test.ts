@@ -15,8 +15,14 @@ describe('Chart-specific General Prediction synthesis', () => {
         expect(domain.summaryEn).toMatch(/indications/);
         expect(domain.predictionEn.length).toBeGreaterThan(80);
         expect(domain.predictionHi.length).toBeGreaterThan(80);
-        expect(domain.predictionEn).toContain('Key supportive chart factor:');
-        expect(domain.predictionHi).toContain('मुख्य अनुकूल कुंडली-आधार:');
+        expect(domain.predictionEn).toContain('The main outcome area');
+        expect(domain.predictionHi).toContain('मुख्य फलित क्षेत्र');
+        if (!domain.keyStrengthsEn[0].startsWith('No clearly')) {
+          expect(domain.predictionEn).toContain('Key supportive chart factor:');
+        }
+        if (!domain.keyStrengthsHi[0].startsWith('प्रदत्त कुंडली-डेटा')) {
+          expect(domain.predictionHi).toContain('मुख्य अनुकूल कुंडली-आधार:');
+        }
         expect(domain.keyStrengthsEn.length).toBeGreaterThan(0);
         expect(domain.watchoutsEn.length).toBeGreaterThan(0);
       }
