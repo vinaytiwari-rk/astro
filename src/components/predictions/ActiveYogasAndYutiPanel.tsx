@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Award,
-  BookOpen,
   CheckCircle,
   Filter,
   Flame,
@@ -12,7 +11,6 @@ import {
   Zap,
 } from 'lucide-react';
 import {
-  CLASSICAL_YOGAS_KB,
   type ClassicalYogaCategory,
   type ClassicalYogaQuality,
   type DetectedClassicalYoga,
@@ -44,7 +42,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'divisional' | 'all'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'divisional'>(initialTab);
   const [selectedVargaForYogas, setSelectedVargaForYogas] = useState<string>('D9');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -102,7 +100,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
   ];
 
   const filteredYogas = useMemo(() => {
-    const list = activeTab === 'detected' ? detectedYogas : CLASSICAL_YOGAS_KB;
+    const list = detectedYogas;
     return list.filter((y) => {
       if (categoryFilter !== 'all' && y.category !== categoryFilter) return false;
       if (qualityFilter !== 'all' && y.quality !== qualityFilter) return false;
@@ -129,8 +127,8 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
             <h3 style={{ margin: 0, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               {isHi
-                ? 'सक्रिय योग व ग्रह युति फल (शास्त्रीय योग संग्रह)'
-                : 'Active Yogas & Planetary Conjunctions (Classical Yoga Library)'}
+                ? 'जन्मकुंडली के सक्रिय योग एवं ग्रह युति'
+                : 'Formed Natal Yogas & Planetary Conjunctions'}
             </h3>
             <p className="muted small-text" style={{ marginTop: '4px' }}>
               {isHi
@@ -165,13 +163,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
               <Award size={13} />{' '}
               {isHi ? 'वर्ग कुंडली योग (D1–D360)' : 'Divisional Yogas (D1–D360)'}
             </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${activeTab === 'all' ? 'btn-primary' : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              <BookOpen size={13} /> {isHi ? 'शास्त्रीय योग संग्रह' : 'Classical Library'}
-            </button>
+
           </div>
         </div>
 
@@ -345,7 +337,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
       )}
 
       {/* --- TAB 2 & 3: DETECTED CLASSICAL YOGAS OR FULL CORPUS --- */}
-      {(activeTab === 'detected' || activeTab === 'all') && (
+      {activeTab === 'detected' && (
         <div className="view-stack">
           {/* Filter Bar */}
           <div className="card" style={{ padding: '10px 14px' }}>
@@ -420,14 +412,14 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
               <div className="card" style={{ gridColumn: '1 / -1', padding: '24px', textAlign: 'center' }}>
                 <p className="muted" style={{ margin: 0 }}>
                   {isHi
-                    ? 'दिए गए फ़िल्टर के अनुसार कोई शास्त्रीय योग नहीं मिला।'
-                    : 'No classical yogas match the active filter criteria.'}
+                    ? 'आपकी जन्मकुंडली में इस फ़िल्टर के अनुसार कोई योग नहीं बना।'
+                    : 'No yoga is formed in this birth chart for the selected filters.'}
                 </p>
               </div>
             ) : (
               filteredYogas.map((y) => {
               const detectedEntry = detectedMap.get(y.id);
-              const isFormed = Boolean(detectedEntry) || activeTab === 'detected';
+              const isFormed = Boolean(detectedEntry);
               const condHi = 'conditionHi' in y ? (y as any).conditionHi : undefined;
               const involvedPlanets: string[] = detectedEntry
                 ? detectedEntry.planets
