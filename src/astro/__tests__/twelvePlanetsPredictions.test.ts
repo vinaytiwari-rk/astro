@@ -47,7 +47,6 @@ describe('Planet-wise prediction timing integrity', () => {
   });
 
   it('reports ephemeris-derived direct or retrograde motion for every classical transit item', () => {
-    // Use a modern sample native so the longevity guard does not intentionally suppress future transit analysis.
     const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = computeDeepGochar(chart, '2026-11-19');
     expect(report.items).toHaveLength(9);
@@ -82,5 +81,23 @@ describe('Planet-wise prediction timing integrity', () => {
     const mercury = report.planets.find((planet) => planet.id === 'Mercury');
     expect(mercury?.timingTriggersEn).toContain('Saturn Mahadasha → Jupiter Antardasha → Mercury Pratyantardasha');
     expect(mercury?.timingTriggersHi).toContain('वर्तमान संयुक्त विंशोत्तरी क्रम');
+  });
+
+  it('produces chart-specific planet readings rather than reusing one generic profile', () => {
+    const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
+      computeTwelvePlanetsPredictions(calculateChart(sample, DEFAULT_SETTINGS), Date.UTC(2026, 10, 19)),
+    );
+    const jupiterReadings = reports.map((report) => {
+      const jupiter = report.planets.find((planet) => planet.id === 'Jupiter');
+      expect(jupiter).toBeDefined();
+      return JSON.stringify({
+        placement: jupiter?.placementSummaryEn,
+        dignity: jupiter?.dignity,
+        positive: jupiter?.positiveEventsEn,
+        negative: jupiter?.negativeEventsEn,
+        ownedHouses: jupiter?.ownedHouses,
+      });
+    });
+    expect(new Set(jupiterReadings).size).toBeGreaterThan(1);
   });
 });
