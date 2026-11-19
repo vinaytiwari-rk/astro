@@ -311,14 +311,8 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 गौण/सहायक प्रभाव:
 - ${secondarySavHi}
 
-शास्त्रीय निर्णय (${meta.areaHi}):
-${finalScore >= 78
-  ? `भाव अत्यंत बली व दोषमुक्त है। ${meta.areaHi} में जातक को स्वतः सिद्ध सफलता, दैवीय कृपा व उल्लेखनीय उन्नति प्राप्त होगी।`
-  : finalScore >= 62
-  ? `भाव सुदृढ़ है। प्राथमिक ग्रहों के सहयोग से ${meta.areaHi} के कार्य समयानुसार सफल होंगे।`
-  : finalScore >= 46
-  ? `भाव पर शुभ व अशुभ दोनों का मिश्रित प्रभाव है। ${meta.areaHi} में प्रगति होगी किंतु प्रारंभिक विलंब व कड़े परिश्रम के पश्चात ही स्थायित्व प्राप्त होगा।`
-  : `भाव पर क्रूर दृष्टि, अस्त अथवा दोष का प्रभाव अधिक है। ${meta.areaHi} के संदर्भ में अत्यधिक सावधानी, धैर्य तथा संबंधित ग्रह के शास्त्रीय परिहार (जप, स्तोत्र व दान) अनिवार्य हैं।`}`;
+फलादेश-सार (${meta.areaHi}):
+यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता।`;
 
     const synthesisEn = `${meta.titleEn}:
 Primary Parashari Analysis (Lord, Dignity, Star Lord, Aspects & Yuti):
@@ -329,14 +323,8 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariEn}\n` : kartariYoga === 'Subhakar
 Secondary Corroborative Capacity:
 - ${secondarySavEn}.
 
-Classical Verdict (${meta.areaEn}):
-${finalScore >= 78
-  ? `The house is exceptionally strong. Promises in ${meta.areaEn} will flourish effortlessly with authoritative breakthroughs.`
-  : finalScore >= 62
-  ? `The house possesses healthy vitality. Matters of ${meta.areaEn} will develop steadily and bring fruitful milestones.`
-  : finalScore >= 46
-  ? `Mixed vibrations prevail. Progress in ${meta.areaEn} requires patience and initial resilience against delays.`
-  : `The house faces noticeable afflictions or karmic bottlenecks. Mindful care, disciplined effort, and classical remedies are recommended for ${meta.areaEn}.`}`;
+Synthesis (${meta.areaEn}):
+This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.`;
 
     const shiftsInHouse = chalit.shiftedBodies.filter(
       (s) => s.rasiHouse === h || s.chalitHouse === h
