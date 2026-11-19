@@ -89,7 +89,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
       const dimension = byId(id);
       expect(dimension).toBeDefined();
       expect(dimension.astroBasisEn).toContain('Recorded chart evidence:');
-      expect(dimension.detailedAnalysisEn).toContain('has not been independently calculated');
+      expect(dimension.detailedAnalysisEn).toContain('divisional evidence:');
       expect(dimension.astroBasisHi).toContain('कुंडली में दर्ज आधार');
     }
 
