@@ -2,6 +2,7 @@ import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '.
 import { NAKSHATRAS, SIGNS } from '../constants';
 import { computeCharaKarakas } from '../jaimini';
 import { getFunctionalLordship } from './functionalLordship';
+import { detectClassicalYogas, type DetectedClassicalYoga } from './classicalYogasKb';
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -36,6 +37,7 @@ export interface DeepLifePredictionsReport {
   executiveSummaryEn: string; executiveSummaryHi: string;
   domains: DeepDomainPrediction[];
   birthProfile: GeneralBirthProfile;
+  classicalYogas: DetectedClassicalYoga[];
 }
 type DomainConfig = {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -90,7 +92,7 @@ function aspectsHouse(chart: ChartData, target: number): string[] {
   }
   return [...new Set(found)];
 }
-function buildDomain(chart: ChartData, config: DomainConfig): DeepDomainPrediction {
+function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: DetectedClassicalYoga[]): DeepDomainPrediction {
   const strengthsEn: string[] = [], strengthsHi: string[] = [], watchoutsEn: string[] = [], watchoutsHi: string[] = [];
   const houseEn: string[] = [], houseHi: string[] = [], yogaEvidence: string[] = [];
   const related = new Set<string>();
@@ -200,6 +202,20 @@ function buildDomain(chart: ChartData, config: DomainConfig): DeepDomainPredicti
     if (d < 0) { watchoutsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); watchoutsHi.push(id + ' की ' + config.varga + ' स्थिति ' + place.dignity + ' है।'); }
   }
   const relatedYogas = chart.yogas.filter((y) => y.planets.some((id) => related.has(id)));
+  const relatedClassicalYogas = classicalYogas.filter((y) =>
+    y.planets.some((id) => related.has(id)) || y.houses.some((house) => config.houses.includes(house))
+  );
+  for (const y of relatedClassicalYogas) {
+    yogaEvidence.push(y.name + ' (' + y.strength + (y.bhangaStatus ? ', ' + y.bhangaStatus + ' bhanga status' : '') + ')');
+    if (y.strength === 'Strong' || y.strength === 'Supreme') {
+      strengthsEn.unshift('Classical yoga: ' + y.name + ' (' + y.strength + ').');
+      strengthsHi.unshift('शास्त्रीय योग ' + y.nameHi + ' (' + y.strength + ') इस जीवन-क्षेत्र से संबंधित है।');
+    }
+    if (y.bhangaStatus === 'Bhanga' || y.bhangaStatus === 'Partial') {
+      watchoutsEn.push(y.name + ' has ' + y.bhangaStatus.toLowerCase() + ' / reduced manifestation: ' + (y.bhangaReasonEn ?? 'review participating planets and conditions.'));
+      watchoutsHi.push(y.nameHi + ' के फल में ' + (y.bhangaStatus === 'Bhanga' ? 'भंग' : 'आंशिक कमी') + ' का संकेत है: ' + (y.bhangaReasonHi ?? 'योग के ग्रहों और शर्तों की पुनः जांच करें।'));
+    }
+  }
   for (const y of relatedYogas) {
     yogaEvidence.push(y.name + ' (' + y.strength + ')');
     if (y.strength === 'Strong') {
@@ -379,12 +395,13 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
 }
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
-  const domains = DOMAINS.map((config) => buildDomain(chart, config));
+  const classicalYogas = detectClassicalYogas(chart);
+  const domains = DOMAINS.map((config) => buildDomain(chart, config, classicalYogas));
   const birthProfile = buildGeneralBirthProfile(chart);
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
   const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + birthProfile.summaryEn + ' ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
   const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
-  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains, birthProfile };
+  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains, birthProfile, classicalYogas };
 }
