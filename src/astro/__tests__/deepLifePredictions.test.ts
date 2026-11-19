@@ -75,6 +75,21 @@ describe('Chart-specific General Prediction synthesis', () => {
   });
 
 
+  it('includes chart-detected classical yogas in General Prediction and domain evidence', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(Array.isArray(report.classicalYogas)).toBe(true);
+    for (const yoga of report.classicalYogas) {
+      expect(yoga.name.length).toBeGreaterThan(0);
+      expect(['Supreme', 'Strong', 'Moderate', 'Present']).toContain(yoga.strength);
+    }
+    const linked = report.domains.some((domain) =>
+      domain.astrologicalFactorsEn.includes('Related yogas:') &&
+      report.classicalYogas.some((yoga) => domain.astrologicalFactorsEn.includes(yoga.name)),
+    );
+    if (report.classicalYogas.length > 0) expect(linked).toBe(true);
+  });
+
   it('includes all requested birth Panchang and Avakhada factors in General Prediction', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeDeepLifePredictions(chart);
