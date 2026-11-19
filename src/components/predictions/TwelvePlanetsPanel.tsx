@@ -80,14 +80,19 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               <span>
                 {isHi
-                  ? 'द्वादश ग्रह विस्तृत घटना फलादेश (9 वैदिक ग्रह + 3 बाह्य ग्रह: हर्षल, नेपच्यून, प्लूटो)'
-                  : '12-Planets Comprehensive Event Predictions (9 Vedic Grahas + Uranus, Neptune, Pluto)'}
+                  ? 'ग्रह-वार कुंडली संकेत विश्लेषण'
+                  : 'Planet-wise Chart Evidence'}
               </span>
             </h2>
             <p className="muted" style={{ margin: '4px 0 0', fontSize: '13px' }}>
               {isHi
-                ? 'प्रत्येक ग्रह का कुंडली-सम्मत सटीक विश्लेषण: सकारात्मक उपलब्धियां, नकारात्मक खतरे, फलन काल व अचूक उपाय।'
-                : 'House, sign, nakshatra, dignity-based concrete positive events, hazard warnings, timing triggers & remedies for all 12 bodies.'}
+                ? 'प्रत्येक ग्रह की राशि, भाव, स्वामित्व, गरिमा, दृष्टि, ग्रहबल और उपलब्ध दशा-संकेत का विश्लेषण।'
+                : 'Chart-specific analysis of sign, house, ownership, dignity, aspects, planetary strength and available dasha periods.'}
+            </p>
+            <p className="muted small-text" style={{ margin: '6px 0 0', lineHeight: 1.45 }}>
+              {isHi
+                ? 'नोट: पारंपरिक वैदिक फलादेश मुख्यतः नवग्रहों पर आधारित है। हर्षल, वरुण और यम आधुनिक पूरक संकेत हैं। दशा के साथ वर्तमान दिनांक का गणितीय गोचर, जन्म चंद्र/लग्न से भाव और वेध भी दिखाए जाते हैं; इसे घटना की गारंटी न मानें।'
+                : 'Note: Classical Vedic interpretation primarily uses the nine grahas; Uranus, Neptune and Pluto are supplementary. Alongside dasha, this view calculates date-specific transits, houses from natal Moon/Ascendant and Vedha. These are indicators, not event guarantees.'}
             </p>
           </div>
 
@@ -336,6 +341,14 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
           {isHi ? planet.placementSummaryHi : planet.placementSummaryEn}
         </div>
 
+        {planet.functionalRolesEn.length > 0 && (
+          <div className="small-text muted" style={{ marginTop: 8, lineHeight: 1.5 }}>
+            <strong>{isHi ? 'कार्यात्मक भाव-स्वामित्व:' : 'Functional Lordship:'}</strong>{' '}
+            {isHi ? planet.functionalRolesHi.join(' · ') : planet.functionalRolesEn.join(' · ')}
+            <div>{isHi ? planet.functionalLordshipNoteHi : planet.functionalLordshipNoteEn}</div>
+          </div>
+        )}
+
         {/* Two-Column Grid: Positive Events vs Negative Events */}
         <div
           style={{
@@ -365,7 +378,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               }}
             >
               <CheckCircle size={15} />
-              <span>{isHi ? 'सकारात्मक जीवन घटनाएँ व उपलब्धियां' : 'Concrete Positive Events & Milestones'}</span>
+              <span>{isHi ? 'अनुकूल ग्रह-संकेत' : 'Supportive Planetary Indicators'}</span>
             </div>
             <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.55 }}>
               {(isHi ? planet.positiveEventsHi : planet.positiveEventsEn).map((event, idx) => (
@@ -397,7 +410,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               }}
             >
               <AlertTriangle size={15} />
-              <span>{isHi ? 'नकारात्मक घटनाएँ, खतरे व सावधानियाँ' : 'Concrete Negative Events & Hazard Alerts'}</span>
+              <span>{isHi ? 'चुनौतीपूर्ण संकेत एवं सावधानियां' : 'Challenging Indicators & Cautions'}</span>
             </div>
             <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.55 }}>
               {(isHi ? planet.negativeEventsHi : planet.negativeEventsEn).map((hazard, idx) => (
@@ -407,6 +420,25 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
               ))}
             </ul>
           </div>
+        </div>
+
+        {/* Date-specific transit evidence */}
+        <div
+          style={{
+            padding: '10px 14px',
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            fontSize: '13px',
+            lineHeight: 1.5,
+          }}
+        >
+          <strong>{isHi ? 'वर्तमान गोचर प्रमाण: ' : 'Current Transit Evidence: '}</strong>
+          {planet.transitEvidenceEn
+            ? (isHi ? planet.transitEvidenceHi : planet.transitEvidenceEn)
+            : (isHi
+                ? (planet.isOuterPlanet ? 'बाह्य ग्रहों के लिए पारंपरिक नवग्रह गोचर-वर्गीकरण लागू नहीं किया गया है।' : 'इस तिथि के लिए गोचर प्रमाण उपलब्ध नहीं है; कोई गोचर निष्कर्ष नहीं निकाला गया।')
+                : (planet.isOuterPlanet ? 'Classical nine-graha gochar classification is not applied to outer planets.' : 'Transit evidence is unavailable for this date; no transit conclusion is drawn.'))}
         </div>
 
         {/* Timing Triggers & Critical Age Windows */}
@@ -468,7 +500,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
             }}
           >
             <Shield size={14} />
-            <span>{isHi ? 'अचूक शास्त्रीय व व्यावहारिक उपाय (Remedies):' : 'Classical & Practical Remedies:'}</span>
+            <span>{isHi ? 'व्यावहारिक परामर्श:' : 'Practical Guidance:'}</span>
           </div>
           <ul style={{ margin: 0, paddingLeft: '18px', lineHeight: 1.5 }}>
             {(isHi ? planet.remediesHi : planet.remediesEn).map((rem, idx) => (

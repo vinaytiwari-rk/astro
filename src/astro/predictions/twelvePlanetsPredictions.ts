@@ -1,6 +1,9 @@
 import * as Astronomy from 'astronomy-engine';
-import type { ChartData, PlanetId } from '../types';
-import { NAKSHATRAS } from '../constants';
+import type { ChartData, DashaPeriod, PlanetId, SevenPlanetId } from '../types';
+import { getFunctionalLordship } from './functionalLordship';
+import { findActiveDashaPath } from '../dasha';
+import { computeDeepGochar } from './gocharDeep';
+import { NAKSHATRAS, SIGNS } from '../constants';
 import {
   buildBaseBodyPosition,
   getTropicalPosition,
@@ -39,6 +42,12 @@ export interface PlanetEventPrediction {
   isCombust: boolean;
   isVargottama: boolean;
   ownedHouses: number[];
+  functionalRolesEn: string[];
+  functionalRolesHi: string[];
+  functionalLordshipNoteEn: string;
+  functionalLordshipNoteHi: string;
+  transitEvidenceEn: string | null;
+  transitEvidenceHi: string | null;
   conjoinedPlanets: PlanetId[];
   aspectingPlanets: PlanetId[];
 
@@ -133,23 +142,37 @@ const HOUSE_THEMES = [
   { en: 'Expenses, Foreign Relocation & Liberation', hi: 'व्यय, विदेश गमन व मोक्ष' },
 ];
 
-export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanetsPredictionsReport {
-  const lagnaSignIndex = chart.ascendant.signIndex;
+function flattenPlanetDasha(periods: DashaPeriod[] = []): DashaPeriod[] {
+  const all: DashaPeriod[] = [];
+  const visit = (items: DashaPeriod[]) => items.forEach((period) => {
+    all.push(period);
+    if (period.children?.length) visit(period.children);
+  });
+  visit(periods);
+  return all;
+}
 
-  // Determine owned houses for Vedic planets
+function dashaLevelName(level: number, hi: boolean): string {
+  if (level === 1) return hi ? 'महादशा' : 'Mahadasha';
+  if (level === 2) return hi ? 'अंतर्दशा' : 'Antardasha';
+  if (level === 3) return hi ? 'प्रत्यंतर दशा' : 'Pratyantardasha';
+  return hi ? 'उप-दशा' : 'sub-period';
+}
+
+function dashaDate(ms: number, hi: boolean): string {
+  return new Date(ms).toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.now()): TwelvePlanetsPredictionsReport {
+  const lagnaSignIndex = chart.ascendant.signIndex;
+  const transitLocalDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
+  const transitReport = computeDeepGochar(chart, transitLocalDate);
+  const transitByPlanet = new Map(transitReport.items.map((item) => [item.planet, item]));
+
+  // Derive each classical planet's functional roles from the actual ascendant.
   function getOwnedHouses(pId: PlanetId): number[] {
-    const houses: number[] = [];
-    for (let h = 1; h <= 12; h++) {
-      const sign = (lagnaSignIndex + h - 1) % 12;
-      if (pId === 'Sun' && sign === 4) houses.push(h); // Leo
-      if (pId === 'Moon' && sign === 3) houses.push(h); // Cancer
-      if (pId === 'Mars' && (sign === 0 || sign === 7)) houses.push(h); // Aries, Scorpio
-      if (pId === 'Mercury' && (sign === 2 || sign === 5)) houses.push(h); // Gemini, Virgo
-      if (pId === 'Jupiter' && (sign === 8 || sign === 11)) houses.push(h); // Sagittarius, Pisces
-      if (pId === 'Venus' && (sign === 1 || sign === 6)) houses.push(h); // Taurus, Libra
-      if (pId === 'Saturn' && (sign === 9 || sign === 10)) houses.push(h); // Capricorn, Aquarius
-    }
-    return houses;
+    if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(pId)) return [];
+    return getFunctionalLordship(pId as SevenPlanetId, lagnaSignIndex).ownedHouses;
   }
 
   // Filter out any non-planet entries such as Ascendant
@@ -203,6 +226,16 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
     const signNameHi = SIGN_NAMES_HI[signIdx];
     const isOuter = p.id === 'Uranus' || p.id === 'Neptune' || p.id === 'Pluto';
     const owned = getOwnedHouses(p.id);
+    const lordship = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(p.id)
+      ? getFunctionalLordship(p.id as SevenPlanetId, lagnaSignIndex)
+      : null;
+    const transit = transitReport.items.find((item) => item.planet === p.id);
+    const transitEvidenceEn = transit
+      ? `Current transit (${transitLocalDate}): ${p.id} in ${transit.transitSign}, House ${transit.houseFromMoon} from natal Moon and House ${transit.houseFromLagna} from natal Ascendant. Motion: ${transit.motionLabel.toLowerCase()} at ${transit.speedDegPerDay.toFixed(4)}°/day. Gochar assessment: ${transit.verdict}. ${transit.hasVedha ? `Vedha by ${transit.vedhaPlanet ?? 'another transiting graha'} is recorded.` : 'No Vedha obstruction is recorded.'} This is a transit indicator, not an event guarantee.`
+      : null;
+    const transitEvidenceHi = transit
+      ? `वर्तमान गोचर (${transitLocalDate}): ${trPlanet(p.id, 'hi')} ${transit.transitSign} राशि में है; जन्म चंद्र से भाव ${transit.houseFromMoon} और जन्म लग्न से भाव ${transit.houseFromLagna} में। गति: ${transit.motionLabel === 'Retrograde' ? 'वक्री' : transit.motionLabel === 'Stationary' ? 'स्थिर' : 'मार्गी'} (${transit.speedDegPerDay.toFixed(4)}° प्रतिदिन)। गोचर आकलन: ${transit.verdict === 'Strong & Auspicious' ? 'प्रबल अनुकूल' : transit.verdict === 'Auspicious' ? 'अनुकूल' : transit.verdict === 'Obstructed (Vedha)' ? 'वेध से बाधित' : transit.verdict === 'Mixed / Kakshya Supported' ? 'मिश्रित / कक्ष्या समर्थित' : 'परीक्षणकारी'}। ${transit.hasVedha ? `वेध ग्रह: ${transit.vedhaPlanet ?? 'उपलब्ध नहीं'}।` : 'वेध अवरोध दर्ज नहीं है।'} यह गोचर-संकेत है, किसी घटना की गारंटी नहीं।`
+      : null;
 
     const conjoined = (houseOccupantsMap.get(hNum) || []).filter((id) => id !== p.id);
 
@@ -210,14 +243,21 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
     const aspecting: PlanetId[] = [];
     for (const other of validPlanets) {
       if (other.id === p.id) continue;
-      const dist = (p.houseNumber - other.houseNumber + 12) % 12;
-      // 7th house mutual aspect for all
+      // Parashari graha drishti is limited here to the nine Vedic grahas.
+      // Modern outer planets remain supplementary placements and are not
+      // assigned classical 7th-house aspects by this engine.
+      if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(other.id)) continue;
+      if (!['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].includes(p.id)) continue;
+      // Use whole-sign Rasi houses, matching General and House-wise predictions.
+      const dist = (p.rasiHouseNumber - other.rasiHouseNumber + 12) % 12;
+      // 7th house aspect for the nine Vedic grahas
       if (dist === 6) aspecting.push(other.id);
-      // Special aspects
+      // Special Parashari aspects
       if (other.id === 'Mars' && (dist === 3 || dist === 7)) aspecting.push(other.id); // 4th, 8th
       if (other.id === 'Jupiter' && (dist === 4 || dist === 8)) aspecting.push(other.id); // 5th, 9th
       if (other.id === 'Saturn' && (dist === 2 || dist === 9)) aspecting.push(other.id); // 3rd, 10th
-      if ((other.id === 'Rahu' || other.id === 'Ketu') && (dist === 4 || dist === 8)) aspecting.push(other.id);
+      // Rahu/Ketu special aspects vary by tradition; apply only the 7th aspect
+      // here so all three prediction views use the same conservative rule.
     }
 
     const isExalted = p.dignity === 'Exalted';
@@ -931,13 +971,144 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
       }
     }
 
+    // Timing is derived only from the supplied Vimshottari periods.
+    // Legacy fixed age windows and generic transit claims are intentionally suppressed.
+    const planetPeriods = flattenPlanetDasha(chart.vimshottari ?? []).filter((period) => period.lord === p.id);
+    const activePlanetPeriods = planetPeriods
+      .filter((period) => period.startMs <= atMs && atMs < period.endMs)
+      .sort((a, b) => b.level - a.level);
+    const activeDashaPath = findActiveDashaPath(chart.vimshottari ?? [], atMs);
+    const activeDashaSequenceEn = activeDashaPath.map((period) => period.lord + ' ' + dashaLevelName(period.level, false)).join(' → ');
+    const activeDashaSequenceHi = activeDashaPath.map((period) => period.lord + ' ' + dashaLevelName(period.level, true)).join(' → ');
+    const nextPlanetPeriod = planetPeriods
+      .filter((period) => period.startMs > atMs)
+      .sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
+    if (activePlanetPeriods.length) {
+      timingEn = 'Current combined Vimshottari sequence: ' + (activeDashaSequenceEn || 'active period unavailable') + '. This planet is active at ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, false) + ' until ' + dashaDate(period.endMs, false)).join('; ') + '. Dasha activation is not a guaranteed event.';
+      timingHi = 'वर्तमान संयुक्त विंशोत्तरी क्रम: ' + (activeDashaSequenceHi || 'सक्रिय अवधि उपलब्ध नहीं') + '। यह ग्रह ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, true) + ' ' + dashaDate(period.endMs, true) + ' तक सक्रिय है').join('; ') + '। दशा सक्रियता किसी घटना की गारंटी नहीं है।';
+    } else if (nextPlanetPeriod) {
+      timingEn = 'The next supplied period for this planet is ' + dashaLevelName(nextPlanetPeriod.level, false) + ', beginning ' + dashaDate(nextPlanetPeriod.startMs, false) + '. This is an activation window, not a promised event.';
+      timingHi = 'इस ग्रह की अगली उपलब्ध अवधि ' + dashaLevelName(nextPlanetPeriod.level, true) + ' ' + dashaDate(nextPlanetPeriod.startMs, true) + ' से शुरू होगी। यह सक्रियता-संकेत है, निश्चित घटना-समय नहीं।';
+    } else {
+      timingEn = isOuter
+        ? 'No Vimshottari period is assigned to outer planets in the supplied chart data; no timing is stated. Transits are not calculated in this planet-wise timing section.'
+        : 'No active or upcoming Vimshottari period for this planet was found in the supplied data; no timing is stated. Transits are not calculated in this planet-wise timing section.';
+      timingHi = isOuter
+        ? 'प्रदत्त कुंडली-डेटा में बाह्य ग्रहों के लिए विंशोत्तरी दशा निर्धारित नहीं है; इसलिए समय नहीं दिया गया। इस ग्रह-वार समय-विश्लेषण में गोचर की गणना नहीं है।'
+        : 'प्रदत्त डेटा में इस ग्रह की सक्रिय या आगामी विंशोत्तरी अवधि नहीं मिली; इसलिए समय नहीं दिया गया। इस ग्रह-वार समय-विश्लेषण में गोचर की गणना नहीं है।';
+    }
+    ageWindows.length = 0;
+
+    // Replace legacy fixed-event templates with chart-evidence indicators.
+    // These are interpretive factors, not predictions of specific incidents.
+    positiveEventsEn.length = 0;
+    positiveEventsHi.length = 0;
+    negativeEventsEn.length = 0;
+    negativeEventsHi.length = 0;
+    remediesEn.length = 0;
+    remediesHi.length = 0;
+
+    const dignitySupport = ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(p.dignity);
+    const dignityChallenge = ['Debilitated', 'Great Enemy', 'Enemy'].includes(p.dignity);
+    const shadbalaRow = chart.shadbala?.find((row) => row.planet === p.id);
+    const d9Placement = chart.divisionalCharts?.D9?.placements.find((placement) => placement.id === p.id);
+    const dispositorId = SIGNS[p.signIndex]?.lord;
+    const dispositor = chart.planets.find((placement) => placement.id === dispositorId);
+    const nakshatraLord = chart.planets.find((placement) => placement.id === p.nakshatraLord);
+
+    const beneficInfluences = [...new Set([
+      ...aspecting.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
+      ...conjoined.filter((id) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(id)),
+    ])];
+    const challengingInfluences = [...new Set([
+      ...aspecting.filter((id) => ['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu'].includes(id)),
+      ...conjoined.filter((id) => ['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu'].includes(id)),
+    ])];
+
+    if (dignitySupport) {
+      positiveEventsEn.push(p.id + ' has ' + p.dignity + ' dignity in the natal sign.');
+      positiveEventsHi.push(p.id + ' की जन्म राशि में ' + p.dignity + ' गरिमा सहायक संकेत है।');
+    }
+    if (shadbalaRow && shadbalaRow.ratio >= 1.2) {
+      positiveEventsEn.push('Shadbala is above the stated minimum threshold (' + shadbalaRow.ratio.toFixed(2) + '×).');
+      positiveEventsHi.push('षड्बल निर्धारित न्यूनतम स्तर से अधिक (' + shadbalaRow.ratio.toFixed(2) + '×) है।');
+    }
+    if (p.isVargottama) {
+      positiveEventsEn.push('The planet is Vargottama (same sign in D1 and D9), adding a consistency factor.');
+      positiveEventsHi.push('ग्रह वर्गोत्तम है (D1 और D9 में समान राशि), जो स्थिति में निरंतरता का संकेत है।');
+    }
+    if (dispositor) {
+      const noteEn = 'Sign dispositor ' + dispositor.id + ' is placed in House ' + dispositor.rasiHouseNumber + ' (' + dispositor.signName + ', ' + dispositor.dignity + ').';
+      const noteHi = 'राशि स्वामी ' + trPlanet(dispositor.id, 'hi') + ' भाव ' + dispositor.rasiHouseNumber + ' में ' + trSign(dispositor.signIndex, 'hi') + ' राशि में (' + trTerm(dispositor.dignity, 'hi') + ') स्थित है।';
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(dispositor.dignity)) {
+        positiveEventsEn.push(noteEn);
+        positiveEventsHi.push(noteHi);
+      } else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(dispositor.dignity)) {
+        negativeEventsEn.push(noteEn);
+        negativeEventsHi.push(noteHi);
+      }
+    }
+    if (nakshatraLord) {
+      const noteEn = 'Nakshatra dispositor ' + nakshatraLord.id + ' is placed in House ' + nakshatraLord.rasiHouseNumber + ' (' + nakshatraLord.signName + ', ' + nakshatraLord.dignity + ').';
+      const noteHi = 'नक्षत्र स्वामी ' + trPlanet(nakshatraLord.id, 'hi') + ' भाव ' + nakshatraLord.rasiHouseNumber + ' में ' + trSign(nakshatraLord.signIndex, 'hi') + ' राशि में (' + trTerm(nakshatraLord.dignity, 'hi') + ') स्थित है।';
+      if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(nakshatraLord.dignity)) {
+        positiveEventsEn.push(noteEn);
+        positiveEventsHi.push(noteHi);
+      } else if (['Debilitated', 'Great Enemy', 'Enemy'].includes(nakshatraLord.dignity)) {
+        negativeEventsEn.push(noteEn);
+        negativeEventsHi.push(noteHi);
+      }
+    }
+    if (d9Placement && ['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(d9Placement.dignity)) {
+      positiveEventsEn.push('D9 placement is ' + d9Placement.dignity + ' in Varga House ' + d9Placement.houseFromVargaLagna + '.');
+      positiveEventsHi.push('नवांश में ग्रह ' + d9Placement.dignity + ' गरिमा के साथ वर्ग भाव ' + d9Placement.houseFromVargaLagna + ' में है।');
+    }
+    if (beneficInfluences.length) {
+      positiveEventsEn.push('Receives traditional benefic influence from ' + beneficInfluences.join(', ') + '.');
+      positiveEventsHi.push('इस पर ' + beneficInfluences.join(', ') + ' का पारंपरिक शुभ प्रभाव है।');
+    }
+    if ([1, 4, 5, 7, 9, 10].includes(hNum)) {
+      positiveEventsEn.push('Placement in a Kendra/Trikona house makes this planet prominent in the chart; prominence alone does not determine whether results are favourable.');
+      positiveEventsHi.push('केंद्र/त्रिकोण भाव में स्थिति ग्रह को कुंडली में प्रमुख बनाती है; केवल प्रमुखता से फल शुभ या अशुभ तय नहीं होता।');
+    }
+    if (dignityChallenge) {
+      negativeEventsEn.push(p.id + ' has ' + p.dignity + ' dignity; judge this alongside house lordship, strength and aspects.');
+      negativeEventsHi.push(p.id + ' की ' + p.dignity + ' गरिमा को भाव-स्वामित्व, ग्रहबल और दृष्टियों के साथ देखना चाहिए।');
+    }
+    if (shadbalaRow && shadbalaRow.ratio < 0.8) {
+      negativeEventsEn.push('Shadbala is below the comparison threshold (' + shadbalaRow.ratio.toFixed(2) + '×); related matters may need sustained attention.');
+      negativeEventsHi.push('षड्बल तुलना-स्तर से कम (' + shadbalaRow.ratio.toFixed(2) + '×) है; संबंधित विषयों पर निरंतर ध्यान देना पड़ सकता है।');
+    }
+    if (p.isCombust) {
+      negativeEventsEn.push('Combustion is a modifying factor; its effect should be judged with the planet’s dignity, strength and house ownership.');
+      negativeEventsHi.push('अस्त स्थिति एक संशोधक कारक है; इसका प्रभाव ग्रह की गरिमा, बल और भाव-स्वामित्व के साथ देखना चाहिए।');
+    }
+    if (d9Placement && ['Debilitated', 'Great Enemy', 'Enemy'].includes(d9Placement.dignity)) {
+      negativeEventsEn.push('D9 placement is ' + d9Placement.dignity + '; this is a secondary caution, not a standalone verdict.');
+      negativeEventsHi.push('नवांश में ग्रह ' + d9Placement.dignity + ' स्थिति में है; यह सहायक सावधानी है, अपने-आप अंतिम निर्णय नहीं।');
+    }
+    if (challengingInfluences.length) {
+      negativeEventsEn.push('Receives traditional challenging influence from ' + challengingInfluences.join(', ') + '.');
+      negativeEventsHi.push('इस पर ' + challengingInfluences.join(', ') + ' का पारंपरिक चुनौतीपूर्ण प्रभाव है।');
+    }
+    if (!positiveEventsEn.length) {
+      positiveEventsEn.push('No strong supportive factor was established from the available dignity, strength and relationship data.');
+      positiveEventsHi.push('उपलब्ध गरिमा, ग्रहबल और संबंध-डेटा से कोई मजबूत अनुकूल कारक स्थापित नहीं हुआ।');
+    }
+    if (!negativeEventsEn.length) {
+      negativeEventsEn.push('No major challenging factor was established from the available indicators; this does not rule out ordinary life difficulties.');
+      negativeEventsHi.push('उपलब्ध संकेतों से कोई प्रमुख चुनौती स्थापित नहीं हुई; इसका अर्थ सामान्य जीवन-कठिनाइयों का अभाव नहीं है।');
+    }
+    remediesEn.push('Use the house themes and planetary factors as a prompt for practical planning; verify important decisions with evidence and qualified advice.');
+    remediesHi.push('भाव के विषयों और ग्रह-संकेतों को व्यावहारिक योजना बनाने का आधार मानें; महत्वपूर्ण निर्णय प्रमाण और योग्य सलाह के आधार पर लें।');
+
     // Compose Placement Summary
     const dignTxtEn = isExalted ? 'Exalted' : isDebilitated ? 'Debilitated' : isOwn ? 'Own/Moolatrikona' : p.dignity;
     const dignTxtHi = isExalted ? 'उच्च' : isDebilitated ? 'नीच' : isOwn ? 'स्वराशि/मूलत्रिकोण' : trTerm(p.dignity, 'hi');
     const houseTheme = HOUSE_THEMES[hNum - 1];
 
     const placementSummaryEn = `${PLANET_NAMES_EN[p.id]} is placed in House ${hNum} (${signNameEn} at ${p.dms}), occupying ${p.nakshatraName} Nakshatra (Pada ${p.pada}, ruled by ${p.nakshatraLord}). Dignity: ${dignTxtEn}.${p.isRetrograde ? ' (Retrograde).' : ''}${p.isCombust ? ' (Combust).' : ''} Affects ${houseTheme.en}.${owned.length ? ` Rules House(s) ${owned.join(' & ')}.` : ''}${conjoined.length ? ` Conjoined with: ${conjoined.join(', ')}.` : ''}${aspecting.length ? ` Aspected by: ${aspecting.join(', ')}.` : ''}`;
-    const placementSummaryHi = `${PLANET_NAMES_HI[p.id]} कुंडली के ${hNum}वें भाव (${signNameHi} राशि, ${p.dms}) में स्थित है, और ${p.nakshatraName} नक्षत्र के चरण ${p.pada} (स्वामी: ${p.nakshatraLord}) में गोचरस्थ है। ग्रह अवस्था: ${dignTxtHi}।${p.isRetrograde ? ' (वक्री)' : ''}${p.isCombust ? ' (अस्त)' : ''} मुख्य प्रभाव क्षेत्र: ${houseTheme.hi}।${owned.length ? ` स्वामित्व: भाव ${owned.join(' व ')}।` : ''}${conjoined.length ? ` युति: ${conjoined.map(x => trPlanet(x, 'hi')).join(', ')} के साथ।` : ''}${aspecting.length ? ` दृष्टि: ${aspecting.map(x => trPlanet(x, 'hi')).join(', ')} द्वारा।` : ''}`;
+    const placementSummaryHi = `${PLANET_NAMES_HI[p.id]} कुंडली के ${hNum}वें भाव (${signNameHi} राशि, ${p.dms}) में स्थित है, और ${p.nakshatraName} नक्षत्र के चरण ${p.pada} (स्वामी: ${p.nakshatraLord}) में स्थित है। ग्रह अवस्था: ${dignTxtHi}।${p.isRetrograde ? ' (वक्री)' : ''}${p.isCombust ? ' (अस्त)' : ''} मुख्य प्रभाव क्षेत्र: ${houseTheme.hi}।${owned.length ? ` स्वामित्व: भाव ${owned.join(' व ')}।` : ''}${conjoined.length ? ` युति: ${conjoined.map(x => trPlanet(x, 'hi')).join(', ')} के साथ।` : ''}${aspecting.length ? ` दृष्टि: ${aspecting.map(x => trPlanet(x, 'hi')).join(', ')} द्वारा।` : ''}`;
 
     results.push({
       id: p.id,
@@ -958,6 +1129,12 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
       isCombust: p.isCombust,
       isVargottama: p.isVargottama,
       ownedHouses: owned,
+      functionalRolesEn: lordship?.rolesEn ?? [],
+      functionalRolesHi: lordship?.rolesHi ?? [],
+      functionalLordshipNoteEn: lordship?.noteEn ?? 'Outer planets are not assigned classical Parashari house lordship.',
+      functionalLordshipNoteHi: lordship?.noteHi ?? 'बाह्य ग्रहों को पारंपरिक पाराशरी भाव-स्वामित्व नहीं दिया गया है।',
+      transitEvidenceEn,
+      transitEvidenceHi,
       conjoinedPlanets: conjoined,
       aspectingPlanets: aspecting,
       placementSummaryEn,
@@ -989,6 +1166,11 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
   const activeConjunctionsSummaryHi = conjunctionHouses.length
     ? `कुंडली में ${conjunctionHouses.length} भावों में ग्रह युति (Conjunctions) सक्रिय हैं: ${conjunctionHouses.map((c) => `भाव ${c.house} (${c.planets.map((p) => trPlanet(p, 'hi')).join(' + ')})`).join('; ')}।`
     : 'कुंडली में किसी भाव में बहु-ग्रह युति नहीं है।';
+
+  // Suppress legacy alert templates containing unverified medical/crisis claims.
+  // Per-planet evidence-based cautions are retained in negativeEvents.
+  criticalAlertsEn.length = 0;
+  criticalAlertsHi.length = 0;
 
   return {
     planets: results,

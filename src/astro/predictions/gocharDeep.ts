@@ -9,6 +9,9 @@ export interface DeepTransitItem {
   planet: NineGrahaId;
   transitSign: string;
   degreeInSign: number;
+  speedDegPerDay: number;
+  isRetrograde: boolean;
+  motionLabel: 'Direct' | 'Retrograde' | 'Stationary';
   nakshatraName: string;
   houseFromMoon: number;
   houseFromLagna: number;
@@ -193,6 +196,9 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
     }
 
     const savBindus = natalChart.ashtakavarga.sarva[tp.signIndex];
+    const motionLabel: DeepTransitItem['motionLabel'] = Math.abs(tp.speedDegPerDay) < 0.0001
+      ? 'Stationary'
+      : tp.isRetrograde ? 'Retrograde' : 'Direct';
 
     let verdict: DeepTransitItem['verdict'];
     if (isGood && !hasVedha && (savBindus >= 28 || kakshyaHasBindu)) {
@@ -207,12 +213,15 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
       verdict = 'Testing';
     }
 
-    const reading = `${g} transits ${tp.signName} (H${houseFromMoon} from Moon, H${houseFromLagna} from Lagna) and activates D9 ${d9Placement.signName} (H${d9HouseFromNatalD9Lagna} from D9 Lagna) & D10 ${d10Placement.signName}. Currently in ${kakshyaLord} Kakshya (${kakshyaHasBindu ? 'bindu-supported' : 'no Kakshya boost'}), ${taraName} Tara, ${savBindus} SAV bindus${hasVedha ? `, Vedha by ${vedhaPlanet}` : ''}.`;
+    const reading = `${g} transits ${tp.signName} (H${houseFromMoon} from Moon, H${houseFromLagna} from Lagna), moving ${motionLabel.toLowerCase()} at ${tp.speedDegPerDay.toFixed(4)}°/day, and activates D9 ${d9Placement.signName} (H${d9HouseFromNatalD9Lagna} from D9 Lagna) & D10 ${d10Placement.signName}. Currently in ${kakshyaLord} Kakshya (${kakshyaHasBindu ? 'bindu-supported' : 'no Kakshya boost'}), ${taraName} Tara, ${savBindus} SAV bindus${hasVedha ? `, Vedha by ${vedhaPlanet}` : ''}.`;
 
     return {
       planet: g,
       transitSign: tp.signName,
       degreeInSign: tp.degreeInSign,
+      speedDegPerDay: tp.speedDegPerDay,
+      isRetrograde: tp.isRetrograde,
+      motionLabel,
       nakshatraName: NAKSHATRAS[tp.nakshatraIndex].name,
       houseFromMoon,
       houseFromLagna,
@@ -233,8 +242,8 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
 
   const overallSummary =
     doubleTransitHouses.length > 0
-      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) form a classical Double Transit on House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')}, priming these life areas for concrete events when supported by Dashas.`
-      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) focus on separate houses right now, encouraging gradual preparation rather than sudden upheaval.`;
+      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) simultaneously aspect or occupy natal House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')} under the implemented Parashari aspect rules. Treat this only as a shared timing corroborator when the natal promise and relevant Dasha also support the topic; it does not guarantee an event.`
+      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) do not simultaneously activate a natal house under the implemented Parashari aspect rules on this date; no Double Transit conclusion is drawn by this method.`;
 
   return {
     targetDate,

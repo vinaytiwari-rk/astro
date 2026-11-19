@@ -35,6 +35,7 @@ import { HumanDesignView } from './components/onlinejyotish/HumanDesignView';
 import { VarshaphalaView } from './components/onlinejyotish/VarshaphalaView';
 import { WesternAstrologyView } from './components/WesternAstrologyView';
 import { LifeDossierView } from './components/LifeDossierView';
+import { SimplePredictionsView } from './components/SimplePredictionsView';
 import { LifeEventTimingView } from './components/predictions/LifeEventTimingView';
 import { ClassicalDoshasView } from './components/predictions/ClassicalDoshasView';
 import { DashaMatrix81View } from './components/predictions/DashaMatrix81View';
@@ -234,8 +235,12 @@ export function App() {
       target = 'marriage-matching';
     } else if (view === 'panchang' || view === 'daily-panchanga' || view === 'daily-panchang') {
       target = 'daily-panchanga';
-    } else if (view === 'sambhavit' || view === 'sambhavit-falkathan' || view === 'falkathan') {
-      target = 'life-dossier';
+    } else if (view === 'sambhavit' || view === 'sambhavit-falkathan' || view === 'falkathan' || view === 'general-prediction') {
+      target = 'general-prediction';
+    } else if (view === 'planet-wise-prediction' || view === 'planets-prediction') {
+      target = 'planet-wise-prediction';
+    } else if (view === 'house-wise-prediction' || view === 'bhava-wise-prediction') {
+      target = 'house-wise-prediction';
     } else if (view === 'vedic' || view === 'vedic-horoscope' || view === 'janam-kundli') {
       target = 'vedic-horoscope';
     } else if (view === 'festivals' || view === 'festival-calendar') {
@@ -371,6 +376,13 @@ export function App() {
                 activeInput={activeInput}
                 settings={settings}
                 onNavigate={navigateTo}
+              />
+            )}
+
+            {(currentView === 'general-prediction' || currentView === 'planet-wise-prediction' || currentView === 'house-wise-prediction') && (
+              <SimplePredictionsView
+                chart={chart}
+                mode={currentView === 'planet-wise-prediction' ? 'planets' : currentView === 'house-wise-prediction' ? 'houses' : 'general'}
               />
             )}
 

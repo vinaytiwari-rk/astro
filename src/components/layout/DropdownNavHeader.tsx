@@ -440,15 +440,36 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* Unified Life Dossier: 12 chapters containing all 21 selected predictions */}
+            {/* Simple prediction menu: two clear entry points */}
             <li className="oj-nav-item">
               <button
                 type="button"
-                className={`oj-nav-link-btn ${currentView === 'life-dossier' || currentView === 'dossier' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('life-dossier')}
+                className={`oj-nav-link-btn ${currentView === 'general-prediction' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('general-prediction')}
               >
                 <Sparkles size={13} />
-                <span>{isHi ? '12 अध्याय · 21 फलादेश' : '12 Chapters · 21 Predictions'}</span>
+                <span>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</span>
+              </button>
+            </li>
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'planet-wise-prediction' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('planet-wise-prediction')}
+              >
+                <Star size={13} />
+                <span>{isHi ? 'ग्रह-वार फलादेश' : 'Planets-wise Prediction'}</span>
+              </button>
+            </li>
+
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'house-wise-prediction' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('house-wise-prediction')}
+              >
+                <Compass size={13} />
+                <span>{isHi ? 'भाव-वार फलादेश' : 'House-wise Prediction'}</span>
               </button>
             </li>
 

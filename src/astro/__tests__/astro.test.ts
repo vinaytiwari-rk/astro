@@ -78,6 +78,7 @@ import { inspectHypotheticalNakshatra } from '../predictions/planetInNakshatra';
 import { inspectHypotheticalPlanetInSign } from '../predictions/planetInSign';
 import { inspectCustomYuti } from '../predictions/yutiPredictions';
 import { computeTwelvePlanetsPredictions } from '../predictions/twelvePlanetsPredictions';
+import { computeHouseWisePredictions } from '../predictions/houseWise';
 import { computeSambhavitFalkathan } from '../predictions/sambhavitFalkathan';
 import { buildSpecializedAstrologySuite } from '../predictions/specialized';
 import {
@@ -588,6 +589,10 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const vivekChart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const livingChart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = generatePredictionReport(livingChart, '2026-11-10');
+    const targetAtMs = Date.parse('2026-11-10T12:00:00.000Z') - livingChart.offsetMinutesUsed * 60_000;
+    const expectedHouseDasha = computeHouseWisePredictions(livingChart, targetAtMs);
+    expect(report.houseWisePredictions.map((house) => house.dashaEvidenceEn))
+      .toEqual(expectedHouseDasha.map((house) => house.dashaEvidenceEn));
 
     expect(report.paramayus.exceeded).toBe(false);
     expect(report.lagnaProfile.signName).toBe(livingChart.ascendant.signName);
@@ -1390,13 +1395,62 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(nov2026.find((d) => d.isoDate === '2026-11-11')?.highlightTagEn).toContain('Bhai Dooj');
 
     // 6. 12-Planets Comprehensive Event Prediction Engine (9 Vedic Grahas + 3 Outer Planets)
+    const houseReport = computeHouseWisePredictions(chart2026, Date.parse('2026-11-11T12:00:00Z'));
+    expect(houseReport).toHaveLength(12);
+    const classicalAspectPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+    for (const house of houseReport) {
+      const expectedAspectors = chart2026.planets
+        .filter((planet) => classicalAspectPlanets.includes(planet.id))
+        .filter((planet) => {
+          const distance = (house.houseNumber - planet.rasiHouseNumber + 12) % 12;
+          const offsets = planet.id === 'Mars' ? [3, 6, 7]
+            : planet.id === 'Jupiter' ? [4, 6, 8]
+            : planet.id === 'Saturn' ? [2, 6, 9]
+            : [6];
+          return offsets.includes(distance);
+        })
+        .map((planet) => planet.id)
+        .sort();
+      expect([...house.aspectingPlanets].sort()).toEqual(expectedAspectors);
+      expect(house.primaryFactorsEn).toContain('Shadbala:');
+      expect(house.primaryFactorsEn).toContain('D9:');
+      expect(house.primaryFactorsEn).toContain('Star lord');
+      expect(house.primaryFactorsEn).toContain('Dasha context:');
+      expect(house.primaryFactorsHi).toContain('दशा-संदर्भ');
+      expect(house.primaryFactorsHi).toContain('षड्बल');
+      expect(house.primaryFactorsHi).toContain('नवांश');
+      expect(house.score).toBeGreaterThanOrEqual(25);
+      expect(house.score).toBeLessThanOrEqual(96);
+    }
+
     const twelveReport = computeTwelvePlanetsPredictions(chart2026);
     expect(twelveReport.planets.length).toBe(12);
 
     const expectedIds = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Uranus', 'Neptune', 'Pluto'];
     expect(twelveReport.planets.map((p) => p.id)).toEqual(expectedIds);
 
+    // Planet-wise evidence must use classical graha drishti only; outer planets
+    // are supplementary and must not be assigned Parashari aspects.
+    const classicalGrahas = new Set(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
     for (const p of twelveReport.planets) {
+      const natalPlanet = chart2026.planets.find((planet) => planet.id === p.id);
+      if (natalPlanet && classicalGrahas.has(p.id)) {
+        const expectedAspectors = chart2026.planets
+          .filter((other) => other.id !== p.id && classicalGrahas.has(other.id))
+          .filter((other) => {
+            const distance = (natalPlanet.rasiHouseNumber - other.rasiHouseNumber + 12) % 12;
+            const offsets = other.id === 'Mars' ? [3, 6, 7]
+              : other.id === 'Jupiter' ? [4, 6, 8]
+              : other.id === 'Saturn' ? [2, 6, 9]
+              : [6];
+            return offsets.includes(distance);
+          })
+          .map((other) => other.id)
+          .sort();
+        expect([...p.aspectingPlanets].sort()).toEqual(expectedAspectors);
+      }
+      expect(p.aspectingPlanets.every((id) => classicalGrahas.has(id))).toBe(true);
+      expect(p.placementSummaryHi).not.toContain('गोचरस्थ');
       expect(p.positiveEventsEn.length).toBeGreaterThan(0);
       expect(p.positiveEventsHi.length).toBeGreaterThan(0);
       expect(p.negativeEventsEn.length).toBeGreaterThan(0);

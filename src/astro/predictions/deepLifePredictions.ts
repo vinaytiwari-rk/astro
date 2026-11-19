@@ -1,281 +1,283 @@
-import type { ChartData } from '../types';
+import type { ChartData, DashaPeriod, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
+import { SIGNS } from '../constants';
+import { getFunctionalLordship } from './functionalLordship';
+import { findActiveDashaPath } from '../dasha';
+import { computeDeepGochar } from './gocharDeep';
 
 export interface DeepDomainPrediction {
-  id: string;
-  titleEn: string;
-  titleHi: string;
-  icon: string;
-  score: number; // 0..100
+  id: string; titleEn: string; titleHi: string; icon: string;
+  /** Internal evidence-balance index, not a probability or event likelihood. */
+  score: number;
   ratingEn: 'Excellent' | 'Very Good' | 'Moderate' | 'Challenging';
   ratingHi: 'अति उत्तम' | 'उत्तम' | 'मध्यम' | 'चुनौतीपूर्ण';
-  summaryEn: string;
-  summaryHi: string;
-  keyStrengthsEn: string[];
-  keyStrengthsHi: string[];
-  watchoutsEn: string[];
-  watchoutsHi: string[];
-  astrologicalFactorsEn: string;
-  astrologicalFactorsHi: string;
-  classicalAdviceEn: string;
-  classicalAdviceHi: string;
+  summaryEn: string; summaryHi: string;
+  keyStrengthsEn: string[]; keyStrengthsHi: string[];
+  watchoutsEn: string[]; watchoutsHi: string[];
+  astrologicalFactorsEn: string; astrologicalFactorsHi: string;
+  timingEn: string; timingHi: string;
+  classicalAdviceEn: string; classicalAdviceHi: string;
 }
-
 export interface DeepLifePredictionsReport {
+  /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
-  executiveSummaryEn: string;
-  executiveSummaryHi: string;
+  executiveSummaryEn: string; executiveSummaryHi: string;
   domains: DeepDomainPrediction[];
 }
-
-export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
-  const lagnaLord = chart.ascendant.signLord;
-  const moon = chart.planets.find((p) => p.id === 'Moon');
-  const sun = chart.planets.find((p) => p.id === 'Sun');
-  const jupiter = chart.planets.find((p) => p.id === 'Jupiter');
-  const saturn = chart.planets.find((p) => p.id === 'Saturn');
-  const venus = chart.planets.find((p) => p.id === 'Venus');
-  const mars = chart.planets.find((p) => p.id === 'Mars');
-  const mercury = chart.planets.find((p) => p.id === 'Mercury');
-
-  const ascSign = chart.ascendant.signName;
-  const moonSign = moon?.signName || '';
-  const sunSign = sun?.signName || '';
-
-  // 1. Personality & Mind
-  const personalityScore = 78 + (chart.ascendant.signIndex % 4) * 4;
-  const personalityDomain: DeepDomainPrediction = {
-    id: 'personality',
-    titleEn: 'Personality, Vitality & Mental Outlook (Lagna & Moon)',
-    titleHi: 'व्यक्तित्व, आत्मबल एवं मानसिक स्वभाव (लग्न व चंद्र)',
-    icon: 'user',
-    score: personalityScore,
-    ratingEn: 'Very Good',
-    ratingHi: 'उत्तम',
-    summaryEn: `Born in ${ascSign} Ascendant with Moon in ${moonSign}, you possess a distinctive combination of intellectual depth, strong inner resolve, and innate adaptability. Your rising sign imparts a natural dignity, while your Moon placement provides emotional resilience and intuitive grasp of human nature.`,
-    summaryHi: `${ascSign} लग्न और ${moonSign} राशि में जन्म होने से आपके व्यक्तित्व में बौद्धिक गहराई, आंतरिक संकल्प शक्ति और स्वाभाविक अनुकूलनशीलता का अद्भुत संतुलन है। लग्न आपकी बाहरी प्रतिष्ठा को सुदृढ़ करता है तथा चंद्र आपके अंतर्मन और सहज ज्ञान को तीव्र बनाता है।`,
-    keyStrengthsEn: [
-      'Natural self-respect and independent decision-making capacity',
-      'Strong communicative charm and ability to analyze complex situations',
-      'Emotional maturity during crises and resilience against external stress',
-    ],
-    keyStrengthsHi: [
-      'स्वाभाविक आत्मसम्मान एवं स्वतंत्र निर्णय लेने की क्षमता',
-      'उत्कृष्ट संवाद कौशल एवं जटिल परिस्थितियों का सटीक विश्लेषण',
-      'संकट के समय मानसिक स्थिरता एवं विपरीत परिस्थितियों से उबरने का सामर्थ्य',
-    ],
-    watchoutsEn: [
-      'Tendency towards occasional overthinking or indecision when Moon is strained',
-      'Guarding against physical fatigue by balancing work-life cycles',
-    ],
-    watchoutsHi: [
-      'चंद्र पर प्रतिकूल प्रभाव होने पर अत्यधिक विचारशीलता या अनिर्णय की स्थिति',
-      'कार्य और विश्राम के बीच संतुलन बनाकर शारीरिक थकान से बचाव',
-    ],
-    astrologicalFactorsEn: `Lagna Lord: ${lagnaLord} | Ascendant Nakshatra: ${chart.ascendant.nakshatraName} Pada ${chart.ascendant.pada} | Moon Sign Lord: ${moon?.signLord || '-'}`,
-    astrologicalFactorsHi: `लग्नेश: ${lagnaLord} | लग्न नक्षत्र: ${chart.ascendant.nakshatraName} चरण ${chart.ascendant.pada} | राशि स्वामी: ${moon?.signLord || '-'}`,
-    classicalAdviceEn: 'Wear natural pearl or perform daily Pranayama to strengthen mental equilibrium and vitality.',
-    classicalAdviceHi: 'मानसिक शांति और जीवनी शक्ति को सुदृढ़ करने हेतु नित्य प्राणायाम करें एवं चंद्र शांति उपाय अपनाएं।',
-  };
-
-  // 2. Wealth & Finances (2nd & 11th House)
-  const wealthScore = 82;
-  const wealthDomain: DeepDomainPrediction = {
-    id: 'wealth',
-    titleEn: 'Wealth, Assets, Savings & Inflow (2nd & 11th Bhavas)',
-    titleHi: 'धन, संचित कोष, पैतृक संपत्ति व लाभ (द्वितीय व एकादश भाव)',
-    icon: 'coins',
-    score: wealthScore,
-    ratingEn: 'Excellent',
-    ratingHi: 'अति उत्तम',
-    summaryEn: `Your financial potential is blessed by strong connections between wealth-giving houses (Dhana Bhava 2nd, Labha Bhava 11th, and Lakshmi Sthanas 5th & 9th). Multiple revenue streams emerge across middle life, with substantial compounding from real estate, consulting, or specialized knowledge.`,
-    summaryHi: `आपकी कुंडली में धन भाव (द्वितीय), लाभ भाव (एकादश) तथा लक्ष्मी स्थानों (पंचम व नवम) का शुभ संबंध श्रेष्ठ धन योग बनाता है। जीवन के मध्य काल से आय के एकाधिक साधन विकसित होंगे तथा भूमि, ज्ञान-संबद्ध परामर्श अथवा व्यवसाय से स्थायी संचित धन का निर्माण होगा।`,
-    keyStrengthsEn: [
-      'High potential for consistent capital accumulation through prudent investments',
-      'Favourable ancestral blessings and growth in fixed family assets',
-      'Intuitive timing for entering profitable contracts or partnerships',
-    ],
-    keyStrengthsHi: [
-      'सोच-समझकर किए गए निवेशों से निरंतर पूंजी संचय की उच्च क्षमता',
-      'पैतृक संपत्ति का लाभ एवं स्थायी पारिवारिक परिसंपत्तियों में वृद्धि',
-      'लाभप्रद अनुबंधों एवं साझेदारी में प्रवेश हेतु सटीक समय का चयन',
-    ],
-    watchoutsEn: [
-      'Avoid speculative high-risk gambles during Rahu or 12th house sub-periods',
-      'Maintain strict documentation in joint property transactions',
-    ],
-    watchoutsHi: [
-      'राहु अथवा द्वादशेश की अंतर्दशा में सट्टा, लॉटरी या अति-जोखिमपूर्ण निवेश से बचें',
-      'साझेदारी या संयुक्त संपत्ति के लेन-देन में पूर्ण कागजी सतर्कता बरतें',
-    ],
-    astrologicalFactorsEn: `Dhana Karaka: Jupiter (${jupiter?.signName || '-'}) | Labha Lord connection to Kendra/Trikona`,
-    astrologicalFactorsHi: `धन कारक: देवगुरु बृहस्पति (${jupiter?.signName || '-'}) | लाभेश का केंद्र-त्रिकोण से संबंध`,
-    classicalAdviceEn: 'Offer Arghya to the Sun at sunrise and chant Kanakadhara Stotram on Fridays.',
-    classicalAdviceHi: 'नित्य प्रातः सूर्य देव को अर्घ्य दें तथा शुक्रवार को कनकधारा स्तोत्र का पाठ करें।',
-  };
-
-  // 3. Career & Profession (10th House & D10)
-  const careerScore = 85;
-  const careerDomain: DeepDomainPrediction = {
-    id: 'career',
-    titleEn: 'Career, Leadership, Authority & Status (10th Bhava & D10)',
-    titleHi: 'आजीविका, पद-प्रतिष्ठा, नेतृत्व व कर्म (दशम भाव व दशमांश)',
-    icon: 'briefcase',
-    score: careerScore,
-    ratingEn: 'Excellent',
-    ratingHi: 'अति उत्तम',
-    summaryEn: `The 10th house of Karma indicates a native destined for administrative authority, management, strategic problem-solving, or entrepreneurship. You gain respect through competence rather than flattery, and major professional breakthroughs occur during the maturity periods of Saturn (36) and Jupiter (16/32).`,
-    summaryHi: `कर्म भाव (दशम) स्पष्ट संकेत देता है कि जातक प्रशासनिक अधिकार, प्रबंधन, रणनीतिक समस्या समाधान या स्वतंत्र व्यवसाय में उल्लेखनीय सफलता प्राप्त करेगा। चाटुकारिता के स्थान पर कर्म-दक्षता से सम्मान मिलेगा। शनि (36 वर्ष) व गुरु (32 वर्ष) के परिपक्व काल में करियर में महान उत्कर्ष होगा।`,
-    keyStrengthsEn: [
-      'Strong organizational leadership and commanding executive presence',
-      'Ability to master complex technical, legal, or commercial domains',
-      'High resilience against professional rivalries, converting adversity into advancement',
-    ],
-    keyStrengthsHi: [
-      'सशक्त संगठनात्मक नेतृत्व एवं प्रभावशाली कार्यकारी उपस्थिति',
-      'जटिल तकनीकी, विधिक या वाणिज्यिक क्षेत्रों पर पूर्ण अधिकार प्राप्त करने की क्षमता',
-      'व्यावसायिक प्रतिद्वंद्वियों के विरुद्ध अडिगता, चुनौतियों को अवसरों में बदलने का कौशल',
-    ],
-    watchoutsEn: [
-      'Impatience with slow bureaucratic subordinates; maintain diplomatic poise',
-      'Watch for burnout during Saturn or Mars transits over key angles',
-    ],
-    watchoutsHi: [
-      'कार्यस्थल पर धीमी गति से चलने वाले अधीनस्थों से अधीर न हों, कूटनीतिक संयम रखें',
-      'शनि या मंगल के महत्वपूर्ण गोचर के दौरान अत्यधिक कार्यभार से मानसिक तनाव से बचें',
-    ],
-    astrologicalFactorsEn: `Karma Karaka: Saturn (${saturn?.signName || '-'}) | Sun Authority: ${sun?.signName || '-'} | Mars Energy: ${mars?.signName || '-'}`,
-    astrologicalFactorsHi: `कर्म कारक: शनि देव (${saturn?.signName || '-'}) | सूर्य प्रतिष्ठा: ${sun?.signName || '-'} | मंगल साहस: ${mars?.signName || '-'}`,
-    classicalAdviceEn: 'Recite Aditya Hridaya Stotram on Sundays and respect colleagues and service providers.',
-    classicalAdviceHi: 'रविवार को आदित्य हृदय स्तोत्र का पाठ करें तथा कार्यक्षेत्र में अधीनस्थों के प्रति न्यायप्रिय रहें।',
-  };
-
-  // 4. Marriage & Partnerships (7th House & D9)
-  const marriageScore = 75;
-  const marriageDomain: DeepDomainPrediction = {
-    id: 'marriage',
-    titleEn: 'Marriage, Spouse Persona & Harmony (7th Bhava & Navamsha D9)',
-    titleHi: 'विवाह, जीवनसाथी का स्वरूप व दांपत्य सुख (सप्तम भाव व नवांश)',
-    icon: 'heart',
-    score: marriageScore,
-    ratingEn: 'Very Good',
-    ratingHi: 'उत्तम',
-    summaryEn: `The 7th house and Venus/Jupiter configurations indicate an intelligent, dignified, and culturally aligned life partner. While minor temperamental differences may surface in early marriage, the union grows deeper with time, creating a stable, socially respected domestic sanctuary.`,
-    summaryHi: `सप्तम भाव तथा शुक्र/गुरु की स्थिति इंगित करती है कि जीवनसाथी सुसंस्कृत, बुद्धिमान, स्वाभिमानी एवं पारिवारिक मूल्यों का सम्मान करने वाला होगा। वैवाहिक जीवन के आरंभिक वर्षों में स्वभाव संबंधी छोटे-मोटे मतभेद हो सकते हैं, किंतु समय के साथ दांपत्य में प्रगाढ़ता और सामाजिक प्रतिष्ठा बढ़ेगी।`,
-    keyStrengthsEn: [
-      'Loyal, supportive spouse who contributes significantly to family prosperity',
-      'Mutual philosophical resonance and respect for personal space',
-      'High compatibility in long-term goals and social status maintenance',
-    ],
-    keyStrengthsHi: [
-      'समर्पित एवं सहयोगी जीवनसाथी जो पारिवारिक समृद्धि में महत्वपूर्ण योगदान देगा',
-      'पारस्परिक वैचारिक अनुकूलता एवं एक-दूसरे की स्वतंत्रता का सम्मान',
-      'दीर्घकालिक पारिवारिक लक्ष्यों एवं सामाजिक सम्मान में पूर्ण सामंजस्य',
-    ],
-    watchoutsEn: [
-      'Do not let professional workplace stress spill over into domestic intimacy',
-      'Clear communication is essential during Mars or Venus combust periods',
-    ],
-    watchoutsHi: [
-      'कार्यक्षेत्र के तनाव और व्यस्तता को पारिवारिक और दांपत्य जीवन पर हावी न होने दें',
-      'मंगल या शुक्र के अस्त/वक्र काल में आपसी संवाद को सदैव खुला और पारदर्शी रखें',
-    ],
-    astrologicalFactorsEn: `Vivaha Karaka: Venus (${venus?.signName || '-'}) | 7th Lord & Navamsha D9 alignment`,
-    astrologicalFactorsHi: `विवाह कारक: शुक्र देव (${venus?.signName || '-'}) | सप्तमेश व नवांश D9 की शुभ स्थिति`,
-    classicalAdviceEn: 'Keep fragrant white flowers or camphor in the bedroom and respect feminine divinity.',
-    classicalAdviceHi: 'दांपत्य सुख की वृद्धि हेतु शयनकक्ष में कपूर या श्वेत सुगंधित पुष्प रखें तथा गौरी-शंकर की आराधना करें।',
-  };
-
-  // 5. Health & Longevity (6th, 8th Bhavas)
-  const healthScore = 76;
-  const healthDomain: DeepDomainPrediction = {
-    id: 'health',
-    titleEn: 'Health, Vitality, Disease Vulnerability & Longevity (Ayur Bhava)',
-    titleHi: 'स्वास्थ्य, दीर्घायु, रोग प्रतिरोधक क्षमता व सावधानी (आयुर्भाव)',
-    icon: 'shield',
-    score: healthScore,
-    ratingEn: 'Very Good',
-    ratingHi: 'उत्तम',
-    summaryEn: `Basic constitution (Deha Bala) is resilient with strong natural immunity. Planetary indicators place you in the Deerghayu (Long Life, 75–100+ years) bracket. The primary zones requiring preventive lifestyle discipline are digestion/metabolism (Pitta/Agni) and joint/back flexibility (Vata).`,
-    summaryHi: `देह बल और नैसर्गिक रोग प्रतिरोधक क्षमता उत्तम है। शास्त्रीय गणना अनुसार आपकी कुंडली दीर्घायु वर्ग (75 से 100+ वर्ष) में आती है। जीवनशैली में मुख्य रूप से पाचन/अग्नि तत्व (पित्त) तथा रीढ़ व जोड़ों के लचीलेपन (वात) पर ध्यान देने की आवश्यकता है।`,
-    keyStrengthsEn: [
-      'Quick recuperative vitality and resilience against chronic ailments',
-      'Clear bodily warning signals enabling timely medical attention',
-      'Strong longevity signatures anchored by benefics in Kendra/Kona',
-    ],
-    keyStrengthsHi: [
-      'बीमारियों से शीघ्र स्वस्थ होने की प्राकृतिक शारीरिक क्षमता',
-      'शरीर द्वारा समय रहते स्पष्ट संकेत मिलना जिससे रोग प्रारंभिक अवस्था में ही नियंत्रित हो जाता है',
-      'केंद्र व त्रिकोण में शुभ ग्रहों के प्रभाव से पुष्ट दीर्घायु योग',
-    ],
-    watchoutsEn: [
-      'Watch dietary acidity, irregular meal timings, and water intake during intense summers',
-      'Exercise care with driving or heavy machinery during Sade Sati or Mars 8th aspects',
-    ],
-    watchoutsHi: [
-      'अनियमित खान-पान, तैलीय भोजन व जल की कमी से होने वाले पित्त विकारों से बचें',
-      'शनि की ढैय्या/साढ़े साती या मंगल की अष्टम दृष्टि के समय वाहन सावधानीपूर्वक चलाएं',
-    ],
-    astrologicalFactorsEn: `Ayush Karaka: Saturn | 6th/8th house lords evaluated without destructive malefics`,
-    astrologicalFactorsHi: `आयु कारक: शनि देव | षष्ठ व अष्टम भाव पर क्रूर ग्रहों का विनाशक प्रभाव नहीं है`,
-    classicalAdviceEn: 'Chant Maha Mrityunjaya Mantra 11 times daily and maintain moderate physical yoga.',
-    classicalAdviceHi: 'नित्य 11 बार महामृत्युंजय मंत्र का जप करें तथा नियमित योगासन व सात्विक आहार अपनाएं।',
-  };
-
-  // 6. Spirituality & Higher Karma (9th & 12th Bhavas)
-  const spiritualityScore = 88;
-  const spiritualityDomain: DeepDomainPrediction = {
-    id: 'spirituality',
-    titleEn: 'Spirituality, Dharma, Ancestral Punya & Moksha (9th & 12th Bhavas)',
-    titleHi: 'धर्म, आध्यात्म, पूर्व-पुण्य एवं मोक्ष गति (नवम व द्वादश भाव)',
-    icon: 'sparkles',
-    score: spiritualityScore,
-    ratingEn: 'Excellent',
-    ratingHi: 'अति उत्तम',
-    summaryEn: `A distinguished heritage of Purva Punya (merit carried from past lives) supports you in critical moments like an unseen shield. You possess an innate curiosity towards philosophy, ancient traditions, and sacred architecture. The latter third of life turns deeply contemplative, leading to philanthropic and spiritual fulfillment.`,
-    summaryHi: `पूर्व जन्मों के संचित पुण्य का आशीर्वाद जीवन के संकटकालीन मोड़ों पर एक अदृश्य सुरक्षा कवच की भांति आपकी रक्षा करता है। आपके भीतर सनातन दर्शन, गूढ़ विद्याओं एवं धर्म-संस्कृति के प्रति स्वाभाविक जिज्ञासा है। जीवन का उत्तरार्ध परोपकार, तीर्थाटन और आध्यात्मिक सिद्धि से परिपूर्ण होगा।`,
-    keyStrengthsEn: [
-      'Deep intuitive connection with lineage deities and spiritual mentors',
-      'Natural ethical compass that protects against karmic entanglements',
-      'Philanthropic drive that attracts divine grace and societal goodwill',
-    ],
-    keyStrengthsHi: [
-      'कुलदेवी/कुलदेवता एवं सद्गुरु के प्रति स्वाभाविक निष्ठा व कृपा',
-      'सत्य और धर्म का अटूट मार्ग जो कर्म बंधनों से रक्षा करता है',
-      'परोपकारी भावना जिसके फलस्वरूप समाज में आदर और ईश्वरीय अनुग्रह प्राप्त होता है',
-    ],
-    watchoutsEn: [
-      'Do not neglect ancestral shraddha or family lineage rituals during Rahu transits',
-    ],
-    watchoutsHi: [
-      'पितृ पक्ष या राहु के गोचर काल में पितरों के तर्पण व पारिवारिक कुल-रीतियों की उपेक्षा न करें',
-    ],
-    astrologicalFactorsEn: `Dharma Karaka: Jupiter | Moksha Karaka: Ketu in spiritual sign`,
-    astrologicalFactorsHi: `धर्म कारक: बृहस्पति | मोक्ष कारक: केतु की आध्यात्मिक स्थिति`,
-    classicalAdviceEn: 'Visit ancient shrines periodically and support educational welfare for underprivileged children.',
-    classicalAdviceHi: 'समय-समय पर प्राचीन तीर्थों का दर्शन करें तथा निर्धन विद्यार्थियों की शिक्षा में सहयोग करें।',
-  };
-
-  const domains = [
-    personalityDomain,
-    wealthDomain,
-    careerDomain,
-    marriageDomain,
-    healthDomain,
-    spiritualityDomain,
-  ];
-
-  const overallLifeScore = Math.round(
-    domains.reduce((acc, d) => acc + d.score, 0) / domains.length
-  );
-
-  const executiveSummaryEn = `This horoscope represents a highly endowed, noble native possessing a harmonious balance between worldly achievement (Artha & Kama) and higher ethical consciousness (Dharma & Moksha). With an aggregate auspicious index of ${overallLifeScore}/100, the planetary alignments favour leadership, stable wealth accumulation, domestic dignity, and sustained long-term prosperity.`;
-
-  const executiveSummaryHi = `यह जन्म कुंडली एक तेजस्वी एवं भाग्यशाली जातक का प्रतिनिधित्व करती है, जिसमें सांसारिक सफलता (अर्थ व काम) और उच्च नैतिक चेतना (धर्म व मोक्ष) का सुंदर संतुलन है। समग्र शुभता सूचकांक ${overallLifeScore}/100 होने के कारण ग्रह स्थितियां नेतृत्व, स्थायी धन संचय, पारिवारिक प्रतिष्ठा एवं सुदीर्घ जीवन का वरदान देती हैं।`;
-
+type DomainConfig = {
+  id: string; titleEn: string; titleHi: string; icon: string;
+  houses: number[]; karakas: NineGrahaId[]; varga: DivisionalChartId;
+  adviceEn: string; adviceHi: string;
+};
+const DOMAINS: DomainConfig[] = [
+  { id: 'personality', titleEn: 'Personality, Vitality & Mind', titleHi: 'व्यक्तित्व, आत्मबल एवं मन', icon: 'user', houses: [1, 5, 9], karakas: ['Sun', 'Moon'], varga: 'D9', adviceEn: 'Build on supportive traits while maintaining steady routines. Treat difficult indications as areas for awareness, not fixed outcomes.', adviceHi: 'अनुकूल संकेतों का सदुपयोग करें और नियमित दिनचर्या बनाए रखें। चुनौतीपूर्ण संकेतों को निश्चित परिणाम नहीं, सावधानी के विषय मानें।' },
+  { id: 'wealth', titleEn: 'Wealth, Savings & Resources', titleHi: 'धन, बचत एवं संसाधन', icon: 'coins', houses: [2, 11, 5, 9], karakas: ['Jupiter', 'Venus', 'Mercury'], varga: 'D2', adviceEn: 'Use budgeting, documented transactions and diversified, risk-aware financial decisions; astrology cannot establish investment returns.', adviceHi: 'बजट, लिखित अभिलेख और जोखिम-संतुलित वित्तीय निर्णय अपनाएं; ज्योतिष निवेश के लाभ की गारंटी नहीं देता।' },
+  { id: 'career', titleEn: 'Career, Work & Public Role', titleHi: 'करियर, कार्य एवं सामाजिक भूमिका', icon: 'briefcase', houses: [10, 6, 2, 11], karakas: ['Sun', 'Saturn', 'Mercury', 'Jupiter'], varga: 'D10', adviceEn: 'Translate strengths into skills, reliable delivery and professional relationships; verify career decisions against real-world conditions.', adviceHi: 'अनुकूल संकेतों को कौशल, भरोसेमंद कार्य-निष्पादन और अच्छे पेशेवर संबंधों में बदलें; करियर निर्णय वास्तविक परिस्थितियों के आधार पर लें।' },
+  { id: 'marriage', titleEn: 'Marriage & Relationships', titleHi: 'विवाह एवं संबंध', icon: 'heart', houses: [7, 2, 5, 8], karakas: ['Venus', 'Jupiter'], varga: 'D9', adviceEn: 'Prioritize mutual respect, communication and compatibility. A chart cannot determine a person’s character or guarantee marriage timing.', adviceHi: 'आपसी सम्मान, संवाद और अनुकूलता को प्राथमिकता दें। कुंडली किसी व्यक्ति का चरित्र तय नहीं करती और विवाह का निश्चित समय नहीं बताती।' },
+  { id: 'health', titleEn: 'Health, Habits & Resilience', titleHi: 'स्वास्थ्य, आदतें एवं सहनशक्ति', icon: 'shield', houses: [1, 6, 8, 12], karakas: ['Sun', 'Moon', 'Saturn'], varga: 'D30', adviceEn: 'Use this section only for traditional reflection on habits and resilience. It is not a diagnosis; consult a qualified clinician about symptoms or treatment.', adviceHi: 'इस भाग को केवल पारंपरिक जीवनशैली-चिंतन के रूप में लें। यह चिकित्सकीय निदान नहीं है; लक्षण या उपचार के लिए योग्य चिकित्सक से सलाह लें।' },
+  { id: 'spirituality', titleEn: 'Dharma, Learning & Spirituality', titleHi: 'धर्म, अध्ययन एवं आध्यात्म', icon: 'sparkles', houses: [9, 12, 5, 8], karakas: ['Jupiter', 'Ketu'], varga: 'D20', adviceEn: 'Develop a consistent study or contemplative practice that fits your beliefs and circumstances; no spiritual outcome is guaranteed by a placement.', adviceHi: 'अपनी मान्यताओं और परिस्थितियों के अनुरूप अध्ययन या साधना की नियमितता विकसित करें; कोई ग्रह-स्थिति आध्यात्मिक उपलब्धि की गारंटी नहीं देती।' },
+];
+const CLASSICAL_PLANETS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
+const CLASSICAL_GRAHAS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
+function functionalLordshipEvidence(chart: ChartData, planetId: string): { en: string; hi: string; adjustment: number } | null {
+  if (!CLASSICAL_PLANETS.has(planetId)) return null;
+  const lordship = getFunctionalLordship(planetId as SevenPlanetId, chart.ascendant.signIndex);
+  const houses = lordship.ownedHouses;
+  // Keep the influence deliberately modest: ownership is one layer, never a verdict.
+  const adjustment = lordship.yogakarakaProfile
+    ? 0.75
+    : lordship.kendradhipatiCaution
+      ? -0.25
+      : lordship.ownsDusthana && !lordship.ownsTrikona
+        ? -0.5
+        : lordship.ownsTrikona && !lordship.ownsDusthana
+          ? 0.5
+          : 0;
   return {
-    overallLifeScore,
-    executiveSummaryEn,
-    executiveSummaryHi,
-    domains,
+    en: planetId + ' owns houses ' + houses.join(', ') + ' (' + lordship.rolesEn.join('; ') + ')',
+    hi: planetId + ' भाव ' + houses.join(', ') + ' का स्वामी है (' + lordship.rolesHi.join('; ') + ')',
+    adjustment,
   };
+}
+function dignityPoints(d: string): number {
+  if (['Exalted', 'Moolatrikona', 'Own Sign'].includes(d)) return 2;
+  if (['Great Friend', 'Friend'].includes(d)) return 1;
+  if (['Enemy', 'Great Enemy', 'Debilitated'].includes(d)) return -2;
+  return 0;
+}
+function flattenDasha(periods: DashaPeriod[] = []): DashaPeriod[] {
+  const all: DashaPeriod[] = [];
+  const visit = (items: DashaPeriod[]) => items.forEach((p) => { all.push(p); if (p.children?.length) visit(p.children); });
+  visit(periods);
+  return all;
+}
+function houseSignIndex(chart: ChartData, house: number): number { return (chart.ascendant.signIndex + house - 1) % 12; }
+function planetHouse(chart: ChartData, p: { signIndex: number }): number { return ((p.signIndex - chart.ascendant.signIndex + 12) % 12) + 1; }
+function aspectsHouse(chart: ChartData, target: number): string[] {
+  const found: string[] = [];
+  for (const p of chart.planets) {
+    if (!CLASSICAL_GRAHAS.has(String(p.id))) continue;
+    const from = planetHouse(chart, p);
+    const offsets = p.id === 'Mars' ? [3, 6, 7] : p.id === 'Jupiter' ? [4, 6, 8] : p.id === 'Saturn' ? [2, 6, 9] : [6];
+    if (offsets.some((n) => ((from - 1 + n) % 12) + 1 === target)) found.push(String(p.id));
+  }
+  return [...new Set(found)];
+}
+function dateLabel(ms: number, hi: boolean): string {
+  return new Date(ms).toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, transitReport: ReturnType<typeof computeDeepGochar>): DeepDomainPrediction {
+  const strengthsEn: string[] = [], strengthsHi: string[] = [], watchoutsEn: string[] = [], watchoutsHi: string[] = [];
+  const houseEn: string[] = [], houseHi: string[] = [], yogaEvidence: string[] = [];
+  const related = new Set<string>();
+  let balance = 0, count = 0;
+  for (const house of config.houses) {
+    const signIndex = houseSignIndex(chart, house), sign = SIGNS[signIndex];
+    const lord = chart.planets.find((p) => p.id === sign.lord);
+    const occupants = chart.planets.filter((p) => p.id !== 'Asc' && p.rasiHouseNumber === house);
+    const aspects = aspectsHouse(chart, house), sav = chart.ashtakavarga?.sarva?.[signIndex];
+    const en: string[] = [], hi: string[] = [];
+    let local = 0;
+    related.add(String(sign.lord));
+    if (lord) {
+      const d = dignityPoints(lord.dignity); local += d; count++;
+      en.push('lord ' + lord.id + ' in H' + lord.rasiHouseNumber + ' (' + lord.signName + ', ' + lord.dignity + ')');
+      hi.push('भावेश ' + lord.id + ' भाव ' + lord.rasiHouseNumber + ' में ' + lord.signName + ' राशि में (' + lord.dignity + ')');
+      const lordRole = functionalLordshipEvidence(chart, String(lord.id));
+      if (lordRole) {
+        local += lordRole.adjustment;
+        en.push('house-lord functional roles: ' + lordRole.en);
+        hi.push('भावेश का कार्यात्मक स्वामित्व: ' + lordRole.hi);
+      }
+      if (d > 0) { strengthsEn.push(house + 'th-house lord ' + lord.id + ' has ' + lord.dignity + ' dignity.'); strengthsHi.push(house + 'वें भावेश ' + lord.id + ' की ' + lord.dignity + ' गरिमा सहायक संकेत है।'); }
+      if (d < 0) { watchoutsEn.push(house + 'th-house lord ' + lord.id + ' has ' + lord.dignity + ' dignity; weigh this with strength and aspects.'); watchoutsHi.push(house + 'वें भावेश ' + lord.id + ' की ' + lord.dignity + ' स्थिति को ग्रहबल और दृष्टियों के साथ तौलें।'); }
+      const sb = chart.shadbala?.find((row) => row.planet === lord.id);
+      if (sb) {
+        local += sb.ratio >= 1.2 ? 1 : sb.ratio < 0.8 ? -1 : 0;
+        en.push('Shadbala ' + sb.ratio.toFixed(2) + '×'); hi.push('षड्बल ' + sb.ratio.toFixed(2) + '×');
+        if (sb.ratio >= 1.2) { strengthsEn.push(lord.id + ' has above-threshold Shadbala (' + sb.ratio.toFixed(2) + '×).'); strengthsHi.push(lord.id + ' का षड्बल अपेक्षाकृत मजबूत (' + sb.ratio.toFixed(2) + '×) है।'); }
+        if (sb.ratio < 0.8) { watchoutsEn.push(lord.id + ' has lower Shadbala (' + sb.ratio.toFixed(2) + '×); sustained effort may be needed.'); watchoutsHi.push(lord.id + ' का षड्बल कम (' + sb.ratio.toFixed(2) + '×) है; निरंतर प्रयास आवश्यक हो सकता है।'); }
+      }
+      if ([1, 4, 5, 7, 9, 10].includes(lord.rasiHouseNumber)) local += 1;
+      if ([6, 8, 12].includes(lord.rasiHouseNumber)) local -= 1;
+      if (lord.isCombust) { local -= 1; watchoutsEn.push(lord.id + ', the ' + house + 'th lord, is combust.'); watchoutsHi.push(house + 'वें भावेश ' + lord.id + ' अस्त हैं; इसे अन्य बल-सूचकों के साथ तौलें।'); }
+      if (lord.isRetrograde && lord.id !== 'Rahu' && lord.id !== 'Ketu') { en.push('retrograde'); hi.push('वक्री'); }
+    } else { en.push('lord ' + sign.lord + ' unavailable'); hi.push('भावेश ' + sign.lord + ' का डेटा उपलब्ध नहीं'); }
+    if (sav !== undefined) {
+      local += sav >= 30 ? 1 : sav <= 24 ? -1 : 0; count++;
+      en.push('SAV ' + sav + ' bindus'); hi.push('सर्वाष्टकवर्ग ' + sav + ' बिंदु');
+      if (sav >= 30) { strengthsEn.push(house + 'th-house sign has ' + sav + ' Sarvashtakavarga bindus.'); strengthsHi.push(house + 'वें भाव की राशि में ' + sav + ' सर्वाष्टकवर्ग बिंदु अपेक्षाकृत सहायक हैं।'); }
+      if (sav <= 24) { watchoutsEn.push(house + 'th-house sign has ' + sav + ' Sarvashtakavarga bindus, a lower-support indicator.'); watchoutsHi.push(house + 'वें भाव की राशि में ' + sav + ' सर्वाष्टकवर्ग बिंदु अपेक्षाकृत कम समर्थन दर्शाते हैं।'); }
+    }
+    if (occupants.length) {
+      const occupantEvidence = occupants.map((p) => {
+        related.add(String(p.id));
+        // Each occupant contributes one dignity observation and, where applicable,
+        // one modest functional-lordship modifier. Keep the denominator at the
+        // same evidence grain so crowded houses cannot distort the balance.
+        const dignity = dignityPoints(p.dignity);
+        local += dignity;
+        count++;
+        if (dignity > 0) {
+          strengthsEn.push(p.id + ' occupies house ' + house + ' with ' + p.dignity + ' dignity.');
+          strengthsHi.push(p.id + ' भाव ' + house + ' में ' + p.dignity + ' गरिमा के साथ स्थित है।');
+        } else if (dignity < 0) {
+          watchoutsEn.push(p.id + ' occupies house ' + house + ' with ' + p.dignity + ' dignity; weigh this with its strength and relationships.');
+          watchoutsHi.push(p.id + ' भाव ' + house + ' में ' + p.dignity + ' स्थिति में है; इसे ग्रहबल और संबंधों के साथ तौलें।');
+        }
+        const role = functionalLordshipEvidence(chart, String(p.id));
+        if (role) {
+          local += role.adjustment;
+          count++;
+          return role.en;
+        }
+        return String(p.id) + ' has no assigned classical house lordship in this synthesis';
+      });
+      en.push('occupants ' + occupants.map((p) => p.id + ' (' + p.dignity + ')').join(', '));
+      en.push('occupant functional roles: ' + occupantEvidence.join('; '));
+      hi.push('स्थित ग्रह ' + occupants.map((p) => p.id + ' (' + p.dignity + ')').join(', '));
+      hi.push('स्थित ग्रहों का कार्यात्मक स्वामित्व: ' + occupants.map((p) => functionalLordshipEvidence(chart, String(p.id))?.hi ?? String(p.id) + ' का पारंपरिक भाव-स्वामित्व नहीं').join('; '));
+    } else { en.push('no classical graha occupant'); hi.push('कोई पारंपरिक ग्रह स्थित नहीं'); }
+    if (aspects.length) {
+      const aspectEvidence = aspects.map((id) => {
+        related.add(id);
+        const role = functionalLordshipEvidence(chart, id);
+        if (role) {
+          local += role.adjustment;
+          count++;
+          return role.en;
+        }
+        return id + ' has no assigned classical house lordship in this synthesis';
+      });
+      en.push('graha aspects ' + aspects.join(', '));
+      en.push('aspecting planets functional roles: ' + aspectEvidence.join('; '));
+      hi.push('ग्रह-दृष्टि ' + aspects.join(', '));
+      hi.push('दृष्टि डालने वाले ग्रहों का कार्यात्मक स्वामित्व: ' + aspects.map((id) => functionalLordshipEvidence(chart, id)?.hi ?? id + ' का पारंपरिक भाव-स्वामित्व नहीं').join('; '));
+    }
+    balance += local;
+    houseEn.push('H' + house + ' (' + sign.name + '): ' + en.join('; ') + '.');
+    houseHi.push('भाव ' + house + ' (' + sign.name + '): ' + hi.join('; ') + '।');
+  }
+  for (const id of config.karakas) {
+    const p = chart.planets.find((x) => x.id === id);
+    if (!p) continue;
+    related.add(String(id));
+    const d = dignityPoints(p.dignity); balance += d * 0.5; count++;
+    if (d > 0) { strengthsEn.push('Natural significator ' + id + ' has ' + p.dignity + ' dignity.'); strengthsHi.push('नैसर्गिक कारक ' + id + ' की ' + p.dignity + ' गरिमा सहायक है।'); }
+    if (d < 0) { watchoutsEn.push('Natural significator ' + id + ' has ' + p.dignity + ' dignity.'); watchoutsHi.push('नैसर्गिक कारक ' + id + ' की ' + p.dignity + ' गरिमा पर ध्यान देना चाहिए।'); }
+  }
+  const varga = chart.divisionalCharts?.[config.varga], vargaEvidence: string[] = [];
+  if (varga) for (const id of related) {
+    const place = varga.placements.find((p) => p.id === id);
+    if (!place) continue;
+    vargaEvidence.push(id + ': ' + place.dignity + ', Varga H' + place.houseFromVargaLagna);
+    const d = dignityPoints(place.dignity); balance += d * 0.5; count++;
+    if (d > 0) { strengthsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); strengthsHi.push(id + ' ' + config.varga + ' में ' + place.dignity + ' स्थिति में हैं।'); }
+    if (d < 0) { watchoutsEn.push(id + ' is ' + place.dignity + ' in ' + config.varga + '.'); watchoutsHi.push(id + ' की ' + config.varga + ' स्थिति ' + place.dignity + ' है।'); }
+  }
+  const relatedYogas = chart.yogas.filter((y) => y.planets.some((id) => related.has(id)));
+  for (const y of relatedYogas) {
+    yogaEvidence.push(y.name + ' (' + y.strength + ')');
+    if (y.strength === 'Strong') {
+      strengthsEn.unshift('Related yoga: ' + y.name + ' (strong).');
+      strengthsHi.unshift('संबंधित योग ' + y.name + ' मजबूत रूप में दर्ज है।');
+    }
+    // Moderate/Present yogas remain visible as corroborating evidence, but are
+    // not counted as supportive outcomes without a strong classification.
+
+  }
+  const periods = flattenDasha(chart.vimshottari ?? []);
+  const activePath = findActiveDashaPath(chart.vimshottari ?? [], atMs);
+  const activeIsRelevant = activePath.some((period) => related.has(period.lord));
+  const next = periods.filter((p) => related.has(p.lord) && p.startMs > atMs).sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
+  const pName = (n: number) => n === 1 ? 'Mahadasha' : n === 2 ? 'Antardasha' : n === 3 ? 'Pratyantardasha' : 'sub-period';
+  const pNameHi = (n: number) => n === 1 ? 'महादशा' : n === 2 ? 'अंतर्दशा' : n === 3 ? 'प्रत्यंतर दशा' : 'उप-दशा';
+  const activeSequenceEn = activePath.map((p) => p.lord + ' ' + pName(p.level)).join(' → ');
+  const activeSequenceHi = activePath.map((p) => p.lord + ' ' + pNameHi(p.level)).join(' → ');
+  const relevantActive = activePath.filter((p) => related.has(p.lord));
+  const activeEnd = activePath[activePath.length - 1]?.endMs;
+  const timingEn = activeIsRelevant
+    ? 'Current combined Vimshottari sequence: ' + activeSequenceEn + '. Relevant lord(s) for this life area: ' + relevantActive.map((p) => p.lord).join(', ') + '. Current sub-period ends ' + dateLabel(activeEnd ?? atMs, false) + '. This is a traditional activation indicator, not an event guarantee.'
+    : next ? 'Next related Vimshottari period: ' + next.lord + ' ' + pName(next.level) + ' from ' + dateLabel(next.startMs, false) + '. This is not a promised event date.'
+    : 'No related active or upcoming Vimshottari period could be established from the supplied dasha data; no timing is stated.';
+  const timingHi = activeIsRelevant
+    ? 'वर्तमान संयुक्त विंशोत्तरी क्रम: ' + activeSequenceHi + '। इस जीवन-क्षेत्र से संबंधित स्वामी: ' + relevantActive.map((p) => p.lord).join(', ') + '। वर्तमान उप-अवधि ' + dateLabel(activeEnd ?? atMs, true) + ' को समाप्त होगी। यह पारंपरिक सक्रियता-संकेत है, घटना की गारंटी नहीं।'
+    : next ? 'अगली संबंधित विंशोत्तरी अवधि: ' + next.lord + ' की ' + pNameHi(next.level) + ' ' + dateLabel(next.startMs, true) + ' से। यह निश्चित घटना-समय नहीं है।'
+    : 'उपलब्ध विंशोत्तरी दशा डेटा में संबंधित अवधि स्थापित नहीं हुई; इसलिए समय-सीमा नहीं दी गई है।';
+  const transitOccupants = transitReport.items.filter((item) => config.houses.includes(item.houseFromLagna));
+  const doubleTransit = transitReport.doubleTransitHouses.filter((item) => config.houses.includes(item.house));
+  const transitEvidenceEn = transitOccupants.length || doubleTransit.length
+    ? ' Current transit evidence: ' +
+      (transitOccupants.length ? transitOccupants.map((item) => item.planet + ' transits natal H' + item.houseFromLagna + ' (H' + item.houseFromMoon + ' from Moon; ' + item.verdict + ')').join('; ') : '') +
+      (doubleTransit.length ? (transitOccupants.length ? '. ' : '') + 'Jupiter-Saturn double transit activates natal house(s) ' + doubleTransit.map((item) => item.house).join(', ') : '') +
+      '. Transit is a corroborating indicator, not an event guarantee.'
+    : ' No relevant transit occupancy or Jupiter-Saturn double-transit activation was identified for these houses on ' + transitReport.targetDate + '.';
+  const transitEvidenceHi = transitOccupants.length || doubleTransit.length
+    ? ' वर्तमान गोचर प्रमाण: ' +
+      (transitOccupants.length ? transitOccupants.map((item) => item.planet + ' जन्म लग्न से भाव ' + item.houseFromLagna + ' (चंद्र से भाव ' + item.houseFromMoon + '; ' + item.verdict + ') में').join('; ') : '') +
+      (doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर जन्म भाव ' + doubleTransit.map((item) => item.house).join(', ') + ' को सक्रिय करता है' : '') +
+      '। गोचर सहायक प्रमाण है, घटना की गारंटी नहीं।'
+    : ' ' + transitReport.targetDate + ' को इन भावों में कोई संबंधित गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं हुई।';
+  const activeDashaTransit = activePath.map((period) => ({
+    period,
+    transit: transitReport.items.find((item) => item.planet === period.lord),
+  })).filter((entry) => entry.transit);
+  const dashaTransitEvidenceEn = activeDashaTransit.length
+    ? ' Active dasha-lord transit cross-check: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pName(period.level) + ') is transiting ' + transit!.transitSign + ', H' + transit!.houseFromLagna + ' from natal Lagna and H' + transit!.houseFromMoon + ' from natal Moon; motion ' + transit!.motionLabel.toLowerCase() + ', ' + transit!.verdict + '.').join(' ')
+    : ' No active classical dasha-lord transit cross-check is available for this date.';
+  const dashaTransitEvidenceHi = activeDashaTransit.length
+    ? ' सक्रिय दशा-स्वामी गोचर मिलान: ' + activeDashaTransit.map(({ period, transit }) => period.lord + ' (' + pNameHi(period.level) + ') ' + transit!.transitSign + ' राशि में, जन्म लग्न से भाव ' + transit!.houseFromLagna + ' और चंद्र से भाव ' + transit!.houseFromMoon + ' में गोचर कर रहा है; गति ' + (transit!.motionLabel === 'Retrograde' ? 'वक्री' : transit!.motionLabel === 'Stationary' ? 'स्थिर' : 'मार्गी') + ', आकलन ' + transit!.verdict + '।').join(' ')
+    : ' इस तिथि के लिए सक्रिय नवग्रह दशा-स्वामी का गोचर मिलान उपलब्ध नहीं है।';
+  const timingWithTransitEn = timingEn + transitEvidenceEn + dashaTransitEvidenceEn;
+  const timingWithTransitHi = timingHi + transitEvidenceHi + dashaTransitEvidenceHi;
+  const hasSupport = strengthsEn.length > 0, hasCaution = watchoutsEn.length > 0;
+  const toneEn = hasSupport && hasCaution ? 'mixed' : hasSupport ? 'more supportive' : hasCaution ? 'more challenging' : 'insufficient';
+  const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
+  const summaryEn = config.titleEn + ': ' + toneEn + ' indications appear across houses ' + config.houses.join(', ') + '. House lords, occupants, aspects, Sarvashtakavarga, ' + config.varga + ' and relevant significators are weighed together; conflicting signals are retained.';
+  const summaryHi = config.titleHi + ': भाव ' + config.houses.join(', ') + ' के संकेत ' + toneHi + ' हैं। भावेश, स्थित ग्रह, दृष्टि, सर्वाष्टकवर्ग, ' + config.varga + ' और संबंधित कारकों को साथ देखा गया है; विरोधी संकेतों को छिपाया नहीं गया है।';
+  const score = Math.max(25, Math.min(75, Math.round(50 + (count ? (balance / count) * 14 : 0))));
+  const ratingEn = score >= 64 ? 'Very Good' : score <= 40 ? 'Challenging' : 'Moderate';
+  const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
+  const factorsEn = houseEn.join(' ') + ' Karakas: ' + config.karakas.join(', ') + '. ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'relevant placements unavailable') + '. Related yogas: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'none identified in supplied yoga data') + '.';
+  const factorsHi = houseHi.join(' ') + ' कारक ग्रह: ' + config.karakas.join(', ') + '। ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'संबंधित स्थिति उपलब्ध नहीं') + '। संबंधित योग: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'प्रदत्त योग-डेटा में कोई संबंधित योग दर्ज नहीं') + '।';
+  return {
+    id: config.id, titleEn: config.titleEn, titleHi: config.titleHi, icon: config.icon, score, ratingEn, ratingHi,
+    summaryEn, summaryHi,
+    keyStrengthsEn: strengthsEn.length ? [...new Set(strengthsEn)].slice(0, 6) : ['No clearly supportive factor was established from the supplied chart data.'],
+    keyStrengthsHi: strengthsHi.length ? [...new Set(strengthsHi)].slice(0, 6) : ['प्रदत्त कुंडली-डेटा से कोई स्पष्ट अनुकूल कारक स्थापित नहीं हुआ।'],
+    watchoutsEn: watchoutsEn.length ? [...new Set(watchoutsEn)].slice(0, 6) : ['No major caution was established from available indicators; this does not mean difficulties are impossible.'],
+    watchoutsHi: watchoutsHi.length ? [...new Set(watchoutsHi)].slice(0, 6) : ['उपलब्ध संकेतों से कोई प्रमुख सावधानी स्थापित नहीं हुई; इसका अर्थ यह नहीं कि कठिनाइयां असंभव हैं।'],
+    astrologicalFactorsEn: factorsEn, astrologicalFactorsHi: factorsHi, timingEn: timingWithTransitEn, timingHi: timingWithTransitHi,
+    classicalAdviceEn: config.adviceEn, classicalAdviceHi: config.adviceHi,
+  };
+}
+export function computeDeepLifePredictions(chart: ChartData, atMs = Date.now()): DeepLifePredictionsReport {
+  const transitDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
+  const transitReport = computeDeepGochar(chart, transitDate);
+  const domains = DOMAINS.map((config) => buildDomain(chart, config, atMs, transitReport));
+  const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
+  const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
+  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary, divisional-chart and dasha evidence together; mixed signals are intentionally shown as mixed.';
+  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह, वर्ग-कुंडली और दशा को साथ पढ़ें; मिले-जुले संकेत उसी रूप में दिखाए गए हैं।';
+  const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
+  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains };
 }

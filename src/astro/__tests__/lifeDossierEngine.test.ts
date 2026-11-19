@@ -38,7 +38,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     }
   });
 
-  it('uses the same central domain evidence in the 12-chapter dossier and 21-prediction engine', () => {
+  it('uses the same central domain evidence in the 12-chapter dossier', () => {
     const central = computePredictionFramework(chart);
     expect(central.map((item) => item.id)).toEqual([
       'career', 'marriage', 'wealth', 'education', 'children', 'property', 'litigation', 'foreign',
@@ -115,7 +115,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
 
   it('verifies Chapter 1 contains Physical Appearance', () => {
     const ch1 = report.chapters.find((c) => c.chapterNumber === 1);
-    expect(ch1?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(5);
+    expect(ch1?.sections.length).toBe(6);
     const physSec = ch1?.sections.find((s) => s.titleEn.includes('Physical Appearance'));
     expect(physSec).toBeDefined();
     expect(physSec?.paragraphsEn.some((p) => p.includes('Stature'))).toBe(true);
@@ -154,7 +154,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 8 (Randhra Bhava) contains Longevity & all 12 epochs spanning 15 to 75 years', () => {
     const ch8 = report.chapters.find((c) => c.chapterNumber === 8);
     expect(ch8).toBeDefined();
-    expect(ch8?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(15); // 3 foundation sections + 12 epochs
+    expect(ch8?.sections.length).toBe(16); // 3 foundation sections + 12 epochs + detailed Bhava reading
     expect(ch8?.specialData?.longevity).toBeUndefined();
     const epoch1 = ch8?.sections.find((s) => s.titleEn.includes('15–20') || s.titleEn.includes('1878–1883'));
     expect(epoch1).toBeDefined();
@@ -170,7 +170,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 9 (Bhagya Bhava) contains Global World Civilizations & Future Rebirth Global Geography', () => {
     const ch9 = report.chapters.find((c) => c.chapterNumber === 9);
     expect(ch9).toBeDefined();
-    expect(ch9?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(4);
+    expect(ch9?.sections.length).toBe(5);
     const pastSec = ch9?.sections.find((s) => s.titleEn.includes('Past-Life Identity Markers'));
     expect(pastSec).toBeDefined();
     expect(pastSec?.paragraphsEn.some((p) => p.includes('Civilization'))).toBe(true);
@@ -182,7 +182,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
   it('verifies Chapter 10 (Karma Bhava) contains Government Job verdict, top vocations & workplace hazards', () => {
     const ch10 = report.chapters.find((c) => c.chapterNumber === 10);
     expect(ch10).toBeDefined();
-    expect(ch10?.sections.filter((section) => section.lifeDimensionId === undefined).length).toBe(6);
+    expect(ch10?.sections.length).toBe(7);
     const govtSec = ch10?.sections.find((s) => s.titleEn.includes('Government Job'));
     expect(govtSec).toBeDefined();
     expect(ch10?.specialData?.careerVerdicts).toBeDefined();
@@ -269,18 +269,16 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(secondVocations).toBeDefined();
     expect(firstVocations!.paragraphsEn[1]).not.toBe(secondVocations!.paragraphsEn[1]);
   });
-  it('embeds all 21 selected life predictions within the existing 12 chapters', () => {
-    const report = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
-    expect(report.chapters).toHaveLength(12);
-    const embedded = report.chapters.flatMap((chapter) =>
-      chapter.sections.filter((section) => section.lifeDimensionId !== undefined),
-    );
-    expect(embedded).toHaveLength(21);
-    expect(embedded.map((section) => section.lifeDimensionId).sort((a, b) => a! - b!))
-      .toEqual([1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51]);
-    for (const chapter of report.chapters) {
-      for (const section of chapter.sections.filter((item) => item.lifeDimensionId !== undefined)) {
-        expect(section.lifeDimensionHouse).toBe(chapter.chapterNumber);
-      }
+  it('replaces the 21 numbered life predictions with one detailed chart-specific reading in each Bhava chapter', () => {
+    const result = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    expect(result.chapters).toHaveLength(12);
+    for (const chapter of result.chapters) {
+      const detailed = chapter.sections.filter((section) => section.titleEn.startsWith('Detailed Bhava Prediction'));
+      expect(detailed).toHaveLength(1);
+      expect(detailed[0].paragraphsEn.length).toBeGreaterThanOrEqual(6);
+      expect(detailed[0].paragraphsHi.length).toBeGreaterThanOrEqual(6);
+      expect(detailed[0].keyPointsEn?.length).toBeGreaterThanOrEqual(5);
+      expect(detailed[0].keyPointsHi?.length).toBeGreaterThanOrEqual(5);
+      expect(chapter.sections.some((section) => /Life prediction \d+:/i.test(section.titleEn))).toBe(false);
     }
   });

@@ -6,7 +6,6 @@ import { computeLalKitabSystemReport, type LalKitabFullSystemReport } from './la
 import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { formatDateDmy } from '../time';
 import { computePredictionFramework, type PredictionDomainEvidence, type PredictionDomainId } from './predictionFramework';
-import { computeSambhavitFalkathan } from './sambhavitFalkathan';
 import {
   computePhysicalAppearance,
   computeEducationAcademics,
@@ -42,9 +41,6 @@ export interface ChapterSection {
     textHi: string;
     tone: 'positive' | 'warning' | 'critical' | 'neutral' | 'spiritual';
   };
-  /** Original selected 21-life-prediction identifier, when this is an embedded prediction. */
-  lifeDimensionId?: number;
-  lifeDimensionHouse?: number;
 }
 
 export interface BhavaProfile {
@@ -557,6 +553,122 @@ export function computeHouseProfile(
   return { profile, remedy };
 }
 
+
+const BHAVA_PREDICTION_THEMES: Record<number, { hi: string; en: string }> = {
+  1: { hi: 'व्यक्तित्व, आत्म-प्रस्तुति, जीवन-दृष्टि और व्यक्तिगत पहल', en: 'identity, self-presentation, outlook and personal initiative' },
+  2: { hi: 'संचित धन, परिवार, वाणी, मूल्य और संसाधनों का प्रबंधन', en: 'savings, family, speech, values and resource management' },
+  3: { hi: 'साहस, संवाद, कौशल, प्रयास और सहोदर संबंध', en: 'courage, communication, skills, effort and sibling relationships' },
+  4: { hi: 'घर, माता, शिक्षा की नींव, संपत्ति और आंतरिक स्थिरता', en: 'home, mother, educational foundations, property and inner stability' },
+  5: { hi: 'बुद्धि, शिक्षा, रचनात्मकता, संतान और विवेकपूर्ण जोखिम', en: 'intellect, education, creativity, children and considered risk' },
+  6: { hi: 'सेवा, दिनचर्या, प्रतिस्पर्धा, ऋण और विवाद-प्रबंधन', en: 'service, routines, competition, debts and dispute management' },
+  7: { hi: 'विवाह, साझेदारी, अनुबंध, सहयोग और सार्वजनिक व्यवहार', en: 'marriage, partnerships, agreements, cooperation and public dealings' },
+  8: { hi: 'परिवर्तन, साझा संसाधन, शोध, गोपनीयता और अनिश्चितताओं का सामना', en: 'transformation, shared resources, research, privacy and navigating uncertainty' },
+  9: { hi: 'धर्म, उच्च अध्ययन, गुरु, सिद्धांत, भाग्य और दीर्घ यात्राएं', en: 'dharma, higher learning, mentors, principles, fortune and long journeys' },
+  10: { hi: 'कर्म, पेशा, उत्तरदायित्व, प्रतिष्ठा और सार्वजनिक योगदान', en: 'work, profession, responsibility, reputation and public contribution' },
+  11: { hi: 'आय, उपलब्धियां, मित्र-मंडली, नेटवर्क और दीर्घकालीन लक्ष्य', en: 'income, achievements, networks, friendships and long-term goals' },
+  12: { hi: 'व्यय, विश्राम, एकांत, विदेश-संपर्क और आध्यात्मिक अभ्यास', en: 'expenditure, rest, solitude, foreign connections and spiritual practice' },
+};
+
+function buildDetailedBhavaPredictionSection(chapter: DossierChapter, chart: ChartData): ChapterSection {
+  const profile = chapter.bhavaProfile;
+  const house = chapter.chapterNumber;
+  const theme = BHAVA_PREDICTION_THEMES[house];
+  const lord = chart.planets.find((planet) => planet.id === profile.lordId);
+  const occupants = chart.planets.filter((planet) => planet.id !== 'Asc' && planet.rasiHouseNumber === house);
+  const aspecting = chart.planets.filter((planet) => {
+    if (planet.id === 'Asc' || !planet.rasiHouseNumber) return false;
+    const offsets = planet.id === 'Mars' ? [3, 6, 7]
+      : planet.id === 'Jupiter' ? [4, 6, 8]
+      : planet.id === 'Saturn' ? [2, 6, 9]
+      : [6];
+    return offsets.some((offset) => ((planet.rasiHouseNumber - 1 + offset) % 12) + 1 === house);
+  });
+  const lordHouse = lord?.rasiHouseNumber;
+  const lordHouseNameHi = lordHouse ? BHAVA_NAMES[lordHouse]?.hi : undefined;
+  const lordHouseNameEn = lordHouse ? BHAVA_NAMES[lordHouse]?.en : undefined;
+  const savBindus = chart.ashtakavarga?.sarva?.[profile.signIndex] ?? null;
+  const savReadingHi = savBindus === null ? 'इस गणना में सर्वाष्टकवर्ग डेटा उपलब्ध नहीं है।'
+    : savBindus >= 30 ? `इस राशि के ${savBindus} बिंदु तुलनात्मक रूप से सहायक संकेत देते हैं।`
+    : savBindus <= 24 ? `इस राशि के ${savBindus} बिंदु अपेक्षाकृत कम समर्थन दिखाते हैं; अन्य ग्रह-योगों के साथ संतुलित अध्ययन आवश्यक है।`
+    : `इस राशि के ${savBindus} बिंदु मध्यम स्तर का संकेत देते हैं।`;
+  const savReadingEn = savBindus === null ? 'Sarvashtakavarga data is unavailable for this calculation.'
+    : savBindus >= 30 ? `${savBindus} bindus for this sign are a relatively supportive indicator.`
+    : savBindus <= 24 ? `${savBindus} bindus suggest comparatively lower support; the full chart must be weighed before drawing conclusions.`
+    : `${savBindus} bindus indicate a moderate level of support.`;
+  const occupantNamesHi = occupants.map((planet) => PLANET_HI[planet.id] || planet.id);
+  const occupantNamesEn = occupants.map((planet) => planet.id);
+  const aspectNamesHi = aspecting.map((planet) => PLANET_HI[planet.id] || planet.id);
+  const aspectNamesEn = aspecting.map((planet) => planet.id);
+  const dignityHi: Record<string, string> = {
+    Exalted: 'उच्च', Moolatrikona: 'मूलत्रिकोण', 'Own Sign': 'स्वराशि',
+    'Great Friend': 'अधिमित्र', Friend: 'मित्र', Neutral: 'सम', Enemy: 'शत्रु',
+    'Great Enemy': 'अधिशत्रु', Debilitated: 'नीच',
+  };
+  const dignityLabelHi = lord ? (dignityHi[lord.dignity] ?? lord.dignity) : 'उपलब्ध नहीं';
+  const dignityLabelEn = lord?.dignity ?? 'unavailable';
+  const domainDetailsHi = (chapter.predictionEvidence ?? []).map((evidence) =>
+    `${evidence.titleHi}: ${evidence.summaryHi} ${evidence.divisionalFinding} ${evidence.timingHi} ${evidence.limitationsHi}`
+  );
+  const domainDetailsEn = (chapter.predictionEvidence ?? []).map((evidence) =>
+    `${evidence.titleEn}: ${evidence.summaryEn} ${evidence.divisionalFinding} ${evidence.timingEn} ${evidence.limitationsEn}`
+  );
+  const lordPlacementHi = lord && lordHouse
+    ? `भावेश ${profile.lordNameHi} ${lordHouseNameHi ?? `भाव ${lordHouse}`} में स्थित हैं। इससे ${theme.hi} के विषयों का संबंध उस भाव के क्षेत्रों से जुड़ता है; यह अपने-आप किसी घटना की गारंटी नहीं है।`
+    : `भावेश ${profile.lordNameHi} की स्थिति इस गणना में उपलब्ध नहीं है; इसलिए भावेश-आधारित निष्कर्ष सीमित रखा गया है।`;
+  const lordPlacementEn = lord && lordHouse
+    ? `The lord ${profile.lordNameEn} is placed in the ${lordHouseNameEn ?? `House ${lordHouse}`}. This links the themes of ${theme.en} with that house's areas; it does not guarantee a specific event.`
+    : `The placement of ${profile.lordNameEn}, the house lord, is unavailable in this calculation, so lord-based conclusions are limited.`;
+
+  return {
+    titleEn: `Detailed Bhava Prediction — House ${house}`,
+    titleHi: `विस्तृत भाव फलादेश — भाव ${house}`,
+    leadEn: `A chart-specific synthesis of ${theme.en}, using the sign, house lord, occupants, aspects, Ashtakavarga and relevant domain evidence.`,
+    leadHi: `इस अध्याय में ${theme.hi} का विश्लेषण राशि, भावेश, स्थित ग्रह, दृष्टि, अष्टकवर्ग और उपलब्ध विषयगत प्रमाणों के आधार पर किया गया है।`,
+    paragraphsEn: [
+      `The ${house}th house falls in ${profile.signNameEn}. In the traditional Jyotish framework it is read for ${theme.en}. The chapter's initial chart conclusion is: ${profile.verdictSummaryEn}`,
+      `House lord: ${profile.lordNameEn}. Its dignity is ${dignityLabelEn}${lord?.isRetrograde ? ', and it is retrograde' : ''}${lord?.isCombust ? ', and it is combust' : ''}. ${lordPlacementEn}`,
+      occupants.length
+        ? `Occupants: ${occupantNamesEn.join(', ')}. Their placement modifies how the house is interpreted and must be judged by dignity, lordship, aspects and the wider chart rather than by a single planet alone.`
+        : 'No classical graha is placed in this house. An unoccupied house is not inactive or result-less; its sign lord, aspects, relevant significators and dasha remain important.',
+      aspecting.length
+        ? `Graha drishti: ${aspectNamesEn.join(', ')} influence this house under the standard Parashari aspect pattern used here. The influence should be read alongside the condition of each aspecting planet.`
+        : 'No major Parashari planetary aspect is recorded for this house by the aspect pattern used in this report.',
+      savReadingEn,
+      ...(domainDetailsEn.length ? domainDetailsEn : ['No additional domain-specific divisional-chart synthesis is available for this house in the current evidence set.']),
+      'Synthesis: treat supportive and challenging factors together. A stronger house may show resources that can be developed; a more pressured house may call for patience, planning and practical effort. This is a traditional symbolic interpretation, not a statistical forecast or a guarantee of events.',
+    ],
+    paragraphsHi: [
+      `${house}वें भाव में ${profile.signNameHi} राशि है। पारंपरिक ज्योतिष में यह भाव ${theme.hi} से संबंधित माना जाता है। इस अध्याय का प्रारंभिक कुंडली-निष्कर्ष है: ${profile.verdictSummaryHi}`,
+      `भावेश: ${profile.lordNameHi}। उनकी स्थिति ${dignityLabelHi} है${lord?.isRetrograde ? ', ग्रह वक्री हैं' : ''}${lord?.isCombust ? ', ग्रह अस्त हैं' : ''}। ${lordPlacementHi}`,
+      occupants.length
+        ? `भाव में स्थित ग्रह: ${occupantNamesHi.join(', ')}। इन ग्रहों का प्रभाव उनकी अपनी राशि-स्थिति, भावेश से संबंध, दृष्टि और संपूर्ण कुंडली के साथ देखकर समझना चाहिए; किसी एक ग्रह से अकेले अंतिम निष्कर्ष नहीं निकालना चाहिए।`
+        : 'इस भाव में कोई पारंपरिक ग्रह स्थित नहीं है। खाली भाव का अर्थ निष्फल भाव नहीं होता; उसका राशि-स्वामी, उस पर पड़ने वाली दृष्टियां, संबंधित कारक और दशा भी महत्वपूर्ण रहते हैं।',
+      aspecting.length
+        ? `ग्रह-दृष्टि: इस रिपोर्ट में प्रयुक्त पाराशरी दृष्टि-पद्धति के अनुसार ${aspectNamesHi.join(', ')} इस भाव को प्रभावित करते हैं। इन ग्रहों की अपनी स्थिति और बल के साथ इसका मूल्यांकन करें।`
+        : 'इस रिपोर्ट में प्रयुक्त पाराशरी दृष्टि-पद्धति के अनुसार इस भाव पर कोई प्रमुख ग्रह-दृष्टि दर्ज नहीं है।',
+      savReadingHi,
+      ...(domainDetailsHi.length ? domainDetailsHi : ['वर्तमान प्रमाण-संग्रह में इस भाव के लिए अलग विषयगत वर्ग-कुंडली विश्लेषण उपलब्ध नहीं है।']),
+      'समग्र निष्कर्ष: अनुकूल और चुनौतीपूर्ण दोनों संकेतों को साथ पढ़ें। समर्थ भाव उपलब्ध संसाधनों को विकसित करने की दिशा दिखा सकता है, जबकि दबाव वाला भाव धैर्य, योजना और व्यावहारिक प्रयास की मांग कर सकता है। यह पारंपरिक प्रतीकात्मक व्याख्या है, सांख्यिकीय भविष्यवाणी या निश्चित घटना की गारंटी नहीं।',
+    ],
+    astrologicalCauseEn: `D1 Rasi: ${profile.signNameEn}; house lord: ${profile.lordNameEn}; dignity: ${dignityLabelEn}; lord placement: ${lordHouse ?? 'unavailable'}; occupants: ${occupantNamesEn.join(', ') || 'none'}; aspects: ${aspectNamesEn.join(', ') || 'none recorded'}; SAV: ${savBindus ?? 'unavailable'}.`,
+    astrologicalCauseHi: `D1 राशि: ${profile.signNameHi}; भावेश: ${profile.lordNameHi}; स्थिति: ${dignityLabelHi}; भावेश का स्थान: ${lordHouse ?? 'उपलब्ध नहीं'}; स्थित ग्रह: ${occupantNamesHi.join(', ') || 'कोई नहीं'}; दृष्टि: ${aspectNamesHi.join(', ') || 'दर्ज नहीं'}; सर्वाष्टकवर्ग: ${savBindus ?? 'उपलब्ध नहीं'}।`,
+    keyPointsEn: [
+      `House sign: ${profile.signNameEn}`,
+      `House lord: ${profile.lordNameEn} — ${dignityLabelEn}, placed in ${lordHouse ?? 'unavailable'}`,
+      `Occupants: ${occupantNamesEn.join(', ') || 'none'}`,
+      `Aspects: ${aspectNamesEn.join(', ') || 'none recorded'}`,
+      `Sarvashtakavarga: ${savBindus ?? 'unavailable'} bindus`,
+    ],
+    keyPointsHi: [
+      `भाव राशि: ${profile.signNameHi}`,
+      `भावेश: ${profile.lordNameHi} — ${dignityLabelHi}, भाव ${lordHouse ?? 'उपलब्ध नहीं'} में`,
+      `स्थित ग्रह: ${occupantNamesHi.join(', ') || 'कोई नहीं'}`,
+      `दृष्टि: ${aspectNamesHi.join(', ') || 'दर्ज नहीं'}`,
+      `सर्वाष्टकवर्ग: ${savBindus ?? 'उपलब्ध नहीं'} बिंदु`,
+    ],
+  };
+}
+
 export function computeLifeDossierReport(
   chart: ChartData,
   forecastDateStr?: string
@@ -595,7 +707,6 @@ export function computeLifeDossierReport(
   const pastFuture = computePastFutureLifeReading(chart);
   const lalKitab = computeLalKitabSystemReport(chart);
   const centralPredictionEvidence = computePredictionFramework(chart);
-  const selectedLifePredictions = computeSambhavitFalkathan(chart).dimensions;
 
   // Modular Deep Predictions & Relational Engines
   const physicalResult = computePhysicalAppearance(chart);
@@ -1553,49 +1664,10 @@ export function computeLifeDossierReport(
     chapter.predictionEvidence = centralPredictionEvidence.filter((item) => relevantIds.includes(item.id));
   }
 
-  // The 21 selected life predictions are part of the 12-house dossier, not a
-  // second report or navigation destination. Preserve each original prediction
-  // and place it under the chapter matching its source bhava.
-  const embeddedPredictionIds = new Set<number>();
-  for (const dimension of selectedLifePredictions) {
-    const targetHouse = Number.isInteger(dimension.houseNumber)
-      && (dimension.houseNumber ?? 0) >= 1
-      && (dimension.houseNumber ?? 0) <= 12
-      ? dimension.houseNumber as number
-      : 1;
-    const chapter = chapters.find((item) => item.chapterNumber === targetHouse);
-    if (!chapter || embeddedPredictionIds.has(dimension.id)) continue;
-    embeddedPredictionIds.add(dimension.id);
-    chapter.sections.push({
-      lifeDimensionId: dimension.id,
-      lifeDimensionHouse: targetHouse,
-      titleEn: `Life prediction ${dimension.id}: ${dimension.titleEn}`,
-      titleHi: `जीवन फलादेश ${dimension.id}: ${dimension.titleHi}`,
-      leadEn: dimension.categoryTitleEn,
-      leadHi: dimension.categoryTitleHi,
-      paragraphsEn: [
-        dimension.verdictEn,
-        dimension.detailedAnalysisEn,
-        dimension.timingEn ?? 'No reliable timing window is available from the current chart data.',
-        dimension.remedyEn,
-      ],
-      paragraphsHi: [
-        dimension.verdictHi,
-        dimension.detailedAnalysisHi,
-        dimension.timingHi ?? 'उपलब्ध कुंडली डेटा से विश्वसनीय समय-सीमा निर्धारित नहीं है।',
-        dimension.remedyHi,
-      ],
-      astrologicalCauseEn: [
-        dimension.astroBasisEn,
-        dimension.classicalRef ? `Classical reference: ${dimension.classicalRef}` : '',
-        dimension.divisionalRef ? `Divisional reference: ${dimension.divisionalRef}` : '',
-      ].filter(Boolean).join(' | '),
-      astrologicalCauseHi: [
-        dimension.astroBasisHi,
-        dimension.classicalRef ? `शास्त्रीय संदर्भ: ${dimension.classicalRef}` : '',
-        dimension.divisionalRef ? `वर्ग-कुंडली संदर्भ: ${dimension.divisionalRef}` : '',
-      ].filter(Boolean).join(' | '),
-    });
+  // One detailed, chart-specific prediction narrative per Bhava replaces the
+  // former collection of 21 individually numbered life predictions.
+  for (const chapter of chapters) {
+    chapter.sections.push(buildDetailedBhavaPredictionSection(chapter, chart));
   }
 
   return {
