@@ -1113,6 +1113,11 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     ? `कुंडली में ${conjunctionHouses.length} भावों में ग्रह युति (Conjunctions) सक्रिय हैं: ${conjunctionHouses.map((c) => `भाव ${c.house} (${c.planets.map((p) => trPlanet(p, 'hi')).join(' + ')})`).join('; ')}।`
     : 'कुंडली में किसी भाव में बहु-ग्रह युति नहीं है।';
 
+  // Suppress legacy alert templates containing unverified medical/crisis claims.
+  // Per-planet evidence-based cautions are retained in negativeEvents.
+  criticalAlertsEn.length = 0;
+  criticalAlertsHi.length = 0;
+
   return {
     planets: results,
     activeConjunctionsSummaryEn,
