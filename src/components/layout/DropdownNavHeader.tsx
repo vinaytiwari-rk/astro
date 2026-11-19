@@ -403,7 +403,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* One Prediction menu with seven independent sub-menus */}
+            {/* One Prediction menu with ten independent sub-menus */}
             <li
               className="oj-nav-item oj-dropdown-parent"
               onMouseEnter={(e) => handleMouseEnter('predictions-menu', e)}
@@ -448,6 +448,15 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'planetInSign')}>
                     <strong>{isHi ? 'राशिवार फलादेश' : 'Sign-wise Prediction'}</strong>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'yutiWise')}>
+                    <strong>{isHi ? 'युति फलादेश' : 'Yuti (Conjunction) Prediction'}</strong>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'drishtiWise')}>
+                    <strong>{isHi ? 'दृष्टि फलादेश' : 'Drishti (Aspect) Prediction'}</strong>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'yogaWise')}>
+                    <strong>{isHi ? 'योगवार फलादेश' : 'Yoga-wise Prediction'}</strong>
                   </button>
                 </div>
               )}
