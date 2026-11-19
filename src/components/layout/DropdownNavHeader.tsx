@@ -462,6 +462,17 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'house-wise-prediction' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('house-wise-prediction')}
+              >
+                <Compass size={13} />
+                <span>{isHi ? 'भाव-वार फलादेश' : 'House-wise Prediction'}</span>
+              </button>
+            </li>
+
             {/* 4. Sade Sati & Dual Transit Wheel */}
             <li
               className="oj-nav-item oj-dropdown-parent"
