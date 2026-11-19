@@ -102,8 +102,8 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
           <div className="muted small-text">
             {isHi
-              ? 'प्रत्येक क्षेत्र में ग्रह कारक, फलित विश्लेषण, सावधानियां एवं शास्त्रीय उपाय सम्मिलित हैं।'
-              : 'Detailed planetary factors, strengths, watchouts and remedies for each sphere.'}
+              ? 'प्रत्येक क्षेत्र में स्पष्ट फलादेश, अनुकूल संकेत, चुनौतियां एवं शास्त्रीय परामर्श दिए गए हैं। दशा और गोचर का समय-फल उनके अलग अनुभागों में है।'
+              : 'Each sphere shows a clear reading, supporting factors, cautions and practical guidance. Dasha and transit timing are shown in their own sections.'}
           </div>
         </div>
       </div>
