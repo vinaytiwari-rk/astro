@@ -70,7 +70,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
     onClose();
   };
 
-  const navLinks = [
+  const navLinks: Array<{ view: string; sub?: string; labelEn: string; labelHi: string; icon: React.ReactNode }> = [
     { view: 'home', labelEn: 'Home', labelHi: 'होम', icon: <Home size={16} /> },
     { view: 'vedic-horoscope', labelEn: 'Janam Kundli (Horoscope)', labelHi: 'वैदिक जन्म कुंडली', icon: <FileText size={16} /> },
     { view: 'predictions', sub: 'deep_life', labelEn: 'Prediction', labelHi: 'फलादेश', icon: <Sparkles size={16} /> },
