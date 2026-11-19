@@ -32,17 +32,19 @@ interface ActiveYogasAndYutiPanelProps {
   chart: ChartData;
   yutiReport: YutiReport;
   detectedYogas?: DetectedClassicalYoga[];
+  initialTab?: 'yuti' | 'detected';
 }
 
 export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = ({
   chart,
   yutiReport,
   detectedYogas = [],
+  initialTab = 'yuti',
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'divisional' | 'all'>('yuti');
+  const [activeTab, setActiveTab] = useState<'yuti' | 'detected' | 'divisional' | 'all'>(initialTab);
   const [selectedVargaForYogas, setSelectedVargaForYogas] = useState<string>('D9');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
