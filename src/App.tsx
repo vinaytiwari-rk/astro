@@ -35,7 +35,7 @@ import { HumanDesignView } from './components/onlinejyotish/HumanDesignView';
 import { VarshaphalaView } from './components/onlinejyotish/VarshaphalaView';
 import { WesternAstrologyView } from './components/WesternAstrologyView';
 import { LifeDossierView } from './components/LifeDossierView';
-import { SimplePredictionsView } from './components/SimplePredictionsView';
+import { PredictionsView } from './components/PredictionsView';
 import { LifeEventTimingView } from './components/predictions/LifeEventTimingView';
 import { ClassicalDoshasView } from './components/predictions/ClassicalDoshasView';
 import { DashaMatrix81View } from './components/predictions/DashaMatrix81View';
@@ -153,6 +153,7 @@ export function App() {
   // Current Active View in AV Astro Vibe
   const [currentView, setCurrentView] = useState<string>('home');
   const [workstationSubTab, setWorkstationSubTab] = useState<string>('1');
+  const [predictionsSubTab, setPredictionsSubTab] = useState<string>('deep_life');
 
   const [language, setLanguage] = useState<'en' | 'hi'>(() => {
     try {
@@ -227,7 +228,20 @@ export function App() {
     }
 
     let target = view;
-    if (view === 'tools' && sub) {
+    if (
+      view === 'predictions' ||
+      view === 'general-prediction' ||
+      view === 'planet-wise-prediction' ||
+      view === 'house-wise-prediction'
+    ) {
+      target = 'predictions';
+      const legacySub = view === 'planet-wise-prediction'
+        ? 'twelve_planets'
+        : view === 'house-wise-prediction'
+          ? 'houseWise'
+          : 'deep_life';
+      setPredictionsSubTab(sub || legacySub);
+    } else if (view === 'tools' && sub) {
       target = sub;
     } else if (view === 'kp' || view === 'kp-horoscope') {
       target = 'kp-horoscope';
@@ -379,10 +393,12 @@ export function App() {
               />
             )}
 
-            {(currentView === 'general-prediction' || currentView === 'planet-wise-prediction' || currentView === 'house-wise-prediction') && (
-              <SimplePredictionsView
+            {currentView === 'predictions' && (
+              <PredictionsView
                 chart={chart}
-                mode={currentView === 'planet-wise-prediction' ? 'planets' : currentView === 'house-wise-prediction' ? 'houses' : 'general'}
+                chartStyle={settings.chartStyle}
+                activeSubTab={predictionsSubTab}
+                onSelectSubTab={setPredictionsSubTab}
               />
             )}
 
