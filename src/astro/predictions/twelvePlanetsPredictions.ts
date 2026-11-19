@@ -229,7 +229,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const lordship = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(p.id)
       ? getFunctionalLordship(p.id as SevenPlanetId, lagnaSignIndex)
       : null;
-    const transit = transitByPlanet.get(p.id as keyof typeof Object) as (typeof transitReport.items)[number] | undefined;
+    const transit = transitReport.items.find((item) => item.planet === p.id);
     const transitEvidenceEn = transit
       ? `Current transit (${transitLocalDate}): ${p.id} in ${transit.transitSign}, House ${transit.houseFromMoon} from natal Moon and House ${transit.houseFromLagna} from natal Ascendant. Gochar assessment: ${transit.verdict}. ${transit.hasVedha ? `Vedha by ${transit.vedhaPlanet ?? 'another transiting graha'} is recorded.` : 'No Vedha obstruction is recorded.'} This is a transit indicator, not an event guarantee.`
       : null;
