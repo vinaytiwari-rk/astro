@@ -47,7 +47,8 @@ describe('Planet-wise prediction timing integrity', () => {
   });
 
   it('reports ephemeris-derived direct or retrograde motion for every classical transit item', () => {
-    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    // Use a modern sample native so the longevity guard does not intentionally suppress future transit analysis.
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = computeDeepGochar(chart, '2026-11-19');
     expect(report.items).toHaveLength(9);
     for (const item of report.items) {
