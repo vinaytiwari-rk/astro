@@ -4,18 +4,16 @@ import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeHouseWisePredictions } from '../predictions/houseWise';
 
 describe('House-wise evidence synthesis', () => {
-  it('includes ephemeris motion in house-specific transit evidence', () => {
+  it('keeps Transit evidence out of natal House-wise readings', () => {
     const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
-    const report = computeHouseWisePredictions(chart, Date.UTC(2026, 10, 19));
-    const withTransit = report.filter((house) => /\d+\.\d{4}°\/day/.test(house.synthesisEn));
-    expect(withTransit.length).toBeGreaterThan(0);
-    expect(withTransit.some((house) => /direct|retrograde|stationary/.test(house.synthesisEn))).toBe(true);
-    expect(withTransit.some((house) => /गति (वक्री|स्थिर|मार्गी)/.test(house.synthesisHi))).toBe(true);
+    const report = computeHouseWisePredictions(chart);
+    expect(report).toHaveLength(12);
+    expect(report.every((house) => !/Current gochar evidence|वर्तमान गोचर प्रमाण/.test(house.synthesisEn + house.synthesisHi))).toBe(true);
   });
 
   it('returns twelve individualized house readings with their actual chart evidence', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
-    const report = computeHouseWisePredictions(chart, Date.UTC(2026, 10, 19));
+    const report = computeHouseWisePredictions(chart);
     expect(report).toHaveLength(12);
     expect(report.map((item) => item.houseNumber)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     for (const house of report) {
@@ -35,7 +33,7 @@ describe('House-wise evidence synthesis', () => {
 
   it('produces individualized readings for the same house across different natal charts', () => {
     const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
-      computeHouseWisePredictions(calculateChart(sample, DEFAULT_SETTINGS), Date.UTC(2026, 10, 19)),
+      computeHouseWisePredictions(calculateChart(sample, DEFAULT_SETTINGS)),
     );
     const tenthHouseReadings = reports.map((report) => {
       const tenth = report.find((house) => house.houseNumber === 10);
