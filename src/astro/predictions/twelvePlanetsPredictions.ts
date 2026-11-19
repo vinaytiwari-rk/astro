@@ -1084,7 +1084,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       negativeEventsHi.push('अस्त स्थिति एक संशोधक कारक है; इसका प्रभाव ग्रह की गरिमा, बल और भाव-स्वामित्व के साथ देखना चाहिए।');
     }
     if (d9Placement && ['Debilitated', 'Great Enemy', 'Enemy'].includes(d9Placement.dignity)) {
-      negativeEventsEn.push('D9 placement is ' + d9Placement.dignity + '; include its dignity and house position in the planet's overall assessment.');
+      negativeEventsEn.push(`D9 placement is ${d9Placement.dignity}; include its dignity and house position in the planet's overall assessment.`);
       negativeEventsHi.push('नवांश में ग्रह ' + d9Placement.dignity + ' स्थिति में है; इससे ग्रह के फल और संबंधित भाव-विषयों में संशोधन होता है।');
     }
     if (challengingInfluences.length) {
