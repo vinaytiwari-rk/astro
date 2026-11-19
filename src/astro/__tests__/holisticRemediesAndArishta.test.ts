@@ -132,6 +132,24 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(dim26?.verdictEn).not.toContain('24 to 28 years of age');
   });
 
+  it('removes deterministic claims from legacy compatibility fields rendered in the Patrika dossier', () => {
+    const report = computeSambhavitFalkathan(swamiChart);
+
+    expect(report.father.lifespanEn).toMatch(/cannot assess.*health or lifespan/i);
+    expect(report.mother.lifespanEn).toMatch(/cannot assess.*health or lifespan/i);
+    expect(report.marriage.spouseAgeGapEn).toMatch(/cannot reliably determine/i);
+    expect(report.children.progenyCountEn).toMatch(/No prediction of number or sex/i);
+    expect(report.children.miscarriageRiskEn).toMatch(/cannot assess miscarriage risk/i);
+    expect(report.children.countAndGenderEn).toMatch(/No prediction.*number or gender/i);
+    expect(report.longevity.rangeEn).toMatch(/No lifespan range/i);
+    expect(report.surgeryYoga.riskLevelEn).toMatch(/No surgery or medical-risk prediction/i);
+    expect(report.surgeryYoga.vulnerableAreasEn).toMatch(/cannot identify vulnerable organs/i);
+    expect(report.surgeryYoga.timingEn).toMatch(/No medical or surgery timing/i);
+    expect(report.mentalHealth.vulnerabilitiesEn).toMatch(/cannot diagnose mental-health/i);
+    expect(report.health.vulnerableOrgansEn).toMatch(/cannot identify vulnerable organs/i);
+    expect(report.wealth.peakAgeWindowEn).toMatch(/No fixed age window/i);
+  });
+
   it('proves 1-second precision sensitivity: changing birth time by even 1 second changes the prediction output', () => {
     const chartTime1 = calculateChart({
       ...SAMPLE_CHARTS[0],
