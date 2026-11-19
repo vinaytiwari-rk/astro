@@ -169,6 +169,7 @@ export function computePanchang(params: {
       horaLord,
       sunriseUtc: sunriseMs !== null ? new Date(sunriseMs).toISOString() : null,
       sunsetUtc: sunsetMs !== null ? new Date(sunsetMs).toISOString() : null,
+      nextSunriseUtc: nextSunriseMs !== null ? new Date(nextSunriseMs).toISOString() : null,
       sunriseLocal: formatLocalTimeFromUtc(sunriseMs, offsetMinutes),
       sunsetLocal: formatLocalTimeFromUtc(sunsetMs, offsetMinutes),
       moonriseLocal: formatLocalTimeFromUtc(moonriseMs, offsetMinutes),
