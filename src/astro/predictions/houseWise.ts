@@ -118,10 +118,10 @@ function getGrahaAspectTargets(planetId: NineGrahaId, fromHouse: number): Array<
   } else if (planetId === 'Saturn') {
     list.push({ targetHouse: step(2), type: '3rd (तृतीय विशेष दृष्टि)' });
     list.push({ targetHouse: step(9), type: '10th (दशम विशेष दृष्टि)' });
-  } else if (planetId === 'Rahu' || planetId === 'Ketu') {
-    list.push({ targetHouse: step(4), type: '5th (पंचम विशेष दृष्टि)' });
-    list.push({ targetHouse: step(8), type: '9th (नवम विशेष दृष्टि)' });
   }
+  // Rahu/Ketu special aspects vary by Jyotish tradition. To keep the
+  // shared prediction engine conservative and consistent, only their
+  // universally used 7th-house aspect is applied here.
   return list;
 }
 
