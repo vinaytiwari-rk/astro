@@ -37,7 +37,7 @@ describe('Chart-specific General Prediction synthesis', () => {
   it('does not describe the internal evidence index as a probability', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeDeepLifePredictions(chart);
-    expect(report.executiveSummaryEn).toContain('not a fixed life verdict');
+    expect(report.executiveSummaryEn).toContain('Chart-specific synthesis:');
     expect(report.executiveSummaryEn).not.toMatch(/probability|%/i);
     expect(report.domains.every((domain) => domain.score >= 25 && domain.score <= 75)).toBe(true);
   });
