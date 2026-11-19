@@ -11,6 +11,7 @@ export interface DeepDomainPrediction {
   ratingEn: 'Excellent' | 'Very Good' | 'Moderate' | 'Challenging';
   ratingHi: 'अति उत्तम' | 'उत्तम' | 'मध्यम' | 'चुनौतीपूर्ण';
   summaryEn: string; summaryHi: string;
+  predictionEn: string; predictionHi: string;
   keyStrengthsEn: string[]; keyStrengthsHi: string[];
   watchoutsEn: string[]; watchoutsHi: string[];
   astrologicalFactorsEn: string; astrologicalFactorsHi: string;
@@ -254,6 +255,31 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
   const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
   const summaryEn = config.titleEn + ': ' + toneEn + ' indications appear across houses ' + config.houses.join(', ') + '. House lords, occupants, aspects, Sarvashtakavarga, ' + config.varga + ' and relevant significators are weighed together; conflicting signals are retained.';
   const summaryHi = config.titleHi + ': भाव ' + config.houses.join(', ') + ' के संकेत ' + toneHi + ' हैं। भावेश, स्थित ग्रह, दृष्टि, सर्वाष्टकवर्ग, ' + config.varga + ' और संबंधित कारकों को साथ देखा गया है; विरोधी संकेतों को छिपाया नहीं गया है।';
+  const domainOutcome: Record<string, { en: string; hi: string }> = {
+    personality: { en: 'The main life theme is self-direction, confidence and steady personal development.', hi: 'मुख्य जीवन-विषय आत्मनिर्णय, आत्मविश्वास और निरंतर व्यक्तित्व-विकास रहेगा।' },
+    wealth: { en: 'The main outcome area is earning, savings and management of family resources.', hi: 'मुख्य फलित क्षेत्र आय, बचत और पारिवारिक संसाधनों का प्रबंधन है।' },
+    career: { en: 'The main outcome area is work responsibility, professional growth and public standing.', hi: 'मुख्य फलित क्षेत्र कार्य-जिम्मेदारी, पेशेवर उन्नति और सामाजिक प्रतिष्ठा है।' },
+    marriage: { en: 'The main outcome area is partnership, commitment and the quality of close relationships.', hi: 'मुख्य फलित क्षेत्र साझेदारी, प्रतिबद्धता और निकट संबंधों की गुणवत्ता है।' },
+    health: { en: 'The main outcome area is vitality, daily habits and the need for consistent self-care.', hi: 'मुख्य फलित क्षेत्र जीवन-शक्ति, दैनिक आदतें और नियमित स्वास्थ्य-संरक्षण है।' },
+    spirituality: { en: 'The main outcome area is learning, values, reflection and spiritual discipline.', hi: 'मुख्य फलित क्षेत्र अध्ययन, जीवन-मूल्य, आत्मचिंतन और आध्यात्मिक अनुशासन है।' },
+  };
+  const outcomeTheme = domainOutcome[config.id] ?? { en: 'This life area requires balanced judgement.', hi: 'इस जीवन-क्षेत्र में संतुलित विवेचन आवश्यक है।' };
+  const predictionToneEn = hasSupport && hasCaution
+    ? 'The chart shows both supportive potential and factors that can make results uneven; progress is more likely through deliberate effort and sound judgement.'
+    : hasSupport
+      ? 'The available chart factors lean supportive in this area; use the indicated strengths consistently rather than treating them as a guarantee.'
+      : hasCaution
+        ? 'The available chart factors call for patience and deliberate effort in this area; avoid rushing important decisions.'
+        : 'The supplied chart evidence does not establish a clear direction for this area, so a firm prediction would be unwarranted.';
+  const predictionToneHi = hasSupport && hasCaution
+    ? 'कुंडली में अनुकूल क्षमता के साथ कुछ अवरोधकारी संकेत भी हैं; इसलिए परिणामों में उतार-चढ़ाव संभव है और सोच-समझकर निरंतर प्रयास अधिक उपयोगी रहेगा।'
+    : hasSupport
+      ? 'उपलब्ध कुंडली-संकेत इस क्षेत्र में अपेक्षाकृत सहायक हैं; इन क्षमताओं का नियमित उपयोग करें, इन्हें निश्चित सफलता की गारंटी न मानें।'
+      : hasCaution
+        ? 'उपलब्ध कुंडली-संकेत इस क्षेत्र में धैर्य और योजनाबद्ध प्रयास की मांग करते हैं; जल्दबाजी में महत्वपूर्ण निर्णय न लें।'
+        : 'उपलब्ध कुंडली-प्रमाण इस क्षेत्र की स्पष्ट दिशा स्थापित नहीं करते; इसलिए निश्चित फलादेश देना उचित नहीं होगा।';
+  const predictionEn = outcomeTheme.en + ' ' + predictionToneEn;
+  const predictionHi = outcomeTheme.hi + ' ' + predictionToneHi;
   const score = Math.max(25, Math.min(75, Math.round(50 + (count ? (balance / count) * 14 : 0))));
   const ratingEn = score >= 64 ? 'Very Good' : score <= 40 ? 'Challenging' : 'Moderate';
   const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
@@ -261,7 +287,7 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number, trans
   const factorsHi = houseHi.join(' ') + ' कारक ग्रह: ' + config.karakas.join(', ') + '। ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'संबंधित स्थिति उपलब्ध नहीं') + '। संबंधित योग: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'प्रदत्त योग-डेटा में कोई संबंधित योग दर्ज नहीं') + '।';
   return {
     id: config.id, titleEn: config.titleEn, titleHi: config.titleHi, icon: config.icon, score, ratingEn, ratingHi,
-    summaryEn, summaryHi,
+    summaryEn, summaryHi, predictionEn, predictionHi,
     keyStrengthsEn: strengthsEn.length ? [...new Set(strengthsEn)].slice(0, 6) : ['No clearly supportive factor was established from the supplied chart data.'],
     keyStrengthsHi: strengthsHi.length ? [...new Set(strengthsHi)].slice(0, 6) : ['प्रदत्त कुंडली-डेटा से कोई स्पष्ट अनुकूल कारक स्थापित नहीं हुआ।'],
     watchoutsEn: watchoutsEn.length ? [...new Set(watchoutsEn)].slice(0, 6) : ['No major caution was established from available indicators; this does not mean difficulties are impossible.'],
@@ -276,8 +302,8 @@ export function computeDeepLifePredictions(chart: ChartData, atMs = Date.now()):
   const domains = DOMAINS.map((config) => buildDomain(chart, config, atMs, transitReport));
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
-  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary, divisional-chart and dasha evidence together; mixed signals are intentionally shown as mixed.';
-  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह, वर्ग-कुंडली और दशा को साथ पढ़ें; मिले-जुले संकेत उसी रूप में दिखाए गए हैं।';
+  const executiveSummaryEn = 'This is a chart-specific synthesis, not a fixed life verdict. ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
+  const executiveSummaryHi = 'यह उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण है, कोई निश्चित जीवन-निर्णय नहीं। ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
   return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains };
 }
