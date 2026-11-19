@@ -4,6 +4,15 @@ import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeHouseWisePredictions } from '../predictions/houseWise';
 
 describe('House-wise evidence synthesis', () => {
+  it('includes ephemeris motion in house-specific transit evidence', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
+    const report = computeHouseWisePredictions(chart, Date.UTC(2026, 10, 19));
+    const withTransit = report.filter((house) => /\d+\.\d{4}°\/day/.test(house.synthesisEn));
+    expect(withTransit.length).toBeGreaterThan(0);
+    expect(withTransit.some((house) => /direct|retrograde|stationary/.test(house.synthesisEn))).toBe(true);
+    expect(withTransit.some((house) => /गति (वक्री|स्थिर|मार्गी)/.test(house.synthesisHi))).toBe(true);
+  });
+
   it('returns twelve individualized house readings with their actual chart evidence', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeHouseWisePredictions(chart, Date.UTC(2026, 10, 19));
