@@ -791,7 +791,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       professionEn: d13.detailedAnalysisEn,
       professionHi: d13.detailedAnalysisHi,
       lifespanEn: 'Astrology cannot assess a mother’s health or lifespan.',
-      lifespanHi: 'ज्योतिष से माता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।'
+      lifespanHi: 'ज्योतिष से माता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।',
       relationshipEn: d13.verdictEn,
       relationshipHi: d13.verdictHi,
     },
@@ -944,7 +944,7 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       constitutionEn: d1.verdictEn,
       constitutionHi: d1.verdictHi,
       vulnerableOrgansEn: 'Astrology cannot identify vulnerable organs or predict disease.',
-      vulnerableOrgansHi: 'ज्योतिष से कमजोर अंगों की पहचान या रोग की भविष्यवाणी नहीं की जा सकती।'
+      vulnerableOrgansHi: 'ज्योतिष से कमजोर अंगों की पहचान या रोग की भविष्यवाणी नहीं की जा सकती।',
     },
     wealth: {
       statusEn: getSelectedDim(5).verdictEn,
