@@ -228,26 +228,26 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigate('life-dossier')}
+              onClick={() => onNavigate('general-prediction')}
             >
               <Sparkles size={17} />
-              <span>{isHi ? '12-अध्याय डोजियर' : '12-Ch Dossier'}</span>
+              <span>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</span>
             </button>
 
             <button
               type="button"
               className="oj-btn-hero-secondary"
-              onClick={() => onNavigate('life-dossier')}
+              onClick={() => onNavigate('general-prediction')}
             >
               <Star size={17} />
-              <span>{isHi ? '12 भावों का विस्तृत फलादेश' : 'Detailed Predictions for 12 Houses'}</span>
+              <span>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</span>
             </button>
           </div>
 
           {/* Quick Feature Pills Bar */}
           <div className="oj-quick-pills-row">
-            <button type="button" className="oj-link-pill" onClick={() => onNavigate('life-dossier')}>
-              {isHi ? '12-अध्याय सम्पूर्ण जीवन डोजियर' : '12-Chapter Master Life Dossier'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('general-prediction')}>
+              {isHi ? 'सामान्य फलादेश' : 'General Prediction'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('vedic-horoscope')}>
               {isHi ? 'जन्म कुंडली (Kundli)' : 'Birth chart (Kundli)'}
@@ -267,8 +267,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
               {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigate('life-dossier')}>
-              {isHi ? '12 भावों का विस्तृत फलादेश' : 'Detailed Predictions for 12 Houses'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('general-prediction')}>
+              {isHi ? 'सामान्य फलादेश' : 'General Prediction'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
@@ -624,10 +624,10 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <article className="oj-service-card" style={{ borderLeft: '3px solid var(--accent)' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: 'var(--accent)', color: '#fff' }}>
-                  {isHi ? '12 भावों का विस्तृत फलादेश' : 'Detailed Predictions for 12 Houses'}
+                  {isHi ? 'सामान्य फलादेश' : 'General Prediction'}
                 </span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'द्वादश भावों का विस्तृत फलादेश' : 'Detailed 12-Bhava Predictions'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'प्रत्येक भाव का अलग, विस्तृत और कुंडली-आधारित विश्लेषण: राशि, भावेश की स्थिति, ग्रहों का प्रभाव, दृष्टि, सर्वाष्टकवर्ग, संबंधित वर्ग-कुंडली और उपलब्ध दशा संकेत।'
@@ -636,9 +636,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <button
                 type="button"
                 className="oj-card-link-btn"
-                onClick={() => onNavigate('life-dossier')}
+                onClick={() => onNavigate('general-prediction')}
               >
-                <span>{isHi ? '12 भावों का विस्तृत फलादेश देखें →' : 'Explore detailed 12-house readings →'}</span>
+                <span>{isHi ? 'सामान्य फलादेश देखें →' : 'Explore General Prediction →'}</span>
               </button>
             </article>
 
@@ -1267,8 +1267,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-popular-item" onClick={() => onNavigate('panchang')}>
               <strong>{isHi ? 'मुहूर्त चेकर (Muhurta Checker)' : 'Muhurta Checker'}</strong>
             </div>
-            <div className="oj-popular-item" onClick={() => onNavigate('life-dossier')}>
-              <strong>{isHi ? '12 भावों का विस्तृत फलादेश' : 'Detailed Predictions for 12 Houses'}</strong>
+            <div className="oj-popular-item" onClick={() => onNavigate('general-prediction')}>
+              <strong>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</strong>
             </div>
           </div>
         </div>
@@ -1375,7 +1375,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-footer-col">
               <h4>{isHi ? 'शास्त्रीय फलादेश व उपाय' : 'Predictions & Remedies'}</h4>
               <ul>
-                <li><button type="button" onClick={() => onNavigate('life-dossier')}>{isHi ? '12 भावों का विस्तृत फलादेश' : 'Detailed Predictions for 12 Houses'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('general-prediction')}>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('vedic-horoscope')}>{isHi ? 'द्वादश भाव व भावेश फल' : '12 Houses & House Lords'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('ashtakavarga')}>{isHi ? 'सर्वाष्टकवर्ग 12 भाव फल' : 'SAV 12 Houses Analysis'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('transit-today')}>{isHi ? 'प्रमुख चंद्र गोचर (शनि/गुरु)' : 'Major Transits from Moon'}</button></li>
