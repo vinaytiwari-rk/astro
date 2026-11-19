@@ -1411,6 +1411,8 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
       expect(house.primaryFactorsEn).toContain('Shadbala:');
       expect(house.primaryFactorsEn).toContain('D9:');
       expect(house.primaryFactorsEn).toContain('Star lord');
+      expect(house.primaryFactorsEn).toContain('Dasha context:');
+      expect(house.primaryFactorsHi).toContain('दशा-संदर्भ');
       expect(house.primaryFactorsHi).toContain('षड्बल');
       expect(house.primaryFactorsHi).toContain('नवांश');
       expect(house.score).toBeGreaterThanOrEqual(25);
