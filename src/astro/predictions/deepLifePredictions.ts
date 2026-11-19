@@ -100,6 +100,12 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
       const d = dignityPoints(lord.dignity); local += d; count++;
       en.push('lord ' + lord.id + ' in H' + lord.rasiHouseNumber + ' (' + lord.signName + ', ' + lord.dignity + ')');
       hi.push('भावेश ' + lord.id + ' भाव ' + lord.rasiHouseNumber + ' में ' + lord.signName + ' राशि में (' + lord.dignity + ')');
+      const lordRole = functionalLordshipEvidence(chart, String(lord.id));
+      if (lordRole) {
+        local += lordRole.adjustment;
+        en.push('house-lord functional roles: ' + lordRole.en);
+        hi.push('भावेश का कार्यात्मक स्वामित्व: ' + lordRole.hi);
+      }
       if (d > 0) { strengthsEn.push(house + 'th-house lord ' + lord.id + ' has ' + lord.dignity + ' dignity.'); strengthsHi.push(house + 'वें भावेश ' + lord.id + ' की ' + lord.dignity + ' गरिमा सहायक संकेत है।'); }
       if (d < 0) { watchoutsEn.push(house + 'th-house lord ' + lord.id + ' has ' + lord.dignity + ' dignity; weigh this with strength and aspects.'); watchoutsHi.push(house + 'वें भावेश ' + lord.id + ' की ' + lord.dignity + ' स्थिति को ग्रहबल और दृष्टियों के साथ तौलें।'); }
       const sb = chart.shadbala?.find((row) => row.planet === lord.id);
