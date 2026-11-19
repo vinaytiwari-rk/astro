@@ -243,19 +243,19 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
   };
   const outcomeTheme = domainOutcome[config.id] ?? { en: 'This life area requires balanced judgement.', hi: 'इस जीवन-क्षेत्र में संतुलित विवेचन आवश्यक है।' };
   const predictionToneEn = hasSupport && hasCaution
-    ? 'The chart shows both supportive potential and factors that can make results uneven; progress is more likely through deliberate effort and sound judgement.'
+    ? 'Supportive planetary factors create opportunities in this area, while the challenging placements indicate where delays, extra responsibility or uneven progress may arise.'
     : hasSupport
-      ? 'The available chart factors lean supportive in this area; use the indicated strengths consistently rather than treating them as a guarantee.'
+      ? 'The planetary pattern is supportive for progress and constructive outcomes in this area; the strongest results come through active use of the indicated strengths.'
       : hasCaution
-        ? 'The available chart factors call for patience and deliberate effort in this area; avoid rushing important decisions.'
-        : 'The supplied chart evidence does not establish a clear direction for this area, so a firm prediction would be unwarranted.';
+        ? 'The planetary pattern places greater emphasis on patience, preparation and sustained effort in this area; progress may develop gradually.'
+        : 'The available planetary factors give a mixed or indistinct picture in this area, with no single dominant trend emerging.';
   const predictionToneHi = hasSupport && hasCaution
-    ? 'कुंडली में अनुकूल क्षमता के साथ कुछ अवरोधकारी संकेत भी हैं; इसलिए परिणामों में उतार-चढ़ाव संभव है और सोच-समझकर निरंतर प्रयास अधिक उपयोगी रहेगा।'
+    ? 'ग्रहस्थितियां इस क्षेत्र में अवसर और चुनौतियां दोनों दिखाती हैं। अनुकूल ग्रह प्रगति के अवसर देते हैं, जबकि चुनौतीपूर्ण स्थितियां विलंब, अतिरिक्त जिम्मेदारी या उतार-चढ़ाव ला सकती हैं।'
     : hasSupport
-      ? 'उपलब्ध कुंडली-संकेत इस क्षेत्र में अपेक्षाकृत सहायक हैं; इन क्षमताओं का नियमित उपयोग करें, इन्हें निश्चित सफलता की गारंटी न मानें।'
+      ? 'ग्रहस्थितियां इस क्षेत्र में प्रगति और अनुकूल परिणामों का समर्थन करती हैं। उपलब्ध क्षमताओं का सक्रिय उपयोग करने से अच्छे अवसर विकसित हो सकते हैं।'
       : hasCaution
-        ? 'उपलब्ध कुंडली-संकेत इस क्षेत्र में धैर्य और योजनाबद्ध प्रयास की मांग करते हैं; जल्दबाजी में महत्वपूर्ण निर्णय न लें।'
-        : 'उपलब्ध कुंडली-प्रमाण इस क्षेत्र की स्पष्ट दिशा स्थापित नहीं करते; इसलिए निश्चित फलादेश देना उचित नहीं होगा।';
+        ? 'ग्रहस्थितियां इस क्षेत्र में धैर्य, तैयारी और निरंतर प्रयास को अधिक महत्व देती हैं। प्रगति धीरे-धीरे विकसित हो सकती है।'
+        : 'इस क्षेत्र में ग्रहस्थितियों से कोई एक प्रमुख प्रवृत्ति स्पष्ट नहीं होती; संकेत मिले-जुले हैं और परिणाम परिस्थितियों के अनुसार बदल सकते हैं।';
   const keySupportEn = strengthsEn[0] ? ' Key supportive chart factor: ' + strengthsEn[0] : '';
   const keyCautionEn = watchoutsEn[0] ? ' Key caution: ' + watchoutsEn[0] : '';
   const keySupportHi = strengthsHi[0] ? ' मुख्य अनुकूल कुंडली-आधार: ' + strengthsHi[0] : '';
