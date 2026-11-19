@@ -6,7 +6,7 @@ import { computeHouseWisePredictions } from '../predictions/houseWise';
 describe('House-wise evidence synthesis', () => {
   it('includes ephemeris motion in house-specific transit evidence', () => {
     const chart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
-    const report = computeHouseWisePredictions(chart, Date.UTC(2026, 10, 19));
+    const report = computeHouseWisePredictions(chart);
     const withTransit = report.filter((house) => /\d+\.\d{4}°\/day/.test(house.synthesisEn));
     expect(withTransit.length).toBeGreaterThan(0);
     expect(withTransit.some((house) => /direct|retrograde|stationary/.test(house.synthesisEn))).toBe(true);
@@ -35,7 +35,7 @@ describe('House-wise evidence synthesis', () => {
 
   it('produces individualized readings for the same house across different natal charts', () => {
     const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
-      computeHouseWisePredictions(calculateChart(sample, DEFAULT_SETTINGS), Date.UTC(2026, 10, 19)),
+      computeHouseWisePredictions(calculateChart(sample, DEFAULT_SETTINGS)),
     );
     const tenthHouseReadings = reports.map((report) => {
       const tenth = report.find((house) => house.houseNumber === 10);
