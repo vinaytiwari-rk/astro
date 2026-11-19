@@ -69,11 +69,6 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
             : 'Scores and percentages are omitted because traditional astrological indications are not statistical probabilities. Use qualified advice for health, legal and financial decisions.'}
         </p>
 
-        {/* Executive Summary */}
-        <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--bg-subtle)', borderRadius: '8px', fontSize: '13.5px', lineHeight: 1.5 }}>
-          <strong>{isHi ? 'समग्र जीवन निष्कर्ष: ' : 'Executive Summary: '}</strong>
-          {isHi ? report.executiveSummaryHi : report.executiveSummaryEn}
-        </div>
       </div>
 
       {/* Birth Panchang and Avakhada foundations used by General Prediction */}
@@ -111,35 +106,6 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </p>
       </div>
 
-      {report.classicalYogas.length > 0 && (
-        <div className="card" style={{ padding: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <Sparkles size={18} style={{ color: 'var(--accent)' }} />
-            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
-              {isHi ? 'आपकी जन्मकुंडली में बने योग' : 'Yogas Formed in Your Birth Chart'}
-            </h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '8px' }}>
-            {report.classicalYogas.map((yoga) => (
-              <div key={yoga.id} style={{ padding: '10px 12px', borderRadius: '7px', background: 'var(--bg-subtle)' }}>
-                <div style={{ fontWeight: 700, fontSize: '13px' }}>{isHi ? yoga.nameHi : yoga.name}</div>
-                <div className="muted small-text" style={{ marginTop: '3px' }}>
-                  {isHi ? 'योग-बल: ' : 'Yoga strength: '}{yoga.strength}
-                  {yoga.bhangaStatus ? ' · ' + (isHi ? 'भंग स्थिति: ' : 'Bhanga: ') + yoga.bhangaStatus : ''}
-                </div>
-                <div style={{ fontSize: '12px', lineHeight: 1.45, marginTop: '5px' }}>
-                  {isHi ? yoga.resultHi : yoga.resultEn}
-                </div>
-                {(yoga.bhangaReasonHi || yoga.bhangaReasonEn) && (
-                  <div className="muted small-text" style={{ marginTop: '5px' }}>
-                    {isHi ? yoga.bhangaReasonHi : yoga.bhangaReasonEn}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       
       {/* Domain Quick Dropdown Selector */}
       <div className="card" style={{ padding: '10px 14px' }}>
