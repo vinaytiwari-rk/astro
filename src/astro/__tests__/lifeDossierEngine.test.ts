@@ -228,6 +228,26 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     expect(vivEpoch1).toBeDefined();
     expect(einEpoch1).toBeDefined();
   });
+  it('keeps sixth- and eighth-house sections non-diagnostic and chart-evidence based', () => {
+    const sixth = report.chapters.find((chapter) => chapter.chapterNumber === 6);
+    const eighth = report.chapters.find((chapter) => chapter.chapterNumber === 8);
+    const sixthSection = sixth?.sections.find((section) => section.titleEn.includes('Sixth House: Daily Work'));
+    const eighthSection = eighth?.sections.find((section) => section.titleEn.includes('Eighth House: Change'));
+    expect(sixthSection).toBeDefined();
+    expect(eighthSection).toBeDefined();
+
+    for (const section of [sixthSection!, eighthSection!]) {
+      const text = [
+        section.titleEn, section.titleHi,
+        ...section.paragraphsEn, ...section.paragraphsHi,
+        section.astrologicalCauseEn, section.astrologicalCauseHi,
+        ...(section.keyPointsEn ?? []), ...(section.keyPointsHi ?? []),
+      ].join(' ');
+      expect(text).toMatch(/Chart evidence|कुंडली-साक्ष्य/);
+      expect(text).not.toMatch(/high-risk organs|critical health years|physical impairment|anga-bhanga|moderate vulnerability|diabetes|मधुमेह|अंग-दोष|संवेदनशील स्वास्थ्य वर्ष|जन्मजात शारीरिक अक्षमता/i);
+    }
+  });
+
 });
   it('keeps career chapter claims qualitative, chart-led and free of invented age windows', () => {
     const first = computeLifeDossierReport(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
@@ -257,7 +277,7 @@ describe('Life Dossier Engine (12-Chapter Master Life Dossier)', () => {
     );
     expect(embedded).toHaveLength(21);
     expect(embedded.map((section) => section.lifeDimensionId).sort((a, b) => a! - b!))
-      .toEqual(Array.from({ length: 21 }, (_, index) => index + 1));
+      .toEqual([1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51]);
     for (const chapter of report.chapters) {
       for (const section of chapter.sections.filter((item) => item.lifeDimensionId !== undefined)) {
         expect(section.lifeDimensionHouse).toBe(chapter.chapterNumber);
