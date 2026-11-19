@@ -95,10 +95,10 @@ export const SecondarySubNav: React.FC<SecondarySubNavProps> = ({
     predictions: [
       {
         id: 'classical_yogas',
-        labelEn: '300+ Classical Yogas',
-        labelHi: '300+ वैदिक योग',
+        labelEn: 'Classical Yogas',
+        labelHi: 'शास्त्रीय वैदिक योग',
         icon: <Award size={14} />,
-        badge: '300 Yogas',
+        badge: 'Yoga Library',
       },
       {
         id: 'timeline_120yr',
