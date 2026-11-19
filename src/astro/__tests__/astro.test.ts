@@ -1396,7 +1396,12 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const expectedIds = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Uranus', 'Neptune', 'Pluto'];
     expect(twelveReport.planets.map((p) => p.id)).toEqual(expectedIds);
 
+    // Planet-wise evidence must use classical graha drishti only; outer planets
+    // are supplementary and must not be assigned Parashari aspects.
+    const classicalGrahas = new Set(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
     for (const p of twelveReport.planets) {
+      expect(p.aspectingPlanets.every((id) => classicalGrahas.has(id))).toBe(true);
+      expect(p.placementSummaryHi).not.toContain('गोचरस्थ');
       expect(p.positiveEventsEn.length).toBeGreaterThan(0);
       expect(p.positiveEventsHi.length).toBeGreaterThan(0);
       expect(p.negativeEventsEn.length).toBeGreaterThan(0);
