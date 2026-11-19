@@ -4037,8 +4037,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     quality: 'Positive',
     category: 'Special',
     source: "Brihat Parashara Hora Shastra, Chapter 36, verses 1-2",
-    conditionEn: "A natural benefic occupies the ascendant, or natural benefics occupy both the 2nd and 12th houses.",
-    conditionHi: "लग्न में नैसर्गिक शुभ ग्रह हो, अथवा द्वितीय और द्वादश दोनों भावों में शुभ ग्रह हों।",
+    conditionEn: "A natural benefic occupies the ascendant, the 2nd house, or the 12th house.",
+    conditionHi: "लग्न, द्वितीय या द्वादश भाव में नैसर्गिक शुभ ग्रह हो।",
     resultEn: "Traditional texts associate this formation with agreeable speech, conduct and supportive circumstances.",
     resultHi: "शास्त्र इसे मधुर वाणी, सदाचरण और सहायक परिस्थितियों से जोड़ते हैं।",
   },
@@ -4049,8 +4049,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     quality: 'Negative',
     category: 'Special',
     source: "Brihat Parashara Hora Shastra, Chapter 36, verses 1-2",
-    conditionEn: "A natural malefic occupies the ascendant, or natural malefics occupy both the 2nd and 12th houses.",
-    conditionHi: "लग्न में नैसर्गिक पाप ग्रह हो, अथवा द्वितीय और द्वादश दोनों भावों में पाप ग्रह हों।",
+    conditionEn: "A natural malefic occupies the ascendant, the 2nd house, or the 12th house.",
+    conditionHi: "लग्न, द्वितीय या द्वादश भाव में नैसर्गिक पाप ग्रह हो।",
     resultEn: "Traditional texts associate this formation with strain in conduct, speech or circumstances; assess mitigating factors before judging.",
     resultHi: "शास्त्र इसे आचरण, वाणी या परिस्थितियों में तनाव से जोड़ते हैं; निष्कर्ष से पहले शुभ प्रभाव भी देखें।",
   },
@@ -4061,8 +4061,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     quality: 'Positive',
     category: 'Raja',
     source: "Brihat Parashara Hora Shastra, Chapter 36, verses 11-12",
-    conditionEn: "The ascendant lord is exalted in a kendra and receives Jupiter's aspect; an alternative textual rule uses two benefics in a kendra or trikona.",
-    conditionHi: "लग्नेश केंद्र में उच्च होकर गुरु की दृष्टि पाए; वैकल्पिक नियम में दो शुभ ग्रह केंद्र या त्रिकोण में हों।",
+    conditionEn: "The exalted ascendant lord is in a kendra and aspected by Jupiter; alternatively, two benefics occupy the 1st, 7th, 9th or 10th house.",
+    conditionHi: "लग्नेश केंद्र में उच्च होकर गुरु की दृष्टि पाए; अथवा प्रथम, सप्तम, नवम या दशम भाव में दो शुभ ग्रह हों।",
     resultEn: "Learning, recognition, eloquence and longevity are traditional indications.",
     resultHi: "विद्या, प्रतिष्ठा, वाक्पटुता और दीर्घायु इसके पारंपरिक संकेत हैं।",
   },
@@ -4085,8 +4085,8 @@ export const CLASSICAL_YOGAS_KB: ClassicalYogaDefinition[] = [
     quality: 'Positive',
     category: 'Raja',
     source: "Brihat Parashara Hora Shastra, Chapter 36, verses 19-20",
-    conditionEn: "Either the 10th lord occupies the 5th, Mercury is in a kendra and Sun is strong in Leo; or Jupiter/Mercury is trinal to Moon while Mars occupies the 11th.",
-    conditionHi: "दशमेश पंचम में, बुध केंद्र में और सूर्य सिंह में बलवान हो; अथवा गुरु/बुध चंद्र से त्रिकोण में तथा मंगल एकादश में हो।",
+    conditionEn: "The 10th lord occupies the 5th, Mercury is in a kendra and Sun is strong in Leo; additionally, Jupiter or Mercury is trinal to the Moon, or Mars occupies the 11th.",
+    conditionHi: "दशमेश पंचम में, बुध केंद्र में और सूर्य सिंह में बलवान हो; साथ में गुरु या बुध चंद्र से त्रिकोण में हो, अथवा मंगल एकादश में हो।",
     resultEn: "Learning, reputation, prosperity and virtuous conduct are traditional indications.",
     resultHi: "विद्या, प्रतिष्ठा, समृद्धि और सदाचरण इसके पारंपरिक संकेत हैं।",
   },
@@ -4529,31 +4529,51 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
 
   // 14. Additional source-defined yogas from BPHS Chapter 36.
   const inHouse = (p: BodyPosition, h: number) => houseBetween(ascSign, p.signIndex) === h;
-  const ascBenefics = chart.planets.filter((p) => inHouse(p, 1) && ['Jupiter', 'Venus'].includes(p.id));
-  const ascMalefics = chart.planets.filter((p) => inHouse(p, 1) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
-  const secondBenefics = chart.planets.filter((p) => inHouse(p, 2) && ['Jupiter', 'Venus'].includes(p.id));
-  const twelfthBenefics = chart.planets.filter((p) => inHouse(p, 12) && ['Jupiter', 'Venus'].includes(p.id));
-  const secondMalefics = chart.planets.filter((p) => inHouse(p, 2) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
-  const twelfthMalefics = chart.planets.filter((p) => inHouse(p, 12) && ['Sun', 'Mars', 'Saturn'].includes(p.id));
-  if (ascBenefics.length || (secondBenefics.length && twelfthBenefics.length)) {
+  const elongationForChandra = (moon.longitude - sun.longitude + 360) % 360;
+  const waxingMoonForBenefic = elongationForChandra > 0 && elongationForChandra < 180;
+  const mercuryHasBeneficCompany = chart.planets.some((p) =>
+    p.id !== 'Mercury' && p.signIndex === mercury.signIndex && ['Jupiter', 'Venus'].includes(p.id)
+  );
+  const mercuryHasMaleficCompany = chart.planets.some((p) =>
+    p.id !== 'Mercury' && p.signIndex === mercury.signIndex && ['Sun', 'Mars', 'Saturn'].includes(p.id)
+  );
+  const isNaturalBenefic = (p: BodyPosition) =>
+    ['Jupiter', 'Venus'].includes(p.id) ||
+    (p.id === 'Moon' && waxingMoonForBenefic) ||
+    (p.id === 'Mercury' && mercuryHasBeneficCompany && !mercuryHasMaleficCompany);
+  const isNaturalMalefic = (p: BodyPosition) =>
+    ['Sun', 'Mars', 'Saturn'].includes(p.id) ||
+    (p.id === 'Moon' && !waxingMoonForBenefic) ||
+    (p.id === 'Mercury' && mercuryHasMaleficCompany && !mercuryHasBeneficCompany);
+  const ascBenefics = chart.planets.filter((p) => inHouse(p, 1) && isNaturalBenefic(p));
+  const ascMalefics = chart.planets.filter((p) => inHouse(p, 1) && isNaturalMalefic(p));
+  const secondBenefics = chart.planets.filter((p) => inHouse(p, 2) && isNaturalBenefic(p));
+  const twelfthBenefics = chart.planets.filter((p) => inHouse(p, 12) && isNaturalBenefic(p));
+  const secondMalefics = chart.planets.filter((p) => inHouse(p, 2) && isNaturalMalefic(p));
+  const twelfthMalefics = chart.planets.filter((p) => inHouse(p, 12) && isNaturalMalefic(p));
+  if (ascBenefics.length || secondBenefics.length || twelfthBenefics.length) {
     const ps = [...ascBenefics, ...secondBenefics, ...twelfthBenefics];
     addYoga(333, 'Moderate', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
   }
-  if (ascMalefics.length || (secondMalefics.length && twelfthMalefics.length)) {
+  if (ascMalefics.length || secondMalefics.length || twelfthMalefics.length) {
     const ps = [...ascMalefics, ...secondMalefics, ...twelfthMalefics];
     addYoga(334, 'Moderate', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
   }
 
   // Chamara: exalted ascendant lord in a kendra with Jupiter's classical 5/7/9 aspect,
-  // or two natural benefics in a kendra/trikona.
+  // or two natural benefics in the four houses specified by BPHS 36.11.
   if (pL1) {
     const hL1 = houseBetween(ascSign, pL1.signIndex);
     const jupiterAspect = [5, 7, 9].includes(houseBetween(jupiter.signIndex, pL1.signIndex));
-    const beneficsInKendraTrikona = chart.planets.filter((p) =>
-      ['Jupiter', 'Venus'].includes(p.id) && (isKendra(houseBetween(ascSign, p.signIndex)) || isTrikona(houseBetween(ascSign, p.signIndex)))
+    const chamaraHouses = [1, 7, 9, 10];
+    const beneficsForChamara = chart.planets.filter((p) =>
+      isNaturalBenefic(p) && chamaraHouses.includes(houseBetween(ascSign, p.signIndex))
     );
-    if ((pL1.dignity === 'Exalted' && isKendra(hL1) && jupiterAspect) || beneficsInKendraTrikona.length >= 2) {
-      addYoga(335, 'Strong', [l1, ...beneficsInKendraTrikona.map((p) => p.id)], [hL1, ...beneficsInKendraTrikona.map((p) => houseBetween(ascSign, p.signIndex))]);
+    if ((pL1.dignity === 'Exalted' && isKendra(hL1) && jupiterAspect) || beneficsForChamara.length >= 2) {
+      const ps = (pL1.dignity === 'Exalted' && isKendra(hL1) && jupiterAspect)
+        ? [pL1, jupiter]
+        : beneficsForChamara;
+      addYoga(335, 'Strong', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
     }
   }
 
@@ -4568,15 +4588,22 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   }
 
   // Sarada: either of the two BPHS Chapter 36 combinations.
-  const saradaFirst = !!pL10 &&
+  const saradaBase = !!pL10 &&
     houseBetween(ascSign, pL10.signIndex) === 5 &&
     isKendra(mercH) &&
-    sun.signIndex === 4; // Leo, Sun's own sign.
-  const jupTrineMoon = [5, 9].includes(houseBetween(moon.signIndex, jupiter.signIndex));
-  const mercTrineMoon = [5, 9].includes(houseBetween(moon.signIndex, mercury.signIndex));
+    sun.signIndex === 4; // Sun in Leo, its own sign.
+  const jupTrineMoon = isTrikona(houseBetween(moon.signIndex, jupiter.signIndex));
+  const mercTrineMoon = isTrikona(houseBetween(moon.signIndex, mercury.signIndex));
   const marsEleventh = houseBetween(ascSign, mars.signIndex) === 11;
-  if (saradaFirst || ((jupTrineMoon || mercTrineMoon) && marsEleventh)) {
-    const ps: BodyPosition[] = saradaFirst ? [sun, mercury, pL10!] : [jupTrineMoon ? jupiter : mercury, mars, moon];
+  if (saradaBase && (jupTrineMoon || mercTrineMoon || marsEleventh)) {
+    const ps: BodyPosition[] = [
+      pL10!,
+      mercury,
+      sun,
+      ...(jupTrineMoon ? [jupiter] : mercTrineMoon ? [] : []),
+      ...(marsEleventh ? [mars] : []),
+      moon,
+    ];
     addYoga(337, 'Strong', ps.map((p) => p.id), ps.map((p) => houseBetween(ascSign, p.signIndex)));
   }
 
@@ -4597,7 +4624,7 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   if (pL7) {
     const relativeHouses = [4, 9, 8];
     const haraPlanets = relativeHouses.map((h) => chart.planets.find((p) =>
-      ['Jupiter', 'Venus'].includes(p.id) && houseBetween(pL7.signIndex, p.signIndex) === h
+      isNaturalBenefic(p) && houseBetween(pL7.signIndex, p.signIndex) === h
     )).filter(Boolean) as BodyPosition[];
     if (haraPlanets.length === 3) {
       addYoga(339, 'Strong', [l7, ...haraPlanets.map((p) => p.id)], haraPlanets.map((p) => houseBetween(ascSign, p.signIndex)));
