@@ -484,10 +484,10 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     ...(period.children ?? []),
   ]);
   const VARGA_BY_DIMENSION: Record<number, DivisionalChartId> = {
-    1: 'D9', 5: 'D2', 9: 'D3', 10: 'D3', 12: 'D3',
+    1: 'D1', 5: 'D2', 9: 'D3', 10: 'D3', 12: 'D3',
     13: 'D12', 14: 'D12', 17: 'D24', 19: 'D7', 20: 'D7',
-    22: 'D30', 24: 'D1', 26: 'D9', 27: 'D9', 31: 'D8',
-    34: 'D20', 37: 'D9', 39: 'D10', 44: 'D1', 48: 'D1', 51: 'D20',
+    22: 'D6', 24: 'D1', 26: 'D9', 27: 'D9', 31: 'D8',
+    34: 'D20', 37: 'D9', 39: 'D10', 44: 'D2', 48: 'D1', 51: 'D20',
   };
   const MASTER_21_IDS = [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51];
   const dims = rawDims
@@ -779,8 +779,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       temperamentHi: d35.verdictHi,
       professionEn: d35.detailedAnalysisEn,
       professionHi: d35.detailedAnalysisHi,
-      lifespanEn: d36.verdictEn,
-      lifespanHi: d36.verdictHi,
+      lifespanEn: 'Astrology cannot assess a father’s health or lifespan.',
+      lifespanHi: 'ज्योतिष से पिता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।'
       relationshipEn: d35.verdictEn,
       relationshipHi: d35.verdictHi,
     },
@@ -789,8 +789,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       temperamentHi: d13.verdictHi,
       professionEn: d13.detailedAnalysisEn,
       professionHi: d13.detailedAnalysisHi,
-      lifespanEn: d14.verdictEn,
-      lifespanHi: d14.verdictHi,
+      lifespanEn: 'Astrology cannot assess a mother’s health or lifespan.',
+      lifespanHi: 'ज्योतिष से माता के स्वास्थ्य या जीवनकाल का आकलन नहीं किया जा सकता।'
       relationshipEn: d13.verdictEn,
       relationshipHi: d13.verdictHi,
     },
@@ -809,22 +809,22 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       marriageYogasHi: d28.verdictHi,
       spouseNatureEn: d27.verdictEn,
       spouseNatureHi: d27.verdictHi,
-      spouseAgeGapEn: d26.verdictEn,
-      spouseAgeGapHi: d26.verdictHi,
+      spouseAgeGapEn: 'A chart cannot reliably determine a spouse’s age or age gap.',
+      spouseAgeGapHi: 'कुंडली से जीवनसाथी की आयु या आयु-अंतर विश्वसनीय रूप से निर्धारित नहीं किया जा सकता।'
       relationshipEn: d28.detailedAnalysisEn,
       relationshipHi: d28.detailedAnalysisHi,
     },
     children: {
       conceptionModeEn: d19.verdictEn,
       conceptionModeHi: d19.verdictHi,
-      progenyCountEn: d19.verdictEn,
-      progenyCountHi: d19.verdictHi,
-      miscarriageRiskEn: d20.verdictEn,
-      miscarriageRiskHi: d20.verdictHi,
+      progenyCountEn: 'No prediction of number or sex of children is made.',
+      progenyCountHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
+      miscarriageRiskEn: 'Astrology cannot assess miscarriage risk, fertility or pregnancy outcomes. Consult a qualified clinician for medical questions.',
+      miscarriageRiskHi: 'ज्योतिष से गर्भपात का जोखिम, प्रजनन क्षमता या गर्भावस्था का परिणाम निर्धारित नहीं किया जा सकता। चिकित्सकीय प्रश्नों के लिए योग्य चिकित्सक से सलाह लें।'
       filialHappinessEn: d19.detailedAnalysisEn,
       filialHappinessHi: d19.detailedAnalysisHi,
-      countAndGenderEn: d19.verdictEn,
-      countAndGenderHi: d19.verdictHi,
+      countAndGenderEn: 'No prediction of children’s number or gender is made.',
+      countAndGenderHi: 'संतानों की संख्या या लिंग का कोई अनुमान नहीं दिया जाता।'
       filialJoyEn: d19.detailedAnalysisEn,
       filialJoyHi: d19.detailedAnalysisHi,
     },
@@ -855,10 +855,10 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     longevity: {
       categoryEn: d31.verdictEn,
       categoryHi: d31.verdictHi,
-      rangeEn: d31.detailedAnalysisEn,
-      rangeHi: d31.detailedAnalysisHi,
-      keyFactorsEn: d31.astroBasisEn,
-      keyFactorsHi: d31.astroBasisHi,
+      rangeEn: 'No lifespan range or age-at-death estimate is provided.',
+      rangeHi: 'जीवनकाल की सीमा या मृत्यु-आयु का कोई अनुमान नहीं दिया जाता।'
+      keyFactorsEn: 'Traditional eighth-house symbolism may be used for reflection on change and long-term responsibilities, not for lifespan assessment.',
+      keyFactorsHi: 'अष्टम भाव के पारंपरिक संकेतों को परिवर्तन और दीर्घकालीन जिम्मेदारियों पर चिंतन के लिए पढ़ें, जीवनकाल के आकलन के लिए नहीं।'
     },
     bandhanaYoga: {
       hasRisk: false,
@@ -869,12 +869,12 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     },
     surgeryYoga: {
       hasRisk: false,
-      riskLevelEn: d33.verdictEn,
-      riskLevelHi: d33.verdictHi,
-      vulnerableAreasEn: d33.astroBasisEn,
-      vulnerableAreasHi: d33.astroBasisHi,
-      timingEn: d33.detailedAnalysisEn,
-      timingHi: d33.detailedAnalysisHi,
+      riskLevelEn: 'No surgery or medical-risk prediction is made from astrology.',
+      riskLevelHi: 'ज्योतिष के आधार पर शल्यक्रिया या चिकित्सकीय जोखिम का अनुमान नहीं दिया जाता।',
+      vulnerableAreasEn: 'Astrology cannot identify vulnerable organs or body parts.',
+      vulnerableAreasHi: 'ज्योतिष से कमजोर अंगों या शरीर के हिस्सों की पहचान नहीं की जा सकती।',
+      timingEn: 'No medical or surgery timing is provided. Use clinical assessment and medical advice.',
+      timingHi: 'चिकित्सा या शल्यक्रिया का समय नहीं बताया जाता। चिकित्सकीय जांच और डॉक्टर की सलाह लें।'
     },
     physicalMarks: {
       identificationEn: d1.verdictEn,
@@ -934,24 +934,24 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
     mentalHealth: {
       conditionEn: d2.verdictEn,
       conditionHi: d2.verdictHi,
-      vulnerabilitiesEn: d2.astroBasisEn,
-      vulnerabilitiesHi: d2.astroBasisHi,
+      vulnerabilitiesEn: 'Astrology cannot diagnose mental-health conditions or psychological vulnerabilities.',
+      vulnerabilitiesHi: 'ज्योतिष से मानसिक स्वास्थ्य की स्थिति या मनोवैज्ञानिक कमजोरियों का निदान नहीं किया जा सकता।'
       remedyEn: d2.remedyEn,
       remedyHi: d2.remedyHi,
     },
     health: {
       constitutionEn: d1.verdictEn,
       constitutionHi: d1.verdictHi,
-      vulnerableOrgansEn: d22.astroBasisEn,
-      vulnerableOrgansHi: d22.astroBasisHi,
+      vulnerableOrgansEn: 'Astrology cannot identify vulnerable organs or predict disease.',
+      vulnerableOrgansHi: 'ज्योतिष से कमजोर अंगों की पहचान या रोग की भविष्यवाणी नहीं की जा सकती।'
     },
     wealth: {
       statusEn: d5.verdictEn,
       statusHi: d5.verdictHi,
       activeYogasEn: [d5.verdictEn, d44.verdictEn],
       activeYogasHi: [d5.verdictHi, d44.verdictHi],
-      peakAgeWindowEn: 'Major prosperity surges between age 28 and 42',
-      peakAgeWindowHi: '28 से 42 वर्ष की आयु के मध्य विशेष वित्तीय समृद्धि',
+      peakAgeWindowEn: 'No fixed age window or guaranteed period of prosperity is assigned.',
+      peakAgeWindowHi: 'समृद्धि के लिए कोई निश्चित आयु-सीमा या गारंटीकृत अवधि निर्धारित नहीं की जाती।'
     },
   };
 
