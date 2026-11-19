@@ -1393,7 +1393,21 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     // 6. 12-Planets Comprehensive Event Prediction Engine (9 Vedic Grahas + 3 Outer Planets)
     const houseReport = computeHouseWisePredictions(chart2026, Date.parse('2026-11-11T12:00:00Z'));
     expect(houseReport).toHaveLength(12);
+    const classicalAspectPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
     for (const house of houseReport) {
+      const expectedAspectors = chart2026.planets
+        .filter((planet) => classicalAspectPlanets.includes(planet.id))
+        .filter((planet) => {
+          const distance = (house.houseNumber - planet.rasiHouseNumber + 12) % 12;
+          const offsets = planet.id === 'Mars' ? [3, 6, 7]
+            : planet.id === 'Jupiter' ? [4, 6, 8]
+            : planet.id === 'Saturn' ? [2, 6, 9]
+            : [6];
+          return offsets.includes(distance);
+        })
+        .map((planet) => planet.id)
+        .sort();
+      expect([...house.aspectingPlanets].sort()).toEqual(expectedAspectors);
       expect(house.primaryFactorsEn).toContain('Shadbala:');
       expect(house.primaryFactorsEn).toContain('D9:');
       expect(house.primaryFactorsEn).toContain('Star lord');
