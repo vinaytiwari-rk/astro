@@ -4,6 +4,7 @@ import { angularDiffDeg } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { buildHouseLordReading } from './bhavaKb';
 import { getFunctionalLordship } from './functionalLordship';
+import { computeDeepGochar } from './gocharDeep';
 
 export interface HouseWisePrediction {
   houseNumber: number; // 1..12
@@ -153,7 +154,9 @@ function checkCombustion(planetId: SevenPlanetId, planetLon: number, sunLon: num
   return { isCombust: dist <= maxOrb, distDeg: Math.round(dist * 10) / 10 };
 }
 
-export function computeHouseWisePredictions(chart: ChartData): HouseWisePrediction[] {
+export function computeHouseWisePredictions(chart: ChartData, atMs = Date.now()): HouseWisePrediction[] {
+  const transitDate = new Date(atMs + chart.offsetMinutesUsed * 60_000).toISOString().slice(0, 10);
+  const transitReport = computeDeepGochar(chart, transitDate);
   const byId = new Map(chart.planets.map((p) => [p.id, p]));
   const sunPos = byId.get('Sun')!;
   const ascSign = chart.ascendant.signIndex;
@@ -307,6 +310,15 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
     const secondarySavHi = `अष्टकवर्ग (गौण/सहायक): ${savBindus} बिंदु — यह भाव को सहायक ऊर्जा व संसाधन प्रदान करता है (${savBindus >= 30 ? 'प्रचुर पोषक ऊर्जा' : savBindus >= 25 ? 'संतुलित ऊर्जा' : 'अवरोधक/न्यून ऊर्जा'})।`;
     const secondarySavEn = `Ashtakavarga (Secondary/Corroborative): ${savBindus} bindus — provides background resource support (${savBindus >= 30 ? 'abundant reserve' : savBindus >= 25 ? 'steady resource' : 'low reserve, requiring conscious effort'})`;
 
+    const transitOccupants = transitReport.items.filter((item) => item.houseFromLagna === h);
+    const doubleTransit = transitReport.doubleTransitHouses.filter((item) => item.house === h);
+    const transitSynthesisEn = transitOccupants.length || doubleTransit.length
+      ? `\n\nCurrent gochar evidence (${transitDate}): ${transitOccupants.map((item) => item.planet + ' transits this natal house (H' + item.houseFromMoon + ' from Moon; ' + item.verdict + ')').join('; ')}${doubleTransit.length ? (transitOccupants.length ? '; ' : '') + 'Jupiter-Saturn double transit also activates this house' : ''}. This is corroborative timing context, not an event guarantee.`
+      : `\n\nCurrent gochar evidence (${transitDate}): no classical graha transit occupancy or Jupiter-Saturn double-transit activation is recorded for this house.`;
+    const transitSynthesisHi = transitOccupants.length || doubleTransit.length
+      ? `\n\nवर्तमान गोचर प्रमाण (${transitDate}): ${transitOccupants.map((item) => item.planet + ' इस जन्म भाव से गोचर कर रहा है (चंद्र से भाव ' + item.houseFromMoon + '; ' + item.verdict + ')').join('; ')}${doubleTransit.length ? (transitOccupants.length ? '। ' : '') + 'गुरु-शनि का संयुक्त गोचर भी इस भाव को सक्रिय करता है' : ''}। यह सहायक समय-संदर्भ है, घटना की गारंटी नहीं।`
+      : `\n\nवर्तमान गोचर प्रमाण (${transitDate}): इस भाव के लिए कोई नवग्रह गोचर स्थिति या गुरु-शनि संयुक्त सक्रियता दर्ज नहीं है।`;
+
     // Deep Structured Synthesis
     const synthesisHi = `${meta.titleHi}:
 भावेश का कार्यात्मक स्वामित्व: ${PLANET_HI[lordPlanet]} भाव ${lordship.ownedHouses.join(', ')} का स्वामी है; भूमिका: ${lordship.rolesHi.join('; ')}। ${lordship.noteHi}
@@ -320,7 +332,7 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 - ${secondarySavHi}
 
 फलादेश-सार (${meta.areaHi}):
-यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता।`;
+यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.${transitSynthesisHi}`;
 
     const synthesisEn = `${meta.titleEn}:
 Functional lordship: ${lordPlanet} owns house(s) ${lordship.ownedHouses.join(', ')}; roles: ${lordship.rolesEn.join('; ')}. ${lordship.noteEn}
@@ -334,7 +346,7 @@ Secondary Corroborative Capacity:
 - ${secondarySavEn}.
 
 Synthesis (${meta.areaEn}):
-This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.`;
+This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.${transitSynthesisEn}`;
 
     const shiftsInHouse = chalit.shiftedBodies.filter(
       (s) => s.rasiHouse === h || s.chalitHouse === h
