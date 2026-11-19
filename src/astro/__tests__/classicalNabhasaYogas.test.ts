@@ -29,7 +29,7 @@ describe('BPHS Chapter 35 Nabhasa yoga catalogue and detection', () => {
     const rajju = detected.find((y) => y.id === 301);
     expect(rajju).toBeTruthy();
     expect(rajju?.source).toContain('Brihat Parashara Hora Shastra, Ch. 35–36');
-    expect(rajju?.resultHi).toContain('राज्जु योग');
+    expect(rajju?.resultHi).toContain('Rajju Yoga');
     expect(rajju?.bhangaReasonHi).toContain('विशिष्ट भंग-नियम');
     expect(detected.some((y) => y.id >= 326 && y.id <= 332)).toBe(false);
   });
