@@ -71,8 +71,8 @@ export function getFunctionalLordship(planet: SevenPlanetId, ascendantSignIndex:
     rolesHi.push('केंद्राधिपति विचार (स्वाभाविक शुभ ग्रह का केंद्र स्वामित्व, बिना त्रिकोण/लग्न स्वामित्व)');
   }
   if (ownsMarakaHouse) {
-    rolesEn.push('Maraka-house ownership (2nd/7th); not a prediction of harm');
-    rolesHi.push('मारक भाव स्वामित्व (2/7); इसे अनिष्ट की भविष्यवाणी न मानें');
+    rolesEn.push('Maraka-house ownership (2nd/7th)');
+    rolesHi.push('मारक भाव स्वामित्व (2/7)');
   }
 
   return {
@@ -87,10 +87,10 @@ export function getFunctionalLordship(planet: SevenPlanetId, ascendantSignIndex:
     ownsTrikona,
     ownsKendra,
     noteEn: rolesEn.length
-      ? 'This is a house-ownership profile, not a standalone benefic/malefic label or final verdict. Yogakaraka and Kendradhipati flags describe traditional rule patterns only; judge them with dignity, placement, aspects, strength, conjunctions and the running dasha. Maraka ownership alone does not predict illness or death.'
+      ? 'House ownership: evaluate the planet through its owned houses, dignity, placement, aspects, strength, conjunctions and running dasha. Maraka ownership describes relationship to the 2nd/7th houses.'
       : 'No classical house ownership was assigned.',
     noteHi: rolesHi.length
-      ? 'यह भाव-स्वामित्व का विवरण है, अंतिम शुभ/अशुभ निर्णय नहीं। योगकारक और केंद्राधिपति संकेत केवल पारंपरिक नियम-पैटर्न बताते हैं; अंतिम विचार राशि-गरिमा, स्थिति, दृष्टि, बल, युति और चल रही दशा से करें। केवल मारक भाव का स्वामित्व बीमारी या मृत्यु की भविष्यवाणी नहीं करता।'
+      ? 'भाव-स्वामित्व: ग्रह के फल का विचार उसके स्वामित्व वाले भावों, राशि-गरिमा, स्थिति, दृष्टि, बल, युति और चल रही दशा के आधार पर करें। मारक स्वामित्व द्वितीय/सप्तम भाव से ग्रह के संबंध को दर्शाता है।'
       : 'इस ग्रह को कोई पारंपरिक भाव-स्वामित्व नहीं दिया गया है।',
   };
 }
