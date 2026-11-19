@@ -172,7 +172,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
                   key={item.view}
                   type="button"
                   className={`pro-drawer-item ${currentView === item.view ? 'is-active' : ''}`}
-                  onClick={() => handleItemClick(item.view)}
+                  onClick={() => handleItemClick(item.view, item.sub)}
                 >
                   <span className="pro-drawer-item-icon">{item.icon}</span>
                   <span className="pro-drawer-item-label">
