@@ -341,6 +341,14 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
           {isHi ? planet.placementSummaryHi : planet.placementSummaryEn}
         </div>
 
+        {planet.functionalRolesEn.length > 0 && (
+          <div className="small-text muted" style={{ marginTop: 8, lineHeight: 1.5 }}>
+            <strong>{isHi ? 'कार्यात्मक भाव-स्वामित्व:' : 'Functional Lordship:'}</strong>{' '}
+            {isHi ? planet.functionalRolesHi.join(' · ') : planet.functionalRolesEn.join(' · ')}
+            <div>{isHi ? planet.functionalLordshipNoteHi : planet.functionalLordshipNoteEn}</div>
+          </div>
+        )}
+
         {/* Two-Column Grid: Positive Events vs Negative Events */}
         <div
           style={{
