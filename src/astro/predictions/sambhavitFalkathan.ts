@@ -585,48 +585,64 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
       const chartBasisEn = `Recorded chart evidence: ${lord.lord} in House ${lord.placedHouse} (${lord.dignity}); occupants: ${occupantTextEn}; Sarvashtakavarga: ${bindus} bindus; aspects: ${aspectTextEn}; natural significators: ${karakaTextEn}.`;
       const safetyOverrides: Record<number, { verdictHi: string; verdictEn: string; analysisHi: string; analysisEn: string }> = {
         14: {
+          titleHi: 'मातृ-संबंध, पारिवारिक वातावरण और देखभाल',
+          titleEn: 'Maternal Relationship, Family Environment & Caregiving',
           verdictHi: 'चतुर्थ भाव, चंद्र और मातृ-संबंधित पारंपरिक संकेत परिवार, घरेलू वातावरण और देखभाल की थीम पर विचार करने में सहायक हो सकते हैं। इनसे माता की आयु, स्वास्थ्य या जीवनकाल का अनुमान नहीं लगाया जा सकता।',
           verdictEn: 'The fourth house, Moon and traditional maternal indicators may be discussed in relation to family, home and caregiving themes. They cannot establish a mother’s health, lifespan or longevity.',
           analysisHi: 'यह ज्योतिषीय विवेचन माता की आयु या स्वास्थ्य का आकलन नहीं है। वास्तविक स्वास्थ्य-संबंधी प्रश्नों के लिए चिकित्सकीय जानकारी और योग्य चिकित्सक की सलाह ही उपयुक्त आधार हैं।',
           analysisEn: 'This is not an assessment of a mother’s health or lifespan. Real health questions should be addressed using medical information and qualified clinical advice.',
         },
         22: {
+          titleHi: 'दिनचर्या, कार्यभार और व्यावहारिक स्वास्थ्य-जिम्मेदारी',
+          titleEn: 'Daily Routines, Workload & Practical Wellbeing',
           verdictHi: 'षष्ठ भाव के पारंपरिक संकेत दिनचर्या, सेवा, काम के दबाव और कठिनाइयों से निपटने की शैली पर विचार दे सकते हैं। इनसे रोग, अंग-विशेष की कमजोरी, प्रतिरोधक क्षमता या उपचार-परिणाम का निदान नहीं किया जा सकता।',
           verdictEn: 'Traditional sixth-house symbolism may prompt reflection on routines, service, workload and ways of handling difficulties. It cannot diagnose disease, organ weakness, immunity or treatment outcomes.',
           analysisHi: 'ग्रह-स्थिति किसी बीमारी या शारीरिक दुर्बलता का प्रमाण नहीं है। लक्षणों, जांच और उपचार के लिए योग्य चिकित्सक से संपर्क करें; ज्योतिष को चिकित्सा का विकल्प न मानें।',
           analysisEn: 'Planetary placements are not evidence of disease or physical weakness. Consult a qualified clinician for symptoms, tests and treatment; astrology is not a substitute for medical care.',
         },
         24: {
+          titleHi: 'प्रतिस्पर्धा, विवाद और कानूनी प्रक्रिया में सावधानी',
+          titleEn: 'Competition, Disputes & Legal Process Awareness',
           verdictHi: 'षष्ठ भाव प्रतिस्पर्धा, विवाद और प्रक्रिया-संबंधी चुनौतियों का पारंपरिक संकेतक है। इससे किसी विरोधी की पहचान, षड्यंत्र, मुकदमे का परिणाम या निश्चित विजय घोषित नहीं की जा सकती।',
           verdictEn: 'The sixth house is traditionally associated with competition, disputes and procedural challenges. It cannot identify an enemy, establish a conspiracy, or guarantee a legal outcome or victory.',
           analysisHi: 'कानूनी विवाद में दस्तावेज, समय-सीमा, साक्ष्य और योग्य अधिवक्ता की सलाह निर्णायक व्यावहारिक आधार हैं। ज्योतिषीय संकेतों को कानूनी रणनीति या परिणाम का विकल्प न बनाएं।',
           analysisEn: 'In legal matters, documents, deadlines, evidence and advice from a qualified lawyer are the practical basis for decisions. Astrological symbolism cannot replace legal strategy or predict a court outcome.',
         },
         26: {
+          titleHi: 'विवाह-विषयक संकेत और संभावित दशा-अवधियां',
+          titleEn: 'Marriage Themes & Possible Dasha Activation Periods',
           verdictHi: 'सप्तम भाव, सप्तमेश और शुक्र विवाह-विषयक पारंपरिक अध्ययन के संकेतक हैं। उपलब्ध गणना में संबंधित दशा-अवधि को केवल संभावित सक्रियता के रूप में पढ़ें; इससे विवाह की निश्चित तारीख या आयु तय नहीं होती।',
           verdictEn: 'The seventh house, its ruler and Venus are traditional marriage indicators. The related dasha period is only a possible activation window in this calculation; it does not determine a certain marriage date or age.',
           analysisHi: 'विवाह का निर्णय व्यक्तिगत इच्छा, सहमति, संबंध की वास्तविक स्थिति और जीवन-परिस्थितियों पर निर्भर करता है। ज्योतिषीय समय-संकेत को निश्चित घटना न समझें।',
           analysisEn: 'Marriage decisions depend on personal choice, consent, the actual relationship and life circumstances. Do not treat an astrological timing indicator as a certain event.',
         },
         31: {
+          titleHi: 'परिवर्तन, धैर्य और दीर्घकालीन जिम्मेदारियां',
+          titleEn: 'Change, Resilience & Long-Term Responsibilities',
           verdictHi: 'अष्टम भाव, लग्नेश और शनि को परंपरागत रूप से परिवर्तन, धैर्य और दीर्घकालीन जिम्मेदारियों के संदर्भ में देखा जाता है। इनसे आयु-खंड, मृत्यु-समय, मृत्यु-कारण या जीवनकाल का विश्वसनीय अनुमान नहीं लगाया जा सकता।',
           verdictEn: 'The eighth house, ascendant ruler and Saturn are traditionally discussed in relation to change, resilience and long-term responsibilities. They cannot reliably estimate lifespan, age at death, timing or cause of death.',
           analysisHi: 'इस फलादेश में कोई आयु-सीमा या मृत्यु-संबंधी निष्कर्ष नहीं दिया जाता। स्वास्थ्य और जीवन-योजना के निर्णय वास्तविक परिस्थितियों, प्रमाण और योग्य विशेषज्ञों की सलाह पर आधारित होने चाहिए।',
           analysisEn: 'This reading makes no lifespan or death-related estimate. Health and life-planning decisions should be based on real circumstances, evidence and qualified professional advice.',
         },
         39: {
+          titleHi: 'पेशेवर दिशा, कार्य-भूमिका और आजीविका विकल्प',
+          titleEn: 'Professional Direction, Work Roles & Livelihood Options',
           verdictHi: 'दशम भाव और दशमेश कार्य, जिम्मेदारी, पेशेवर भूमिका और सार्वजनिक योगदान के पारंपरिक संकेतक हैं। उपलब्ध D1 आधार अकेले यह तय नहीं करता कि नौकरी या व्यवसाय में से कौन-सा मार्ग निश्चित रूप से सफल होगा।',
           verdictEn: 'The tenth house and its ruler are traditional indicators of work, responsibility, professional role and public contribution. The available D1 evidence alone cannot determine whether employment or business will certainly succeed.',
           analysisHi: 'करियर के निर्णय कौशल, अनुभव, अवसर, आर्थिक स्थिति, रुचि और वास्तविक कार्य-बाजार को देखकर लें। इस रिपोर्ट में नौकरी बनाम व्यवसाय का कोई निश्चित अनुपात या सांख्यिकीय संभावना नहीं दी जाती।',
           analysisEn: 'Career decisions should consider skills, experience, opportunities, finances, preferences and the actual labor market. This report does not assign a fixed employment-versus-business split or statistical probability.',
         },
         48: {
+          titleHi: 'दूरस्थ स्थान, विदेश-संबंधी विषय और व्यय',
+          titleEn: 'Distant Places, Foreign-Related Themes & Expenditure',
           verdictHi: 'द्वादश भाव दूरस्थ स्थान, खर्च, विश्राम और विदेश-संबंधी विषयों का पारंपरिक संकेतक है। यह अकेले विदेश यात्रा, स्थायी प्रवास, वीजा या विदेशी आय की गारंटी नहीं देता।',
           verdictEn: 'The twelfth house is traditionally associated with distant places, expenditure, retreat and foreign-related themes. By itself it does not guarantee travel, permanent relocation, a visa or overseas income.',
           analysisHi: 'विदेश जाने या बसने की वास्तविक संभावना योग्यता, वीजा नियम, रोजगार, वित्त और व्यक्तिगत विकल्पों पर निर्भर करती है। ज्योतिषीय संकेत को निश्चित प्रवास न समझें।',
           analysisEn: 'Actual prospects for travel or relocation depend on eligibility, visa rules, employment, finances and personal choices. Do not interpret astrological symbolism as a guaranteed move.',
         },
         51: {
+          titleHi: 'आध्यात्मिक अभ्यास, एकांत और आत्मचिंतन',
+          titleEn: 'Spiritual Practice, Solitude & Reflection',
           verdictHi: 'द्वादश भाव और केतु को पारंपरिक रूप से एकांत, ध्यान, त्याग और आध्यात्मिक अभ्यास से जोड़ा जाता है। मोक्ष या समाधि जैसी आध्यात्मिक उपलब्धि की गारंटी कुंडली से नहीं दी जा सकती।',
           verdictEn: 'The twelfth house and Ketu are traditionally associated with solitude, meditation, renunciation and spiritual practice. A chart cannot guarantee moksha or samadhi.',
           analysisHi: 'आध्यात्मिक प्रगति व्यक्तिगत साधना, नैतिक आचरण, अनुभव और परंपरा से जुड़ी है। इस फलादेश को प्रतीकात्मक चिंतन समझें, किसी आध्यात्मिक उपलब्धि का निश्चित दावा नहीं।',
@@ -634,11 +650,16 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         },
       };
       const safety = safetyOverrides[d.id];
-      const analysisHi = safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`;
-      const analysisEn = safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`;
+      const divisionalLimitHi = `विभागीय संदर्भ (${d.divisionalRef || 'परंपरागत संदर्भ'}) उल्लेखित है, लेकिन इस गणना में संबंधित वर्ग-कुंडली का स्वतंत्र सत्यापन नहीं किया गया है।`;
+      const divisionalLimitEn = `The divisional reference (${d.divisionalRef || 'traditional reference'}) is listed for context, but the corresponding divisional chart has not been independently calculated in this reading.`;
+      const analysisHi = safety?.analysisHi ?? `${d.detailedAnalysisHi}\n\nव्यक्तिगत कुंडली-पठन: ${chartBasisHi} ${divisionalLimitHi} यह विवेचन पारंपरिक ज्योतिषीय संकेत है, निश्चित घटना या वैज्ञानिक निदान नहीं।`;
+      const analysisEn = safety?.analysisEn ?? `${d.detailedAnalysisEn}\n\nChart-specific synthesis: ${chartBasisEn} ${divisionalLimitEn} This is a traditional astrological interpretation, not a guaranteed event or scientific diagnosis.`;
+      const suppressSensitiveTiming = [14, 22, 31].includes(d.id);
       return {
         ...d,
         id: d.id,
+        titleHi: safety?.titleHi ?? d.titleHi,
+        titleEn: safety?.titleEn ?? d.titleEn,
         astroBasisHi: chartBasisHi,
         astroBasisEn: chartBasisEn,
         verdictHi: safety?.verdictHi ?? verdictHi,
@@ -646,8 +667,8 @@ export function computeSambhavitFalkathan(chart: ChartData): SambhavitFalkathanR
         detailedAnalysisHi: analysisHi,
         detailedAnalysisEn: analysisEn,
         auspiciousness,
-        timingHi,
-        timingEn,
+        timingHi: suppressSensitiveTiming ? 'इस विषय में स्वास्थ्य या आयु से संबंधित समय-सीमा बताना उचित नहीं है।' : timingHi,
+        timingEn: suppressSensitiveTiming ? 'No health- or lifespan-related timing window is stated for this topic.' : timingEn,
       };
     });
 
