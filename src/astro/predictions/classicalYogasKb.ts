@@ -4163,39 +4163,29 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
     const def = CLASSICAL_YOGAS_KB.find((y) => y.id === id);
     if (!def) return;
 
-    // Compute classical Yoga-Bhanga (Cancellation / Fruition) status
-    let bhangaStatus: 'Full' | 'Partial' | 'Bhanga' | 'Neechabhanga' = 'Full';
-    let bhangaReasonEn = 'Planets unblemished; yoga manifests with full classical potency.';
-    let bhangaReasonHi = 'कारक ग्रह दोषमुक्त हैं; योग पूर्ण शास्त्रीय सामर्थ्य से फलित होगा।';
+    // A yoga is not cancelled merely because one participant is debilitated,
+    // combust, or placed in a dusthana. Cancellation and neechabhanga are
+    // yoga-specific rules and must be evaluated by the corresponding sutra.
+    // Until that rule is implemented for a definition, do not manufacture a
+    // bhanga verdict or a numerical reduction.
+    const bhangaStatus: 'Full' | 'Partial' | 'Bhanga' | 'Neechabhanga' = 'Full';
+    const bhangaReasonEn = 'No yoga-specific cancellation rule was established by the current evaluation.';
+    const bhangaReasonHi = 'वर्तमान परीक्षण में इस योग के लिए कोई विशिष्ट भंग-नियम स्थापित नहीं हुआ।';
 
-    const pObjects = participatingPlanets.map((pId) => byId.get(pId as PlanetId)).filter(Boolean) as BodyPosition[];
-    const hasCombust = pObjects.some((p) => p.isCombust);
-    const hasDebilitated = pObjects.some((p) => p.dignity === 'Debilitated');
-    const inDusthana = participatingHouses.some((h) => [6, 8, 12].includes(h));
-
-    if (def.category !== 'Nabhasa' && hasDebilitated) {
-      const debPlanet = pObjects.find((p) => p.dignity === 'Debilitated')!;
-      const rashiLordId = SIGNS[debPlanet.signIndex].lord;
-      const rashiLord = byId.get(rashiLordId as PlanetId);
-      const debRashiLordInKendra = rashiLord ? isKendra(houseBetween(ascSign, rashiLord.signIndex)) : false;
-      if (debRashiLordInKendra) {
-        bhangaStatus = 'Neechabhanga';
-        bhangaReasonEn = `Neechabhanga Raja Yoga activated: dispositor ${rashiLordId} occupies Kendra, converting debilitation into high status.`;
-        bhangaReasonHi = `नीचभंग राजयोग सक्रिय: राशि स्वामी ${rashiLordId} केंद्र में होने से नीचता दूर होकर उच्च फल प्राप्त होगा।`;
-      } else {
-        bhangaStatus = 'Bhanga';
-        bhangaReasonEn = 'Yoga neutralized (Bhanga): Key participating planet is debilitated without cancellation.';
-        bhangaReasonHi = 'योग-भंग: प्रमुख कारक ग्रह नीच राशि में है, जिससे शुभ फल निष्फल अथवा अत्यंत न्यून रहेगा।';
-      }
-    } else if (def.category !== 'Nabhasa' && hasCombust) {
-      bhangaStatus = 'Partial';
-      bhangaReasonEn = 'Partially impaired: Participating planet is combust with Sun (Asta), reducing manifestation to 40-50%.';
-      bhangaReasonHi = 'आंशिक प्रभावी: कारक ग्रह सूर्य की समीपता से अस्त (Combust) है, फल 40-50% तक सीमित रहेगा।';
-    } else if (def.category !== 'Nabhasa' && inDusthana && def.category !== 'Viparita' && def.category !== 'Arishta') {
-      bhangaStatus = 'Bhanga';
-      bhangaReasonEn = 'Neutralized / Impaired: Formed in Dusthana (6, 8, 12th house), causing struggle before fruition.';
-      bhangaReasonHi = 'त्रिक भाव (6, 8, 12) में स्थित होने से योग का फल अत्यधिक संघर्ष व बाधाओं के उपरांत ही मिलेगा।';
-    }
+    const sourceByCategory: Record<ClassicalYogaCategory, string> = {
+      Mahapurusha: 'Brihat Parashara Hora Shastra (Mahapurusha Yoga rules); Saravali, Ch. 37',
+      Chandra: 'Brihat Jataka, Ch. 13; Saravali, Ch. 34',
+      Surya: 'Brihat Jataka, Ch. 14; Saravali, Ch. 33',
+      Raja: 'Brihat Parashara Hora Shastra; Phaladeepika; Jataka Parijata',
+      Dhana: 'Brihat Parashara Hora Shastra; Phaladeepika; Jataka Parijata',
+      Viparita: 'Brihat Parashara Hora Shastra; Phaladeepika',
+      Nabhasa: 'Brihat Parashara Hora Shastra, Ch. 35–36',
+      Arishta: 'Brihat Parashara Hora Shastra; Saravali',
+      Special: 'Classical Jyotisha references; verify the individual yoga rule and textual attribution',
+    };
+    const source = def.source.includes('Classical Vedic Shastra') || def.source.includes('300 Classical Yogas')
+      ? sourceByCategory[def.category]
+      : def.source;
 
     detected.push({
       id: def.id,
@@ -4206,7 +4196,7 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
       strength,
       planets: participatingPlanets,
       houses: participatingHouses,
-      source: def.source,
+      source,
       conditionEn: def.conditionEn,
       resultEn: customResultEn || def.resultEn,
       resultHi: customResultHi || def.resultHi,
