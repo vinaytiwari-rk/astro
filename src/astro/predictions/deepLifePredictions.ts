@@ -135,8 +135,8 @@ function buildDomain(chart: ChartData, config: DomainConfig, atMs: number): Deep
   for (const y of relatedYogas) {
     yogaEvidence.push(y.name + ' (' + y.strength + ')');
     if (y.strength === 'Strong') {
-      strengthsEn.push('Related yoga: ' + y.name + ' (strong).');
-      strengthsHi.push('संबंधित योग ' + y.name + ' मजबूत रूप में दर्ज है।');
+      strengthsEn.unshift('Related yoga: ' + y.name + ' (strong).');
+      strengthsHi.unshift('संबंधित योग ' + y.name + ' मजबूत रूप में दर्ज है।');
     }
     // Moderate/Present yogas remain visible as corroborating evidence, but are
     // not counted as supportive outcomes without a strong classification.
