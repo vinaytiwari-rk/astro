@@ -1037,7 +1037,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     }
     if (dispositor) {
       const noteEn = 'Sign dispositor ' + dispositor.id + ' is placed in House ' + dispositor.rasiHouseNumber + ' (' + dispositor.signName + ', ' + dispositor.dignity + ').';
-      const noteHi = 'राशि स्वामी ' + trPlanet(dispositor.id, 'hi') + ' भाव ' + dispositor.rasiHouseNumber + ' में ' + trSign(dispositor.signName, 'hi') + ' राशि में (' + trTerm(dispositor.dignity, 'hi') + ') स्थित है।';
+      const noteHi = 'राशि स्वामी ' + trPlanet(dispositor.id, 'hi') + ' भाव ' + dispositor.rasiHouseNumber + ' में ' + trSign(dispositor.signIndex, 'hi') + ' राशि में (' + trTerm(dispositor.dignity, 'hi') + ') स्थित है।';
       if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(dispositor.dignity)) {
         positiveEventsEn.push(noteEn);
         positiveEventsHi.push(noteHi);
@@ -1048,7 +1048,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     }
     if (nakshatraLord) {
       const noteEn = 'Nakshatra dispositor ' + nakshatraLord.id + ' is placed in House ' + nakshatraLord.rasiHouseNumber + ' (' + nakshatraLord.signName + ', ' + nakshatraLord.dignity + ').';
-      const noteHi = 'नक्षत्र स्वामी ' + trPlanet(nakshatraLord.id, 'hi') + ' भाव ' + nakshatraLord.rasiHouseNumber + ' में ' + trSign(nakshatraLord.signName, 'hi') + ' राशि में (' + trTerm(nakshatraLord.dignity, 'hi') + ') स्थित है।';
+      const noteHi = 'नक्षत्र स्वामी ' + trPlanet(nakshatraLord.id, 'hi') + ' भाव ' + nakshatraLord.rasiHouseNumber + ' में ' + trSign(nakshatraLord.signIndex, 'hi') + ' राशि में (' + trTerm(nakshatraLord.dignity, 'hi') + ') स्थित है।';
       if (['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend'].includes(nakshatraLord.dignity)) {
         positiveEventsEn.push(noteEn);
         positiveEventsHi.push(noteHi);
