@@ -80,8 +80,8 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               <span>
                 {isHi
-                  ? 'ग्रह-वार कुंडली संकेत विश्लेषण'
-                  : 'Planet-wise Chart Evidence'}
+                  ? 'ग्रहवार फलादेश'
+                  : 'Planet-wise Predictions'}
               </span>
             </h2>
             <p className="muted" style={{ margin: '4px 0 0', fontSize: '13px' }}>
