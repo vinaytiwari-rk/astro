@@ -80,6 +80,44 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(uniqueDetailed.size).toBe(21);
   });
 
+
+  it('keeps sensitive selected predictions non-deterministic and transparent about chart evidence', () => {
+    const report = computeSambhavitFalkathan(swamiChart);
+    const byId = (id: number) => report.dimensions.find((dimension) => dimension.id === id)!;
+
+    for (const id of [1, 5, 9, 10, 12, 13, 14, 17, 19, 20, 22, 24, 26, 27, 31, 34, 37, 39, 44, 48, 51]) {
+      const dimension = byId(id);
+      expect(dimension).toBeDefined();
+      expect(dimension.astroBasisEn).toContain('Recorded chart evidence:');
+      expect(dimension.detailedAnalysisEn).toContain('has not been independently calculated');
+      expect(dimension.astroBasisHi).toContain('कुंडली में दर्ज आधार');
+    }
+
+    const maternal = byId(14);
+    const health = byId(22);
+    const disputes = byId(24);
+    const marriage = byId(26);
+    const longevity = byId(31);
+    const career = byId(39);
+    const foreign = byId(48);
+    const spirituality = byId(51);
+
+    expect(maternal.titleEn).not.toMatch(/longevity/i);
+    expect(maternal.verdictEn).not.toMatch(/lifespan|long life|longevity/i);
+    expect(health.titleEn).not.toMatch(/disease|vulnerabilit|recovery speed/i);
+    expect(health.verdictEn).toMatch(/cannot diagnose/i);
+    expect(disputes.titleEn).not.toMatch(/adversar|court triumph/i);
+    expect(disputes.verdictEn).toMatch(/cannot.*guarantee/i);
+    expect(marriage.titleEn).not.toMatch(/age span|timing window/i);
+    expect(marriage.verdictEn).toMatch(/does not determine a certain marriage date or age/i);
+    expect(longevity.titleEn).not.toMatch(/lifespan|longevity|maraka/i);
+    expect(longevity.verdictEn).toMatch(/cannot reliably estimate lifespan/i);
+    expect(longevity.timingEn).toMatch(/No health- or lifespan-related timing/i);
+    expect(career.verdictEn).toMatch(/cannot determine whether employment or business will certainly succeed/i);
+    expect(foreign.verdictEn).toMatch(/does not guarantee travel/i);
+    expect(spirituality.verdictEn).toMatch(/cannot guarantee moksha or samadhi/i);
+  });
+
   it('correctly handles chart with severe 7th house delay for adult native', () => {
     // Native born in 1985 (currently 40+ years old)
     const adultInput = {
