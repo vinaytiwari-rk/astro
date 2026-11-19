@@ -35,8 +35,8 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
         ? 'प्रत्येक ग्रह की राशि, भाव, नक्षत्र, गरिमा, वक्री/अस्त स्थिति और संबंधित संकेतों का अलग-अलग विश्लेषण।'
         : 'Separate analysis of each planet using its sign, house, nakshatra, dignity, retrograde/combust state and related indications.')
       : (isHi
-        ? 'प्रथम से द्वादश भाव तक राशि, भावेश, स्थित ग्रह, दृष्टि और सर्वाष्टकवर्ग का जन्मकुंडली-आधारित विश्लेषण। इसमें दशा या गोचर के आधार पर समय-निर्धारण शामिल नहीं है।'
-        : 'A natal-chart reading of all twelve houses using sign, house lord, lord placement, occupants, aspects and Sarvashtakavarga. Dasha- or transit-based timing is not included in this view.');
+        ? 'प्रथम से द्वादश भाव तक राशि, भावेश, स्थित ग्रह, दृष्टि और सर्वाष्टकवर्ग का जन्मकुंडली-आधारित विश्लेषण। दशा-आधारित समय-निर्धारण शामिल नहीं है; वर्तमान गोचर केवल सहायक संदर्भ के रूप में दिखाया जाता है।'
+        : 'A natal-chart reading of all twelve houses using sign, house lord, lord placement, occupants, aspects and Sarvashtakavarga. Dasha timing is not included; current transits are shown only as supporting context, not as event predictions.');
 
   return (
     <div className="view-stack">
