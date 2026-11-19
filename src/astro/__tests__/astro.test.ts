@@ -589,6 +589,10 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     const vivekChart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const livingChart = calculateChart(SAMPLE_CHARTS[3], DEFAULT_SETTINGS);
     const report = generatePredictionReport(livingChart, '2026-11-10');
+    const targetAtMs = Date.parse('2026-11-10T12:00:00.000Z') - livingChart.offsetMinutesUsed * 60_000;
+    const expectedHouseDasha = computeHouseWisePredictions(livingChart, targetAtMs);
+    expect(report.houseWisePredictions.map((house) => house.dashaEvidenceEn))
+      .toEqual(expectedHouseDasha.map((house) => house.dashaEvidenceEn));
 
     expect(report.paramayus.exceeded).toBe(false);
     expect(report.lagnaProfile.signName).toBe(livingChart.ascendant.signName);
