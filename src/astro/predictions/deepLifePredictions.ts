@@ -24,6 +24,8 @@ export interface GeneralBirthFactor {
   labelHi: string;
   valueEn: string;
   valueHi: string;
+  interpretationEn: string;
+  interpretationHi: string;
 }
 export interface GeneralBirthProfile {
   factors: GeneralBirthFactor[];
@@ -277,6 +279,60 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
   };
 }
 
+
+function interpretBirthFactor(
+  id: string,
+  valueEn: string,
+  valueHi: string,
+  chart: ChartData
+): { en: string; hi: string } {
+  const weekday = chart.panchang?.vara;
+  const tithi = chart.panchang?.tithi;
+  const weekdayReadings: Record<string, { en: string; hi: string }> = {
+    Sun: { en: 'Sunday birth is traditionally linked with solar themes: self-respect, visibility, leadership and responsibility. The Sun’s dignity, house and aspects decide how these themes express.', hi: 'रविवार का जन्म परंपरागत रूप से सूर्य के गुण—आत्मसम्मान, पहचान, नेतृत्व और उत्तरदायित्व—से जोड़ा जाता है। इनका वास्तविक रूप सूर्य की राशि, भाव, बल और दृष्टियों से तय होगा।' },
+    Moon: { en: 'Monday birth is traditionally associated with the Moon: sensitivity, care, adaptability and public connection. The Moon’s strength and associations qualify this reading.', hi: 'सोमवार का जन्म चंद्रमा के गुण—संवेदनशीलता, देखभाल, अनुकूलन और जन-संपर्क—से जोड़ा जाता है। चंद्रमा का बल और युति-दृष्टि इस संकेत को बदलते हैं।' },
+    Mars: { en: 'Tuesday birth is linked with Mars: initiative, courage, competitiveness and decisive action. Its condition shows whether these become constructive drive or impatience.', hi: 'मंगलवार का जन्म मंगल के गुण—पहल, साहस, प्रतिस्पर्धा और निर्णय-क्षमता—से जुड़ा है। मंगल की स्थिति बताएगी कि ये गुण रचनात्मक साहस बनेंगे या अधीरता।' },
+    Mercury: { en: 'Wednesday birth is linked with Mercury: learning, communication, calculation, trade and practical intelligence. Mercury’s condition and house lordships refine the result.', hi: 'बुधवार का जन्म बुध के गुण—सीखना, संवाद, गणना, व्यापार और व्यावहारिक बुद्धि—से जुड़ा है। बुध का बल, भाव और स्वामित्व फल को स्पष्ट करेंगे।' },
+    Jupiter: { en: 'Thursday birth is traditionally associated with Jupiter: knowledge, ethics, counsel, teaching, faith and expansion. A strong, well-supported Jupiter can make these themes more constructive; affliction may bring overconfidence or inconsistent judgement.', hi: 'गुरुवार का जन्म परंपरागत रूप से गुरु के गुण—ज्ञान, नैतिकता, सलाह, शिक्षा, आस्था और विस्तार—से जुड़ा माना जाता है। बलवान व शुभ-संबद्ध गुरु इन गुणों को निखार सकता है; पीड़ित गुरु में अति-आशावाद या निर्णय में असंगति दिख सकती है।' },
+    Venus: { en: 'Friday birth is associated with Venus: relationships, aesthetics, comfort, diplomacy and artistic appreciation. Venus’s dignity and afflictions show how balanced these themes are.', hi: 'शुक्रवार का जन्म शुक्र के गुण—संबंध, सौंदर्य-बोध, सुविधा, कूटनीति और कला-रुचि—से जुड़ा है। शुक्र का बल और पीड़ा इन गुणों की सहजता बताते हैं।' },
+    Saturn: { en: 'Saturday birth is traditionally linked with Saturn: discipline, patience, duty, endurance and gradual achievement. Saturn’s condition distinguishes steady maturity from avoidable delay or heaviness.', hi: 'शनिवार का जन्म शनि के गुण—अनुशासन, धैर्य, कर्तव्य, सहनशीलता और क्रमिक उपलब्धि—से जुड़ा है। शनि की स्थिति परिपक्व स्थिरता और अनावश्यक विलंब के बीच अंतर स्पष्ट करती है।' },
+  };
+  const tithiGroup = (n: number) => n % 5 === 1 ? 'Nanda' : n % 5 === 2 ? 'Bhadra' : n % 5 === 3 ? 'Jaya' : n % 5 === 4 ? 'Rikta' : 'Purna';
+  const tithiGroupHi: Record<string,string> = {
+    Nanda: 'नंदा', Bhadra: 'भद्रा', Jaya: 'जया', Rikta: 'रिक्ता', Purna: 'पूर्णा',
+  };
+  switch (id) {
+    case 'weekday':
+      return weekdayReadings[weekday?.lord ?? ''] ?? { en: 'The weekday lord gives a traditional baseline; its natal strength and house placement must be assessed before drawing a conclusion.', hi: 'वारेश एक पारंपरिक आधार देता है; निष्कर्ष से पहले उसकी जन्मकुंडली में स्थिति, बल और दृष्टि देखना आवश्यक है।' };
+    case 'tithi':
+      if (tithi?.number === 15 && tithi.paksha === 'Shukla') return { en: 'Purnima birth: the Moon is near its full phase. Tradition associates this with emotional visibility, receptivity and fullness; the Moon’s strength, sign and afflictions decide the personal expression.', hi: 'पूर्णिमा जन्म: चंद्रमा पूर्ण कला के निकट होता है। परंपरा इसे भावनात्मक अभिव्यक्ति, ग्रहणशीलता और पूर्णता से जोड़ती है; वास्तविक फल चंद्रबल, राशि और पीड़ा से तय होगा।' };
+      if (tithi?.number === 30 || (tithi?.number === 15 && tithi.paksha === 'Krishna')) return { en: 'Amavasya / new-Moon birth: Sun and Moon are closely united. Traditional readings emphasize inwardness, reflection and the need to assess lunar strength and combustion carefully.', hi: 'अमावस्या जन्म: सूर्य और चंद्रमा निकट युति में होते हैं। पारंपरिक व्याख्या अंतर्मुखता और आत्मचिंतन पर बल देती है; चंद्रबल तथा सूर्य-समीपता को ध्यान से देखना चाहिए।' };
+      return { en: 'Tithi ' + valueEn + ' belongs to the ' + tithiGroup(tithi?.number ?? 1) + ' group (' + tithiGroupHi[tithiGroup(tithi?.number ?? 1)] + '): a traditional lunar-day quality. It is a supporting temperament indicator, not a stand-alone prediction.', hi: 'यह तिथि ' + (tithiGroupHi[tithiGroup(tithi?.number ?? 1)]) + ' वर्ग की है। यह चंद्र-दिवस का पारंपरिक स्वभाव-संकेत है; इसे अकेले निश्चित फल नहीं मानकर अन्य कुंडली-योगों के साथ पढ़ें।' };
+    case 'paksha':
+      return tithi?.paksha === 'Shukla'
+        ? { en: 'Shukla Paksha is the waxing lunar half; traditional interpretation emphasizes growth, outward development and increasing visibility.', hi: 'शुक्ल पक्ष में चंद्रमा की कला बढ़ती है; पारंपरिक रूप से इसे विकास, बाहरी सक्रियता और क्रमशः बढ़ती अभिव्यक्ति से जोड़ा जाता है।' }
+        : { en: 'Krishna Paksha is the waning lunar half; traditional interpretation emphasizes reflection, consolidation, release and inward processing.', hi: 'कृष्ण पक्ष में चंद्रमा की कला घटती है; पारंपरिक रूप से इसे आत्मचिंतन, समेकन, त्याग और अंतर्मुखी प्रक्रिया से जोड़ा जाता है।' };
+    case 'maas': return { en: 'The lunar month gives a seasonal and devotional-cultural context in traditional Panchanga reading. Its result is secondary to the natal chart and should not be used alone to judge fortune.', hi: 'चंद्र मास पारंपरिक पंचांग में ऋतु और सांस्कृतिक-धार्मिक संदर्भ देता है। इसका संकेत जन्मकुंडली के अन्य प्रमाणों से गौण है; केवल मास से भाग्य का निर्णय नहीं किया जाता।' };
+    case 'ritu': return { en: 'Birth season is a traditional contextual factor, not a deterministic personality rule. Read it lightly alongside the Moon, Lagna and planetary strengths.', hi: 'जन्म ऋतु एक पारंपरिक संदर्भ है, व्यक्तित्व का अटल नियम नहीं। इसे चंद्रमा, लग्न और ग्रहबल के साथ सीमित महत्व दें।' };
+    case 'prahar': return { en: 'Prahar records the birth time within the day or night cycle. It is a traditional time-quality indicator; it does not independently promise success or difficulty.', hi: 'प्रहर दिन-रात्रि चक्र में जन्म का समय बताता है। यह पारंपरिक काल-संकेत है; अकेले इससे सफलता या कठिनाई का वादा नहीं किया जा सकता।' };
+    case 'karana': return { en: 'Karana is half a tithi and is traditionally used to describe the practical tone of activity. Its specific nature should be considered with the birth weekday, tithi and chart—not in isolation.', hi: 'करण तिथि का आधा भाग है और पारंपरिक रूप से कार्य-शैली का संकेत माना जाता है। इसके विशिष्ट स्वभाव को वार, तिथि और पूरी कुंडली के साथ पढ़ें।' };
+    case 'surya-yoga': return { en: 'Nitya Yoga is calculated from the combined longitudes of Sun and Moon. It describes a traditional birth-time quality and is distinct from planetary Raja/Dhana yogas.', hi: 'नित्य योग सूर्य और चंद्रमा के संयुक्त अंशों से निकलता है। यह जन्म-समय का पंचांग संकेत है और ग्रहों से बनने वाले राजयोग/धनयोग से अलग है।' };
+    case 'varna': return { en: 'Rashi Varna is a symbolic traditional classification used in compatibility systems; it is not a statement about social caste, status or personal worth.', hi: 'राशि-वर्ण ज्योतिषीय मिलान की प्रतीकात्मक पारंपरिक श्रेणी है; यह सामाजिक जाति, दर्जे या व्यक्ति के मूल्य का कथन नहीं है।' };
+    case 'vashya': return { en: 'Vashya is a traditional sign-to-sign compatibility category describing symbolic mutual influence; it should not be read as literal control over another person.', hi: 'वश्य राशि-मिलान की पारंपरिक प्रतीकात्मक श्रेणी है; इसे किसी व्यक्ति पर वास्तविक नियंत्रण या अधीनता का अर्थ न दें।' };
+    case 'yoni': return { en: 'Yoni is a Nakshatra-based symbolic compatibility classification. It is primarily a matching factor, not a reliable standalone description of character or relationships.', hi: 'योनि नक्षत्र-आधारित प्रतीकात्मक मिलान श्रेणी है। इसका मुख्य उपयोग पारंपरिक अनुकूलता में है; यह अकेले चरित्र या संबंधों का विश्वसनीय निर्णय नहीं है।' };
+    case 'gana': return { en: 'Gana is a traditional Nakshatra temperament grouping (Deva, Manushya or Rakshasa). It is a broad symbolic category, not a moral label or fixed personality verdict.', hi: 'गण नक्षत्र का पारंपरिक स्वभाव-वर्ग (देव, मनुष्य या राक्षस) है। यह व्यापक प्रतीकात्मक श्रेणी है, नैतिक निर्णय या स्थायी चरित्र-लेबल नहीं।' };
+    case 'nadi': return { en: 'Nadi is mainly used in traditional compatibility matching. It is not a medical diagnosis and cannot indicate a person’s health condition.', hi: 'नाड़ी का उपयोग मुख्यतः पारंपरिक विवाह-मिलान में होता है। यह चिकित्सकीय निदान नहीं है और स्वास्थ्य-स्थिति नहीं बताती।' };
+    case 'nadi-pad': return { en: 'Nadi and Nakshatra Pada together refine the traditional matching reference. This combination should not be interpreted as a medical or deterministic life result.', hi: 'नाड़ी और नक्षत्र पद मिलकर पारंपरिक मिलान-संदर्भ को सूक्ष्म करते हैं। इसे स्वास्थ्य या निश्चित जीवन-परिणाम न मानें।' };
+    case 'tattva': return { en: 'The Moon-sign element gives a symbolic emotional-response style: Fire—initiative, Earth—stability, Air—ideas and exchange, Water—sensitivity. Confirm it with Moon strength and aspects.', hi: 'चंद्र राशि का तत्त्व भावनात्मक प्रतिक्रिया का प्रतीकात्मक ढंग बताता है: अग्नि—पहल, पृथ्वी—स्थिरता, वायु—विचार व संवाद, जल—संवेदनशीलता। चंद्रबल और दृष्टियों से पुष्टि करें।' };
+    case 'paya': return { en: 'Paya is a regional folk classification based on the Moon’s house from the Ascendant. It is not a core classical rule and should never be used alone to forecast wealth or misfortune.', hi: 'पाया लग्न से चंद्रमा की भाव-स्थिति पर आधारित क्षेत्रीय लोक-परंपरा है। यह मूल शास्त्रीय नियम नहीं; इससे अकेले धन या दुर्भाग्य का अनुमान नहीं लगाना चाहिए।' };
+    case 'naam-akshar': return { en: 'The syllable is a traditional naming convention assigned to the Nakshatra Pada; it is not a prediction of destiny.', hi: 'यह अक्षर नक्षत्र पद के अनुसार पारंपरिक नामकरण-संकेत है; इससे भाग्य का फलादेश नहीं निकलता।' };
+    case 'nakshatra-charan': return { en: 'Nakshatra and Pada refine the Moon’s symbolic field and are read with the Nakshatra lord, Moon condition and occupied house.', hi: 'नक्षत्र और चरण चंद्रमा के प्रतीकात्मक स्वभाव को सूक्ष्म करते हैं। इन्हें नक्षत्रेश, चंद्रमा की स्थिति और भाव के साथ पढ़ना चाहिए।' };
+    case 'atmakaraka': return { en: 'In Jaimini astrology, Atmakaraka is a key indicator of recurring inner lessons and areas of personal growth. Its sign, house, aspects and Navamsa position are essential before interpreting it.', hi: 'जैमिनी ज्योतिष में आत्मकारक जीवन के दोहराते आंतरिक पाठ और आत्म-विकास के विषयों का प्रमुख संकेतक है। इसकी राशि, भाव, दृष्टि और नवांश स्थिति देखकर ही अर्थ निकालना चाहिए।' };
+    case 'ishta-dev': return { en: 'This is a Jaimini Karakamsha-based devotional indicator. It may support a personal contemplative practice if meaningful to the native; it is not a compulsory religious instruction.', hi: 'यह जैमिनी कारकांश-आधारित उपास्य संकेत है। जातक की आस्था के अनुरूप साधना में सहायक हो सकता है; यह अनिवार्य धार्मिक निर्देश नहीं है।' };
+    default: return { en: 'This factor is a supporting traditional context and must be interpreted with the full natal chart.', hi: 'यह कारक पारंपरिक सहायक संदर्भ है और इसकी व्याख्या पूरी जन्मकुंडली के साथ करनी चाहिए।' };
+  }
+}
+
 const NAKSHATRA_NAME_AKSHAR: string[][] = [
   ['चू', 'चे', 'चो', 'ला'], ['ली', 'लू', 'ले', 'लो'], ['अ', 'ई', 'उ', 'ए'],
   ['ओ', 'वा', 'वी', 'वू'], ['वे', 'वो', 'का', 'की'], ['कू', 'घ', 'ङ', 'छ'],
@@ -391,7 +447,8 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
   ];
   const summaryEn = `Birth foundation: ${weekday?.name ?? 'weekday unavailable'}, ${tithi?.name ?? 'tithi unavailable'} / ${tithi?.paksha ?? 'paksha unavailable'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'birth nakshatra unavailable'} Pada ${pada}, ${nakInfo?.gana ?? ''} Gana, ${nakInfo?.nadi ?? ''} Nadi. Moon-sign Varna/Vashya/Tattva, Moon-from-Lagna Paya, Chara Atmakaraka and the D9 Karakamsha-based Ishta Devata are treated as foundational context and read alongside the natal houses, lords, planets and yogas—not as standalone guarantees.`;
   const summaryHi = `जन्म का आधार: ${weekday?.sanskrit ?? 'वार उपलब्ध नहीं'}, ${tithi?.name ?? 'तिथि उपलब्ध नहीं'} / ${tithi?.paksha === 'Shukla' ? 'शुक्ल पक्ष' : 'कृष्ण पक्ष'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'नक्षत्र उपलब्ध नहीं'} चरण ${pada}, ${nakInfo?.gana ?? ''} गण, ${nakInfo?.nadi ?? ''} नाड़ी। चंद्र राशि के वर्ण, वश्य और तत्त्व; लग्न से चंद्र स्थिति का पाया; जैमिनी आत्मकारक और D9 कारकांश से इष्ट देव को जन्म-कुंडली के भाव, भावेश, ग्रह और योगों के साथ मूल संदर्भ के रूप में पढ़ा जाएगा—अलग से निश्चित फल मानकर नहीं।`;
-  return { factors, summaryEn, summaryHi };
+  const interpretedFactors = factors.map((factor) => ({ ...factor, ...(() => { const meaning = interpretBirthFactor(factor.id, factor.valueEn, factor.valueHi, chart); return { interpretationEn: meaning.en, interpretationHi: meaning.hi }; })() }));
+  return { factors: interpretedFactors, summaryEn, summaryHi };
 }
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
