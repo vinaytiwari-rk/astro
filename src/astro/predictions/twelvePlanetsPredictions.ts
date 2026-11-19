@@ -1,5 +1,5 @@
 import * as Astronomy from 'astronomy-engine';
-import type { ChartData, PlanetId } from '../types';
+import type { ChartData, DashaPeriod, PlanetId } from '../types';
 import { NAKSHATRAS } from '../constants';
 import {
   buildBaseBodyPosition,
@@ -133,7 +133,28 @@ const HOUSE_THEMES = [
   { en: 'Expenses, Foreign Relocation & Liberation', hi: 'व्यय, विदेश गमन व मोक्ष' },
 ];
 
-export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanetsPredictionsReport {
+function flattenPlanetDasha(periods: DashaPeriod[] = []): DashaPeriod[] {
+  const all: DashaPeriod[] = [];
+  const visit = (items: DashaPeriod[]) => items.forEach((period) => {
+    all.push(period);
+    if (period.children?.length) visit(period.children);
+  });
+  visit(periods);
+  return all;
+}
+
+function dashaLevelName(level: number, hi: boolean): string {
+  if (level === 1) return hi ? 'महादशा' : 'Mahadasha';
+  if (level === 2) return hi ? 'अंतर्दशा' : 'Antardasha';
+  if (level === 3) return hi ? 'प्रत्यंतर दशा' : 'Pratyantardasha';
+  return hi ? 'उप-दशा' : 'sub-period';
+}
+
+function dashaDate(ms: number, hi: boolean): string {
+  return new Date(ms).toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.now()): TwelvePlanetsPredictionsReport {
   const lagnaSignIndex = chart.ascendant.signIndex;
 
   // Determine owned houses for Vedic planets
@@ -930,6 +951,31 @@ export function computeTwelvePlanetsPredictions(chart: ChartData): TwelvePlanets
         break;
       }
     }
+
+    // Timing is derived only from the supplied Vimshottari periods.
+    // Legacy fixed age windows and generic transit claims are intentionally suppressed.
+    const planetPeriods = flattenPlanetDasha(chart.vimshottari ?? []).filter((period) => period.lord === p.id);
+    const activePlanetPeriods = planetPeriods
+      .filter((period) => period.startMs <= atMs && atMs < period.endMs)
+      .sort((a, b) => b.level - a.level);
+    const nextPlanetPeriod = planetPeriods
+      .filter((period) => period.startMs > atMs)
+      .sort((a, b) => a.startMs - b.startMs || b.level - a.level)[0];
+    if (activePlanetPeriods.length) {
+      timingEn = 'This planet’s ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, false) + ' is active until ' + dashaDate(period.endMs, false)).join('; ') + '. Dasha activation is not a guaranteed event.';
+      timingHi = 'इस ग्रह की ' + activePlanetPeriods.map((period) => dashaLevelName(period.level, true) + ' ' + dashaDate(period.endMs, true) + ' तक सक्रिय है').join('; ') + '। दशा सक्रियता किसी घटना की गारंटी नहीं है।';
+    } else if (nextPlanetPeriod) {
+      timingEn = 'The next supplied period for this planet is ' + dashaLevelName(nextPlanetPeriod.level, false) + ', beginning ' + dashaDate(nextPlanetPeriod.startMs, false) + '. This is an activation window, not a promised event.';
+      timingHi = 'इस ग्रह की अगली उपलब्ध अवधि ' + dashaLevelName(nextPlanetPeriod.level, true) + ' ' + dashaDate(nextPlanetPeriod.startMs, true) + ' से शुरू होगी। यह सक्रियता-संकेत है, निश्चित घटना-समय नहीं।';
+    } else {
+      timingEn = isOuter
+        ? 'No Vimshottari period is assigned to outer planets in the supplied chart data; no timing is stated. Transits are not calculated in this planet-wise timing section.'
+        : 'No active or upcoming Vimshottari period for this planet was found in the supplied data; no timing is stated. Transits are not calculated in this planet-wise timing section.';
+      timingHi = isOuter
+        ? 'प्रदत्त कुंडली-डेटा में बाह्य ग्रहों के लिए विंशोत्तरी दशा निर्धारित नहीं है; इसलिए समय नहीं दिया गया। इस ग्रह-वार समय-विश्लेषण में गोचर की गणना नहीं है।'
+        : 'प्रदत्त डेटा में इस ग्रह की सक्रिय या आगामी विंशोत्तरी अवधि नहीं मिली; इसलिए समय नहीं दिया गया। इस ग्रह-वार समय-विश्लेषण में गोचर की गणना नहीं है।';
+    }
+    ageWindows.length = 0;
 
     // Compose Placement Summary
     const dignTxtEn = isExalted ? 'Exalted' : isDebilitated ? 'Debilitated' : isOwn ? 'Own/Moolatrikona' : p.dignity;
