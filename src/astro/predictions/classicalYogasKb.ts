@@ -4307,65 +4307,127 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   }
 
 
-  // 13. Nabhasa Yogas (BPHS): assess the seven classical planets only.
-  // These are natal configurations and are not mixed with dasha or transit triggers.
+  // 13. Nabhasa Yogas (BPHS, Chapter 35): seven classical planets only.
+  // Rahu and Ketu are intentionally excluded. Sankhya yogas are suppressed
+  // whenever any Ashraya, Dala or Akriti yoga is formed (BPHS 35.16-17).
   const seven = SEVEN_PLANETS.map((id) => byId.get(id)).filter(Boolean) as BodyPosition[];
-  const sevenHouses = seven.map((p) => houseBetween(ascSign, p.signIndex));
-  const sevenSigns = seven.map((p) => p.signIndex);
-  const uniqueSigns = new Set(sevenSigns);
-  const allIn = (houses: number[]) => sevenHouses.every((h) => houses.includes(h));
-  const addNabhasa = (id: number, label: string) => {
-    addYoga(
-      id,
-      'Present',
-      seven.map((p) => p.id),
-      Array.from(new Set(sevenHouses)),
-      `${label}: all seven classical planets satisfy the specified natal house/sign arrangement.`,
-      `${label}: सातों शास्त्रीय ग्रह निर्धारित जन्मकुंडली विन्यास में स्थित हैं।`
-    );
-  };
+  if (seven.length === 7) {
+    const sevenHouses = seven.map((p) => houseBetween(ascSign, p.signIndex));
+    const sevenSigns = seven.map((p) => p.signIndex);
+    const occupiedHouses = new Set(sevenHouses);
+    const occupiedSigns = new Set(sevenSigns);
+    const allIn = (houses: number[]) => sevenHouses.every((h) => houses.includes(h));
+    const allInSignModality = (modality: 'Movable' | 'Fixed' | 'Dual') =>
+      sevenSigns.every((sign) => SIGNS[sign].modality === modality);
+    const addNabhasa = (id: number, label: string, houses = Array.from(occupiedHouses)) => {
+      addYoga(
+        id,
+        'Present',
+        seven.map((p) => p.id),
+        houses,
+        `${label} is formed by the seven classical planets' natal placement pattern.`,
+        `${label} सात शास्त्रीय ग्रहों के जन्मकालीन स्थान-विन्यास से बनता है।`
+      );
+    };
+    let nonSankhyaFormed = false;
+    const mark = (id: number, label: string, houses?: number[]) => {
+      addNabhasa(id, label, houses);
+      nonSankhyaFormed = true;
+    };
 
-  const modalities = new Set(sevenSigns.map((sign) => SIGNS[sign].modality));
-  if (modalities.size === 1 && modalities.has('Movable')) addNabhasa(301, 'Rajju Yoga');
-  if (modalities.size === 1 && modalities.has('Fixed')) addNabhasa(302, 'Musala Yoga');
-  if (modalities.size === 1 && modalities.has('Dual')) addNabhasa(303, 'Nala Yoga');
+    // Ashraya (3): all seven planets in signs of one modality.
+    if (allInSignModality('Movable')) mark(301, 'Rajju Yoga');
+    if (allInSignModality('Fixed')) mark(302, 'Musala Yoga');
+    if (allInSignModality('Dual')) mark(303, 'Nala Yoga');
 
-  // Akriti patterns whose house groups are explicitly defined in BPHS.
-  const akritiPatterns: Array<{ id: number; houses: number[]; label: string }> = [
-    { id: 306, houses: [1, 4], label: 'Gada Yoga' },
-    { id: 307, houses: [1, 7], label: 'Sakata Yoga (Nabhasa)' },
-    { id: 308, houses: [4, 10], label: 'Vihaga Yoga' },
-    { id: 309, houses: [1, 5, 9], label: 'Shringataka Yoga' },
-    { id: 310, houses: [2, 6, 10], label: 'Hala Yoga' },
-    { id: 310, houses: [3, 7, 11], label: 'Hala Yoga' },
-    { id: 310, houses: [4, 8, 12], label: 'Hala Yoga' },
-    { id: 313, houses: [1, 4, 7, 10], label: 'Kamala Yoga' },
-    { id: 314, houses: [2, 3, 5, 6, 8, 9, 11, 12], label: 'Vapi Yoga' },
-    { id: 315, houses: [1, 2, 3, 4], label: 'Yupa Yoga' },
-    { id: 316, houses: [4, 5, 6, 7], label: 'Sara Yoga' },
-    { id: 317, houses: [7, 8, 9, 10], label: 'Shakti Yoga' },
-    { id: 318, houses: [10, 11, 12, 1], label: 'Danda Yoga' },
-    { id: 319, houses: [1, 2, 3, 4, 5, 6], label: 'Nauka Yoga' },
-    { id: 320, houses: [7, 8, 9, 10, 11, 12], label: 'Koota Yoga' },
-    { id: 321, houses: [1, 2, 3, 4, 5, 6, 7], label: 'Chatra Yoga' },
-    { id: 322, houses: [4, 5, 6, 7, 8, 9, 10], label: 'Chapa Yoga' },
-    { id: 323, houses: [1, 3, 5, 7, 9, 11], label: 'Ardha-Chandra Yoga' },
-    { id: 324, houses: [1, 3, 5, 7, 9, 11], label: 'Chakra Yoga' },
-    { id: 325, houses: [2, 4, 6, 8, 10, 12], label: 'Samudra Yoga' },
-  ];
-  const matchedAkriti = new Set<number>();
-  for (const pattern of akritiPatterns) {
-    if (!matchedAkriti.has(pattern.id) && allIn(pattern.houses)) {
-      addNabhasa(pattern.id, pattern.label);
-      matchedAkriti.add(pattern.id);
+    // Dala (2): three occupied kendras populated exclusively by the relevant
+    // classical natural benefics/malefics. Mercury and Moon are context-sensitive
+    // and therefore do not qualify for this conservative automatic test.
+    const kendraHouses = [1, 4, 7, 10];
+    const kendraOccupants = seven.filter((p) => kendraHouses.includes(houseBetween(ascSign, p.signIndex)));
+    const occupiedKendras = new Set(kendraOccupants.map((p) => houseBetween(ascSign, p.signIndex)));
+    const beneficIds = new Set(['Jupiter', 'Venus']);
+    const maleficIds = new Set(['Sun', 'Mars', 'Saturn']);
+    if (occupiedKendras.size >= 3 && kendraOccupants.every((p) => beneficIds.has(p.id))) {
+      mark(304, 'Mala Yoga', Array.from(occupiedKendras));
+    }
+    if (occupiedKendras.size >= 3 && kendraOccupants.every((p) => maleficIds.has(p.id))) {
+      mark(305, 'Sarpa Yoga', Array.from(occupiedKendras));
+    }
+
+    // Akriti (20): house-pattern definitions from BPHS 35.9-15.
+    const gadaPairs = [[1, 4], [4, 7], [7, 10], [10, 1]];
+    if (gadaPairs.some((pair) => allIn(pair))) mark(306, 'Gada Yoga');
+    if (allIn([1, 7])) mark(307, 'Sakata Yoga');
+    if (allIn([4, 10])) mark(308, 'Vihaga Yoga');
+    if (allIn([1, 5, 9])) mark(309, 'Shringataka Yoga');
+    if ([[2, 6, 10], [3, 7, 11], [4, 8, 12]].some((group) => allIn(group))) mark(310, 'Hala Yoga');
+
+    // Vajra / Yava use the traditional benefic-malefic split. Mercury and Moon
+    // are left out of the automatic classifier because their nature is conditional.
+    const classified = seven.filter((p) => beneficIds.has(p.id) || maleficIds.has(p.id));
+    const benefics = classified.filter((p) => beneficIds.has(p.id));
+    const malefics = classified.filter((p) => maleficIds.has(p.id));
+    const inHouses = (ps: BodyPosition[], houses: number[]) =>
+      ps.length > 0 && ps.every((p) => houses.includes(houseBetween(ascSign, p.signIndex)));
+    if (classified.length === seven.length && inHouses(benefics, [1, 7]) && inHouses(malefics, [4, 10])) {
+      mark(311, 'Vajra Yoga');
+    } else if (classified.length === seven.length && inHouses(benefics, [4, 10]) && inHouses(malefics, [1, 7])) {
+      mark(312, 'Yava Yoga');
+    }
+
+    if (allIn(kendraHouses) && kendraHouses.every((h) => occupiedHouses.has(h))) mark(313, 'Kamala Yoga');
+    const panaphara = [2, 5, 8, 11];
+    const apoklima = [3, 6, 9, 12];
+    if ((allIn(panaphara) && panaphara.every((h) => occupiedHouses.has(h))) ||
+        (allIn(apoklima) && apoklima.every((h) => occupiedHouses.has(h)))) {
+      mark(314, 'Vapi Yoga');
+    }
+
+    const fourHousePatterns = [
+      { id: 315, houses: [1, 2, 3, 4], label: 'Yupa Yoga' },
+      { id: 316, houses: [4, 5, 6, 7], label: 'Sara Yoga' },
+      { id: 317, houses: [7, 8, 9, 10], label: 'Shakti Yoga' },
+      { id: 318, houses: [10, 11, 12, 1], label: 'Danda Yoga' },
+    ];
+    for (const pattern of fourHousePatterns) {
+      if (allIn(pattern.houses)) mark(pattern.id, pattern.label);
+    }
+
+    const sevenHousePatterns = [
+      { id: 319, houses: [1, 2, 3, 4, 5, 6, 7], label: 'Nauka Yoga' },
+      { id: 320, houses: [4, 5, 6, 7, 8, 9, 10], label: 'Koota Yoga' },
+      { id: 321, houses: [7, 8, 9, 10, 11, 12, 1], label: 'Chatra Yoga' },
+      { id: 322, houses: [10, 11, 12, 1, 2, 3, 4], label: 'Chapa Yoga' },
+    ];
+    for (const pattern of sevenHousePatterns) {
+      if (allIn(pattern.houses)) mark(pattern.id, pattern.label);
+    }
+
+    // Ardha-Chandra: seven consecutive houses beginning in a non-kendra.
+    const ardhaChandraStarts = [2, 3, 5, 6, 8, 9, 11, 12];
+    if (ardhaChandraStarts.some((start) =>
+      allIn(Array.from({ length: 7 }, (_, i) => ((start + i - 1) % 12) + 1))
+    )) mark(323, 'Ardha-Chandra Yoga');
+
+    const chakra = [1, 3, 5, 7, 9, 11];
+    const samudra = [2, 4, 6, 8, 10, 12];
+    if (allIn(chakra) && chakra.every((h) => occupiedHouses.has(h))) mark(324, 'Chakra Yoga');
+    if (allIn(samudra) && samudra.every((h) => occupiedHouses.has(h))) mark(325, 'Samudra Yoga');
+
+    // Sankhya (7): report only when no other Nabhasa group is derivable.
+    if (!nonSankhyaFormed) {
+      const sankhyaIdByCount: Record<number, number> = {
+        1: 332, 2: 331, 3: 330, 4: 329, 5: 328, 6: 327, 7: 326,
+      };
+      const sankhyaNameByCount: Record<number, string> = {
+        1: 'Gola Yoga', 2: 'Yuga Yoga', 3: 'Soola Yoga', 4: 'Kedara Yoga',
+        5: 'Pasha Yoga', 6: 'Dama Yoga', 7: 'Vallaki (Veena) Yoga',
+      };
+      const id = sankhyaIdByCount[occupiedSigns.size];
+      if (id) addNabhasa(id, sankhyaNameByCount[occupiedSigns.size]);
     }
   }
-
-  // Sankhya (numerical) Yogas: number of signs occupied by the seven classical planets.
-  const sankhyaIdByCount: Record<number, number> = { 1: 332, 2: 331, 3: 330, 4: 329, 5: 328, 6: 327, 7: 326 };
-  const sankhyaId = sankhyaIdByCount[uniqueSigns.size];
-  if (sankhyaId) addNabhasa(sankhyaId, (['', 'Gola Yoga', 'Yuga Yoga', 'Soola Yoga', 'Kedara Yoga', 'Pasha Yoga', 'Dama Yoga', 'Vallaki (Veena) Yoga'][uniqueSigns.size]));
-
 
   return detected;
 }
