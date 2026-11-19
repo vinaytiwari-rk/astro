@@ -31,6 +31,20 @@ describe('Planet-wise prediction timing integrity', () => {
     }
   });
 
+  it('includes date-specific gochar houses and assessment for classical grahas', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeTwelvePlanetsPredictions(chart, Date.UTC(2026, 10, 19));
+    const classical = report.planets.find((planet) => planet.id === 'Jupiter');
+    expect(classical).toBeDefined();
+    if (classical?.transitEvidenceEn) {
+      expect(classical.transitEvidenceEn).toMatch(/Current transit \(2026-11-19\)/);
+      expect(classical.transitEvidenceEn).toMatch(/House \d+ from natal Moon/);
+      expect(classical.transitEvidenceEn).toMatch(/Gochar assessment:/);
+    }
+    const outer = report.planets.find((planet) => planet.id === 'Uranus');
+    expect(outer?.transitEvidenceEn).toBeNull();
+  });
+
   it('shows the combined Mahadasha-Antardasha-Pratyantardasha path in planet-wise timing', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const nestedPeriods = [{
