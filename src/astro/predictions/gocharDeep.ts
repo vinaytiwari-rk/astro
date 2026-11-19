@@ -242,8 +242,8 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
 
   const overallSummary =
     doubleTransitHouses.length > 0
-      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) form a classical Double Transit on House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')}, priming these life areas for concrete events when supported by Dashas.`
-      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) focus on separate houses right now, encouraging gradual preparation rather than sudden upheaval.`;
+      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) simultaneously aspect or occupy natal House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')} under the implemented Parashari aspect rules. Treat this only as a shared timing corroborator when the natal promise and relevant Dasha also support the topic; it does not guarantee an event.`
+      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) do not simultaneously activate a natal house under the implemented Parashari aspect rules on this date; no Double Transit conclusion is drawn by this method.`;
 
   return {
     targetDate,
