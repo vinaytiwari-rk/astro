@@ -89,6 +89,11 @@ export const TwelvePlanetsPanel: React.FC<TwelvePlanetsPanelProps> = ({ chart })
                 ? 'प्रत्येक ग्रह की राशि, भाव, स्वामित्व, गरिमा, दृष्टि, ग्रहबल और उपलब्ध दशा-संकेत का विश्लेषण।'
                 : 'Chart-specific analysis of sign, house, ownership, dignity, aspects, planetary strength and available dasha periods.'}
             </p>
+            <p className="muted small-text" style={{ margin: '6px 0 0', lineHeight: 1.45 }}>
+              {isHi
+                ? 'नोट: पारंपरिक वैदिक फलादेश मुख्यतः नवग्रहों पर आधारित है। हर्षल, वरुण और यम को केवल आधुनिक पूरक संकेत के रूप में देखें। यहाँ समय केवल उपलब्ध विंशोत्तरी दशा से दिया जाता है; गोचर-आधारित समय-निर्धारण शामिल नहीं है।'
+                : 'Note: Classical Vedic interpretation primarily uses the nine grahas. Uranus, Neptune and Pluto are supplementary modern indicators only. Timing here uses supplied Vimshottari periods; transit-based timing is not included.'}
+            </p>
           </div>
 
           <div className="toolbar-group">
