@@ -1,3 +1,20 @@
+import {
+  CLASSICAL_VARA_PROFILES,
+  CLASSICAL_TITHI_PROFILES,
+  CLASSICAL_PRITHU_YASAS_NAVAMSHA,
+  CLASSICAL_LUNAR_MAAS_PROFILES,
+  CLASSICAL_RITU_PROFILES,
+  CLASSICAL_AYANA_PROFILES,
+  CLASSICAL_KAAL_PROFILES,
+  CLASSICAL_NITYA_YOGAS,
+  CLASSICAL_KARANAS,
+  CLASSICAL_NAKSHATRAS,
+  CLASSICAL_GREGORIAN_MONTHS,
+  getTithiVaraYoga,
+  getHoraReading,
+  type NavamshaLagnaProfile,
+  type TithiProfile,
+} from './classicalPanchangaNavamshaKb';
 import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { NAKSHATRAS, SIGNS } from '../constants';
 import { computeCharaKarakas } from '../jaimini';
@@ -35,6 +52,64 @@ export interface GeneralBirthProfile {
   factors: GeneralBirthFactor[];
   summaryEn: string;
   summaryHi: string;
+  navamshaLagna?: {
+    signIndex: number;
+    signNameEn: string;
+    signNameHi: string;
+    readingEn: string;
+    readingHi: string;
+    vulnerabilityAges: number[];
+    isVargottama: boolean;
+    sageWarningEn: string;
+    sageWarningHi: string;
+  };
+  tithiDetails?: {
+    tithiNumber: number;
+    tithiNameEn: string;
+    tithiNameHi: string;
+    category: 'Nanda' | 'Bhadra' | 'Jaya' | 'Rikta' | 'Poorna';
+    categoryHi: string;
+    presidingDeityEn: string;
+    presidingDeityHi: string;
+    governingNityaDeviEn: string;
+    governingNityaDeviHi: string;
+    nityaDeviMantra: string;
+    combinationYoga?: {
+      isAuspicious: boolean;
+      combinationTitleEn: string;
+      combinationTitleHi: string;
+      detailsEn: string;
+      detailsHi: string;
+      alertType?: 'Daghda' | 'Visha' | 'Hutashan';
+    };
+  };
+  seasonalDetails?: {
+    ayanaEn: string;
+    ayanaHi: string;
+    ayanaReadingEn: string;
+    ayanaReadingHi: string;
+    maasEn: string;
+    maasHi: string;
+    isAdhika: boolean;
+    maasReadingEn: string;
+    maasReadingHi: string;
+    rituEn: string;
+    rituHi: string;
+    rituReadingEn: string;
+    rituReadingHi: string;
+    kaalEn: string;
+    kaalHi: string;
+    kaalReadingEn: string;
+    kaalReadingHi: string;
+    horaEn: string;
+    horaHi: string;
+    horaReadingEn: string;
+    horaReadingHi: string;
+    gregorianMonthEn: string;
+    gregorianMonthHi: string;
+    gregorianReadingEn: string;
+    gregorianReadingHi: string;
+  };
 }
 
 export interface DeepLifePredictionsReport {
@@ -391,48 +466,227 @@ function interpretBirthFactor(
 ): { en: string; hi: string } {
   const weekday = chart.panchang?.vara;
   const tithi = chart.panchang?.tithi;
-  const weekdayReadings: Record<string, { en: string; hi: string }> = {
-    Sun: { en: 'Sunday birth is traditionally linked with solar themes: self-respect, visibility, leadership and responsibility. The Sun’s dignity, house and aspects decide how these themes express.', hi: 'रविवार का जन्म परंपरागत रूप से सूर्य के गुण—आत्मसम्मान, पहचान, नेतृत्व और उत्तरदायित्व—से जोड़ा जाता है। इनका वास्तविक रूप सूर्य की राशि, भाव, बल और दृष्टियों से तय होगा।' },
-    Moon: { en: 'Monday birth is traditionally associated with the Moon: sensitivity, care, adaptability and public connection. The Moon’s strength and associations qualify this reading.', hi: 'सोमवार का जन्म चंद्रमा के गुण—संवेदनशीलता, देखभाल, अनुकूलन और जन-संपर्क—से जोड़ा जाता है। चंद्रमा का बल और युति-दृष्टि इस संकेत को बदलते हैं।' },
-    Mars: { en: 'Tuesday birth is linked with Mars: initiative, courage, competitiveness and decisive action. Its condition shows whether these become constructive drive or impatience.', hi: 'मंगलवार का जन्म मंगल के गुण—पहल, साहस, प्रतिस्पर्धा और निर्णय-क्षमता—से जुड़ा है। मंगल की स्थिति बताएगी कि ये गुण रचनात्मक साहस बनेंगे या अधीरता।' },
-    Mercury: { en: 'Wednesday birth is linked with Mercury: learning, communication, calculation, trade and practical intelligence. Mercury’s condition and house lordships refine the result.', hi: 'बुधवार का जन्म बुध के गुण—सीखना, संवाद, गणना, व्यापार और व्यावहारिक बुद्धि—से जुड़ा है। बुध का बल, भाव और स्वामित्व फल को स्पष्ट करेंगे।' },
-    Jupiter: { en: 'Thursday birth is traditionally associated with Jupiter: knowledge, ethics, counsel, teaching, faith and expansion. A strong, well-supported Jupiter can make these themes more constructive; affliction may bring overconfidence or inconsistent judgement.', hi: 'गुरुवार का जन्म परंपरागत रूप से गुरु के गुण—ज्ञान, नैतिकता, सलाह, शिक्षा, आस्था और विस्तार—से जुड़ा माना जाता है। बलवान व शुभ-संबद्ध गुरु इन गुणों को निखार सकता है; पीड़ित गुरु में अति-आशावाद या निर्णय में असंगति दिख सकती है।' },
-    Venus: { en: 'Friday birth is associated with Venus: relationships, aesthetics, comfort, diplomacy and artistic appreciation. Venus’s dignity and afflictions show how balanced these themes are.', hi: 'शुक्रवार का जन्म शुक्र के गुण—संबंध, सौंदर्य-बोध, सुविधा, कूटनीति और कला-रुचि—से जुड़ा है। शुक्र का बल और पीड़ा इन गुणों की सहजता बताते हैं।' },
-    Saturn: { en: 'Saturday birth is traditionally linked with Saturn: discipline, patience, duty, endurance and gradual achievement. Saturn’s condition distinguishes steady maturity from avoidable delay or heaviness.', hi: 'शनिवार का जन्म शनि के गुण—अनुशासन, धैर्य, कर्तव्य, सहनशीलता और क्रमिक उपलब्धि—से जुड़ा है। शनि की स्थिति परिपक्व स्थिरता और अनावश्यक विलंब के बीच अंतर स्पष्ट करती है।' },
-  };
-  const tithiGroup = (n: number) => n % 5 === 1 ? 'Nanda' : n % 5 === 2 ? 'Bhadra' : n % 5 === 3 ? 'Jaya' : n % 5 === 4 ? 'Rikta' : 'Purna';
-  const tithiGroupHi: Record<string,string> = {
-    Nanda: 'नंदा', Bhadra: 'भद्रा', Jaya: 'जया', Rikta: 'रिक्ता', Purna: 'पूर्णा',
-  };
+  const sun = chart.planets.find((p) => p.id === 'Sun');
+  const moon = chart.planets.find((p) => p.id === 'Moon');
+
   switch (id) {
-    case 'weekday':
-      return weekdayReadings[weekday?.lord ?? ''] ?? { en: 'The weekday lord is ' + (weekday?.lord ?? 'unavailable') + ', traditionally associated with its characteristic qualities and life themes.', hi: 'इस जन्म का वारेश ' + (weekday?.lord ?? 'उपलब्ध नहीं') + ' है, जो अपने पारंपरिक गुणों और जीवन-विषयों से जुड़ा है।' };
-    case 'tithi':
-      if (tithi?.number === 15 && tithi.paksha === 'Shukla') return { en: 'Purnima birth: the Moon is near its full phase. Tradition associates this with emotional visibility, receptivity and fullness; the Moon’s strength, sign and afflictions decide the personal expression.', hi: 'पूर्णिमा जन्म: चंद्रमा पूर्ण कला के निकट होता है। परंपरा इसे भावनात्मक अभिव्यक्ति, ग्रहणशीलता और पूर्णता से जोड़ती है; वास्तविक फल चंद्रबल, राशि और पीड़ा से तय होगा।' };
-      if (tithi?.number === 30 || (tithi?.number === 15 && tithi.paksha === 'Krishna')) return { en: 'Amavasya / new-Moon birth: Sun and Moon are closely united. Traditional readings emphasize inwardness, reflection and the need to assess lunar strength and combustion carefully.', hi: 'अमावस्या जन्म: सूर्य और चंद्रमा निकट युति में होते हैं। पारंपरिक व्याख्या अंतर्मुखता और आत्मचिंतन पर बल देती है; चंद्रबल तथा सूर्य-समीपता को ध्यान से देखना चाहिए।' };
-      return { en: 'Tithi ' + valueEn + ' belongs to the ' + tithiGroup(tithi?.number ?? 1) + ' group (' + tithiGroupHi[tithiGroup(tithi?.number ?? 1)] + '), traditionally associated with the qualities of this lunar day.', hi: 'यह तिथि ' + (tithiGroupHi[tithiGroup(tithi?.number ?? 1)]) + ' वर्ग की है और पारंपरिक रूप से इस चंद्र-दिवस के स्वभाव तथा कार्य-प्रवृत्ति से जुड़ी मानी जाती है।' };
-    case 'paksha':
-      return tithi?.paksha === 'Shukla'
-        ? { en: 'Shukla Paksha is the waxing lunar half; traditional interpretation emphasizes growth, outward development and increasing visibility.', hi: 'शुक्ल पक्ष में चंद्रमा की कला बढ़ती है; पारंपरिक रूप से इसे विकास, बाहरी सक्रियता और क्रमशः बढ़ती अभिव्यक्ति से जोड़ा जाता है।' }
-        : { en: 'Krishna Paksha is the waning lunar half; traditional interpretation emphasizes reflection, consolidation, release and inward processing.', hi: 'कृष्ण पक्ष में चंद्रमा की कला घटती है; पारंपरिक रूप से इसे आत्मचिंतन, समेकन, त्याग और अंतर्मुखी प्रक्रिया से जोड़ा जाता है।' };
-    case 'maas': return { en: 'The lunar month ' + valueEn + ' is traditionally associated with seasonal rhythm, observances and the temperament of the birth period.', hi: 'चंद्र मास ' + valueHi + ' पारंपरिक पंचांग में ऋतु, पर्व-परंपरा और जन्मकालीन सांस्कृतिक वातावरण से जुड़ा है।' };
-    case 'ritu': return { en: 'Hemanta birth is traditionally associated with measured conduct, endurance, planning and preference for stability. Saturn, the Moon and the ascendant show how these qualities shape the native’s temperament.', hi: 'हेमंत ऋतु में जन्म परंपरागत रूप से गंभीरता, धैर्य, योजनाबद्ध कार्य और स्थिरता की प्रवृत्ति से जोड़ा जाता है। शनि, चंद्रमा और लग्न इन गुणों की वास्तविक अभिव्यक्ति बताते हैं।' };
-    case 'prahar': return { en: 'Prahar records the birth time within the day or night cycle and is traditionally associated with the activity and temperament of that period.', hi: 'प्रहर दिन-रात्रि चक्र में जन्म का समय बताता है और उस अवधि की पारंपरिक कार्य-प्रवृत्ति तथा स्वभाव से जुड़ा है।' };
-    case 'karana': return { en: 'Karana is half a tithi and traditionally describes the practical tone, initiative and working style associated with the birth moment.', hi: 'करण तिथि का आधा भाग है और पारंपरिक रूप से जन्मकालीन कार्य-शैली, पहल तथा व्यवहारिक प्रवृत्ति से जुड़ा माना जाता है।' };
-    case 'surya-yoga': return { en: 'Nitya Yoga is calculated from the combined longitudes of Sun and Moon. It describes a traditional birth-time quality and is distinct from planetary Raja/Dhana yogas.', hi: 'नित्य योग सूर्य और चंद्रमा के संयुक्त अंशों से निकलता है। यह जन्म-समय का पंचांग संकेत है और ग्रहों से बनने वाले राजयोग/धनयोग से अलग है।' };
-    case 'varna': return { en: valueEn + ' Varna is traditionally associated with a style of learning, responsibility and social contribution in classical matching descriptions.', hi: 'राशि-वर्ण ' + valueHi + ' पारंपरिक मिलान-विवेचन में अध्ययन, उत्तरदायित्व और सामाजिक योगदान की प्रवृत्ति से जोड़ा जाता है।' };
-    case 'vashya': return { en: valueEn + ' Vashya describes the traditional interaction style associated with the Moon sign, including adaptability, initiative and rapport.', hi: 'वश्य की ' + valueHi + ' श्रेणी चंद्र राशि से जुड़ी पारंपरिक व्यवहार-शैली, अनुकूलन, पहल और पारस्परिक तालमेल को दर्शाती है।' };
-    case 'yoni': return { en: 'Yoni is a Nakshatra-based symbolic classification used in traditional compatibility readings, describing instinctive preferences and relational temperament.', hi: 'योनि नक्षत्र-आधारित प्रतीकात्मक श्रेणी है, जिसका पारंपरिक मिलान में उपयोग स्वभावगत पसंद और संबंधों की प्रवृत्ति समझने के लिए किया जाता है।' };
-    case 'gana': return { en: valueEn + ' Gana is traditionally associated with a characteristic style of temperament, conduct and interpersonal response.', hi: valueHi + ' गण पारंपरिक रूप से स्वभाव, व्यवहार और पारस्परिक प्रतिक्रिया की विशिष्ट प्रवृत्ति से जुड़ा है।' };
-    case 'nadi': return { en: valueEn + ' Nadi is one of the three traditional Nakshatra classifications and is used in Ashtakoota matching to describe a temperament category.', hi: valueHi + ' नाड़ी नक्षत्र की तीन पारंपरिक श्रेणियों में से एक है और अष्टकूट मिलान में स्वभाव-वर्ग के रूप में प्रयुक्त होती है।' };
-    case 'nadi-pad': return { en: valueEn + ' combines the Nakshatra Nadi and Pada used in traditional Ashtakoota classification.', hi: valueHi + ' नक्षत्र की नाड़ी और चरण को मिलाकर अष्टकूट की पारंपरिक श्रेणी बताता है।' };
-    case 'tattva': return { en: 'The Moon-sign element gives a symbolic emotional-response style: Fire—initiative, Earth—stability, Air—ideas and exchange, Water—sensitivity. Confirm it with Moon strength and aspects.', hi: 'चंद्र राशि का तत्त्व भावनात्मक प्रतिक्रिया का प्रतीकात्मक ढंग बताता है: अग्नि—पहल, पृथ्वी—स्थिरता, वायु—विचार व संवाद, जल—संवेदनशीलता। चंद्रबल और दृष्टियों से पुष्टि करें।' };
-    case 'paya': return { en: 'Paya is a regional traditional classification based on the Moon’s house from the Ascendant, associated with the customary symbolism of the birth period.', hi: 'पाया लग्न से चंद्रमा की भाव-स्थिति पर आधारित क्षेत्रीय पारंपरिक वर्गीकरण है, जिसे जन्मकालीन परिस्थितियों के प्रतीकात्मक संकेत के रूप में देखा जाता है।' };
-    case 'naam-akshar': return { en: 'The birth syllable is assigned from the Nakshatra Pada and is traditionally used as the opening sound for naming.', hi: 'जन्माक्षर नक्षत्र के चरण से निर्धारित होता है और पारंपरिक रूप से नामकरण के प्रारंभिक अक्षर के रूप में प्रयुक्त होता है।' };
-    case 'nakshatra-charan': return { en: 'Nakshatra and Pada refine the Moon’s symbolic field and are read with the Nakshatra lord, Moon condition and occupied house.', hi: 'नक्षत्र और चरण चंद्रमा के प्रतीकात्मक स्वभाव को सूक्ष्म करते हैं। इन्हें नक्षत्रेश, चंद्रमा की स्थिति और भाव के साथ पढ़ना चाहिए।' };
-    case 'atmakaraka': return { en: valueEn + ' is the Jaimini Atmakaraka, highlighting the central themes of inner development, responsibility and personal growth.', hi: valueHi + ' जैमिनी आत्मकारक है, जो आंतरिक विकास, उत्तरदायित्व और व्यक्तिगत परिपक्वता के प्रमुख विषयों को दर्शाता है।' };
-    case 'ishta-dev': return { en: valueEn + ' is the devotional indication derived from the Jaimini Karakamsha method and may be used as a focus for personal prayer or reflection.', hi: valueHi + ' जैमिनी कारकांश पद्धति से प्राप्त उपास्य संकेत है, जिसे व्यक्तिगत प्रार्थना और आत्मचिंतन का केंद्र बनाया जा सकता है।' };
-    default: return { en: valueEn + ' is a traditional birth classification associated with the qualities of this Panchanga or Nakshatra factor.', hi: valueHi + ' इस पंचांग अथवा नक्षत्र कारक का पारंपरिक जन्म-वर्गीकरण है, जो उससे जुड़े गुणों को दर्शाता है।' };
+    case 'weekday': {
+      const lord = weekday?.lord ?? '';
+      const varaProf = CLASSICAL_VARA_PROFILES[lord];
+      if (varaProf) {
+        return {
+          en: `${varaProf.nameEn}: ${varaProf.psychologicalTraitsEn} Ambition & Work: ${varaProf.workAndAmbitionEn} Relationship dynamic: ${varaProf.relationshipNatureEn} Ruling planet: ${varaProf.rulingPlanet}.`,
+          hi: `${varaProf.nameHi}: ${varaProf.psychologicalTraitsHi} कार्य व महत्वाकांक्षा: ${varaProf.workAndAmbitionHi} संबंध स्वभाव: ${varaProf.relationshipNatureHi} स्वामी ग्रह: ${varaProf.rulingPlanetHi}।`,
+        };
+      }
+      return {
+        en: `Born on ${valueEn}. Reflects planetary qualities of ${weekday?.lord ?? 'the day lord'}, shaping core drive and social role.`,
+        hi: `${valueHi} का जन्म। यह वार स्वामी (${weekday?.sanskrit ?? 'वार स्वामी'}) के प्रभाव से जातक की कार्यशैली व स्वभाव का निर्धारण करता है।`,
+      };
+    }
+
+    case 'tithi': {
+      const tNum = Math.max(1, Math.min(15, tithi?.number ?? 1));
+      const tProf = CLASSICAL_TITHI_PROFILES[tNum];
+      const isShukla = tithi?.paksha === 'Shukla';
+      const isPurnima = tNum === 15 && isShukla;
+      const isAmavasya = tNum === 15 && !isShukla;
+      const yogaRes = getTithiVaraYoga(tNum, weekday?.lord ?? '');
+
+      if (tProf) {
+        const titleEn = isPurnima ? 'Purnima (15th Shukla Tithi)' : isAmavasya ? 'Amavasya (15th Krishna Tithi)' : tProf.nameEn;
+        const titleHi = isPurnima ? 'पूर्णिमा (१५वीं शुक्ल तिथि)' : isAmavasya ? 'अमावस्या (१५वीं कृष्ण तिथि)' : tProf.nameHi;
+        const deityEn = isPurnima ? 'Chandra Deva & Goddess Lakshmi' : isAmavasya ? 'Pitrus & Lord Shani' : tProf.presidingDeityEn;
+        const deityHi = isPurnima ? 'चंद्र देव एवं महालक्ष्मी' : isAmavasya ? 'पितृगण एवं शनि देव' : tProf.presidingDeityHi;
+        const nityaEn = isPurnima ? 'Shodashi / Maha Nitya' : isAmavasya ? 'Chitra Nitya Devi' : tProf.governingNityaDeviEn;
+        const nityaHi = isPurnima ? 'षोडशी / महानित्या' : isAmavasya ? 'चित्रा नित्या देवी' : tProf.governingNityaDeviHi;
+
+        return {
+          en: `${titleEn} [${tProf.category} Category - ${tProf.categorySignificanceEn}]: Presiding Deity: ${deityEn}; Governing Nitya Devi: ${nityaEn}. Classical Indication: ${tProf.classicalResultEn} Propitious activities: ${tProf.propitiousWorkEn}. Combination: ${yogaRes.combinationTitleEn} (${yogaRes.detailsEn}).`,
+          hi: `${titleHi} [${tProf.categoryHi} वर्ग - ${tProf.categorySignificanceHi}]: अधिष्ठाता देव: ${deityHi}; अधिष्ठात्री नित्या देवी: ${nityaHi}। शास्त्रीय फलकथन: ${tProf.classicalResultHi} शुभ कार्य: ${tProf.propitiousWorkHi}। संयोग: ${yogaRes.combinationTitleHi} (${yogaRes.detailsHi})।`,
+        };
+      }
+      return {
+        en: `Tithi ${valueEn}: Governs vital lunar vitality, mental disposition, and timing of auspicious actions.`,
+        hi: `तिथि ${valueHi}: चंद्र-कलाओं पर आधारित मानसिक स्थिति, आत्मबल और मांगलिक कार्यों की शुभता का निर्धारण करती है।`,
+      };
+    }
+
+    case 'paksha': {
+      const isShukla = tithi?.paksha === 'Shukla';
+      if (isShukla) {
+        return {
+          en: 'Shukla Paksha (Bright Fortnight): Waxing lunar digits endow the native with flourishing progeny, wealth, righteous conduct, benevolence, and natural ascent in public esteem.',
+          hi: 'शुक्ल पक्ष (शुक्ल पक्षीय जन्म): वर्धमान चंद्र किरणों के प्रभाव से जातक संतान-सुख, प्रचुर धन, धार्मिक रुचि, दया, उदारता और समाज में निरंतर यश व प्रगति प्राप्त करता है।',
+        };
+      }
+      return {
+        en: 'Krishna Paksha (Dark Fortnight): Deeply devoted to mother, pragmatic worldly karma, tenacious debater for self-advancement, building strength through perseverance and overcoming early hurdles.',
+        hi: 'कृष्ण पक्ष (कृष्ण पक्षीय जन्म): माता के प्रति अनन्य भक्ति, व्यावहारिक कर्मठता, स्वावलंबन हेतु तार्किक दृढ़ता तथा आरंभिक चुनौतियों को पार कर अडिग सफलता पाने का सामर्थ्य।',
+      };
+    }
+
+    case 'maas': {
+      // Find clean maas name
+      const cleanMaas = valueEn.replace('Adhika ', '').trim();
+      const maasProf = CLASSICAL_LUNAR_MAAS_PROFILES[cleanMaas];
+      const isAdhika = valueEn.startsWith('Adhika');
+      const adhikaEn = isAdhika ? ' [Adhika Maas (Purushottama Maas): Sacred astronomical synchronization balancing solar and lunar cycles, extraordinarily auspicious for spiritual merit.]' : '';
+      const adhikaHi = isAdhika ? ' [अधिक मास (पुरुषोत्तम मास): सौर व चांद्र वर्ष के सामंजस्य का पावन मास, जो आध्यात्मिक उत्थान व दान-पुण्य हेतु परम फलदायी है।]' : '';
+
+      if (maasProf) {
+        return {
+          en: `${valueEn} (Sun in ${maasProf.sunSignEn}): ${maasProf.shastricResultEn}${adhikaEn}`,
+          hi: `${valueHi} (सूर्य ${maasProf.sunSignHi} में): ${maasProf.shastricResultHi}${adhikaHi}`,
+        };
+      }
+      return {
+        en: `Lunar Month ${valueEn}: Marks seasonal solar-lunar alignment and societal inclination.`,
+        hi: `चांद्र मास ${valueHi}: सौर-चांद्र संवत्सर के प्रभाव से जीवन की प्राथमिक प्रवृत्तियों को दिशा देता है।`,
+      };
+    }
+
+    case 'ritu': {
+      const cleanRitu = valueEn.split(' ')[0] ?? 'Vasanta';
+      const rituProf = CLASSICAL_RITU_PROFILES[cleanRitu] ?? CLASSICAL_RITU_PROFILES['Vasanta'];
+      return {
+        en: `${rituProf.nameEn} (Lunar Months: ${rituProf.lunarMonthsEn}): ${rituProf.temperamentEn}`,
+        hi: `${rituProf.nameHi} (${rituProf.lunarMonthsHi}): ${rituProf.temperamentHi}`,
+      };
+    }
+
+    case 'prahar': {
+      let kaalKey = 'Madhyahna';
+      const sunHouse = sun?.rasiHouseNumber ?? 1;
+      if (sunHouse === 12 || sunHouse === 1 || sunHouse === 2) kaalKey = 'Ushakaal';
+      else if (sunHouse === 11 || sunHouse === 10) kaalKey = 'Pratushakaal';
+      else if (sunHouse === 9 || sunHouse === 8) kaalKey = 'Madhyahna';
+      else if (sunHouse === 7 || sunHouse === 6) kaalKey = 'Sayamkaal';
+      else kaalKey = 'RatriKaal';
+
+      const kaalProf = CLASSICAL_KAAL_PROFILES[kaalKey] ?? CLASSICAL_KAAL_PROFILES['Madhyahna'];
+      return {
+        en: `${valueEn} · ${kaalProf.nameEn} (Diurnal Phase): ${kaalProf.natureEn} Solar alignment in ${kaalProf.sunHousePosition}.`,
+        hi: `${valueHi} · ${kaalProf.nameHi}: ${kaalProf.natureHi} सूर्य की भाव-स्थिति (${kaalProf.sunHousePosition})।`,
+      };
+    }
+
+    case 'karana': {
+      const karanaName = chart.panchang?.karana?.name ?? valueEn.split(' ')[0] ?? 'Bava';
+      const kProf = CLASSICAL_KARANAS[karanaName];
+      if (kProf) {
+        return {
+          en: `Karana ${kProf.nameEn} [${kProf.natureEn}]: ${kProf.classicalResultEn}`,
+          hi: `करण ${kProf.nameHi} [${kProf.natureHi}]: ${kProf.classicalResultHi}`,
+        };
+      }
+      return {
+        en: `Karana ${valueEn}: Defines executive rhythm and immediate capacity to take decisive actions.`,
+        hi: `करण ${valueHi}: कार्य-संपादन क्षमता, तात्कालिक निर्णय-शक्ति और पुरुषार्थ का प्रतीक है।`,
+      };
+    }
+
+    case 'surya-yoga': {
+      const yogaNum = chart.panchang?.yoga?.number ?? 1;
+      const yProf = CLASSICAL_NITYA_YOGAS[yogaNum];
+      if (yProf) {
+        return {
+          en: `Nitya Yoga ${yProf.nameEn} [${yProf.natureEn}]: ${yProf.classicalResultEn}`,
+          hi: `नित्य योग ${yProf.nameHi} [${yProf.natureHi}]: ${yProf.classicalResultHi}`,
+        };
+      }
+      return {
+        en: `Surya-Chandra Yoga ${valueEn}: Shows harmonized coordination between vital consciousness and mind.`,
+        hi: `सूर्य-चंद्र नित्य योग ${valueHi}: आत्मबल और मनोबल के पारस्परिक सामंजस्य का शास्त्रीय संकेत है।`,
+      };
+    }
+
+    case 'nakshatra-charan': {
+      const nakIndex = chart.panchang?.nakshatra?.index ?? moon?.nakshatraIndex ?? 0;
+      const nakProf = CLASSICAL_NAKSHATRAS[nakIndex];
+      if (nakProf) {
+        return {
+          en: `${valueEn}: Appearance: ${nakProf.physicalFeaturesEn} Personality: ${nakProf.psychologicalTraitsEn}${nakProf.lifeTrajectoryEn ? ` Career & Life: ${nakProf.lifeTrajectoryEn}` : ''}`,
+          hi: `${valueHi}: शारीरिक लक्षण: ${nakProf.physicalFeaturesHi} स्वभाव व व्यक्तित्व: ${nakProf.psychologicalTraitsHi}${nakProf.lifeTrajectoryHi ? ` कार्यक्षेत्र व प्रगति: ${nakProf.lifeTrajectoryHi}` : ''}`,
+        };
+      }
+      return {
+        en: `Nakshatra Pada ${valueEn}: Sets specific subconscious tendencies and mental orientation.`,
+        hi: `नक्षत्र चरण ${valueHi}: मानसिक प्रवृत्तियों और चेतना की दिशा को सूक्ष्म रूप से निर्धारित करता है।`,
+      };
+    }
+
+    case 'varna':
+      return {
+        en: `Varna (${valueEn}): Traditionally signifies natural aptitude and temperament in social responsibility and intellectual pursuits.`,
+        hi: `वर्ण (${valueHi}): सामाजिक उत्तरदायित्व और बौद्धिक कार्यप्रणाली में जातक की स्वाभाविक रुचि व प्रवृत्ति का शास्त्रीय वर्गीकरण है।`,
+      };
+
+    case 'vashya':
+      return {
+        en: `Vashya (${valueEn}): Classical indicator of mutual influence, social adaptability, and magnetic relationship resonance.`,
+        hi: `वश्य (${valueHi}): सामाजिक अनुकूलता, प्रभावशीलता और संबंधों में पारस्परिक आकर्षण का शास्त्रीय सूचक है।`,
+      };
+
+    case 'yoni':
+      return {
+        en: `Yoni (${valueEn}): Instinctive nature, physiological resilience, and relational harmony in marriage compatibility.`,
+        hi: `योनि (${valueHi}): जातक की मूल जैविक प्रकृति, शारीरिक ऊर्जा और दांपत्य जीवन में स्वाभाविक सामंजस्य का प्रतीक है।`,
+      };
+
+    case 'gana':
+      return {
+        en: `Gana (${valueEn}): Mental disposition and worldview—Deva indicates noble idealism; Manushya indicates pragmatic balance; Rakshasa indicates bold ambition and defiance of convention.`,
+        hi: `गण (${valueHi}): जीवन-दृष्टिकोण का निर्धारण—देव गण उच्च आदर्श; मनुष्य गण व्यावहारिक संतुलन; राक्षस गण अदम्य साहस और दृढ़ महत्वाकांक्षा का सूचक है।`,
+      };
+
+    case 'nadi':
+      return {
+        en: `Nadi (${valueEn}): Constitutional biological current (Vata/Pitta/Kapha balance), hereditary vitality, and marital longevity harmony.`,
+        hi: `नाड़ी (${valueHi}): जैविक त्रिदोष (वात/पित्त/कफ) संतुलन, आनुवंशिक जीवनशक्ति और दांपत्य स्वास्थ्य का मुख्य आधार है।`,
+      };
+
+    case 'nadi-pad':
+      return {
+        en: `Nadi Pada (${valueEn}): Quarter-based refinement of physical constitution and micro-timing of constitutional health.`,
+        hi: `नाड़ी पाद (${valueHi}): शारीरिक धातु-पुष्टि और स्वास्थ्य प्रवृत्तियों का सूक्ष्म शास्त्रीय संकेत है।`,
+      };
+
+    case 'tattva':
+      return {
+        en: `Tatva (${valueEn}): Elemental foundation of the psyche—Fire gives bold action, Earth gives steadfast pragmatism, Air gives intellectual agility, Water gives intuitive empathy.`,
+        hi: `तत्त्व (${valueHi}): मानसिक चेतना का मूल तत्त्व—अग्नि पराक्रम देती है, पृथ्वी स्थिरता, वायु बौद्धिक संवेदनशीलता, और जल सहज अंतर्दृष्टि।`,
+      };
+
+    case 'paya':
+      return {
+        en: `Paya (${valueEn}): North-Indian classical matrix based on Moon’s house from Lagna, indicating childhood blessings and baseline fortune.`,
+        hi: `पाया (${valueHi}): लग्न से चंद्रमा की भाव-स्थिति पर आधारित उत्तर-भारतीय पद्धति, जो जीवनारंभ के भाग्य और पारिवारिक संबल को दर्शाती है।`,
+      };
+
+    case 'naam-akshar':
+      return {
+        en: `Birth Syllable (${valueEn}): Assigned from the Nakshatra Pada, activating the sacred sonic vibration for personal naming and vitality.`,
+        hi: `जन्माक्षर (${valueHi}): नक्षत्र चरण से निर्धारित मंगल ध्वनि, जो नामकरण और आत्मिक आभा को बल प्रदान करती है।`,
+      };
+
+    case 'atmakaraka':
+      return {
+        en: `${valueEn} is the Jaimini Atmakaraka (Soul Signifier), indicating core karmic lessons, ethical mission, and path of self-realization.`,
+        hi: `${valueHi} जैमिनी आत्मकारक है, जो आत्मा के मुख्य कर्म-संस्कार, जीवन-उद्देश्य और आत्म-साक्षात्कार के मार्ग को उजागर करता है।`,
+      };
+
+    case 'ishta-dev':
+      return {
+        en: `${valueEn} is the Ishta Devata derived from the 12th from Karakamsha in Navamsha (D9), serving as the supreme focus for personal meditation and divine protection.`,
+        hi: `${valueHi} नवांश (D9) में कारकांश से १२वें भाव से प्राप्त इष्ट देव हैं, जो व्यक्तिगत साधना, मानसिक शांति और दैवीय संबल के सर्वोच्च केंद्र हैं।`,
+      };
+
+    default:
+      return {
+        en: `${valueEn} is a traditional birth foundation factor providing classical perspective on constitutional strengths.`,
+        hi: `${valueHi} एक पारंपरिक जन्म कारक है, जो जातक की शास्त्रीय प्रवृत्तियों को स्पष्ट करता है।`,
+      };
   }
 }
 
@@ -551,7 +805,98 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
   const summaryEn = `Birth foundation: ${weekday?.name ?? 'weekday unavailable'}, ${tithi?.name ?? 'tithi unavailable'} / ${tithi?.paksha ?? 'paksha unavailable'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'birth nakshatra unavailable'} Pada ${pada}, ${nakInfo?.gana ?? ''} Gana, ${nakInfo?.nadi ?? ''} Nadi. The birth profile combines Panchanga, Nakshatra, Moon-sign attributes, Chara Atmakaraka and D9 Karakamsha indications.`;
   const summaryHi = `जन्म का आधार: ${weekday?.sanskrit ?? 'वार उपलब्ध नहीं'}, ${tithi?.name ?? 'तिथि उपलब्ध नहीं'} / ${tithi?.paksha === 'Shukla' ? 'शुक्ल पक्ष' : 'कृष्ण पक्ष'}, ${monthName}, ${ritu}; ${nakInfo?.name ?? 'नक्षत्र उपलब्ध नहीं'} चरण ${pada}, ${nakInfo?.gana ?? ''} गण, ${nakInfo?.nadi ?? ''} नाड़ी। इसमें पंचांग, नक्षत्र, चंद्र राशि के वर्ण-वश्य-तत्त्व, जैमिनी आत्मकारक और D9 कारकांश से प्राप्त इष्ट देव के संकेत सम्मिलित हैं।`;
   const interpretedFactors = factors.map((factor) => ({ ...factor, ...(() => { const meaning = interpretBirthFactor(factor.id, factor.valueEn, factor.valueHi, chart); return { interpretationEn: meaning.en, interpretationHi: meaning.hi }; })() }));
-  return { factors: interpretedFactors, summaryEn, summaryHi };
+  // Compute Classical Navamsha Lagna (Prithu Yasas)
+  const d9AscPlacement = chart.divisionalCharts?.D9?.placements?.find((p) => p.id === 'Asc');
+  const navSignIndex = d9AscPlacement
+    ? d9AscPlacement.signIndex
+    : Math.floor(normalize360(chart.ascendant.longitude) / (30 / 9)) % 12;
+  const navProf = CLASSICAL_PRITHU_YASAS_NAVAMSHA[navSignIndex] ?? CLASSICAL_PRITHU_YASAS_NAVAMSHA[0];
+  const isVargottama = navSignIndex === chart.ascendant.signIndex;
+
+  const navamshaLagna = {
+    signIndex: navSignIndex,
+    signNameEn: navProf.signNameEn,
+    signNameHi: navProf.signNameHi,
+    readingEn: navProf.prithuYasasDictumEn + (isVargottama ? ' [Vargottama Navamsha: Lagna in identical sign in D1 and D9 bestows two-fold happiness, great longevity and unshakeable prosperity.]' : ''),
+    readingHi: navProf.prithuYasasDictumHi + (isVargottama ? ' [वर्गोत्तम नवांश: लग्न D1 व D9 दोनों में समान राशि में होने से जातक को दोगुना शुभ फल, उत्तम स्वास्थ्य और अखंड समृद्धि मिलती है।]' : ''),
+    vulnerabilityAges: navProf.criticalVulnerabilityAges,
+    isVargottama,
+    sageWarningEn: navProf.sageWarningEn,
+    sageWarningHi: navProf.sageWarningHi,
+  };
+
+  // Compute Tithi & Nitya Devi Profile
+  const tNum = Math.max(1, Math.min(15, chart.panchang?.tithi?.number ?? 1));
+  const tProf = CLASSICAL_TITHI_PROFILES[tNum] ?? CLASSICAL_TITHI_PROFILES[1];
+  const tithiYoga = getTithiVaraYoga(tNum, chart.panchang?.vara?.lord ?? '');
+  const isShukla = chart.panchang?.tithi?.paksha === 'Shukla';
+  const tithiDetails = {
+    tithiNumber: tNum,
+    tithiNameEn: tNum === 15 ? (isShukla ? 'Purnima' : 'Amavasya') : tProf.nameEn,
+    tithiNameHi: tNum === 15 ? (isShukla ? 'पूर्णिमा' : 'अमावस्या') : tProf.nameHi,
+    category: tProf.category,
+    categoryHi: tProf.categoryHi,
+    presidingDeityEn: tNum === 15 ? (isShukla ? 'Chandra Deva & Mahalakshmi' : 'Pitrus & Lord Shani') : tProf.presidingDeityEn,
+    presidingDeityHi: tNum === 15 ? (isShukla ? 'चंद्र देव एवं महालक्ष्मी' : 'पितृगण एवं शनि देव') : tProf.presidingDeityHi,
+    governingNityaDeviEn: tNum === 15 ? (isShukla ? 'Shodashi / Maha Nitya' : 'Chitra Nitya Devi') : tProf.governingNityaDeviEn,
+    governingNityaDeviHi: tNum === 15 ? (isShukla ? 'षोडशी / महानित्या' : 'चित्रा नित्या देवी') : tProf.governingNityaDeviHi,
+    nityaDeviMantra: tProf.nityaDeviMantra,
+    combinationYoga: tithiYoga,
+  };
+
+  // Compute Seasonal Details (Ayana, Maas, Ritu, Kaal, Hora, Gregorian Month)
+  const sunSign = sun ? sun.signIndex : 0;
+  const isUttarayana = sunSign === 9 || sunSign === 10 || sunSign === 11 || sunSign === 0 || sunSign === 1 || sunSign === 2;
+  const ayanaData = isUttarayana ? CLASSICAL_AYANA_PROFILES.Uttarayana : CLASSICAL_AYANA_PROFILES.Dakshinayana;
+  const maasProf = CLASSICAL_LUNAR_MAAS_PROFILES[lunarMonth] ?? CLASSICAL_LUNAR_MAAS_PROFILES['Chaitra'];
+  const rituKey = ritu.split(' ')[0] ?? 'Vasanta';
+  const rituProf = CLASSICAL_RITU_PROFILES[rituKey] ?? CLASSICAL_RITU_PROFILES['Vasanta'];
+
+  let kaalKey = 'Madhyahna';
+  const sHouse = sun?.rasiHouseNumber ?? 1;
+  if (sHouse === 12 || sHouse === 1 || sHouse === 2) kaalKey = 'Ushakaal';
+  else if (sHouse === 11 || sHouse === 10) kaalKey = 'Pratushakaal';
+  else if (sHouse === 9 || sHouse === 8) kaalKey = 'Madhyahna';
+  else if (sHouse === 7 || sHouse === 6) kaalKey = 'Sayamkaal';
+  else kaalKey = 'RatriKaal';
+  const kaalProf = CLASSICAL_KAAL_PROFILES[kaalKey] ?? CLASSICAL_KAAL_PROFILES['Madhyahna'];
+
+  const horaRes = getHoraReading(chart.ascendant.signIndex, chart.ascendant.degreeInSign);
+
+  // Gregorian Birth Month
+  const birthDateObj = new Date(chart.utcMs);
+  const gregMonthNum = (birthDateObj.getUTCMonth() + 1);
+  const gregMonthProf = CLASSICAL_GREGORIAN_MONTHS[gregMonthNum] ?? CLASSICAL_GREGORIAN_MONTHS[1];
+
+  const seasonalDetails = {
+    ayanaEn: ayanaData.nameEn,
+    ayanaHi: ayanaData.nameHi,
+    ayanaReadingEn: ayanaData.natureEn,
+    ayanaReadingHi: ayanaData.natureHi,
+    maasEn: monthName,
+    maasHi: (isAdhika ? 'अधिक ' : '') + (({ Chaitra: 'चैत्र', Vaishakha: 'वैशाख', Jyeshtha: 'ज्येष्ठ', Ashadha: 'आषाढ़', Shravana: 'श्रावण', Bhadrapada: 'भाद्रपद', Ashwin: 'आश्विन', Kartika: 'कार्तिक', Margashirsha: 'मार्गशीर्ष', Pausha: 'पौष', Magha: 'माघ', Phalguna: 'फाल्गुन' } as Record<string, string>)[lunarMonth] ?? lunarMonth),
+    isAdhika,
+    maasReadingEn: maasProf.shastricResultEn,
+    maasReadingHi: maasProf.shastricResultHi,
+    rituEn: rituProf.nameEn,
+    rituHi: rituProf.nameHi,
+    rituReadingEn: rituProf.temperamentEn,
+    rituReadingHi: rituProf.temperamentHi,
+    kaalEn: kaalProf.nameEn,
+    kaalHi: kaalProf.nameHi,
+    kaalReadingEn: kaalProf.natureEn,
+    kaalReadingHi: kaalProf.natureHi,
+    horaEn: `${horaRes.horaLord} Hora (${horaRes.isOddSign ? 'Odd Sign' : 'Even Sign'})`,
+    horaHi: `${horaRes.horaLordHi} होरा (${horaRes.isOddSign ? 'विषम राशि' : 'सम राशि'})`,
+    horaReadingEn: horaRes.readingEn,
+    horaReadingHi: horaRes.readingHi,
+    gregorianMonthEn: gregMonthProf.monthNameEn,
+    gregorianMonthHi: gregMonthProf.monthNameHi,
+    gregorianReadingEn: gregMonthProf.archetypeEn,
+    gregorianReadingHi: gregMonthProf.archetypeHi,
+  };
+
+  return { factors: interpretedFactors, summaryEn, summaryHi, navamshaLagna, tithiDetails, seasonalDetails };
 }
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
