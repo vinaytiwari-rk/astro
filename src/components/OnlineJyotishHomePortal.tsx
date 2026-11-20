@@ -1389,7 +1389,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <li><button type="button" onClick={onOpenBooklet}>{isHi ? 'संपूर्ण जन्म पत्रिका (निःशुल्क)' : 'Birth Report Booklet (Free)'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('shadbala')}>{isHi ? 'षड्बल व ग्रह बल' : 'Shadbala & Planetary Strengths'}</button></li>
                 <li><button type="button" onClick={() => onNavigate('marriage-matching')}>{isHi ? 'दश कूट मिलान (10 Poruthams)' : 'Dasha Koota Matching'}</button></li>
-                <li><button type="button" onClick={() => onNavigate('workstation')}>{isHi ? '12-भाग विस्तृत वर्कस्टेशन' : '12-Division Workstation'}</button></li>
+                <li><button type="button" onClick={() => onNavigate('split-studio')}>{isHi ? '4-स्क्रीन ज्योतिषी वर्कस्टेशन' : '4-Screen Split Workstation'}</button></li>
               </ul>
             </div>
           </div>

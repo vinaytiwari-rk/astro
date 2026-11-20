@@ -1,6 +1,7 @@
 import rawCities from 'city-timezones/data/cityMap.json';
 import tzlookup from 'tz-lookup';
 import type { BirthInput, CalcSettings } from '../astro/types';
+import { INDIAN_DISTRICTS_ATLAS } from './indianDistricts';
 
 export interface CityEntry {
   city: string;
@@ -12,6 +13,7 @@ export interface CityEntry {
   pop: number;
   timezone: string;
   source?: 'core' | 'atlas' | 'online';
+  aliases?: string;
 }
 
 const ESSENTIAL_INDIAN_CITIES: CityEntry[] = [
@@ -59,6 +61,7 @@ interface IndexedCity {
   timezone?: string;
   nameLow: string;
   asciiLow: string;
+  aliasLow: string;
   source: 'core' | 'atlas';
 }
 
@@ -136,6 +139,14 @@ function buildCore(): { list: CityEntry[]; indexed: IndexedCity[] } {
     list.push(c);
   }
 
+  for (const d of INDIAN_DISTRICTS_ATLAS) {
+    const key = `${d.cityAscii.toLowerCase()}|${d.province.toLowerCase()}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      list.push(d);
+    }
+  }
+
   for (const r of rawCities as RawCity[]) {
     if (!r.timezone || !r.city) continue;
     const key = `${r.city.toLowerCase()}|${(r.country || '').toLowerCase()}`;
@@ -161,6 +172,7 @@ function buildCore(): { list: CityEntry[]; indexed: IndexedCity[] } {
     const asciiLow = stripDiacritics(entry.cityAscii || entry.city);
     const provLow = stripDiacritics(entry.province);
     const cLow = stripDiacritics(entry.country);
+    const aliasLow = stripDiacritics(entry.aliases || '');
     return {
       city: entry.city,
       cityAscii: entry.cityAscii,
@@ -174,6 +186,7 @@ function buildCore(): { list: CityEntry[]; indexed: IndexedCity[] } {
       timezone: entry.timezone,
       nameLow,
       asciiLow,
+      aliasLow,
       source: 'core',
     };
   });
@@ -272,6 +285,7 @@ async function loadExpandedAtlas(): Promise<IndexedCity[]> {
             pop: 1500,
             nameLow,
             asciiLow: nameLow,
+            aliasLow: '',
             source: 'atlas',
           };
         }
@@ -294,13 +308,15 @@ function scoreIndexedCity(
   tokens: string[],
   primaryToken: string
 ): number | null {
+  const itemAliases = item.aliasLow || '';
   for (let i = 0; i < tokens.length; i++) {
     const t = tokens[i];
     if (
       !item.nameLow.includes(t) &&
       !item.asciiLow.includes(t) &&
       !item.provLow.includes(t) &&
-      !item.countryAliases.includes(t)
+      !item.countryAliases.includes(t) &&
+      !itemAliases.includes(t)
     ) {
       return null;
     }
@@ -310,18 +326,22 @@ function scoreIndexedCity(
   const cLow = item.nameLow;
   const aLow = item.asciiLow;
 
-  if (cLow === qNorm || aLow === qNorm || cLow === primaryToken) {
-    score += 140;
+  if (aLow === qNorm || cLow === qNorm || cLow.startsWith(`${qNorm} `) || cLow.startsWith(`${qNorm}(`)) {
+    score += 260;
   } else if (cLow.startsWith(primaryToken) || aLow.startsWith(primaryToken)) {
-    score += 65;
+    score += 120;
   } else if (cLow.includes(` ${primaryToken}`) || aLow.includes(` ${primaryToken}`)) {
-    score += 36;
+    score += 60;
   } else if (cLow.includes(primaryToken) || aLow.includes(primaryToken)) {
-    score += 18;
+    score += 35;
+  } else if (itemAliases.includes(qNorm)) {
+    score += 20;
+  } else if (itemAliases.includes(primaryToken)) {
+    score += 10;
   }
 
-  if (item.countryAliases.includes('india')) {
-    score += 1.5;
+  if (item.countryAliases.includes('india') || item.country.toLowerCase() === 'india') {
+    score += 8;
   }
 
   return score;
@@ -485,6 +505,58 @@ export async function searchPlacesOnline(
         return extraTokens.every((t) => hay.includes(t));
       });
       if (filtered.length > 0) return filtered.slice(0, limit);
+    }
+
+    // If Open-Meteo returned 0 results or filtered down to 0, try Nominatim OpenStreetMap
+    if (mapped.length === 0) {
+      try {
+        const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          raw
+        )}&format=json&addressdetails=1&limit=${Math.min(limit, 10)}`;
+        const nomRes = await fetch(nomUrl, {
+          signal,
+          headers: { 'User-Agent': 'AV-Astro-Vibe-Location-Lookup/1.0' },
+        });
+        if (nomRes.ok) {
+          const nomData = (await nomRes.json()) as Array<{
+            display_name?: string;
+            lat?: string;
+            lon?: string;
+            address?: Record<string, string>;
+          }>;
+          if (Array.isArray(nomData)) {
+            for (const n of nomData) {
+              const latNum = parseFloat(n.lat || '');
+              const lonNum = parseFloat(n.lon || '');
+              if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) continue;
+              const addr = n.address || {};
+              const placeName =
+                addr.city ||
+                addr.town ||
+                addr.village ||
+                addr.county ||
+                addr.state_district ||
+                n.display_name?.split(',')[0] ||
+                raw;
+              const prov = addr.state || addr.province || '';
+              const country = addr.country || '';
+              mapped.push({
+                city: placeName,
+                cityAscii: stripDiacritics(placeName),
+                province: prov,
+                country,
+                lat: latNum,
+                lng: lonNum,
+                pop: 1000,
+                timezone: lookupTimezoneFromCoords(latNum, lonNum),
+                source: 'online',
+              });
+            }
+          }
+        }
+      } catch {
+        // Fallback gracefully on network failure
+      }
     }
 
     return mapped.slice(0, limit);

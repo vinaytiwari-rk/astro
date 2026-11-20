@@ -222,8 +222,7 @@ export function App() {
       return;
     }
     if (view === 'workstation') {
-      setCurrentView('workstation');
-      if (sub) setWorkstationSubTab(sub);
+      setCurrentView('split-studio');
       return;
     }
 

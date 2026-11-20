@@ -105,7 +105,6 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
     { view: 'classical-doshas', labelEn: '18 Classical Doshas & Cancellations', labelHi: '१८ शास्त्रीय दोष व सक्रियता आयु', icon: <ShieldAlert size={16} /> },
     { view: 'dasha-matrix-81', labelEn: '81 Dasha Combinations Matrix', labelHi: '८१ महादशा-अंतर्दशा फलकथन', icon: <Sparkles size={16} /> },
     { view: 'kota-ayurdaya', labelEn: 'Kota Chakra, Longevity & Upagrahas', labelHi: 'कोटा चक्र, आयुर्दाय व उपग्रह', icon: <Shield size={16} /> },
-    { view: 'workstation', labelEn: '12-Division Workstation', labelHi: '12-भाग विस्तृत वर्कस्टेशन', icon: <Compass size={16} /> },
   ];
 
   return (

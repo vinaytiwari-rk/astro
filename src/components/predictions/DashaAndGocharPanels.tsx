@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { computeFullLalKitabReport } from '../../astro/lalKitabExtended';
 import {
-  AIFAS_DASHA_26_RULES,
   AIFAS_YOGINI_64_ANTARDASHAS,
   AIFAS_YOGINI_BOOK_METADATA,
   AIFAS_YOGINI_MAHADASHAS,
@@ -33,9 +32,8 @@ export const DashaWisePanel: React.FC<{
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [dashaTab, setDashaTab] = useState<'vimshottari' | 'yogini' | 'rules' | 'other'>('vimshottari');
+  const [dashaTab, setDashaTab] = useState<'vimshottari' | 'yogini' | 'other'>('vimshottari');
   const [selectedYoginiFilter, setSelectedYoginiFilter] = useState<string>('Mangala');
-  const [ruleCategory, setRuleCategory] = useState<string>('all');
 
   // --- Vimshottari Mahadasha Lifeline ---
   const allMahadashaCards = useMemo(() => {
@@ -119,11 +117,6 @@ export const DashaWisePanel: React.FC<{
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
   }, [selectedYoginiFilter]);
 
-  const filteredRules = useMemo(() => {
-    if (ruleCategory === 'all') return AIFAS_DASHA_26_RULES;
-    return AIFAS_DASHA_26_RULES.filter((r) => r.category === ruleCategory);
-  }, [ruleCategory]);
-
   const lkDashas = useMemo(() => computeFullLalKitabReport(chart).dasha35.slice(0, 9), [chart]);
 
   return (
@@ -156,14 +149,6 @@ export const DashaWisePanel: React.FC<{
           style={{ fontWeight: dashaTab === 'yogini' ? 700 : 500, fontSize: '13px' }}
         >
           {isHi ? 'योगिनी दशा व ६४ अंतर्दशा (AIFAS)' : 'Yogini Dasha & 64 Subs (AIFAS)'}
-        </button>
-        <button
-          type="button"
-          className={`btn btn-sm ${dashaTab === 'rules' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setDashaTab('rules')}
-          style={{ fontWeight: dashaTab === 'rules' ? 700 : 500, fontSize: '13px' }}
-        >
-          {isHi ? 'दशा फल के २६ स्वर्णिम नियम (AIFAS)' : 'AIFAS 26 Golden Rules'}
         </button>
         <button
           type="button"
@@ -575,74 +560,7 @@ export const DashaWisePanel: React.FC<{
       )}
 
       {/* ========================================================= */}
-      {/* TAB 3: AIFAS 26 GOLDEN RULES OF DASHA PREDICTIONS         */}
-      {/* ========================================================= */}
-      {dashaTab === 'rules' && (
-        <div className="view-stack">
-          {/* Header & Category Filters */}
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <h3>
-                  <BookOpen size={16} />{' '}
-                  {isHi ? 'AIFAS दशा फल के २६ स्वर्णिम नियम (अध्याय १३)' : 'AIFAS 26 Golden Rules of Dasha Predictions (Chapter 13)'}
-                </h3>
-                <p className="muted small-text" style={{ margin: '4px 0 0 0' }}>
-                  {isHi
-                    ? "All India Federation of Astrologers' Societies द्वारा प्रतिपादित दशा फलादेश के प्रामाणिक नियम"
-                    : "Standard rules for analyzing Mahadasha-Antardasha results formulated by AIFAS"}
-                </p>
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {[
-                  { id: 'all', labelHi: 'सभी २६ नियम', labelEn: 'All 26 Rules' },
-                  { id: 'Dignity', labelHi: 'ग्रह बल व स्थिति', labelEn: 'Dignity & Strength' },
-                  { id: 'Aspect & Position', labelHi: 'संबंध व दृष्टि', labelEn: 'Aspect & Position' },
-                  { id: 'Friendship & Order', labelHi: 'मैत्री व दशा क्रम', labelEn: 'Friendship & Order' },
-                  { id: 'Jeeva vs Dhatva', labelHi: 'जीव व द्रव्य द्वैत', labelEn: 'Jeeva vs Dravya' },
-                  { id: 'Special Principles', labelHi: 'विशेष शास्त्रीय सिद्धांत', labelEn: 'Special Principles' },
-                ].map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    className={`btn btn-sm ${ruleCategory === c.id ? 'btn-primary' : 'btn-secondary'}`}
-                    onClick={() => setRuleCategory(c.id)}
-                    style={{ fontSize: '12px', padding: '4px 8px' }}
-                  >
-                    {isHi ? c.labelHi : c.labelEn}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="domains-grid">
-              {filteredRules.map((rule) => (
-                <article key={rule.ruleNumber} className="domain-card" style={{ padding: '14px 16px' }}>
-                  <div className="domain-top" style={{ marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="tag tag-varg" style={{ fontWeight: 700 }}>
-                        {isHi ? `नियम ${rule.ruleNumber}` : `Rule #${rule.ruleNumber}`}
-                      </span>
-                      <h4 style={{ margin: 0, fontSize: '13.5px' }}>
-                        {isHi ? rule.titleHi : rule.titleEn}
-                      </h4>
-                    </div>
-                    <span className="tag tag-karaka" style={{ fontSize: '11px' }}>
-                      {rule.category}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: 'var(--text)' }}>
-                    {isHi ? rule.ruleHi : rule.ruleEn}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* TAB 4: JAIMINI CHARA & LAL KITAB 35-YEAR DASHA             */}
+      {/* TAB 3: JAIMINI CHARA & LAL KITAB 35-YEAR DASHA             */}
       {/* ========================================================= */}
       {dashaTab === 'other' && (
         <div className="pred-top-grid">
