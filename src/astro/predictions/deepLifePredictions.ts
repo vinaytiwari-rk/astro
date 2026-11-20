@@ -12,15 +12,31 @@ import {
   CLASSICAL_GREGORIAN_MONTHS,
   CLASSICAL_PAYA_PROFILES,
   CLASSICAL_ATMAKARAKA_PROFILES,
+  CLASSICAL_GANA_PROFILES,
+  CLASSICAL_NADI_PROFILES,
+  CLASSICAL_VARNA_PROFILES,
+  CLASSICAL_YONI_PROFILES,
+  CLASSICAL_BIRTH_TATWA_PROFILES,
   getTithiVaraYoga,
   getHoraReading,
   getPadaDetail,
   getAtmakarakaProfile,
+  getPayaProfile,
+  getGanaProfile,
+  getNadiProfile,
+  getVarnaProfile,
+  getYoniProfile,
+  calculateBirthTimeTatwa,
   type NavamshaLagnaProfile,
   type TithiProfile,
   type PayaProfile,
   type NakshatraPadaDetail,
   type AtmakarakaProfile,
+  type GanaProfile,
+  type NadiProfile,
+  type VarnaProfile,
+  type YoniProfile,
+  type BirthTatwaCalculationResult,
 } from './classicalPanchangaNavamshaKb';
 import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { NAKSHATRAS, SIGNS } from '../constants';
@@ -62,6 +78,11 @@ export interface GeneralBirthProfile {
   payaDetails?: PayaProfile;
   padaDetails?: NakshatraPadaDetail;
   atmakarakaProfile?: AtmakarakaProfile;
+  ganaDetails?: GanaProfile;
+  nadiDetails?: NadiProfile;
+  varnaDetails?: VarnaProfile;
+  yoniDetails?: YoniProfile;
+  birthTatwaDetails?: BirthTatwaCalculationResult;
   navamshaLagna?: {
     signIndex: number;
     signNameEn: string;
@@ -631,11 +652,13 @@ function interpretBirthFactor(
       };
     }
 
-    case 'varna':
+    case 'varna': {
+      const vProf = getVarnaProfile(valueEn);
       return {
-        en: `Varna (${valueEn}): Traditionally signifies natural aptitude and temperament in social responsibility and intellectual pursuits.`,
-        hi: `वर्ण (${valueHi}): सामाजिक उत्तरदायित्व और बौद्धिक कार्यप्रणाली में जातक की स्वाभाविक रुचि व प्रवृत्ति का शास्त्रीय वर्गीकरण है।`,
+        en: `${vProf.nameEn} [${vProf.moonSignsEn}]: ${vProf.archetypeEn}. Key Qualities: ${vProf.keyQualitiesEn.join('; ')}. Worldview: ${vProf.worldviewEn}`,
+        hi: `${vProf.nameHi} [${vProf.moonSignsHi}]: ${vProf.archetypeHi}। मुख्य गुण: ${vProf.keyQualitiesHi.join('; ')}। जीवन-दृष्टिकोण: ${vProf.worldviewHi}`,
       };
+    }
 
     case 'vashya':
       return {
@@ -643,23 +666,29 @@ function interpretBirthFactor(
         hi: `वश्य (${valueHi}): सामाजिक अनुकूलता, प्रभावशीलता और संबंधों में पारस्परिक आकर्षण का शास्त्रीय सूचक है।`,
       };
 
-    case 'yoni':
+    case 'yoni': {
+      const yProf = getYoniProfile(valueEn);
       return {
-        en: `Yoni (${valueEn}): Instinctive nature, physiological resilience, and relational harmony in marriage compatibility.`,
-        hi: `योनि (${valueHi}): जातक की मूल जैविक प्रकृति, शारीरिक ऊर्जा और दांपत्य जीवन में स्वाभाविक सामंजस्य का प्रतीक है।`,
+        en: `${yProf.animalEn}: ${yProf.personaEn} Relationship Style: ${yProf.relationshipStyleEn} Instinctive Traits: ${yProf.instinctiveTraitsEn.join(', ')}.`,
+        hi: `${yProf.animalHi}: ${yProf.personaHi} दांपत्य व संबंध: ${yProf.relationshipStyleHi} मूल जैविक प्रवृत्तियां: ${yProf.instinctiveTraitsHi.join(', ')}।`,
       };
+    }
 
-    case 'gana':
+    case 'gana': {
+      const gProf = getGanaProfile(valueEn);
       return {
-        en: `Gana (${valueEn}): Mental disposition and worldview—Deva indicates noble idealism; Manushya indicates pragmatic balance; Rakshasa indicates bold ambition and defiance of convention.`,
-        hi: `गण (${valueHi}): जीवन-दृष्टिकोण का निर्धारण—देव गण उच्च आदर्श; मनुष्य गण व्यावहारिक संतुलन; राक्षस गण अदम्य साहस और दृढ़ महत्वाकांक्षा का सूचक है।`,
+        en: `${gProf.nameEn}: ${gProf.natureEn}. Key Traits: ${gProf.keyTraitsEn.join('; ')}. Worldview: ${gProf.worldviewEn} Challenges to Watch: ${gProf.challengesEn.join('; ')}.`,
+        hi: `${gProf.nameHi}: ${gProf.natureHi}। मुख्य लक्षण: ${gProf.keyTraitsHi.join('; ')}। जीवन-दृष्टिकोण: ${gProf.worldviewHi} ध्यान देने योग्य चुनौतियां: ${gProf.challengesHi.join('; ')}।`,
       };
+    }
 
-    case 'nadi':
+    case 'nadi': {
+      const nProf = getNadiProfile(valueEn);
       return {
-        en: `Nadi (${valueEn}): Constitutional biological current (Vata/Pitta/Kapha balance), hereditary vitality, and marital longevity harmony.`,
-        hi: `नाड़ी (${valueHi}): जैविक त्रिदोष (वात/पित्त/कफ) संतुलन, आनुवंशिक जीवनशक्ति और दांपत्य स्वास्थ्य का मुख्य आधार है।`,
+        en: `${nProf.nameEn} [Dosha: ${nProf.ayurvedicDoshaEn} · Energy Flow: ${nProf.energyFlowEn}]: ${nProf.coreNatureEn}. Marriage Impact: ${nProf.marriageImpactEn} Health Vulnerabilities: ${nProf.associatedDiseasesEn.join('; ')}.`,
+        hi: `${nProf.nameHi} [दोष: ${nProf.ayurvedicDoshaHi} · ऊर्जा प्रवाह: ${nProf.energyFlowHi}]: ${nProf.coreNatureHi}। दांपत्य प्रभाव: ${nProf.marriageImpactHi} स्वास्थ्य संवेदनशीलता: ${nProf.associatedDiseasesHi.join('; ')}।`,
       };
+    }
 
     case 'nadi-pad':
       return {
@@ -667,11 +696,22 @@ function interpretBirthFactor(
         hi: `नाड़ी पाद (${valueHi}): शारीरिक धातु-पुष्टि और स्वास्थ्य प्रवृत्तियों का सूक्ष्म शास्त्रीय संकेत है।`,
       };
 
-    case 'tattva':
+    case 'tattva': {
+      const birthMs = chart.utcMs;
+      const sunriseMs = chart.panchang?.sunriseUtc ? Date.parse(chart.panchang.sunriseUtc) : NaN;
+      const weekdayLord = chart.panchang?.vara?.lord ?? chart.panchang?.vara?.name ?? 'Sun';
+      if (Number.isFinite(sunriseMs)) {
+        const tRes = calculateBirthTimeTatwa(birthMs, sunriseMs, weekdayLord);
+        return {
+          en: `Birth Time Tatwa: ${tRes.nameEn} [${tRes.cycle} Cycle #${tRes.cycleNumber}, ${tRes.durationMinutes} min block, ruled by ${tRes.governingPlanetsEn}]. Core Drive: ${tRes.coreDesiresEn} Health & Susceptibilities: ${tRes.healthVulnerabilitiesEn} Astrological Warning: ${tRes.planetaryAfflictionsEn}`,
+          hi: `जन्म समय पंचमहाभूत तत्त्व: ${tRes.nameHi} [${tRes.cycleHi} चक्र क्रम ${tRes.cycleNumber}, अवधि ${tRes.durationMinutes} मिनट, स्वामी: ${tRes.governingPlanetsHi}]। मूल चेतना व अभिलाषा: ${tRes.coreDesiresHi} स्वास्थ्य व अंग-संवेदनशीलता: ${tRes.healthVulnerabilitiesHi} शास्त्रीय चेतावनी: ${tRes.planetaryAfflictionsHi}`,
+        };
+      }
       return {
         en: `Tatva (${valueEn}): Elemental foundation of the psyche—Fire gives bold action, Earth gives steadfast pragmatism, Air gives intellectual agility, Water gives intuitive empathy.`,
         hi: `तत्त्व (${valueHi}): मानसिक चेतना का मूल तत्त्व—अग्नि पराक्रम देती है, पृथ्वी स्थिरता, वायु बौद्धिक संवेदनशीलता, और जल सहज अंतर्दृष्टि।`,
       };
+    }
 
     case 'paya': {
       const mHouse = moon?.rasiHouseNumber ?? (moon ? ((moon.signIndex - chart.ascendant.signIndex + 12) % 12) + 1 : 1);
@@ -925,13 +965,38 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
     gregorianReadingHi: gregMonthProf.archetypeHi,
   };
 
-  // Compute Paya, Pada, and Atmakaraka Profiles
+  // Compute Paya, Pada, Atmakaraka, Gana, Nadi, Varna, Yoni, and Birth Tatwa Profiles
   const payaKey = moonHouse === 1 || moonHouse === 6 || moonHouse === 11 ? 'gold' : moonHouse === 2 || moonHouse === 5 || moonHouse === 9 ? 'silver' : moonHouse === 3 || moonHouse === 7 || moonHouse === 10 ? 'copper' : 'iron';
   const payaDetails = CLASSICAL_PAYA_PROFILES[payaKey];
   const padaDetails = getPadaDetail(nakInfo?.index ?? 0, pada);
   const atmakarakaProfile = ak ? getAtmakarakaProfile(ak.planet) : undefined;
+  const ganaDetails = nakInfo ? getGanaProfile(nakInfo.gana) : undefined;
+  const nadiDetails = nakInfo ? getNadiProfile(nakInfo.nadi) : undefined;
+  const varnaDetails = moonSign ? getVarnaProfile(moonSign.varna) : undefined;
+  const yoniDetails = nakInfo ? getYoniProfile(nakInfo.yoni) : undefined;
 
-  return { factors: interpretedFactors, summaryEn, summaryHi, payaDetails, padaDetails, atmakarakaProfile, navamshaLagna, tithiDetails, seasonalDetails };
+  let birthTatwaDetails: BirthTatwaCalculationResult | undefined;
+  if (Number.isFinite(sunriseMs)) {
+    const weekdayLord = weekday?.lord ?? weekday?.name ?? 'Sun';
+    birthTatwaDetails = calculateBirthTimeTatwa(birthMs, sunriseMs, weekdayLord);
+  }
+
+  return {
+    factors: interpretedFactors,
+    summaryEn,
+    summaryHi,
+    payaDetails,
+    padaDetails,
+    atmakarakaProfile,
+    ganaDetails,
+    nadiDetails,
+    varnaDetails,
+    yoniDetails,
+    birthTatwaDetails,
+    navamshaLagna,
+    tithiDetails,
+    seasonalDetails,
+  };
 }
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {

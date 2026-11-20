@@ -2068,3 +2068,799 @@ export function getAtmakarakaProfile(planetId: string): AtmakarakaProfile {
 export function getPayaProfile(payaKey: 'gold' | 'silver' | 'copper' | 'iron'): PayaProfile {
   return CLASSICAL_PAYA_PROFILES[payaKey];
 }
+
+/* =========================================================================
+   17. GANA PROFILES (देव, मनुष्य, राक्षस गण फलादेश व स्वभाव)
+   ========================================================================= */
+export interface GanaProfile {
+  id: 'deva' | 'manushya' | 'rakshasa';
+  nameEn: string;
+  nameHi: string;
+  natureEn: string;
+  natureHi: string;
+  worldviewEn: string;
+  worldviewHi: string;
+  keyTraitsEn: string[];
+  keyTraitsHi: string[];
+  challengesEn: string[];
+  challengesHi: string[];
+}
+
+export const CLASSICAL_GANA_PROFILES: Record<string, GanaProfile> = {
+  deva: {
+    id: 'deva',
+    nameEn: 'Deva Gana (The Divine Nature)',
+    nameHi: 'देव गण (दैवीय सात्विक प्रकृति)',
+    natureEn: 'Gentle, kind, and spiritually inclined in nature',
+    natureHi: 'शांत, दयालु, सौम्य एवं स्वभावतः अध्यात्म-प्रेमी',
+    worldviewEn: 'Prefers harmony over conflict, avoids aggressive confrontations, naturally generous, and steadfastly believes in fairness.',
+    worldviewHi: 'कलह के स्थान पर शांति व सामंजस्य को प्राथमिकता, उदारमना, नैतिक आचरण और प्राकृतिक रूप से न्याय व निष्पक्षता के पक्षधर।',
+    keyTraitsEn: [
+      'Compassionate, deeply caring, and soft-spoken in demeanor',
+      'Reflect ethical thinking, moral integrity, and spiritual values',
+      'Peace-loving and naturally avoid aggressive or volatile situations',
+      'Emotionally sensitive, highly empathetic, and naturally charitable'
+    ],
+    keyTraitsHi: [
+      'करुणामयी, संवेदनशील और अत्यंत मृदुभाषी स्वभाव',
+      'उच्च नैतिक चिंतन, सदाचार और मानवीय मूल्यों के प्रति निष्ठा',
+      'शांतिप्रिय, आक्रामक परिस्थितियों व व्यर्थ कलह से दूर रहने वाले',
+      'भावुक, दूसरों के दुख से द्रवित होने वाले और परोपकारी'
+    ],
+    challengesEn: [
+      'Vulnerable to emotional hurt due to an overly sensitive nature',
+      'Chronic hesitation or avoidance of necessary confrontation',
+      'May lack assertive boundaries when facing dominating or aggressive personalities'
+    ],
+    challengesHi: [
+      'अत्यधिक संवेदनशीलता के कारण शीघ्र मानसिक आघात का शिकार होना',
+      'टकराव टालने की आदत के कारण कई बार अपने अधिकारों के लिए न लड़ पाना',
+      'कठोर या आक्रामक लोगों के सामने अपनी बात दृढ़ता से न रख पाना'
+    ]
+  },
+  manushya: {
+    id: 'manushya',
+    nameEn: 'Manushya Gana (The Human Nature)',
+    nameHi: 'मनुष्य गण (संतुलित सांसारिक प्रकृति)',
+    natureEn: 'Represents a balance between material and spiritual life',
+    natureHi: 'भौतिक और आध्यात्मिक जीवन के मध्य व्यावहारिक संतुलन का प्रतीक',
+    worldviewEn: 'Understands worldly responsibilities deeply, focused on long-term stability, sustainable growth, and practical social achievement.',
+    worldviewHi: 'सांसारिक दायित्वों की यथार्थ समझ, पारिवारिक स्थायित्व, संतुलित महत्वाकांक्षा और सामाजिक सम्मान का अर्जन।',
+    keyTraitsEn: [
+      'Practical, realistic, and socially adaptable to every environment',
+      'Ambitious, confident, and goal-oriented in daily pursuits',
+      'Highly responsible with a steadfast commitment to duty',
+      'Disciplined humans who balance logic and societal commitments'
+    ],
+    keyTraitsHi: [
+      'व्यावहारिक, यथार्थवादी और प्रत्येक सामाजिक परिवेश में सहजता से ढलने वाले',
+      'महत्वाकांक्षी, आत्मविश्वास से परिपूर्ण और कर्मठ व्यक्तित्व',
+      'सांसारिक जिम्मेदारियों और पारिवारिक कर्तव्यों का निष्ठावान निर्वहन',
+      'अनुशासित, सुव्यवस्थित और दूरदर्शी योजनाएं बनाने में निपुण'
+    ],
+    challengesEn: [
+      'Can become self-centered or overly absorbed in personal material gain',
+      'May experience inner friction when torn between cold logic and deep emotional needs'
+    ],
+    challengesHi: [
+      'कभी-कभी अत्यधिक स्व-केंद्रित अथवा केवल भौतिक सुरक्षा तक सीमित हो जाना',
+      'मस्तिष्क के तर्क और हृदय की भावनाओं के मध्य आंतरिक द्वंद्व'
+    ]
+  },
+  rakshasa: {
+    id: 'rakshasa',
+    nameEn: 'Rakshasa Gana (The Intense Nature)',
+    nameHi: 'राक्षस गण (अदम्य साहसी व प्रखर प्रकृति)',
+    natureEn: 'Does not mean evil; represents strong, bold, and determined personalities',
+    natureHi: 'राक्षस का अर्थ बुराई नहीं है; यह निर्भीक, प्रखर, शक्तिशाली और दृढ़-संकल्पी व्यक्तित्व का परिचायक है',
+    worldviewEn: 'Powerful individuals who dislike external control, value uncompromised independence, and conquer difficulties through sheer willpower.',
+    worldviewHi: 'नियंत्रण या पराधीनता को अस्वीकार कर स्वायत्तता, अदम्य पराक्रम और अपने संकल्प के बल पर परिस्थितियों को बदलने का दृष्टिकोण।',
+    keyTraitsEn: [
+      'Fearless in nature, highly independent, and fiercely protective of personal freedom',
+      'Ambitious with big dreams, unwavering drive, and indomitable courage',
+      'Reflect natural leadership qualities, commanding presence, and strategic tenacity',
+      'Resolute individuals determined towards achieving everything they set their mind to'
+    ],
+    keyTraitsHi: [
+      'निर्भीक, स्वाभिमानी और व्यक्तिगत स्वतंत्रता के प्रबल पक्षधर',
+      'विशाल स्वप्न, उच्च महत्वाकांक्षा और लक्ष्यों के प्रति अटूट लगन',
+      'स्वाभाविक नेतृत्व क्षमता, निर्भय वाणी और प्रभावोत्पादक उपस्थिति',
+      'बाधाओं से भयभीत न होकर संकटों को अवसर में बदलने की अद्वितीय क्षमता'
+    ],
+    challengesEn: [
+      'May encounter interpersonal conflicts due to an aggressive or uncompromising edge',
+      'Tendency towards domination, impatience, and intolerance of mediocrity',
+      'Prone to short-tempered reactions during intense pressure'
+    ],
+    challengesHi: [
+      'उग्र स्वभाव और समझौता न करने की प्रवृत्ति के कारण संबंधों में खिंचाव',
+      'दूसरों पर आधिपत्य जमाने और अत्यधिक अधीरता की संभावना',
+      'क्रोध अथवा तात्कालिक आवेश पर आत्म-नियंत्रण रखने की आवश्यकता'
+    ]
+  }
+};
+
+export function getGanaProfile(ganaName: string): GanaProfile {
+  const g = ganaName.trim().toLowerCase();
+  if (g.includes('deva') || g.includes('देव')) return CLASSICAL_GANA_PROFILES.deva;
+  if (g.includes('rakshasa') || g.includes('राक्षस')) return CLASSICAL_GANA_PROFILES.rakshasa;
+  return CLASSICAL_GANA_PROFILES.manushya;
+}
+
+/* =========================================================================
+   18. NADI PROFILES (आदि, मध्य, अंत्य नाड़ी - त्रिदोष, ऊर्जा प्रवाह एवं व्याधियां)
+   ========================================================================= */
+export interface NadiProfile {
+  id: 'adi' | 'madhya' | 'antya';
+  nameEn: string;
+  nameHi: string;
+  ayurvedicDoshaEn: string;
+  ayurvedicDoshaHi: string;
+  elementEn: string;
+  elementHi: string;
+  energyFlowEn: string;
+  energyFlowHi: string;
+  coreNatureEn: string;
+  coreNatureHi: string;
+  personalityTraitsEn: string[];
+  personalityTraitsHi: string[];
+  marriageImpactEn: string;
+  marriageImpactHi: string;
+  associatedDiseasesEn: string[];
+  associatedDiseasesHi: string[];
+}
+
+export const CLASSICAL_NADI_PROFILES: Record<string, NadiProfile> = {
+  adi: {
+    id: 'adi',
+    nameEn: 'Adi (Adya) Nadi',
+    nameHi: 'आदि (आद्य) नाड़ी',
+    ayurvedicDoshaEn: 'Vata (Air & Space Element)',
+    ayurvedicDoshaHi: 'वात (वायु व आकाश तत्त्व)',
+    elementEn: 'Air (Vata)',
+    elementHi: 'वायु (वात)',
+    energyFlowEn: 'Bottom to top (feet to head) - represents upward movement of subtle energy (Urdhva-Gati)',
+    energyFlowHi: 'पाद से शीर्ष की ओर (ऊर्ध्वगामी ऊर्जा प्रवाह) - सूक्ष्म चेतना का ऊपर की ओर संचलन',
+    coreNatureEn: 'Mentally agile, fast-thinking, and intensely creative',
+    coreNatureHi: 'तीव्र बुद्धि, कल्पनाशील और विचार-प्रधान प्रकृति',
+    personalityTraitsEn: [
+      'Intelligent, creative, curious, and intellectually adventurous',
+      'Excellent communication skills, expressive, and quick-witted',
+      'Adaptable and spontaneous, but prone to restlessness, overthinking, and anxiety'
+    ],
+    personalityTraitsHi: [
+      'तीव्र मेधा, रचनात्मक सोच, जिज्ञासा और त्वरित सीखने की क्षमता',
+      'उत्कृष्ट वाक्पटुता, स्पष्ट अभिव्यक्ति और हाजिरजवाबी',
+      'अनुकूलनशील स्वभाव, किंतु मानसिक व्यग्रता व अति-चिंतन की संभावना'
+    ],
+    marriageImpactEn: 'Couples sharing Adi Nadi may experience heightened nervous tension, mutual anxiety, or reproductive and genetic challenges.',
+    marriageImpactHi: 'समान आदि नाड़ी होने पर दांपत्य में अत्यधिक मानसिक तनाव, नर्वस संवेदनशीलता तथा संतानोत्पत्ति व आनुवंशिक ऊर्जा में बाधा संभव होती है।',
+    associatedDiseasesEn: [
+      'Nervous system disorders, anxiety, tremors, and sleep disturbances',
+      'Asthma, chronic dry cough, and respiratory sensitivity',
+      'Digestive issues related to gas, bloating, and chronic constipation',
+      'Wandering muscular aches and joint cracking/dryness'
+    ],
+    associatedDiseasesHi: [
+      'तंत्रिका तंत्र (Nervous system) विकार, चिंता, अनिद्रा व कंपकंपी',
+      'अस्थमा, सूखी खांसी व श्वास नली की संवेदनशीलता',
+      'गैस, उदर शूल, पेट फूलना व जीर्ण कब्ज',
+      'शरीर के अंगों में वात पीड़ा व जोड़ों में सूखापन'
+    ]
+  },
+  madhya: {
+    id: 'madhya',
+    nameEn: 'Madhya Nadi',
+    nameHi: 'मध्य नाड़ी',
+    ayurvedicDoshaEn: 'Pitta (Fire Element)',
+    ayurvedicDoshaHi: 'पित्त (अग्नि तत्त्व)',
+    elementEn: 'Fire (Pitta)',
+    elementHi: 'अग्नि (पित्त)',
+    energyFlowEn: 'Bidirectional - represents dynamic transformation, equilibrium, and radiant power',
+    energyFlowHi: 'उभयगामी (द्विदिशीय) ऊर्जा - रूपांतरण, आंतरिक तेज व गतिशील संतुलन का प्रतीक',
+    coreNatureEn: 'Fiery, ambitious, goal-driven, and intensely strong-willed',
+    coreNatureHi: 'तेजस्वी, महत्वाकांक्षी, लक्ष्य-उन्मुख और अदम्य इच्छाशक्ति',
+    personalityTraitsEn: [
+      'Energetic, ambitious, and focused on decisive mastery',
+      'Perfectionist tendencies with exceptionally high standards for self and others',
+      'Strong metabolism, sharp digestion, and commanding personal presence',
+      'Can be short-tempered, critical, or impatient when execution stalls'
+    ],
+    personalityTraitsHi: [
+      'अत्यधिक ऊर्जावान, महत्वाकांक्षी और परिणाम-उन्मुख कार्यशैली',
+      'परफेक्शनिस्ट दृष्टिकोण और स्वयं व सहयोगियों से उच्च मानदंड',
+      'तीव्र पाचन शक्ति, ओजस्वी व्यक्तित्व और निर्णयात्मक नेतृत्व',
+      'अधीरता, क्रोध और कार्य में शिथिलता के प्रति त्वरित असहिष्णुता'
+    ],
+    marriageImpactEn: 'Couples sharing Madhya Nadi face fiery ego clashes, dominance battles, frequent arguments, and metabolism or blood-related health concerns.',
+    marriageImpactHi: 'समान मध्य नाड़ी होने पर दांपत्य में अहं का तीव्र टकराव, प्रभुत्व की होड़, बारंबार वाद-विवाद तथा रक्त व पित्त संबंधी विकार उत्पन्न हो सकते हैं।',
+    associatedDiseasesEn: [
+      'Acid reflux, gastritis, hyperacidity, and peptic ulcers',
+      'Liver sensitivities, bile disorders, and inflammatory digestion',
+      'Hypertension, blood impurities, skin rashes, and acne',
+      'Fever-related issues, heat exhaustion, and inflammatory conditions'
+    ],
+    associatedDiseasesHi: [
+      'अम्लपित्त (Acid reflux), जलन, गैस्ट्रिक व पेट के अल्सर',
+      'यकृत (Liver) की संवेदनशीलता और पित्त का असंतुलन',
+      'उच्च रक्तचाप (Hypertension), रक्त विकार, मुहासे व एलर्जी',
+      'शरीर में दाह/जलन, अत्यधिक पसीना व पित्त जनित ज्वर'
+    ]
+  },
+  antya: {
+    id: 'antya',
+    nameEn: 'Antya Nadi',
+    nameHi: 'अंत्य नाड़ी',
+    ayurvedicDoshaEn: 'Kapha (Earth & Water Element)',
+    ayurvedicDoshaHi: 'कफ (पृथ्वी व जल तत्त्व)',
+    elementEn: 'Earth & Water (Kapha)',
+    elementHi: 'पृथ्वी व जल (कफ)',
+    energyFlowEn: 'Top to bottom (head to feet) - symbolizes grounding, stability, and enduring calmness',
+    energyFlowHi: 'शीर्ष से पाद की ओर (अधोगामी ऊर्जा प्रवाह) - स्थायित्व, शांति व आधारभूत मजबूती',
+    coreNatureEn: 'Grounded, patient, nurturing, and emotionally steadfast',
+    coreNatureHi: 'धैर्यवान, स्नेहमयी, गंभीर और संवेगात्मक रूप से अचल',
+    personalityTraitsEn: [
+      'Calm, patient, deeply nurturing, and emotionally stable',
+      'Reliable, thoughtful, loyal, and steadfastly protective of home and family',
+      'Often spiritual, meditative, and introspective, but can be reserved or slow to act',
+      'Values peace, emotional safety, and enduring foundations over hasty change'
+    ],
+    personalityTraitsHi: [
+      'शांत, क्षमाशील, वात्सल्यपूर्ण और संवेगात्मक रूप से स्थिर',
+      'अत्यंत विश्वसनीय, गंभीर, कर्तव्यनिष्ठ और पारिवारिक रक्षक',
+      'आध्यात्मिक, मननशील और अंतर्मुखी, किंतु कई बार संकोची व धीमी शुरुआत वाले',
+      'जल्दबाजी के स्थान पर स्थायी शांति और गहरे संबंधों के पक्षधर'
+    ],
+    marriageImpactEn: 'Shared Antya Nadi may lead to emotional detachment, mutual stagnation, lack of spontaneous spark, or lethargy and delay in conceiving.',
+    marriageImpactHi: 'समान अंत्य नाड़ी होने पर दांपत्य में नीरसता, भावुकता में ठंडापन, गतिहीनता तथा संतानोत्पत्ति में विलंब की स्थिति बन सकती है।',
+    associatedDiseasesEn: [
+      'Allergies, chronic cough, sinusitis, and bronchial congestion',
+      'Sluggish metabolism, obesity, water retention, and weight gain',
+      'Joint stiffness, arthritis, coldness in extremities, and excessive lethargy',
+      'Reproductive delays, hormonal sluggishness, and lymphatic stagnation'
+    ],
+    associatedDiseasesHi: [
+      'एलर्जी, पुरानी खांसी, साइनोसाइटिस व श्वास नलिकाओं में कफ संचय',
+      'धीमा चयापचय (Metabolism), मोटापा व शरीर में जलीय भारीपन',
+      'जोड़ों में जकड़न, गठिया (Arthritis), आलस्य व अंगों में भारीपन',
+      'संतान उत्पत्ति में विलंब व शारीरिक धातुओं की मंदता'
+    ]
+  }
+};
+
+export function getNadiProfile(nadiName: string): NadiProfile {
+  const n = nadiName.trim().toLowerCase();
+  if (n.includes('adi') || n.includes('आदि')) return CLASSICAL_NADI_PROFILES.adi;
+  if (n.includes('madhya') || n.includes('मध्य')) return CLASSICAL_NADI_PROFILES.madhya;
+  return CLASSICAL_NADI_PROFILES.antya;
+}
+
+/* =========================================================================
+   19. VARNA PROFILES (ब्राह्मण, क्षत्रिय, वैश्य, शूद्र वर्ण फलादेश)
+   ========================================================================= */
+export interface VarnaProfile {
+  id: 'brahmin' | 'kshatriya' | 'vaishya' | 'shudra';
+  nameEn: string;
+  nameHi: string;
+  archetypeEn: string;
+  archetypeHi: string;
+  moonSignsEn: string;
+  moonSignsHi: string;
+  worldviewEn: string;
+  worldviewHi: string;
+  keyQualitiesEn: string[];
+  keyQualitiesHi: string[];
+}
+
+export const CLASSICAL_VARNA_PROFILES: Record<string, VarnaProfile> = {
+  brahmin: {
+    id: 'brahmin',
+    nameEn: 'Brahmin Varna (The Cosmic Knower / Intuitive Understanding)',
+    nameHi: 'ब्राह्मण वर्ण (ज्ञान, विवेक व आत्म-संज्ञान)',
+    archetypeEn: 'Represents wisdom, spirituality, deep learning, guidance, and intuitive synthesis',
+    archetypeHi: 'ज्ञान, विवेक, तत्व-चिंतन, अध्यात्म और लोक-मार्गदर्शन का प्रतीक',
+    moonSignsEn: 'Cancer, Scorpio, Pisces (Water Signs / जल राशियां)',
+    moonSignsHi: 'कर्क, वृश्चिक, मीन (जल राशियां)',
+    worldviewEn: 'Prefers solving problems through wisdom, counsel, and ethical philosophy rather than raw conflict.',
+    worldviewHi: 'समस्याओं का समाधान कलह अथवा बल से नहीं, अपितु विवेक, नीति और आध्यात्मिक अंतर्दृष्टि से करने में विश्वास।',
+    keyQualitiesEn: [
+      'Passion for research, teaching, and expanding understanding',
+      'Spiritual-mindedness, naturally patient, calm, and deeply reflective',
+      'Analytical thinking harmonized with intuitive emotional depth',
+      'Philosophical outlook and natural gravitation towards higher wisdom'
+    ],
+    keyQualitiesHi: [
+      'शिक्षण, शोध और मानवीय चेतना के रहस्यों को जानने में गहरी रुचि',
+      'आध्यात्मिक दृष्टिकोण, शांत, धैर्यवान और मननशील चित्त',
+      'विश्लेषणात्मक चिंतन के साथ सहज संवेगात्मक अंतर्दृष्टि का समन्वय',
+      'दार्शनिक सोच और उच्चतर ज्ञान व शास्त्रों के प्रति स्वाभाविक आकर्षण'
+    ]
+  },
+  kshatriya: {
+    id: 'kshatriya',
+    nameEn: 'Kshatriya Varna (The Way of the True Warrior)',
+    nameHi: 'क्षत्रिय वर्ण (शौर्य, नेतृत्व व उत्तरदायित्व)',
+    archetypeEn: 'Symbolizes courage, leadership, discipline, protective responsibility, and decisiveness',
+    archetypeHi: 'साहस, नेतृत्व, अनुशासन, सुरक्षा और संकट में भी अविचल रहने वाले आत्मबल का परिचायक',
+    moonSignsEn: 'Aries, Leo, Sagittarius (Fire Signs / अग्नि राशियां)',
+    moonSignsHi: 'मेष, सिंह, धनु (अग्नि राशियां)',
+    worldviewEn: 'Takes on positions of responsibility naturally and motivates others through courage, honor, and protective action.',
+    worldviewHi: 'स्वाभाविक रूप से उत्तरदायित्व अपने कंधों पर लेना और अपने पराक्रम व आचरण से समाज को प्रेरित व सुरक्षित करना।',
+    keyQualitiesEn: [
+      'Excellent leadership skills and commanding moral authority',
+      'Self-confidence, courage, and swift clarity in decision-making',
+      'Unyielding survival instinct and determination to accomplish goals',
+      'Exceptional ability to stay composed and lead under high pressure'
+    ],
+    keyQualitiesHi: [
+      'उत्कृष्ट नेतृत्व क्षमता और मर्यादायुक्त प्रभावोत्पादक व्यक्तित्व',
+      'कठिन और निर्णायक पलों में स्पष्ट, निर्भय व साहसिक निर्णय',
+      'अदम्य जिजीविषा और निर्धारित लक्ष्यों को भेदने का दृढ़ संकल्प',
+      'अत्यधिक दबाव में भी अडिग रहकर दूसरों में उत्साह और साहस का संचार करना'
+    ]
+  },
+  vaishya: {
+    id: 'vaishya',
+    nameEn: 'Vaishya Varna (The Money-Maker Mentality / Resourcefulness)',
+    nameHi: 'वैश्य वर्ण (व्यापारिक मेधा, प्रबंधन व समृद्धि)',
+    archetypeEn: 'Focuses on trade, commerce, strategic planning, resourcefulness, and material stewardship',
+    archetypeHi: 'व्यापार, वाणिज्य, रणनीतिक योजना, संसाधन प्रबंधन और धन-समृद्धि का कुशल सृजन',
+    moonSignsEn: 'Taurus, Virgo, Capricorn (Earth Signs / पृथ्वी राशियां)',
+    moonSignsHi: 'वृषभ, कन्या, मकर (पृथ्वी राशियां)',
+    worldviewEn: 'Pragmatic organization, building material security, creating sustainable enterprise, and managing resources effectively.',
+    worldviewHi: 'व्यावहारिक संगठन, भौतिक सुरक्षा का सुदृढ़ीकरण, स्थायी उपक्रमों का निर्माण और संसाधनों का सर्वोत्तम उपयोग।',
+    keyQualitiesEn: [
+      'Financial smarts, commercial foresight, and economic prudence',
+      'Pragmatic business attitude and investment intelligence',
+      'Systematic planning skills and strategic resource optimization',
+      'Strong aptitude for entrepreneurship, management, and wealth creation'
+    ],
+    keyQualitiesHi: [
+      'तीक्ष्ण वित्तीय दृष्टि, व्यावसायिक दूरदर्शिता और आर्थिक सूझबूझ',
+      'व्यावहारिक सोच और निवेश व पूंजी वृद्धि में स्वाभाविक निपुणता',
+      'योजनाबद्ध कार्यप्रणाली और संसाधनों का योजनाबद्ध उपयोग',
+      'उद्यमिता, व्यापार, वित्त और संगठनात्मक प्रबंधन में सहज सफलता'
+    ]
+  },
+  shudra: {
+    id: 'shudra',
+    nameEn: 'Shudra Varna (Dedicated Mastery of Practical Service)',
+    nameHi: 'शूद्र वर्ण (कर्म-निष्ठा, शिल्पकला व सेवा-धर्म)',
+    archetypeEn: 'Represents service, craftsmanship, practical hard work, dedication, and teamwork—not social status',
+    archetypeHi: 'कर्म-निष्ठा, व्यावहारिक कौशल, शिल्पकला, निष्ठावान सेवा और कार्यान्वयन की शक्ति का प्रतीक (यह सामाजिक पद नहीं, कर्म-प्रवृत्ति है)',
+    moonSignsEn: 'Gemini, Libra, Aquarius (Air Signs / वायु राशियां)',
+    moonSignsHi: 'मिथुन, तुला, कुंभ (वायु राशियां)',
+    worldviewEn: 'Believes in the nobility of practical execution, turning abstract visions into tangible reality through patient craftsmanship.',
+    worldviewHi: 'व्यावहारिक कर्म की श्रेष्ठता में विश्वास, अमूर्त विचारों को धैर्य और कौशल से साकार रूप देना।',
+    keyQualitiesEn: [
+      'Faithful, loyal, dependable, and dedicated to excellence in execution',
+      'Highly skilled at practical craftsmanship, technical work, and implementation',
+      'Disciplined, patient, and detail-oriented team players who support the collective',
+      'Committed to assisting others and forming the indispensable bedrock of enterprise'
+    ],
+    keyQualitiesHi: [
+      'अटूट निष्ठा, विश्वसनीयता और व्यावहारिक कार्यों में विशिष्ट कुशलता',
+      'शिल्प, तकनीकी कार्यान्वयन और जमीनी कार्यों में अद्वितीय दक्षता',
+      'अनुशासित, धैर्यवान और कार्य को पूर्णता तक पहुंचाने वाले उत्कृष्ट सहयोगी',
+      'दूसरों के सहयोग और किसी भी व्यवस्था को सुचारु रूप से चलाने की आधारशिला'
+    ]
+  }
+};
+
+export function getVarnaProfile(varnaName: string): VarnaProfile {
+  const v = varnaName.trim().toLowerCase();
+  if (v.includes('brahmin') || v.includes('ब्राह्मण')) return CLASSICAL_VARNA_PROFILES.brahmin;
+  if (v.includes('kshatriya') || v.includes('क्षत्रिय')) return CLASSICAL_VARNA_PROFILES.kshatriya;
+  if (v.includes('vaishya') || v.includes('वैश्य')) return CLASSICAL_VARNA_PROFILES.vaishya;
+  return CLASSICAL_VARNA_PROFILES.shudra;
+}
+
+/* =========================================================================
+   20. YONI PROFILES (१४ योनि फलादेश - स्वभाव, दांपत्य व प्रवृत्तियां)
+   ========================================================================= */
+export interface YoniProfile {
+  id: string;
+  animalEn: string;
+  animalHi: string;
+  personaEn: string;
+  personaHi: string;
+  relationshipStyleEn: string;
+  relationshipStyleHi: string;
+  instinctiveTraitsEn: string[];
+  instinctiveTraitsHi: string[];
+}
+
+export const CLASSICAL_YONI_PROFILES: Record<string, YoniProfile> = {
+  horse: {
+    id: 'horse',
+    animalEn: 'Ashwa (Horse)',
+    animalHi: 'अश्व (घोड़ा)',
+    personaEn: 'Independent, creative, skilled, and spiritually inclined. Dynamic, determined, and energetic.',
+    personaHi: 'स्वाधीन, रचनात्मक, कार्यकुशल और आध्यात्मिक रुझान। गतिशील, दृढ़-संकल्पी और अदम्य ऊर्जावान।',
+    relationshipStyleEn: 'Craves personal freedom alongside deep and unshakeable loyalty in love.',
+    relationshipStyleHi: 'प्रेम में अटूट निष्ठा के साथ-साथ व्यक्तिगत स्वतंत्रता और स्वाभिमान की अपेक्षा।',
+    instinctiveTraitsEn: ['High physical stamina', 'Dynamic momentum', 'Fiercely independent', 'Loyal to commitments'],
+    instinctiveTraitsHi: ['उच्च शारीरिक ऊर्जा', 'गतिशीलता व स्फूर्ति', 'स्वाधीन चेतना', 'वचनों के प्रति निष्ठा']
+  },
+  elephant: {
+    id: 'elephant',
+    animalEn: 'Gaja (Elephant)',
+    animalHi: 'गज (हाथी)',
+    personaEn: 'Calm, grounded, majestic, and powerful. Possesses long-term vision, high trustworthiness, and dependability.',
+    personaHi: 'शांत, स्थिर, गरिमामयी और प्रभावशाली। दीर्घकालिक दृष्टिकोण, अत्यंत विश्वसनीय और अडिग।',
+    relationshipStyleEn: 'Built for lifelong commitment, devoted protection, and steady affection.',
+    relationshipStyleHi: 'आजीवन स्थायित्व, सुरक्षा का भाव और अटूट संवेगात्मक विश्वास।',
+    instinctiveTraitsEn: ['Majestic patience', 'Deep emotional memory', 'Protective strength', 'Steadfast dependability'],
+    instinctiveTraitsHi: ['गंभीर धैर्य', 'गहरी संवेगात्मक स्मृति', 'सुरक्षात्मक शक्ति', 'अटूट विश्वसनीयता']
+  },
+  sheep: {
+    id: 'sheep',
+    animalEn: 'Mesha / Aja (Goat / Sheep)',
+    animalHi: 'मेष / अज (भेड़ / बकरा)',
+    personaEn: 'Courageous, strong-willed, persistent, and highly driven. Unpretentious and straightforward.',
+    personaHi: 'साहसी, दृढ़-संकल्पी, अनथक और कर्मठ। आडंबरहीन और स्पष्टवादी स्वभाव।',
+    relationshipStyleEn: 'Looks for partners who are intense, transparent, and direct in communication.',
+    relationshipStyleHi: 'स्पष्टवादी, पारदर्शी और भावनात्मक रूप से ईमानदार साथी की चाह।',
+    instinctiveTraitsEn: ['Steep climbing resilience', 'Direct communication', 'Obstinate persistence', 'Practical courage'],
+    instinctiveTraitsHi: ['विषम परिस्थितियों में टिके रहना', 'सीधी व स्पष्ट बात', 'अविचल लगन', 'व्यावहारिक साहस']
+  },
+  serpent: {
+    id: 'serpent',
+    animalEn: 'Sarpa (Serpent)',
+    animalHi: 'सर्प (सांप)',
+    personaEn: 'Intuitive, mysterious, alert, and deeply emotional. Possesses profound psychological depth.',
+    personaHi: 'अंतर्ज्ञानी, गूढ़, सजग और गहरे संवेगात्मक। दूसरों के अंतर्मन को ताड़ लेने की रहस्यमयी क्षमता।',
+    relationshipStyleEn: 'Desires profound emotional bonding and places uncompromising value on honesty.',
+    relationshipStyleHi: 'अति-गहन संवेगात्मक एकाकारिता की चाह तथा सत्यनिष्ठा पर कोई समझौता न करना।',
+    instinctiveTraitsEn: ['Acute psychic perception', 'Protective secrecy', 'Intensity of affection', 'Unforgiving of betrayal'],
+    instinctiveTraitsHi: ['तीक्ष्ण पूर्वाभास', 'रहस्यमयी प्रकृति', 'प्रेम की प्रगाढ़ता', 'विश्वासघात को न भूलना']
+  },
+  dog: {
+    id: 'dog',
+    animalEn: 'Shwan (Dog)',
+    animalHi: 'श्वान (कुत्ता)',
+    personaEn: 'Loyal, sincere, alert, and fiercely protective of loved ones. Steadfast companion.',
+    personaHi: 'निष्ठावान, सच्चा, सजग और अपनों का परम रक्षक। आत्मीय और वफादार साथी।',
+    relationshipStyleEn: 'Expects unconditional trust, emotional warmth, and fidelity from their life partner.',
+    relationshipStyleHi: 'जीवनसाथी से अटूट विश्वास, आत्मीय गर्माहट और पूर्ण निष्ठा की अपेक्षा।',
+    instinctiveTraitsEn: ['Unquestioning loyalty', 'Alert guardian instinct', 'Sincere affection', 'High emotional sensitivity'],
+    instinctiveTraitsHi: ['अटूट वफादारी', 'सजग रक्षक स्वभाव', 'सच्चा अपनत्व', 'उच्च संवेदनशीलता']
+  },
+  cat: {
+    id: 'cat',
+    animalEn: 'Marjara (Cat)',
+    animalHi: 'मार्जार (बिल्ली)',
+    personaEn: 'Sensitive, affectionate, agile, and observant. Values self-care and quiet boundaries.',
+    personaHi: 'संवेदनशील, स्नेहमयी, चपल और सूक्ष्मदर्शी। अपनी सीमाओं और एकांत के प्रति सजग।',
+    relationshipStyleEn: 'Connects profoundly and shows tender affection when feeling genuinely safe.',
+    relationshipStyleHi: 'पूर्ण भावनात्मक सुरक्षा अनुभव होने पर ही अपना गहरा प्रेम और कोमलता प्रकट करना।',
+    instinctiveTraitsEn: ['Selective closeness', 'Stealthy grace', 'Deep affection in safe zones', 'Refined aesthetic taste'],
+    instinctiveTraitsHi: ['चुनिंदा आत्मीयता', 'सहज सौंदर्य-बोध', 'सुरक्षित परिवेश में गहरा स्नेह', 'सूक्ष्म अवलोकन']
+  },
+  rat: {
+    id: 'rat',
+    animalEn: 'Mushaka (Rat)',
+    animalHi: 'मूषक (चूहा)',
+    personaEn: 'Clever, resourceful, quick-witted, and active. Charming, adaptive, and mentally nimble.',
+    personaHi: 'चतुर, संसाधन जुटाने में माहिर, त्वरित बुद्धि और सक्रिय। आकर्षक, अनुकूलनशील और मेधावी।',
+    relationshipStyleEn: 'Likes stability and warm domestic comfort but can experience emotional restlessness.',
+    relationshipStyleHi: 'घरेलू सुख व सुरक्षा की चाह, किंतु मन में निरंतर विचार और बेचैनी का प्रवाह।',
+    instinctiveTraitsEn: ['Resourcefulness in scarcity', 'Mental nimbleness', 'Thriftiness and foresight', 'Restless energy'],
+    instinctiveTraitsHi: ['अभाव में भी राह निकालना', 'तीव्र मानसिक गति', 'बचत व दूरदर्शिता', 'चंचल चेतना']
+  },
+  cow: {
+    id: 'cow',
+    animalEn: 'Gau (Cow)',
+    animalHi: 'गौ (गाय)',
+    personaEn: 'Devoted, nurturing, generous, and patient. Embodying maternal warmth and gentle grace.',
+    personaHi: 'समर्पित, वात्सल्यमयी, उदार और परम धैर्यवान। मातृत्व की गर्माहट और सात्विक सौम्यता का प्रतीक।',
+    relationshipStyleEn: 'Loves to build relationships for the long run with boundless selfless devotion.',
+    relationshipStyleHi: 'निःस्वार्थ समर्पण और असीम धैर्य के साथ आजीवन निभाने वाले रिश्तों का निर्माण।',
+    instinctiveTraitsEn: ['Selfless nurturing', 'Gentle patience', 'High maternal instinct', 'Forgiving heart'],
+    instinctiveTraitsHi: ['निःस्वार्थ पोषण', 'अगाध धैर्य', 'वात्सल्य भाव', 'क्षमाशील हृदय']
+  },
+  buffalo: {
+    id: 'buffalo',
+    animalEn: 'Mahisha (Buffalo)',
+    animalHi: 'महिष (भैंस)',
+    personaEn: 'Disciplined, composed, resilient, and enduring. Quiet powerhouse of persistent effort.',
+    personaHi: 'अनुशासित, शांत-गंभीर, सहनशील और दृढ़। मौन रहकर निरंतर कठोर परिश्रम करने की अद्भुत क्षमता।',
+    relationshipStyleEn: 'Steady in love, deeply reliable, and emotionally unshakable across life challenges.',
+    relationshipStyleHi: 'प्रेम में धीर-गंभीर, परम भरोसेमंद और संकट के समय चट्टान की तरह अडिग साथी।',
+    instinctiveTraitsEn: ['Endurance under heavy loads', 'Slow to anger', 'Unyielding persistence', 'Grounded reliability'],
+    instinctiveTraitsHi: ['कठिन भार वहन करने की क्षमता', 'शांत स्वभाव', 'अटूट दृढ़ता', 'धरातल से जुड़ाव']
+  },
+  tiger: {
+    id: 'tiger',
+    animalEn: 'Vyaghra (Tiger)',
+    animalHi: 'व्याघ्र (बाघ)',
+    personaEn: 'Fearless, intense, passionate, and proud. Majestic aura with magnetic personal charisma.',
+    personaHi: 'निर्भीक, तीव्र, प्रखर और स्वाभिमानी। चुंबकीय व्यक्तित्व और शाही गरिमा।',
+    relationshipStyleEn: 'Prefers exciting, passionately loyal, and emotionally deep relationships.',
+    relationshipStyleHi: 'उत्साहपूर्ण, प्रगाढ़ निष्ठा और गहरे भावनात्मक स्तर पर जुड़ने वाले संबंधों की चाह।',
+    instinctiveTraitsEn: ['Solitary strength', 'Sudden decisive leaps', 'Unmatched passion', 'Proud dignity'],
+    instinctiveTraitsHi: ['एकाकी शक्ति', 'निर्णायक प्रहार क्षमता', 'अतुल्य उत्साह', 'आत्मसम्मान की रक्षा']
+  },
+  deer: {
+    id: 'deer',
+    animalEn: 'Mriga (Deer)',
+    animalHi: 'मृग (हिरण)',
+    personaEn: 'Gentle, compassionate, peace-loving, and elegant. Possesses delicate grace and pure heart.',
+    personaHi: 'कोमल, दयालु, शांतिप्रिय और सुरुचिपूर्ण। निर्मल हृदय, सुकुमारता और सात्विक दृष्टि।',
+    relationshipStyleEn: 'Prefers harmony, hates conflict, and flourishes in gentle and respectful partnerships.',
+    relationshipStyleHi: 'कलह व कटुता से विमुखता, आपसी सम्मान, कोमल व्यवहार और मधुर सामंजस्य की चाह।',
+    instinctiveTraitsEn: ['Acute alertness', 'Gentle grace', 'Aversion to aggression', 'Purity of sentiment'],
+    instinctiveTraitsHi: ['तीव्र संवेदनशीलता', 'कोमल सौंदर्य', 'आक्रामकता से भय', 'भावों की पवित्रता']
+  },
+  monkey: {
+    id: 'monkey',
+    animalEn: 'Vanara (Monkey)',
+    animalHi: 'वानर (बंदर)',
+    personaEn: 'Curious, playful, witty, and inventive. High mental agility and light-hearted spirit.',
+    personaHi: 'जिज्ञासु, विनोदी, वाक्पटु और नवाचारी। त्वरित सीखने की ललक और प्रफुल्लित स्वभाव।',
+    relationshipStyleEn: 'Thrives with humorous, adaptable, communicative, and light-hearted partners.',
+    relationshipStyleHi: 'हंसमुख, अनुकूलनशील, संवाद-प्रिय और जीवन को सहजता से लेने वाले साथी के साथ जुड़ाव।',
+    instinctiveTraitsEn: ['Quick problem solving', 'Inquisitive exploration', 'Playful affection', 'Mental adaptability'],
+    instinctiveTraitsHi: ['समस्या का त्वरित हल', 'निरंतर खोज की प्रवृत्ति', 'चुलबुलापन', 'मानसिक लचीलापन']
+  },
+  mongoose: {
+    id: 'mongoose',
+    animalEn: 'Nakula (Mongoose)',
+    animalHi: 'नकुल (नेवला)',
+    personaEn: 'Sharp-minded, independent, agile, and courageous. Tactical brilliance and self-containment.',
+    personaHi: 'कुशाग्र बुद्धि, स्वाभिमानी, चपल और साहसी। रणनीतिक सूझबूझ और आत्मनिर्भरता।',
+    relationshipStyleEn: 'Expects partners who respect their personal space and offer genuine emotional support.',
+    relationshipStyleHi: 'व्यक्तिगत स्वतंत्रता का सम्मान करने वाले और यथार्थवादी भावनात्मक सहारा देने वाले साथी की चाह।',
+    instinctiveTraitsEn: ['Speedy tactical reflexes', 'Defiance of venom/intimidation', 'Self-reliance', 'Private boundaries'],
+    instinctiveTraitsHi: ['त्वरित प्रतिक्रिया', 'भय पर विजय', 'आत्मनिर्भरता', 'निजी क्षेत्र की रक्षा']
+  },
+  lion: {
+    id: 'lion',
+    animalEn: 'Simha (Lion)',
+    animalHi: 'सिंह (शेर)',
+    personaEn: 'Bold, confident, naturally dominant, and noble. Born to lead and command respect.',
+    personaHi: 'तेजस्वी, आत्मविश्वासी, स्वाभाविक नेतृत्वकारी और उदार। समाज में सम्मान और प्रतिष्ठा पाने वाले।',
+    relationshipStyleEn: 'Wants their partner to admire their strength, stand by their vision, and share mutual pride.',
+    relationshipStyleHi: 'पारस्परिक गर्व, नेतृत्व में सहयोग और अपनी शक्ति व दृष्टि का आदर करने वाले साथी की चाह।',
+    instinctiveTraitsEn: ['Royalty and magnanimity', 'Courageous command', 'Pride in legacy', 'Fierce protectiveness'],
+    instinctiveTraitsHi: ['शाही उदारता', 'साहसिक नेतृत्व', 'कुल-सम्मान की रक्षा', 'संरक्षण का भाव']
+  }
+};
+
+export function getYoniProfile(yoniName: string): YoniProfile {
+  const y = yoniName.trim().toLowerCase();
+  if (y.includes('horse') || y.includes('ashwa') || y.includes('अश्व')) return CLASSICAL_YONI_PROFILES.horse;
+  if (y.includes('elephant') || y.includes('gaja') || y.includes('गज')) return CLASSICAL_YONI_PROFILES.elephant;
+  if (y.includes('sheep') || y.includes('goat') || y.includes('mesha') || y.includes('aja') || y.includes('मेष') || y.includes('अज')) return CLASSICAL_YONI_PROFILES.sheep;
+  if (y.includes('serpent') || y.includes('snake') || y.includes('sarpa') || y.includes('सर्प')) return CLASSICAL_YONI_PROFILES.serpent;
+  if (y.includes('dog') || y.includes('shwan') || y.includes('श्वान')) return CLASSICAL_YONI_PROFILES.dog;
+  if (y.includes('cat') || y.includes('marjara') || y.includes('मार्जार')) return CLASSICAL_YONI_PROFILES.cat;
+  if (y.includes('rat') || y.includes('mushaka') || y.includes('मूषक')) return CLASSICAL_YONI_PROFILES.rat;
+  if (y.includes('cow') || y.includes('gau') || y.includes('गौ')) return CLASSICAL_YONI_PROFILES.cow;
+  if (y.includes('buffalo') || y.includes('mahisha') || y.includes('महिष')) return CLASSICAL_YONI_PROFILES.buffalo;
+  if (y.includes('tiger') || y.includes('vyaghra') || y.includes('व्याघ्र')) return CLASSICAL_YONI_PROFILES.tiger;
+  if (y.includes('deer') || y.includes('mriga') || y.includes('मृग')) return CLASSICAL_YONI_PROFILES.deer;
+  if (y.includes('monkey') || y.includes('vanara') || y.includes('वानर')) return CLASSICAL_YONI_PROFILES.monkey;
+  if (y.includes('mongoose') || y.includes('nakula') || y.includes('नकुल')) return CLASSICAL_YONI_PROFILES.mongoose;
+  return CLASSICAL_YONI_PROFILES.lion;
+}
+
+/* =========================================================================
+   21. PANCHA MAHABHUTA BIRTH TATWA & 90-MIN AROHA/AVAROHA ENGINE
+   ========================================================================= */
+export type PanchaTatwaId = 'prithvi' | 'jala' | 'tejas' | 'vayu' | 'akasha';
+
+export interface BirthTatwaProfile {
+  id: PanchaTatwaId;
+  nameEn: string;
+  nameHi: string;
+  elementEn: string;
+  elementHi: string;
+  governingPlanetsEn: string;
+  governingPlanetsHi: string;
+  durationMinutes: number;
+  coreDesiresEn: string;
+  coreDesiresHi: string;
+  healthVulnerabilitiesEn: string;
+  healthVulnerabilitiesHi: string;
+  planetaryAfflictionsEn: string;
+  planetaryAfflictionsHi: string;
+}
+
+export const CLASSICAL_BIRTH_TATWA_PROFILES: Record<PanchaTatwaId, BirthTatwaProfile> = {
+  prithvi: {
+    id: 'prithvi',
+    nameEn: 'Prithvi Tatwa (Earth Element)',
+    nameHi: 'पृथ्वी तत्त्व (भू-तत्त्व)',
+    elementEn: 'Earth',
+    elementHi: 'पृथ्वी',
+    governingPlanetsEn: 'Mercury (Budha)',
+    governingPlanetsHi: 'बुध ग्रह',
+    durationMinutes: 6,
+    coreDesiresEn: 'Achieving high material success, satisfaction, trade stability, and practical wealth generation.',
+    coreDesiresHi: 'भौतिक समृद्धि, व्यापारिक स्थायित्व, ठोस निर्माण और व्यावहारिक लक्ष्यों की प्राप्ति।',
+    healthVulnerabilitiesEn: 'Governs physical structure, flesh, bones, and digestive stability. Susceptible to nervous exhaustion and digestive sluggishness when stressed.',
+    healthVulnerabilitiesHi: 'शारीरिक संरचना, धातु-पुष्टि और पाचन संस्थान पर प्रभाव। तनाव में तंत्रिका तंत्र व पाचन विकार।',
+    planetaryAfflictionsEn: 'When Mercury is weak or afflicted: nervous system disorders, digestive impairment, cognitive fatigue, and speech or respiratory sensitivities.',
+    planetaryAfflictionsHi: 'बुध के पीड़ित होने पर: स्नायु विकार (Nervous system), अपच, मानसिक थकान, वाणी अथवा त्वचा संबंधी संवेदनशीलता।'
+  },
+  jala: {
+    id: 'jala',
+    nameEn: 'Jala Tatwa (Water Element)',
+    nameHi: 'जल तत्त्व',
+    elementEn: 'Water',
+    elementHi: 'जल',
+    governingPlanetsEn: 'Moon & Venus (Chandra & Shukra)',
+    governingPlanetsHi: 'चंद्रमा एवं शुक्र ग्रह',
+    durationMinutes: 12,
+    coreDesiresEn: 'Creative, artistic, emotional expression; success in fine arts, literature, aesthetic beauty, and compassionate relationships.',
+    coreDesiresHi: 'कलात्मक, रचनात्मक और संवेगात्मक अभिव्यक्ति; साहित्य, कला, सौंदर्य और आत्मीय संबंधों में स्वाभाविक सफलता।',
+    healthVulnerabilitiesEn: 'Governs bodily fluids, blood plasma, lymphatic circulation, emotional equilibrium, and reproductive vitality.',
+    healthVulnerabilitiesHi: 'शारीरिक तरल, रक्त प्लाज्मा, लसिका (Lymphatic) तंत्र, मानसिक शांति और प्रजनन ओज का संचालन।',
+    planetaryAfflictionsEn: 'When Moon is afflicted: emotional turbulence, mental anxiety, menstrual or hormonal fluctuations. When Venus is afflicted: hormonal imbalances, vitality loss, urinary sensitivities, and emotional disillusionment.',
+    planetaryAfflictionsHi: 'चंद्र पीड़ित होने पर: मानसिक अशांति, अवसाद, हार्मोनल असंतुलन। शुक्र पीड़ित होने पर: जीवनशक्ति में कमी, मूत्र संस्थान विकार और वैवाहिक नीरसता।'
+  },
+  tejas: {
+    id: 'tejas',
+    nameEn: 'Tejas Tatwa (Fire Element)',
+    nameHi: 'तेजस् तत्त्व (अग्नि तत्त्व)',
+    elementEn: 'Fire',
+    elementHi: 'अग्नि / तेजस्',
+    governingPlanetsEn: 'Sun & Mars (Surya & Mangala)',
+    governingPlanetsHi: 'सूर्य एवं मंगल ग्रह',
+    durationMinutes: 18,
+    coreDesiresEn: 'Craves leadership, authority, positions of power, dynamic influence, victory over opposition, and transformative action.',
+    coreDesiresHi: 'सत्ता, पद, प्रतिष्ठा, समाज में नेतृत्व, विरोधियों पर विजय और तेजस्वी पराक्रम की आकांक्षा।',
+    healthVulnerabilitiesEn: 'Governs body temperature, digestive metabolic fire (Jatharagni), eyesight, and cardiovascular circulation.',
+    healthVulnerabilitiesHi: 'शारीरिक ताप, जठराग्नि, नेत्र ज्योति और रक्त परिसंचरण का नियमन।',
+    planetaryAfflictionsEn: 'When Sun is afflicted: cardiovascular strain, bone weakness, blood pressure, and glandular issues. When Mars is afflicted: accidental injuries, inflammation, blood loss, and surgery susceptibilities.',
+    planetaryAfflictionsHi: 'सूर्य पीड़ित होने पर: हृदय विकार, अस्थि दुर्बलता, रक्तचाप। मंगल पीड़ित होने पर: रक्त विकार, दुर्घटनाएं, ज्वर, पित्त प्रकोप व शल्य चिकित्सा (Surgery)।'
+  },
+  vayu: {
+    id: 'vayu',
+    nameEn: 'Vayu Tatwa (Air Element)',
+    nameHi: 'वायु तत्त्व',
+    elementEn: 'Air',
+    elementHi: 'वायु',
+    governingPlanetsEn: 'Saturn (Shani)',
+    governingPlanetsHi: 'शनि ग्रह',
+    durationMinutes: 24,
+    coreDesiresEn: 'Views work as worship (Karma Yoga), capable of enduring profound physical and mental stress, achieving enduring victory through tireless toil.',
+    coreDesiresHi: 'कर्म को ही पूजा मानना, भारी शारीरिक व मानसिक दबाव सहने की अद्भुत क्षमता और कठोर परिश्रम से चिरस्थायी सफलता।',
+    healthVulnerabilitiesEn: 'Governs breath, neural impulses, joint articulation, gaseous balance, and constitutional stamina.',
+    healthVulnerabilitiesHi: 'प्राणवायु, तंत्रिका आवेग (Nerve impulses), जोड़ों का संचलन और शारीरिक सहनशक्ति।',
+    planetaryAfflictionsEn: 'When Saturn is afflicted: chronic rheumatic pains, joint arthritis, muscular stiffness, tremors, chronic fatigue, and dry constitutional disorders.',
+    planetaryAfflictionsHi: 'शनि के पीड़ित होने पर: जोड़ों में दर्द, गठिया (Arthritis), वात रोग, पक्षाघात (Paralysis), मांसपेशियों में जकड़न व जीर्ण थकान।'
+  },
+  akasha: {
+    id: 'akasha',
+    nameEn: 'Akasha Tatwa (Ether / Space Element)',
+    nameHi: 'आकाश तत्त्व (व्योम तत्त्व)',
+    elementEn: 'Ether / Space',
+    elementHi: 'आकाश',
+    governingPlanetsEn: 'Jupiter (Brihaspati)',
+    governingPlanetsHi: 'गुरु (बृहस्पति) ग्रह',
+    durationMinutes: 30,
+    coreDesiresEn: 'Minds continuously drawn towards learning, philosophy, spiritual expansion, divine wisdom, and transmitting knowledge to humanity.',
+    coreDesiresHi: 'चेतना का उच्चतर ज्ञान, दर्शन, आध्यात्मिक अनुसंधान, ईश्वरीय प्रज्ञा और लोक-कल्याण की ओर स्वाभाविक झुकाव।',
+    healthVulnerabilitiesEn: 'Governs spatial cavities, hearing, brain expansiveness, cellular growth, liver function, and metabolic fat synthesis.',
+    healthVulnerabilitiesHi: 'कर्णेंद्रिय (श्रवण शक्ति), मस्तिष्क का विस्तार, यकृत (Liver) कार्यप्रणाली और वसा (Fat) चयापचय।',
+    planetaryAfflictionsEn: 'When Jupiter is afflicted: liver ailments, obesity, cholesterol imbalance, hernia, endocrine expansion, and metabolic slowdown.',
+    planetaryAfflictionsHi: 'गुरु के पीड़ित होने पर: यकृत (Liver) विकार, मोटापा, कोलेस्ट्रॉल असंतुलन, हर्निया व चयापचय में शिथिलता।'
+  }
+};
+
+export interface BirthTatwaCalculationResult {
+  tatwa: PanchaTatwaId;
+  nameEn: string;
+  nameHi: string;
+  elementEn: string;
+  elementHi: string;
+  governingPlanetsEn: string;
+  governingPlanetsHi: string;
+  cycle: 'Aroha' | 'Avaroha';
+  cycleHi: string;
+  cycleNumber: number;
+  minutesFromSunrise: number;
+  durationMinutes: number;
+  coreDesiresEn: string;
+  coreDesiresHi: string;
+  healthVulnerabilitiesEn: string;
+  healthVulnerabilitiesHi: string;
+  planetaryAfflictionsEn: string;
+  planetaryAfflictionsHi: string;
+}
+
+/**
+ * Calculates exact dynamic Birth Tatwa using the classical 90-min Aroha/Avaroha cycle.
+ * Table A Durations: Prithvi 6m, Jala 12m, Tejas 18m, Vayu 24m, Akasha 30m = 90 min.
+ * Aroha (Ascending 90 min) + Avaroha (Descending 90 min) = 180 min (3 hour complete block).
+ * Day start at Sunrise:
+ * Sunday / Tuesday -> Tejas (18m)
+ * Monday / Friday -> Jala (12m)
+ * Wednesday -> Prithvi (6m)
+ * Thursday -> Akasha (30m)
+ * Saturday -> Vayu (24m)
+ */
+export function calculateBirthTimeTatwa(
+  birthMs: number,
+  sunriseMs: number,
+  weekdayLordOrName: string
+): BirthTatwaCalculationResult {
+  const diffMs = birthMs - sunriseMs;
+  let elapsedMinutes = Math.floor(diffMs / 60000);
+  if (elapsedMinutes < 0) {
+    // Born before sunrise: belongs to previous Vedic day block (up to 24 hrs = 1440 mins)
+    elapsedMinutes = ((elapsedMinutes % 1440) + 1440) % 1440;
+  }
+
+  const w = weekdayLordOrName.trim().toLowerCase();
+  let startingTatwa: PanchaTatwaId = 'prithvi';
+  if (w.includes('sun') || w.includes('mars') || w.includes('ravi') || w.includes('mangal') || w.includes('tues')) {
+    startingTatwa = 'tejas';
+  } else if (w.includes('mon') || w.includes('venus') || w.includes('som') || w.includes('shukra') || w.includes('fri')) {
+    startingTatwa = 'jala';
+  } else if (w.includes('wed') || w.includes('merc') || w.includes('budh')) {
+    startingTatwa = 'prithvi';
+  } else if (w.includes('thu') || w.includes('jup') || w.includes('guru')) {
+    startingTatwa = 'akasha';
+  } else if (w.includes('sat') || w.includes('shani')) {
+    startingTatwa = 'vayu';
+  }
+
+  // Circular order in Aroha: Prithvi (6) -> Jala (12) -> Tejas (18) -> Vayu (24) -> Akasha (30)
+  const fullCircle: PanchaTatwaId[] = ['prithvi', 'jala', 'tejas', 'vayu', 'akasha'];
+  const startIdx = fullCircle.indexOf(startingTatwa);
+  const arohaOrder: PanchaTatwaId[] = [];
+  for (let i = 0; i < 5; i++) {
+    arohaOrder.push(fullCircle[(startIdx + i) % 5]);
+  }
+  const avarohaOrder: PanchaTatwaId[] = [...arohaOrder].reverse();
+
+  // 180 min cycle (90m Aroha + 90m Avaroha)
+  const cycleNumber = Math.floor(elapsedMinutes / 180) + 1;
+  const minutesIn180 = elapsedMinutes % 180;
+  const isAroha = minutesIn180 < 90;
+  const cycleName: 'Aroha' | 'Avaroha' = isAroha ? 'Aroha' : 'Avaroha';
+  const cycleHi = isAroha ? 'आरोह (उत्थान चक्र)' : 'अवरोह (अवतरण चक्र)';
+
+  const activeOrder = isAroha ? arohaOrder : avarohaOrder;
+  const offsetIn90 = isAroha ? minutesIn180 : minutesIn180 - 90;
+
+  let accumulated = 0;
+  let resolvedTatwaId: PanchaTatwaId = activeOrder[0];
+  let tatwaDuration = CLASSICAL_BIRTH_TATWA_PROFILES[resolvedTatwaId].durationMinutes;
+
+  for (const tId of activeOrder) {
+    const dur = CLASSICAL_BIRTH_TATWA_PROFILES[tId].durationMinutes;
+    if (offsetIn90 < accumulated + dur) {
+      resolvedTatwaId = tId;
+      tatwaDuration = dur;
+      break;
+    }
+    accumulated += dur;
+  }
+
+  const profile = CLASSICAL_BIRTH_TATWA_PROFILES[resolvedTatwaId];
+
+  return {
+    tatwa: resolvedTatwaId,
+    nameEn: profile.nameEn,
+    nameHi: profile.nameHi,
+    elementEn: profile.elementEn,
+    elementHi: profile.elementHi,
+    governingPlanetsEn: profile.governingPlanetsEn,
+    governingPlanetsHi: profile.governingPlanetsHi,
+    cycle: cycleName,
+    cycleHi,
+    cycleNumber,
+    minutesFromSunrise: elapsedMinutes,
+    durationMinutes: tatwaDuration,
+    coreDesiresEn: profile.coreDesiresEn,
+    coreDesiresHi: profile.coreDesiresHi,
+    healthVulnerabilitiesEn: profile.healthVulnerabilitiesEn,
+    healthVulnerabilitiesHi: profile.healthVulnerabilitiesHi,
+    planetaryAfflictionsEn: profile.planetaryAfflictionsEn,
+    planetaryAfflictionsHi: profile.planetaryAfflictionsHi
+  };
+}

@@ -20,6 +20,16 @@ import {
   getPayaProfile,
   getPadaDetail,
   getAtmakarakaProfile,
+  CLASSICAL_GANA_PROFILES,
+  CLASSICAL_NADI_PROFILES,
+  CLASSICAL_VARNA_PROFILES,
+  CLASSICAL_YONI_PROFILES,
+  CLASSICAL_BIRTH_TATWA_PROFILES,
+  getGanaProfile,
+  getNadiProfile,
+  getVarnaProfile,
+  getYoniProfile,
+  calculateBirthTimeTatwa,
 } from '../predictions/classicalPanchangaNavamshaKb';
 
 describe('Classical Panchanga, Seasonality & Prithu Yasas Navamsha Knowledge Base', () => {
@@ -202,5 +212,131 @@ describe('Classical Panchanga, Seasonality & Prithu Yasas Navamsha Knowledge Bas
 
     const akFactor = report.birthProfile.factors.find(f => f.id === 'atmakaraka');
     expect(akFactor?.interpretationEn).toContain('King of the Chart');
+  });
+  it('covers all 3 Ganas with worldview, traits, and cautionary challenges', () => {
+    const ganas = ['deva', 'manushya', 'rakshasa'] as const;
+    for (const g of ganas) {
+      const gp = CLASSICAL_GANA_PROFILES[g];
+      expect(gp).toBeDefined();
+      expect(gp.nameEn.length).toBeGreaterThan(5);
+      expect(gp.natureEn.length).toBeGreaterThan(15);
+      expect(gp.keyTraitsEn.length).toBeGreaterThanOrEqual(4);
+      expect(gp.challengesEn.length).toBeGreaterThanOrEqual(2);
+    }
+    expect(getGanaProfile('Deva').id).toBe('deva');
+    expect(getGanaProfile('Manushya').id).toBe('manushya');
+    expect(getGanaProfile('Rakshasa').id).toBe('rakshasa');
+  });
+
+  it('covers all 3 Nadis with Ayurvedic Doshas, energy flows, and associated diseases', () => {
+    const nadis = ['adi', 'madhya', 'antya'] as const;
+    for (const n of nadis) {
+      const np = CLASSICAL_NADI_PROFILES[n];
+      expect(np).toBeDefined();
+      expect(np.nameEn.length).toBeGreaterThan(5);
+      expect(np.energyFlowEn.length).toBeGreaterThan(15);
+      expect(np.associatedDiseasesEn.length).toBeGreaterThanOrEqual(3);
+      expect(np.marriageImpactEn.length).toBeGreaterThan(20);
+    }
+    // Check specific elements and energy flow
+    expect(CLASSICAL_NADI_PROFILES.adi.elementEn).toContain('Air');
+    expect(CLASSICAL_NADI_PROFILES.adi.energyFlowEn).toContain('Bottom to top');
+    expect(CLASSICAL_NADI_PROFILES.madhya.elementEn).toContain('Fire');
+    expect(CLASSICAL_NADI_PROFILES.madhya.energyFlowEn).toContain('Bidirectional');
+    expect(CLASSICAL_NADI_PROFILES.antya.elementEn).toContain('Earth & Water');
+    expect(CLASSICAL_NADI_PROFILES.antya.energyFlowEn).toContain('Top to bottom');
+
+    // Associated diseases
+    expect(CLASSICAL_NADI_PROFILES.adi.associatedDiseasesEn.some(d => d.includes('Nervous'))).toBe(true);
+    expect(CLASSICAL_NADI_PROFILES.madhya.associatedDiseasesEn.some(d => d.includes('reflux'))).toBe(true);
+    expect(CLASSICAL_NADI_PROFILES.antya.associatedDiseasesEn.some(d => d.includes('sinusitis') || d.includes('Allergies'))).toBe(true);
+  });
+
+  it('covers all 4 Varnas with innate psychological aptitude and moon sign correlation', () => {
+    const varnas = ['brahmin', 'kshatriya', 'vaishya', 'shudra'] as const;
+    for (const v of varnas) {
+      const vp = CLASSICAL_VARNA_PROFILES[v];
+      expect(vp).toBeDefined();
+      expect(vp.archetypeEn.length).toBeGreaterThan(20);
+      expect(vp.keyQualitiesEn.length).toBeGreaterThanOrEqual(4);
+      expect(vp.moonSignsEn.length).toBeGreaterThan(10);
+    }
+    expect(getVarnaProfile('Brahmin').moonSignsEn).toContain('Water');
+    expect(getVarnaProfile('Kshatriya').moonSignsEn).toContain('Fire');
+    expect(getVarnaProfile('Vaishya').moonSignsEn).toContain('Earth');
+    expect(getVarnaProfile('Shudra').moonSignsEn).toContain('Air');
+  });
+
+  it('covers all 14 Yonis with personas, relationship styles, and instinctive traits', () => {
+    const yoniAnimals = [
+      'horse', 'elephant', 'sheep', 'serpent', 'dog', 'cat', 'rat',
+      'cow', 'buffalo', 'tiger', 'deer', 'monkey', 'mongoose', 'lion'
+    ];
+    for (const animal of yoniAnimals) {
+      const yp = CLASSICAL_YONI_PROFILES[animal];
+      expect(yp).toBeDefined();
+      expect(yp.animalEn.length).toBeGreaterThan(3);
+      expect(yp.personaEn.length).toBeGreaterThan(15);
+      expect(yp.relationshipStyleEn.length).toBeGreaterThan(15);
+      expect(yp.instinctiveTraitsEn.length).toBeGreaterThanOrEqual(3);
+    }
+    expect(getYoniProfile('Horse').id).toBe('horse');
+    expect(getYoniProfile('Elephant').id).toBe('elephant');
+    expect(getYoniProfile('Serpent').id).toBe('serpent');
+    expect(getYoniProfile('Tiger').id).toBe('tiger');
+  });
+
+  it('computes exact dynamic Birth Tatwa using the 90-minute Aroha/Avaroha cycle', () => {
+    // User benchmark example:
+    // Wednesday, Sunrise 6:15 am, Birth 10:30 am
+    // 10:30 - 6:15 = 4h 15m = 255 mins
+    // Block: Cycle #2 (180 to 360m). 255 % 180 = 75 mins in Aroha.
+    // Wednesday Aroha: Prithvi (0..6), Jala (6..18), Tejas (18..36), Vayu (36..60), Akasha (60..90).
+    // 75m -> Akasha Tatwa! Governed by Jupiter.
+    const wedSunrise = Date.parse('2026-11-18T06:15:00.000Z');
+    const wedBirth = Date.parse('2026-11-18T10:30:00.000Z');
+    const wedResult = calculateBirthTimeTatwa(wedBirth, wedSunrise, 'Wednesday');
+
+    expect(wedResult.tatwa).toBe('akasha');
+    expect(wedResult.cycle).toBe('Aroha');
+    expect(wedResult.cycleNumber).toBe(2);
+    expect(wedResult.governingPlanetsEn).toContain('Jupiter');
+    expect(wedResult.durationMinutes).toBe(30);
+
+    // Sunday example: Sunrise 6:00 am, Birth 6:10 am -> 10m -> Tejas (18m)
+    const sunSunrise = Date.parse('2026-11-15T06:00:00.000Z');
+    const sunBirth = Date.parse('2026-11-15T06:10:00.000Z');
+    const sunResult = calculateBirthTimeTatwa(sunBirth, sunSunrise, 'Sunday');
+
+    expect(sunResult.tatwa).toBe('tejas');
+    expect(sunResult.cycle).toBe('Aroha');
+    expect(sunResult.cycleNumber).toBe(1);
+    expect(sunResult.governingPlanetsEn).toContain('Sun');
+  });
+
+  it('integrates Gana, Nadi, Varna, Yoni, and Birth Tatwa in deep birth profile', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+
+    expect(report.birthProfile.ganaDetails).toBeDefined();
+    expect(report.birthProfile.nadiDetails).toBeDefined();
+    expect(report.birthProfile.varnaDetails).toBeDefined();
+    expect(report.birthProfile.yoniDetails).toBeDefined();
+    expect(report.birthProfile.birthTatwaDetails).toBeDefined();
+
+    const ganaFactor = report.birthProfile.factors.find(f => f.id === 'gana');
+    expect(ganaFactor?.interpretationEn).toContain('Key Traits:');
+
+    const nadiFactor = report.birthProfile.factors.find(f => f.id === 'nadi');
+    expect(nadiFactor?.interpretationEn).toContain('Energy Flow:');
+
+    const varnaFactor = report.birthProfile.factors.find(f => f.id === 'varna');
+    expect(varnaFactor?.interpretationEn).toContain('Key Qualities:');
+
+    const yoniFactor = report.birthProfile.factors.find(f => f.id === 'yoni');
+    expect(yoniFactor?.interpretationEn).toContain('Relationship Style:');
+
+    const tatwaFactor = report.birthProfile.factors.find(f => f.id === 'tattva');
+    expect(tatwaFactor?.interpretationEn).toContain('Birth Time Tatwa:');
   });
 });

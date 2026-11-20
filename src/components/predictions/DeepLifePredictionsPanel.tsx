@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import {
+  Activity,
   Crown,
+  Flame,
   Gem,
   AlertTriangle,
   Award,
@@ -636,6 +638,184 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                 </div>
               </div>
             )}
+
+            {/* Birth Time Tatwa (Pancha Mahabhuta Aroha/Avaroha) Card */}
+            {report.birthProfile.birthTatwaDetails && (
+              <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #059669' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Flame size={16} style={{ color: '#059669' }} />
+                    <span style={{ fontWeight: 700, fontSize: '14px' }}>
+                      {isHi ? 'जन्म समय पंचमहाभूत तत्त्व (Dynamic Birth Time Tatwa)' : 'Dynamic Birth Time Tatwa (Pancha Bhuta Cycle)'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'rgba(5, 150, 105, 0.12)', color: '#059669', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.birthTatwaDetails.nameHi : report.birthProfile.birthTatwaDetails.nameEn}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(5, 150, 105, 0.12)', color: '#059669', fontWeight: 650 }}>
+                      {isHi ? `${report.birthProfile.birthTatwaDetails.cycleHi} #${report.birthProfile.birthTatwaDetails.cycleNumber}` : `${report.birthProfile.birthTatwaDetails.cycle} Cycle #${report.birthProfile.birthTatwaDetails.cycleNumber}`}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(5, 150, 105, 0.12)', color: '#059669', fontWeight: 650 }}>
+                      {isHi ? `स्वामी: ${report.birthProfile.birthTatwaDetails.governingPlanetsHi}` : `Ruler: ${report.birthProfile.birthTatwaDetails.governingPlanetsEn}`}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '13px', lineHeight: 1.55, marginBottom: '8px' }}>
+                  <strong>{isHi ? 'मूल चेतना व अभिलाषा: ' : 'Core Desires & Samskaras: '}</strong>
+                  <span>{isHi ? report.birthProfile.birthTatwaDetails.coreDesiresHi : report.birthProfile.birthTatwaDetails.coreDesiresEn}</span>
+                </div>
+
+                <div style={{ padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid rgba(5, 150, 105, 0.25)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#059669', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
+                    {isHi ? 'शारीरिक स्वास्थ्य व तत्त्वीय संवेदनशीलता (Physical Vitality)' : 'Physical Health & Organic Constitution'}
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? report.birthProfile.birthTatwaDetails.healthVulnerabilitiesHi : report.birthProfile.birthTatwaDetails.healthVulnerabilitiesEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    <strong>{isHi ? 'ग्रह-पीड़ा संकेत: ' : 'Affliction Warning: '}</strong>
+                    <span>{isHi ? report.birthProfile.birthTatwaDetails.planetaryAfflictionsHi : report.birthProfile.birthTatwaDetails.planetaryAfflictionsEn}</span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                  {isHi
+                    ? `सूर्योदय से ${report.birthProfile.birthTatwaDetails.minutesFromSunrise} मिनट बाद जन्म। ९० मिनट के आरोह-अवरोह चक्र में ${report.birthProfile.birthTatwaDetails.durationMinutes} मिनट की अवधि।`
+                    : `Born ${report.birthProfile.birthTatwaDetails.minutesFromSunrise} minutes after sunrise. Active in a ${report.birthProfile.birthTatwaDetails.durationMinutes}-minute phase within the 90-minute Aroha/Avaroha cycle.`}
+                </div>
+              </div>
+            )}
+
+            {/* Nadi, Ayurvedic Dosha & Energy Flow Card */}
+            {report.birthProfile.nadiDetails && (
+              <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #2563eb' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Activity size={16} style={{ color: '#2563eb' }} />
+                    <span style={{ fontWeight: 700, fontSize: '14px' }}>
+                      {isHi ? 'नाड़ी, त्रिदोष एवं ऊर्जा प्रवाह (Nadi & Ayurvedic Energy Flow)' : 'Nadi, Ayurvedic Dosha & Energy Direction'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.nadiDetails.nameHi : report.birthProfile.nadiDetails.nameEn}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.nadiDetails.ayurvedicDoshaHi : report.birthProfile.nadiDetails.ayurvedicDoshaEn}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '13px', lineHeight: 1.55, marginBottom: '6px' }}>
+                  <strong>{isHi ? 'ऊर्जा प्रवाह (Energy Flow): ' : 'Energy Flow: '}</strong>
+                  <span>{isHi ? report.birthProfile.nadiDetails.energyFlowHi : report.birthProfile.nadiDetails.energyFlowEn}</span>
+                </div>
+
+                <div style={{ fontSize: '12.5px', color: 'var(--text)', lineHeight: 1.5, marginBottom: '10px' }}>
+                  <strong>{isHi ? 'मूल प्रकृति व गुण: ' : 'Core Persona: '}</strong>
+                  <span>{(isHi ? report.birthProfile.nadiDetails.personalityTraitsHi : report.birthProfile.nadiDetails.personalityTraitsEn).join(' · ')}</span>
+                </div>
+
+                {/* Nadi Dosha Marital Warning Box */}
+                <div style={{ padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid rgba(37, 99, 235, 0.25)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#2563eb', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
+                    {isHi ? 'दांपत्य समन्वय एवं नाड़ी दोष प्रभाव (Marriage Impact)' : 'Marital Harmony & Nadi Dosha Indications'}
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? report.birthProfile.nadiDetails.marriageImpactHi : report.birthProfile.nadiDetails.marriageImpactEn}
+                  </div>
+                </div>
+
+                {/* Associated Diseases / Vulnerabilities */}
+                <div style={{ padding: '8px 10px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', marginBottom: '4px' }}>
+                    {isHi ? 'संभावित शारीरिक व्याधियां (Ayurvedic Disease Susceptibilities):' : 'Susceptible Health Vulnerabilities:'}
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {(isHi ? report.birthProfile.nadiDetails.associatedDiseasesHi : report.birthProfile.nadiDetails.associatedDiseasesEn).map((dis, dIdx) => (
+                      <span key={dIdx} className="badge" style={{ fontSize: '10.5px', background: 'rgba(37, 99, 235, 0.08)', color: '#2563eb' }}>
+                        {dis}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Gana, Varna & Yoni 3-Card Detailed Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
+              {/* Gana Card */}
+              {report.birthProfile.ganaDetails && (
+                <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #ea580c' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px' }}>
+                      {isHi ? 'गण फलादेश (Gana Nature)' : 'Gana Disposition'}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(234, 88, 12, 0.12)', color: '#ea580c', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.ganaDetails.nameHi : report.birthProfile.ganaDetails.nameEn}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.45, marginBottom: '6px' }}>
+                    <strong>{isHi ? 'स्वभाव: ' : 'Nature: '}</strong>
+                    {isHi ? report.birthProfile.ganaDetails.natureHi : report.birthProfile.ganaDetails.natureEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', lineHeight: 1.4, marginBottom: '6px' }}>
+                    <strong>{isHi ? 'दृष्टिकोण: ' : 'Worldview: '}</strong>
+                    {isHi ? report.birthProfile.ganaDetails.worldviewHi : report.birthProfile.ganaDetails.worldviewEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: '#c2410c' }}>
+                    <strong>{isHi ? 'सावधानी: ' : 'Challenges: '}</strong>
+                    {(isHi ? report.birthProfile.ganaDetails.challengesHi : report.birthProfile.ganaDetails.challengesEn).join(' · ')}
+                  </div>
+                </div>
+              )}
+
+              {/* Varna Card */}
+              {report.birthProfile.varnaDetails && (
+                <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #4f46e5' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px' }}>
+                      {isHi ? 'वर्ण फलादेश (Varna Aptitude)' : 'Varna Archetype'}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(79, 70, 229, 0.12)', color: '#4f46e5', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.varnaDetails.nameHi : report.birthProfile.varnaDetails.nameEn}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.45, marginBottom: '6px' }}>
+                    <strong>{isHi ? 'मूल स्वरूप: ' : 'Archetype: '}</strong>
+                    {isHi ? report.birthProfile.varnaDetails.archetypeHi : report.birthProfile.varnaDetails.archetypeEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    <strong>{isHi ? 'सहज प्रवृत्तियां: ' : 'Strengths: '}</strong>
+                    {(isHi ? report.birthProfile.varnaDetails.keyQualitiesHi : report.birthProfile.varnaDetails.keyQualitiesEn).join(' · ')}
+                  </div>
+                </div>
+              )}
+
+              {/* Yoni Card */}
+              {report.birthProfile.yoniDetails && (
+                <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #0891b2' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px' }}>
+                      {isHi ? 'योनि फलादेश (Yoni Instincts)' : 'Yoni Persona & Instincts'}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(8, 145, 178, 0.12)', color: '#0891b2', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.yoniDetails.animalHi : report.birthProfile.yoniDetails.animalEn}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.45, marginBottom: '6px' }}>
+                    <strong>{isHi ? 'जैविक स्वभाव: ' : 'Persona: '}</strong>
+                    {isHi ? report.birthProfile.yoniDetails.personaHi : report.birthProfile.yoniDetails.personaEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    <strong>{isHi ? 'दांपत्य शैली: ' : 'In Love: '}</strong>
+                    {isHi ? report.birthProfile.yoniDetails.relationshipStyleHi : report.birthProfile.yoniDetails.relationshipStyleEn}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Avakhada Elements 8-Kuta Matrix */}
             <div>
