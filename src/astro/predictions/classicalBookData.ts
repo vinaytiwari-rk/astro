@@ -7484,3 +7484,6 @@ export * from './aifasYoginiDashaKb';
 
 // Re-export Dr. K.S. Charak & Far Far Away Classical Treatises
 export * from './charakElementsKb';
+
+// Re-export Parashara's Light 6.1 Classical Yoga & Conjunction Compendium
+export * from './parasharasLightYogasKb';

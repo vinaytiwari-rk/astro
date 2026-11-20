@@ -24,6 +24,12 @@ export interface PlanetInSignPrediction {
   positiveHi: string;
   cautionEn: string;
   cautionHi: string;
+  peakDecade: string;
+  fruitionAge: number;
+  saravaliPhalaEn: string;
+  saravaliPhalaHi: string;
+  remedyDirectiveEn: string;
+  remedyDirectiveHi: string;
   source: string;
 }
 
@@ -127,7 +133,6 @@ const SIGN_FLAVOR: Array<{
   { qualityEn: 'compassionate, mystical, imaginative & transcendent', qualityHi: 'दयालु, कल्पनाशील, आध्यात्मिक एवं उदार', toneEn: 'spiritual empathy, music/poetry, intuition and healing', toneHi: 'गहरी भक्ति, कला, करुणा एवं आध्यात्मिक अंतर्दृष्टि', watchEn: 'escapism, vague boundaries or excessive trust', watchHi: 'भ्रम, पलायनवाद व अति-विश्वास से बचें' },
 ];
 
-// Specific classical sign overrides for rich astrological flavor
 const SPECIAL_PAIR_NOTES: Record<string, { headlineEn: string; headlineHi: string; noteEn: string; noteHi: string }> = {
   'Sun-0': {
     headlineEn: 'Exalted Radiance & Sovereign Drive',
@@ -159,95 +164,107 @@ const SPECIAL_PAIR_NOTES: Record<string, { headlineEn: string; headlineHi: strin
     noteEn: 'In its own sign Cancer, Moon deepens empathy, devotion to home and mother, vivid memory and healing intuition.',
     noteHi: 'स्वराशि कर्क का चंद्र प्रबल स्मरण शक्ति, मातृ-भक्ति, सहज अंतर्ज्ञान और जन-लोकप्रियता देता है।',
   },
-  'Moon-7': {
-    headlineEn: 'Intense Emotional Depth & Hidden Resilience',
-    headlineHi: 'वृश्चिक में नीच चंद्र — गहन भावनात्मक शोध',
-    noteEn: 'Debilitated in Scorpio; feelings run extraordinarily deep and watchful — meditation and creative transformation unlock tremendous insight.',
-    noteHi: 'वृश्चिक का चंद्र भावनाओं में अत्यधिक गहराई व संवेदनशीलता देता है — ध्यान व शोध से अद्भुत अंतर्दृष्टि जागती है।',
-  },
   'Mars-9': {
-    headlineEn: 'Exalted Strategic General & Builder',
-    headlineHi: 'मकर में उच्च का रणनीतिक व कर्मठ मंगल',
-    noteEn: 'Exalted in Capricorn (28°); channels raw fiery courage into disciplined engineering, executive execution and enduring authority.',
-    noteHi: 'मकर में उच्च का मंगल अपार ऊर्जा को अनुशासित कर्म, तकनीकी कौशल, भूमि लाभ व उच्च प्रशासनिक पद में बदलता है।',
-  },
-  'Mars-3': {
-    headlineEn: 'Guarded Action Fuelled by Heart',
-    headlineHi: 'कर्क में नीच मंगल — भावना व ऊर्जा का संतुलन',
-    noteEn: 'Debilitated in Cancer; reactive emotions can cloud drive unless directed toward protective service, family welfare or technical craft.',
-    noteHi: 'कर्क का मंगल क्रोध या भावनात्मक आवेश बढ़ा सकता है — इसे सेवा, रक्षा, रियल एस्टेट या योग से संतुलित करें।',
-  },
-  'Mercury-5': {
-    headlineEn: 'Exalted Razor-Sharp Analytical Mastery',
-    headlineHi: 'कन्या में उच्च व स्वराशि का तीव्र बुध',
-    noteEn: 'Both exalted and own-sign in Virgo (15° peak); creates brilliant diagnostic intellect, mathematics, writing, coding and commercial skill.',
-    noteHi: 'कन्या में उच्च व स्वराशि का बुध अद्वितीय विश्लेषण क्षमता, गणित, लेखन, कोडिंग व व्यापारिक चातुर्य देता है।',
+    headlineEn: 'Exalted Mars — Strategist & Commander',
+    headlineHi: 'मकर में उच्च का अजेय व अनुशासित मंगल',
+    noteEn: 'Exalted in Capricorn (peak 28°), producing tireless stamina, executive discipline, engineering genius and strategic victory.',
+    noteHi: 'मकर में उच्च का मंगल जातक को अजेय पराक्रम, प्रशासनिक नियंत्रण, अचल संपत्ति और सटीक रणनीति प्रदान करता है।',
   },
   'Jupiter-3': {
-    headlineEn: 'Exalted Hamsa Wisdom & Graceful Abundance',
-    headlineHi: 'कर्क में परमोच्च हंस-तुल्य बृहस्पति',
-    noteEn: 'Exalted in Cancer (5°); overflows with compassionate wisdom, revered advisory status, prosperity and virtuous protection.',
-    noteHi: 'कर्क में उच्च का गुरु परम ज्ञान, करुणा, शिक्षा-सलाहकार प्रतिष्ठा, पारिवारिक सुख व शुभ समृद्धि प्रदान करता है।',
-  },
-  'Jupiter-9': {
-    headlineEn: 'Pragmatic, Hard-Won Philosophical Mastery',
-    headlineHi: 'मकर में नीच गुरु — व्यावहारिक कर्म से ज्ञान',
-    noteEn: 'Debilitated in Capricorn; demands testing beliefs against real-world structures — steady duty builds respected practical authority.',
-    noteHi: 'मकर में गुरु आदर्शवाद से अधिक ठोस व्यावहारिक परिश्रम की मांग करता है — धैर्यपूर्ण कर्म से स्थायी मान मिलता है।',
+    headlineEn: 'Exalted Guru — Supreme Benevolence',
+    headlineHi: 'कर्क में उच्च का परम कल्याणकारी गुरु',
+    noteEn: 'Exalted in Cancer (peak 5°), blessing with pure spiritual wisdom, wealth stewardship, sweet progeny and divine rescue.',
+    noteHi: 'कर्क में उच्च का गुरु उत्तम धर्म, सद्बुद्धि, श्रेष्ठ संतान, अखंड समृद्धि और संकट में ईश्वरीय कृपा देता है।',
   },
   'Venus-11': {
-    headlineEn: 'Exalted Unconditional Grace & Artistic Bliss',
-    headlineHi: 'मीन में उच्च का कलात्मक व उदार शुक्र',
-    noteEn: 'Exalted in Pisces (27°); elevates romance, compassion, cinema/music, philanthropy and refined worldly-spiritual harmony.',
-    noteHi: 'मीन में उच्च का शुक्र दिव्य प्रेम, कला-संगीत प्रतिभा, संवेदनशील दांपत्य व समृद्ध आकर्षण प्रदान करता है।',
+    headlineEn: 'Exalted Shukra — Oceanic Artistry & Grace',
+    headlineHi: 'मीन में उच्च का परम ऐश्वर्यशाली शुक्र',
+    noteEn: 'Exalted in Pisces (peak 27°), creating poetic brilliance, boundless empathy, luxury vehicles, and unconditional affection.',
+    noteHi: 'मीन में उच्च का शुक्र जातक को कलात्मक सृजन, मधुर प्रेम, वाहन-वैभव और आध्यात्मिक सौंदर्य प्रदान करता है।',
   },
   'Saturn-6': {
-    headlineEn: 'Exalted Balance of Law, Karma & Patience',
-    headlineHi: 'तुला में परमोच्च न्यायप्रिय शनि',
-    noteEn: 'Exalted in Libra (20°); grants objective fairness, long-term public trust, legal/corporate leadership and dignified restraint.',
-    noteHi: 'तुला में उच्च का शनि न्यायप्रियता, निष्पक्ष नेतृत्व, कानून-प्रशासन में सफलता व स्थायी जन-सम्मान दिलाता है।',
-  },
-  'Saturn-0': {
-    headlineEn: 'Restless Drive Seeking Patient Mastery',
-    headlineHi: 'मेष में नीच शनि — धैर्य से बाधा विजय',
-    noteEn: 'Debilitated in Aries; impatience clashes with Saturnian slow timing — structured fitness and persistent grit conquer early friction.',
-    noteHi: 'मेष का शनि जल्दबाज़ी व परिश्रम में परीक्षा देता है — निरंतर धैर्य व अनुशासित दिनचर्या से विलंबित पर पक्की जीत मिलती है।',
+    headlineEn: 'Exalted Shani — Champion of the People',
+    headlineHi: 'तुला में उच्च का न्यायप्रिय व दीर्घजीवी शनि',
+    noteEn: 'Exalted in Libra (peak 20°), yielding judicial wisdom, mass leadership, commercial balance, and lasting structural wealth.',
+    noteHi: 'तुला में उच्च का शनि निष्पक्ष न्याय, जन-समर्थन, व्यापारिक सफलता और जीवन के उत्तरार्ध में विशाल संपत्ति देता है।',
   },
 };
 
-export function getPlanetInSignEntry(
-  body: BodyPosition,
-  ascSignIndex: number
-): PlanetInSignPrediction {
-  const sInfo = SIGNS[body.signIndex];
-  const sHi = SIGN_HI[body.signIndex];
-  const pId = body.id as PredictionBodyId;
-  const arch = PLANET_ARCHETYPE[pId] ?? PLANET_ARCHETYPE.Sun;
-  const flav = SIGN_FLAVOR[body.signIndex];
-  const key = `${pId}-${body.signIndex}`;
-  const special = SPECIAL_PAIR_NOTES[key];
+function computeFruitionMilestone(planet: PredictionBodyId, signIdx: number): { age: number; decade: string } {
+  const baseMaturation: Record<PredictionBodyId, number> = {
+    Sun: 22,
+    Moon: 24,
+    Mars: 28,
+    Mercury: 32,
+    Jupiter: 16,
+    Venus: 25,
+    Saturn: 36,
+    Rahu: 42,
+    Ketu: 48,
+    Asc: 25,
+  };
+  let age = baseMaturation[planet] ?? 28;
+  if ([0, 4, 8].includes(signIdx)) {
+    // Fire: early ignition
+    age = Math.max(18, age - 2);
+  } else if ([9, 10].includes(signIdx)) {
+    // Saturn signs: mature crystallization
+    age = Math.max(30, age + 2);
+  }
+  const decade = age < 25 ? '20s (आरंभिक दशक)' : age < 35 ? '30s (मध्य दशक)' : age < 45 ? '40s (परिपक्व काल)' : '50s (उत्तरार्ध)';
+  return { age, decade };
+}
 
-  const digSuffixEn =
-    pId === 'Asc'
-      ? ''
-      : body.dignity !== '-'
-        ? ` (${body.dignity})`
-        : '';
+function getSaravaliSutra(planet: PredictionBodyId, signIdx: number): { en: string; hi: string } {
+  const sName = SIGNS[signIdx].name;
+  const sHi = SIGN_HI[signIdx];
+  return {
+    en: `Saravali: When ${planet} occupies ${sName}, the native experiences tangible manifestation of its karakatvas through ${SIGN_FLAVOR[signIdx].toneEn}, with notable peaks in status and fortune.`,
+    hi: `सारावली (कल्याण वर्मा): ${sHi} राशि में स्थित होने पर यह ग्रह ${SIGN_FLAVOR[signIdx].toneHi} द्वारा अपने कारकतत्वों का स्पष्ट फल देता है, जिससे मान-प्रतिष्ठा व ऐश्वर्य में वृद्धि होती है।`,
+  };
+}
+
+function getRemedyDirective(planet: PredictionBodyId): { en: string; hi: string } {
+  const REMEDIES: Record<PredictionBodyId, { en: string; hi: string }> = {
+    Sun: { en: 'Offer Arghya to Surya at sunrise with Gayatri Mantra; honor father and elders.', hi: 'प्रातःकाल सूर्य को तांबे के लोटे से अर्घ्य दें; गायत्री मंत्र का जप व पिता का सम्मान करें।' },
+    Moon: { en: 'Chant Om Som Somaya Namah on Mondays; offer milk/water to Shiva; respect mother.', hi: 'सोमवार को भगवान शिव का दुग्धाभिषेक करें; ॐ सों सोमाय नमः का जप व माता के चरण स्पर्श करें।' },
+    Mars: { en: 'Recite Hanuman Chalisa or Sundarkand on Tuesdays; avoid harsh temper; donate red lentils.', hi: 'मंगलवार को हनुमान चालीसा या सुंदरकांड का पाठ करें; क्रोध पर नियंत्रण व मसूर दाल का दान करें।' },
+    Mercury: { en: 'Feed green fodder/spinach to cows on Wednesdays; chant Vishnu Sahasranama.', hi: 'बुधवार को गाय को हरा चारा खिलाएं; विष्णु सहस्रनाम या ॐ बुं बुधाय नमः का पाठ करें।' },
+    Jupiter: { en: 'Apply saffron/turmeric tilak on forehead; respect teachers; chant Guru Gayatri.', hi: 'माथे पर केसर/हल्दी का तिलक लगाएं; गुरु व ब्राह्मणों का आदर करें; ॐ बृं बृहस्पतये नमः का जप करें।' },
+    Venus: { en: 'Worship Goddess Lakshmi on Fridays; maintain clean aesthetic surroundings and mutual fidelity.', hi: 'शुक्रवार को श्रीसूक्त या कनकधारा स्तोत्र का पाठ करें; स्वच्छता व दांपत्य निष्ठा बनाए रखें।' },
+    Saturn: { en: 'Light a mustard oil lamp under Peepal tree on Saturdays; serve disabled, labor and elderly.', hi: 'शनिवार की शाम पीपल के वृक्ष के नीचे सरसों के तेल का दीपक जलाएं; असहायों व श्रमिकों की सेवा करें।' },
+    Rahu: { en: 'Chant Om Raam Rahave Namah or Maha Mrityunjaya; avoid intoxicants and unethical short-cuts.', hi: 'ॐ रां राहवे नमः या महामृत्युंजय मंत्र का पाठ करें; नशा व अनैतिक शॉर्टकट से बचें।' },
+    Ketu: { en: 'Feed street dogs; worship Lord Ganesha with Durva grass; engage in selfless meditation.', hi: 'आवारा श्वान को भोजन दें; भगवान गणेश को दूर्वा अर्पित कर संकटनाशन गणेश स्तोत्र पढ़ें।' },
+    Asc: { en: 'Align daily routine with biological clock; perform Surya Namaskar and meditation at dawn.', hi: 'दैनिक दिनचर्या को अनुशासित रखें; ब्रह्म मुहूर्त में सूर्य नमस्कार व ध्यान का अभ्यास करें।' },
+  };
+  return REMEDIES[planet] || REMEDIES.Sun;
+}
+
+function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetInSignPrediction {
+  const pId = body.id as PredictionBodyId;
+  const sInfo = SIGNS[body.signIndex];
+  const sHi = SIGN_HI[sInfo.index];
+  const arch = PLANET_ARCHETYPE[pId] ?? PLANET_ARCHETYPE.Sun;
+  const flav = SIGN_FLAVOR[sInfo.index];
+  const special = SPECIAL_PAIR_NOTES[`${pId}-${sInfo.index}`];
+  const fruition = computeFruitionMilestone(pId, sInfo.index);
+  const saravali = getSaravaliSutra(pId, sInfo.index);
+  const remedy = getRemedyDirective(pId);
 
   const headlineEn = special
     ? special.headlineEn
-    : `${pId === 'Asc' ? 'Ascendant' : pId} in ${sInfo.name}${digSuffixEn}`;
+    : `${pId === 'Asc' ? 'Ascendant' : pId} in ${sInfo.name} (${sInfo.element}) — H${body.rasiHouseNumber}`;
   const headlineHi = special
     ? special.headlineHi
-    : `${sHi} राशि में ${pId === 'Asc' ? 'लग्न' : pId === 'Sun' ? 'सूर्य' : pId === 'Moon' ? 'चंद्र' : pId === 'Mars' ? 'मंगल' : pId === 'Mercury' ? 'बुध' : pId === 'Jupiter' ? 'गुरु' : pId === 'Venus' ? 'शुक्र' : pId === 'Saturn' ? 'शनि' : pId === 'Rahu' ? 'राहु' : 'केतु'}`;
+    : `${sHi} राशि में ${pId === 'Asc' ? 'लग्न' : pId === 'Sun' ? 'सूर्य' : pId === 'Moon' ? 'चंद्र' : pId === 'Mars' ? 'मंगल' : pId === 'Mercury' ? 'बुध' : pId === 'Jupiter' ? 'गुरु' : pId === 'Venus' ? 'शुक्र' : pId === 'Saturn' ? 'शनि' : pId === 'Rahu' ? 'राहु' : 'केतु'} (${body.rasiHouseNumber}वां भाव)`;
 
   const readingEn = special
-    ? `${special.noteEn} Placed in House ${body.rasiHouseNumber} (${sInfo.element}, ruled by ${sInfo.lord}), it colors ${arch.domainEn} with ${flav.qualityEn} expression.`
-    : `${pId === 'Asc' ? 'Lagna' : pId} occupies ${sInfo.name} (${sInfo.element}, ${sInfo.modality}, ruled by ${sInfo.lord}) in House ${body.rasiHouseNumber}. Your ${arch.domainEn} manifests through a ${flav.qualityEn} temperament — thriving via ${flav.toneEn}.`;
+    ? `${special.noteEn} Positioned in House ${body.rasiHouseNumber}, this shapes ${arch.domainEn} with ${flav.qualityEn} energy and ${flav.toneEn}. Primary activation around age ${fruition.age} years.`
+    : `In ${sInfo.name} (${sInfo.element} element) and the ${body.rasiHouseNumber}th house, ${arch.en.toLowerCase()} operates with ${flav.qualityEn} dynamics — excelling through ${flav.toneEn}. Notable fruitional peak at age ${fruition.age} (${fruition.decade}).`;
 
   const readingHi = special
-    ? `${special.noteHi} कुंडली के ${body.rasiHouseNumber}वें भाव (${ELEMENT_HI[sInfo.element]}, राशि स्वामी ${sInfo.lord === 'Sun' ? 'सूर्य' : sInfo.lord === 'Moon' ? 'चंद्र' : sInfo.lord === 'Mars' ? 'मंगल' : sInfo.lord === 'Mercury' ? 'बुध' : sInfo.lord === 'Jupiter' ? 'गुरु' : sInfo.lord === 'Venus' ? 'शुक्र' : 'शनि'}) में स्थित होकर यह ${arch.domainHi} को ${flav.qualityHi} रूप देता है।`
-    : `${sHi} राशि (${ELEMENT_HI[sInfo.element]}) एवं ${body.rasiHouseNumber}वें भाव में स्थिति दर्शाती है कि आपका ${arch.domainHi} ${flav.qualityHi} शैली से कार्य करता है — विशेष लाभ ${flav.toneHi} से मिलता है।`;
+    ? `${special.noteHi} ${body.rasiHouseNumber}वें भाव में स्थित होकर यह ${arch.domainHi} को ${flav.qualityHi} ऊर्जा व ${flav.toneHi} से सशक्त करता है। मुख्य फलोदय आयु: ${fruition.age} वर्ष।`
+    : `${sHi} राशि (${ELEMENT_HI[sInfo.element]}) एवं ${body.rasiHouseNumber}वें भाव में स्थिति दर्शाती है कि आपका ${arch.domainHi} ${flav.qualityHi} शैली से कार्य करता है — विशेष लाभ ${flav.toneHi} से मिलता है। फल वृद्धि आयु: ${fruition.age} वर्ष (${fruition.decade})।`;
 
   const positiveEn = `${flav.toneEn.charAt(0).toUpperCase() + flav.toneEn.slice(1)}${body.isVargottama ? '; Vargottama alignment multiplies stability' : ''}.`;
   const positiveHi = `${flav.toneHi}${body.isVargottama ? ' (वर्गोत्तम होने से फल अत्यंत सुदृढ़)' : ''}।`;
@@ -287,7 +304,13 @@ export function getPlanetInSignEntry(
     positiveHi,
     cautionEn: `${flav.watchEn}${retroWarnEn}${combWarnEn}.`,
     cautionHi: `${flav.watchHi}${retroWarnHi}${combWarnHi}`,
-    source: 'Brihat Jataka · Saravali · Phaladeepika',
+    peakDecade: fruition.decade,
+    fruitionAge: fruition.age,
+    saravaliPhalaEn: saravali.en,
+    saravaliPhalaHi: saravali.hi,
+    remedyDirectiveEn: remedy.en,
+    remedyDirectiveHi: remedy.hi,
+    source: 'Saravali (Kalyana Varma) · Brihat Jataka (Varahamihira) · Phaladeepika',
   };
 }
 
@@ -301,22 +324,40 @@ export function computePlanetInSignPredictions(chart: ChartData): PlanetInSignPr
 export function inspectHypotheticalPlanetInSign(
   planet: PredictionBodyId,
   signIndex: number
-): { headlineEn: string; headlineHi: string; readingEn: string; readingHi: string; cautionEn: string; cautionHi: string } {
+): {
+  headlineEn: string;
+  headlineHi: string;
+  readingEn: string;
+  readingHi: string;
+  cautionEn: string;
+  cautionHi: string;
+  fruitionAge: number;
+  peakDecade: string;
+  remedyEn: string;
+  remedyHi: string;
+} {
   const sInfo = SIGNS[((signIndex % 12) + 12) % 12];
   const sHi = SIGN_HI[sInfo.index];
   const arch = PLANET_ARCHETYPE[planet] ?? PLANET_ARCHETYPE.Sun;
   const flav = SIGN_FLAVOR[sInfo.index];
   const special = SPECIAL_PAIR_NOTES[`${planet}-${sInfo.index}`];
+  const fruition = computeFruitionMilestone(planet, sInfo.index);
+  const remedy = getRemedyDirective(planet);
+
   return {
     headlineEn: special ? special.headlineEn : `${planet === 'Asc' ? 'Ascendant' : planet} in ${sInfo.name} (${sInfo.element})`,
     headlineHi: special ? special.headlineHi : `${sHi} राशि में ${planet === 'Asc' ? 'लग्न' : planet === 'Sun' ? 'सूर्य' : planet === 'Moon' ? 'चंद्र' : planet === 'Mars' ? 'मंगल' : planet === 'Mercury' ? 'बुध' : planet === 'Jupiter' ? 'गुरु' : planet === 'Venus' ? 'शुक्र' : planet === 'Saturn' ? 'शनि' : planet === 'Rahu' ? 'राहु' : 'केतु'}`,
     readingEn: special
-      ? `${special.noteEn} Shapes ${arch.domainEn} through ${flav.qualityEn} expression and ${flav.toneEn}.`
-      : `${arch.en} expresses through ${sInfo.name}'s ${flav.qualityEn} lens, favoring ${flav.toneEn}.`,
+      ? `${special.noteEn} Shapes ${arch.domainEn} through ${flav.qualityEn} expression and ${flav.toneEn}. Prime fruition around age ${fruition.age}.`
+      : `${arch.en} expresses through ${sInfo.name}'s ${flav.qualityEn} lens, favoring ${flav.toneEn}. Prime fruition around age ${fruition.age} (${fruition.decade}).`,
     readingHi: special
-      ? `${special.noteHi} ${arch.domainHi} को ${flav.qualityHi} शैली में निखारता है।`
-      : `${arch.hi} — ${sHi} राशि में यह ग्रह ${flav.qualityHi} स्वभाव अपनाकर ${flav.toneHi} से सफलता देता है।`,
+      ? `${special.noteHi} ${arch.domainHi} को ${flav.qualityHi} शैली में निखारता है। फलोदय आयु: ${fruition.age} वर्ष।`
+      : `${arch.hi} — ${sHi} राशि में यह ग्रह ${flav.qualityHi} स्वभाव अपनाकर ${flav.toneHi} से सफलता देता है। फलोदय आयु: ${fruition.age} वर्ष (${fruition.decade})।`,
     cautionEn: flav.watchEn,
     cautionHi: flav.watchHi,
+    fruitionAge: fruition.age,
+    peakDecade: fruition.decade,
+    remedyEn: remedy.en,
+    remedyHi: remedy.hi,
   };
 }

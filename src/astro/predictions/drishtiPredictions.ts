@@ -20,6 +20,12 @@ export interface DrishtiLinkPrediction {
   negativeHi: string;
   eventEn: string;
   eventHi: string;
+  timingRuleEn: string;
+  timingRuleHi: string;
+  classicalShastraEn: string;
+  classicalShastraHi: string;
+  remedyEn: string;
+  remedyHi: string;
 }
 
 export interface HouseDrishtiSummary {
@@ -220,6 +226,17 @@ function buildPairDrishti(
   const mutualTagEn = isMutual ? ' [Mutual Samasaptaka 7/7]' : '';
   const mutualTagHi = isMutual ? ' [परस्पर दृष्टि]' : '';
 
+  const timingRuleEn = `Activates during Mahadasha/Antardasha of ${fromId} and transits over ${toId === 'Asc' ? 'Ascendant' : toId}.`;
+  const timingRuleHi = `${fromHi} की महादशा/अंतर्दशा तथा ${toHi} पर गोचर भ्रमण के समय यह दृष्टि-प्रभाव प्रमुखता से घटित होता है।`;
+  const classicalShastraEn = 'Brihat Parashara Hora Shastra Ch. 26 & Phaladeepika Ch. 18';
+  const classicalShastraHi = 'बृहत्पाराशर होराशास्त्र (अध्याय 26) एवं फलदीपिका (अध्याय 18)';
+  const remedyEn = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(fromId)
+    ? `Perform charity on ${fromId}'s weekday and chant ${fromId} shanti mantra to harmonize aspect pressure.`
+    : `Strengthen positive grace through morning prayers and ethical alignment with ${fromId}.`;
+  const remedyHi = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(fromId)
+    ? `${fromHi} के वार को दान करें तथा शांति मंत्र का जप कर दृष्टि तनाव को संतुलित रखें।`
+    : `${fromHi} के कारकतत्वों का सम्मान करें व नियमित पूजन से शुभ प्रभाव बढ़ाएं।`;
+
   return {
     from: fromId,
     to: toId,
@@ -238,6 +255,12 @@ function buildPairDrishti(
     negativeHi: `${fl.negHi}${extraNegHi}`,
     eventEn: `${fl.evEn}${extraEvEn}`,
     eventHi: `${fl.evHi}${extraEvHi}`,
+    timingRuleEn,
+    timingRuleHi,
+    classicalShastraEn,
+    classicalShastraHi,
+    remedyEn,
+    remedyHi,
   };
 }
 

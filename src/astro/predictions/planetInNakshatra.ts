@@ -19,12 +19,17 @@ export interface PlanetInNakshatraPrediction {
   taraFromMoonEn: string;
   taraFromMoonHi: string;
   taraAuspicious: boolean;
+  activationAges: number[];
+  taraTimingEn: string;
+  taraTimingHi: string;
   padaNuanceEn: string;
   padaNuanceHi: string;
   readingEn: string;
   readingHi: string;
   vocationEn: string;
   vocationHi: string;
+  classicalSutraEn: string;
+  classicalSutraHi: string;
   source: string;
 }
 
@@ -32,6 +37,66 @@ const NAK_HI = [
   'अश्विनी', 'भरणी', 'कृत्तिका', 'रोहिणी', 'मृगशिरा', 'आर्द्रा', 'पुनर्वसु', 'पुष्य', 'अश्लेषा',
   'मघा', 'पूर्वा फाल्गुनी', 'उत्तरा फाल्गुनी', 'हस्त', 'चित्रा', 'स्वाति', 'विशाखा', 'अनुराधा', 'ज्येष्ठा',
   'मूल', 'पूर्वाषाढ़ा', 'उत्तराषाढ़ा', 'श्रवण', 'धनिष्ठा', 'शतभिषा', 'पूर्वा भाद्रपद', 'उत्तरा भाद्रपद', 'रेवती',
+];
+
+export const NAK_ACTIVATION_AGES: number[][] = [
+  [16, 28, 44], // Ashwini
+  [24, 33, 50], // Bharani
+  [30, 42, 54], // Krittika
+  [24, 36, 48], // Rohini
+  [28, 38, 52], // Mrigashira
+  [25, 34, 45], // Ardra
+  [32, 40, 56], // Punarvasu
+  [28, 35, 49], // Pushya
+  [30, 41, 55], // Ashlesha
+  [22, 38, 53], // Magha
+  [28, 38, 50], // Purva Phalguni
+  [26, 36, 52], // Uttara Phalguni
+  [25, 33, 49], // Hasta
+  [32, 40, 55], // Chitra
+  [30, 37, 52], // Swati
+  [28, 34, 48], // Vishakha
+  [26, 35, 51], // Anuradha
+  [21, 35, 47], // Jyeshtha
+  [27, 48, 60], // Moola
+  [28, 38, 54], // Purvashadha
+  [31, 39, 55], // Uttarashadha
+  [25, 35, 45], // Shravana
+  [28, 36, 52], // Dhanishta
+  [30, 42, 58], // Shatabhisha
+  [29, 39, 51], // Purva Bhadrapada
+  [27, 37, 53], // Uttara Bhadrapada
+  [22, 32, 46], // Revati
+];
+
+export const NAK_CLASSICAL_SUTRAS: Array<{ en: string; hi: string }> = [
+  { en: 'Phaladeepika: Fond of ornaments, lovely appearance, clever in work, respected by rulers, swift in medicine and pioneering ventures.', hi: 'फलदीपिका: आभूषण-प्रिय, मनोहर स्वरूप, कार्य-कुशल, बुद्धिमान व राजा से सम्मानित। आयुर्वेद व त्वरित कार्यों में विशेष यश।' },
+  { en: 'Phaladeepika: Resolute, truthful, free from diseases, skilled in execution, steadfast mind, attains prosperity after initial struggle.', hi: 'फलदीपिका: दृढ़ निश्चयी, सत्यवादी, रोग-मुक्त, कार्यों में दक्ष, स्थिर मति और प्रारंभिक संघर्ष के बाद स्थायी धन लाभ।' },
+  { en: 'Phaladeepika: Voracious appetite, illustrious demeanor, famous, valorous, sharp intelligence, authoritative executive capacity.', hi: 'फलदीपिका: तेजस्वी, प्रसिद्ध, पराक्रमी, तीक्ष्ण बुद्धि और प्रशासनिक दायित्वों का निर्वहन करने में निपुण।' },
+  { en: 'Phaladeepika: Truthful, pure heart, sweet-tongued, stable intellect, handsome, highly prosperous in agriculture, trade, or fine arts.', hi: 'फलदीपिका: सत्यवादी, पवित्र, मधुरभाषी, स्थिर बुद्धि, सुंदर, व्यापार, कला व जनसंपर्क में अत्यंत धनवान।' },
+  { en: 'Phaladeepika: Enthusiastic, fickle-minded, sharp investigator, fond of music and travels, respected by elite patrons.', hi: 'फलदीपिका: उत्साही, खोजी बुद्धि, संगीत व यात्रा-प्रेमी, समाज के प्रतिष्ठित लोगों द्वारा समादृत।' },
+  { en: 'Phaladeepika: Proud, unyielding, deep researcher, razor-sharp intellect, undergoes mental turbulence before great technological rise.', hi: 'फलदीपिका: स्वाभिमानी, प्रचंड बुद्धि, गूढ़ शोधकर्ता, प्रारंभिक मंथन के बाद तकनीकी व वैज्ञानिक क्षेत्र में शीर्ष पद।' },
+  { en: 'Phaladeepika: Virtuous, self-controlled, wealthy, poet, living with family harmony, repeatedly regains lost fortunes.', hi: 'फलदीपिका: धार्मिक, संयमी, कवि, सुखी, दानी और खोए हुए धन व मान-सम्मान को पुनः प्राप्त करने वाला।' },
+  { en: 'Phaladeepika: Composed mind, learned, wealthy, devoted to dharma, favored by rulers, beloved of righteous mentors.', hi: 'फलदीपिका: शांत चित्त, विद्वान, धनवान, धर्मपरायण, राज्य से सम्मानित और गुरुजनों का प्रिय पात्र।' },
+  { en: 'Phaladeepika: Deft in diplomacy, independent thinker, researcher of occult substances, strategic foresight in difficult times.', hi: 'फलदीपिका: कूटनीति में चतुर, स्वतंत्र विचारक, गोपनीय विद्याओं का ज्ञाता और संकट के समय अचूक रणनीति बनाने वाला।' },
+  { en: 'Phaladeepika: Great wealth, servants, respect for ancestors, majestic personality, fond of ceremonial honors and leadership.', hi: 'फलदीपिका: विपुल धन, सेवक-सुख, पितृ-भक्त, राजसी ठाठ-बाट, सम्मान-प्रिय और नेतृत्व में अग्रणी।' },
+  { en: 'Phaladeepika: Sweet-spoken, generous, handsome, fond of roaming, artistic inclinations, royal patronage and marital joys.', hi: 'फलदीपिका: मधुरभाषी, दानी, आकर्षक, कला-प्रेमी, शासन से लाभ और उत्तम दांपत्य व वाहन सुख।' },
+  { en: 'Phaladeepika: Liked by all, earns wealth through self-effort, honorable, enjoys life, principled in public administration.', hi: 'फलदीपिका: सर्वप्रिय, स्व-अर्जित धन से संपन्न, स्वाभिमानी, सुखी जीवन और सार्वजनिक कार्यों में निष्ठावान।' },
+  { en: 'Phaladeepika: Resourceful, energetic, eloquent speaker, skilled in manual arts and mathematics, fond of learning and trading.', hi: 'फलदीपिका: उद्योगी, उत्साही, वाकपटु, शिल्प व गणना में दक्ष, विद्या-अनुरागी और सफल व्यापारी।' },
+  { en: 'Phaladeepika: Wearing colorful attire, beautiful eyes, creative craftsmanship, versatile mastery in structural designs.', hi: 'फलदीपिका: सुंदर वस्त्र व नेत्रों वाला, रचनात्मक शिल्पी, आभूषण व वास्तु-डिजाइन में कुशल।' },
+  { en: 'Phaladeepika: Righteous, compassionate, sweet words, modest, disciplined in commerce, adaptable in international transactions.', hi: 'फलदीपिका: धार्मिक, दयालु, मधुर वाणी, विनीत, व्यापार में कुशल और विदेश व स्वतंत्र कार्यों में सफल।' },
+  { en: 'Phaladeepika: Jealous of none, speaks cautiously, ambitious, skilled in earning money, influential speaker in gatherings.', hi: 'फलदीपिका: ईर्ष्या-रहित, विचारपूर्वक बोलने वाला, धन कमाने में दक्ष और सभाओं में प्रभावशाली वक्ता।' },
+  { en: 'Phaladeepika: Wealthy, residing abroad or traveling widely, energetic, resilient under stress, loyal friend and organizer.', hi: 'फलदीपिका: धनवान, विदेश-यात्रा या प्रवास में लाभ, कार्य-कुशल, संकट में धैर्यवान और विश्वसनीय मित्र।' },
+  { en: 'Phaladeepika: Few friends, contented, devoted to duty, highly respected, capable of leading institutions and security.', hi: 'फलदीपिका: कर्तव्यनिष्ठ, आत्म-संतुष्ट, वरिष्ठ पद पाने वाला और संस्थान/सुरक्षा के नेतृत्व में सक्षम।' },
+  { en: 'Phaladeepika: Resolute, peaceful, skilled in investigating hidden causes, philosophical, experiences sudden financial leaps.', hi: 'फलदीपिका: दृढ़ संकल्पी, शांतिप्रिय, गूढ़ कारणों का अन्वेषक, दार्शनिक और अचानक धन लाभ प्राप्त करने वाला।' },
+  { en: 'Phaladeepika: Proud, firm friendships, devoted spouse, eloquent debater, enjoys aquatic travels and widespread acclaim.', hi: 'फलदीपिका: स्वाभिमानी, दृढ़ मित्र, अनुकूल जीवनसाथी, उत्कृष्ट वक्ता और जनमानस में ख्याति प्राप्त।' },
+  { en: 'Phaladeepika: Obedient to elders, learned, heroic, highly principled, victorious in contested situations, long-term legacy.', hi: 'फलदीपिका: गुरुजनों का आज्ञाकारी, विद्वान, पराक्रमी, सत्यनिष्ठ, कठिन परिस्थितियों में विजयी और स्थायी यश।' },
+  { en: 'Phaladeepika: Versed in scriptures, dedicated spouse, wealthy, charitable, attentive listener, scholarly achievements.', hi: 'फलदीपिका: शास्त्र-वेत्ता, उत्तम जीवनसाथी, धनी, दानी, श्रेष्ठ श्रोता और शैक्षणिक/सांस्कृतिक प्रतिष्ठा।' },
+  { en: 'Phaladeepika: Generous, heroic, fond of music and wealth, courageous, administrative authority with material prosperity.', hi: 'फलदीपिका: उदार, पराक्रमी, संगीत व धन-प्रिय, साहसी, प्रशासनिक अधिकार और भौतिक ऐश्वर्य संपन्न।' },
+  { en: 'Phaladeepika: Plain speaker, victorious over adversaries, skilled in medical and scientific formulations, solitary philosopher.', hi: 'फलदीपिका: स्पष्टवक्ता, शत्रुओं पर विजयी, औषधि व विज्ञान में निपुण और गंभीर विचारक।' },
+  { en: 'Phaladeepika: Sorrowful, wealthy, skillful speaker, charitable, transformative vision, dedicated to higher ideals.', hi: 'फलदीपिका: गंभीर, धनवान, कुशल वक्ता, दानी, परिवर्तनकारी दृष्टि और उच्च आदर्शों के प्रति समर्पित।' },
+  { en: 'Phaladeepika: Eloquent speaker, virtuous, blessed with noble children, overcomes obstacles through calm patience.', hi: 'फलदीपिका: मधुर वक्ता, धर्मात्मा, उत्तम संतान-सुख, धैर्य से बाधाओं को जीतने वाला और प्रतिष्ठित।' },
+  { en: 'Phaladeepika: Well-proportioned limbs, beloved of all, brave, truthful, wealthy, accomplishes journeys safely and gracefully.', hi: 'फलदीपिका: सुंदर शरीर, सबका प्रिय, शूरवीर, निष्कपट, धनवान और यात्राओं व उद्यमों को कुशलता से पूर्ण करने वाला।' },
 ];
 
 const NAK_EXT: Array<{
@@ -72,16 +137,70 @@ const NAK_EXT: Array<{
   { deityHi: 'पूषा देव (सूर्य)', symEn: 'Pair of Fish / Drum', symHi: 'मछली जोड़ा / मृदंग', natureEn: 'gentle nourishment, creative empathy, safe journeys & completion', natureHi: 'कोमल पोषण, कलात्मक करुणा, सुरक्षित यात्रा व पूर्णता', vocEn: 'mentorship, arts, hospitality, foster/care, digital creation', vocHi: 'शिक्षण-पालन, कला, आतिथ्य व सृजनात्मक कार्य' },
 ];
 
-const TARA_NAMES = [
-  { en: 'Janma Tara (Birth — Sensitive/Active)', hi: 'जन्म तारा (स्वभाव-प्रधान)', ok: true },
-  { en: 'Sampat Tara (Wealth & Prosperity)', hi: 'संपत तारा (धन व समृद्धि)', ok: true },
-  { en: 'Vipat Tara (Cautious / Tests)', hi: 'विपत तारा (सतर्कता आवश्यक)', ok: false },
-  { en: 'Kshema Tara (Safety & Wellbeing)', hi: 'क्षेम तारा (कल्याण व सुरक्षा)', ok: true },
-  { en: 'Pratyari Tara (Friction / Adaptation)', hi: 'प्रत्यरि तारा (धैर्य अपेक्षित)', ok: false },
-  { en: 'Sadhaka Tara (Accomplishment)', hi: 'साधक तारा (कार्य सिद्धि)', ok: true },
-  { en: 'Naidhana Tara (Transformative Caution)', hi: 'नैधन तारा (सावधानी व परिवर्तन)', ok: false },
-  { en: 'Mitra Tara (Friendly Grace)', hi: 'मित्र तारा (सहायक व शुभ)', ok: true },
-  { en: 'Parama Mitra Tara (Supreme Blessing)', hi: 'परम मित्र तारा (अत्यंत शुभ)', ok: true },
+export const TARA_NAMES = [
+  {
+    en: 'Janma Tara (Birth — Sensitive/Active)',
+    hi: 'जन्म तारा (स्वभाव-प्रधान)',
+    ok: true,
+    timingEn: 'Deeply activates during natal Dasha/Antardasha: heightened self-awareness, physical vitality tests, and personal reinvention.',
+    timingHi: 'इस ग्रह की दशा-अंतर्दशा में आत्म-पहचान, शारीरिक स्वास्थ्य संवेदनशीलता तथा जीवन में व्यक्तिगत नए अध्याय की शुरुआत होती है।',
+  },
+  {
+    en: 'Sampat Tara (Wealth & Prosperity)',
+    hi: 'संपत तारा (धन व समृद्धि)',
+    ok: true,
+    timingEn: 'Direct wealth generator: triggers major financial inflows, property gains, profitable contracts and material expansion during its period.',
+    timingHi: 'प्रत्यक्ष धन-दायक तारा: इसकी दशा या गोचर में धन आगमन, व्यापारिक अनुबंध, संपत्ति लाभ व भौतिक सुखों में भारी विस्तार होता है।',
+  },
+  {
+    en: 'Vipat Tara (Cautious / Tests)',
+    hi: 'विपत तारा (सतर्कता आवश्यक)',
+    ok: false,
+    timingEn: 'Sudden tests & hurdles: requires caution against risky financial gambles, travel hazards, or abrupt structural roadblocks.',
+    timingHi: 'आकस्मिक बाधा व परीक्षण: इसकी दशा में बिना सोचे-समझे वित्तीय जोखिम, वाहन गति व जल्दबाजी से बचें; धैर्य से कार्य करें।',
+  },
+  {
+    en: 'Kshema Tara (Safety & Wellbeing)',
+    hi: 'क्षेम तारा (कल्याण व सुरक्षा)',
+    ok: true,
+    timingEn: 'Well-being & safety shield: provides smooth progress, reliable recovery from setbacks, family peace and career security.',
+    timingHi: 'कल्याण व सुरक्षा कवच: प्रतिकूलताओं से उबरने, पारिवारिक शांति, रोग मुक्ति व आजीविका में स्थिरता प्रदान करता है।',
+  },
+  {
+    en: 'Pratyari Tara (Friction / Adaptation)',
+    hi: 'प्रत्यरि तारा (धैर्य अपेक्षित)',
+    ok: false,
+    timingEn: 'Friction & opposition: brings competition, legal or bureaucratic friction, demanding adaptability and disciplined persistence.',
+    timingHi: 'प्रत्यरि / शत्रु प्रतिरोध: कार्यक्षेत्र में प्रतिस्पर्धा, कागजी अड़चनें व मतभेद संभव; कूटनीति व संयम से विजय मिलती है।',
+  },
+  {
+    en: 'Sadhaka Tara (Accomplishment)',
+    hi: 'साधक तारा (कार्य सिद्धि)',
+    ok: true,
+    timingEn: 'Accomplishment & mastery: goals materialize rapidly, exams/promotions succeed, and long-term ambitions achieve breakthrough.',
+    timingHi: 'साधक / कार्य-सिद्धि: पूर्व-प्रयासों का पूर्ण फल, पदोन्नति, परीक्षा/इंटरव्यू में सफलता व महत्वपूर्ण लक्ष्यों की प्राप्ति।',
+  },
+  {
+    en: 'Naidhana Tara (Transformative Caution)',
+    hi: 'नैधन तारा (सावधानी व परिवर्तन)',
+    ok: false,
+    timingEn: 'Major karmic transformation: high health vigilance, profound spiritual awakening, end of unproductive cycles and deep reset.',
+    timingHi: 'नैधन / गहरा रूपांतरण: स्वास्थ्य में विशेष सावधानी रखें; व्यर्थ के बंधनों का अंत व गहरा आध्यात्मिक/मानसिक नवजागरण।',
+  },
+  {
+    en: 'Mitra Tara (Friendly Grace)',
+    hi: 'मित्र तारा (सहायक व शुभ)',
+    ok: true,
+    timingEn: 'Harmonious alliances: genuine friendship, smooth patron support, enjoyable partnerships and pleasant family events.',
+    timingHi: 'मित्र कृपा: विश्वसनीय मित्रों व वरिष्ठों का सहयोग, सुखद साझेदारी, पारिवारिक मांगलिक कार्य व अनुकूल वातावरण।',
+  },
+  {
+    en: 'Parama Mitra Tara (Supreme Blessing)',
+    hi: 'परम मित्र तारा (अत्यंत शुभ)',
+    ok: true,
+    timingEn: 'Supreme auspicious patronage: rarest luck, prestigious elevation, honors from authorities and lasting legacy achievements.',
+    timingHi: 'परम मित्र सर्वोच्च कृपा: अप्रत्याशित सौभाग्य, उच्चाधिकारियों से सम्मान, सामाजिक प्रतिष्ठा व बड़े कार्यों का शुभारंभ।',
+  },
 ];
 
 const PADA_NUANCE = [
@@ -112,10 +231,12 @@ function buildOne(
   const pada = Math.max(1, Math.min(4, body.pada));
   const nakInfo = NAKSHATRAS[nIdx];
   const ext = NAK_EXT[nIdx];
+  const sutra = NAK_CLASSICAL_SUTRAS[nIdx];
   const taraIdx = ((nIdx - moonNakIdx + 27) % 9);
   const tara = TARA_NAMES[taraIdx];
   const pNu = PADA_NUANCE[pada - 1];
   const role = BODY_ROLE[body.id as PredictionBodyId] ?? BODY_ROLE.Sun;
+  const actAges = NAK_ACTIVATION_AGES[nIdx] || [28, 36, 48];
 
   return {
     planet: body.id as PredictionBodyId,
@@ -134,13 +255,18 @@ function buildOne(
     taraFromMoonEn: tara.en,
     taraFromMoonHi: tara.hi,
     taraAuspicious: tara.ok,
+    activationAges: actAges,
+    taraTimingEn: tara.timingEn,
+    taraTimingHi: tara.timingHi,
     padaNuanceEn: pNu.en,
     padaNuanceHi: pNu.hi,
-    readingEn: `${body.id === 'Asc' ? 'Ascendant' : body.id} in ${nakInfo.name} Pada ${pada} (ruled by ${nakInfo.lord}, Deity: ${nakInfo.deity}) infuses your ${role.en.toLowerCase()} with ${ext.natureEn}. Relation to Moon Nakshatra: ${tara.en}.`,
-    readingHi: `${NAK_HI[nIdx]} नक्षत्र के ${pada} चरण (स्वामी: ${nakInfo.lord === 'Sun' ? 'सूर्य' : nakInfo.lord === 'Moon' ? 'चंद्र' : nakInfo.lord === 'Mars' ? 'मंगल' : nakInfo.lord === 'Mercury' ? 'बुध' : nakInfo.lord === 'Jupiter' ? 'गुरु' : nakInfo.lord === 'Venus' ? 'शुक्र' : nakInfo.lord === 'Saturn' ? 'शनि' : nakInfo.lord === 'Rahu' ? 'राहु' : 'केतु'}, देवता: ${ext.deityHi}) में स्थित होकर यह ग्रह ${role.hi} को ${ext.natureHi} से जोड़ता है। जन्म चंद्र से तारा: ${tara.hi}।`,
+    readingEn: `${body.id === 'Asc' ? 'Ascendant' : body.id} in ${nakInfo.name} Pada ${pada} (ruled by ${nakInfo.lord}, Deity: ${nakInfo.deity}) infuses your ${role.en.toLowerCase()} with ${ext.natureEn}. Key activation ages: ${actAges.join(', ')} years. Relation to Moon Nakshatra: ${tara.en}.`,
+    readingHi: `${NAK_HI[nIdx]} नक्षत्र के चरण ${pada} (स्वामी: ${nakInfo.lord === 'Sun' ? 'सूर्य' : nakInfo.lord === 'Moon' ? 'चंद्र' : nakInfo.lord === 'Mars' ? 'मंगल' : nakInfo.lord === 'Mercury' ? 'बुध' : nakInfo.lord === 'Jupiter' ? 'गुरु' : nakInfo.lord === 'Venus' ? 'शुक्र' : nakInfo.lord === 'Saturn' ? 'शनि' : nakInfo.lord === 'Rahu' ? 'राहु' : 'केतु'}, देवता: ${ext.deityHi}) में स्थित होकर यह ग्रह ${role.hi} को ${ext.natureHi} से जोड़ता है। सक्रियता आयु: ${actAges.join(', ')} वर्ष। जन्म चंद्र से तारा: ${tara.hi}।`,
     vocationEn: ext.vocEn,
     vocationHi: ext.vocHi,
-    source: 'Brihat Samhita · Taittiriya Brahmana · KP Nakshatra Nadi',
+    classicalSutraEn: sutra.en,
+    classicalSutraHi: sutra.hi,
+    source: 'Phaladeepika Ch. 11 · Brihat Samhita · Taittiriya Brahmana · KP Nakshatra Nadi',
   };
 }
 
@@ -169,24 +295,33 @@ export function inspectHypotheticalNakshatra(
   vocationHi: string;
   padaEn: string;
   padaHi: string;
+  activationAges: number[];
+  classicalSutraEn: string;
+  classicalSutraHi: string;
 } {
   const idx = ((nakIndex % 27) + 27) % 27;
   const p = Math.max(1, Math.min(4, pada));
   const nakInfo = NAKSHATRAS[idx];
   const ext = NAK_EXT[idx];
+  const sutra = NAK_CLASSICAL_SUTRAS[idx];
   const role = BODY_ROLE[planet] ?? BODY_ROLE.Sun;
   const pNu = PADA_NUANCE[p - 1];
+  const actAges = NAK_ACTIVATION_AGES[idx] || [28, 36, 48];
+
   return {
     nakNameEn: nakInfo.name,
     nakNameHi: NAK_HI[idx],
     lord: nakInfo.lord,
     deityEn: nakInfo.deity,
     deityHi: ext.deityHi,
-    readingEn: `${planet === 'Asc' ? 'Ascendant' : planet} in ${nakInfo.name} Pada ${p} (${nakInfo.deity}, Lord ${nakInfo.lord}) empowers ${role.en.toLowerCase()} through ${ext.natureEn}.`,
-    readingHi: `${NAK_HI[idx]} नक्षत्र के चरण ${p} (${ext.deityHi}) में स्थित होने पर ${role.hi} में ${ext.natureHi} के गुण विकसित होते हैं।`,
+    readingEn: `${planet === 'Asc' ? 'Ascendant' : planet} in ${nakInfo.name} Pada ${p} (${nakInfo.deity}, Lord ${nakInfo.lord}) empowers ${role.en.toLowerCase()} through ${ext.natureEn}. Natural fruition milestones at ages ${actAges.join(', ')}.`,
+    readingHi: `${NAK_HI[idx]} नक्षत्र के चरण ${p} (${ext.deityHi}) में स्थित होने पर ${role.hi} में ${ext.natureHi} के गुण विकसित होते हैं। स्वाभाविक फलोदय आयु: ${actAges.join(', ')} वर्ष।`,
     vocationEn: ext.vocEn,
     vocationHi: ext.vocHi,
     padaEn: pNu.en,
     padaHi: pNu.hi,
+    activationAges: actAges,
+    classicalSutraEn: sutra.en,
+    classicalSutraHi: sutra.hi,
   };
 }

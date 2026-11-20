@@ -127,13 +127,13 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
             <h3 style={{ margin: 0, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} style={{ color: 'var(--accent)' }} />
               {isHi
-                ? 'जन्मकुंडली के सक्रिय योग एवं ग्रह युति'
-                : 'Formed Natal Yogas & Planetary Conjunctions'}
+                ? 'शास्त्रीय योग एवं ग्रह युति फलादेश (Parashara\'s Light 6.1 Compendium)'
+                : 'Classical Yogas & Multi-Planet Conjunctions (Parashara\'s Light 6.1)'}
             </h3>
             <p className="muted small-text" style={{ marginTop: '4px' }}>
               {isHi
-                ? `जन्मकुंडली में ${yutiReport.groups.length} भावों में ग्रह युति तथा ${detectedYogas.length} शास्त्रीय वैदिक योग प्रत्यक्ष रूप से सक्रिय हैं।`
-                : `${yutiReport.groups.length} natal house conjunctions and ${detectedYogas.length} classical Vedic yogas active in chart.`}
+                ? `पाराशर होरा, सारावली (122 बहु-ग्रह युतियाँ), बृहज्जातक व फलदीपिका सम्मत ग्रंथ संग्रह — ${yutiReport.groups.length} सक्रिय युतियाँ एवं ${detectedYogas.length} प्रत्यक्ष योग उपस्थित हैं।`
+                : `Authoritative Classical Compendium (BPHS, Saravali 122 conjunctions, Brihat Jataka, Phaladeepika) — ${yutiReport.groups.length} natal conjunctions & ${detectedYogas.length} active yogas.`}
             </p>
           </div>
 

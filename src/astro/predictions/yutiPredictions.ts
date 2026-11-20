@@ -1,6 +1,7 @@
 import { NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import type { BodyPosition, ChartData, NineGrahaId } from '../types';
+import { lookupParasharaConjunction } from './parasharasLightYogasKb';
 
 export interface PairYutiInsight {
   pair: [NineGrahaId, NineGrahaId];
@@ -565,9 +566,13 @@ function buildMultiPlanetAnalysis(
         ? `चतुर्ग्रही प्रव्रज्या / महायोग (${pNamesHi}) — ${houseNumber}वें भाव में`
         : `त्रिग्रही त्रिकोण-सदृश युति (${pNamesHi}) — ${houseNumber}वें भाव में`;
 
-  const positiveEn = `${count} planetary energies fuse in ${signEn} (${houseNumber}th House), making ${houseEn} the central destiny engine of life. ${beneficHeavy ? 'Benefic dominance confers rare wisdom, wealth accumulation, charisma and rescue during hard times.' : 'High energy intensity produces extraordinary ambition, self-made resilience and mastery when channeled cleanly.'}${count >= 4 ? ' Classically evokes Pravrajya/Sannyasa brilliance — intense single-minded mission or institutional leadership.' : ''}`;
+  const parasharaEntry = lookupParasharaConjunction(planets);
+  const classicalTextEn = parasharaEntry ? ` [Classical Sutra (${parasharaEntry.source}): ${parasharaEntry.readingEn}]` : '';
+  const classicalTextHi = parasharaEntry ? ` [शास्त्रीय सूत्र (${parasharaEntry.source}): ${parasharaEntry.readingHi}]` : '';
 
-  const positiveHi = `${count} ग्रहों का ${signHi} (${houseNumber}वें भाव) में मिलन ${houseHi} को पूरे जीवन की सबसे प्रमुख धुरी बना देता है। ${beneficHeavy ? 'शुभ ग्रहों के बहुमत से असाधारण ज्ञान, धन, यश व कठिन समय में दैवीय सुरक्षा मिलती है।' : 'अत्यधिक ऊर्जा से जातक स्व-निर्मित पराक्रम, दृढ़ संकल्प व विशिष्ट क्षेत्र में महारत हासिल करता है।'}${count >= 4 ? ' 4+ ग्रहों की युति व्यक्ति को किसी बड़े मिशन, शोध या आध्यात्मिक/प्रशासनिक नेतृत्व की ओर ले जाती है।' : ''}`;
+  const positiveEn = `${count} planetary energies fuse in ${signEn} (${houseNumber}th House), making ${houseEn} the central destiny engine of life. ${beneficHeavy ? 'Benefic dominance confers rare wisdom, wealth accumulation, charisma and rescue during hard times.' : 'High energy intensity produces extraordinary ambition, self-made resilience and mastery when channeled cleanly.'}${count >= 4 ? ' Classically evokes Pravrajya/Sannyasa brilliance — intense single-minded mission or institutional leadership.' : ''}${classicalTextEn}`;
+
+  const positiveHi = `${count} ग्रहों का ${signHi} (${houseNumber}वें भाव) में मिलन ${houseHi} को पूरे जीवन की सबसे प्रमुख धुरी बना देता है। ${beneficHeavy ? 'शुभ ग्रहों के बहुमत से असाधारण ज्ञान, धन, यश व कठिन समय में दैवीय सुरक्षा मिलती है।' : 'अत्यधिक ऊर्जा से जातक स्व-निर्मित पराक्रम, दृढ़ संकल्प व विशिष्ट क्षेत्र में महारत हासिल करता है।'}${count >= 4 ? ' 4+ ग्रहों की युति व्यक्ति को किसी बड़े मिशन, शोध या आध्यात्मिक/प्रशासनिक नेतृत्व की ओर ले जाती है।' : ''}${classicalTextHi}`;
 
   const negativeEn = `${tightOrb ? 'Tight degree orb creates intense internal friction and mutual combustion/eclipse pressure.' : 'Wide sign blend creates competing desires around the same house.'} ${mixedTone ? `Clash between benefics (${benefics.join(', ')}) and malefics (${malefics.join(', ')}) can swing results between high peaks and sudden drops.` : 'Heavy malefic weight can trigger impatience, burnout, or strained close ties around this house.'}${warPairs.length ? ` Planetary War (${warPairs.join(', ')}) weakens the loser planet sharply.` : ''}`;
 
@@ -675,6 +680,8 @@ export function computeChartYutiReport(chart: ChartData): YutiReport {
       pairInsights
     );
 
+    const parasharaConj = lookupParasharaConjunction(planets);
+
     groups.push({
       ...core,
       labelEn: lbl.en,
@@ -687,7 +694,7 @@ export function computeChartYutiReport(chart: ChartData): YutiReport {
       degreeSpanDeg,
       warPairs,
       pairInsights,
-      source: 'Brihat Jataka · Saravali · Phaladeepika (Nabhasa/Yuti)',
+      source: parasharaConj ? parasharaConj.source : 'Brihat Jataka · Saravali · Phaladeepika (Nabhasa/Yuti)',
     });
   }
 
@@ -721,9 +728,12 @@ export function inspectCustomYuti(
   const lbl = getStelliumClassLabel(planets.length);
   const core = buildMultiPlanetAnalysis(planets, houseNumber, signIndex, 6.0, [], pairInsights);
   const hasImpossibleNodes = planets.includes('Rahu') && planets.includes('Ketu');
+  const parasharaConj = lookupParasharaConjunction(planets);
 
   return {
     ...core,
+    headlineEn: parasharaConj && planets.length > 2 ? `${parasharaConj.nameEn} (Saravali)` : core.headlineEn,
+    headlineHi: parasharaConj && planets.length > 2 ? `${parasharaConj.nameHi} (सारावली)` : core.headlineHi,
     negativeEn: hasImpossibleNodes
       ? `${core.negativeEn} (Astronomical note: Rahu and Ketu are always 180° opposite in a real chart, never physically in the same sign.)`
       : core.negativeEn,
@@ -740,6 +750,6 @@ export function inspectCustomYuti(
     degreeSpanDeg: 6.0,
     warPairs: [],
     pairInsights,
-    source: 'Saravali · Brihat Jataka · Nabhasa Stellium Sutras',
+    source: parasharaConj?.source || 'Saravali · Brihat Jataka · Parashara Light 6.1',
   };
 }

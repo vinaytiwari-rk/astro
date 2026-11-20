@@ -190,18 +190,40 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
   return (
     <div className="view-stack">
       {/* 1. Summary & Mutual Oppositions */}
-      <section className="panel">
+      <section className="panel" style={{ borderLeft: '4px solid var(--accent)' }}>
         <div className="panel-header">
-          <h3>
-            <Eye size={15} />{' '}
-            {isHi
-              ? 'ग्रह दृष्टि फल (Aspects / Graha Drishti Predictions — 7वीं व विशेष दृष्टियाँ)'
-              : 'Aspects / Drishti-Wise Predictions (Classical Full & Special Aspects)'}
-          </h3>
-          <span className="muted small-text">{isHi ? 'दृष्टि वीरुपा मूल्यांकन' : 'Drishti Virupas Evaluation'}</span>
+          <div>
+            <h3>
+              <Eye size={15} />{' '}
+              {isHi
+                ? 'दृष्टि फलादेश (Drishti Predictions — बृहत्पाराशर व फलदीपिका सम्मत)'
+                : 'Aspects / Drishti-Wise Predictions — BPHS & Phaladeepika Authority'}
+            </h3>
+            <span className="muted small-text">
+              {isHi
+                ? 'बृहत्पाराशर होराशास्त्र (अध्याय 26) एवं फलदीपिका (अध्याय 18) — दृष्टि वीरुपा, दशा-सक्रियण काल व घटना फल'
+                : 'Brihat Parashara Hora Shastra (Ch. 26) & Phaladeepika (Ch. 18) — Parashari Virupas, Dasha Timing & Concrete Events'}
+            </span>
+          </div>
         </div>
         <div className="two-col-split-pad">
           <div className="gochar-banner is-info">{isHi ? report.summaryHi : report.summaryEn}</div>
+
+          <div
+            style={{
+              padding: '10px 14px',
+              background: 'var(--bg-subtle)',
+              borderRadius: '6px',
+              fontSize: '13px',
+              lineHeight: 1.5,
+              borderLeft: '3px solid var(--accent)',
+            }}
+          >
+            <strong>{isHi ? 'पाराशरी दृष्टि व समय-सीमा सिद्धांत: ' : 'Parashari Aspect & Timing Principle: '}</strong>
+            {isHi
+              ? 'शुभ ग्रहों (गुरु, शुक्र, शुभ बुध व पूर्ण चंद्र) की दृष्टि अमृत तुल्य सुरक्षा, पदोन्नति व समृद्धि प्रदान करती है; जबकि क्रूर ग्रहों (शनि, मंगल, राहु, केतु) की दृष्टि संघर्ष, कर्मिक विलंब, सर्जरी या आकस्मिक घटनाक्रम की परीक्षा लेती है। प्रत्येक दृष्टि का मूर्त घटना-फल दृष्टिकर्ता ग्रह की महादशा-अंतर्दशा और लक्षित भाव/ग्रह पर शनि-गुरु के गोचर भ्रमण के समय ही पूर्ण रूप से प्रकट होता है।'
+              : 'Benefic aspects (Jupiter, Venus, benefic Mercury, bright Moon) confer protective grace, expansion and recovery. Malefic aspects (Saturn, Mars, Rahu, Ketu) test patience through discipline, delayed fruits, technical friction or sudden events. Event results activate decisively during the Mahadasha/Antardasha of the aspecting planet and transits across the target.'}
+          </div>
 
           {report.mutualOppositions.length > 0 && (
             <>
@@ -289,7 +311,13 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
                   <td className="wrap-cell">
                     <div><strong>+</strong> {isHi ? d.positiveHi : d.positiveEn}</div>
                     <div className="muted"><strong>−</strong> {isHi ? d.negativeHi : d.negativeEn}</div>
-                    <div><strong>{isHi ? 'घटना:' : 'Event:'}</strong> {isHi ? d.eventHi : d.eventEn}</div>
+                    <div style={{ marginTop: '4px' }}><strong>{isHi ? 'घटना प्रभाव:' : 'Event:'}</strong> {isHi ? d.eventHi : d.eventEn}</div>
+                    <div className="gochar-banner is-clear" style={{ marginTop: '4px', fontSize: '11.5px', padding: '4px 6px' }}>
+                      <strong>{isHi ? 'समय-सीमा व दशा सक्रियता:' : 'Timing & Dasha Trigger:'}</strong> {isHi ? d.timingRuleHi : d.timingRuleEn}
+                    </div>
+                    <div style={{ marginTop: '3px', fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                      <strong>{isHi ? 'उपाय निर्देश:' : 'Remedy:'}</strong> {isHi ? d.remedyHi : d.remedyEn}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -395,6 +423,14 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
             <strong>{isHi ? 'घटना प्रभाव:' : 'Event Impact:'}</strong>{' '}
             {isHi ? simDrishti.eventHi : simDrishti.eventEn}
           </p>
+          <div className="gochar-banner is-info" style={{ marginTop: '8px', fontSize: '12.5px' }}>
+            <strong>{isHi ? 'समय-सीमा व दशा सक्रियता: ' : 'Timing & Dasha Trigger: '}</strong>
+            {isHi ? simDrishti.timingRuleHi : simDrishti.timingRuleEn}
+          </div>
+          <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--text-muted)' }}>
+            <strong>{isHi ? 'शास्त्रीय उपाय: ' : 'Classical Remedy: '}</strong>
+            {isHi ? simDrishti.remedyHi : simDrishti.remedyEn}
+          </div>
         </div>
       </section>
     </div>
