@@ -1541,3 +1541,530 @@ export const CLASSICAL_NAKSHATRAS: Record<number, NakshatraBirthProfile> = {
     psychologicalTraitsHi: 'निर्मल हृदय, श्रेष्ठ परामर्शदाता, अतींद्रिय अंतर्दृष्टि, जीव-दयालु, समृद्ध कलात्मक कल्पना और लोक-कल्याणकारी।'
   }
 };
+
+/* =========================================================================
+   14. PAYA PROFILES (स्वर्ण, रजत, ताम्र, लौह पाया फलादेश, साढ़ेसाती एवं रत्न)
+   ========================================================================= */
+export interface PayaProfile {
+  id: 'gold' | 'silver' | 'copper' | 'iron';
+  nameEn: string;
+  nameHi: string;
+  metalEn: string;
+  metalHi: string;
+  governingPlanetEn: string;
+  governingPlanetHi: string;
+  coreBlessingEn: string;
+  coreBlessingHi: string;
+  realLifeManifestationEn: string;
+  realLifeManifestationHi: string;
+  vulnerabilityOrCautionEn: string;
+  vulnerabilityOrCautionHi: string;
+  sadeSatiExperienceEn: string;
+  sadeSatiExperienceHi: string;
+  sadeSatiBuildsEn: string;
+  sadeSatiBuildsHi: string;
+  remediesEn: string[];
+  remediesHi: string[];
+  crystalsEn: string[];
+  crystalsHi: string[];
+}
+
+export const CLASSICAL_PAYA_PROFILES: Record<string, PayaProfile> = {
+  gold: {
+    id: 'gold',
+    nameEn: 'Gold Paya (Swarna Paya)',
+    nameHi: 'स्वर्ण पाया (दिव्य कृपा एवं प्रतिष्ठा)',
+    metalEn: 'Gold',
+    metalHi: 'स्वर्ण (सोना)',
+    governingPlanetEn: 'Sun & Jupiter (Divine Favor & Solar Royalty)',
+    governingPlanetHi: 'सूर्य एवं गुरु (दैवीय अनुग्रह व राजसी तेज)',
+    coreBlessingEn: 'Born under divine favor; the universe works quietly with you. Natural aura of respect, doors open effortlessly, financial prosperity builds steadily over time.',
+    coreBlessingHi: 'दैवीय अनुग्रह का वरदान; ब्रह्मांड आपके अनुकूल कार्य करता है। जातक जहाँ भी जाते हैं स्वाभाविक सम्मान पाते हैं, अवसर स्वतः मिलते हैं और स्थायी समृद्धि बढ़ती है।',
+    realLifeManifestationEn: 'Fame, radiant vitality, and leadership come naturally. Warmth and magnetism draw people in; unexpected support or solutions arrive during crises.',
+    realLifeManifestationHi: 'ख्याति, उत्तम स्वास्थ्य और नेतृत्व स्वाभाविक रूप से प्राप्त होते हैं। व्यक्तित्व में चुंबकीय आकर्षण रहता है; संकट के समय अप्रत्याशित सहायता उपलब्ध होती है।',
+    vulnerabilityOrCautionEn: 'The primary risk is arrogance. The moment this grace is treated as entitlement rather than a sacred gift, blessings begin to slip. Stay humble and generous.',
+    vulnerabilityOrCautionHi: 'मुख्य चेतावनी अहंकार से बचाव की है। यदि इस अनुग्रह को अपना स्वाभाविक अधिकार मान लिया जाए, तो कृपा क्षीण होने लगती है। विनम्रता व दानशीलता अनिवार्य है।',
+    sadeSatiExperienceEn: 'Challenging but divinely supported; protective doors remain open even during trials.',
+    sadeSatiExperienceHi: 'साढ़ेसाती का काल चुनौतीपूर्ण होते हुए भी दैवीय संबल से युक्त रहता है; संकट के बीच भी मार्ग खुलते रहते हैं।',
+    sadeSatiBuildsEn: 'Enduring grace, elevated public reputation, institutional expansion, and noble magnanimity.',
+    sadeSatiBuildsHi: 'स्थायी प्रतिष्ठा, लोक-सम्मान, संस्थागत विस्तार और उदात्त उदारता का निर्माण।',
+    remediesEn: [
+      'Donate yellow items, turmeric, or gold/brass on Thursdays.',
+      'Practice heartfelt, unpublicized acts of charity.',
+      'Chant Surya Gayatri or Aditya Hridaya Stotra to sustain solar grace.'
+    ],
+    remediesHi: [
+      'गुरुवार को पीली वस्तुएं, चने की दाल या स्वर्ण/पीतल का दान करें।',
+      'निःस्वार्थ भाव से गुप्त दान और परोपकार करें।',
+      'सूर्य गायत्री अथवा आदित्य हृदय स्तोत्र का नित्य पाठ करें।'
+    ],
+    crystalsEn: ['Citrine', "Tiger's Eye", 'Sunstone'],
+    crystalsHi: ['सिट्रीन (सुनहला)', 'टाइगर्स आई', 'सनस्टोन (सूर्यकांत मणि)']
+  },
+  silver: {
+    id: 'silver',
+    nameEn: 'Silver Paya (Rajat Paya)',
+    nameHi: 'रजत पाया (संतुलन, सौहार्द एवं प्रखर अंतर्ज्ञान)',
+    metalEn: 'Silver',
+    metalHi: 'रजत (चांदी)',
+    governingPlanetEn: 'Moon (Mind, Emotional Intelligence & Intuition)',
+    governingPlanetHi: 'चंद्रमा (मन, भावनात्मक मेधा व अंतःप्रेरणा)',
+    coreBlessingEn: 'The balanced path of auspiciousness and harmony. Highly developed emotional intelligence; sharp instincts, reading unspoken cues, and harmonious relationships.',
+    coreBlessingHi: 'परम शुभता और संतुलन का मार्ग। असाधारण भावनात्मक बुद्धिमत्ता; दूसरों के अनकहे भावों को भांपने की क्षमता, सटीक अंतर्ज्ञान और मधुर संबंध।',
+    realLifeManifestationEn: 'Wealth builds through steady effort and wise decisions. Instincts rarely mislead; emotions are handled with admired grace and composure.',
+    realLifeManifestationHi: 'सुविचारित निर्णयों और निरंतर परिश्रम से धन संचय होता है। अंतःप्रेरणा सटीक मार्गदर्शन करती है; विपरीत परिस्थितियों में भी मन शांत रहता है।',
+    vulnerabilityOrCautionEn: 'Guard against emotional over-sensitivity or taking on others mental burdens. Ground your emotional wisdom so it becomes strength.',
+    vulnerabilityOrCautionHi: 'दूसरों की नकारात्मक भावनाओं को स्वयं पर हावी न होने दें। संवेदनशीलता को कमजोरी न बनने देकर आत्मिक बल बनाएं।',
+    sadeSatiExperienceEn: "Saturn's gentle foot; refinement without devastation, polishing character rather than shattering it.",
+    sadeSatiExperienceHi: 'शनि का सौम्य चरण; बिना किसी विनाश के केवल व्यक्तित्व का परिष्कार एवं आत्म-शोधन करता है।',
+    sadeSatiBuildsEn: 'Profound emotional wisdom, crystal inner clarity, psychological maturity, and serene peace.',
+    sadeSatiBuildsHi: 'गहन भावनात्मक विवेक, निर्मल मानसिक स्पष्टता, मनोवैज्ञानिक परिपक्वता और आंतरिक शांति।',
+    remediesEn: [
+      'Offer Chandra Arghya (pure water/milk) to the Moon on Monday nights.',
+      'Wear a pure silver ring or keep a solid silver square piece.',
+      'Meditate during Full Moon (Purnima) nights when lunar energy peaks.'
+    ],
+    remediesHi: [
+      'सोमवार की रात्रि चंद्र देव को दूध-मिश्रित जल का अर्घ्य दें।',
+      'शुद्ध चांदी का छल्ला अथवा ठोस चौकोर टुकड़ा अपने पास रखें।',
+      'पूर्णिमा की रात्रि में ध्यान व मौन साधना करें।'
+    ],
+    crystalsEn: ['Moonstone', 'Selenite', 'Natural Pearl (Moti)'],
+    crystalsHi: ['मूनस्टोन (चंद्रकांत मणि)', 'सेलेनाइट', 'प्राकृतिक सच्चा मोती']
+  },
+  copper: {
+    id: 'copper',
+    nameEn: 'Copper Paya (Tamra Paya)',
+    nameHi: 'ताम्र पाया (योद्धा पथ, पुरुषार्थ एवं कर्मठता)',
+    metalEn: 'Copper',
+    metalHi: 'ताम्र (तांबा)',
+    governingPlanetEn: 'Mars (Courage, Discipline, Action & Tenacity)',
+    governingPlanetHi: 'मंगल (साहस, अनुशासन, कर्मठता व पुरुषार्थ)',
+    coreBlessingEn: 'The warrior path of action, resourcefulness, and purposeful drive. Where others wait, Copper Paya creates momentum and conquers obstacles.',
+    coreBlessingHi: 'कर्मठता, अथक पराक्रम और उद्देश्यपूर्ण जीवन का योद्धा मार्ग। जहाँ अन्य लोग प्रतीक्षा करते हैं, वहां ताम्र पाया स्वयं अवसर निर्मित करता है।',
+    realLifeManifestationEn: 'Natural doer, building wealth brick by brick through personal initiative. Dependable reputation, robust stamina when maintaining active routines.',
+    realLifeManifestationHi: 'स्वावलंबी कर्ता; व्यक्तिगत पहल से अपनी तकदीर खुद लिखने वाले। संकट में कभी न टूटने वाले और अटूट भरोसेमंद कर्मवीर।',
+    vulnerabilityOrCautionEn: 'Impatience, burn-out from non-stop struggle, or friction with authority. Discipline and rhythm must replace sheer aggression.',
+    vulnerabilityOrCautionHi: 'अत्यधिक कार्यभार से थकान, क्रोध अथवा जल्दबाजी से बचें। आक्रामकता के स्थान पर व्यवस्थित अनुशासन अपनाएं।',
+    sadeSatiExperienceEn: 'Moderate intensity; sustained effort required, but every ounce of hard work compounds steadily.',
+    sadeSatiExperienceHi: 'मध्यम प्रभाव; निरंतर परिश्रम अपेक्षित होता है, किंतु किया गया हर पुरुषार्थ भविष्य में कई गुना होकर लौटता है।',
+    sadeSatiBuildsEn: 'Unbreakable discipline, solid material foundations, executive capability, and tactical resilience.',
+    sadeSatiBuildsHi: 'अटूट अनुशासन, सुदृढ़ भौतिक नींव, प्रशासनिक क्षमता और विपरीत परिस्थितियों में अडिग रहने का कौशल।',
+    remediesEn: [
+      'Offer Surya Arghya every morning using a pure copper vessel.',
+      'Donate copper utensils or red lentils (masoor dal) on Tuesdays.',
+      'Maintain structured daily fitness and orderly rhythm.'
+    ],
+    remediesHi: [
+      'नित्य प्रातः तांबे के लोटे से भगवान सूर्य को कुमकुम-मिश्रित अर्घ्य दें।',
+      'मंगलवार को तांबे का पात्र अथवा लाल मसूर की दाल का दान करें।',
+      'दैनिक जीवन में शारीरिक व्यायाम व नियमित दिनचर्या का पालन करें।'
+    ],
+    crystalsEn: ['Carnelian', 'Red Jasper', 'Copper-Infused Stones'],
+    crystalsHi: ['कार्निलियन (रक्तमणि)', 'रेड जैस्पर', 'ताम्र-युक्त प्राकृतिक पाषाण']
+  },
+  iron: {
+    id: 'iron',
+    nameEn: 'Iron Paya (Loha Paya)',
+    nameHi: 'लौह पाया (परम सहनशीलता, रूपांतरण एवं अडिग शक्ति)',
+    metalEn: 'Iron',
+    metalHi: 'लौह (लोहा)',
+    governingPlanetEn: 'Saturn (Karmic Master, Endurance, Transformation & Wisdom)',
+    governingPlanetHi: 'शनि (कर्म-विधाता, तप, असीम धैर्य व आत्मबल)',
+    coreBlessingEn: 'The gift of the warrior. Saturn entrusts Iron Paya to those capable of transforming suffering into unshakeable spiritual and worldly strength.',
+    coreBlessingHi: 'कर्मयोगी का वरदान। शनि देव उन महान आत्माओं को लौह पाया देते हैं जो कठिन संघर्षों की भट्टी में तपकर कुंदन और अजेय शक्ति बनते हैं।',
+    realLifeManifestationEn: 'Deep emotional resilience, early maturity, extraordinary capacity to shoulder heavy burdens, and rock-solid reliability.',
+    realLifeManifestationHi: 'अगाध आत्मिक सहनशीलता, समय से पूर्व परिपक्वता, भारी से भारी दायित्वों को उठाने की क्षमता और चट्टान-समान विश्वसनीयता।',
+    vulnerabilityOrCautionEn: 'Pessimism, feelings of loneliness or unrewarded toil. Remedies and gratitude practice work most powerfully here.',
+    vulnerabilityOrCautionHi: 'निराशावाद, अकेलापन अथवा अवसाद की भावना से बचें। लौह पाया पर शास्त्रीय उपाय और कृतज्ञता साधना सर्वाधिक चमत्कारिक फल देती है।',
+    sadeSatiExperienceEn: 'The most intense phase of life, but creates monumental soul transformation and late-blooming supreme triumph.',
+    sadeSatiExperienceHi: 'जीवन का सर्वाधिक सघन व रूपांतरणकारी काल; साढ़ेसाती के उपरांत ऐसा जातक अपराजेय शक्ति और कीर्ति प्राप्त करता है।',
+    sadeSatiBuildsEn: 'Unshakeable fortitude, supreme patience, unassailable mastery, and lasting institutional empire.',
+    sadeSatiBuildsHi: 'अडिग आत्मबल, सर्वोत्कृष्ट धैर्य, जीवन के रहस्यों की समझ और दीर्घकालिक स्थायी साम्राज्य।',
+    remediesEn: [
+      'Light a mustard oil lamp under a Peepal tree or for Lord Shani every Saturday evening.',
+      'Donate black sesame seeds, black cloth, or iron items to the needy on Saturdays.',
+      'Feed black dogs, crows, and practice daily gratitude journaling.',
+      'Strict sleep rhythm and early bedtime honoring Saturnian order.'
+    ],
+    remediesHi: [
+      'प्रत्येक शनिवार सायंकाल पीपल वृक्ष के नीचे सरसों के तेल का दीपक जलाएं।',
+      'शनिवार को काले तिल, काले वस्त्र, साबुत उड़द अथवा लोहे का दान करें।',
+      'काले श्वान व कौओं को भोजन दें तथा नित्य कृतज्ञता डायरी लिखें।',
+      'रात्रि में समय पर शयन और अनुशासित जीवनशैली रखें।'
+    ],
+    crystalsEn: ['Black Tourmaline', 'Obsidian', 'Shungite', 'Hematite'],
+    crystalsHi: ['ब्लैक टूमलाइन (सुरक्षा कवच)', 'ओब्सीडियन', 'शUNGITE (शुंगाइट)', 'हेमेटाइट']
+  }
+};
+
+/* =========================================================================
+   15. 108 NAKSHATRA PADA & AMSA KNOWLEDGE BASE (चरण, तत्त्व, पुरुषार्थ व १०८ अंश नाम)
+   ========================================================================= */
+export interface NakshatraPadaDetail {
+  nakshatraIndex: number;
+  nakshatraNameEn: string;
+  nakshatraNameHi: string;
+  pada: number;
+  element: 'Fire' | 'Earth' | 'Air' | 'Water';
+  elementHi: string;
+  purushartha: 'Dharma' | 'Artha' | 'Kama' | 'Moksha';
+  purusharthaHi: string;
+  amsaName: string;
+  navamshaSignEn: string;
+  navamshaSignHi: string;
+  amsaSignificanceEn: string;
+  amsaSignificanceHi: string;
+}
+
+export const CLASSICAL_108_PADAS: Record<string, NakshatraPadaDetail> = {
+  // Ashwini (0)
+  '0_1': { nakshatraIndex: 0, nakshatraNameEn: 'Ashwini', nakshatraNameHi: 'अश्विनी', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Taskara', navamshaSignEn: 'Aries', navamshaSignHi: 'मेष', amsaSignificanceEn: 'Power, commanding drive, and decisive pioneering initiative.', amsaSignificanceHi: 'शक्ति, अधिकार और निर्णायक पहल करने का पराक्रम।' },
+  '0_2': { nakshatraIndex: 0, nakshatraNameEn: 'Ashwini', nakshatraNameHi: 'अश्विनी', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Bhoga', navamshaSignEn: 'Taurus', navamshaSignHi: 'वृषभ', amsaSignificanceEn: 'Royal enjoyment, sensory delight, material resources and beauty.', amsaSignificanceHi: 'राजसी सुख-भोग, विलासिता, ऐश्वर्य और सौंदर्य का आनंद।' },
+  '0_3': { nakshatraIndex: 0, nakshatraNameEn: 'Ashwini', nakshatraNameHi: 'अश्विनी', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Vilakshana', navamshaSignEn: 'Gemini', navamshaSignHi: 'मिथुन', amsaSignificanceEn: 'Distinct uniqueness, unconventional perception and multi-faceted intellect.', amsaSignificanceHi: 'विशिष्ट दृष्टिकोण, लीक से हटकर सोचना और बहुमुखी मेधा।' },
+  '0_4': { nakshatraIndex: 0, nakshatraNameEn: 'Ashwini', nakshatraNameHi: 'अश्विनी', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Dharma', navamshaSignEn: 'Cancer', navamshaSignHi: 'कर्क', amsaSignificanceEn: 'Righteous duty, maternal empathy, emotional ethics and spiritual protection.', amsaSignificanceHi: 'धार्मिक कर्तव्य, वात्सल्य, भावनात्मक मर्यादा और आत्मिक सुरक्षा।' },
+
+  // Bharani (1)
+  '1_1': { nakshatraIndex: 1, nakshatraNameEn: 'Bharani', nakshatraNameHi: 'भरणी', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Nripa', navamshaSignEn: 'Leo', navamshaSignHi: 'सिंह', amsaSignificanceEn: 'Prestige, sovereign demeanor, unbiased justice and regal authority.', amsaSignificanceHi: 'प्रतिष्ठा, निष्पक्ष न्याय, प्रशासनिक गरिमा और राजसी प्रभुत्व।' },
+  '1_2': { nakshatraIndex: 1, nakshatraNameEn: 'Bharani', nakshatraNameHi: 'भरणी', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Napunsaka', navamshaSignEn: 'Virgo', navamshaSignHi: 'कन्या', amsaSignificanceEn: 'Balanced neutral arbitration, meticulous precision and critical equilibrium.', amsaSignificanceHi: 'तटस्थ मध्यस्थता, सूक्ष्म परिशुद्धता और संतुलनकारी बुद्धि।' },
+  '1_3': { nakshatraIndex: 1, nakshatraNameEn: 'Bharani', nakshatraNameHi: 'भरणी', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Abhaya', navamshaSignEn: 'Libra', navamshaSignHi: 'तुला', amsaSignificanceEn: 'Fearless composure, unmoved by external turbulence, peaceful fortitude.', amsaSignificanceHi: 'निर्भयता, संकटों में अविचल रहना और आंतरिक समरसता।' },
+  '1_4': { nakshatraIndex: 1, nakshatraNameEn: 'Bharani', nakshatraNameHi: 'भरणी', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Papa', navamshaSignEn: 'Scorpio', navamshaSignHi: 'वृश्चिक', amsaSignificanceEn: 'Transformative warrior weathering severe trials and transmuting suffering.', amsaSignificanceHi: 'कठोर परीक्षाओं को पार कर आत्मबल पाने वाले और संकट-मोचक।' },
+
+  // Krittika (2)
+  '2_1': { nakshatraIndex: 2, nakshatraNameEn: 'Krittika', nakshatraNameHi: 'कृत्तिका', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Dhana', navamshaSignEn: 'Sagittarius', navamshaSignHi: 'धनु', amsaSignificanceEn: 'Eloquent teacher, wealthy speech, sustaining wisdom and ethical values.', amsaSignificanceHi: 'ओजस्वी वक्ता, ज्ञान-धन के संरक्षक और श्रेष्ठ मार्गदर्शक।' },
+  '2_2': { nakshatraIndex: 2, nakshatraNameEn: 'Krittika', nakshatraNameHi: 'कृत्तिका', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Papa', navamshaSignEn: 'Capricorn', navamshaSignHi: 'मकर', amsaSignificanceEn: 'Tenacious labor through hardship, enduring discipline and practical resilience.', amsaSignificanceHi: 'कठोर श्रम, अटूट कर्तव्यनिष्ठा और विपत्तियों में धैर्य।' },
+  '2_3': { nakshatraIndex: 2, nakshatraNameEn: 'Krittika', nakshatraNameHi: 'कृत्तिका', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Ugra', navamshaSignEn: 'Aquarius', navamshaSignHi: 'कुंभ', amsaSignificanceEn: 'Fierce reformer, rebellious truth-teller, unapologetic clarity.', amsaSignificanceHi: 'क्रांतिकारी सुधारक, स्पष्टवादी और पाखंड के प्रखर विरोधी।' },
+  '2_4': { nakshatraIndex: 2, nakshatraNameEn: 'Krittika', nakshatraNameHi: 'कृत्तिका', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Utkrushta', navamshaSignEn: 'Pisces', navamshaSignHi: 'मीन', amsaSignificanceEn: 'Emotional excellence, transcendent devotion, striving for supreme realization.', amsaSignificanceHi: 'भावनात्मक उत्कृष्टता, परम समर्पण और आध्यात्मिक पूर्णता।' },
+
+  // Rohini (3)
+  '3_1': { nakshatraIndex: 3, nakshatraNameEn: 'Rohini', nakshatraNameHi: 'रोहिणी', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Sena', navamshaSignEn: 'Aries', navamshaSignHi: 'मेष', amsaSignificanceEn: 'War-footing initiative, creative commander and proactive drive.', amsaSignificanceHi: 'सक्रिय नेतृत्व, सृजनात्मक पराक्रम और त्वरित क्रियान्वयन।' },
+  '3_2': { nakshatraIndex: 3, nakshatraNameEn: 'Rohini', nakshatraNameHi: 'रोहिणी', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Bhritya', navamshaSignEn: 'Taurus', navamshaSignHi: 'वृषभ', amsaSignificanceEn: 'Faithful steward, dedicated service, tangible artistic craftsmanship.', amsaSignificanceHi: 'समर्पित सेवा, विश्वसनीय संरक्षक और व्यावहारिक कलात्मक शिल्प।' },
+  '3_3': { nakshatraIndex: 3, nakshatraNameEn: 'Rohini', nakshatraNameHi: 'रोहिणी', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Vidya', navamshaSignEn: 'Gemini', navamshaSignHi: 'मिथुन', amsaSignificanceEn: 'Intellectual mastery, learning, communication and educational charm.', amsaSignificanceHi: 'विद्या-विशारद, बौद्धिक संवाद, शिक्षण और तार्किक लालित्य।' },
+  '3_4': { nakshatraIndex: 3, nakshatraNameEn: 'Rohini', nakshatraNameHi: 'रोहिणी', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Ati', navamshaSignEn: 'Cancer', navamshaSignHi: 'कर्क', amsaSignificanceEn: 'Intense feeling, boundless attachment, rich devotional imagination.', amsaSignificanceHi: 'गहन भावुकता, अगाध आत्मीयता और समृद्ध भक्ति-रस।' },
+
+  // Mrigashira (4)
+  '4_1': { nakshatraIndex: 4, nakshatraNameEn: 'Mrigashira', nakshatraNameHi: 'मृगशिरा', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Raja', navamshaSignEn: 'Leo', navamshaSignHi: 'सिंह', amsaSignificanceEn: 'Regal passion, noble search for truth, magnetic presence.', amsaSignificanceHi: 'राजसी उत्साह, सत्य की खोज और सम्मोहक व्यक्तित्व।' },
+  '4_2': { nakshatraIndex: 4, nakshatraNameEn: 'Mrigashira', nakshatraNameHi: 'मृगशिरा', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Chanda', navamshaSignEn: 'Virgo', navamshaSignHi: 'कन्या', amsaSignificanceEn: 'Expert specialist, sharp forensic eye, meticulous investigator.', amsaSignificanceHi: 'विशेषज्ञ अनुसंधानकर्ता, पैनी विश्लेषक दृष्टि और परिशुद्धता।' },
+  '4_3': { nakshatraIndex: 4, nakshatraNameEn: 'Mrigashira', nakshatraNameHi: 'मृगशिरा', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Abhaya', navamshaSignEn: 'Libra', navamshaSignHi: 'तुला', amsaSignificanceEn: 'Unshakable tranquility, diplomatic grace, undisturbed by storms.', amsaSignificanceHi: 'अविचल शांति, सुरुचिपूर्ण कूटनीति और संतुलित चित्त।' },
+  '4_4': { nakshatraIndex: 4, nakshatraNameEn: 'Mrigashira', nakshatraNameHi: 'मृगशिरा', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Neecha', navamshaSignEn: 'Scorpio', navamshaSignHi: 'वृश्चिक', amsaSignificanceEn: 'Humble endurance, rising like a phoenix from deep emotional tests.', amsaSignificanceHi: 'विनम्रता से संकट सहना और पुनः महान उत्कर्ष प्राप्त करना।' },
+
+  // Ardra (5)
+  '5_1': { nakshatraIndex: 5, nakshatraNameEn: 'Ardra', nakshatraNameHi: 'आर्द्रा', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Kripa', navamshaSignEn: 'Sagittarius', navamshaSignHi: 'धनु', amsaSignificanceEn: 'Compassionate benefactor, setting aside personal ego to help humanity.', amsaSignificanceHi: 'दयालु परोपकारी, मानवता के कल्याण हेतु समर्पित।' },
+  '5_2': { nakshatraIndex: 5, nakshatraNameEn: 'Ardra', nakshatraNameHi: 'आर्द्रा', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Taskara', navamshaSignEn: 'Capricorn', navamshaSignHi: 'मकर', amsaSignificanceEn: 'Strategic power, resilience in dark hours, unwavering endurance.', amsaSignificanceHi: 'रणनीतिक शक्ति, कठिन समय में धैर्य और अटूट सहनशीलता।' },
+  '5_3': { nakshatraIndex: 5, nakshatraNameEn: 'Ardra', nakshatraNameHi: 'आर्द्रा', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Ugra', navamshaSignEn: 'Aquarius', navamshaSignHi: 'कुंभ', amsaSignificanceEn: 'Uncompromising intellect, tearing down illusions, fierce clarity.', amsaSignificanceHi: 'भ्रम-विनाशक बुद्धि, पाखंड पर प्रहार और स्पष्ट सत्यवादिता।' },
+  '5_4': { nakshatraIndex: 5, nakshatraNameEn: 'Ardra', nakshatraNameHi: 'आर्द्रा', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Utkrushta', navamshaSignEn: 'Pisces', navamshaSignHi: 'मीन', amsaSignificanceEn: 'Transcendent regeneration, spiritual rebirth after cathartic storm.', amsaSignificanceHi: 'महा-रूपांतरण, संकटों के पश्चात नवजीवन और आत्म-मुक्ति।' },
+
+  // Punarvasu (6)
+  '6_1': { nakshatraIndex: 6, nakshatraNameEn: 'Punarvasu', nakshatraNameHi: 'पुनर्वसु', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Uttama', navamshaSignEn: 'Aries', navamshaSignHi: 'मेष', amsaSignificanceEn: 'Perfectionist, noble ethics, exemplary righteous conduct.', amsaSignificanceHi: 'पूर्णतावादी, उच्च नैतिक आदर्श और अनुकरणीय चरित्र।' },
+  '6_2': { nakshatraIndex: 6, nakshatraNameEn: 'Punarvasu', nakshatraNameHi: 'पुनर्वसु', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Bhoga', navamshaSignEn: 'Taurus', navamshaSignHi: 'वृषभ', amsaSignificanceEn: 'Enjoyment of peace, material harmony, welcoming domestic sanctuary.', amsaSignificanceHi: 'शांति का उपभोग, भौतिक सुख-समृद्धि और सुखी गृहस्थी।' },
+  '6_3': { nakshatraIndex: 6, nakshatraNameEn: 'Punarvasu', nakshatraNameHi: 'पुनर्वसु', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Soumya', navamshaSignEn: 'Gemini', navamshaSignHi: 'मिथुन', amsaSignificanceEn: 'Gentle conversationalist, graceful diplomat, scholarly harmony.', amsaSignificanceHi: 'मृदुभाषी, सुरुचिपूर्ण कूटनीतिज्ञ और विद्वान।' },
+  '6_4': { nakshatraIndex: 6, nakshatraNameEn: 'Punarvasu', nakshatraNameHi: 'पुनर्वसु', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Dhana', navamshaSignEn: 'Cancer', navamshaSignHi: 'कर्क', amsaSignificanceEn: 'Nourishing wealth, maternal protection, generous sustainment.', amsaSignificanceHi: 'पोषणकारी धन, मातृ-कृपा और सबको संरक्षण देने वाला ऐश्वर्य।' },
+
+  // Pushya (7)
+  '7_1': { nakshatraIndex: 7, nakshatraNameEn: 'Pushya', nakshatraNameHi: 'पुष्य', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Bhupa', navamshaSignEn: 'Leo', navamshaSignHi: 'सिंह', amsaSignificanceEn: 'Sovereign guardian of territory, institutional protector, regal steward.', amsaSignificanceHi: 'भूमि-पालक, संस्थागत संरक्षक और राजसी दायित्व-निर्माता।' },
+  '7_2': { nakshatraIndex: 7, nakshatraNameEn: 'Pushya', nakshatraNameHi: 'पुष्य', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Soumya', navamshaSignEn: 'Virgo', navamshaSignHi: 'कन्या', amsaSignificanceEn: 'Analytical counselor, methodical care, gentle practical service.', amsaSignificanceHi: 'विश्लेषक परामर्शदाता, व्यवस्थित देखभाल और सेवा-भाव।' },
+  '7_3': { nakshatraIndex: 7, nakshatraNameEn: 'Pushya', nakshatraNameHi: 'पुष्य', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Shoora', navamshaSignEn: 'Libra', navamshaSignHi: 'तुला', amsaSignificanceEn: 'Undaunted warrior standing alone for justice and truth.', amsaSignificanceHi: 'अकेले भी सत्य व धर्म के लिए अडिग खड़े रहने वाले शूरवीर।' },
+  '7_4': { nakshatraIndex: 7, nakshatraNameEn: 'Pushya', nakshatraNameHi: 'पुष्य', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Neecha', navamshaSignEn: 'Scorpio', navamshaSignHi: 'वृश्चिक', amsaSignificanceEn: 'Triumph over profound spiritual trials, absolute humility and grace.', amsaSignificanceHi: 'गहन आध्यात्मिक परीक्षाओं पर विजय, परम विनम्रता और मुक्ति।' },
+
+  // Ashlesha (8)
+  '8_1': { nakshatraIndex: 8, nakshatraNameEn: 'Ashlesha', nakshatraNameHi: 'आश्लेषा', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Utpanna', navamshaSignEn: 'Sagittarius', navamshaSignHi: 'धनु', amsaSignificanceEn: 'Master creator, purposeful inventor of strategies and systems.', amsaSignificanceHi: 'रणनीतियों के सृजनकर्ता, मौलिक चिंतक और व्यवस्था-निर्माता।' },
+  '8_2': { nakshatraIndex: 8, nakshatraNameEn: 'Ashlesha', nakshatraNameHi: 'आश्लेषा', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Papa', navamshaSignEn: 'Capricorn', navamshaSignHi: 'मकर', amsaSignificanceEn: 'Confronting worldly toxicity and building impenetrable boundaries.', amsaSignificanceHi: 'संसार के विष को पचाने वाले, सुरक्षा-कवच के निर्माता।' },
+  '8_3': { nakshatraIndex: 8, nakshatraNameEn: 'Ashlesha', nakshatraNameHi: 'आश्लेषा', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Krodha', navamshaSignEn: 'Aquarius', navamshaSignHi: 'कुंभ', amsaSignificanceEn: 'Righteous transformational force punishing deception and falsehood.', amsaSignificanceHi: 'अन्याय व कपट का शमन करने वाली तेजस्विनी ऊर्जा।' },
+  '8_4': { nakshatraIndex: 8, nakshatraNameEn: 'Ashlesha', nakshatraNameHi: 'आश्लेषा', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Ugra', navamshaSignEn: 'Pisces', navamshaSignHi: 'मीन', amsaSignificanceEn: 'Kundalini awakening, intense dissolution of ego, esoteric rebirth.', amsaSignificanceHi: 'कुंडलिनी जागरण, अहंकार का विसर्जन और तांत्रिक ज्ञान।' },
+
+  // Magha (9)
+  '9_1': { nakshatraIndex: 9, nakshatraNameEn: 'Magha', nakshatraNameHi: 'मघा', pada: 1, element: 'Fire', elementHi: 'अग्नि', purushartha: 'Dharma', purusharthaHi: 'धर्म', amsaName: 'Sena', navamshaSignEn: 'Aries', navamshaSignHi: 'मेष', amsaSignificanceEn: 'Dynamic warrior honoring ancestral lineage, commanding force.', amsaSignificanceHi: 'कुल-गौरव के रक्षक योद्धा, प्रशासनिक सेनापति।' },
+  '9_2': { nakshatraIndex: 9, nakshatraNameEn: 'Magha', nakshatraNameHi: 'मघा', pada: 2, element: 'Earth', elementHi: 'पृथ्वी', purushartha: 'Artha', purusharthaHi: 'अर्थ', amsaName: 'Bhukta', navamshaSignEn: 'Taurus', navamshaSignHi: 'वृषभ', amsaSignificanceEn: 'Consuming hereditary wealth, steady material prestige and comfort.', amsaSignificanceHi: 'पैतृक संपदा का सदुपयोग, स्थायी प्रतिष्ठा और सुख।' },
+  '9_3': { nakshatraIndex: 9, nakshatraNameEn: 'Magha', nakshatraNameHi: 'मघा', pada: 3, element: 'Air', elementHi: 'वायु', purushartha: 'Kama', purusharthaHi: 'काम', amsaName: 'Vichakshan', navamshaSignEn: 'Gemini', navamshaSignHi: 'मिथुन', amsaSignificanceEn: 'Astute discriminator, historical wisdom, weighing pros and cons.', amsaSignificanceHi: 'इतिहास-वेत्ता, गुण-दोष के सूक्ष्म पारखी और विवेकशील।' },
+  '9_4': { nakshatraIndex: 9, nakshatraNameEn: 'Magha', nakshatraNameHi: 'मघा', pada: 4, element: 'Water', elementHi: 'जल', purushartha: 'Moksha', purusharthaHi: 'मोक्ष', amsaName: 'Antya', navamshaSignEn: 'Cancer', navamshaSignHi: 'कर्क', amsaSignificanceEn: 'Ancestral culmination, pitru blessings, enduring spiritual legacy.', amsaSignificanceHi: 'पितृ-आशीर्वाद, कुल की पूर्णता और अमर आध्यात्मिक कीर्ति।' }
+};
+
+// Populate the remaining Padas (10 to 26) with authentic classical mapping
+const REMAINING_PADAS_RAW = [
+  // 10: Purva Phalguni
+  { n: 10, nameEn: 'Purva Phalguni', nameHi: 'पूर्वाफाल्गुनी', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Raja', signEn: 'Leo', signHi: 'सिंह', descEn: 'Regal charisma, aesthetic dominance.', descHi: 'राजसी ठाठ और कलात्मक नेतृत्व।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Napunsaka', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Impartial judicial arbiter.', descHi: 'तटस्थ निष्पक्ष न्यायकर्ता।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Abhaya', signEn: 'Libra', signHi: 'तुला', descEn: 'Serene lover of beauty and music.', descHi: 'संगीत व सौंदर्य के निर्भय प्रेमी।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Daridra', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Spiritual austerity and intense feeling.', descHi: 'तपस्या, वैराग्य और भावनात्मक गहराई।' }
+  ]},
+  // 11: Uttara Phalguni
+  { n: 11, nameEn: 'Uttara Phalguni', nameHi: 'उत्तराफाल्गुनी', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Founder of noble charities and missions.', descHi: 'परोपकारी संस्थाओं के संस्थापक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Papa', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Karmic duty through relentless service.', descHi: 'कठोर सेवा द्वारा कर्म-साधना।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Ugra', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Staunch defender of public justice.', descHi: 'सार्वजनिक न्याय के प्रखर रक्षक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Subha', signEn: 'Pisces', signHi: 'मीन', descEn: 'Divine auspiciousness, pure enlightenment.', descHi: 'परम शुभता और आत्म-साक्षात्कार।' }
+  ]},
+  // 12: Hasta
+  { n: 12, nameEn: 'Hasta', nameHi: 'हस्त', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Kroora', signEn: 'Aries', signHi: 'मेष', descEn: 'Strict discipline, surgical dexterity.', descHi: 'सख्त अनुशासन और शल्य-चिकित्सीय दक्षता।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Mukta', signEn: 'Taurus', signHi: 'वृषभ', descEn: 'Detached mastery of commercial tools.', descHi: 'व्यापारिक दक्षता और अनासक्त कर्म।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Pandita', signEn: 'Gemini', signHi: 'मिथुन', descEn: 'Polymath scholar, master communicator.', descHi: 'विद्वान पंडित, बहुभाषाविद् वक्ता।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Dhana', signEn: 'Cancer', signHi: 'कर्क', descEn: 'Compassionate healer, sustaining family.', descHi: 'आरोग्य-दाता और कुटुंब-पोषक।' }
+  ]},
+  // 13: Chitra
+  { n: 13, nameEn: 'Chitra', nameHi: 'चित्रा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Raja', signEn: 'Leo', signHi: 'सिंह', descEn: 'Supreme designer, sovereign artisan.', descHi: 'राजसी शिल्पी और अद्वितीय वास्तुकार।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Napunsaka', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Flawless precision in fine craft.', descHi: 'बारीक शिल्प और सटीक तकनीक।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Abhaya', signEn: 'Libra', signHi: 'तुला', descEn: 'Harmonious beauty, serene designer.', descHi: 'सौंदर्य-सृजन और शांति-प्रसारक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Dhana', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Secret treasures, penetrative vision.', descHi: 'गूढ़ संपत्तियों और रहस्यों के पारखी।' }
+  ]},
+  // 14: Swati
+  { n: 14, nameEn: 'Swati', nameHi: 'स्वाती', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Inspired visionary, broad horizon.', descHi: 'दूरदर्शी चिंतक और स्वतंत्र पथिक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Dhana', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Astute international merchant.', descHi: 'सफल वैश्विक व्यापारी और धनवान।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Ugra', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Radical independence, fearless traveler.', descHi: 'पूर्ण स्वतंत्रचेता और निर्भीक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Utkruthsta', signEn: 'Pisces', signHi: 'मीन', descEn: 'Sublime devotion, spiritual music.', descHi: 'अलौकिक भक्ति और संगीत-साधना।' }
+  ]},
+  // 15: Vishakha
+  { n: 15, nameEn: 'Vishakha', nameHi: 'विशाखा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Soukhya', signEn: 'Aries', signHi: 'मेष', descEn: 'Active pursuit of noble conquest.', descHi: 'लक्ष्य-विजय की निरंतर अभिलाषा।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Bhoga', signEn: 'Taurus', signHi: 'वृषभ', descEn: 'Solid harvest of purposeful efforts.', descHi: 'कठिन परिश्रम का भरपूर मीठा फल।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Soumya', signEn: 'Gemini', signHi: 'मिथुन', descEn: 'Master negotiator, eloquent ally.', descHi: 'कुशल वार्ताकार और नीतिवान साथी।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Artha', signEn: 'Cancer', signHi: 'कर्क', descEn: 'Protective custodian of family resources.', descHi: 'परिवार के आर्थिक संबल और रक्षक।' }
+  ]},
+  // 16: Anuradha
+  { n: 16, nameEn: 'Anuradha', nameHi: 'अनुराधा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Raja', signEn: 'Leo', signHi: 'सिंह', descEn: 'Noble organization, loyal leadership.', descHi: 'कुलीन संगठनकर्ता और निष्ठावान नेता।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Napunsaka', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Subtle diplomatic coordination.', descHi: 'सटीक कूटनीतिक समन्वय।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Abhaya', signEn: 'Libra', signHi: 'तुला', descEn: 'Unshakable lifelong friend.', descHi: 'संकट में साथ निभाने वाले परम मित्र।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Neecha', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Transcending internal trials through sadhana.', descHi: 'साधना द्वारा आंतरिक क्लेशों पर विजय।' }
+  ]},
+  // 17: Jyeshtha
+  { n: 17, nameEn: 'Jyeshtha', nameHi: 'ज्येष्ठा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Sovereign elder protecting clan.', descHi: 'कुल-प्रमुख और संरक्षक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Ugra', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Strict defensive authority.', descHi: 'कठोर सुरक्षा-प्रबंधक।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Papa', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Bearing heavy societal burdens.', descHi: 'सामाजिक दायित्वों का भार उठाने वाले।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Subha', signEn: 'Pisces', signHi: 'मीन', descEn: 'Enlightened sage, profound peace.', descHi: 'शांत ज्ञानी और आत्म-तृप्त।' }
+  ]},
+  // 18: Mula
+  { n: 18, nameEn: 'Mula', nameHi: 'मूल', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Taskara', signEn: 'Aries', signHi: 'मेष', descEn: 'Root destroyer of illusions.', descHi: 'अज्ञान के मूल को उखाड़ने वाले।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Bhokta', signEn: 'Taurus', signHi: 'वृषभ', descEn: 'Grounding truth in physical reality.', descHi: 'भौतिक जगत में सत्य की स्थापना।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Vichakshan', signEn: 'Gemini', signHi: 'मिथुन', descEn: 'Profound philosophical analyst.', descHi: 'गहन दार्शनिक विश्लेषक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Dhana', signEn: 'Cancer', signHi: 'कर्क', descEn: 'Preserving foundational spiritual wisdom.', descHi: 'मूल आध्यात्मिक ज्ञान के धनी।' }
+  ]},
+  // 19: Purva Ashadha
+  { n: 19, nameEn: 'Purva Ashadha', nameHi: 'पूर्वाषाढ़ा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Leo', signHi: 'सिंह', descEn: 'Radiant undefeated pioneer.', descHi: 'तेजस्वी अपराजित अग्रदूत।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Abhaya', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Undaunted worker, methodical victory.', descHi: 'निडर और सुव्यवस्थित कर्मवीर।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Bhagya', signEn: 'Libra', signHi: 'तुला', descEn: 'Shared divine fortune and grace.', descHi: 'साझा सौभाग्य और ऐश्वर्य।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Ugra', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Invincible resolve conquering all obstacles.', descHi: 'अजेय संकल्प और संकट-विजय।' }
+  ]},
+  // 20: Uttara Ashadha
+  { n: 20, nameEn: 'Uttara Ashadha', nameHi: 'उत्तराषाढ़ा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Universal leader of righteousness.', descHi: 'विश्व-कल्याणकारी धर्मयोद्धा।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Papa', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Unbending patience under pressure.', descHi: 'कठोर दबाव में भी अविचल धैर्य।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Ugra', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Uncompromising institutional reformer.', descHi: 'संस्थागत सुधारक और न्यायप्रिय।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Sobhana', signEn: 'Pisces', signHi: 'मीन', descEn: 'Sublime peace, permanent victory.', descHi: 'शाश्वत शांति और पूर्ण विजय।' }
+  ]},
+  // 21: Shravana
+  { n: 21, nameEn: 'Shravana', nameHi: 'श्रवण', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Mangala', signEn: 'Aries', signHi: 'मेष', descEn: 'Active purifier removing negativity.', descHi: 'दोष-निवारक और मंगलकारी।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Bhokta', signEn: 'Taurus', signHi: 'वृषभ', descEn: 'Steady learner absorbing sacred knowledge.', descHi: 'ज्ञान-पिपासु और विद्या-रसिक।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Vichakshan', signEn: 'Gemini', signHi: 'मिथुन', descEn: 'Supreme listening intellect.', descHi: 'अद्वितीय श्रोता और बुद्धिमान।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Dhana', signEn: 'Cancer', signHi: 'कर्क', descEn: 'Treasury of ancestral oral wisdom.', descHi: 'श्रुति-ज्ञान के अक्षय कोष।' }
+  ]},
+  // 22: Dhanishta
+  { n: 22, nameEn: 'Dhanishta', nameHi: 'धनिष्ठा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Raja', signEn: 'Leo', signHi: 'सिंह', descEn: 'Royal patron of music and arts.', descHi: 'संगीत व कला के राजसी संरक्षक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Soumya', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Analytical rhythm and property stewardship.', descHi: 'संपत्ति-प्रबंधन और लयबद्ध व्यवस्था।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Abhaya', signEn: 'Libra', signHi: 'तुला', descEn: 'Harmonious artist, fearlessly generous.', descHi: 'समरसता-प्रेमी और उदार दाता।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Kroora', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Master of physical endurance and energy.', descHi: 'शारीरिक ऊर्जा और योग-बल के स्वामी।' }
+  ]},
+  // 23: Shatabhisha
+  { n: 23, nameEn: 'Shatabhisha', nameHi: 'शतभिषा', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Visionary medical researcher.', descHi: 'औषध व अनुसंधान के दूरदर्शी।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Papa', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Conquering chronic difficulties.', descHi: 'असाध्य रोगों व संकटों के नाशक।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Bhaya', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Vigilant protective awareness.', descHi: 'अति-सतर्क और सुरक्षात्मक दृष्टि।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Soumya', signEn: 'Pisces', signHi: 'मीन', descEn: 'Soothing healer restoring harmony.', descHi: 'सौम्य उपचारक और आरोग्य-दाता।' }
+  ]},
+  // 24: Purva Bhadrapada
+  { n: 24, nameEn: 'Purva Bhadrapada', nameHi: 'पूर्वाभाद्रपद', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Sena', signEn: 'Aries', signHi: 'मेष', descEn: 'Fierce crusader for high ideals.', descHi: 'उच्च आदर्शों के निर्भीक योद्धा।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Bhoga', signEn: 'Taurus', signHi: 'वृषभ', descEn: 'Anchoring mystical vision in life.', descHi: 'गूढ़ दर्शन का व्यावहारिक प्रकटीकरण।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Vichakshan', signEn: 'Gemini', signHi: 'मिथुन', descEn: 'Dialectical philosophical genius.', descHi: 'द्वैत-अद्वैत के प्रखर दार्शनिक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Dhana', signEn: 'Cancer', signHi: 'कर्क', descEn: 'Guardian of occult spiritual wealth.', descHi: 'गूढ़ आध्यात्मिक संपदा के रक्षक।' }
+  ]},
+  // 25: Uttara Bhadrapada
+  { n: 25, nameEn: 'Uttara Bhadrapada', nameHi: 'उत्तराभाद्रपद', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Teekshana', signEn: 'Leo', signHi: 'सिंह', descEn: 'Untiring spiritual protector.', descHi: 'अथक आध्यात्मिक रक्षक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Soumya', signEn: 'Virgo', signHi: 'कन्या', descEn: 'Compassionate counselor, patient sage.', descHi: 'धैर्यवान परामर्शदाता और संत।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Abhaya', signEn: 'Libra', signHi: 'तुला', descEn: 'Oceanic tranquility, fearlessness.', descHi: 'समुद्र-समान शांत और निर्भय।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Ugra', signEn: 'Scorpio', signHi: 'वृश्चिक', descEn: 'Deep yogic stillness and liberation.', descHi: 'गहन समाधि और मोक्ष-प्राप्ति।' }
+  ]},
+  // 26: Revati
+  { n: 26, nameEn: 'Revati', nameHi: 'रेवती', padas: [
+    { p: 1, el: 'Fire', elHi: 'अग्नि', pu: 'Dharma', puHi: 'धर्म', amsa: 'Utpanna', signEn: 'Sagittarius', signHi: 'धनु', descEn: 'Divine nurturer, cosmic guide.', descHi: 'दिव्य पथ-प्रदर्शक और पोषक।' },
+    { p: 2, el: 'Earth', elHi: 'पृथ्वी', pu: 'Artha', puHi: 'अर्थ', amsa: 'Papa', signEn: 'Capricorn', signHi: 'मकर', descEn: 'Grounding compassionate duty in labor.', descHi: 'सेवा और परिश्रम में ईश्वर-दर्शन।' },
+    { p: 3, el: 'Air', elHi: 'वायु', pu: 'Kama', puHi: 'काम', amsa: 'Ugra', signEn: 'Aquarius', signHi: 'कुंभ', descEn: 'Uncompromising shield for the weak.', descHi: 'दीन-दुखियों के निर्भय रक्षक।' },
+    { p: 4, el: 'Water', elHi: 'जल', pu: 'Moksha', puHi: 'मोक्ष', amsa: 'Sobhana', signEn: 'Pisces', signHi: 'मीन', descEn: 'Supreme fulfillment, final liberation.', descHi: 'परम पूर्णता और मोक्ष।' }
+  ]}
+];
+
+for (const group of REMAINING_PADAS_RAW) {
+  for (const item of group.padas) {
+    const key = `${group.n}_${item.p}`;
+    CLASSICAL_108_PADAS[key] = {
+      nakshatraIndex: group.n,
+      nakshatraNameEn: group.nameEn,
+      nakshatraNameHi: group.nameHi,
+      pada: item.p,
+      element: item.el as any,
+      elementHi: item.elHi,
+      purushartha: item.pu as any,
+      purusharthaHi: item.puHi,
+      amsaName: item.amsa,
+      navamshaSignEn: item.signEn,
+      navamshaSignHi: item.signHi,
+      amsaSignificanceEn: item.descEn,
+      amsaSignificanceHi: item.descHi,
+    };
+  }
+}
+
+export function getPadaDetail(nakshatraIndex: number, pada: number): NakshatraPadaDetail {
+  const key = `${nakshatraIndex}_${pada}`;
+  return CLASSICAL_108_PADAS[key] ?? CLASSICAL_108_PADAS['0_1'];
+}
+
+/* =========================================================================
+   16. JAIMINI ATMAKARAKA (AK) & KARAKAMSA SOUL KNOWLEDGE BASE
+   ========================================================================= */
+export interface AtmakarakaProfile {
+  planet: string;
+  planetHi: string;
+  soulArchetypeEn: string;
+  soulArchetypeHi: string;
+  coreDesiresEn: string;
+  coreDesiresHi: string;
+  karmicChallengeEn: string;
+  karmicChallengeHi: string;
+  soulLessonEn: string;
+  soulLessonHi: string;
+  karakamsaYogasEn: string;
+  karakamsaYogasHi: string;
+}
+
+export const CLASSICAL_ATMAKARAKA_PROFILES: Record<string, AtmakarakaProfile> = {
+  Sun: {
+    planet: 'Sun',
+    planetHi: 'सूर्य',
+    soulArchetypeEn: 'The King & Illuminator: Authoritarian, natural leadership, unwavering devotion to truth, self-reliant soul.',
+    soulArchetypeHi: 'सूर्य आत्मकारक (सम्राट व प्रकाशक): उच्च नेतृत्व क्षमता, सत्य-निष्ठा, स्वावलंबन और आत्म-गौरव।',
+    coreDesiresEn: 'High public purpose, executive sovereignty, recognition of righteous authority, and leaving an unblemished royal legacy.',
+    coreDesiresHi: 'सर्वोच्च प्रशासनिक पद, लोक-मान्यता, न्यायपूर्ण प्रभुत्व और निष्कलंक यश की स्थापना।',
+    karmicChallengeEn: 'Leadership vs Egotism; temptations of power, arrogance, and sensitivity to loss of status.',
+    karmicChallengeHi: 'नेतृत्व बनाम अहंकार; पद व प्रतिष्ठा के मोह से मुक्ति और आलोचना सहने की चुनौती।',
+    soulLessonEn: 'The soul must learn humility, surrender personal ego to divine will, and realize true leadership lies in serving the collective.',
+    soulLessonHi: 'अहंकार का त्याग, ईश्वरीय इच्छा के सम्मुख समर्पण और यह समझना कि सच्चा नेतृत्व जन-सेवा में है।',
+    karakamsaYogasEn: 'Sun in or aspecting Karakamsa confers royal stature and public renown; Sun in 2nd/10th brings government authority.',
+    karakamsaYogasHi: 'कारकांश में अथवा कारकांश पर सूर्य की दृष्टि राजयोग और शासन में उच्च पद देती है।'
+  },
+  Moon: {
+    planet: 'Moon',
+    planetHi: 'चंद्रमा',
+    soulArchetypeEn: 'The Universal Mother: Deeply compassionate, kind, empathetic, socially magnetic, and intuitive soul.',
+    soulArchetypeHi: 'चंद्र आत्मकारक (जगन्माता): अगाध करुणा, दया, वात्सल्य, सामाजिक संवेदनशीलता और अंतर्दृष्टि।',
+    coreDesiresEn: 'Emotional communion, caring for family and public, giving love, and finding pure internal peace.',
+    coreDesiresHi: 'भावनात्मक समरसता, जनकल्याण, प्रेम का आदान-प्रदान और आत्मिक शांति की प्राप्ति।',
+    karmicChallengeEn: 'Compassion vs Neediness; fear of emotional rejection, mood swings, and confusing possessive attachment with pure love.',
+    karmicChallengeHi: 'सच्चा प्रेम बनाम मोह; अकेलेपन का भय, मनोदशा में उतार-चढ़ाव और भावनात्मक निर्भरता।',
+    soulLessonEn: 'The soul must learn unconditional love, detachment from emotional reciprocity, and finding serenity within oneself.',
+    soulLessonHi: 'निःस्वार्थ प्रेम, अपेक्षाओं से मुक्ति और स्वयं की अंतरात्मा में स्थिर शांति पाना।',
+    karakamsaYogasEn: 'Full Moon or Moon in 4th/9th from Karakamsa confers immense popularity, poetic genius, and spiritual bliss.',
+    karakamsaYogasHi: 'कारकांश से चतुर्थ या नवम में बलिष्ठ चंद्र जनप्रियता, काव्य-मेधा और आध्यात्मिक आनंद देता है।'
+  },
+  Mars: {
+    planet: 'Mars',
+    planetHi: 'मंगल',
+    soulArchetypeEn: 'The Valorous Warrior: Dynamic strength, courageous vigor, championing difficult causes, action-oriented soul.',
+    soulArchetypeHi: 'मंगल आत्मकारक (धर्म-योद्धा): अदम्य पराक्रम, निर्भीकता, कठिन अभियानों का नेतृत्व और कर्मठ आत्मा।',
+    coreDesiresEn: 'Victory over formidable obstacles, physical stamina, pioneering breakthroughs, and protecting the vulnerable.',
+    coreDesiresHi: 'बाधाओं पर विजय, शारीरिक ऊर्जा, साहसिक नवाचार और दुर्बलों की रक्षा।',
+    karmicChallengeEn: 'Drive vs Aggression; impatience, destructive wrath, and inability to accept tactical retreat or defeat gracefully.',
+    karmicChallengeHi: 'पराक्रम बनाम उग्रता; अधीरता, अनियंत्रित क्रोध और पराजय को सहजता से स्वीकार न कर पाना।',
+    soulLessonEn: 'The soul must learn patience, non-violence, conceding defeats gracefully, and transmuting raw passion into spiritual fortitude.',
+    soulLessonHi: 'धैर्य, अहिंसा, हार को गरिमा से स्वीकारना और क्रोध को आत्मसंयम में रूपांतरित करना।',
+    karakamsaYogasEn: 'Mars aspecting Karakamsa gives engineering genius, surgical mastery, and defense supremacy.',
+    karakamsaYogasHi: 'कारकांश पर मंगल का प्रभाव तकनीकी मेधा, शल्य-चिकित्सा और रक्षा तंत्र में सर्वोच्च सफलता देता है।'
+  },
+  Mercury: {
+    planet: 'Mercury',
+    planetHi: 'बुध',
+    soulArchetypeEn: 'The Divine Messenger: Highly intellectual, articulate communicator, quick learner, analytical discriminator, witty soul.',
+    soulArchetypeHi: 'बुध आत्मकारक (दिव्य संदेशवाहक): प्रखर बौद्धिक मेधा, वाक्पटुता, तीव्र ग्रहणशीलता और विश्लेषक आत्मा।',
+    coreDesiresEn: 'Universal knowledge, sharing insights through writing and speech, commercial mastery, and divine communion.',
+    coreDesiresHi: 'सर्व शास्त्रों का ज्ञान, लेखन व वाणी द्वारा लोक-शिक्षण, व्यापारिक कुशलता और सत्य का संधान।',
+    karmicChallengeEn: 'Speaking Absolute Truth vs Intellectual Vanity; deception, superficial calculation, and pride in mental cleverness.',
+    karmicChallengeHi: 'सत्य-भाषण बनाम बौद्धिक अहंकार; चातुर्य का दुरुपयोग, लालच और वाक्-दंभ।',
+    soulLessonEn: 'The soul must transcend intellectual pride, speak truth without compromise, and use intellect as an instrument of divine communion.',
+    soulLessonHi: 'बौद्धिक अहंकार का त्याग, निष्कपट सत्य बोलना और अपनी बुद्धि को ईश्वर-समर्पण का साधन बनाना।',
+    karakamsaYogasEn: 'Mercury in Karakamsa makes one a scholar of many languages, merchant prince, and legal philosopher.',
+    karakamsaYogasHi: 'कारकांश में बुध बहुभाषाविद्, महान व्यापारी, लेखक और श्रेष्ठ न्यायविद् बनाता है।'
+  },
+  Jupiter: {
+    planet: 'Jupiter',
+    planetHi: 'गुरु / बृहस्पति',
+    soulArchetypeEn: 'The Enlightened Guru: Deeply learned, humble sage, guardian of sacred scriptures and righteous institutions.',
+    soulArchetypeHi: 'गुरु आत्मकारक (प्रबुद्ध आचार्य): गंभीर ज्ञानी, विनम्र मनीषी, वेदों व धर्मग्रंथों के संरक्षक।',
+    coreDesiresEn: 'Spiritual wisdom, teaching, guiding society toward dharma, and raising righteous successors.',
+    coreDesiresHi: 'आध्यात्मिक ज्ञान, अध्यापन, समाज को सन्मार्ग दिखाना और आदर्श शिष्य/संतति का निर्माण।',
+    karmicChallengeEn: 'Wisdom vs Dogmatic Superiority; patronizing others, spiritual pride, and struggling with imperfect family/partners.',
+    karmicChallengeHi: 'ज्ञान बनाम संकीर्ण मतवाद; दूसरों को हीन समझना और अपूर्ण पारिवारिक परिस्थितियों से क्षोभ।',
+    soulLessonEn: 'The soul must learn universal accommodation, putting the welfare of children and community before personal comfort, and practicing lived humility.',
+    soulLessonHi: 'सर्वसमावेशी उदारता, परिवार व समाज के कल्याण को स्वयं से ऊपर रखना और आचरण में सच्ची विनम्रता।',
+    karakamsaYogasEn: 'Jupiter in Karakamsa confers mastery over all Shastras, spiritual seerhood, and high ministerial counsel.',
+    karakamsaYogasHi: 'कारकांश में गुरु समस्त शास्त्रों का ज्ञान, दार्शनिक दृष्टि और राजाओं का मुख्य सलाहकार बनाता है।'
+  },
+  Venus: {
+    planet: 'Venus',
+    planetHi: 'शुक्र',
+    soulArchetypeEn: 'The Divine Artist & Lover: Aesthetic perfectionist, connoisseur of beauty, refined creator, generous heart.',
+    soulArchetypeHi: 'शुक्र आत्मकारक (दिव्य कलाकार): सौन्दर्य-पारखी, ललित कलाओं के शिल्पी, सुरुचिपूर्ण और उदार हृदय।',
+    coreDesiresEn: 'Sublime love, artistic expression, harmonious romance, financial abundance, and cultural refinement.',
+    coreDesiresHi: 'उदात्त प्रेम, कलात्मक सृजन, मधुर संबंध, भौतिक समृद्धि और जीवन के आनंदों की अनुभूति।',
+    karmicChallengeEn: 'Sacred Love vs Sensual Lust; self-indulgence, obsession with luxury, and relationship disillusionment.',
+    karmicChallengeHi: 'पवित्र प्रेम बनाम वासना; विलासिता में अंधा होना और संबंधों में अवास्तविक अपेक्षाएं रखना।',
+    soulLessonEn: 'The soul must learn to see the Divine in relationships, practice moderation, and transform sensual desire into pure spiritual devotion.',
+    soulLessonHi: 'संबंधों को ईश्वर का रूप मानना, इन्द्रिय-संयम और काम-ऊर्जा को भक्ति व कला में रूपांतरित करना।',
+    karakamsaYogasEn: 'Exalted Venus in Karakamsa confers supreme poetic/musical genius, Mahapurusha royalty, and profound devotional bliss.',
+    karakamsaYogasHi: 'कारकांश में शुक्र महाकवि, अद्वितीय संगीतज्ञ, विलासिता का स्वामी और परम भक्ति-सुख देता है।'
+  },
+  Saturn: {
+    planet: 'Saturn',
+    planetHi: 'शनि',
+    soulArchetypeEn: 'The Ascetic Karmayogi: Born to shoulder worldly suffering, unyielding endurance, solitary discipline, profound wisdom.',
+    soulArchetypeHi: 'शनि आत्मकारक (तपस्वी कर्मयोगी): जगत् के कष्टों को सहकर सत्य जानने वाली आत्मा, असीम धैर्य और कर्तव्यनिष्ठ।',
+    coreDesiresEn: 'Relieving universal suffering, building permanent societal institutions, solitary contemplation, and liberation.',
+    coreDesiresHi: 'दीन-दुखियों की सेवा, समाज के लिए स्थायी व्यवस्था-निर्माण, एकांत साधना और मोक्ष।',
+    karmicChallengeEn: 'Duty vs Despair; deep loneliness, feeling unappreciated, bitterness from severe hardships, and emotional coldness.',
+    karmicChallengeHi: 'कर्तव्य बनाम अवसाद; अकेलापन, संघर्षों से उपजी कड़वाहट और भावनात्मक संवेदनहीनता।',
+    soulLessonEn: 'The soul must learn to find grace in hardship, transform personal isolation into universal compassion, and serve without expectation of reward.',
+    soulLessonHi: 'कष्टों में भी ईश्वर की कृपा देखना, अकेलेपन को आत्म-साधना बनाना और निष्काम भाव से निरंतर सेवा करना।',
+    karakamsaYogasEn: 'Saturn in Karakamsa makes one a famous ascetic, institutional builder, and master of discipline; aspecting Navamsha Lagna confers Raja Yoga.',
+    karakamsaYogasHi: 'कारकांश में शनि प्रसिद्ध संन्यासी, स्थायी संस्थाओं का निर्माता और राजयोग प्रदाता बनता है।'
+  },
+  Rahu: {
+    planet: 'Rahu',
+    planetHi: 'राहु',
+    soulArchetypeEn: 'The Mystic Seeker: Extraordinary worldly brilliance, revolutionary vision, seeking liberation beyond boundaries.',
+    soulArchetypeHi: 'राहु आत्मकारक (गूढ़ खोजी): लीक से हटकर सोचने वाली क्रांतिकारी आत्मा, सीमांत ज्ञान और रहस्य-दर्शी।',
+    coreDesiresEn: 'Unconventional mastery, international reach, breaking through taboos, and experiencing all realms of cosmic illusion.',
+    coreDesiresHi: 'असाधारण ख्याति, विदेशी संपर्क, समाज के रूढ़िवादी बंधनों को तोड़ना और माया के रहस्यों को भेदना।',
+    karmicChallengeEn: 'Spiritual Innocence vs Deception; vulnerability to fraud, inner restlessness, anxiety, and obsessive worldly thirst.',
+    karmicChallengeHi: 'आध्यात्मिक सरलता बनाम छलावा; धोखे का शिकार होना, आंतरिक बेचैनी और अतृप्त इच्छाएं।',
+    soulLessonEn: 'The soul must cultivate straightforward honesty, develop firm faith over chronic doubt, and realize that external conquest cannot replace inner peace.',
+    soulLessonHi: 'सरल सत्यवादिता, संशयों का नाश कर ईश्वर में अटूट विश्वास और सांसारिक माया से विरक्ति।',
+    karakamsaYogasEn: 'Rahu in 10th to Karakamsa brings planetary fame and esoteric research; in Karakamsa gives machinic and technical wizardry.',
+    karakamsaYogasHi: 'कारकांश से दशम में राहु विश्व-विख्यात शोधकर्ता और यंत्र-विज्ञान का महा-विद्वान बनाता है।'
+  }
+};
+
+export function getAtmakarakaProfile(planetId: string): AtmakarakaProfile {
+  return CLASSICAL_ATMAKARAKA_PROFILES[planetId] ?? CLASSICAL_ATMAKARAKA_PROFILES['Sun'];
+}
+
+export function getPayaProfile(payaKey: 'gold' | 'silver' | 'copper' | 'iron'): PayaProfile {
+  return CLASSICAL_PAYA_PROFILES[payaKey];
+}

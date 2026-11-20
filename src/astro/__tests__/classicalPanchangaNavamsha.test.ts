@@ -14,6 +14,12 @@ import {
   CLASSICAL_GREGORIAN_MONTHS,
   getTithiVaraYoga,
   getHoraReading,
+  CLASSICAL_PAYA_PROFILES,
+  CLASSICAL_108_PADAS,
+  CLASSICAL_ATMAKARAKA_PROFILES,
+  getPayaProfile,
+  getPadaDetail,
+  getAtmakarakaProfile,
 } from '../predictions/classicalPanchangaNavamshaKb';
 
 describe('Classical Panchanga, Seasonality & Prithu Yasas Navamsha Knowledge Base', () => {
@@ -100,5 +106,101 @@ describe('Classical Panchanga, Seasonality & Prithu Yasas Navamsha Knowledge Bas
     expect(report.birthProfile.seasonalDetails?.ayanaEn).toMatch(/Uttarayana|Dakshinayana/);
     expect(report.birthProfile.seasonalDetails?.horaEn).toMatch(/Hora/);
     expect(report.birthProfile.seasonalDetails?.gregorianMonthEn.length).toBeGreaterThan(2);
+  });
+  it('covers all 4 Payas with real-life traits, Sade Sati armor, remedies and crystals', () => {
+    const payaKeys = ['gold', 'silver', 'copper', 'iron'] as const;
+    for (const key of payaKeys) {
+      const p = CLASSICAL_PAYA_PROFILES[key];
+      expect(p).toBeDefined();
+      expect(p.nameEn.length).toBeGreaterThan(4);
+      expect(p.metalEn.length).toBeGreaterThan(3);
+      expect(p.governingPlanetEn.length).toBeGreaterThan(3);
+      expect(p.coreBlessingEn.length).toBeGreaterThan(20);
+      expect(p.realLifeManifestationEn.length).toBeGreaterThan(20);
+      expect(p.vulnerabilityOrCautionEn.length).toBeGreaterThan(15);
+      expect(p.sadeSatiExperienceEn.length).toBeGreaterThan(20);
+      expect(p.sadeSatiBuildsEn.length).toBeGreaterThan(10);
+      expect(p.remediesEn.length).toBeGreaterThanOrEqual(3);
+      expect(p.crystalsEn.length).toBeGreaterThanOrEqual(2);
+    }
+    // Specific crystals
+    expect(CLASSICAL_PAYA_PROFILES.gold.crystalsEn).toContain('Citrine');
+    expect(CLASSICAL_PAYA_PROFILES.silver.crystalsEn).toContain('Moonstone');
+    expect(CLASSICAL_PAYA_PROFILES.copper.crystalsEn).toContain('Carnelian');
+    expect(CLASSICAL_PAYA_PROFILES.iron.crystalsEn).toContain('Black Tourmaline');
+  });
+
+  it('covers all 108 Nakshatra Padas with Elements, Purusharthas and classical Amsa names', () => {
+    expect(Object.keys(CLASSICAL_108_PADAS)).toHaveLength(108);
+
+    for (let nak = 0; nak < 27; nak++) {
+      for (let p = 1; p <= 4; p++) {
+        const detail = getPadaDetail(nak, p);
+        expect(detail).toBeDefined();
+        expect(detail.nakshatraIndex).toBe(nak);
+        expect(detail.pada).toBe(p);
+        expect(detail.amsaName.length).toBeGreaterThan(2);
+        expect(detail.navamshaSignEn.length).toBeGreaterThanOrEqual(3);
+
+        // Cyclic elements: Pada 1=Fire, 2=Earth, 3=Air, 4=Water
+        if (p === 1) expect(detail.element).toBe('Fire');
+        if (p === 2) expect(detail.element).toBe('Earth');
+        if (p === 3) expect(detail.element).toBe('Air');
+        if (p === 4) expect(detail.element).toBe('Water');
+
+        // Cyclic purusharthas: Pada 1=Dharma, 2=Artha, 3=Kama, 4=Moksha
+        if (p === 1) expect(detail.purushartha).toBe('Dharma');
+        if (p === 2) expect(detail.purushartha).toBe('Artha');
+        if (p === 3) expect(detail.purushartha).toBe('Kama');
+        if (p === 4) expect(detail.purushartha).toBe('Moksha');
+      }
+    }
+
+    // Check specific Somayajula Amsa names
+    expect(getPadaDetail(0, 1).amsaName).toBe('Taskara');
+    expect(getPadaDetail(0, 2).amsaName).toBe('Bhoga');
+    expect(getPadaDetail(0, 3).amsaName).toBe('Vilakshana');
+    expect(getPadaDetail(0, 4).amsaName).toBe('Dharma');
+    expect(getPadaDetail(1, 1).amsaName).toBe('Nripa');
+  });
+
+  it('covers all 8 Jaimini Atmakaraka planets with archetypes, soul lessons and Karakamsa yogas', () => {
+    const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu'];
+    for (const pl of planets) {
+      const ak = getAtmakarakaProfile(pl);
+      expect(ak).toBeDefined();
+      expect(ak.soulArchetypeEn.length).toBeGreaterThan(10);
+      expect(ak.coreDesiresEn.length).toBeGreaterThan(15);
+      expect(ak.karmicChallengeEn.length).toBeGreaterThan(15);
+      expect(ak.soulLessonEn.length).toBeGreaterThan(20);
+      expect(ak.karakamsaYogasEn.length).toBeGreaterThan(20);
+    }
+    // Specific soul lesson checks
+    expect(getAtmakarakaProfile('Sun').soulLessonEn).toMatch(/humility|surrender/i);
+    expect(getAtmakarakaProfile('Saturn').soulLessonEn).toMatch(/hardship|serve|duty|suffering/i);
+    expect(getAtmakarakaProfile('Mars').soulLessonEn).toMatch(/defeat|patience/i);
+  });
+
+  it('evaluates Paya, 108 Pada, and Atmakaraka profile integrations in natal chart predictions', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+
+    expect(report.birthProfile.payaDetails).toBeDefined();
+    expect(['gold', 'silver', 'copper', 'iron']).toContain(report.birthProfile.payaDetails?.id);
+
+    expect(report.birthProfile.padaDetails).toBeDefined();
+    expect(report.birthProfile.padaDetails?.amsaName.length).toBeGreaterThan(2);
+
+    expect(report.birthProfile.atmakarakaProfile).toBeDefined();
+    expect(report.birthProfile.atmakarakaProfile?.soulLessonEn.length).toBeGreaterThan(20);
+
+    const payaFactor = report.birthProfile.factors.find(f => f.id === 'paya');
+    expect(payaFactor?.interpretationEn).toContain('Sade Sati Armor');
+
+    const nakPadaFactor = report.birthProfile.factors.find(f => f.id === 'nakshatra-charan');
+    expect(nakPadaFactor?.interpretationEn).toContain('Amsa:');
+
+    const akFactor = report.birthProfile.factors.find(f => f.id === 'atmakaraka');
+    expect(akFactor?.interpretationEn).toContain('King of the Chart');
   });
 });

@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
+  Crown,
+  Gem,
   AlertTriangle,
   Award,
   BookOpen,
@@ -289,6 +291,30 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                 <div style={{ fontSize: '13px', lineHeight: 1.55 }}>
                   {isHi ? nakshatraFactor.interpretationHi : nakshatraFactor.interpretationEn}
                 </div>
+
+                {/* 108 Pada & Amsa Deep Box */}
+                {report.birthProfile.padaDetails && (
+                  <div style={{ marginTop: '10px', padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid rgba(2, 132, 199, 0.25)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0284c7' }}>
+                        {isHi
+                          ? `१०८ नवांश अंश नाम: ${report.birthProfile.padaDetails.amsaName} (${report.birthProfile.padaDetails.navamshaSignHi} नवांश)`
+                          : `108 Navamsha Amsa: ${report.birthProfile.padaDetails.amsaName} (${report.birthProfile.padaDetails.navamshaSignEn} Navamsha)`}
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <span className="badge" style={{ fontSize: '10.5px', background: 'rgba(2, 132, 199, 0.1)', color: '#0284c7' }}>
+                          {isHi ? `तत्त्व: ${report.birthProfile.padaDetails.elementHi}` : `Element: ${report.birthProfile.padaDetails.element}`}
+                        </span>
+                        <span className="badge" style={{ fontSize: '10.5px', background: 'rgba(2, 132, 199, 0.1)', color: '#0284c7' }}>
+                          {isHi ? `पुरुषार्थ: ${report.birthProfile.padaDetails.purusharthaHi}` : `Aim: ${report.birthProfile.padaDetails.purushartha}`}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      {isHi ? report.birthProfile.padaDetails.amsaSignificanceHi : report.birthProfile.padaDetails.amsaSignificanceEn}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -490,23 +516,149 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
         {/* TAB 4: AVAKHADA ELEMENTS & SPIRITUAL PILLARS */}
         {birthProfileTab === 'avakhada' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '8px' }}>
-              {report.birthProfile.factors
-                .filter((f) => ['varna', 'vashya', 'yoni', 'gana', 'nadi', 'nadi-pad', 'tattva', 'paya', 'naam-akshar', 'atmakaraka', 'ishta-dev'].includes(f.id))
-                .map((factor) => (
-                  <div key={factor.id} style={{ padding: '9px 11px', borderRadius: '7px', background: 'var(--bg-subtle)', minWidth: 0 }}>
-                    <div className="muted" style={{ fontSize: '11px', marginBottom: '3px' }}>
-                      {isHi ? factor.labelHi : factor.labelEn}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Atmakaraka & Karakamsa Deep Card */}
+            {report.birthProfile.atmakarakaProfile && (
+              <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #9333ea' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Crown size={16} style={{ color: '#9333ea' }} />
+                    <span style={{ fontWeight: 700, fontSize: '14px' }}>
+                      {isHi ? 'जैमिनी आत्मकारक एवं कारकांश योग (Soul Signifier & Karakamsa)' : 'Jaimini Atmakaraka & Karakamsa (King of Chart)'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'rgba(147, 51, 234, 0.12)', color: '#9333ea', fontWeight: 650 }}>
+                      {report.birthProfile.atmakarakaProfile.planet}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(147, 51, 234, 0.12)', color: '#9333ea', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.atmakarakaProfile.soulArchetypeHi : report.birthProfile.atmakarakaProfile.soulArchetypeEn}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '13px', lineHeight: 1.55, marginBottom: '10px' }}>
+                  <strong>{isHi ? 'मूल आत्म-अभिलाषा: ' : 'Core Desires: '}</strong>
+                  <span>{isHi ? report.birthProfile.atmakarakaProfile.coreDesiresHi : report.birthProfile.atmakarakaProfile.coreDesiresEn}</span>
+                </div>
+
+                {/* Soul Lesson & Karmic Challenge Box */}
+                <div style={{ padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid rgba(147, 51, 234, 0.25)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#9333ea', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
+                    {isHi ? 'आत्म-संस्कार व जीवन-पाठ (Divine Soul Lesson)' : 'Divine Soul Lesson & Assignment'}
+                  </div>
+                  <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text)', lineHeight: 1.5 }}>
+                    {isHi ? report.birthProfile.atmakarakaProfile.soulLessonHi : report.birthProfile.atmakarakaProfile.soulLessonEn}
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px', lineHeight: 1.45 }}>
+                    <strong>{isHi ? 'कर्म-चुनौती: ' : 'Karmic Challenge: '}</strong>
+                    <span>{isHi ? report.birthProfile.atmakarakaProfile.karmicChallengeHi : report.birthProfile.atmakarakaProfile.karmicChallengeEn}</span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                  <strong>{isHi ? 'कारकांश एवं इष्ट देव संकेत: ' : 'Karakamsa & Ishta Devata Alignment: '}</strong>
+                  <span>{isHi ? report.birthProfile.atmakarakaProfile.karakamsaYogasHi : report.birthProfile.atmakarakaProfile.karakamsaYogasEn}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Paya Deep Classical Card */}
+            {report.birthProfile.payaDetails && (
+              <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', borderLeft: '4px solid #d97706' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Shield size={16} style={{ color: '#d97706' }} />
+                    <span style={{ fontWeight: 700, fontSize: '14px' }}>
+                      {isHi ? 'पाया फलादेश, साढ़ेसाती कवच एवं रत्न' : 'Paya Profile, Sade Sati Armor & Crystals'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'rgba(217, 119, 6, 0.12)', color: '#d97706', fontWeight: 650 }}>
+                      {isHi ? report.birthProfile.payaDetails.nameHi : report.birthProfile.payaDetails.nameEn}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(217, 119, 6, 0.12)', color: '#d97706', fontWeight: 650 }}>
+                      {isHi ? `${report.birthProfile.payaDetails.metalHi} · ${report.birthProfile.payaDetails.governingPlanetHi}` : `${report.birthProfile.payaDetails.metalEn} · ${report.birthProfile.payaDetails.governingPlanetEn}`}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '13px', lineHeight: 1.55, marginBottom: '8px' }}>
+                  <strong>{isHi ? 'दैवीय वरदान: ' : 'Divine Blessing: '}</strong>
+                  <span>{isHi ? report.birthProfile.payaDetails.coreBlessingHi : report.birthProfile.payaDetails.coreBlessingEn}</span>
+                </div>
+
+                <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '10px' }}>
+                  <strong>{isHi ? 'वास्तविक प्रकटीकरण: ' : 'Real-Life Manifestation: '}</strong>
+                  <span>{isHi ? report.birthProfile.payaDetails.realLifeManifestationHi : report.birthProfile.payaDetails.realLifeManifestationEn}</span>
+                </div>
+
+                {/* Sade Sati Shield & Soul Fortitude Box */}
+                <div style={{ padding: '10px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', border: '1px solid rgba(217, 119, 6, 0.25)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#d97706', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
+                    {isHi ? 'साढ़ेसाती कवच व आत्म-परिमार्जन (Sade Sati Fortitude)' : 'Sade Sati Armor & Soul Refinement'}
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? report.birthProfile.payaDetails.sadeSatiExperienceHi : report.birthProfile.payaDetails.sadeSatiExperienceEn}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    <strong>{isHi ? 'शनि देव क्या गढ़ते हैं: ' : 'What Saturn Builds: '}</strong>
+                    <span>{isHi ? report.birthProfile.payaDetails.sadeSatiBuildsHi : report.birthProfile.payaDetails.sadeSatiBuildsEn}</span>
+                  </div>
+                </div>
+
+                {/* Remedies & Crystals */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '8px', marginTop: '6px' }}>
+                  <div style={{ padding: '8px 10px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#d97706', marginBottom: '3px' }}>
+                      {isHi ? 'शास्त्रीय परिहार (Classical Remedies)' : 'Classical Remedies'}
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: 650, lineHeight: 1.4, overflowWrap: 'anywhere', color: 'var(--accent)' }}>
-                      {isHi ? factor.valueHi : factor.valueEn}
+                    <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', lineHeight: 1.45 }}>
+                      {(isHi ? report.birthProfile.payaDetails.remediesHi : report.birthProfile.payaDetails.remediesEn).map((rem, rIdx) => (
+                        <li key={rIdx}>{rem}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div style={{ padding: '8px 10px', background: 'var(--bg-elevated)', borderRadius: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 700, color: '#d97706', marginBottom: '3px' }}>
+                      <Gem size={13} />
+                      <span>{isHi ? 'अनुकूल रत्न व क्रिस्टल (Crystals)' : 'Aligned Crystals & Frequency Matches'}</span>
                     </div>
-                    <div style={{ fontSize: '12px', lineHeight: 1.5, marginTop: '6px' }}>
-                      {isHi ? factor.interpretationHi : factor.interpretationEn}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                      {(isHi ? report.birthProfile.payaDetails.crystalsHi : report.birthProfile.payaDetails.crystalsEn).map((cryst, cIdx) => (
+                        <span key={cIdx} className="badge" style={{ fontSize: '10.5px', background: 'rgba(217, 119, 6, 0.12)', color: '#d97706' }}>
+                          {cryst}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                ))}
+                </div>
+              </div>
+            )}
+
+            {/* Avakhada Elements 8-Kuta Matrix */}
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                {isHi ? 'अवकहड़ा अष्टकूट एवं शारीरिक-मानसिक तत्त्व' : 'Avakhada Chakra & Biological Constituents'}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '8px' }}>
+                {report.birthProfile.factors
+                  .filter((f) => ['varna', 'vashya', 'yoni', 'gana', 'nadi', 'nadi-pad', 'tattva', 'naam-akshar', 'ishta-dev'].includes(f.id))
+                  .map((factor) => (
+                    <div key={factor.id} style={{ padding: '9px 11px', borderRadius: '7px', background: 'var(--bg-subtle)', minWidth: 0 }}>
+                      <div className="muted" style={{ fontSize: '11px', marginBottom: '3px' }}>
+                        {isHi ? factor.labelHi : factor.labelEn}
+                      </div>
+                      <div style={{ fontSize: '13px', fontWeight: 650, lineHeight: 1.4, overflowWrap: 'anywhere', color: 'var(--accent)' }}>
+                        {isHi ? factor.valueHi : factor.valueEn}
+                      </div>
+                      <div style={{ fontSize: '12px', lineHeight: 1.5, marginTop: '6px' }}>
+                        {isHi ? factor.interpretationHi : factor.interpretationEn}
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         )}

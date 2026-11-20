@@ -10,10 +10,17 @@ import {
   CLASSICAL_KARANAS,
   CLASSICAL_NAKSHATRAS,
   CLASSICAL_GREGORIAN_MONTHS,
+  CLASSICAL_PAYA_PROFILES,
+  CLASSICAL_ATMAKARAKA_PROFILES,
   getTithiVaraYoga,
   getHoraReading,
+  getPadaDetail,
+  getAtmakarakaProfile,
   type NavamshaLagnaProfile,
   type TithiProfile,
+  type PayaProfile,
+  type NakshatraPadaDetail,
+  type AtmakarakaProfile,
 } from './classicalPanchangaNavamshaKb';
 import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { NAKSHATRAS, SIGNS } from '../constants';
@@ -52,6 +59,9 @@ export interface GeneralBirthProfile {
   factors: GeneralBirthFactor[];
   summaryEn: string;
   summaryHi: string;
+  payaDetails?: PayaProfile;
+  padaDetails?: NakshatraPadaDetail;
+  atmakarakaProfile?: AtmakarakaProfile;
   navamshaLagna?: {
     signIndex: number;
     signNameEn: string;
@@ -603,16 +613,21 @@ function interpretBirthFactor(
 
     case 'nakshatra-charan': {
       const nakIndex = chart.panchang?.nakshatra?.index ?? moon?.nakshatraIndex ?? 0;
+      const padaNum = Math.max(1, Math.min(4, chart.panchang?.nakshatra?.pada ?? moon?.pada ?? 1));
+      const padaDetail = getPadaDetail(nakIndex, padaNum);
       const nakProf = CLASSICAL_NAKSHATRAS[nakIndex];
+      const amsaDescEn = padaDetail ? ` [Amsa: ${padaDetail.amsaName} in ${padaDetail.navamshaSignEn} Navamsha · Element: ${padaDetail.element} · Aim: ${padaDetail.purushartha} - ${padaDetail.amsaSignificanceEn}]` : '';
+      const amsaDescHi = padaDetail ? ` [अंश नाम: ${padaDetail.amsaName} (${padaDetail.navamshaSignHi} नवांश) · तत्त्व: ${padaDetail.elementHi} · पुरुषार्थ: ${padaDetail.purusharthaHi} - ${padaDetail.amsaSignificanceHi}]` : '';
+
       if (nakProf) {
         return {
-          en: `${valueEn}: Appearance: ${nakProf.physicalFeaturesEn} Personality: ${nakProf.psychologicalTraitsEn}${nakProf.lifeTrajectoryEn ? ` Career & Life: ${nakProf.lifeTrajectoryEn}` : ''}`,
-          hi: `${valueHi}: शारीरिक लक्षण: ${nakProf.physicalFeaturesHi} स्वभाव व व्यक्तित्व: ${nakProf.psychologicalTraitsHi}${nakProf.lifeTrajectoryHi ? ` कार्यक्षेत्र व प्रगति: ${nakProf.lifeTrajectoryHi}` : ''}`,
+          en: `${valueEn}${amsaDescEn}: Appearance: ${nakProf.physicalFeaturesEn} Personality: ${nakProf.psychologicalTraitsEn}${nakProf.lifeTrajectoryEn ? ` Life Trajectory: ${nakProf.lifeTrajectoryEn}` : ''}`,
+          hi: `${valueHi}${amsaDescHi}: शारीरिक लक्षण: ${nakProf.physicalFeaturesHi} व्यक्तित्व: ${nakProf.psychologicalTraitsHi}${nakProf.lifeTrajectoryHi ? ` जीवन-दिशा: ${nakProf.lifeTrajectoryHi}` : ''}`,
         };
       }
       return {
-        en: `Nakshatra Pada ${valueEn}: Sets specific subconscious tendencies and mental orientation.`,
-        hi: `नक्षत्र चरण ${valueHi}: मानसिक प्रवृत्तियों और चेतना की दिशा को सूक्ष्म रूप से निर्धारित करता है।`,
+        en: `Nakshatra Pada ${valueEn}${amsaDescEn}: Refines subconscious motivation and builds the D9 Navamsha degree.`,
+        hi: `नक्षत्र चरण ${valueHi}${amsaDescHi}: मानसिक प्रेरणा और D9 नवांश की स्थिति का सूक्ष्म निर्धारण करता है।`,
       };
     }
 
@@ -658,11 +673,21 @@ function interpretBirthFactor(
         hi: `तत्त्व (${valueHi}): मानसिक चेतना का मूल तत्त्व—अग्नि पराक्रम देती है, पृथ्वी स्थिरता, वायु बौद्धिक संवेदनशीलता, और जल सहज अंतर्दृष्टि।`,
       };
 
-    case 'paya':
+    case 'paya': {
+      const mHouse = moon?.rasiHouseNumber ?? (moon ? ((moon.signIndex - chart.ascendant.signIndex + 12) % 12) + 1 : 1);
+      const payaKey = mHouse === 1 || mHouse === 6 || mHouse === 11 ? 'gold' : mHouse === 2 || mHouse === 5 || mHouse === 9 ? 'silver' : mHouse === 3 || mHouse === 7 || mHouse === 10 ? 'copper' : 'iron';
+      const payaProf = CLASSICAL_PAYA_PROFILES[payaKey];
+      if (payaProf) {
+        return {
+          en: `${payaProf.nameEn} [${payaProf.metalEn} · ${payaProf.governingPlanetEn}]: ${payaProf.coreBlessingEn} Real Life: ${payaProf.realLifeManifestationEn} Sade Sati Armor: ${payaProf.sadeSatiExperienceEn} (Builds: ${payaProf.sadeSatiBuildsEn}). Crystals: ${payaProf.crystalsEn.join(', ')}.`,
+          hi: `${payaProf.nameHi} [${payaProf.metalHi} · ${payaProf.governingPlanetHi}]: ${payaProf.coreBlessingHi} वास्तविक स्वरूप: ${payaProf.realLifeManifestationHi} साढ़ेसाती कवच: ${payaProf.sadeSatiExperienceHi} (फल: ${payaProf.sadeSatiBuildsHi})। रत्न/क्रिस्टल: ${payaProf.crystalsHi.join(', ')}।`,
+        };
+      }
       return {
-        en: `Paya (${valueEn}): North-Indian classical matrix based on Moon’s house from Lagna, indicating childhood blessings and baseline fortune.`,
-        hi: `पाया (${valueHi}): लग्न से चंद्रमा की भाव-स्थिति पर आधारित उत्तर-भारतीय पद्धति, जो जीवनारंभ के भाग्य और पारिवारिक संबल को दर्शाती है।`,
+        en: `Paya (${valueEn}): Classical indicator of baseline biological vitality, childhood environment, and energetic armor.`,
+        hi: `पाया (${valueHi}): जीवनारंभ की परिस्थितियों, शारीरिक ऊर्जा और साढ़ेसाती के प्रभाव-कवच का मुख्य शास्त्रीय आधार है।`,
       };
+    }
 
     case 'naam-akshar':
       return {
@@ -670,11 +695,15 @@ function interpretBirthFactor(
         hi: `जन्माक्षर (${valueHi}): नक्षत्र चरण से निर्धारित मंगल ध्वनि, जो नामकरण और आत्मिक आभा को बल प्रदान करती है।`,
       };
 
-    case 'atmakaraka':
+    case 'atmakaraka': {
+      const karakasList = computeCharaKarakas(chart);
+      const soulPlanet = karakasList.find((k) => k.role === 'AK')?.planet ?? 'Sun';
+      const akProf = getAtmakarakaProfile(soulPlanet);
       return {
-        en: `${valueEn} is the Jaimini Atmakaraka (Soul Signifier), indicating core karmic lessons, ethical mission, and path of self-realization.`,
-        hi: `${valueHi} जैमिनी आत्मकारक है, जो आत्मा के मुख्य कर्म-संस्कार, जीवन-उद्देश्य और आत्म-साक्षात्कार के मार्ग को उजागर करता है।`,
+        en: `${valueEn} is the Jaimini Atmakaraka (King of the Chart & Soul Indicator). Archetype: ${akProf.soulArchetypeEn} Karmic Challenge: ${akProf.karmicChallengeEn} Soul Lesson: ${akProf.soulLessonEn} Karakamsa Alignment: ${akProf.karakamsaYogasEn}`,
+        hi: `${valueHi} जैमिनी आत्मकारक (कुंडली का सम्राट व आत्मिक संकेतक) है। मूल स्वरूप: ${akProf.soulArchetypeHi} कर्म-चुनौती: ${akProf.karmicChallengeHi} आत्म-संस्कार: ${akProf.soulLessonHi} कारकांश प्रभाव: ${akProf.karakamsaYogasHi}`,
       };
+    }
 
     case 'ishta-dev':
       return {
@@ -896,7 +925,13 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
     gregorianReadingHi: gregMonthProf.archetypeHi,
   };
 
-  return { factors: interpretedFactors, summaryEn, summaryHi, navamshaLagna, tithiDetails, seasonalDetails };
+  // Compute Paya, Pada, and Atmakaraka Profiles
+  const payaKey = moonHouse === 1 || moonHouse === 6 || moonHouse === 11 ? 'gold' : moonHouse === 2 || moonHouse === 5 || moonHouse === 9 ? 'silver' : moonHouse === 3 || moonHouse === 7 || moonHouse === 10 ? 'copper' : 'iron';
+  const payaDetails = CLASSICAL_PAYA_PROFILES[payaKey];
+  const padaDetails = getPadaDetail(nakInfo?.index ?? 0, pada);
+  const atmakarakaProfile = ak ? getAtmakarakaProfile(ak.planet) : undefined;
+
+  return { factors: interpretedFactors, summaryEn, summaryHi, payaDetails, padaDetails, atmakarakaProfile, navamshaLagna, tithiDetails, seasonalDetails };
 }
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
