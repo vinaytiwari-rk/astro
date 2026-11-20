@@ -197,6 +197,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     onNavigate(view, sub);
   };
 
+  const isMatchingActive = currentView === 'marriage-matching' || currentView === 'kundali-milan';
   const isTransitsActive = currentView === 'sade-sati' || currentView === 'dual-transit' || currentView === 'transit-calendar';
   const isAdvancedActive = [
     'numerology',
@@ -467,6 +468,59 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('predictions', 'yogaWise')}>
                     <strong>{isHi ? 'योगवार फलादेश' : 'Yoga-wise Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग' : 'Raja, Dhana, Mahapurusha & Classical Yogas'}</span>
+                  </button>
+                </div>
+              )}
+            </li>
+
+            {/* 4. Kundali Milan & Vivaha — Dedicated Top-Level Menu */}
+            <li
+              className="oj-nav-item oj-dropdown-parent"
+              onMouseEnter={(e) => handleMouseEnter('milan-menu', e)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                type="button"
+                className={`oj-nav-link-btn oj-nav-dropdown-btn ${openDropdown === 'milan-menu' ? 'is-open' : ''} ${isMatchingActive ? 'is-current' : ''}`}
+                onClick={(e) => toggleDropdown('milan-menu', e)}
+                aria-expanded={openDropdown === 'milan-menu'}
+                aria-haspopup="true"
+              >
+                <Heart size={13} />
+                <span>{isHi ? 'कुण्डली मिलान व विवाह' : 'Kundali Milan & Marriage'}</span>
+                <ChevronDown size={13} className="oj-chevron" />
+              </button>
+              {openDropdown === 'milan-menu' && (
+                <div
+                  className="oj-dropdown-menu"
+                  role="menu"
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
+                  style={getDropdownMenuInlineStyle()}
+                >
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'ashtakoota')}>
+                    <strong>{isHi ? 'अष्टकूट ३६ गुण मिलान' : 'Ashtakoota 36 Gunas'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'वर्ण, वश्य, तारा, योनि, ग्रहमैत्री, गण, भकूट, नाड़ी' : 'Complete 36-Point Vedic Guna Milan'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'dashakoota')}>
+                    <strong>{isHi ? 'दक्षिण भारतीय दशकूट (१० कूट)' : 'Dashakoota (10 Poruthams)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'दीना, गणा, माहेन्द्रा, रज्जु व वेध सुरक्षा कूट' : 'Dina, Gana, Mahendra, Rajju & Vedha Shield'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'dosha-parihara')}>
+                    <strong>{isHi ? 'दोष विश्लेषण एवं १६ मांगलिक परिहार' : '16 Manglik Bhanga & Pariharas'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '१६ मांगलिक नियम, भकूट परिहार व नाड़ी दोष निवारण' : 'Classical Exceptions, Bhakoot & Nadi Pariharas'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'tribala-pooja')}>
+                    <strong>{isHi ? 'त्रिबल शुद्धि, लाल पूजा व पीली पूजा' : 'Tribala Shuddhi & Puja Protocols'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'वर सूर्य बल, कन्या गुरु बल, चंद्र बल व संपूर्ण पूजा विधान' : 'Groom Sun, Bride Jupiter, Moon & Remedial Pujas'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'muhurta')}>
+                    <strong>{isHi ? 'शास्त्रसम्मत विवाह, सगाई व तिलक मुहूर्त' : 'Authentic Vivah, Sagai & Tilak Muhurta'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'खरमास-चातुर्मास मुक्त, गोचर व दशा समर्थित शुद्ध मुहूर्त' : 'Pure ephemeris calendar free from prohibited windows'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('marriage-matching', 'synastry-d9')}>
+                    <strong>{isHi ? 'द्वादश भाव, D9 नवांश व संतान स्फुट' : 'Synastry, D9 Navamsha & Progeny'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'बीज स्फुट, क्षेत्र स्फुट व पारस्परिक भाव सादृश्य' : 'Beeja & Kshetra Sphuta, Navamsha Overlay'}</span>
                   </button>
                 </div>
               )}

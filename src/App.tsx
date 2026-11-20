@@ -7,7 +7,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { OnlineJyotishHomePortal } from './components/OnlineJyotishHomePortal';
 import { OnlineJyotishVedicHoroscopeView } from './components/onlinejyotish/OnlineJyotishVedicHoroscopeView';
 import { OnlineJyotishKpView } from './components/onlinejyotish/OnlineJyotishKpView';
-import { OnlineJyotishMatchingView } from './components/onlinejyotish/OnlineJyotishMatchingView';
+import { AdvanceMarriageMatchingView, type MarriageSubTab } from './components/marriage/AdvanceMarriageMatchingView';
 import { OnlineJyotishPanchangView } from './components/onlinejyotish/OnlineJyotishPanchangView';
 
 import { OnlineJyotishFestivalsView } from './components/onlinejyotish/OnlineJyotishFestivalsView';
@@ -154,6 +154,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<string>('home');
   const [workstationSubTab, setWorkstationSubTab] = useState<string>('1');
   const [predictionsSubTab, setPredictionsSubTab] = useState<string>('deep_life');
+  const [marriageSubTab, setMarriageSubTab] = useState<MarriageSubTab>('ashtakoota');
 
   const [language, setLanguage] = useState<'en' | 'hi'>(() => {
     try {
@@ -246,8 +247,11 @@ export function App() {
       target = sub;
     } else if (view === 'kp' || view === 'kp-horoscope') {
       target = 'kp-horoscope';
-    } else if (view === 'matching' || view === 'marriage-matching') {
+    } else if (view === 'matching' || view === 'marriage-matching' || view === 'kundali-milan') {
       target = 'marriage-matching';
+      if (sub && ['ashtakoota', 'dashakoota', 'dosha-parihara', 'tribala-pooja', 'muhurta', 'synastry-d9'].includes(sub)) {
+        setMarriageSubTab(sub as MarriageSubTab);
+      }
     } else if (view === 'panchang' || view === 'daily-panchanga' || view === 'daily-panchang') {
       target = 'daily-panchanga';
     } else if (view === 'sambhavit' || view === 'sambhavit-falkathan' || view === 'falkathan' || view === 'general-prediction') {
@@ -378,8 +382,11 @@ export function App() {
             )}
 
             {currentView === 'marriage-matching' && (
-              <OnlineJyotishMatchingView
+              <AdvanceMarriageMatchingView
                 settings={settings}
+                profiles={profiles}
+                activeProfileId={activeId}
+                initialSubTab={marriageSubTab}
                 onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
                 onNavigate={navigateTo}
               />

@@ -523,20 +523,20 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             {/* Card 3: Marriage Matching */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'विवाह मिलान' : 'Match Making'}</span>
+                <span className="oj-card-tag">{isHi ? 'विवाह मिलान व मुहूर्त' : 'Marriage Matching & Muhurta'}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'कुंडली मिलान (Marriage Matching)' : 'Marriage Matching'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'उन्नत कुण्डली मिलान व विवाह मुहूर्त' : 'Advance Kundali Milan & Vivaha Muhurta'}</h3>
               <p className="oj-card-text">
                 {isHi
-                  ? 'अष्टकूट गुण मिलान (36 गुण), दक्षिण भारतीय दश कूट (10 Poruthams) एवं मांगलिक दोष भंग परिहार के साथ दो कुंडलियों की तुलना करें।'
-                  : 'Compare two birth charts using Ashtakoota Guna Milan, South Indian Porutham and other traditional compatibility factors.'}
+                  ? 'अष्टकूट ३६ गुण, दक्षिण भारतीय दशकूट (१० कूट), १६ मांगलिक परिहार नियम, त्रिबल शुद्धि (सूर्य/गुरु/चंद्र बल), संपूर्ण लाल व पीली पूजा विधान एवं शुद्ध विवाह, सगाई व तिलक मुहूर्त।'
+                  : 'Ashtakoota 36 Gunas, 10 South Indian Poruthams, 16 Classical Manglik Bhanga rules, Tribala Shuddhi (Lal & Peeli Puja protocols), and authentic ceremony Muhurtas.'}
               </p>
               <button
                 type="button"
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('marriage-matching')}
               >
-                <span>{isHi ? 'कुंडली मिलान करें →' : 'Compare horoscopes →'}</span>
+                <span>{isHi ? 'कुण्डली मिलान व मुहूर्त देखें →' : 'Advance Marriage Matching & Muhurta →'}</span>
               </button>
             </article>
 
