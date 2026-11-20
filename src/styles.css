@@ -8385,3 +8385,95 @@ h1, h2, h3, h4, .serif-heading {
   background: rgba(148, 163, 184, 0.05);
   opacity: 0.75;
 }
+
+/* Advance Marriage Matching Additional Classical Modules (Tab 4 & Tab 6) */
+.amm-synastry-table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  margin: 16px 0;
+  background: var(--bg-card, #ffffff);
+}
+
+.amm-synastry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 720px;
+}
+
+.amm-synastry-table th {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text, #1e293b);
+  padding: 10px 14px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  text-align: left;
+}
+
+.amm-synastry-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+  vertical-align: top;
+  color: var(--text, #1e293b);
+}
+
+.amm-synastry-table tr:last-child td {
+  border-bottom: none;
+}
+
+.amm-synastry-table tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.amm-synastry-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.amm-synastry-badge.badge-strong {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.amm-synastry-badge.badge-balanced {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.amm-synastry-badge.badge-caution {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.amm-classical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.amm-classical-card {
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.amm-callout-box {
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  background: rgba(217, 119, 6, 0.06);
+  border-left: 5px solid #d97706;
+}

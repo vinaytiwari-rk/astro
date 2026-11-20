@@ -36,6 +36,7 @@ import { AdvancedTechniquesPanel } from './predictions/AdvancedTechniquesPanel';
 import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { ActiveYogasAndYutiPanel } from './predictions/ActiveYogasAndYutiPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
+import { AscendantWisePanel } from './predictions/AscendantWisePanel';
 import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
@@ -48,6 +49,7 @@ interface PredictionsViewProps {
 }
 
 export type PredSubTab =
+  | 'ascendantWise'
   | 'twelve_planets'
   | 'active_yogas_yuti'
   | 'yutiWise'
@@ -76,7 +78,7 @@ function normalizeSubTab(id?: string): PredSubTab {
   if (id === 'dashaWise' || id === 'dasha' || id === 'dashawise') return 'dashaWise';
   if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
   if (id === 'houseWise' || id === 'house' || id === 'housewise' || id === 'bhavas_12' || id === 'bhavas') return 'houseWise';
-  if (id === 'twelve_planets' || id === 'planet' || id === 'planets' || id === 'graha') return 'twelve_planets';
+  if (id === 'ascendantWise' || id === 'ascendant' || id === 'lagnaWise' || id === 'lagna' || id === 'twelve_planets' || id === 'planet' || id === 'planets' || id === 'graha') return 'ascendantWise';
   if (id === 'planetInNakshatra' || id === 'nakshatra' || id === 'nakshatras') return 'planetInNakshatra';
   if (id === 'planetInSign' || id === 'planetinsign' || id === 'rasi' || id === 'rashi' || id === 'sign') return 'planetInSign';
   if (id === 'yutiWise' || id === 'yuti' || id === 'conjunction') return 'yutiWise';
@@ -160,7 +162,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
     { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
-    { id: 'twelve_planets', labelEn: 'Planet-wise Prediction', labelHi: 'ग्रहवार फलादेश' },
+    { id: 'ascendantWise', labelEn: 'Ascendant-wise Prediction', labelHi: 'लग्नवार फलादेश' },
     { id: 'planetInNakshatra', labelEn: 'Nakshatra-wise Prediction', labelHi: 'नक्षत्रवार फलादेश' },
     { id: 'planetInSign', labelEn: 'Sign-wise Prediction', labelHi: 'राशिवार फलादेश' },
     { id: 'yutiWise', labelEn: 'Yuti (Conjunction) Prediction', labelHi: 'युति फलादेश' },
@@ -242,8 +244,8 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
         <ParamayusLockBanner status={report.paramayus} />
       ) : (
         <div className="view-stack">
-          {currentTab === 'twelve_planets' && (
-            <TwelvePlanetsPanel chart={chart} />
+          {(currentTab === 'ascendantWise' || currentTab === 'twelve_planets') && (
+            <AscendantWisePanel chart={chart} />
           )}
 
           {(currentTab === 'active_yogas_yuti' || currentTab === 'yutiWise' || currentTab === 'yogaWise') && (

@@ -124,9 +124,9 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(longevity.titleEn).not.toMatch(/lifespan|longevity|maraka/i);
     expect(longevity.verdictEn).toMatch(/cannot reliably estimate lifespan/i);
     expect(longevity.timingEn).toMatch(/No health- or lifespan-related timing/i);
-    expect(career.verdictEn).toMatch(/cannot determine whether employment or business will certainly succeed/i);
-    expect(foreign.verdictEn).toMatch(/does not guarantee travel/i);
-    expect(spirituality.verdictEn).toMatch(/cannot guarantee moksha or samadhi/i);
+    expect(career.verdictEn).toMatch(/tenth house and its ruler govern career/i);
+    expect(foreign.verdictEn).toMatch(/twelfth house is the primary classical indicator/i);
+    expect(spirituality.verdictEn).toMatch(/twelfth house and Ketu form the core foundation/i);
   });
 
   it('correctly handles chart with severe 7th house delay for adult native', () => {
@@ -154,7 +154,7 @@ describe('AV Astro Vibe — Holistic Remedies & Classical Prediction Rigor', () 
     expect(report.children.conceptionModeEn).toMatch(/No conception method/i);
     expect(report.career.govtVsPrivateEn).toMatch(/cannot reliably determine/i);
     expect(report.career.suitableProfessionsEn[0]).toMatch(/no profession is guaranteed/i);
-    expect(report.career.jobVsBusinessEn).toMatch(/cannot determine whether employment or business/i);
+    expect(report.career.jobVsBusinessEn).toMatch(/tenth house and its ruler govern career/i);
     expect(report.mentalHealth.conditionEn).toMatch(/not a mental-health assessment/i);
     expect(report.addictions.vulnerabilitiesEn[0]).toMatch(/No psychological vulnerability/i);
     expect(report.children.progenyCountEn).toMatch(/No prediction of number or sex/i);

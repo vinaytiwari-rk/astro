@@ -11,6 +11,7 @@ import {
   computeMasterMarriageMuhurtaReport,
   evaluateTribalaOnDate,
 } from '../marriageMuhurtaEngine';
+import { generateAscendantPrediction } from '../predictions/ascendantWise';
 import type { BirthInput, CalcSettings } from '../types';
 
 describe('Advance Marriage Matching & Authentic Muhurta Suite', () => {
@@ -104,16 +105,39 @@ describe('Advance Marriage Matching & Authentic Muhurta Suite', () => {
     expect(nadiParihara.verdictHi.length).toBeGreaterThan(0);
   });
 
-  it('computes Beeja Sphuta & Kshetra Sphuta and Synastry matching', () => {
+  it('computes Beeja Sphuta & Kshetra Sphuta, Synastry, Dasha Sandhi, Stri Jataka, Upapada, and Ayushya Safety', () => {
     const report = computeAdvanceMarriageMatching(groomChart, brideChart);
 
     expect(report.beejaKshetra).toBeDefined();
     expect(report.beejaKshetra.partnerABeeja).toBeDefined();
     expect(report.beejaKshetra.partnerBKshetra).toBeDefined();
-    expect(report.synastryHouses.length).toBeGreaterThan(0);
+    expect(report.synastryHouses).toHaveLength(12);
     expect(report.synastrySigns.length).toBeGreaterThan(0);
     expect(report.totalEffectiveGunas).toBeGreaterThanOrEqual(0);
     expect(report.totalEffectiveGunas).toBeLessThanOrEqual(36);
+
+    // Dasha Sandhi
+    expect(report.dashaSandhi).toBeDefined();
+    expect(['Safe', 'Caution']).toContain(report.dashaSandhi.status);
+    expect(report.dashaSandhi.verdictHi.length).toBeGreaterThan(0);
+
+    // Stri Jataka
+    expect(report.striJataka).toBeDefined();
+    expect(report.striJataka.mangalyaBhavaScore).toBeGreaterThanOrEqual(0);
+    expect(report.striJataka.mangalyaBhavaScore).toBeLessThanOrEqual(100);
+    expect(typeof report.striJataka.hasVishaKanyaYoga).toBe('boolean');
+    expect(typeof report.striJataka.hasVaidhavyaYoga).toBe('boolean');
+
+    // Upapada Lagna
+    expect(report.upapadaSynastry).toBeDefined();
+    expect(report.upapadaSynastry.groomULSign).toBeGreaterThanOrEqual(0);
+    expect(report.upapadaSynastry.brideULSign).toBeGreaterThanOrEqual(0);
+    expect(report.upapadaSynastry.score).toBeGreaterThanOrEqual(0);
+
+    // Ayushya Safety
+    expect(report.ayushyaSafety).toBeDefined();
+    expect(typeof report.ayushyaSafety.safetyPassed).toBe('boolean');
+    expect(report.ayushyaSafety.verdictHi.length).toBeGreaterThan(0);
   });
 
   it('computes Tribala Shuddhi and triggers Lal Pooja / Peeli Pooja / Safed Pooja when needed', () => {
@@ -169,6 +193,26 @@ describe('Advance Marriage Matching & Authentic Muhurta Suite', () => {
     for (const t of muhurtaCalendar.tilakMuhurtas) {
       expect(t.dateDmy).toMatch(dmyRegex);
       expect(t.ceremonyType).toBe('Tilak');
+    }
+  });
+
+  it('generates rich Ascendant-Wise predictions for all 12 Lagnas with native chart synthesis', () => {
+    for (let signIdx = 0; signIdx < 12; signIdx++) {
+      const pred = generateAscendantPrediction(groomChart, signIdx);
+      expect(pred.selectedLagnaIndex).toBe(signIdx);
+      expect(pred.profile.signIndex).toBe(signIdx);
+      expect(pred.profile.nameHi.length).toBeGreaterThan(0);
+      expect(pred.profile.nameEn.length).toBeGreaterThan(0);
+      expect(pred.profile.personalityHi.length).toBeGreaterThan(0);
+      expect(pred.profile.dhanaAndProsperityHi.length).toBeGreaterThan(0);
+      expect(pred.profile.marriageAndSpouseHi.length).toBeGreaterThan(0);
+      expect(pred.profile.careerAndProfessionHi.length).toBeGreaterThan(0);
+      expect(pred.profile.healthAndMilestonesHi.length).toBeGreaterThan(0);
+      expect(pred.profile.milestoneAges.length).toBeGreaterThan(0);
+      expect(pred.profile.functionalBeneficsHi.length).toBeGreaterThan(0);
+      expect(pred.profile.functionalMaleficsHi.length).toBeGreaterThan(0);
+      expect(pred.profile.remediesAndDeityHi.length).toBeGreaterThan(0);
+      expect(pred.natalSynthesisHi.length).toBeGreaterThan(0);
     }
   });
 });

@@ -537,7 +537,7 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
           onClick={() => setActiveTab('synastry-d9')}
         >
           <Compass size={16} />
-          <span>{isHi ? '६. द्वादश भाव, D9 व संतान स्फुट' : '6. Synastry, D9 & Progeny'}</span>
+          <span>{isHi ? '६. द्वादश भाव सादृश्य, दशा संधि, स्त्री जातक व D9' : '6. 12 Houses, Dasha Sandhi, Stri Jataka & D9'}</span>
         </button>
       </nav>
 
@@ -961,7 +961,46 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
             </div>
           </div>
 
+          {/* Classical Clarification Banner: Do all dates require Puja? */}
+          <div className="amm-callout-box">
+            <h3 style={{ margin: '0 0 6px', color: '#b45309', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Shield size={18} />
+              <span>{isHi ? 'शास्त्रीय त्रिबल शुद्धि नियम एवं पूजा का औचित्य' : 'Classical Tribala Shuddhi Rules & Puja Applicability'}</span>
+            </h3>
+            <p style={{ margin: '0 0 10px', fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.5 }}>
+              {isHi
+                ? 'महत्वपूर्ण नियम: क्या सभी विवाह तिथियों में लाल, पीली या सफेद पूजा अनिवार्य है? बिल्कुल नहीं! जब वर का सूर्य (३, ६, १०, ११वें भाव), कन्या का गुरु (२, ५, ७, ९, ११वें भाव) और दोनों का चंद्र (१, ३, ६, ७, १०, ११वें भाव) में होता है, तो वह विवाह तिथि "पूर्ण त्रिबल शुद्ध" होती है (शून्य पूजा अपेक्षित)। ऐसी तिथियों में किसी भी पूजा की आवश्यकता नहीं होती। केवल मध्यम स्थिति में ही लाल या पीली पूजा विवाह पूर्व कराई जाती है।'
+                : 'Crucial Rule: Do all wedding dates require Lal, Peeli or Safed Puja? Absolutely not! When the Groom\'s Sun is in houses 3, 6, 10, 11; Bride\'s Jupiter in 2, 5, 7, 9, 11; and Moon in 1, 3, 6, 7, 10, 11, the date is "Full Tribala Pure" requiring ZERO day-of-wedding pujas.'}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px', marginTop: '10px' }}>
+              <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)' }}>
+                <strong style={{ fontSize: '0.86rem', color: '#047857' }}>
+                  {isHi ? '१. जन्मकालीन दोष शांति पूजा (Natal Dosha Shanti):' : '1. Natal Kundali Remedial Pujas:'}
+                </strong>
+                <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                  {isHi
+                    ? 'जन्म कुंडली के स्थाई दोषों (मांगलिक, नाड़ी, भकूट) के निवारण हेतु विवाह पूर्व केवल एक बार संपन्न की जाने वाली शांति पूजाएं (जैसे कुंभ विवाह, महामृत्युंजय जप, रुद्राभिषेक)।'
+                    : 'One-time pre-marital rituals for permanent natal afflictions (Kumbha Vivaha for Mars, Maha Mrityunjaya Japa for Nadi, Rudrabhisheka for Bhakoot).'}
+                </p>
+              </div>
+
+              <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)' }}>
+                <strong style={{ fontSize: '0.86rem', color: '#b45309' }}>
+                  {isHi ? '२. गोचर त्रिबल पूजा (Transit Tribala on Wedding Day):' : '2. Transit Tribala on Wedding Day:'}
+                </strong>
+                <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                  {isHi
+                    ? 'यह केवल तब कराई जाती है जब परिवार किसी मध्यम त्रिबल गोचर वाली विवाह तिथि का चयन करता है। यदि पूर्ण त्रिबल शुद्ध तिथि चुनी गई है तो विवाह के दिन कोई पूजा नहीं लगती।'
+                    : 'Conducted only on the wedding day IF a couple selects a date with moderate planetary transit strength. Fully pure dates require no day-of puja.'}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Tribala Current Status Cards */}
+          <h3 style={{ margin: '18px 0 10px', fontSize: '1.05rem', color: 'var(--text)' }}>
+            {isHi ? 'आज का तत्कालीन गोचर त्रिबल (Current Day Transit Tribala for Reference):' : 'Current Day Transit Tribala for Reference:'}
+          </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', margin: '14px 0 20px' }}>
             {/* Surya Balam */}
             <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
@@ -1018,9 +1057,95 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
             </div>
           </div>
 
-          {/* Puja Protocols (लाल पूजा, पीली पूजा, सफेद पूजा) */}
+          {/* Section A: Natal Kundali Remedial Pujas */}
           <h3 style={{ margin: '24px 0 12px', fontSize: '1.15rem', color: 'var(--text)' }}>
-            {isHi ? 'विस्तृत पूजा प्रोटोकॉल एवं सामग्री विधान (Puja Protocols)' : 'Prescribed Remedial Puja Protocols & Vidhi'}
+            {isHi ? 'जन्मकालीन कुंडली दोष निवारण अनुष्ठान (Natal Remedial Pujas):' : 'Natal Chart Dosha Pacification Rituals:'}
+          </h3>
+          <div className="amm-classical-grid" style={{ marginBottom: '22px' }}>
+            {/* Manglik Shanti */}
+            <div className="amm-classical-card" style={{ borderLeft: '4px solid #ef4444' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.95rem', color: '#991b1b' }}>
+                  {isHi ? 'मांगलिक शांति अनुष्ठान' : 'Manglik Shanti Ritual'}
+                </strong>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    background: matchReport.manglikAnalysis.severity === 'Clean' || matchReport.manglikAnalysis.severity === 'Cancelled' ? '#d1fae5' : '#fee2e2',
+                    color: matchReport.manglikAnalysis.severity === 'Clean' || matchReport.manglikAnalysis.severity === 'Cancelled' ? '#065f46' : '#991b1b',
+                  }}
+                >
+                  {matchReport.manglikAnalysis.severity === 'Clean' || matchReport.manglikAnalysis.severity === 'Cancelled'
+                    ? (isHi ? 'आवश्यकता नहीं' : 'Not Required')
+                    : (isHi ? 'विवाह पूर्व अनुशंसित' : 'Recommended')}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text)' }}>
+                {matchReport.manglikAnalysis.severity === 'Clean' || matchReport.manglikAnalysis.severity === 'Cancelled'
+                  ? (isHi ? 'दोनों की कुंडलियों में मंगल दोष शून्य या पूर्णतः परिहार हो चुका है। किसी कुंभ विवाह की आवश्यकता नहीं।' : 'Kuja dosha is absent or cancelled. No pre-marital Kumbha ritual needed.')
+                  : (isHi ? 'विवाह से पूर्व जातक हेतु पारंपरिक कुंभ विवाह / अर्क विवाह अथवा मंगल चंडिका स्तोत्र अनुष्ठान कराएं।' : 'Perform traditional Kumbha Vivaha or Ark Vivaha prior to the wedding.')}
+              </p>
+            </div>
+
+            {/* Nadi Shanti */}
+            <div className="amm-classical-card" style={{ borderLeft: '4px solid #3b82f6' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.95rem', color: '#1e40af' }}>
+                  {isHi ? 'नाड़ी दोष महामृत्युंजय अनुष्ठान' : 'Nadi Dosha Shanti Japa'}
+                </strong>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    background: !matchReport.nadiParihara.hasNadiDosha ? '#d1fae5' : '#fee2e2',
+                    color: !matchReport.nadiParihara.hasNadiDosha ? '#065f46' : '#991b1b',
+                  }}
+                >
+                  {!matchReport.nadiParihara.hasNadiDosha ? (isHi ? 'दोष मुक्त' : 'Clean') : (isHi ? 'शांति आवश्यक' : 'Japa Needed')}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text)' }}>
+                {!matchReport.nadiParihara.hasNadiDosha
+                  ? (isHi ? 'नाड़ी दोष नहीं है अथवा शास्त्रीय परिहार लागू है (८/८ अंक)। किसी नाड़ी शांति की आवश्यकता नहीं।' : 'Nadi is pure or parihara applied. No Nadi shanti required.')
+                  : (isHi ? 'विवाह पूर्व ११,००० महामृत्युंजय मंत्र जप, स्वर्ण-नाड़ी दान एवं ब्राह्मण भोजन का शास्त्रीय विधान संपन्न कराएं।' : '11,000 Maha Mrityunjaya Japa and Swarna Nadi charity recommended before marriage.')}
+              </p>
+            </div>
+
+            {/* Bhakoot Shanti */}
+            <div className="amm-classical-card" style={{ borderLeft: '4px solid #8b5cf6' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.95rem', color: '#6d28d9' }}>
+                  {isHi ? 'भकूट दोष शिव रुद्राभिषेक' : 'Bhakoot Shiva Rudrabhisheka'}
+                </strong>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    background: !matchReport.bhakootParihara.hasBhakootDosha ? '#d1fae5' : '#fee2e2',
+                    color: !matchReport.bhakootParihara.hasBhakootDosha ? '#065f46' : '#991b1b',
+                  }}
+                >
+                  {!matchReport.bhakootParihara.hasBhakootDosha ? (isHi ? 'दोष मुक्त' : 'Clean') : (isHi ? 'अभिषेक अनुशंसित' : 'Rudrabhisheka Advised')}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text)' }}>
+                {!matchReport.bhakootParihara.hasBhakootDosha
+                  ? (isHi ? 'भकूट दोष नहीं है अथवा मैत्री परिहार द्वारा निष्प्रभावी है (७/७ अंक)।' : 'Bhakoot is pure or neutralized through planetary friendship.')
+                  : (isHi ? 'शिव मंदिर में रुद्राभिषेक कराएं तथा दंपत्ति नियमित रूप से शिव-गौरी का संयुक्त पूजन करें।' : 'Perform Lord Shiva Rudrabhisheka and worship Shiva-Gauri together.')}
+              </p>
+            </div>
+          </div>
+
+          {/* Section B: Transit Tribala Day-Of Pujas Reference */}
+          <h3 style={{ margin: '24px 0 12px', fontSize: '1.15rem', color: 'var(--text)' }}>
+            {isHi ? 'विवाह तिथि गोचर त्रिबल पूजा विधान एवं संदर्भ संहिता (Day-of-Wedding Reference Protocols):' : 'Day-of-Wedding Transit Tribala Protocols & Samagri:'}
           </h3>
 
           <div className="amm-puja-grid">
@@ -1242,6 +1367,175 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
                   : 'Progeny vitality via Beeja & Kshetra Sphuta, D9 Navamsha charts, and 12-house mutual synastry.'}
               </p>
             </div>
+          </div>
+
+          {/* 4 Cardinal Classical Checks (Dasha Sandhi, Stri Jataka, Upapada, Longevity) */}
+          <div className="amm-classical-grid" style={{ margin: '18px 0 24px' }}>
+            {/* 1. Dasha Sandhi */}
+            <div className="amm-classical-card" style={{ borderLeft: `5px solid ${matchReport.dashaSandhi.status === 'Safe' ? '#059669' : '#d97706'}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.98rem', color: matchReport.dashaSandhi.status === 'Safe' ? '#065f46' : '#b45309' }}>
+                  {isHi ? 'दशा संधि परीक्षण (Dasha Sandhi)' : 'Dasha Sandhi Assessment'}
+                </strong>
+                <span className={`amm-synastry-badge ${matchReport.dashaSandhi.status === 'Safe' ? 'badge-strong' : 'badge-caution'}`}>
+                  {matchReport.dashaSandhi.status === 'Safe' ? (isHi ? 'सुरक्षित (निर्दोष)' : 'Safe') : (isHi ? 'सावधानी अपेक्षित' : 'Caution')}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div><strong>{isHi ? 'वर महादशा परिवर्तन:' : 'Groom Transition:'}</strong> {formatDateDmy(matchReport.dashaSandhi.groomDashaTransition)}</div>
+                <div><strong>{isHi ? 'कन्या महादशा परिवर्तन:' : 'Bride Transition:'}</strong> {formatDateDmy(matchReport.dashaSandhi.brideDashaTransition)}</div>
+                <div><strong>{isHi ? 'परिवर्तन में अंतर:' : 'Time Gap:'}</strong> {matchReport.dashaSandhi.monthsDifference} {isHi ? 'माह' : 'months'}</div>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.45 }}>
+                {isHi ? matchReport.dashaSandhi.verdictHi : matchReport.dashaSandhi.verdictEn}
+              </p>
+            </div>
+
+            {/* 2. Stri Jataka Special Yogas & Mangalya Bhava */}
+            <div className="amm-classical-card" style={{ borderLeft: '5px solid #ec4899' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.98rem', color: '#be185d' }}>
+                  {isHi ? 'स्त्री जातक एवं मांगल्य भाव' : 'Stri Jataka & Mangalya'}
+                </strong>
+                <span className="amm-synastry-badge badge-strong">
+                  {isHi ? `मांगल्य: ${matchReport.striJataka.mangalyaBhavaScore}/100` : `Mangalya: ${matchReport.striJataka.mangalyaBhavaScore}/100`}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div>
+                  <strong>{isHi ? 'विषकन्या योग:' : 'Visha Kanya:'}</strong>{' '}
+                  <span style={{ color: !matchReport.striJataka.hasVishaKanyaYoga || matchReport.striJataka.vishaKanyaCancelled ? '#059669' : '#dc2626', fontWeight: 600 }}>
+                    {!matchReport.striJataka.hasVishaKanyaYoga ? (isHi ? 'दोष मुक्त' : 'Clean') : matchReport.striJataka.vishaKanyaCancelled ? (isHi ? 'परिहार मान्य' : 'Cancelled') : (isHi ? 'सक्रिय' : 'Active')}
+                  </span>
+                </div>
+                <div>
+                  <strong>{isHi ? 'वैधव्य योग:' : 'Vaidhavya:'}</strong>{' '}
+                  <span style={{ color: !matchReport.striJataka.hasVaidhavyaYoga || matchReport.striJataka.vaidhavyaCancelled ? '#059669' : '#dc2626', fontWeight: 600 }}>
+                    {!matchReport.striJataka.hasVaidhavyaYoga ? (isHi ? 'दोष मुक्त' : 'Clean') : matchReport.striJataka.vaidhavyaCancelled ? (isHi ? 'परिहार मान्य' : 'Cancelled') : (isHi ? 'सक्रिय' : 'Active')}
+                  </span>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.4 }}>
+                {isHi ? matchReport.striJataka.mangalyaStatusHi : matchReport.striJataka.mangalyaStatusEn}
+              </p>
+              {matchReport.striJataka.saubhagyaYogas.length > 0 && (
+                <div style={{ fontSize: '0.8rem', color: '#047857', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '6px' }}>
+                  <strong>{isHi ? 'सौभाग्य योग:' : 'Saubhagya Yogas:'}</strong> {matchReport.striJataka.saubhagyaYogas.join(' | ')}
+                </div>
+              )}
+            </div>
+
+            {/* 3. Jaimini Upapada Lagna (UL) Synastry */}
+            <div className="amm-classical-card" style={{ borderLeft: '5px solid #8b5cf6' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.98rem', color: '#6d28d9' }}>
+                  {isHi ? 'जैमिनी उपपद लग्न (UL) सादृश्य' : 'Jaimini Upapada Lagna (UL)'}
+                </strong>
+                <span className={`amm-synastry-badge ${matchReport.upapadaSynastry.score >= 70 ? 'badge-strong' : 'badge-caution'}`}>
+                  {matchReport.upapadaSynastry.score}/100
+                </span>
+              </div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div><strong>{isHi ? 'वर उपपद लग्न (UL):' : 'Groom UL:'}</strong> {matchReport.upapadaSynastry.groomULSignName}</div>
+                <div><strong>{isHi ? 'कन्या उपपद लग्न (UL):' : 'Bride UL:'}</strong> {matchReport.upapadaSynastry.brideULSignName}</div>
+                <div><strong>{isHi ? 'पारस्परिक अक्ष:' : 'Mutual Axis:'}</strong> {matchReport.upapadaSynastry.mutualAxis}</div>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.45 }}>
+                {isHi ? matchReport.upapadaSynastry.verdictHi : matchReport.upapadaSynastry.verdictEn}
+              </p>
+            </div>
+
+            {/* 4. Longevity & Ayushya Safety */}
+            <div className="amm-classical-card" style={{ borderLeft: '5px solid #10b981' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.98rem', color: '#047857' }}>
+                  {isHi ? 'आयुर्दाय एवं अल्पायु सुरक्षा' : 'Longevity & Ayushya Safety'}
+                </strong>
+                <span className={`amm-synastry-badge ${matchReport.ayushyaSafety.safetyPassed ? 'badge-strong' : 'badge-caution'}`}>
+                  {matchReport.ayushyaSafety.safetyPassed ? (isHi ? 'सुरक्षित' : 'Safe') : (isHi ? 'सावधानी' : 'Caution')}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <div><strong>{isHi ? 'वर आयु वर्ग:' : 'Groom Longevity:'}</strong> {matchReport.ayushyaSafety.groomLongevityGrade}</div>
+                <div><strong>{isHi ? 'कन्या आयु वर्ग:' : 'Bride Longevity:'}</strong> {matchReport.ayushyaSafety.brideLongevityGrade}</div>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.45 }}>
+                {isHi ? matchReport.ayushyaSafety.verdictHi : matchReport.ayushyaSafety.verdictEn}
+              </p>
+            </div>
+          </div>
+
+          {/* House-to-House 12-Bhava Synastry Matrix Table */}
+          <h3 style={{ margin: '22px 0 10px', fontSize: '1.15rem', color: 'var(--text)' }}>
+            {isHi ? 'द्वादश भाव सादृश्य विस्तृत सारणी (House-to-House 12-Bhava Compatibility Matrix):' : '12-Bhava House-to-House Compatibility Matrix:'}
+          </h3>
+          <p style={{ margin: '0 0 12px', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+            {isHi
+              ? 'वर एवं कन्या दोनों की कुंडलियों के प्रथम (तनु) से द्वादश (व्यय) भावों की राशि, भावेश संबंध, ग्रह स्थिति एवं पारस्परिक सामंजस्य का समग्र विश्लेषण।'
+              : 'Detailed synastry across all 12 bhavas analyzing sign, lord relationships, planetary occupants, and mutual harmony.'}
+          </p>
+
+          <div className="amm-synastry-table-wrapper">
+            <table className="amm-synastry-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '14%' }}>{isHi ? 'भाव एवं विषय' : 'House & Theme'}</th>
+                  <th style={{ width: '18%' }}>{isHi ? 'वर स्थिति (राशि/भावेश)' : 'Groom Position'}</th>
+                  <th style={{ width: '18%' }}>{isHi ? 'कन्या स्थिति (राशि/भावेश)' : 'Bride Position'}</th>
+                  <th style={{ width: '12%', textAlign: 'center' }}>{isHi ? 'स्कोर व स्तर' : 'Score / Status'}</th>
+                  <th style={{ width: '38%' }}>{isHi ? 'शास्त्रीय सादृश्य फलादेश' : 'Synastry Reading'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matchReport.synastryHouses.map((row) => {
+                  const badgeClass =
+                    row.status === 'Strong'
+                      ? 'badge-strong'
+                      : row.status === 'Balanced'
+                      ? 'badge-balanced'
+                      : 'badge-caution';
+
+                  return (
+                    <tr key={row.house}>
+                      <td>
+                        <strong>{isHi ? `${row.house}वां भाव` : `House ${row.house}`}</strong>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {isHi ? row.themeHi : row.themeEn}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <strong>{trSign(row.signAIndex, lang)}</strong> ({trPlanetShort(row.lordA, lang)})
+                        </div>
+                        {row.occupantsA.length > 0 && (
+                          <div style={{ fontSize: '0.78rem', color: '#0369a1', marginTop: '2px' }}>
+                            {isHi ? 'ग्रह:' : 'Planets:'} {row.occupantsA.map((p) => trPlanetShort(p, lang)).join(', ')}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <div>
+                          <strong>{trSign(row.signBIndex, lang)}</strong> ({trPlanetShort(row.lordB, lang)})
+                        </div>
+                        {row.occupantsB.length > 0 && (
+                          <div style={{ fontSize: '0.78rem', color: '#be185d', marginTop: '2px' }}>
+                            {isHi ? 'ग्रह:' : 'Planets:'} {row.occupantsB.map((p) => trPlanetShort(p, lang)).join(', ')}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <span className={`amm-synastry-badge ${badgeClass}`}>
+                          {row.score}/100 · {row.status}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '0.84rem', lineHeight: 1.45 }}>
+                        {isHi ? row.readingHi : row.readingEn}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
 
           {/* Beeja-Kshetra Sphuta Progeny Analysis */}

@@ -232,13 +232,14 @@ export function App() {
       view === 'predictions' ||
       view === 'general-prediction' ||
       view === 'planet-wise-prediction' ||
+      view === 'ascendant-wise-prediction' ||
       view === 'house-wise-prediction' ||
       view === 'sambhavit-falkathan' ||
       view === 'falkathan'
     ) {
       target = 'predictions';
-      const legacySub = view === 'planet-wise-prediction'
-        ? 'twelve_planets'
+      const legacySub = view === 'planet-wise-prediction' || view === 'ascendant-wise-prediction'
+        ? 'ascendantWise'
         : view === 'house-wise-prediction'
           ? 'houseWise'
           : 'deep_life';

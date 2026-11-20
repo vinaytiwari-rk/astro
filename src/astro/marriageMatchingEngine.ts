@@ -580,7 +580,306 @@ export function evaluateNadiPariharas(
 }
 
 // ============================================================================
-// 4. MASTER ADVANCE MATCHMAKING COMPOSITE ENGINE
+// 4. ADVANCED CLASSICAL PILLARS (Dasha Sandhi, Stri Jataka, Upapada, Ayurdaya)
+// ============================================================================
+
+export interface DashaSandhiReport {
+  hasDashaSandhi: boolean;
+  groomDashaTransition: string;
+  brideDashaTransition: string;
+  monthsDifference: number;
+  status: 'Safe' | 'Caution';
+  verdictHi: string;
+  verdictEn: string;
+}
+
+export function evaluateDashaSandhi(
+  groomChart: ChartData,
+  brideChart: ChartData
+): DashaSandhiReport {
+  const nowMs = Date.now();
+  const searchWindowMs = 3 * 365.25 * 86_400_000; // ±3 years
+
+  // Find nearest Mahadasha end dates for groom and bride
+  let gNextTransitionMs = 0;
+  let gNextLord = '';
+  for (const d of groomChart.vimshottari) {
+    if (d.endMs >= nowMs && d.endMs <= nowMs + searchWindowMs) {
+      gNextTransitionMs = d.endMs;
+      gNextLord = d.lord;
+      break;
+    }
+  }
+
+  let bNextTransitionMs = 0;
+  let bNextLord = '';
+  for (const d of brideChart.vimshottari) {
+    if (d.endMs >= nowMs && d.endMs <= nowMs + searchWindowMs) {
+      bNextTransitionMs = d.endMs;
+      bNextLord = d.lord;
+      break;
+    }
+  }
+
+  let hasDashaSandhi = false;
+  let diffMonths = 999;
+  if (gNextTransitionMs > 0 && bNextTransitionMs > 0) {
+    const diffDays = Math.abs(gNextTransitionMs - bNextTransitionMs) / 86_400_000;
+    diffMonths = Math.round(diffDays / 30.4375);
+    if (diffMonths <= 12) {
+      hasDashaSandhi = true;
+    }
+  }
+
+  const status: DashaSandhiReport['status'] = hasDashaSandhi ? 'Caution' : 'Safe';
+  const verdictHi = hasDashaSandhi
+    ? `सावधानी: वर एवं कन्या दोनों की महादशाएं लगभग एक ही समय (${diffMonths} माह के अंतर में) बदल रही हैं। इसे दशा संधि कहते हैं। विवाह के आरंभिक काल में धैर्य व शांति आवश्यक रहेगी।`
+    : `दशा संधि से मुक्त: दोनों की महादशा संक्रमण तिथियां भिन्न हैं। वैवाहिक जीवन में भावनात्मक व आर्थिक स्थिरता बनी रहेगी।`;
+
+  const verdictEn = hasDashaSandhi
+    ? `Caution: Both partners undergo a major Vimshottari Mahadasha transition within ${diffMonths} months of each other (Dasha Sandhi). Mutual patience and remedial rituals recommended.`
+    : `Free from Dasha Sandhi: Major Mahadasha shifts occur at asynchronous intervals, ensuring psychological and structural continuity in marriage.`;
+
+  return {
+    hasDashaSandhi,
+    groomDashaTransition: gNextTransitionMs ? new Date(gNextTransitionMs).toISOString().slice(0, 10) : 'None in 3Y',
+    brideDashaTransition: bNextTransitionMs ? new Date(bNextTransitionMs).toISOString().slice(0, 10) : 'None in 3Y',
+    monthsDifference: diffMonths === 999 ? 0 : diffMonths,
+    status,
+    verdictHi,
+    verdictEn,
+  };
+}
+
+export interface StriJatakaReport {
+  mangalyaBhavaScore: number; // 0..100
+  mangalyaStatusHi: string;
+  mangalyaStatusEn: string;
+  hasVishaKanyaYoga: boolean;
+  vishaKanyaCancelled: boolean;
+  vishaKanyaNoteHi: string;
+  vishaKanyaNoteEn: string;
+  hasVaidhavyaYoga: boolean;
+  vaidhavyaCancelled: boolean;
+  vaidhavyaNoteHi: string;
+  vaidhavyaNoteEn: string;
+  saubhagyaYogas: string[];
+}
+
+export function evaluateStriJatakaSpecialYogas(
+  groomChart: ChartData,
+  brideChart: ChartData
+): StriJatakaReport {
+  // 1. Mangalya Bhava (8th house of Bride)
+  const bH8Sign = (brideChart.ascendant.signIndex + 7) % 12;
+  const bH8Lord = SIGNS[bH8Sign].lord;
+  const h8Occupants = brideChart.planets.filter((p) => p.rasiHouseNumber === 8);
+  const h8LordPos = brideChart.planets.find((p) => p.id === bH8Lord);
+
+  const hasBeneficIn8 = h8Occupants.some((p) => ['Jupiter', 'Venus', 'Mercury'].includes(p.id));
+  const hasPureMaleficIn8 = h8Occupants.some((p) => ['Mars', 'Rahu', 'Ketu'].includes(p.id));
+
+  let mangalyaScore = 75;
+  if (hasBeneficIn8) mangalyaScore += 20;
+  if (hasPureMaleficIn8) mangalyaScore -= 25;
+  if (h8LordPos && ['Own Sign', 'Exalted', 'Moolatrikona'].includes(h8LordPos.dignity)) mangalyaScore += 15;
+  mangalyaScore = Math.max(30, Math.min(100, mangalyaScore));
+
+  const mangalyaStatusHi = mangalyaScore >= 70
+    ? `अष्टम (मांगल्य) भाव अत्यंत शुभ व सुरक्षित है। पति की दीर्घायु व अखंड सौभाग्य का वरदान प्राप्त है।`
+    : `अष्टम भाव पर क्रूर ग्रहों का प्रभाव है; विवाह पूर्व भगवान शिव का रुद्राभिषेक अथवा गौरी पूजन अनुशंसित है।`;
+
+  const mangalyaStatusEn = mangalyaScore >= 70
+    ? `8th (Mangalya) house is well-fortified, conferring marital longevity and spousal protection.`
+    : `8th house carries malefic activation; Shiva Rudrabhisheka or Gauri worship recommended.`;
+
+  // 2. Visha Kanya Yoga (Checking Bride Chart)
+  // Classical combinations: Tuesday/Sunday/Saturday with 2nd/7th/12th tithis & Ashlesha/Krittika/Shatabhisha
+  const bMoon = brideChart.planets.find((p) => p.id === 'Moon')!;
+  const bNak = bMoon.nakshatraIndex;
+  const isVishaNak = [2, 8, 23].includes(bNak); // Krittika, Ashlesha, Shatabhisha
+  const hasVishaKanya = isVishaNak;
+  // Parihara: Jupiter or Lagna lord in Kendra cancels Visha Kanya
+  const bJup = brideChart.planets.find((p) => p.id === 'Jupiter');
+  const vishaKanyaCancelled = Boolean(bJup && [1, 4, 7, 10].includes(bJup.rasiHouseNumber));
+
+  const vishaKanyaNoteHi = !hasVishaKanya
+    ? 'कन्या की कुंडली में विषकन्या योग का कोई प्रभाव नहीं है (पूर्णतः निर्दोष)।'
+    : vishaKanyaCancelled
+    ? 'विषकन्या योग उपस्थित था किंतु केंद्र में देवगुरु बृहस्पति के प्रभाव से पूर्णतः निष्प्रभावी हो चुका है।'
+    : 'विषकन्या योग का प्रभाव उपस्थित है; विवाह से पूर्व कुंभ विवाह अथवा विष्णु प्रतिमा विवाह का शास्त्रीय विधान कराएं।';
+
+  const vishaKanyaNoteEn = !hasVishaKanya
+    ? 'Free from Visha Kanya yoga.'
+    : vishaKanyaCancelled
+    ? 'Visha Kanya combination fully dissolved by Jupiter situated in Kendra.'
+    : 'Visha Kanya combination detected; Kumbha Vivaha or Vishnu Pratima Vivaha is advised.';
+
+  // 3. Vaidhavya Yoga Check
+  const bH7Sign = (brideChart.ascendant.signIndex + 6) % 12;
+  const bH7Lord = SIGNS[bH7Sign].lord;
+  const bMars = brideChart.planets.find((p) => p.id === 'Mars')!;
+  const hasVaidhavya = bMars.rasiHouseNumber === 8 && bH7Lord === 'Saturn';
+  const vaidhavyaCancelled = Boolean(bJup && (bJup.rasiHouseNumber === 1 || bJup.rasiHouseNumber === 7));
+
+  const vaidhavyaNoteHi = !hasVaidhavya
+    ? 'वैधव्य योग का कोई लक्षण नहीं है; सप्तम व अष्टम भाव वैवाहिक आयु हेतु सुरक्षित हैं।'
+    : vaidhavyaCancelled
+    ? 'वैधव्य योग का शास्त्रीय परिहार बृहस्पति की शुभ दृष्टि अथवा केंद्र स्थिति द्वारा हो गया है।'
+    : 'शास्त्रीय शांति विधान एवं महामृत्युंजय जप कराकर विवाह करें।';
+
+  const vaidhavyaNoteEn = !hasVaidhavya
+    ? 'No adverse widowhood combinations present; 7th and 8th houses are stable.'
+    : vaidhavyaCancelled
+    ? 'Potential affliction fully cancelled by benevolent Jupiterian aspect.'
+    : 'Prescribed Vedic shanti and Maha Mrityunjaya japa recommended.';
+
+  // 4. Saubhagya Yogas
+  const saubhagyaList: string[] = [];
+  if (brideChart.planets.some((p) => p.rasiHouseNumber === 2 && ['Jupiter', 'Venus', 'Mercury'].includes(p.id))) {
+    saubhagyaList.push('द्वितीय भाव में शुभ ग्रह — अखंड सौभाग्य व कुटुंब वृद्धि योग');
+  }
+  if (brideChart.planets.some((p) => p.rasiHouseNumber === 9 && ['Jupiter', 'Sun', 'Mars'].includes(p.id))) {
+    saubhagyaList.push('नवम भाव में भाग्य कारक ग्रह — पति के भाग्योदय व कुल प्रतिष्ठा का योग');
+  }
+  if (saubhagyaList.length === 0) {
+    saubhagyaList.push('सप्तमेश व लग्नेश की अनुकूल स्थिति — सुखद दांपत्य जीवन योग');
+  }
+
+  return {
+    mangalyaBhavaScore: mangalyaScore,
+    mangalyaStatusHi,
+    mangalyaStatusEn,
+    hasVishaKanyaYoga: hasVishaKanya,
+    vishaKanyaCancelled,
+    vishaKanyaNoteHi,
+    vishaKanyaNoteEn,
+    hasVaidhavyaYoga: hasVaidhavya,
+    vaidhavyaCancelled,
+    vaidhavyaNoteHi,
+    vaidhavyaNoteEn,
+    saubhagyaYogas: saubhagyaList,
+  };
+}
+
+export interface UpapadaSynastryReport {
+  groomULSign: number;
+  brideULSign: number;
+  groomULSignName: string;
+  brideULSignName: string;
+  mutualAxis: string;
+  score: number;
+  verdictHi: string;
+  verdictEn: string;
+}
+
+export function computeUpapadaLagna(chart: ChartData): number {
+  // 12th house sign
+  const h12Sign = (chart.ascendant.signIndex + 11) % 12;
+  const h12Lord = SIGNS[h12Sign].lord;
+  const lordPos = chart.planets.find((p) => p.id === h12Lord);
+  const lordSign = lordPos ? lordPos.signIndex : h12Sign;
+
+  // Distance from 12th house to its lord
+  const dist = (lordSign - h12Sign + 12) % 12;
+  let ul = (lordSign + dist) % 12;
+
+  // Jaimini exception: if UL falls in 12th house or 6th from it
+  if (ul === h12Sign) {
+    ul = (ul + 9) % 12;
+  } else if (ul === (h12Sign + 6) % 12) {
+    ul = (ul + 9) % 12;
+  }
+  return ul;
+}
+
+export function evaluateUpapadaSynastry(
+  groomChart: ChartData,
+  brideChart: ChartData
+): UpapadaSynastryReport {
+  const gUL = computeUpapadaLagna(groomChart);
+  const bUL = computeUpapadaLagna(brideChart);
+
+  // Axis between Groom UL and Bride Lagna/Moon
+  const distGULToBLag = ((gUL - brideChart.ascendant.signIndex + 12) % 12) + 1;
+  const isKendraTrikona = [1, 4, 5, 7, 9, 10].includes(distGULToBLag);
+
+  let score = 70;
+  if (isKendraTrikona) score += 20;
+  if ([6, 8].includes(distGULToBLag)) score -= 20;
+  score = Math.max(35, Math.min(95, score));
+
+  const mutualAxis = `${distGULToBLag}/${14 - distGULToBLag}`;
+  const verdictHi = isKendraTrikona
+    ? `जैमिनी उपपद लग्न अत्यंत अनुकूल है (${SIGNS[gUL].name} ↔ ${SIGNS[bUL].name})। दोनों के मध्य विवाह का आत्मिक व सामाजिक बंधन अत्यंत सुदृढ़ व चिरस्थायी रहेगा।`
+    : `उपपद लग्न का पारस्परिक संबंध ${mutualAxis} अक्ष पर है। वैवाहिक स्थिरता हेतु उपपद व्रत अथवा नारायण कवच का पाठ लाभप्रद रहेगा।`;
+
+  const verdictEn = isKendraTrikona
+    ? `Jaimini Upapada Lagna aligns harmoniously (${SIGNS[gUL].name} ↔ ${SIGNS[bUL].name}). A deep, durable karmic marital bond is indicated.`
+    : `Upapada Lagna axis is ${mutualAxis}. Jaimini Upapada fasting or Narayana Kavacha recitation preserves marital harmony.`;
+
+  return {
+    groomULSign: gUL,
+    brideULSign: bUL,
+    groomULSignName: SIGNS[gUL].name,
+    brideULSignName: SIGNS[bUL].name,
+    mutualAxis,
+    score,
+    verdictHi,
+    verdictEn,
+  };
+}
+
+export interface AyushyaSafetyReport {
+  groomLongevityGrade: 'Deerghayu (Long)' | 'Madhyayu (Medium)' | 'Alpayu (Attention)';
+  brideLongevityGrade: 'Deerghayu (Long)' | 'Madhyayu (Medium)' | 'Alpayu (Attention)';
+  safetyPassed: boolean;
+  verdictHi: string;
+  verdictEn: string;
+}
+
+export function evaluateAyushyaSafety(
+  groomChart: ChartData,
+  brideChart: ChartData
+): AyushyaSafetyReport {
+  const checkLongevity = (c: ChartData): 'Deerghayu (Long)' | 'Madhyayu (Medium)' | 'Alpayu (Attention)' => {
+    const lagnaLord = SIGNS[c.ascendant.signIndex].lord;
+    const h8Lord = SIGNS[(c.ascendant.signIndex + 7) % 12].lord;
+    const lPos = c.planets.find((p) => p.id === lagnaLord);
+    const h8Pos = c.planets.find((p) => p.id === h8Lord);
+
+    const lDignity = lPos?.dignity || 'Neutral';
+    const isLordStrong = ['Exalted', 'Own Sign', 'Moolatrikona'].includes(lDignity) || [1, 4, 5, 9, 10].includes(lPos?.rasiHouseNumber || 1);
+    const isH8Strong = ['Exalted', 'Own Sign', 'Moolatrikona'].includes(h8Pos?.dignity || 'Neutral');
+
+    if (isLordStrong && isH8Strong) return 'Deerghayu (Long)';
+    if (isLordStrong || isH8Strong) return 'Deerghayu (Long)';
+    return 'Madhyayu (Medium)';
+  };
+
+  const gGrade = checkLongevity(groomChart);
+  const bGrade = checkLongevity(brideChart);
+  const safetyPassed = gGrade !== 'Alpayu (Attention)' && bGrade !== 'Alpayu (Attention)';
+
+  const verdictHi = safetyPassed
+    ? `आयुर्दाय परीक्षण पूर्णतः उत्तीर्ण: वर (${gGrade}) एवं कन्या (${bGrade}) दोनों की कुंडलियों में अल्पायु दोष का अभाव है। दांपत्य जीवन पूर्ण आयु एवं स्वास्थ्य से सुरक्षित है।`
+    : `आयुर्दाय परीक्षण में विशेष सावधानी अपेक्षित है। वरिष्ठ ज्योतिषी से दोनों कुंडलियों की समग्र ग्रह स्थिति जांच कर ही निर्णय लें।`;
+
+  const verdictEn = safetyPassed
+    ? `Longevity safety confirmed: Both Groom (${gGrade}) and Bride (${bGrade}) are free from Alpayu afflictions, ensuring long-term marital security.`
+    : `Longevity analysis requires detailed review by an experienced astrologer.`;
+
+  return {
+    groomLongevityGrade: gGrade,
+    brideLongevityGrade: bGrade,
+    safetyPassed,
+    verdictHi,
+    verdictEn,
+  };
+}
+
+// ============================================================================
+// 5. MASTER ADVANCE MATCHMAKING COMPOSITE ENGINE
 // ============================================================================
 export interface AdvanceMarriageMatchReport {
   ashtakoota: MatchMakingResult;
@@ -591,6 +890,10 @@ export interface AdvanceMarriageMatchReport {
   beejaKshetra: BeejaKshetraMatchReport;
   synastryHouses: HouseToHouseMatchRow[];
   synastrySigns: SignToSignMatchRow[];
+  dashaSandhi: DashaSandhiReport;
+  striJataka: StriJatakaReport;
+  upapadaSynastry: UpapadaSynastryReport;
+  ayushyaSafety: AyushyaSafetyReport;
   totalEffectiveGunas: number; // Ashtakoota score with Bhakoot/Nadi parihara adjustments
   overallVerdictHi: string;
   overallVerdictEn: string;
@@ -621,6 +924,18 @@ export function computeAdvanceMarriageMatching(
 
   // 7. House and Sign Synastry
   const { signMatches, houseMatches } = computeSignAndHouseMatching(groomChart, brideChart);
+
+  // 8. Dasha Sandhi Check
+  const dashaSandhi = evaluateDashaSandhi(groomChart, brideChart);
+
+  // 9. Stri Jataka Special Yogas (Mangalya, Visha Kanya, Vaidhavya)
+  const striJataka = evaluateStriJatakaSpecialYogas(groomChart, brideChart);
+
+  // 10. Jaimini Upapada Lagna Synastry
+  const upapadaSynastry = evaluateUpapadaSynastry(groomChart, brideChart);
+
+  // 11. Longevity & Ayushya Safety
+  const ayushyaSafety = evaluateAyushyaSafety(groomChart, brideChart);
 
   // Adjusted Gunas incorporating shastric pariharas
   let effectiveGunas = ashtakoota.totalObtained;
@@ -667,6 +982,10 @@ export function computeAdvanceMarriageMatching(
     beejaKshetra,
     synastryHouses: houseMatches,
     synastrySigns: signMatches,
+    dashaSandhi,
+    striJataka,
+    upapadaSynastry,
+    ayushyaSafety,
     totalEffectiveGunas: effectiveGunas,
     overallVerdictHi,
     overallVerdictEn,

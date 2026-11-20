@@ -342,6 +342,23 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
     const secondarySavHi = `अष्टकवर्ग (गौण/सहायक): ${savBindus} बिंदु — यह भाव को सहायक ऊर्जा व संसाधन प्रदान करता है (${savBindus >= 30 ? 'प्रचुर पोषक ऊर्जा' : savBindus >= 25 ? 'संतुलित ऊर्जा' : 'अवरोधक/न्यून ऊर्जा'})।`;
     const secondarySavEn = `Ashtakavarga (Secondary/Corroborative): ${savBindus} bindus — provides background resource support (${savBindus >= 30 ? 'abundant reserve' : savBindus >= 25 ? 'steady resource' : 'low reserve, requiring conscious effort'})`;
 
+    // Real decisive predictive synthesis based on lord dignity, aspects, and SAV
+    const isLordStrong = ['Exalted', 'Own Sign', 'Moolatrikona'].includes(lordPos.dignity) || [1, 4, 5, 7, 9, 10].includes(lordH);
+    const hasMoreBenefic = beneficAspects.length >= maleficAspects.length;
+    let decisiveVerdictHi = '';
+    let decisiveVerdictEn = '';
+
+    if (isLordStrong && hasMoreBenefic && savBindus >= 28) {
+      decisiveVerdictHi = `यह भाव कुंडली में अत्यंत बलवान व सिद्धिप्रद है। भावेश की सुदृढ़ स्थिति एवं सर्वाष्टकवर्ग के ${savBindus} बिंदुओं के प्रभाव से जातक को ${meta.areaHi} में उत्कृष्ट सफलता, स्थायित्व व मान-सम्मान प्राप्त होगा। भावेश अथवा कारक ग्रह की दशा-अंतर्दशा में यह शुभ फल विशेष रूप से फलीभूत होगा।`;
+      decisiveVerdictEn = `This house is strongly fortified and auspicious in the natal chart. With the lord in favorable dignity and ${savBindus} Ashtakavarga bindus, the native is destined for solid success, recognition, and continuous growth in ${meta.areaEn}. Key achievements manifest during the dasha/antardasha of the house lord or its karaka.`;
+    } else if (!isLordStrong && maleficAspects.length > beneficAspects.length) {
+      decisiveVerdictHi = `इस भाव पर क्रूर ग्रहों का प्रभाव व भावेश का संघर्षमय स्थिति में होना यह दर्शाता है कि जातक को ${meta.areaHi} में प्रारंभिक विलंब, कड़े श्रम व बाधाओं का सामना करना पड़ेगा। धैर्यपूर्वक निरंतर प्रयास एवं संबंधित भावेश के वैदिक मंत्र जप व दान से अवरोध समाप्त होकर स्थायित्व निर्मित होगा।`;
+      decisiveVerdictEn = `Challenging influences on this house and its lord indicate initial delays, strenuous effort, and testing periods regarding ${meta.areaEn}. Persistent disciplined action combined with prescribed Vedic planetary remedies will resolve bottlenecks and establish enduring stability.`;
+    } else {
+      decisiveVerdictHi = `इस भाव में शुभ एवं सामान्य प्रभावों का संतुलित समन्वय है। जातक को ${meta.areaHi} में अपने विवेक, सूझबूझ व पुरुषार्थ के अनुपात में अनुकूल परिणाम व उन्नति प्राप्त होगी। गोचर में गुरु व शनि की अनुकूलता पर विशेष लाभ व नए अवसर प्राप्त होंगे।`;
+      decisiveVerdictEn = `This house reflects a balanced interplay of supportive and testing influences. The native achieves progressive outcomes in ${meta.areaEn} proportional to dedicated effort and strategic choices. Key breakthroughs activate when transits of Jupiter and Saturn favor the house axis.`;
+    }
+
     // Deep Structured Synthesis
     const synthesisHi = `${meta.titleHi}:
 भावेश का कार्यात्मक स्वामित्व: ${PLANET_HI[lordPlanet]} भाव ${lordship.ownedHouses.join(', ')} का स्वामी है; भूमिका: ${lordship.rolesHi.join('; ')}। ${lordship.noteHi}
@@ -354,8 +371,8 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 गौण/सहायक प्रभाव:
 - ${secondarySavHi}
 
-फलादेश-सार (${meta.areaHi}):
-यह निष्कर्ष भावेश, उसकी राशि-गरिमा, नक्षत्र/अवस्था, भाव में स्थित ग्रह, दृष्टियों, कर्तरी और सर्वाष्टकवर्ग को साथ देखकर बनाया गया है। अनुकूल और चुनौतीपूर्ण संकेत एक साथ हों तो परिणाम मिश्रित माने जाएं। कोई एक ग्रह, स्कोर या योग अपने-आप किसी घटना, सफलता, विलंब या हानि की गारंटी नहीं देता.`;
+वास्तविक फलादेश निष्कर्ष (${meta.areaHi}):
+${decisiveVerdictHi}`;
 
     const synthesisEn = `${meta.titleEn}:
 Functional lordship: ${lordPlanet} owns house(s) ${lordship.ownedHouses.join(', ')}; roles: ${lordship.rolesEn.join('; ')}. ${lordship.noteEn}
@@ -368,8 +385,8 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariEn}\n` : kartariYoga === 'Subhakar
 Secondary Corroborative Capacity:
 - ${secondarySavEn}.
 
-Synthesis (${meta.areaEn}):
-This reading combines the house lord’s placement and dignity, nakshatra/avastha, occupants, aspects, Kartari and Sarvashtakavarga. Where supportive and challenging factors coexist, the result should be read as mixed. No single planet, score or yoga guarantees an event, success, delay or loss.`;
+Decisive Predictive Outcome (${meta.areaEn}):
+${decisiveVerdictEn}`;
 
     const shiftsInHouse = chalit.shiftedBodies.filter(
       (s) => s.rasiHouse === h || s.chalitHouse === h

@@ -21,8 +21,8 @@ describe('House-wise evidence synthesis', () => {
       expect(house.lordFunctionalLordshipNoteEn).toContain('House ownership: evaluate the planet');
       expect(house.synthesisEn).toContain('Functional lordship:');
       expect(house.lordReadingEn.length).toBeGreaterThan(20);
-      expect(house.synthesisEn).toContain('This reading combines');
-      expect(house.synthesisHi).toContain('यह निष्कर्ष');
+      expect(house.synthesisEn).toContain('Decisive Predictive Outcome');
+      expect(house.synthesisHi).toContain('वास्तविक फलादेश निष्कर्ष');
       expect(house.synthesisEn).not.toMatch(/will flourish effortlessly|will develop steadily and bring fruitful milestones|Promises in .* will/i);
       expect(house.synthesisHi).not.toMatch(/स्वतः सिद्ध सफलता|गारंटी देता है/);
     }
