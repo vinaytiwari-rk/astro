@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import {
   Briefcase,
   CheckCircle,
+  Clock,
   Coins,
   Heart,
   Shield,
@@ -62,13 +63,64 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
             {isHi ? 'पारंपरिक संकेत-आधारित व्याख्या' : 'Traditional indication-based reading'}
           </span>
         </div>
+      </div>
 
-        <p className="muted small-text" style={{ margin: 0 }}>
-          {isHi
-            ? 'स्कोर या प्रतिशत नहीं दिखाए जाते, क्योंकि पारंपरिक ज्योतिषीय संकेत सांख्यिकीय संभावना नहीं होते। स्वास्थ्य, कानूनी और वित्तीय निर्णय विशेषज्ञ सलाह से लें।'
-            : 'Scores and percentages are omitted because traditional astrological indications are not statistical probabilities. Use qualified advice for health, legal and financial decisions.'}
-        </p>
+      {/* 4 Master Prediction Pillars: Stature, Prime Golden Era, Testing Periods, and Karmic Mission */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+        {/* Pillar 1: Life Stature */}
+        <div className="card" style={{ padding: '14px', borderTop: '3px solid #d97706', background: 'var(--bg-elevated)' }}>
+          <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isHi ? 'जीवन प्रतिष्ठा व वर्ग' : 'Life Stature & Social Class'}
+          </div>
+          <div style={{ fontSize: '15px', fontWeight: 700, margin: '4px 0 6px', color: '#b45309' }}>
+            {isHi ? (report.lifeStatureClassHi || 'समृद्ध व कुलीन वर्ग') : (report.lifeStatureClassEn || 'Affluent & Dignified Class')}
+          </div>
+          <div style={{ fontSize: '12.5px', lineHeight: 1.45, color: 'var(--text)' }}>
+            {isHi ? report.lifeStatureMeaningHi : report.lifeStatureMeaningEn}
+          </div>
+        </div>
 
+        {/* Pillar 2: Prime Golden Rise Era */}
+        <div className="card" style={{ padding: '14px', borderTop: '3px solid #16a34a', background: 'var(--bg-elevated)' }}>
+          <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isHi ? 'महा-भाग्योदय स्वर्ण काल' : 'Peak Rise Golden Era'}
+          </div>
+          <div style={{ fontSize: '15px', fontWeight: 700, margin: '4px 0 6px', color: '#16a34a' }}>
+            {isHi ? report.peakRiseAgeWindowHi : report.peakRiseAgeWindowEn}
+          </div>
+          <div style={{ fontSize: '12.5px', lineHeight: 1.45, color: 'var(--text)' }}>
+            {isHi
+              ? 'इस कालखंड में करियर, संपत्ति व सामाजिक प्रतिष्ठा का सर्वोच्च उत्कर्ष होगा।'
+              : 'Maximum accumulation of wealth, professional elevation and authority manifests here.'}
+          </div>
+        </div>
+
+        {/* Pillar 3: Testing Eras / Crisis Warning */}
+        <div className="card" style={{ padding: '14px', borderTop: '3px solid #dc2626', background: 'var(--bg-elevated)' }}>
+          <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isHi ? 'जीवन परीक्षा व सतर्कता काल' : 'Testing / Caution Periods'}
+          </div>
+          <ul style={{ margin: '6px 0 0', paddingLeft: '16px', fontSize: '12px', lineHeight: 1.45, color: 'var(--text)' }}>
+            {(isHi ? (report.crisisErasHi || []) : (report.crisisErasEn || [])).slice(0, 2).map((era, eIdx) => (
+              <li key={eIdx} style={{ marginBottom: '3px' }}>{era}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Pillar 4: Karmic Mission */}
+        <div className="card" style={{ padding: '14px', borderTop: '3px solid #2563eb', background: 'var(--bg-elevated)' }}>
+          <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isHi ? 'मूल आत्मिक कर्म पथ' : 'Soul Karmic Mission'}
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 700, margin: '4px 0 6px', color: '#2563eb' }}>
+            {isHi ? report.karmicMissionHi : report.karmicMissionEn}
+          </div>
+          <div style={{ fontSize: '12.5px', lineHeight: 1.45, color: 'var(--text)' }}>
+            {isHi
+              ? 'सांसारिक उपलब्धियों के साथ-साथ संस्थागत न्याय व धर्म का निर्वहन जीवन का सर्वोच्च उद्देश्य है।'
+              : 'Balancing executive success with institutional righteousness defines the ultimate destiny.'}
+          </div>
+        </div>
       </div>
 
       {/* Birth Panchang and Avakhada foundations used by General Prediction */}
@@ -162,6 +214,37 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               <strong>{isHi ? 'फलादेश: ' : 'Prediction: '}</strong>
               {isHi ? domain.predictionHi : domain.predictionEn}
             </div>
+
+            {/* Active Timing Window & Concrete Event Milestones */}
+            {(domain.timingWindowHi || domain.timingWindowEn) && (
+              <div
+                style={{
+                  padding: '10px 14px',
+                  background: 'rgba(217, 119, 6, 0.08)',
+                  borderLeft: '4px solid #d97706',
+                  borderRadius: '6px',
+                  marginBottom: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#b45309', fontWeight: 700, fontSize: '13px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                  <Clock size={14} />
+                  <span>{isHi ? 'सक्रिय फलन समय-सीमा (Timing Window):' : 'Active Manifestation Window:'}</span>
+                  <span style={{ color: 'var(--text)', fontWeight: 600 }}>{isHi ? domain.timingWindowHi : domain.timingWindowEn}</span>
+                </div>
+                {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).length > 0 && (
+                  <div>
+                    <div style={{ fontWeight: 650, fontSize: '12.5px', marginBottom: '4px' }}>
+                      {isHi ? 'ठोस संभावित जीवन घटनाएं (Concrete Predicted Events):' : 'Concrete Manifesting Events:'}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
+                      {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).map((ev, evIdx) => (
+                        <li key={evIdx} style={{ marginBottom: '3px' }}>{ev}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* In-depth Detailed Narrative */}
             <p style={{ margin: '0 0 14px', fontSize: '13.5px', lineHeight: 1.55 }}>

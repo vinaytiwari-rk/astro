@@ -53,6 +53,104 @@ export const PlanetInHousePanel: React.FC<{ report: PredictionReport }> = ({ rep
   );
 };
 
+function getHouseSpecificEventAnswers(
+  houseNum: number,
+  lord: string,
+  dignity: string,
+  isHi: boolean
+): { qHi: string; qEn: string; aHi: string; aEn: string } {
+  const isGood = ['Exalted', 'Own Sign', 'Moolatrikona', 'Friend', 'Great Friend'].includes(dignity);
+
+  switch (houseNum) {
+    case 1:
+      return {
+        qHi: 'देह, आरोग्य, दीर्घायु व सामाजिक प्रभाव:',
+        qEn: 'Vitality, Physique, Stature & Social Aura:',
+        aHi: isGood ? 'तेजस्वी व्यक्तित्व, उत्तम आरोग्य एवं समाज में स्वाभाविक नेतृत्व। आयु 24-28 वर्ष में स्वतंत्र पहचान का उदय।' : 'आरंभिक वर्षों में स्वास्थ्य के प्रति सतर्कता आवश्यक; नियमित योगाभ्यास व सूर्य उपासना से सर्वांगीण कल्याण।',
+        aEn: isGood ? 'Radiant persona, robust vitality and commanding leadership. Independent identity peaks at age 24–28.' : 'Cultivate disciplined wellness; Surya Upasana ensures vigorous longevity and immune resilience.',
+      };
+    case 2:
+      return {
+        qHi: 'संचित धन, पैतृक संपत्ति व वाणी:',
+        qEn: 'Accumulated Wealth, Lineage & Speech:',
+        aHi: isGood ? 'स्थायी धन संचय, कुटुंब का सहयोग एवं आयु 28-32 वर्ष में पैतृक व स्व-अर्जित कोष में उल्लेखनीय वृद्धि।' : 'वाणी में कटुता से बचें; वित्तीय योजनाबद्धता व बचत पर ध्यान देने से धन स्थिरता प्राप्त होगी।',
+        aEn: isGood ? 'Steady wealth accumulation, solid family backing & significant wealth multiplication around age 28–32.' : 'Refrain from harsh speech; systematic financial planning safeguards assets.',
+      };
+    case 3:
+      return {
+        qHi: 'पराक्रम, छोटे भाई-बहन व यात्राएं:',
+        qEn: 'Courage, Siblings & Ventures:',
+        aHi: isGood ? 'अदम्य साहस, पुरुषार्थ से भाग्योदय, छोटे भाई-बहनों से स्नेह एवं सफल व्यावसायिक यात्राएं।' : 'अनावश्यक जोखिमपूर्ण निर्णयों से बचें; अपने पराक्रम को एक दिशा में केंद्रित करें।',
+        aEn: isGood ? 'Exceptional valour, self-made enterprise success, warm sibling ties & rewarding travels.' : 'Channel courageous drive constructively; avoid hasty impulse ventures.',
+      };
+    case 4:
+      return {
+        qHi: 'माता का सुख, भूमि-भवन व वाहन योग:',
+        qEn: 'Mother, Real Estate, Vehicle & Inner Peace:',
+        aHi: isGood ? 'माता का आशीर्वाद, आयु 27-31 वर्ष में वाहन सुख एवं 33-37 वर्ष में स्वयं का भव्य गृह निर्माण योग।' : 'पारिवारिक शांति बनाए रखें; आयु 30 के बाद धैर्य व परिश्रम से अचल संपत्ति का निर्माण संभव होगा।',
+        aEn: isGood ? 'Maternal grace, prime vehicle acquisition at age 27–31 and grand home ownership at age 33–37.' : 'Preserve domestic harmony; disciplined savings unlock real estate past age 30.',
+      };
+    case 5:
+      return {
+        qHi: 'संतान योग, उच्च विद्या व आकस्मिक लाभ:',
+        qEn: 'Progeny, Higher Intellect & Speculation:',
+        aHi: isGood ? 'कुशाग्र बुद्धि, उच्च शिक्षा में विशिष्ट सफलता, सुयोग्य संतान योग (आयु 26-30 वर्ष) एवं शोध/निवेश से लाभ।' : 'संतान की शिक्षा पर ध्यान दें; सट्टेबाजी व शेयर बाजार में अत्यधिक जोखिम से बचें।',
+        aEn: isGood ? 'Sharp intellect, academic distinction, dutiful progeny around age 26–30 & lucrative analytical gains.' : 'Focus on progeny mentoring; avoid speculative trading without deep research.',
+      };
+    case 6:
+      return {
+        qHi: 'रोग, ऋण, शत्रु विजय व प्रतियोगी परीक्षा:',
+        qEn: 'Debts, Health Immunity, Competition & Victory:',
+        aHi: isGood ? 'शत्रुओं पर पूर्ण विजय, प्रतियोगी परीक्षाओं में उत्कृष्ट सफलता एवं किसी भी ऋण से शीघ्र मुक्ति।' : 'स्वास्थ्य में पाचन व उदर विकारों से बचाव रखें; बिना जांचे किसी को बड़ा उधार न दें।',
+        aEn: isGood ? 'Complete triumph over adversaries, competitive exam success and quick liquidation of liabilities.' : 'Safeguard digestive health; avoid informal unsecured loans to acquaintances.',
+      };
+    case 7:
+      return {
+        qHi: 'विवाह काल, जीवनसाथी का स्वरूप व दांपत्य:',
+        qEn: 'Marriage Timing, Spouse Persona & Harmony:',
+        aHi: isGood ? 'आयु 25-29 वर्ष में विवाह; जीवनसाथी सुसंस्कृत, बुद्धिमान व पूर्व/उत्तर दिशा से आने का योग।' : 'विवाह में जल्दबाजी न करें; आयु 28 के पश्चात परिपक्वता से दांपत्य में स्थायी मधुरता आएगी।',
+        aEn: isGood ? 'Marriage favoured around age 25–29; spouse is dignified, intelligent & supportive.' : 'Avoid impulsive haste; union after age 28 brings mature, lasting harmony.',
+      };
+    case 8:
+      return {
+        qHi: 'अचानक धन लाभ, आयु व गुप्त विद्या:',
+        qEn: 'Sudden Wealth, Longevity & Transformation:',
+        aHi: isGood ? 'दीर्घायु योग (75+ वर्ष), शोध/गूढ़ विज्ञान में रुचि तथा वसीयत या अप्रत्याशित लाभ।' : 'वाहन सावधानी से चलाएं; शनि व महामृत्युंजय मंत्र जप से आयु-आरोग्य की पूर्ण रक्षा होती है।',
+        aEn: isGood ? 'Long life (75+ years), fascination with deep research & sudden windfall gains.' : 'Drive with disciplined care; Maha Mrityunjaya mantra shields health and longevity.',
+      };
+    case 9:
+      return {
+        qHi: 'भाग्य, धर्म, पिता व तीर्थाटन:',
+        qEn: 'Fortune, Dharma, Father & Pilgrimage:',
+        aHi: isGood ? 'ईश्वरीय कृपा से संकटों में स्वतः रक्षा, पिता का आशीर्वाद एवं जीवन में सुदूर तीर्थ यात्राएं।' : 'धर्म-कर्म का मार्ग न छोड़ें; गुरुजनों का आदर करने से भाग्य के अवरोध दूर होते हैं।',
+        aEn: isGood ? 'Divine protection in crises, paternal blessing, and fulfilling spiritual travels.' : 'Stay anchored to ethical dharma; respecting elders steadily unlocks fortune.',
+      };
+    case 10:
+      return {
+        qHi: 'करियर, पद-प्रतिष्ठा व शासन से लाभ:',
+        qEn: 'Career Authority, Status & Governance:',
+        aHi: isGood ? 'प्रशासनिक अधिकार, नेतृत्व पद एवं आयु 32-36 वर्ष में करियर का ऐतिहासिक उत्कर्ष।' : 'कार्यस्थल की राजनीति से दूर रहें; अपनी कार्यकुशलता से ही स्थायी सम्मान प्राप्त होगा।',
+        aEn: isGood ? 'Commanding executive authority, leadership rank & major zenith around age 32–36.' : 'Steer clear of office gossip; technical expertise ensures lasting prestige.',
+      };
+    case 11:
+      return {
+        qHi: 'स्थायी आय, बड़े मित्र व मनोकामना पूर्ति:',
+        qEn: 'Inflow Streams, Elder Siblings & Desires:',
+        aHi: isGood ? 'जीवन में आय के एकाधिक स्थायी स्रोत, प्रभावशाली मित्रों का नेटवर्क व इच्छाओं की पूर्ति।' : 'आय की तुलना में व्यय का अनुपात संतुलित रखें; मित्रों के साथ वित्तीय पारदर्शिता रखें।',
+        aEn: isGood ? 'Multiple streams of income, influential high-status network & fulfillment of aims.' : 'Balance cash outflow against inflow; maintain strict transparency with friends.',
+      };
+    case 12:
+      return {
+        qHi: 'विदेश गमन, व्यय व मोक्ष गति:',
+        qEn: 'Foreign Settlement, Expenditure & Moksha:',
+        aHi: isGood ? 'सुदूर विदेश यात्रा, विदेशी कंपनियों/मुद्रा से लाभ अथवा स्थायी निवास (PR) का योग।' : 'अनावश्यक अपव्यय से बचें; रात्रि में ध्यान व प्राणायाम से मानसिक शांति व अनिद्रा से मुक्ति मिलेगी।',
+        aEn: isGood ? 'Foreign travel, lucrative cross-border commerce, or permanent foreign residency.' : 'Curtail impulsive expenses; evening meditation grants deep sleep and serenity.',
+      };
+    default:
+      return { qHi: '', qEn: '', aHi: '', aEn: '' };
+  }
+}
+
 export const HouseWisePanel: React.FC<{
   houses: HouseWisePrediction[];
   report?: PredictionReport;
@@ -166,6 +264,7 @@ export const HouseWisePanel: React.FC<{
         <div className="domains-grid">
           {visibleHouses.map((h) => {
             const tone = h.score >= 75 ? 'high' : h.score >= 55 ? 'mid' : 'low';
+            const eventQa = getHouseSpecificEventAnswers(h.houseNumber, h.lordPlanet, h.lordDignity, isHi);
             return (
               <article key={h.houseNumber} className="domain-card">
                 <div className="domain-top">
@@ -209,6 +308,25 @@ export const HouseWisePanel: React.FC<{
                   <strong>{isHi ? 'भावेश फल:' : 'House Lord Placement:'}</strong>{' '}
                   {isHi ? h.lordReadingHi : h.lordReadingEn}
                 </p>
+
+                {/* Concrete Event Timing & Prediction Block */}
+                <div style={{
+                  margin: '10px 0',
+                  padding: '10px 12px',
+                  background: 'rgba(217, 119, 6, 0.08)',
+                  borderLeft: '4px solid #d97706',
+                  borderRadius: 6,
+                  fontSize: '0.88rem',
+                  lineHeight: 1.5,
+                }}>
+                  <strong style={{ color: '#b45309' }}>
+                    {isHi ? eventQa.qHi : eventQa.qEn}
+                  </strong>
+                  <div style={{ marginTop: 4, color: 'var(--text)' }}>
+                    {isHi ? eventQa.aHi : eventQa.aEn}
+                  </div>
+                </div>
+
                 <div className="small-text muted" style={{ marginTop: 6, lineHeight: 1.5 }}>
                   <strong>{isHi ? 'भावेश का कार्यात्मक स्वामित्व:' : 'Lord’s Functional House Ownership:'}</strong>{' '}
                   {isHi ? h.lordFunctionalRolesHi.join(' · ') : h.lordFunctionalRolesEn.join(' · ')}

@@ -39,13 +39,13 @@ export const DashaWisePanel: React.FC<{
   return (
     <div className="view-stack">
       {/* 1. Target Date Active MD/AD/PD */}
-      <section className="panel">
+      <section className="panel" style={{ borderLeft: '4px solid var(--accent)' }}>
         <div className="panel-header">
           <h3>
             <Calendar size={15} />{' '}
             {isHi
-              ? `सक्रिय विंशोत्तरी दशा फलादेश (${formatDateDmy(report.dashaForecast.targetDate)})`
-              : `Active Vimshottari Dasha Prediction (${formatDateDmy(report.dashaForecast.targetDate)})`}
+              ? `सक्रिय विंशोत्तरी दशा फलादेश एवं तात्कालिक घटना फल (${formatDateDmy(report.dashaForecast.targetDate)})`
+              : `Active Vimshottari Dasha Prediction & Concrete Events (${formatDateDmy(report.dashaForecast.targetDate)})`}
           </h3>
           <div className="toolbar-group">
             <span className="tag tag-karaka">
@@ -65,7 +65,42 @@ export const DashaWisePanel: React.FC<{
           </div>
         </div>
         <div className="pred-card-body">
-          <p className="lead-text">{report.dashaForecast.summary}</p>
+          <p className="lead-text" style={{ fontSize: '14px', fontWeight: 600 }}>{report.dashaForecast.summary}</p>
+          
+          {/* Concrete Events in Current Running Dasha */}
+          <div style={{ margin: '12px 0', padding: '12px 14px', background: 'var(--bg-subtle)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13px', color: 'var(--accent)', marginBottom: '8px' }}>
+              <Sparkles size={14} />
+              <span>{isHi ? 'वर्तमान दशा काल में संभावित निश्चित घटनाएं:' : 'Concrete Event Manifestations in Current Period:'}</span>
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', lineHeight: 1.55 }}>
+              <li>
+                <strong>{isHi ? 'करियर व आजीविका: ' : 'Career & Authority: '}</strong>
+                <span>
+                  {isHi
+                    ? `${trPlanet(report.dashaForecast.mahadashaLord, lang)} महादशा में ${trPlanet(report.dashaForecast.antardashaLord, lang)} की अंतर्दशा कार्यक्षेत्र में पदोन्नति, दायित्व वृद्धि अथवा नए व्यावसायिक अनुबंधों का मार्ग प्रशस्त करेगी।`
+                    : `Promotion, heightened executive responsibilities, and strategic business contracts under ${report.dashaForecast.mahadashaLord}-${report.dashaForecast.antardashaLord}.`}
+                </span>
+              </li>
+              <li>
+                <strong>{isHi ? 'आर्थिक लाभ व संपत्ति: ' : 'Wealth & Assets: '}</strong>
+                <span>
+                  {isHi
+                    ? 'संचित धन में वृद्धि, नवीन अचल संपत्ति अथवा वाहन क्रय के अनुकूल अवसर निर्मित होंगे; अनावश्यक जोखिम से बचें।'
+                    : 'Capital accumulation, opportunities for real estate/vehicle purchase, and expansion of liquidity.'}
+                </span>
+              </li>
+              <li>
+                <strong>{isHi ? 'पारिवारिक व स्वास्थ्य सतर्कता: ' : 'Family & Health Care: '}</strong>
+                <span>
+                  {isHi
+                    ? 'पारिवारिक मांगलिक कार्य संपन्न होंगे; खान-पान व नियमित दिनचर्या पर ध्यान देकर मौसमी व पित्त विकारों से बचाव रखें।'
+                    : 'Auspicious domestic celebrations; preventive lifestyle discipline required to manage metabolic stress.'}
+                </span>
+              </li>
+            </ul>
+          </div>
+
           <div className="pred-bullets">
             <div>
               <strong>{isHi ? 'महादशा फल:' : 'Mahadasha'} ({report.dashaForecast.mahadashaLord}):</strong>{' '}
@@ -76,7 +111,7 @@ export const DashaWisePanel: React.FC<{
               {report.dashaForecast.antardashaReading}
             </div>
             <div>
-              <strong>{isHi ? 'दशा मार्गदर्शन:' : 'Timing Guidance:'}</strong>{' '}
+              <strong>{isHi ? 'दशा मार्गदर्शन व अचूक उपाय:' : 'Timing Guidance & Remedy:'}</strong>{' '}
               {report.dashaForecast.guidance}
             </div>
           </div>
@@ -262,6 +297,33 @@ export const GocharWisePanel: React.FC<{
           </div>
 
           <div className="gochar-highlights">
+            {/* 12-24 Month Transit Roadmap */}
+            <div style={{ padding: '12px 14px', background: 'var(--bg-elevated)', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)', marginBottom: '6px' }}>
+                <Sparkles size={15} />
+                <span>{isHi ? 'आगामी 12 से 24 माह का गोचर रोडमैप (2026-2027 Transit Predictions):' : 'Next 12–24 Months Transit Roadmap (2026–2027):'}</span>
+              </div>
+              <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: 1.5 }}>
+                {isHi
+                  ? 'वर्तमान कालखंड में देवगुरु बृहस्पति का गोचर ज्ञान, संतान व आर्थिक विस्तार के नए द्वार खोलेगा, जबकि शनि का गोचर कर्मक्षेत्र में अनुशासन व ठोस परिश्रम की मांग करेगा। राहु-केतु अक्ष अप्रत्याशित यात्राओं व नवाचार को प्रेरित करेगा।'
+                  : 'Jupiter transit expands intellectual pursuits and wealth creation, while Saturn demands disciplined perseverance. Rahu-Ketu triggers unconventional ventures and long-distance travel.'}
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', fontSize: '12.5px' }}>
+                <div style={{ padding: '6px 10px', background: 'rgba(5, 150, 105, 0.08)', borderRadius: '6px', borderLeft: '3px solid #059669' }}>
+                  <strong>{isHi ? 'गुरु कृपा: ' : 'Jupiter: '}</strong>
+                  <span>{isHi ? 'आर्थिक लाभ व पदोन्नति अवसर' : 'Financial gains & promotion'}</span>
+                </div>
+                <div style={{ padding: '6px 10px', background: 'rgba(217, 119, 6, 0.08)', borderRadius: '6px', borderLeft: '3px solid var(--accent)' }}>
+                  <strong>{isHi ? 'शनि प्रभाव: ' : 'Saturn: '}</strong>
+                  <span>{isHi ? 'स्थिर निर्माण व धैर्य की परीक्षा' : 'Structure & patience test'}</span>
+                </div>
+                <div style={{ padding: '6px 10px', background: 'rgba(37, 99, 235, 0.08)', borderRadius: '6px', borderLeft: '3px solid #2563eb' }}>
+                  <strong>{isHi ? 'राहु-केतु: ' : 'Rahu-Ketu: '}</strong>
+                  <span>{isHi ? 'आकस्मिक यात्रा व स्थान परिवर्तन' : 'Travel & unexpected shifts'}</span>
+                </div>
+              </div>
+            </div>
+
             <div className="gochar-banner is-info">
               <strong>{isHi ? 'दोहरा गोचर प्रभाव:' : 'Double Transit Activation:'}</strong>{' '}
               {report.deepGochar.overallSummary}

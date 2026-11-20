@@ -232,7 +232,9 @@ export function App() {
       view === 'predictions' ||
       view === 'general-prediction' ||
       view === 'planet-wise-prediction' ||
-      view === 'house-wise-prediction'
+      view === 'house-wise-prediction' ||
+      view === 'sambhavit-falkathan' ||
+      view === 'falkathan'
     ) {
       target = 'predictions';
       const legacySub = view === 'planet-wise-prediction'

@@ -430,33 +430,43 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 >
                   <button type="button" onClick={() => handleLinkClick('predictions', 'deep_life')}>
                     <strong>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'जीवन स्तर, स्वर्ण कालखंड, संकट काल व 6 जीवन क्षेत्र' : 'Life Stature, Peak Era & 6 Life Domains'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
                     <strong>{isHi ? 'दशा फलादेश' : 'Dasha Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं' : 'Running Mahadasha/Antardasha Manifestation'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'gocharWise')}>
                     <strong>{isHi ? 'गोचर फलादेश' : 'Transit Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '12-24 माह का गोचर रोडमैप, गुरु-शनि दोहरा गोचर फल' : '12-24 Month Transit Roadmap & Double Transit'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'houseWise')}>
                     <strong>{isHi ? 'भाववार फलादेश' : 'House-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल' : '1st to 12th House Specific Events & Timing'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'twelve_planets')}>
                     <strong>{isHi ? 'ग्रहवार फलादेश' : 'Planet-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'द्वादश ग्रह: सकारात्मक घटनाएं, खतरे, फलन काल व उपाय' : '12 Planets: Positive Milestones, Hazards & Timing'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'planetInNakshatra')}>
                     <strong>{isHi ? 'नक्षत्रवार फलादेश' : 'Nakshatra-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '27 नक्षत्र, 4 चरण, तारा चक्र व अनुकूल कार्यक्षेत्र' : '27 Nakshatras, 4 Padas, Tara & Career Nuance'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'planetInSign')}>
                     <strong>{isHi ? 'राशिवार फलादेश' : 'Sign-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '12 राशियों में ग्रहों की शास्त्रीय स्थिति व स्वभाव' : 'Planets in 12 Signs Classical Findings'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'yutiWise')}>
                     <strong>{isHi ? 'युति फलादेश' : 'Yuti (Conjunction) Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कुंडली के ग्रह युति योग, युति अंश व अनुकूल-प्रतिकूल फल' : 'Planetary Conjunctions, Degrees & Exact Effects'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'drishtiWise')}>
                     <strong>{isHi ? 'दृष्टि फलादेश' : 'Drishti (Aspect) Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'समसप्तक व विशेष दृष्टियां, दृष्टि वीरुपा व घटना प्रभाव' : 'Full & Special Aspects, Virupas & Event Impacts'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'yogaWise')}>
                     <strong>{isHi ? 'योगवार फलादेश' : 'Yoga-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग' : 'Raja, Dhana, Mahapurusha & Classical Yogas'}</span>
                   </button>
                 </div>
               )}

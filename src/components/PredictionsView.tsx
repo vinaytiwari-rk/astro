@@ -72,21 +72,24 @@ export type PredSubTab =
 
 function normalizeSubTab(id?: string): PredSubTab {
   if (!id) return 'deep_life';
-  if (id === 'twelve_planets') return 'twelve_planets';
+  if (id === 'deep_life' || id === 'general' || id === 'samanya') return 'deep_life';
+  if (id === 'dashaWise' || id === 'dasha' || id === 'dashawise') return 'dashaWise';
+  if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
+  if (id === 'houseWise' || id === 'house' || id === 'housewise' || id === 'bhavas_12' || id === 'bhavas') return 'houseWise';
+  if (id === 'twelve_planets' || id === 'planet' || id === 'planets' || id === 'graha') return 'twelve_planets';
+  if (id === 'planetInNakshatra' || id === 'nakshatra' || id === 'nakshatras') return 'planetInNakshatra';
+  if (id === 'planetInSign' || id === 'planetinsign' || id === 'rasi' || id === 'rashi' || id === 'sign') return 'planetInSign';
+  if (id === 'yutiWise' || id === 'yuti' || id === 'conjunction') return 'yutiWise';
+  if (id === 'drishtiWise' || id === 'drishti' || id === 'aspect') return 'drishtiWise';
+  if (id === 'yogaWise' || id === 'yoga' || id === 'yogas') return 'yogaWise';
   if (
     id === 'active_yogas_yuti' ||
     id === 'classical_yogas' ||
     id === 'classicalYogas' ||
-    id === 'yuti' ||
     id === 'yuti_aspects'
   ) {
     return 'active_yogas_yuti';
   }
-  if (id === 'yutiWise' || id === 'yuti') return 'yutiWise';
-  if (id === 'yogaWise' || id === 'yoga') return 'yogaWise';
-  if (id === 'deep_life') return 'deep_life';
-  if (id === 'eventsLedger' || id === 'timeline_120yr' || id === 'timeline') return 'eventsLedger';
-  if (id === 'houseWise' || id === 'bhavas_12' || id === 'bhavas12' || id === 'bhavas') return 'houseWise';
   if (id === 'bhriguNadi' || id === 'bnn_bsp' || id === 'bnn') return 'bhriguNadi';
   if (id === 'pastFuture' || id === 'past_future' || id === 'past_life') return 'pastFuture';
   if (

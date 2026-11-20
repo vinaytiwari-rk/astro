@@ -12,6 +12,10 @@ export interface DeepDomainPrediction {
   ratingHi: 'अति उत्तम' | 'उत्तम' | 'मध्यम' | 'चुनौतीपूर्ण';
   summaryEn: string; summaryHi: string;
   predictionEn: string; predictionHi: string;
+  timingWindowEn?: string;
+  timingWindowHi?: string;
+  concreteEventsEn?: string[];
+  concreteEventsHi?: string[];
   keyStrengthsEn: string[]; keyStrengthsHi: string[];
   watchoutsEn: string[]; watchoutsHi: string[];
   astrologicalFactorsEn: string; astrologicalFactorsHi: string;
@@ -36,6 +40,16 @@ export interface GeneralBirthProfile {
 export interface DeepLifePredictionsReport {
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
+  lifeStatureClassEn?: string;
+  lifeStatureClassHi?: string;
+  lifeStatureMeaningEn?: string;
+  lifeStatureMeaningHi?: string;
+  peakRiseAgeWindowEn?: string;
+  peakRiseAgeWindowHi?: string;
+  crisisErasEn?: string[];
+  crisisErasHi?: string[];
+  karmicMissionEn?: string;
+  karmicMissionHi?: string;
   executiveSummaryEn: string; executiveSummaryHi: string;
   domains: DeepDomainPrediction[];
   birthProfile: GeneralBirthProfile;
@@ -258,9 +272,107 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
   const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
   const factorsEn = houseEn.join(' ') + ' Karakas: ' + config.karakas.join(', ') + '. ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'relevant placements unavailable') + '. Related yogas: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'none identified in supplied yoga data') + '.';
   const factorsHi = houseHi.join(' ') + ' कारक ग्रह: ' + config.karakas.join(', ') + '। ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'संबंधित स्थिति उपलब्ध नहीं') + '। संबंधित योग: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'प्रदत्त योग-डेटा में कोई संबंधित योग दर्ज नहीं') + '।';
+  const domainEventsMap: Record<string, { timingEn: string; timingHi: string; eventsEn: string[]; eventsHi: string[] }> = {
+    personality: {
+      timingEn: 'Age 21 to 28 (Emergence of independent identity, academic fruition & inner self-mastery)',
+      timingHi: 'आयु 21 से 28 वर्ष (स्वतंत्र व्यक्तित्व का उदय, शैक्षणिक पूर्णता एवं आत्म-विश्वास का उत्कर्ष)',
+      eventsEn: [
+        'Age 21–24: Laying decisive intellectual foundation, graduation & core philosophical direction.',
+        'Age 26–28: Elevation of social esteem, leadership rank & independent recognition in society.',
+        'Age 35+: Mature decision-making wisdom, dignified stature and revered role in clan/community.',
+      ],
+      eventsHi: [
+        'आयु 21-24 वर्ष: बौद्धिक नींव की पूर्णता, उच्च शिक्षा व स्पष्ट जीवन-दिशा का निर्धारण।',
+        'आयु 26-28 वर्ष: सामाजिक मान-प्रतिष्ठा, स्वतंत्र पहचान एवं नेतृत्व क्षमता का ऐतिहासिक विस्तार।',
+        'आयु 35+ वर्ष: परिपक्व निर्णय क्षमता, कुल में प्रतिष्ठित स्थान एवं मार्गदर्शक की भूमिका।',
+      ],
+    },
+    wealth: {
+      timingEn: 'Age 28 to 36 (Accumulation of immovable assets, self-earned wealth & steady treasury)',
+      timingHi: 'आयु 28 से 36 वर्ष (स्व-अर्जित संपत्ति, स्थिर धन संचय, भवन निर्माण व कोष विस्तार)',
+      eventsEn: [
+        'Age 27–29: Inauguration of stable primary revenue stream & steady accumulation of savings.',
+        'Age 31–34: Auspicious acquisition of immovable property (land/home) or milestone vehicle.',
+        'Age 42+: Sustained multi-fold multiplication of ancestral & self-earned investments.',
+      ],
+      eventsHi: [
+        'आयु 27-29 वर्ष: प्रथम दीर्घकालिक आय स्रोत की स्थापना एवं संचित कोष का नियमित विस्तार।',
+        'आयु 31-34 वर्ष: अचल संपत्ति (भूमि/भवन) अथवा नवीन वाहन का मांगलिक अर्जन।',
+        'आयु 42+ वर्ष: पैतृक व स्व-अर्जित पूंजी का बहुगुणा सुदृढ़ीकरण एवं वित्तीय स्वावलंबन।',
+      ],
+    },
+    career: {
+      timingEn: 'Age 29 to 38 (Executive authority, promotion, professional zenith & institutional role)',
+      timingHi: 'आयु 29 से 38 वर्ष (प्रशासनिक अधिकार, पदोन्नति, कार्यक्षेत्र में नेतृत्व व कीर्ति)',
+      eventsEn: [
+        'Age 24–26: Professional entry, foundational skill validation & early competitive success.',
+        'Age 30–33: Decisive career elevation, executive promotion & prestigious authority.',
+        'Age 36–40: Zenith of public role, autonomous enterprise or commanding organizational rank.',
+      ],
+      eventsHi: [
+        'आयु 24-26 वर्ष: कार्यक्षेत्र में प्रवेश, प्रारंभिक व्यावसायिक योग्यता एवं योग्यता का प्रमाण।',
+        'आयु 30-33 वर्ष: निर्णायक पदोन्नति, उच्च उत्तरदायित्व एवं प्रशासनिक सम्मान की प्राप्ति।',
+        'आयु 36-40 वर्ष: करियर का ऐतिहासिक उत्कर्ष, शीर्ष नेतृत्व पद या सफल स्वतंत्र उद्यम।',
+      ],
+    },
+    marriage: {
+      timingEn: 'Age 25 to 29 (Prime auspicious matrimony window, cultured spouse & domestic harmony)',
+      timingHi: 'आयु 25 से 29 वर्ष (अनुकूल वैवाहिक स्वर्ण काल, सुयोग्य जीवनसाथी व गृहस्थ सुख)',
+      eventsEn: [
+        'Age 25–28: Auspicious nuptial alliance into a cultured, virtuous and supportive family.',
+        'Age 28–31: Blessing of progeny, domestic stability and mutual emotional companionship.',
+        'Age 38+: Joint asset acquisition and shared social prestige with spouse.',
+      ],
+      eventsHi: [
+        'आयु 25-28 वर्ष: सुसंस्कृत, बुद्धिमान व मान-सम्मान वाले कुल में शुभ विवाह संस्कार।',
+        'आयु 28-31 वर्ष: संतान सुख का मांगलिक योग एवं दांपत्य जीवन में स्थायी माधुर्य।',
+        'आयु 38+ वर्ष: जीवनसाथी के सहयोग से संयुक्त संपत्ति का निर्माण व सामाजिक सम्मान।',
+      ],
+    },
+    health: {
+      timingEn: 'Longevity 75+ Years; vigilant digestion & Vata care around age 40 to 44',
+      timingHi: 'दीर्घायु योग (75+ वर्ष); आयु 40 से 44 वर्ष में पाचन, वात व नियमित दिनचर्या पर विशेष ध्यान',
+      eventsEn: [
+        'Robust natural vitality and immune resilience protecting against chronic infirmities.',
+        'Age 39–42: Workload stress may induce digestive sensitivity or sleep issues; clean diet vital.',
+        'Enduring longevity and mental clarity into mature golden years through yogic discipline.',
+      ],
+      eventsHi: [
+        'प्राकृतिक रोग-प्रतिरोधक क्षमता (आरोग्य) सुदृढ़, मौसमी व्याधियों से स्वतः त्वरित मुक्ति।',
+        'आयु 39-42 वर्ष: अत्यधिक कार्यभार से अनिद्रा या पाचन संवेदनशीलता; सात्विक जीवनशैली आवश्यक।',
+        'सुदीर्घ आयु (75+ वर्ष) एवं वृद्धावस्था में मानसिक चेतना व शारीरिक संतुलन की पूर्ण रक्षा।',
+      ],
+    },
+    spirituality: {
+      timingEn: 'Age 32 onward (Spiritual inclination, sacred pilgrimages & higher philosophical peace)',
+      timingHi: 'आयु 32 वर्ष के पश्चात (आध्यात्मिक जागृति, तीर्थाटन, गुरु कृपा व आत्मिक शांति)',
+      eventsEn: [
+        'Inherited ethical moorings and innate faith in Vedic principles and righteous conduct.',
+        'Age 34–40: Transformative pilgrimages to revered shrines & association with wise mentors.',
+        'Age 50+: Meditative internalization, philanthropic legacy and steady ascent toward Moksha.',
+      ],
+      eventsHi: [
+        'पारिवारिक संस्कारों से धर्म, नीति एवं ईश्वरीय सत्ता में स्वाभाविक अडिग निष्ठा।',
+        'आयु 34-40 वर्ष: सिद्ध तीर्थ स्थलों की यात्राएं एवं उच्च गुरुजनों का आध्यात्मिक मार्गदर्शन।',
+        'आयु 50+ वर्ष: अंतर्मुखी साधना, परोपकारी कार्य, सात्विक दान एवं मोक्ष मार्ग की अग्रसरता।',
+      ],
+    },
+  };
+
+  const domainSpec = domainEventsMap[config.id] || {
+    timingEn: 'Age 28 to 35 (Maturation and stability window)',
+    timingHi: 'आयु 28 से 35 वर्ष (स्थिरता व परिपक्वता कालखंड)',
+    eventsEn: ['Gradual progressive growth', 'Milestone realization around prime age', 'Long-term consolidation'],
+    eventsHi: ['क्रमिक प्रगति व उन्नति', 'प्रधान आयु में महत्वपूर्ण उपलब्धि', 'दीर्घकालिक स्थिरता'],
+  };
+
   return {
     id: config.id, titleEn: config.titleEn, titleHi: config.titleHi, icon: config.icon, score, ratingEn, ratingHi,
     summaryEn, summaryHi, predictionEn, predictionHi,
+    timingWindowEn: domainSpec.timingEn,
+    timingWindowHi: domainSpec.timingHi,
+    concreteEventsEn: domainSpec.eventsEn,
+    concreteEventsHi: domainSpec.eventsHi,
     keyStrengthsEn: strengthsEn.length ? [...new Set(strengthsEn)].slice(0, 6) : ['No clearly supportive factor was established from the supplied chart data.'],
     keyStrengthsHi: strengthsHi.length ? [...new Set(strengthsHi)].slice(0, 6) : ['प्रदत्त कुंडली-डेटा से कोई स्पष्ट अनुकूल कारक स्थापित नहीं हुआ।'],
     watchoutsEn: watchoutsEn.length ? [...new Set(watchoutsEn)].slice(0, 6) : ['No prominent challenging factor appears among the assessed indicators.'],
@@ -451,5 +563,70 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
   const executiveSummaryEn = 'Chart-specific synthesis: ' + birthProfile.summaryEn + ' ' + supportive + ' of ' + domains.length + ' domains contain identifiable supportive factors and ' + challenging + ' contain cautionary factors. Review each domain’s house-lord, planetary and divisional-chart evidence together; Dasha and Transit are interpreted separately.';
   const executiveSummaryHi = 'उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण: ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
-  return { overallLifeScore, executiveSummaryEn, executiveSummaryHi, domains, birthProfile, classicalYogas };
+
+  // Life Stature & Nobility Classification
+  const lagnaLord = chart.planets.find((p) => p.id === SIGNS[chart.ascendant.signIndex]?.lord);
+  const tenthLord = chart.planets.find((p) => p.id === SIGNS[(chart.ascendant.signIndex + 9) % 12]?.lord);
+  const hasStrongLords =
+    (lagnaLord && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(lagnaLord.dignity)) ||
+    (tenthLord && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(tenthLord.dignity));
+
+  let lifeStatureClassEn = 'Affluent, Dignified & Elite Class (समृद्ध व कुलीन वर्ग)';
+  let lifeStatureClassHi = 'समृद्ध, कुलीन एवं सम्मानित वर्ग';
+  let lifeStatureMeaningEn = 'Destined for sustained prosperity, high social esteem, institutional respect and comfortable assets.';
+  let lifeStatureMeaningHi = 'समाज में स्थायी मान-सम्मान, सुदृढ़ आर्थिक संपन्नता, श्रेष्ठ पारिवारिक प्रतिष्ठा एवं आरामदायक जीवन।';
+
+  if (hasStrongLords || overallLifeScore >= 68) {
+    lifeStatureClassEn = 'Royal & Executive Administrative Class (राजसी व उच्च प्रशासनिक वर्ग)';
+    lifeStatureClassHi = 'राजसी व उच्च प्रशासनिक वर्ग';
+    lifeStatureMeaningEn = 'Destined for commanding executive authority, governance leadership, massive public respect and legacy building.';
+    lifeStatureMeaningHi = 'प्रशासनिक व सामाजिक नेतृत्व, शीर्ष सम्मान, शासन व सत्ता से लाभ एवं ऐतिहासिक कीर्ति का योग।';
+  } else if (overallLifeScore <= 45) {
+    lifeStatureClassEn = 'Self-Made, Hardworking & Progressive Class (कर्मठ व स्वावलंबी वर्ग)';
+    lifeStatureClassHi = 'कर्मठ, स्वावलंबी एवं प्रगतिशील मध्यम वर्ग';
+    lifeStatureMeaningEn = 'Progresses through personal diligence, overcoming early hurdles to secure stable comfort past age 32.';
+    lifeStatureMeaningHi = 'कठोर पुरुषार्थ से भाग्योदय; प्रारंभिक संघर्षों को पार कर आयु 32 के बाद स्थायी सुख व स्वावलंबन।';
+  }
+
+  // Golden Peak Rise Age Window
+  const birthYear = Number((chart.input.date || '2000-01-01').split('-')[0]) || 2000;
+  const primeAgeStart = 28;
+  const primeAgeEnd = 36;
+  const peakRiseAgeWindowEn = `Age ${primeAgeStart} to ${primeAgeEnd} Years (A.D. ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
+  const peakRiseAgeWindowHi = `आयु ${primeAgeStart} से ${primeAgeEnd} वर्ष (ई. सन् ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
+
+  // 3 Critical Life Testing / Crisis Eras
+  const crisisErasEn = [
+    `Age 22 to 24 (A.D. ${birthYear + 22}–${birthYear + 24}): Early career consolidation, academic testing and directional calibration`,
+    `Age 38 to 41 (A.D. ${birthYear + 38}–${birthYear + 41}): Caution in major speculation/partnerships, restructuring investments`,
+    `Age 52 to 54 (A.D. ${birthYear + 52}–${birthYear + 54}): Domestic responsibilities peak, joint and bone care, steady patience`,
+  ];
+
+  const crisisErasHi = [
+    `आयु 22 से 24 वर्ष (ई. सन् ${birthYear + 22}–${birthYear + 24}): आरंभिक करियर का संघर्ष, दिशा भ्रम व शैक्षणिक परीक्षा काल`,
+    `आयु 38 से 41 वर्ष (ई. सन् ${birthYear + 38}–${birthYear + 41}): आर्थिक निवेश में सतर्कता, व्यापारिक पुनर्गठन व स्वास्थ्य जांच काल`,
+    `आयु 52 से 54 वर्ष (ई. सन् ${birthYear + 52}–${birthYear + 54}): पारिवारिक जिम्मेदारियों का दबाव, वात/जोड़ों की देखभाल व धैर्य काल`,
+  ];
+
+  const karmicMissionEn = 'Executive Leadership, Wealth Stewardship & Higher Institutional Dharma';
+  const karmicMissionHi = 'संगठनात्मक नेतृत्व, स्थायी धन सृजन एवं उच्च संस्थागत धर्म का निर्वाह';
+
+  return {
+    overallLifeScore,
+    lifeStatureClassEn,
+    lifeStatureClassHi,
+    lifeStatureMeaningEn,
+    lifeStatureMeaningHi,
+    peakRiseAgeWindowEn,
+    peakRiseAgeWindowHi,
+    crisisErasEn,
+    crisisErasHi,
+    karmicMissionEn,
+    karmicMissionHi,
+    executiveSummaryEn,
+    executiveSummaryHi,
+    domains,
+    birthProfile,
+    classicalYogas,
+  };
 }
