@@ -7478,3 +7478,6 @@ export function getGulikaHouseRecord(house: number): GulikaHouseRecord | undefin
   const normH = ((house - 1) % 12) + 1;
   return GULIKA_HOUSES_CORPUS.find((g) => g.house === normH);
 }
+
+// Re-export AIFAS Dasha & Yogini Classical Treatise (Prediction through Dasha: Yogini & Vimshottari)
+export * from './aifasYoginiDashaKb';

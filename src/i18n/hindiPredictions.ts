@@ -1,5 +1,6 @@
 import { SIGNS } from '../astro/constants';
 import { getBhavesha144Entry } from '../astro/predictions/bhavesha144';
+import { getAifasYoginiMaha, getAifasYoginiSub } from '../astro/predictions/aifasYoginiDashaKb';
 import type {
   AdvancedDashaBundle,
   SudarshanaWheelResult,
@@ -1006,14 +1007,66 @@ export function localizeDashaDetailHi(
   if (detail.score === 0 && detail.activatedHouses.length === 0) {
     return detail;
   }
-  const mdHi = levelLabel === 'yogini' ? detail.mdLord : planetToHi(detail.mdLord);
-  const adHi = detail.adLord ? (levelLabel === 'yogini' ? detail.adLord : planetToHi(detail.adLord)) : undefined;
+
+  if (levelLabel === 'yogini') {
+    const cleanMd = detail.mdLord.trim().split(' ')[0];
+    const cleanAd = detail.adLord ? detail.adLord.trim().split(' ')[0] : undefined;
+    const aifasMaha = getAifasYoginiMaha(cleanMd);
+    const aifasSub = cleanAd ? getAifasYoginiSub(cleanMd, cleanAd) : undefined;
+
+    if (aifasMaha) {
+      const mdTitleHi = `${aifasMaha.nameHi} (${aifasMaha.lordHi})`;
+      const lordHiMap: Record<string, string> = {
+        Moon: 'चंद्रमा',
+        Sun: 'सूर्य',
+        Jupiter: 'बृहस्पति',
+        Mars: 'मंगल',
+        Mercury: 'बुध',
+        Saturn: 'शनि',
+        Venus: 'शुक्र',
+        Rahu: 'राहु',
+      };
+      const adTitleHi = aifasSub ? `${aifasSub.adName} (${lordHiMap[aifasSub.adLordEn] ?? aifasSub.adLordEn})` : undefined;
+      const titleHi = adTitleHi ? `${mdTitleHi} → ${adTitleHi}` : `${mdTitleHi} योगिनी महादशा`;
+
+      const mdSummaryHi = `${aifasMaha.nameHi} महादशा (${aifasMaha.years} वर्ष · स्वामी: ${aifasMaha.lordHi} · स्वभाव: ${aifasMaha.nature === 'Auspicious' ? 'शुभ' : aifasMaha.nature === 'Inauspicious' ? 'क्रूर/अशुभ' : 'मिश्रित'}): ${aifasMaha.predictionHi}`;
+
+      const adSummaryHi = aifasSub
+        ? `${aifasSub.adName} अंतर्दशा (${aifasSub.durationStrHi} · स्वामी: ${lordHiMap[aifasSub.adLordEn] ?? aifasSub.adLordEn}): ${aifasSub.predictionHi}${aifasSub.isSpecialCrisisAlert ? ' [विशेष शास्त्रीय चेतावनी: संकटा अंतर्दशा मृत्युतुल्य कष्ट या गंभीर संकट सूचक है; तुरंत शांति उपाय करें।]' : ''}`
+        : undefined;
+
+      const guidanceHi = aifasSub?.isSpecialCrisisAlert
+        ? `[AIFAS संकट चेतावनी] संकटा कालखंड में सतर्कता अनिवार्य है। शास्त्रीय उपाय: ${aifasMaha.remediesHi.join(' ')}`
+        : `शास्त्रीय उपाय (${aifasMaha.nameHi} - स्वामी ${aifasMaha.lordHi}): ${aifasMaha.remediesHi.join(' ')}`;
+
+      const keyEffectsHi = [
+        `योगिनी ३६-वर्षीय चक्र: ${aifasMaha.nameHi} महादशा की अवधि ${aifasMaha.years} वर्ष है। ${aifasMaha.lordHi} का नैसर्गिक कारकत्व बिना भाव-स्वामित्व के फलीभूत होता है।`,
+        ...(aifasSub ? [`अंतर्दशा अवधि: ${aifasSub.durationStrHi}।`] : []),
+        ...(aifasSub?.isSpecialCrisisAlert ? [`उच्च जोखिम चेतावनी: ${aifasMaha.nameHi} में संकटा अंतर्दशा स्वास्थ्य, प्रतिष्ठा व जीवन स्थिरता के लिए संकटकारक मानी गई है।`] : []),
+        `शास्त्रीय ग्रंथ प्रमाण: 'Prediction through Dasha: Yogini & Vimshottari' (AIFAS)।`,
+      ];
+
+      return {
+        ...detail,
+        title: titleHi,
+        mdLord: mdTitleHi,
+        adLord: adTitleHi,
+        mdSummary: mdSummaryHi,
+        adSummary: adSummaryHi,
+        guidance: guidanceHi,
+        keyEffects: keyEffectsHi,
+      };
+    }
+  }
+
+  const mdHi = planetToHi(detail.mdLord);
+  const adHi = detail.adLord ? planetToHi(detail.adLord) : undefined;
   const pdHi = detail.pdLord ? planetToHi(detail.pdLord) : undefined;
   const titleHi = pdHi
     ? `${mdHi} → ${adHi} → ${pdHi}`
     : adHi
       ? `${mdHi} → ${adHi}`
-      : `${mdHi} ${levelLabel === 'yogini' ? 'योगिनी दशा' : 'महादशा'}`;
+      : `${mdHi} महादशा`;
 
   return {
     ...detail,
@@ -1021,7 +1074,7 @@ export function localizeDashaDetailHi(
     mdLord: mdHi,
     adLord: adHi,
     pdLord: pdHi,
-    mdSummary: `${mdHi} ${levelLabel === 'yogini' ? 'योगिनी' : 'महादशा'} मुख्य रूप से ${houseListHi(detail.activatedHouses)} के परिणाम सक्रिय करती है (दशा बल: ${detail.score}/100)।`,
+    mdSummary: `${mdHi} महादशा मुख्य रूप से ${houseListHi(detail.activatedHouses)} के परिणाम सक्रिय करती है (दशा बल: ${detail.score}/100)।`,
     adSummary: adHi ? `${adHi} अंतरदशा में ${HOUSE_DOMAIN_HI[detail.activatedHouses[0] ?? 1]} व संबद्ध कार्यों में गति आती है।` : undefined,
     pdSummary: pdHi ? `${pdHi} प्रत्यंतरदशा घटनाओं के घटित होने का सूक्ष्म समय बिंदु निर्धारित करती है।` : undefined,
     d9AndD10Note: replaceEnTermsWithHi(detail.d9AndD10Note)
