@@ -8,6 +8,8 @@ import {
 import type { HouseWisePrediction } from '../../astro/predictions/houseWise';
 import type { PredictionBodyId } from '../../astro/predictions/planetInSign';
 import type { PredictionReport } from '../../astro/predictions/types';
+import { getCharakBhava, DR_CHARAK_BOOK_METADATA, FARFARAWAY_SYNTHESIS_METADATA } from '../../astro/predictions/charakElementsKb';
+import { ExternalLink, ShieldCheck } from 'lucide-react';
 import { trBadge } from '../../i18n/hindiPredictions';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign, trTerm } from '../../i18n/translations';

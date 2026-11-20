@@ -7481,3 +7481,6 @@ export function getGulikaHouseRecord(house: number): GulikaHouseRecord | undefin
 
 // Re-export AIFAS Dasha & Yogini Classical Treatise (Prediction through Dasha: Yogini & Vimshottari)
 export * from './aifasYoginiDashaKb';
+
+// Re-export Dr. K.S. Charak & Far Far Away Classical Treatises
+export * from './charakElementsKb';
