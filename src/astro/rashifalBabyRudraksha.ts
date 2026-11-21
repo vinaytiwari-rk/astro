@@ -9,6 +9,17 @@ import type { ChartData, SevenPlanetId } from './types';
 
 export type RashifalPeriod = 'daily' | 'tomorrow' | 'weekly' | 'weekly_love' | 'monthly' | 'yearly';
 
+export interface RashiThematicDomain {
+  domainId: 'mental_state' | 'work_career' | 'love_attraction' | 'finance_relief' | 'family_siblings';
+  domainNameEn: string;
+  domainNameHi: string;
+  score: number;
+  verdictEn: string;
+  verdictHi: string;
+  adviceEn: string;
+  adviceHi: string;
+}
+
 export interface RashiForecastItem {
   signIndex: number;
   isNatalMoon: boolean;
@@ -36,6 +47,17 @@ export interface RashiForecastItem {
   luckyColorEn: string;
   luckyColorHi: string;
   luckyNumber: number;
+  mentalMoodEn: string;
+  mentalMoodHi: string;
+  workplaceBossEn: string;
+  workplaceBossHi: string;
+  loveAttractionEn: string;
+  loveAttractionHi: string;
+  financeReliefEn: string;
+  financeReliefHi: string;
+  familySiblingsEn: string;
+  familySiblingsHi: string;
+  thematicDomains: RashiThematicDomain[];
 }
 
 export interface BabyNameEntry {
@@ -194,6 +216,104 @@ export function computeRashifalReport(
         ? `साप्ताहिक प्रेम व दांपत्य: शुक्र (${hVen}वें भाव) प्रेम, पारिवारिक सौहार्द व मधुर संवाद को प्रबल बना रहे हैं।`
         : `साप्ताहिक प्रेम व दांपत्य: शुक्र (${hVen}वें) व मंगल (${hMars}वें) के प्रभाव से वाणी में मधुरता व संयम आवश्यक रहेगा।`;
 
+    const isMentalHigh = [1, 3, 6, 7, 10, 11].includes(hMoon);
+    const mentalScore = isMentalHigh ? 82 : [2, 5, 9].includes(hMoon) ? 70 : 54;
+    const mentalMoodEn = isMentalHigh
+      ? 'Mental equilibrium is solid; vibrant optimism and acute clarity empower decisive problem solving.'
+      : 'Mind feels sensitive and prone to over-analysis; meditation, quiet rest and avoiding hasty arguments will restore peace.';
+    const mentalMoodHi = isMentalHigh
+      ? 'मानसिक संतुलन सुदृढ़ रहेगा; सकारात्मक ऊर्जा व स्पष्ट सोच से जटिल मामलों में सटीक निर्णय ले सकेंगे।'
+      : 'मन कुछ संवेदनशील या चंचल रह सकता है; ध्यान, मौन व अनावश्यक वाद-विवाद से दूरी मानसिक शांति लौटाएगी।';
+
+    const isWorkHigh = [1, 3, 6, 10, 11].includes(hSun);
+    const workScore = isWorkHigh ? 85 : 62;
+    const workplaceBossEn = isWorkHigh
+      ? 'Superiors and colleagues favor your proposals; proactive leadership and fresh ideas gain swift approval.'
+      : 'Maintain steady documentation, punctuality, and calm diplomacy during meetings to avoid misunderstandings with seniors.';
+    const workplaceBossHi = isWorkHigh
+      ? 'उच्चाधिकारियों व वरिष्ठों से सराहना मिलेगी; आपके रचनात्मक प्रस्तावों व नेतृत्व क्षमता को गति प्राप्त होगी।'
+      : 'कार्यक्षेत्र में समयबद्धता, स्पष्ट दस्तावेज व शांत कूटनीति बनाए रखें ताकि वरिष्ठों से कोई गलतफहमी न हो।';
+
+    const isLoveHigh = [1, 2, 5, 7, 11].includes(hVen);
+    const loveScore = isLoveHigh ? 84 : 64;
+    const loveAttractionEn = isLoveHigh
+      ? 'Heartfelt emotional warmth, romantic magnetism, and deeper mutual appreciation illuminate your bonds.'
+      : 'Maintain gentle speech, listen patiently, and avoid testing partners over minor trifles to safeguard marital bliss.';
+    const loveAttractionHi = isLoveHigh
+      ? 'प्रेम, आकर्षण व दांपत्य सुख में वृद्धि होगी; परस्पर समर्पण व आत्मीयता से संबंध अधिक गहरे होंगे।'
+      : 'वाणी में मिठास रखें, साथी की बात धैर्य से सुनें और छोटी-छोटी बातों पर संशय से बचकर प्रेम की रक्षा करें।';
+
+    const isFinHigh = [2, 5, 9, 11].includes(hJup);
+    const finScore = isFinHigh ? 86 : 60;
+    const financeReliefEn = isFinHigh
+      ? 'Financial relief arrives as stuck payments ease up and long-term security plans take auspicious shape.'
+      : 'Exercise disciplined budgeting; avoid impulsive speculation and ensure essential commitments are funded first.';
+    const financeReliefHi = isFinHigh
+      ? 'वित्तीय उलझनों में राहत मिलेगी; अटके हुए धन की प्राप्ति व दीर्घकालिक बचत योजनाओं में प्रगति होगी।'
+      : 'बजट पर कड़ा नियंत्रण रखें; जल्दबाजी में सट्टेबाजी या अनावश्यक जोखिम से बचकर आवश्यक दायित्वों को प्राथमिकता दें।';
+
+    const isFamHigh = [3, 4, 11].includes(hMoon) || [3, 4].includes(hMer);
+    const famScore = isFamHigh ? 80 : 65;
+    const familySiblingsEn = isFamHigh
+      ? 'Warm bonds with siblings and home elders; past misunderstandings dissolve over shared meals and mutual respect.'
+      : 'Refrain from offering unsolicited advice in kin affairs; firmly guard family privacy against external interference.';
+    const familySiblingsHi = isFamHigh
+      ? 'भाई-बहनों व परिजनों से मधुर संबंध रहेंगे; पुरानी गलतफहमियां दूर होंगी और आत्मीय संवाद का सुख मिलेगा।'
+      : 'परिजनों के मामलों में बिन मांगी सलाह न दें और अपने घर की निजता व मर्यादा की बाहरी लोगों से रक्षा करें।';
+
+    const thematicDomains: RashiThematicDomain[] = [
+      {
+        domainId: 'mental_state',
+        domainNameEn: 'Mental State & Inner Peace',
+        domainNameHi: 'मानसिक स्थिति व शांति',
+        score: mentalScore,
+        verdictEn: isMentalHigh ? 'Calm, Focused & Receptive' : 'Mindful & Contemplative',
+        verdictHi: isMentalHigh ? 'शांत, एकाग्र व आशावादी' : 'सतर्कता व आत्मचिंतन अपेक्षित',
+        adviceEn: mentalMoodEn,
+        adviceHi: mentalMoodHi,
+      },
+      {
+        domainId: 'work_career',
+        domainNameEn: 'Workplace & Superiors',
+        domainNameHi: 'कार्यक्षेत्र व वरिष्ठ अधिकारी',
+        score: workScore,
+        verdictEn: isWorkHigh ? 'High Approval & Leadership Scope' : 'Steady Routine & Diligence',
+        verdictHi: isWorkHigh ? 'वरिष्ठों की कृपा व पदोन्नति अवसर' : 'धैर्य व व्यवस्थित कार्यप्रणाली',
+        adviceEn: workplaceBossEn,
+        adviceHi: workplaceBossHi,
+      },
+      {
+        domainId: 'love_attraction',
+        domainNameEn: 'Love, Attraction & Bond',
+        domainNameHi: 'प्रेम, आकर्षण व दांपत्य',
+        score: loveScore,
+        verdictEn: isLoveHigh ? 'Romantic Magnetism & Sweetness' : 'Gentle Patience Required',
+        verdictHi: isLoveHigh ? 'आकर्षण, सौहार्द व मधुरता' : 'संयम व कोमल संवाद आवश्यक',
+        adviceEn: loveAttractionEn,
+        adviceHi: loveAttractionHi,
+      },
+      {
+        domainId: 'finance_relief',
+        domainNameEn: 'Finance & Material Relief',
+        domainNameHi: 'धन, राहत व वित्तीय संतुलन',
+        score: finScore,
+        verdictEn: isFinHigh ? 'Substantial Easing & Cashflow Growth' : 'Calculated Thrift & Protection',
+        verdictHi: isFinHigh ? 'आर्थिक राहत व धन प्रवाह' : 'संतुलित व्यय व बचत सुरक्षा',
+        adviceEn: financeReliefEn,
+        adviceHi: financeReliefHi,
+      },
+      {
+        domainId: 'family_siblings',
+        domainNameEn: 'Family, Siblings & Home',
+        domainNameHi: 'परिवार, भाई-बहन व गृह सुख',
+        score: famScore,
+        verdictEn: isFamHigh ? 'Affectionate Kinship & Joy' : 'Boundary Discipline & Privacy',
+        verdictHi: isFamHigh ? 'भाई-बहनों से मेल-मिलाप' : 'पारिवारिक मर्यादा व निजता',
+        adviceEn: familySiblingsEn,
+        adviceHi: familySiblingsHi,
+      },
+    ];
+
     const c = RASHI_COLORS[rIdx];
     return {
       signIndex: rIdx,
@@ -222,6 +342,17 @@ export function computeRashifalReport(
       luckyColorEn: c.en,
       luckyColorHi: c.hi,
       luckyNumber: c.num,
+      mentalMoodEn,
+      mentalMoodHi,
+      workplaceBossEn,
+      workplaceBossHi,
+      loveAttractionEn,
+      loveAttractionHi,
+      financeReliefEn,
+      financeReliefHi,
+      familySiblingsEn,
+      familySiblingsHi,
+      thematicDomains,
     };
   });
 }

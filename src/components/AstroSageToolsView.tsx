@@ -1,5 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Baby, Compass, Gem, Grid3x3, Sparkles, Star } from 'lucide-react';
+import {
+  Baby,
+  Compass,
+  ExternalLink,
+  Gem,
+  Grid3x3,
+  Heart,
+  Home,
+  Lightbulb,
+  RefreshCw,
+  Rss,
+  Smile,
+  Sparkles,
+  Star,
+  TrendingUp,
+  UserCheck,
+  Zap,
+} from 'lucide-react';
 import { NAKSHATRAS } from '../astro/constants';
 import { computeAvakahadaChakra } from '../astro/avakahadaChalit';
 import {
@@ -8,6 +25,12 @@ import {
   findBabyNames,
   type RashifalPeriod,
 } from '../astro/rashifalBabyRudraksha';
+import {
+  fetchClickAstroFeed,
+  CLICKASTRO_DAILY_FEED_SNAPSHOT,
+  CLICKASTRO_WEEKLY_FEED_SNAPSHOT,
+  type FeedSignHoroscope,
+} from '../astro/externalHoroscopeFeeds';
 import { evaluateParamayusStatus } from '../astro/predictions/paramayus';
 import { formatDateDmy } from '../astro/time';
 import type { ChartData } from '../astro/types';
@@ -67,6 +90,36 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
   );
   const activeRashifal = rashifalList[selectedRashi] ?? rashifalList[0];
 
+  // ClickAstro Live Feeds State
+  const [rashifalSource, setRashifalSource] = useState<'engine' | 'clickastro'>('engine');
+  const [feedPeriod, setFeedPeriod] = useState<'daily' | 'weekly'>('daily');
+  const [feedStatus, setFeedStatus] = useState<'online' | 'cached'>('cached');
+  const [feedItems, setFeedItems] = useState<FeedSignHoroscope[]>(CLICKASTRO_DAILY_FEED_SNAPSHOT);
+  const [isRefreshingFeed, setIsRefreshingFeed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetchClickAstroFeed(feedPeriod).then((res) => {
+      if (active) {
+        setFeedItems(res.items);
+        setFeedStatus(res.status);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [feedPeriod]);
+
+  const handleRefreshFeed = async () => {
+    setIsRefreshingFeed(true);
+    const res = await fetchClickAstroFeed(feedPeriod, true);
+    setFeedItems(res.items);
+    setFeedStatus(res.status);
+    setIsRefreshingFeed(false);
+  };
+
+  const activeFeedItem = feedItems[selectedRashi] ?? feedItems[0];
+
   // Baby Names state
   const avakahada = useMemo(() => computeAvakahadaChakra(chart), [chart]);
   const [babyNak, setBabyNak] = useState<number | 'all'>(chart.panchang.nakshatra.index);
@@ -122,128 +175,432 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
         <ParamayusLockBanner status={paramayus} />
       ) : (
         <>
-      {/* 1. RASHIFAL (DAILY / WEEKLY / MONTHLY / YEARLY) */}
+      {/* 1. RASHIFAL (DAILY / WEEKLY / MONTHLY / YEARLY & CLICKASTRO FEEDS) */}
       {mode === 'rashifal' && (
-        <div className="view-stack">
-          <section className="panel">
-            <div className="panel-header">
-              <h3>
-                <Star size={15} />{' '}
-                {isHi
-                  ? `राशिफल — दैनिक, साप्ताहिक, मासिक एवं वार्षिक (${formatDateDmy(rashiDate)})`
-                  : `Rashifal Horoscope — Daily, Weekly, Monthly & Yearly (${formatDateDmy(rashiDate)})`}
-              </h3>
-              <div className="toolbar-group">
-                <DateDmyInput
-                  compact
-                  className="select-compact mono"
-                  value={rashiDate}
-                  ariaLabel={isHi ? 'राशिफल दिनांक (DD-MM-YYYY)' : 'Rashifal Date (DD-MM-YYYY)'}
-                  onChange={setRashiDate}
-                />
-                <div className="subtab-bar">
-                  {(
-                    [
-                      ['daily', isHi ? 'दैनिक' : 'Daily'],
-                      ['tomorrow', isHi ? 'कल' : 'Tomorrow'],
-                      ['weekly', isHi ? 'साप्ताहिक' : 'Weekly'],
-                      ['weekly_love', isHi ? 'साप्ताहिक प्रेम' : 'Weekly Love'],
-                      ['monthly', isHi ? 'मासिक' : 'Monthly'],
-                      ['yearly', isHi ? `वार्षिक (${rashiDate.slice(0, 4)})` : `Yearly (${rashiDate.slice(0, 4)})`],
-                    ] as Array<[RashifalPeriod, string]>
-                  ).map(([id, lbl]) => (
+        <div className="view-stack" style={{ gap: '16px' }}>
+          {/* Source Selector Tab */}
+          <div
+            className="card"
+            style={{
+              padding: '12px 16px',
+              background: 'var(--bg-elevated)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '10px',
+              borderRadius: '10px',
+              border: '1px solid var(--border-color, rgba(0,0,0,0.08))',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={`btn btn-sm ${rashifalSource === 'engine' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setRashifalSource('engine')}
+                style={{ fontWeight: rashifalSource === 'engine' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Sparkles size={14} />
+                <span>{isHi ? 'AV Astro Vibe वैदिक गोचर इंजन (100% सटीक)' : 'AV Astro Vibe Vedic Gochar Engine'}</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${rashifalSource === 'clickastro' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setRashifalSource('clickastro')}
+                style={{ fontWeight: rashifalSource === 'clickastro' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Rss size={14} />
+                <span>{isHi ? 'ClickAstro लाइव वेब फीड्स (दैनिक व साप्ताहिक)' : 'ClickAstro Live RSS Feeds (Daily & Weekly)'}</span>
+              </button>
+            </div>
+
+            {rashifalSource === 'clickastro' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    background: feedStatus === 'online' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                    color: feedStatus === 'online' ? '#059669' : '#d97706',
+                    border: `1px solid ${feedStatus === 'online' ? '#10b981' : '#f59e0b'}`,
+                  }}
+                >
+                  {feedStatus === 'online'
+                    ? (isHi ? 'लाइव स्ट्रीम सक्रिय' : 'Live Stream Active')
+                    : (isHi ? 'सत्यापित कैश सक्रिय' : 'Verified Cache Active')}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  disabled={isRefreshingFeed}
+                  onClick={handleRefreshFeed}
+                  style={{ fontSize: '11.5px', padding: '4px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <RefreshCw size={12} className={isRefreshingFeed ? 'spin' : ''} />
+                  <span>{isRefreshingFeed ? (isHi ? 'लोड हो रहा है...' : 'Refreshing...') : (isHi ? 'रिफ्रेश' : 'Refresh')}</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ENGINE VIEW */}
+          {rashifalSource === 'engine' && (
+            <section className="panel">
+              <div className="panel-header">
+                <h3>
+                  <Star size={15} />{' '}
+                  {isHi
+                    ? `वैदिक गोचर राशिफल — ५ प्रमुख जीवन आयाम (${formatDateDmy(rashiDate)})`
+                    : `Vedic Gochar Horoscope — 5 Thematic Domains (${formatDateDmy(rashiDate)})`}
+                </h3>
+                <div className="toolbar-group">
+                  <DateDmyInput
+                    compact
+                    className="select-compact mono"
+                    value={rashiDate}
+                    ariaLabel={isHi ? 'राशिफल दिनांक (DD-MM-YYYY)' : 'Rashifal Date (DD-MM-YYYY)'}
+                    onChange={setRashiDate}
+                  />
+                  <div className="subtab-bar">
+                    {(
+                      [
+                        ['daily', isHi ? 'दैनिक' : 'Daily'],
+                        ['tomorrow', isHi ? 'कल' : 'Tomorrow'],
+                        ['weekly', isHi ? 'साप्ताहिक' : 'Weekly'],
+                        ['weekly_love', isHi ? 'साप्ताहिक प्रेम' : 'Weekly Love'],
+                        ['monthly', isHi ? 'मासिक' : 'Monthly'],
+                        ['yearly', isHi ? `वार्षिक (${rashiDate.slice(0, 4)})` : `Yearly (${rashiDate.slice(0, 4)})`],
+                      ] as Array<[RashifalPeriod, string]>
+                    ).map(([id, lbl]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        className={`subtab-btn ${rashiPeriod === id ? 'is-active' : ''}`}
+                        onClick={() => setRashiPeriod(id)}
+                      >
+                        {lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="panel-subblock">
+                <div className="rashi-pill-grid">
+                  {rashifalList.map((r) => (
                     <button
-                      key={id}
+                      key={r.signIndex}
                       type="button"
-                      className={`subtab-btn ${rashiPeriod === id ? 'is-active' : ''}`}
-                      onClick={() => setRashiPeriod(id)}
+                      className={`subtab-btn ${selectedRashi === r.signIndex ? 'is-active' : ''}`}
+                      onClick={() => setSelectedRashi(r.signIndex)}
                     >
-                      {lbl}
+                      {trSign(r.signIndex, lang)} {r.isNatalMoon ? (isHi ? '(जन्म)' : '★') : ''}
                     </button>
                   ))}
                 </div>
               </div>
-            </div>
 
-            <div className="panel-subblock">
-              <div className="rashi-pill-grid">
-                {rashifalList.map((r) => (
-                  <button
-                    key={r.signIndex}
-                    type="button"
-                    className={`subtab-btn ${selectedRashi === r.signIndex ? 'is-active' : ''}`}
-                    onClick={() => setSelectedRashi(r.signIndex)}
-                  >
-                    {trSign(r.signIndex, lang)} {r.isNatalMoon ? (isHi ? '(जन्म)' : '★') : ''}
-                  </button>
-                ))}
-              </div>
-            </div>
+              <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div className="branch-highlights">
+                  <div className="highlight-box">
+                    <span className="muted small-text">{isHi ? 'चयनित चंद्र राशि' : 'Selected Moon Rashi'}</span>
+                    <strong>
+                      {trSign(activeRashifal.signIndex, lang)}{' '}
+                      {activeRashifal.isNatalMoon ? (isHi ? '· आपकी जन्म राशि ★' : '· Your Janma Rashi ★') : ''}
+                    </strong>
+                    <span className="tag tag-varg">
+                      {isHi ? activeRashifal.moodHi : activeRashifal.moodEn} ({activeRashifal.score}/100)
+                    </span>
+                  </div>
+                  <div className="highlight-box">
+                    <span className="muted small-text">{isHi ? 'शुभ रंग व शुभ अंक' : 'Lucky Color & Number'}</span>
+                    <strong>
+                      {isHi ? activeRashifal.luckyColorHi : activeRashifal.luckyColorEn} ·{' '}
+                      {isHi ? 'अंक' : '#'} {activeRashifal.luckyNumber}
+                    </strong>
+                  </div>
+                </div>
 
-            <div className="pred-card-body">
-              <div className="branch-highlights">
-                <div className="highlight-box">
-                  <span className="muted small-text">{isHi ? 'चयनित चंद्र राशि' : 'Selected Moon Rashi'}</span>
+                <div className="gochar-banner is-info">
                   <strong>
-                    {trSign(activeRashifal.signIndex, lang)}{' '}
-                    {activeRashifal.isNatalMoon ? (isHi ? '· आपकी जन्म राशि ★' : '· Your Janma Rashi ★') : ''}
-                  </strong>
-                  <span className="tag tag-varg">
-                    {isHi ? activeRashifal.moodHi : activeRashifal.moodEn} ({activeRashifal.score}/100)
+                    {rashiPeriod === 'daily'
+                      ? (isHi ? 'आज का राशिफल:' : "Today's Overview:")
+                      : rashiPeriod === 'tomorrow'
+                        ? (isHi ? 'कल का राशिफल:' : "Tomorrow's Overview:")
+                        : rashiPeriod === 'weekly'
+                          ? (isHi ? 'साप्ताहिक फल:' : 'Weekly Forecast:')
+                          : rashiPeriod === 'weekly_love'
+                            ? (isHi ? 'साप्ताहिक प्रेम व संबंध:' : 'Weekly Love & Harmony:')
+                            : rashiPeriod === 'monthly'
+                              ? (isHi ? 'मासिक फल:' : 'Monthly Outlook:')
+                              : (isHi ? 'वार्षिक भविष्यफल:' : 'Annual Horoscope:')}
+                  </strong>{' '}
+                  {rashiPeriod === 'daily'
+                    ? (isHi ? activeRashifal.dailyHi : activeRashifal.dailyEn)
+                    : rashiPeriod === 'tomorrow'
+                      ? (isHi ? activeRashifal.tomorrowHi : activeRashifal.tomorrowEn)
+                      : rashiPeriod === 'weekly'
+                        ? (isHi ? activeRashifal.weeklyHi : activeRashifal.weeklyEn)
+                        : rashiPeriod === 'weekly_love'
+                          ? (isHi ? activeRashifal.weeklyLoveHi : activeRashifal.weeklyLoveEn)
+                          : rashiPeriod === 'monthly'
+                            ? (isHi ? activeRashifal.monthlyHi : activeRashifal.monthlyEn)
+                            : (isHi ? activeRashifal.yearlyHi : activeRashifal.yearlyEn)}
+                </div>
+
+                {/* 5 Thematic Domains Grid */}
+                <div>
+                  <h4 style={{ margin: '8px 0 10px', fontSize: '13.5px', color: 'var(--text)' }}>
+                    {isHi ? '५ प्रमुख जीवन क्षेत्र विस्तृत विश्लेषण' : '5 Core Thematic Domains Breakdown'}
+                  </h4>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gap: '12px',
+                    }}
+                  >
+                    {activeRashifal.thematicDomains.map((dom) => {
+                      const iconMap = {
+                        mental_state: Smile,
+                        work_career: TrendingUp,
+                        love_attraction: Heart,
+                        finance_relief: Zap,
+                        family_siblings: Home,
+                      };
+                      const IconComp = iconMap[dom.domainId] || Sparkles;
+                      const scoreColor =
+                        dom.score >= 80 ? '#10b981' : dom.score >= 65 ? '#3b82f6' : '#f59e0b';
+
+                      return (
+                        <div
+                          key={dom.domainId}
+                          style={{
+                            padding: '12px 14px',
+                            borderRadius: '10px',
+                            background: 'var(--bg-subtle, #f8fafc)',
+                            border: '1px solid var(--border-color, rgba(0,0,0,0.08))',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '6px',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <IconComp size={15} style={{ color: scoreColor }} />
+                              <strong style={{ fontSize: '13px' }}>
+                                {isHi ? dom.domainNameHi : dom.domainNameEn}
+                              </strong>
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: scoreColor }}>
+                              {dom.score}%
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                            {isHi ? dom.verdictHi : dom.verdictEn}
+                          </div>
+
+                          <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.5, color: 'var(--text)' }}>
+                            {isHi ? dom.adviceHi : dom.adviceEn}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Legacy Quick Summary Bullets */}
+                <div className="pred-bullets">
+                  <div>
+                    <strong>{isHi ? 'करियर एवं पद:' : 'Career & Status:'}</strong>{' '}
+                    {isHi ? activeRashifal.careerHi : activeRashifal.careerEn}
+                  </div>
+                  <div>
+                    <strong>{isHi ? 'प्रेम व दांपत्य:' : 'Love & Marriage:'}</strong>{' '}
+                    {isHi ? activeRashifal.loveHi : activeRashifal.loveEn}
+                  </div>
+                  <div>
+                    <strong>{isHi ? 'स्वास्थ्य व ऊर्जा:' : 'Health & Vitality:'}</strong>{' '}
+                    {isHi ? activeRashifal.healthHi : activeRashifal.healthEn}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* CLICKASTRO LIVE FEED VIEW */}
+          {rashifalSource === 'clickastro' && (
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Rss size={16} style={{ color: '#ea580c' }} />
+                    {isHi
+                      ? `ClickAstro लाइव वेब फीड — ${feedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'} (${activeFeedItem.pubDateFormatted})`
+                      : `ClickAstro Live Web Feed — ${feedPeriod === 'daily' ? 'Daily Horoscope' : 'Weekly Horoscope'} (${activeFeedItem.pubDateFormatted})`}
+                  </h3>
+                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', display: 'block', marginTop: '2px' }}>
+                    {isHi
+                      ? 'आधिकारिक FeedBurner RSS चैनल से सीधे प्राप्त प्रामाणिक राशिफल'
+                      : 'Live syndication feed from ClickAstro official FeedBurner channels'}
                   </span>
                 </div>
-                <div className="highlight-box">
-                  <span className="muted small-text">{isHi ? 'शुभ रंग व शुभ अंक' : 'Lucky Color & Number'}</span>
-                  <strong>
-                    {isHi ? activeRashifal.luckyColorHi : activeRashifal.luckyColorEn} ·{' '}
-                    {isHi ? 'अंक' : '#'} {activeRashifal.luckyNumber}
+
+                <div className="toolbar-group">
+                  <div className="subtab-bar">
+                    <button
+                      type="button"
+                      className={`subtab-btn ${feedPeriod === 'daily' ? 'is-active' : ''}`}
+                      onClick={() => setFeedPeriod('daily')}
+                    >
+                      {isHi ? 'दैनिक फीड' : 'Daily Feed'}
+                    </button>
+                    <button
+                      type="button"
+                      className={`subtab-btn ${feedPeriod === 'weekly' ? 'is-active' : ''}`}
+                      onClick={() => setFeedPeriod('weekly')}
+                    >
+                      {isHi ? 'साप्ताहिक फीड' : 'Weekly Feed'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 12 Rashi Pill Grid */}
+              <div className="panel-subblock">
+                <div className="rashi-pill-grid">
+                  {feedItems.map((item) => (
+                    <button
+                      key={item.signIndex}
+                      type="button"
+                      className={`subtab-btn ${selectedRashi === item.signIndex ? 'is-active' : ''}`}
+                      onClick={() => setSelectedRashi(item.signIndex)}
+                    >
+                      {isHi ? item.signNameHi : item.signNameEn} {item.signIndex === natalMoonSign ? (isHi ? '(जन्म)' : '★') : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Active Sign Feed Card */}
+              <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: 'var(--bg-elevated, #ffffff)',
+                    border: '1px solid var(--border-color, rgba(0,0,0,0.1))',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '10px',
+                      marginBottom: '12px',
+                      borderBottom: '1px solid var(--border-color, rgba(0,0,0,0.08))',
+                      paddingBottom: '10px',
+                    }}
+                  >
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text)' }}>
+                        {isHi
+                          ? `${activeFeedItem.signNameHi} राशि (${activeFeedItem.signNameEn}) — ${feedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'}`
+                          : `${activeFeedItem.title}`}
+                      </h4>
+                      <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                        {isHi ? `प्रकाशन दिनांक: ${activeFeedItem.pubDateFormatted}` : `Published: ${activeFeedItem.pubDate}`}
+                      </span>
+                    </div>
+
+                    <a
+                      href={activeFeedItem.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-sm btn-secondary"
+                      style={{ fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <span>{isHi ? 'ClickAstro मूल पृष्ठ' : 'View on ClickAstro'}</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+
+                  {/* Bilingual Reading */}
+                  <div style={{ marginBottom: '14px' }}>
+                    <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text)', marginBottom: '8px' }}>
+                      <strong>{isHi ? 'हिंदी अनुवाद:' : 'Hindi Interpretation:'}</strong>{' '}
+                      {activeFeedItem.descriptionHi}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '12.5px',
+                        lineHeight: 1.5,
+                        color: 'var(--text-muted)',
+                        padding: '10px 14px',
+                        background: 'var(--bg-subtle, #f8fafc)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #ea580c',
+                      }}
+                    >
+                      <strong>{isHi ? 'मूल अंग्रेजी पाठ:' : 'Original Feed Text:'}</strong>{' '}
+                      {activeFeedItem.description}
+                    </div>
+                  </div>
+
+                  {/* Key Themes Chips */}
+                  <div>
+                    <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                      {isHi ? 'मुख्य ज्योतिषीय सूत्र व विषय:' : 'Key Astrological Highlights:'}
+                    </span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {(isHi ? activeFeedItem.keyThemesHi : activeFeedItem.keyThemesEn).map((th, idx) => (
+                        <span
+                          key={idx}
+                          style={{
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            background: 'rgba(234, 88, 12, 0.1)',
+                            color: '#c2410c',
+                            border: '1px solid rgba(234, 88, 12, 0.25)',
+                          }}
+                        >
+                          {th}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shastric Rationale Box */}
+                <div
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    background: 'rgba(59, 130, 246, 0.08)',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    fontSize: '12px',
+                    lineHeight: 1.5,
+                    color: 'var(--text)',
+                  }}
+                >
+                  <strong style={{ color: '#1d4ed8', display: 'block', marginBottom: '2px' }}>
+                    {isHi ? 'AV Astro Vibe वैदिक गोचर तुलना व विश्लेषण:' : 'AV Astro Vibe Planetary Transit Root Rationale:'}
                   </strong>
+                  {isHi
+                    ? `आपकी चयनित ${activeFeedItem.signNameHi} राशि से आज चंद्रमा का गोचर ${activeRashifal.thematicDomains[0].verdictHi} स्थिति दर्शाता है। सूर्य का प्रभाव कार्यक्षेत्र में वरिष्ठों से तालमेल की मांग करता है, जबकि शुक्र प्रेम संबंधों में वाणी की मिठास बनाए रखने का संकेत देते हैं।`
+                    : `For ${activeFeedItem.signNameEn}, the transit Moon's relative placement underpins the daily emotional momentum (${activeRashifal.thematicDomains[0].verdictEn}), while Sun in transit dictates superiors' responsiveness and Venus governs relational harmony.`}
                 </div>
               </div>
-
-              <div className="gochar-banner is-info">
-                <strong>
-                  {rashiPeriod === 'daily'
-                    ? (isHi ? 'आज का राशिफल:' : "Today's Overview:")
-                    : rashiPeriod === 'tomorrow'
-                      ? (isHi ? 'कल का राशिफल:' : "Tomorrow's Overview:")
-                      : rashiPeriod === 'weekly'
-                        ? (isHi ? 'साप्ताहिक फल:' : 'Weekly Forecast:')
-                        : rashiPeriod === 'weekly_love'
-                          ? (isHi ? 'साप्ताहिक प्रेम व संबंध:' : 'Weekly Love & Harmony:')
-                          : rashiPeriod === 'monthly'
-                            ? (isHi ? 'मासिक फल:' : 'Monthly Outlook:')
-                            : (isHi ? 'वार्षिक भविष्यफल:' : 'Annual Horoscope:')}
-                </strong>{' '}
-                {rashiPeriod === 'daily'
-                  ? (isHi ? activeRashifal.dailyHi : activeRashifal.dailyEn)
-                  : rashiPeriod === 'tomorrow'
-                    ? (isHi ? activeRashifal.tomorrowHi : activeRashifal.tomorrowEn)
-                    : rashiPeriod === 'weekly'
-                      ? (isHi ? activeRashifal.weeklyHi : activeRashifal.weeklyEn)
-                      : rashiPeriod === 'weekly_love'
-                        ? (isHi ? activeRashifal.weeklyLoveHi : activeRashifal.weeklyLoveEn)
-                        : rashiPeriod === 'monthly'
-                          ? (isHi ? activeRashifal.monthlyHi : activeRashifal.monthlyEn)
-                          : (isHi ? activeRashifal.yearlyHi : activeRashifal.yearlyEn)}
-              </div>
-
-              <div className="pred-bullets">
-                <div>
-                  <strong>{isHi ? 'करियर एवं धन:' : 'Career & Wealth:'}</strong>{' '}
-                  {isHi ? activeRashifal.careerHi : activeRashifal.careerEn}
-                </div>
-                <div>
-                  <strong>{isHi ? 'प्रेम व दांपत्य:' : 'Love & Relationships:'}</strong>{' '}
-                  {isHi ? activeRashifal.loveHi : activeRashifal.loveEn}
-                </div>
-                <div>
-                  <strong>{isHi ? 'स्वास्थ्य:' : 'Health & Vitality:'}</strong>{' '}
-                  {isHi ? activeRashifal.healthHi : activeRashifal.healthEn}
-                </div>
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
       )}
 
