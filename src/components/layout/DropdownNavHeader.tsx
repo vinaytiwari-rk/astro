@@ -473,6 +473,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'योगवार फलादेश' : 'Yoga-wise Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग' : 'Raja, Dhana, Mahapurusha & Classical Yogas'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('rashifal')}>
+                    <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (ClickAstro व गोचर)' : 'Daily & Weekly Rashifal (ClickAstro & Gochar)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव ClickAstro RSS फीड्स' : '5 Life Domains, 12 Signs & Live ClickAstro RSS Feeds'}</span>
+                  </button>
                 </div>
               )}
             </li>

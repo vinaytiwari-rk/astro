@@ -43,6 +43,7 @@ import { KotaAndAyurdayaView } from './components/predictions/KotaAndAyurdayaVie
 import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalculatorsView';
 import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
 import { NumerologyView } from './components/onlinejyotish/NumerologyView';
+import { AstroSageToolsView } from './components/AstroSageToolsView';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -659,6 +660,13 @@ export function App() {
               <NumerologyView
                 chart={chart}
                 onNavigate={navigateTo}
+              />
+            )}
+
+            {(currentView === 'rashifal' || currentView === 'astro_tools') && (
+              <AstroSageToolsView
+                chart={chart}
+                requestedMode={{ id: 'rashifal', nonce: Date.now() }}
               />
             )}
 
