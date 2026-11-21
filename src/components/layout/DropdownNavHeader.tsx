@@ -445,6 +445,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'भाववार फलादेश' : 'House-wise Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल' : '1st to 12th House Specific Events & Timing'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'educationWise')}>
+                    <strong>{isHi ? 'शिक्षा व उच्च विद्या फलादेश' : 'Education & Higher Studies'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '१० भंग नियम, सर्वभौम व सरस्वती योग, शोध Ph.D. व संकाय' : '10 Break Rules, Sarvabhouma, Ph.D. Research & College Streams'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'ascendantWise')}>
                     <strong>{isHi ? 'लग्नवार फलादेश' : 'Ascendant-wise Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? '१२ लग्न: स्वरूप, कारक-मारक, धन, दांपत्य, करियर व भाग्योदय वर्ष' : '12 Ascendants: Temperament, Benefics, Marakas, Marriage & Milestones'}</span>

@@ -28,6 +28,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { trPlanetShort, trVarga } from '../i18n/translations';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 import { VedicChartSvg } from './VedicChartSvg';
+import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 
 interface SpecializedAstrologyViewProps {
   chart: ChartData;
@@ -314,6 +315,8 @@ export const SpecializedAstrologyView: React.FC<SpecializedAstrologyViewProps> =
               windows={suite.education.favorableDashas}
             />
           </section>
+
+          <EducationAstrologyPanel chart={chart} />
         </div>
       )}
 

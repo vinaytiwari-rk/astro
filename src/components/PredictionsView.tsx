@@ -38,6 +38,7 @@ import { ActiveYogasAndYutiPanel } from './predictions/ActiveYogasAndYutiPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { AscendantWisePanel } from './predictions/AscendantWisePanel';
 import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
+import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
 interface PredictionsViewProps {
@@ -50,6 +51,7 @@ interface PredictionsViewProps {
 
 export type PredSubTab =
   | 'ascendantWise'
+  | 'educationWise'
   | 'twelve_planets'
   | 'active_yogas_yuti'
   | 'yutiWise'
@@ -78,6 +80,7 @@ function normalizeSubTab(id?: string): PredSubTab {
   if (id === 'dashaWise' || id === 'dasha' || id === 'dashawise') return 'dashaWise';
   if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
   if (id === 'houseWise' || id === 'house' || id === 'housewise' || id === 'bhavas_12' || id === 'bhavas') return 'houseWise';
+  if (id === 'educationWise' || id === 'education' || id === 'vidya' || id === 'studies') return 'educationWise';
   if (id === 'ascendantWise' || id === 'ascendant' || id === 'lagnaWise' || id === 'lagna' || id === 'twelve_planets' || id === 'planet' || id === 'planets' || id === 'graha') return 'ascendantWise';
   if (id === 'planetInNakshatra' || id === 'nakshatra' || id === 'nakshatras') return 'planetInNakshatra';
   if (id === 'planetInSign' || id === 'planetinsign' || id === 'rasi' || id === 'rashi' || id === 'sign') return 'planetInSign';
@@ -162,6 +165,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
     { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
+    { id: 'educationWise', labelEn: 'Education & Higher Studies', labelHi: 'शिक्षा व उच्च विद्या' },
     { id: 'ascendantWise', labelEn: 'Ascendant-wise Prediction', labelHi: 'लग्नवार फलादेश' },
     { id: 'planetInNakshatra', labelEn: 'Nakshatra-wise Prediction', labelHi: 'नक्षत्रवार फलादेश' },
     { id: 'planetInSign', labelEn: 'Sign-wise Prediction', labelHi: 'राशिवार फलादेश' },
@@ -246,6 +250,10 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
         <div className="view-stack">
           {(currentTab === 'ascendantWise' || currentTab === 'twelve_planets') && (
             <AscendantWisePanel chart={chart} />
+          )}
+
+          {currentTab === 'educationWise' && (
+            <EducationAstrologyPanel chart={chart} />
           )}
 
           {(currentTab === 'active_yogas_yuti' || currentTab === 'yutiWise' || currentTab === 'yogaWise') && (
