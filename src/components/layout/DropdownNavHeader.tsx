@@ -439,6 +439,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'इष्ट देव, वक्री ग्रह, ताराबल व पंच पक्षी' : 'Ishta Dev, Vakri, Tarabalam & Pancha Pakshi'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'कारकांश १२वां भाव, वक्री चेष्टा बल, दैनिक ऊर्जा मीटर व २० कुज परिहार' : 'Karakamsha 12th House, Vakri Cheshta Bala, Daily Meter & 20 Kuja Exceptions'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'prasnaMargaSuite')}>
+                    <strong>{isHi ? 'प्रश्न मार्ग, चिकित्सा फलित व बीज-क्षेत्र स्फुट' : 'Prasna Marga, Medical & Beeja-Kshetra'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'रोग परीक्षा (वात-पित्त-कफ), बीज/क्षेत्र स्फुट, बाधक स्थान, त्रिपताकी व मेदिनी' : 'Roga Prasna (Tridosha), Beeja/Kshetra Sphutas, Badhakasthana, Tripataki & Mundane'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
                     <strong>{isHi ? 'दशा फलादेश' : 'Dasha Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं' : 'Running Mahadasha/Antardasha Manifestation'}</span>

@@ -41,6 +41,7 @@ import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel
 import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 import { ParasharaKalaWorkstationPanel } from './predictions/ParasharaKalaWorkstationPanel';
 import { SpecializedVedicPanel } from './predictions/SpecializedVedicPanel';
+import { PrasnaMargaWorkstationPanel } from './predictions/PrasnaMargaWorkstationPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
 interface PredictionsViewProps {
@@ -52,6 +53,7 @@ interface PredictionsViewProps {
 }
 
 export type PredSubTab =
+  | 'prasnaMargaSuite'
   | 'specializedVedic'
   | 'parasharaKala'
   | 'ascendantWise'
@@ -80,6 +82,24 @@ export type PredSubTab =
 
 function normalizeSubTab(id?: string): PredSubTab {
   if (!id) return 'deep_life';
+  if (
+    id === 'prasnaMargaSuite' ||
+    id === 'prasnaMarga' ||
+    id === 'prasna' ||
+    id === 'vedastro' ||
+    id === 'medical' ||
+    id === 'rogaPrasna' ||
+    id === 'beeja' ||
+    id === 'kshetra' ||
+    id === 'badhaka' ||
+    id === 'vivahaPrasna' ||
+    id === 'spouse' ||
+    id === 'sodyaPinda' ||
+    id === 'tripataki' ||
+    id === 'mundane'
+  ) {
+    return 'prasnaMargaSuite';
+  }
   if (
     id === 'specializedVedic' ||
     id === 'ishta' ||
@@ -190,6 +210,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   // Seven independent prediction systems. Natal and timing-based readings stay separate.
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
+    { id: 'prasnaMargaSuite', labelEn: 'Prasna Marga & Medical', labelHi: 'प्रश्न मार्ग व चिकित्सा फलित' },
     { id: 'specializedVedic', labelEn: 'Ishta Dev, Vakri & Bio-Rhythm', labelHi: 'इष्ट देव, वक्री व पंच पक्षी' },
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
@@ -293,6 +314,10 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
               detectedYogas={report.classicalYogas}
               initialTab={currentTab === 'yogaWise' ? 'detected' : 'yuti'}
             />
+          )}
+
+          {currentTab === 'prasnaMargaSuite' && (
+            <PrasnaMargaWorkstationPanel chart={chart} />
           )}
 
           {currentTab === 'specializedVedic' && (
