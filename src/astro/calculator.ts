@@ -34,7 +34,18 @@ import {
 } from './vargas';
 import { detectYogas } from './yogas';
 
-export function calculateChart(input: BirthInput, settings: CalcSettings): ChartData {
+export const DEFAULT_CALC_SETTINGS: CalcSettings = {
+  ayanamsa: 'lahiri',
+  nodeMode: 'mean',
+  houseSystem: 'whole_sign',
+  chartStyle: 'north',
+  dashaYearType: 'tropical',
+  includeOuterPlanets: false,
+  karakaCount: 7,
+  horaMode: 'parashara',
+};
+
+export function calculateChart(input: BirthInput, settings: CalcSettings = DEFAULT_CALC_SETTINGS): ChartData {
   const { utcMs, offsetMinutes } = resolveUtcFromBirth(
     input.date,
     input.time,

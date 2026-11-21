@@ -315,6 +315,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
             </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('parashara-workstation')}>
+              {isHi ? 'पाराशर-काला कार्यशाला (कक्ष्य, CIL, 11500 चार्ट्स)' : 'Parashara-Kala Workstation (CIL & 11,500 Charts)'}
+            </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('financial-astrology')}>
               {isHi ? 'शेयर बाजार व इंदु लग्न' : 'Financial Astrology & Indu Lagna'}
             </button>

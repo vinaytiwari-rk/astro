@@ -39,6 +39,7 @@ import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { AscendantWisePanel } from './predictions/AscendantWisePanel';
 import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
 import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
+import { ParasharaKalaWorkstationPanel } from './predictions/ParasharaKalaWorkstationPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
 interface PredictionsViewProps {
@@ -50,6 +51,7 @@ interface PredictionsViewProps {
 }
 
 export type PredSubTab =
+  | 'parasharaKala'
   | 'ascendantWise'
   | 'educationWise'
   | 'twelve_planets'
@@ -76,6 +78,18 @@ export type PredSubTab =
 
 function normalizeSubTab(id?: string): PredSubTab {
   if (!id) return 'deep_life';
+  if (
+    id === 'parasharaKala' ||
+    id === 'parashara' ||
+    id === 'softwareSuite' ||
+    id === 'software' ||
+    id === 'kakshya' ||
+    id === 'sahams' ||
+    id === 'cil' ||
+    id === 'bhavabala'
+  ) {
+    return 'parasharaKala';
+  }
   if (id === 'deep_life' || id === 'general' || id === 'samanya') return 'deep_life';
   if (id === 'dashaWise' || id === 'dasha' || id === 'dashawise') return 'dashaWise';
   if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
@@ -347,6 +361,10 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
 
           {currentTab === 'divisional' && (
             <DivisionalPredictionsPanel chart={chart} chartStyle={chartStyle} report={report} />
+          )}
+
+          {currentTab === 'parasharaKala' && (
+            <ParasharaKalaWorkstationPanel natalChart={chart} />
           )}
         </div>
       )}

@@ -44,6 +44,7 @@ import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalcul
 import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
 import { NumerologyView } from './components/onlinejyotish/NumerologyView';
 import { AstroSageToolsView } from './components/AstroSageToolsView';
+import { ParasharaKalaWorkstationPanel } from './components/predictions/ParasharaKalaWorkstationPanel';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -667,6 +668,20 @@ export function App() {
               <AstroSageToolsView
                 chart={chart}
                 requestedMode={{ id: 'rashifal', nonce: Date.now() }}
+              />
+            )}
+
+            {(currentView === 'parashara-workstation' || currentView === 'software-suite') && (
+              <ParasharaKalaWorkstationPanel
+                natalChart={chart}
+                onLoadBenchmarkChart={(bInput) => {
+                  setProfiles((prev) => {
+                    const exists = prev.find((p) => p.id === bInput.id);
+                    if (exists) return prev;
+                    return [bInput, ...prev];
+                  });
+                  setActiveId(bInput.id);
+                }}
               />
             )}
 

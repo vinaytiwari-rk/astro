@@ -216,6 +216,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'western-astrology',
     'human-design',
     'astrocartography',
+    'parashara-workstation',
+    'software-suite',
   ].includes(currentView);
   const isToolsActive = [
     'fortune-calculators',
@@ -477,6 +479,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (ClickAstro व गोचर)' : 'Daily & Weekly Rashifal (ClickAstro & Gochar)'}</strong>
                     <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव ClickAstro RSS फीड्स' : '5 Life Domains, 12 Signs & Live ClickAstro RSS Feeds'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
+                    <strong>{isHi ? 'पाराशर-काला-CIL कार्यशाला' : 'Parashara-Kala-CIL Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, ताजिक 50 सहम, CIL 1-2193, भावबल व 11500 शोध चार्ट्स' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & 11,500 Charts'}</span>
+                  </button>
                 </div>
               )}
             </li>
@@ -661,6 +667,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('astrocartography')}>
                     <strong>{isHi ? 'एस्ट्रोकार्टोग्राफी (विश्व मानचित्र)' : 'Astrocartography (World Lines)'}</strong>
                     <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
+                    <strong>{isHi ? 'पाराशर-काला-CIL कार्यशाला' : 'Parashara-Kala-CIL Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, 50 सहम, CIL 1-2193, भावबल एवं 11,500 शोध पत्रिकाएं' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & 11,500 Charts'}</span>
                   </button>
                 </div>
               )}
