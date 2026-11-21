@@ -8,8 +8,7 @@ import {
 import type { HouseWisePrediction } from '../../astro/predictions/houseWise';
 import type { PredictionBodyId } from '../../astro/predictions/planetInSign';
 import type { PredictionReport } from '../../astro/predictions/types';
-import { getCharakBhava, DR_CHARAK_BOOK_METADATA, FARFARAWAY_SYNTHESIS_METADATA } from '../../astro/predictions/charakElementsKb';
-import { ExternalLink, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { trBadge } from '../../i18n/hindiPredictions';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign, trTerm } from '../../i18n/translations';
@@ -305,10 +304,48 @@ export const HouseWisePanel: React.FC<{
                   </span>
                 </div>
 
-                <p className="domain-summary">{isHi ? h.synthesisHi : h.synthesisEn}</p>
+                {/* Classical Sanskrit Bhavam Names */}
+                {h.bhavamNames && h.bhavamNames.length > 0 && (
+                  <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+                    <span className="muted small-text" style={{ fontSize: '0.75rem' }}>
+                      {isHi ? 'शास्त्रीय संज्ञाएं:' : 'Bhavam Names:'}
+                    </span>
+                    {h.bhavamNames.map((name) => (
+                      <span key={name} className="tag tag-varg" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sthanas & Sub-Karakas */}
+                <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                  {h.sthanangal && h.sthanangal.length > 0 && (
+                    <span className="tag tag-karaka" style={{ fontSize: '0.75rem' }}>
+                      {isHi ? 'स्थान:' : 'Sthana:'} {h.sthanangal.join(' · ')}
+                    </span>
+                  )}
+                  {h.subKarakas && h.subKarakas.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {h.subKarakas.map((sk) => (
+                        <span key={sk.domain} className="factor-chip" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
+                          {sk.domain}: <strong>{trPlanet(sk.graha, lang)}</strong>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <p className="domain-summary" style={{ marginTop: 8 }}>{isHi ? h.synthesisHi : h.synthesisEn}</p>
                 <p className="yoga-desc">
-                  <strong>{isHi ? 'भावेश फल:' : 'House Lord Placement:'}</strong>{' '}
-                  {isHi ? h.lordReadingHi : h.lordReadingEn}
+                  <strong>
+                    {isHi
+                      ? `${h.houseNumber}वें भावेश का ${h.lordPlacedHouse}वें भाव में फल (Karma):`
+                      : `House ${h.houseNumber} Lord in House ${h.lordPlacedHouse} (Karma):`}
+                  </strong>{' '}
+                  {isHi
+                    ? (h.lordPlacementKarmaHi || h.lordReadingHi)
+                    : (h.lordPlacementKarmaEn || h.lordReadingEn)}
                 </p>
 
                 {/* Concrete Event Timing & Prediction Block */}
@@ -329,7 +366,154 @@ export const HouseWisePanel: React.FC<{
                   </div>
                 </div>
 
-                <div className="small-text muted" style={{ marginTop: 6, lineHeight: 1.5 }}>
+                {/* Sign Archetype & Demeanor */}
+                {(h.signPersonalityHi || h.signPersonalityEn) && (
+                  <div style={{
+                    margin: '8px 0',
+                    padding: '8px 10px',
+                    background: 'rgba(59, 130, 246, 0.05)',
+                    borderLeft: '3px solid #3b82f6',
+                    borderRadius: 4,
+                    fontSize: '0.84rem',
+                    lineHeight: 1.45,
+                  }}>
+                    <strong>{isHi ? `${trSign(h.signIndex, lang)} राशि का इस भाव में स्वभाव:` : `${h.signNameEn} Sign Archetype in this House:`}</strong>{' '}
+                    {isHi ? h.signPersonalityHi : h.signPersonalityEn}
+                    {h.signPositiveTrait && (
+                      <div style={{ marginTop: 3, fontSize: '0.78rem' }}>
+                        <span style={{ color: '#16a34a' }}>+ {isHi ? 'सकारात्मक गुण:' : 'Strengths:'} {h.signPositiveTrait}</span>
+                        {' · '}
+                        <span style={{ color: '#dc2626' }}>- {isHi ? 'चुनौती:' : 'Shadow:'} {h.signNegativeTrait}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Occupants with Dignity Relation & Classical Effects */}
+                {h.occupantEffects && h.occupantEffects.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <div className="small-text" style={{ fontWeight: 600, marginBottom: 4 }}>
+                      {isHi ? 'स्थित ग्रहों का शास्त्रीय प्रभाव व संबंध:' : 'Occupant Classical Impacts & Sign Relationship:'}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {h.occupantEffects.map((occ) => (
+                        <div key={occ.graha} style={{
+                          padding: '6px 8px',
+                          background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          borderRadius: 4,
+                          fontSize: '0.82rem',
+                          lineHeight: 1.45,
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                            <strong>{trPlanet(occ.graha, lang)}</strong>
+                            <span className={`tag ${occ.dignityRelation === 'Friend' ? 'tag-varg' : occ.dignityRelation === 'Enemy' ? 'tag-combust' : 'tag-karaka'}`} style={{ fontSize: '0.72rem', padding: '0 4px' }}>
+                              {isHi ? (occ.dignityRelation === 'Friend' ? 'मित्र राशि' : occ.dignityRelation === 'Enemy' ? 'शत्रु राशि' : 'सम राशि') : `${occ.dignityRelation} Sign`}
+                            </span>
+                          </div>
+                          <div>{isHi ? occ.generalHi : occ.generalEn}</div>
+                          {occ.afflictedHi && (
+                            <div style={{ color: '#dc2626', fontSize: '0.78rem', marginTop: 2 }}>
+                              {isHi ? 'पीड़ित होने पर: ' + occ.afflictedHi : 'If Afflicted: ' + occ.afflictedEn}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Argala & Virodhargala Mechanics */}
+                {h.pvrArgalaItems && h.pvrArgalaItems.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <div className="small-text" style={{ fontWeight: 600, marginBottom: 4 }}>
+                      {isHi ? 'अर्गला एवं विरोधागला विश्लेषण (हस्तक्षेप तंत्र):' : 'Argala & Virodhargala Intervention Dynamics:'}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {h.pvrArgalaItems.map((arg, aIdx) => (
+                        <div key={aIdx} style={{
+                          padding: '6px 8px',
+                          background: 'rgba(139, 92, 246, 0.05)',
+                          borderLeft: '3px solid #8b5cf6',
+                          borderRadius: 4,
+                          fontSize: '0.82rem',
+                          lineHeight: 1.45,
+                        }}>
+                          <div>
+                            <strong>{arg.argalaType}:</strong> {arg.argalaPlanets.map((p) => trPlanet(p, lang)).join(', ')} ({arg.nature})
+                            {' · '}
+                            <span style={{ color: arg.isObstructed ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+                              {arg.isObstructed
+                                ? (isHi ? `अवरुद्ध (भाव ${arg.obstructingHouse} में ${arg.obstructingPlanets.map((p) => trPlanet(p, lang)).join(', ')} द्वारा)` : `Obstructed by H${arg.obstructingHouse} (${arg.obstructingPlanets.join(', ')})`)
+                                : (isHi ? 'निर्बाध (Unobstructed — पूर्ण सक्रिय)' : 'Unobstructed (Active)')}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 2 }}>
+                            {isHi ? arg.manifestationHi : arg.manifestationEn}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Classical Vedic Remedies (Upayas) */}
+                {(h.remedyMantraHi || h.remedyMantraEn) && (
+                  <div style={{
+                    marginTop: 10,
+                    padding: '8px 10px',
+                    background: 'rgba(234, 179, 8, 0.07)',
+                    border: '1px solid rgba(234, 179, 8, 0.3)',
+                    borderRadius: 6,
+                    fontSize: '0.84rem',
+                    lineHeight: 1.5,
+                  }}>
+                    <div style={{ fontWeight: 700, color: '#ca8a04', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <ShieldCheck size={14} /> {isHi ? 'भाव शुद्धि एवं शास्त्रीय वैदिक उपाय (Vedic Remedies):' : 'Classical Vedic Remedial Upayas:'}
+                    </div>
+                    <div>
+                      <strong>{isHi ? 'गुप्त मंत्र साधना:' : 'Mantra:'}</strong> {isHi ? h.remedyMantraHi : h.remedyMantraEn}
+                    </div>
+                    {h.remedyFastingHi && (
+                      <div style={{ marginTop: 2 }}>
+                        <strong>{isHi ? 'व्रत एवं दान:' : 'Fasting & Charity:'}</strong> {isHi ? h.remedyFastingHi : h.remedyFastingEn}
+                      </div>
+                    )}
+                    {h.remedyRitualHi && (
+                      <div style={{ marginTop: 2 }}>
+                        <strong>{isHi ? 'यज्ञ / अनुष्ठान:' : 'Ritual / Pooja:'}</strong> {isHi ? h.remedyRitualHi : h.remedyRitualEn}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Granular Karakatwas & Bhavat Bhavam Significations */}
+                {h.karakatwams && h.karakatwams.length > 0 && (
+                  <details style={{ marginTop: 8, fontSize: '0.83rem' }}>
+                    <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--accent, #d97706)' }}>
+                      {isHi
+                        ? `${h.houseNumber}वें भाव के 30+ सूक्ष्म कारकत्व एवं भावत् भावम् संबंध (विस्तार देखें)`
+                        : `30+ Granular Karakatwas & Derived Relations for House ${h.houseNumber} (Click to expand)`}
+                    </summary>
+                    <div style={{
+                      marginTop: 6,
+                      padding: '8px 10px',
+                      background: 'rgba(0,0,0,0.02)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: 4,
+                      maxHeight: 180,
+                      overflowY: 'auto',
+                    }}>
+                      <ol style={{ margin: 0, paddingLeft: 18 }}>
+                        {h.karakatwams.map((k, kIdx) => (
+                          <li key={kIdx} style={{ marginBottom: 2 }}>{k}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  </details>
+                )}
+
+                <div className="small-text muted" style={{ marginTop: 8, lineHeight: 1.5 }}>
                   <strong>{isHi ? 'भावेश का कार्यात्मक स्वामित्व:' : 'Lord’s Functional House Ownership:'}</strong>{' '}
                   {isHi ? h.lordFunctionalRolesHi.join(' · ') : h.lordFunctionalRolesEn.join(' · ')}
                   <div>{isHi ? h.lordFunctionalLordshipNoteHi : h.lordFunctionalLordshipNoteEn}</div>
@@ -361,12 +545,6 @@ export const HouseWisePanel: React.FC<{
                       ? h.aspectingPlanets.map((a) => trPlanet(a, lang)).join(', ')
                       : isHi ? 'कोई नहीं' : 'None'}
                   </span>
-                </div>
-                <div className="small-text muted" style={{ marginTop: 6 }}>
-                  <strong>{isHi ? 'पठन-सिद्धांत:' : 'Reading principle:'}</strong>{' '}
-                  {isHi
-                    ? 'केवल एक ग्रह या संकेत से निष्कर्ष न निकालें; भावेश, स्थित ग्रह, दृष्टि, कारक और अष्टकवर्ग को साथ देखें।'
-                    : 'Do not judge from one planet or factor alone; weigh the lord, occupants, aspects, karaka and Ashtakavarga together.'}
                 </div>
               </article>
             );

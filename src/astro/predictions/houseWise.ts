@@ -2,8 +2,10 @@ import { computeBhavaChalitPlacements } from '../avakahadaChalit';
 import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import { getBhavaClassicalInfo } from './bhavaKarakatwaKb';
 import { buildHouseLordReading } from './bhavaKb';
 import { getFunctionalLordship } from './functionalLordship';
+import { evaluatePvrArgalaOnHouse, type PvrArgalaItem } from './pvrNarasimhaRaoKb';
 
 export interface HouseWisePrediction {
   houseNumber: number; // 1..12
@@ -51,6 +53,33 @@ export interface HouseWisePrediction {
   primaryFactorsEn?: string;
   secondarySavHi?: string;
   secondarySavEn?: string;
+  // Classical Shastra Karakatwa & Sthana expansion (Astroved & Vedic Karakatwa synthesis)
+  bhavamNames?: string[];
+  sthanangal?: string[];
+  primaryKarakaName?: string;
+  subKarakas?: { domain: string; graha: NineGrahaId }[];
+  karakatwams?: string[];
+  signPositiveTrait?: string;
+  signNegativeTrait?: string;
+  signPersonalityEn?: string;
+  signPersonalityHi?: string;
+  occupantEffects?: {
+    graha: NineGrahaId;
+    generalEn: string;
+    generalHi: string;
+    afflictedEn: string;
+    afflictedHi: string;
+    dignityRelation: 'Friend' | 'Neutral' | 'Enemy';
+  }[];
+  lordPlacementKarmaEn?: string;
+  lordPlacementKarmaHi?: string;
+  remedyMantraEn?: string;
+  remedyMantraHi?: string;
+  remedyFastingEn?: string;
+  remedyFastingHi?: string;
+  remedyRitualEn?: string;
+  remedyRitualHi?: string;
+  pvrArgalaItems?: PvrArgalaItem[];
 }
 
 const SIGN_HI = [
@@ -188,6 +217,30 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
     const occupants = NINE_GRAHAS.filter((g) => byId.get(g)?.rasiHouseNumber === h);
     const aspectEntries = aspectMap.get(h) ?? [];
     const aspectingPlanets = aspectEntries.map((a) => a.planet);
+
+    // Classical Karakatwa & Sthana information from classical treatises
+    const classicalInfo = getBhavaClassicalInfo(h);
+    const signFlavor = classicalInfo.signFlavors[signIndex];
+    const signFriendship = classicalInfo.signFriendship[signIndex];
+
+    const occupantEffects = occupants.map((occ) => {
+      const eff = classicalInfo.planetEffects[occ];
+      let dignityRelation: 'Friend' | 'Neutral' | 'Enemy' = 'Neutral';
+      if (signFriendship?.friends.includes(occ)) dignityRelation = 'Friend';
+      else if (signFriendship?.enemies.includes(occ)) dignityRelation = 'Enemy';
+
+      return {
+        graha: occ,
+        generalEn: eff?.generalEn ?? '',
+        generalHi: eff?.generalHi ?? '',
+        afflictedEn: eff?.afflictedEn ?? '',
+        afflictedHi: eff?.afflictedHi ?? '',
+        dignityRelation,
+      };
+    });
+
+    const lordKarma = classicalInfo.lordInHouses[lordPos.rasiHouseNumber];
+    const pvrArgalaItems = evaluatePvrArgalaOnHouse(chart, h);
     // 1. Lord's Nakshatra & Star Lord
     const lordNakIdx = lordPos.nakshatraIndex ?? Math.floor(lordPos.longitude / (360 / 27));
     const lordNak = NAKSHATRAS[lordNakIdx] ?? NAKSHATRAS[0];
@@ -443,6 +496,25 @@ ${decisiveVerdictEn}`;
       primaryFactorsEn,
       secondarySavHi,
       secondarySavEn,
+      bhavamNames: classicalInfo.bhavamNames,
+      sthanangal: classicalInfo.sthanangal,
+      primaryKarakaName: classicalInfo.primaryKaraka,
+      subKarakas: classicalInfo.subKarakas,
+      karakatwams: classicalInfo.karakatwams,
+      signPositiveTrait: signFlavor?.positiveTrait,
+      signNegativeTrait: signFlavor?.negativeTrait,
+      signPersonalityEn: signFlavor?.personalityDescriptionEn,
+      signPersonalityHi: signFlavor?.personalityDescriptionHi,
+      occupantEffects,
+      lordPlacementKarmaEn: lordKarma?.outcomeEn,
+      lordPlacementKarmaHi: lordKarma?.outcomeHi,
+      remedyMantraEn: classicalInfo.remedies.mantraEn,
+      remedyMantraHi: classicalInfo.remedies.mantraHi,
+      remedyFastingEn: classicalInfo.remedies.fastingDayEn,
+      remedyFastingHi: classicalInfo.remedies.fastingDayHi,
+      remedyRitualEn: classicalInfo.remedies.ritualAdviceEn,
+      remedyRitualHi: classicalInfo.remedies.ritualAdviceHi,
+      pvrArgalaItems,
     };
   });
 }

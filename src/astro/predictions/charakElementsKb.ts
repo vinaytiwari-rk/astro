@@ -1,12 +1,11 @@
 /* =========================================================================
-   DR. K.S. CHARAK & FAR FAR AWAY CLASSICAL VEDIC ASTROLOGY KNOWLEDGE BASE
+   ELEMENTS OF VEDIC ASTROLOGY & CLASSICAL SHASTRA KNOWLEDGE BASE
    Sources:
    1. "Elements of Vedic Astrology" (Vol 1 & 2, 518 Pages)
-      by Dr. K.S. Charak, M.S. (Surgery), F.R.C.S. (Glasgow)
-      Head of the Department of Astrology, Bharatiya Vidya Bhavan (BVB), New Delhi.
+      Classical Parashari Authority · Bharatiya Vidya Bhavan (BVB) Curriculum
       Uma Publications.
    2. "Basics of Vedic Astrology: Houses, Planets and Signs"
-      by Far Far Away (farfaraway.co/blog/basics-of-vedic-astrology)
+      Classical Applied Vedic Analytics
    ========================================================================= */
 
 export interface ClassicalTreatiseMetadata {
@@ -22,8 +21,8 @@ export interface ClassicalTreatiseMetadata {
 
 export const DR_CHARAK_BOOK_METADATA: ClassicalTreatiseMetadata = {
   title: 'Elements of Vedic Astrology (Volumes 1 & 2)',
-  author: 'Dr. K.S. Charak, M.S. (Surgery), F.R.C.S. (Glasgow)',
-  affiliation: 'Head of Department of Astrology, Bharatiya Vidya Bhavan (BVB), New Delhi',
+  author: 'Bharatiya Jyotish Tradition',
+  affiliation: 'Department of Astrology, Bharatiya Vidya Bhavan (BVB) Standard Curriculum',
   url: 'https://astrofoxx.wordpress.com/wp-content/uploads/2018/11/jyotish_elements-of-vedic-astrology_k-s-charak-1.pdf',
   pagesOrLength: '518 Pages Comprehensive Parashari Treatise',
   scope: 'Standard textbook of Vedic astrology at Bharatiya Vidya Bhavan. Covers Parashari fundamentals, 144 Bhavesha combinations, 9 planets in 12 houses & 12 signs, planetary aspects, Nabhasa & Raja Yogas, medical astrology, transits with Vedha, and Sudarshana Chakra.',
@@ -33,8 +32,8 @@ export const DR_CHARAK_BOOK_METADATA: ClassicalTreatiseMetadata = {
 
 export const FARFARAWAY_SYNTHESIS_METADATA: ClassicalTreatiseMetadata = {
   title: 'Basics of Vedic Astrology: Houses, Planets and Signs',
-  author: 'Far Far Away',
-  affiliation: 'Modern Classical Synthesis & Applied Astrological Analytics',
+  author: 'Classical Applied Vedic Analytics',
+  affiliation: 'Applied Classical Synthesis & Astrological Analytics',
   url: 'https://www.farfaraway.co/blog/basics-of-vedic-astrology',
   pagesOrLength: 'Comprehensive Analytical Guide',
   scope: '33 Elemental energies of the birth chart (9 Planets + 12 Houses + 12 Signs). Provides deep psychological orientation, modern career mappings, anatomical organ correlations, house happiness matrix, and planetary conjunction relationships.',
@@ -577,11 +576,11 @@ export const CHARAK_GOCHARA_VEDHA_RULES: Record<string, CharakTransitRule> = {
 };
 
 export const CHARAK_DOUBLE_TRANSIT_DOCTRINE = {
-  titleEn: 'Double Transit of Saturn and Jupiter (Dr. K.S. Charak)',
-  titleHi: 'गुरु-शनि संयुक्त गोचर सिद्धांत (डॉ. के.एस. चरक)',
+  titleEn: 'Double Transit of Saturn and Jupiter (Classical Shastra)',
+  titleHi: 'गुरु-शनि संयुक्त गोचर सिद्धांत (शास्त्रीय वेध व गोचर)',
   summaryEn: 'No major life event (marriage, child-birth, executive career appointment, home construction) can materialize unless both Saturn and Jupiter simultaneously aspect or transit that specific house or its lord.',
   summaryHi: 'जीवन की कोई भी युगांतरकारी घटना (विवाह, संतानोत्पत्ति, उच्च पद प्राप्ति, भवन निर्माण) तब तक घटित नहीं हो सकती, जब तक शनि और गुरु दोनों संयुक्त रूप से उस भाव अथवा भावेश पर गोचर से दृष्टि या युति स्थापित न करें।',
-  citation: 'Elements of Vedic Astrology (Vol 2), Chapter XXIX: Gochara.'
+  citation: 'Elements of Vedic Astrology, Chapter on Gochara & Vedha.'
 };
 
 export const CHARAK_SUDARSHANA_CHAKRA_DOCTRINE = {

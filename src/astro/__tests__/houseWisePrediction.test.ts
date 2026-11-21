@@ -25,6 +25,18 @@ describe('House-wise evidence synthesis', () => {
       expect(house.synthesisHi).toContain('वास्तविक फलादेश निष्कर्ष');
       expect(house.synthesisEn).not.toMatch(/will flourish effortlessly|will develop steadily and bring fruitful milestones|Promises in .* will/i);
       expect(house.synthesisHi).not.toMatch(/स्वतः सिद्ध सफलता|गारंटी देता है/);
+
+      // Classical 12-Bhava Karakatwa assertions
+      expect(house.bhavamNames && house.bhavamNames.length).toBeGreaterThan(0);
+      expect(house.sthanangal && house.sthanangal.length).toBeGreaterThan(0);
+      expect(house.primaryKarakaName).toBeTruthy();
+      expect(house.karakatwams && house.karakatwams.length).toBeGreaterThan(15);
+      expect(house.lordPlacementKarmaEn).toBeTruthy();
+      expect(house.lordPlacementKarmaHi).toBeTruthy();
+      expect(house.remedyMantraEn).toBeTruthy();
+      expect(house.remedyMantraHi).toBeTruthy();
+      expect(house.remedyFastingEn).toBeTruthy();
+      expect(house.remedyRitualEn).toBeTruthy();
     }
   });
 

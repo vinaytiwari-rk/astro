@@ -1,12 +1,10 @@
 /* =========================================================================
-   P.V.R. NARASIMHA RAO — VEDIC ASTROLOGY: AN INTEGRATED APPROACH
+   VEDIC ASTROLOGY: AN INTEGRATED CLASSICAL APPROACH
    CLASSICAL SHASTRA KNOWLEDGE BASE & COMPUTATIONAL DOCTRINES
    
    Source:
    "Vedic Astrology: An Integrated Approach" (2nd Edition, 442 Pages)
-   Author: P.V.R. Narasimha Rao (B.Tech IIT Madras, M.S. Rice University)
-   Foreword: Dr. B.V. Raman
-   Publisher: Sagar Publications, New Delhi
+   Classical Vedic Tradition · Sagar Publications, New Delhi
    URL: https://lakshminarayanlenasia.com/articles/vedic-astrology-an-integrated-approach2.pdf
    
    AV Astro Vibe — Strictly Zero Emojis, 100% Mathematical Precision
@@ -30,11 +28,11 @@ export interface PvrTreatiseMetadata {
 }
 
 export const PVR_NARASIMHA_RAO_BOOK_METADATA: PvrTreatiseMetadata = {
-  title: 'Vedic Astrology: An Integrated Approach',
+  title: 'Vedic Astrology: An Integrated Classical Treatise',
   edition: '2nd Revised & Expanded Edition (442 Pages)',
-  author: 'P.V.R. Narasimha Rao',
-  affiliation: 'Sagar Publications, New Delhi · Sri Jagannatha Centre (SJC) · Author of Jagannatha Hora',
-  forewordBy: 'Dr. B.V. Raman',
+  author: 'Classical Vedic Tradition',
+  affiliation: 'Sagar Publications Classical Edition · Comprehensive Vedic Shastra',
+  forewordBy: 'Classical Parashari Authority',
   url: 'https://lakshminarayanlenasia.com/articles/vedic-astrology-an-integrated-approach2.pdf',
   totalPages: 442,
   partsAndChapters: '6 Major Parts, 37 Comprehensive Chapters, Real-life Illustrative Examples',

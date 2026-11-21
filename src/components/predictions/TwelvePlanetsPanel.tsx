@@ -20,7 +20,7 @@ import {
   type TwelvePlanetsPredictionsReport,
 } from '../../astro/predictions/twelvePlanetsPredictions';
 import type { ChartData, PlanetId } from '../../astro/types';
-import { getCharakGraha, DR_CHARAK_BOOK_METADATA, FARFARAWAY_SYNTHESIS_METADATA } from '../../astro/predictions/charakElementsKb';
+import { getCharakGraha } from '../../astro/predictions/charakElementsKb';
 import { BookOpen, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign, trTerm } from '../../i18n/translations';

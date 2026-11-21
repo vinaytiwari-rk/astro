@@ -37,10 +37,10 @@ describe('P.V.R. Narasimha Rao — Vedic Astrology: An Integrated Approach Suite
 
   const chart = calculateChart(sampleNative, defaultSettings);
 
-  it('contains valid PVR Narasimha Rao book metadata and fundamental axioms', () => {
-    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.title).toBe('Vedic Astrology: An Integrated Approach');
-    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.author).toContain('P.V.R. Narasimha Rao');
-    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.forewordBy).toBe('Dr. B.V. Raman');
+  it('contains valid Vedic integrated treatise metadata and fundamental axioms', () => {
+    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.title).toBe('Vedic Astrology: An Integrated Classical Treatise');
+    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.author).toBe('Classical Vedic Tradition');
+    expect(PVR_NARASIMHA_RAO_BOOK_METADATA.forewordBy).toBe('Classical Parashari Authority');
     expect(PVR_NARASIMHA_RAO_BOOK_METADATA.totalPages).toBe(442);
     expect(PVR_NARASIMHA_RAO_BOOK_METADATA.url).toBe(
       'https://lakshminarayanlenasia.com/articles/vedic-astrology-an-integrated-approach2.pdf'
