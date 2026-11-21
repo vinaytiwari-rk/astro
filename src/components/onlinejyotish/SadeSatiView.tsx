@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { formatDateDmy } from '../../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm } from '../../astro/time';
 import { ChartData } from '../../astro/types';
 import {
   computeSadeSatiPhases,
@@ -277,6 +277,29 @@ const SadeSatiView: React.FC<SadeSatiViewProps> = ({ chart }) => {
 
   return (
     <div className="sss-root">
+      {/* ── Desktop Software Titlebar ── */}
+      <div className="sw-titlebar" style={{ borderRadius: '12px' }}>
+        <div className="sw-title-left">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span className="sw-badge sw-badge-warning">
+              गोचर शनि विश्लेषण
+            </span>
+            <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              Parashara Shani Gochar · Moorti Nirnaya · 20-Year Timeline
+            </span>
+          </div>
+          <h2>
+            शनि गोचर एवं साढ़ेसाती महा-विश्लेषण / Saturn Transit &amp; Sade Sati Workstation
+          </h2>
+          <p>
+            गोचर शनि, जन्म चंद्र एवं लग्न सापेक्ष स्थिति, मूर्ति निर्णय (स्वर्ण/रजत/ताम्र/लोह) एवं २० वर्षीय संपूर्ण कालक्रम।
+          </p>
+        </div>
+        <div className="sw-native-pill">
+          {chart.input.name} ({formatDateTimeDmyAmPm(chart.input.date, chart.input.time)})
+        </div>
+      </div>
+
       {/* ── Current Status ── */}
       <StatusCard status={report.currentStatus} />
 

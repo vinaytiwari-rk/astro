@@ -58,7 +58,7 @@ import {
   computeSudarshanChakra,
 } from '../astro/specialChakras';
 import { computeComprehensiveSensitivePoints, computePushkaraAnalysis, computeMrityuBhagaAnalysis } from '../astro/specialSensitivities';
-import { formatDateDmy, formatDms } from '../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatDms } from '../astro/time';
 import type {
   BirthInput,
   CalcSettings,
@@ -522,7 +522,7 @@ export const VedicMasterWorkstation: React.FC<VedicMasterWorkstationProps> = ({
           </span>
 
           <span className="tag tag-accent mono">
-            {chart.input.name} ({chart.input.date})
+            {chart.input.name} ({formatDateTimeDmyAmPm(chart.input.date, chart.input.time)})
           </span>
 
           {onOpenEditor && (

@@ -102,21 +102,29 @@ export const NumerologyView: React.FC<NumerologyViewProps> = ({ chart, onNavigat
       </div>
 
       {/* Interactive Form Card */}
-      <div className="oj-card no-print mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="sw-card no-print" style={{ marginTop: '16px', marginBottom: '16px' }}>
+        <div className="sw-grid-4">
           <div>
-            <label className="block text-xs font-semibold text-amber-300 mb-1">
+            <label className="sw-stat-label" style={{ marginBottom: '6px' }}>
               {isHi ? 'नाम (अक्षर जांच हेतु)' : 'Name (Spelling Test)'}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-700 text-amber-100 text-xs rounded-lg p-2.5 focus:border-amber-400"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color, #cbd5e1)',
+                background: 'var(--bg-subtle, #f8fafc)',
+                color: 'var(--text-primary, #0f172a)',
+                fontSize: '0.85rem',
+              }}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-amber-300 mb-1">
+            <label className="sw-stat-label" style={{ marginBottom: '6px' }}>
               {isHi ? 'जन्म तिथि (DD-MM-YYYY)' : 'Date of Birth (DD-MM-YYYY)'}
             </label>
             <DateDmyInput
@@ -126,13 +134,21 @@ export const NumerologyView: React.FC<NumerologyViewProps> = ({ chart, onNavigat
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-amber-300 mb-1">
+            <label className="sw-stat-label" style={{ marginBottom: '6px' }}>
               {isHi ? 'लिंग (कुआ अंक हेतु)' : 'Gender (Kua Number)'}
             </label>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value as 'male' | 'female' | 'other')}
-              className="w-full bg-neutral-900 border border-neutral-700 text-amber-100 text-xs rounded-lg p-2.5 focus:border-amber-400"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color, #cbd5e1)',
+                background: 'var(--bg-subtle, #f8fafc)',
+                color: 'var(--text-primary, #0f172a)',
+                fontSize: '0.85rem',
+              }}
             >
               <option value="male">{isHi ? 'पुरुष' : 'Male'}</option>
               <option value="female">{isHi ? 'महिला' : 'Female'}</option>
@@ -140,169 +156,206 @@ export const NumerologyView: React.FC<NumerologyViewProps> = ({ chart, onNavigat
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-amber-300 mb-1">
+            <label className="sw-stat-label" style={{ marginBottom: '6px' }}>
               {isHi ? 'पर्सनल ईयर वर्ष' : 'Target Year'}
             </label>
             <input
               type="number"
               value={targetYear}
               onChange={(e) => setTargetYear(parseInt(e.target.value, 10) || 2026)}
-              className="w-full bg-neutral-900 border border-neutral-700 text-amber-100 text-xs rounded-lg p-2.5 focus:border-amber-400 font-mono"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color, #cbd5e1)',
+                background: 'var(--bg-subtle, #f8fafc)',
+                color: 'var(--text-primary, #0f172a)',
+                fontSize: '0.85rem',
+                fontFamily: 'monospace',
+              }}
             />
           </div>
         </div>
       </div>
 
       {/* Main Numerology Key Numbers Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      <div className="sw-grid-4" style={{ marginBottom: '20px' }}>
         {/* Mulank */}
-        <div className="oj-card border-amber-500/40 text-center">
-          <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+        <div className="sw-card" style={{ textAlign: 'center', borderTop: '4px solid #f59e0b' }}>
+          <span className="sw-stat-label" style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {isHi ? 'मूलांक (Root / Driver)' : 'Mulank (Driver)'}
           </span>
-          <div className="text-4xl font-black text-amber-300 font-mono my-2">{report.mulank}</div>
-          <div className="text-xs text-neutral-300 font-medium">
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#d97706', fontFamily: 'monospace', margin: '8px 0' }}>
+            {report.mulank}
+          </div>
+          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #334155)' }}>
             {isHi ? report.mulankRulerHi : report.mulankRulerEn}
           </div>
         </div>
 
         {/* Bhagyank */}
-        <div className="oj-card border-amber-500/40 text-center">
-          <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+        <div className="sw-card" style={{ textAlign: 'center', borderTop: '4px solid #3b82f6' }}>
+          <span className="sw-stat-label" style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {isHi ? 'भाग्यांक (Destiny / Conductor)' : 'Bhagyank (Conductor)'}
           </span>
-          <div className="text-4xl font-black text-amber-300 font-mono my-2">{report.bhagyank}</div>
-          <div className="text-xs text-neutral-300 font-medium">
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#2563eb', fontFamily: 'monospace', margin: '8px 0' }}>
+            {report.bhagyank}
+          </div>
+          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #334155)' }}>
             {isHi ? 'जीवन लक्ष्य व संचालक' : 'Destiny Path Conductor'}
           </div>
         </div>
 
         {/* Chaldean Namank */}
-        <div className="oj-card border-amber-500/40 text-center">
-          <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+        <div className="sw-card" style={{ textAlign: 'center', borderTop: '4px solid #8b5cf6' }}>
+          <span className="sw-stat-label" style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {isHi ? 'कीरो (Chaldean) नामांक' : 'Chaldean Name No.'}
           </span>
-          <div className="text-4xl font-black text-amber-300 font-mono my-2">
-            {report.chaldeanReduced} <span className="text-sm font-normal text-amber-400/80">({report.chaldeanTotal})</span>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#7c3aed', fontFamily: 'monospace', margin: '8px 0' }}>
+            {report.chaldeanReduced} <span style={{ fontSize: '0.9rem', fontWeight: 400, color: '#94a3b8' }}>({report.chaldeanTotal})</span>
           </div>
-          <div className="text-xs text-neutral-300 font-medium">
+          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #334155)' }}>
             {isHi ? 'पाइथागोरस नामांक:' : 'Pythagorean:'} {report.pythagoreanReduced}
           </div>
         </div>
 
         {/* Kua Number */}
-        <div className="oj-card border-amber-500/40 text-center">
-          <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+        <div className="sw-card" style={{ textAlign: 'center', borderTop: '4px solid #10b981' }}>
+          <span className="sw-stat-label" style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {isHi ? 'कुआ अंक व पर्सनल ईयर' : 'Kua & Personal Year'}
           </span>
-          <div className="text-4xl font-black text-amber-300 font-mono my-2">{report.kuaNumber}</div>
-          <div className="text-xs text-neutral-300 font-medium">
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#059669', fontFamily: 'monospace', margin: '8px 0' }}>
+            {report.kuaNumber}
+          </div>
+          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #334155)' }}>
             {isHi ? `पर्सनल ईयर ${report.personalYear}` : `Personal Year ${report.personalYear}`}
           </div>
         </div>
       </div>
 
       {/* Lo Shu Grid & Detailed Predictions */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-        {/* Left: 3x3 Lo Shu Grid (5 Cols) */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="oj-card">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-amber-900/30">
-              <Grid3x3 className="w-5 h-5 text-amber-400" />
-              <h3 className="text-base font-bold text-amber-200">
-                {isHi ? '३x३ लो-शू अंक ग्रिड (Lo Shu Magic Square)' : '3x3 Lo Shu Grid'}
-              </h3>
+      <div className="sw-grid-2" style={{ gap: '20px' }}>
+        {/* Left: 3x3 Lo Shu Grid & Planes */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="sw-card">
+            <div className="sw-card-header">
+              <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Grid3x3 className="w-5 h-5 text-amber-500" />
+                {isHi ? '३x३ लो-शू अंक ग्रिड (Lo Shu Magic Square)' : '3x3 Lo Shu Magic Square Grid'}
+              </span>
             </div>
-            <p className="text-xs text-neutral-400 mb-4">
+            <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 14px 0', lineHeight: 1.5 }}>
               {isHi
                 ? 'जन्म तिथि के अंकों की आवृत्ति आपके बौद्धिक, भावनात्मक एवं व्यावहारिक तलों को प्रकट करती है:'
                 : 'Presence and repetition of natal digits reveal conscious strengths and blind spots:'}
             </p>
 
-            <div className="grid grid-cols-3 gap-2.5 max-w-xs mx-auto p-3 bg-neutral-950 border border-amber-900/40 rounded-xl">
-              {LO_SHU_ORDER.map((digit) => {
-                const count = report.loShuCounts[digit] || 0;
-                return (
-                  <div
-                    key={digit}
-                    className={`aspect-square rounded-lg flex flex-col items-center justify-center p-1 border text-center transition-all ${
-                      count > 0
-                        ? 'bg-amber-500/20 border-amber-500/60 text-amber-200 font-bold shadow'
-                        : 'bg-neutral-900/60 border-neutral-800 text-neutral-600'
-                    }`}
-                  >
-                    <span className="text-lg font-black font-mono">{digit}</span>
-                    <span className="text-[10px] opacity-80">
-                      {count > 0 ? (isHi ? `${count} बार` : `x${count}`) : '-'}
-                    </span>
-                  </div>
-                );
-              })}
+            {/* Authentic 3x3 Magic Square Matrix */}
+            <div className="loshu-container">
+              <div className="loshu-grid-3x3">
+                {LO_SHU_ORDER.map((digit) => {
+                  const count = report.loShuCounts[digit] || 0;
+                  return (
+                    <div
+                      key={digit}
+                      className={`loshu-cell ${count > 0 ? 'is-present' : ''}`}
+                    >
+                      <span className="loshu-cell-digit">{digit}</span>
+                      <span className="loshu-cell-freq">
+                        {count > 0 ? (isHi ? `${count} बार` : `x${count}`) : '—'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-neutral-800 text-xs text-neutral-300 space-y-1">
-              <div><strong>{isHi ? 'मानसिक तल (4, 9, 2):' : 'Mental Plane (4, 9, 2):'}</strong> {isHi ? 'मेधा व तार्किक स्मृति' : 'Analytical intellect'}</div>
-              <div><strong>{isHi ? 'भावनात्मक तल (3, 5, 7):' : 'Emotional Plane (3, 5, 7):'}</strong> {isHi ? 'संवेदना व आत्मिक बल' : 'Emotional intuition'}</div>
-              <div><strong>{isHi ? 'व्यावहारिक तल (8, 1, 6):' : 'Practical Plane (8, 1, 6):'}</strong> {isHi ? 'कर्मठता व धन संचय' : 'Material execution'}</div>
+            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div className="loshu-plane-row">
+                <span><strong>{isHi ? 'मानसिक तल (4, 9, 2):' : 'Mental Plane (4, 9, 2):'}</strong></span>
+                <span>{isHi ? 'मेधा व तार्किक स्मृति' : 'Analytical intellect'}</span>
+              </div>
+              <div className="loshu-plane-row">
+                <span><strong>{isHi ? 'भावनात्मक तल (3, 5, 7):' : 'Emotional Plane (3, 5, 7):'}</strong></span>
+                <span>{isHi ? 'संवेदना व आत्मिक बल' : 'Emotional intuition'}</span>
+              </div>
+              <div className="loshu-plane-row">
+                <span><strong>{isHi ? 'व्यावहारिक तल (8, 1, 6):' : 'Practical Plane (8, 1, 6):'}</strong></span>
+                <span>{isHi ? 'कर्मठता व धन संचय' : 'Material execution'}</span>
+              </div>
             </div>
           </div>
 
           {/* Lucky Attributes */}
-          <div className="oj-card">
-            <h4 className="text-sm font-bold text-amber-200 mb-3 pb-2 border-b border-amber-900/30">
-              {isHi ? 'शुभ अंक, रंग, दिन एवं दिशाएं' : 'Favorable Vibrations'}
-            </h4>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-neutral-800/60">
-                <span className="text-neutral-400">{isHi ? 'अनुकूल अंक:' : 'Compatible Numbers:'}</span>
-                <strong className="text-amber-300 font-mono">{report.compatibleNumbers.join(', ')}</strong>
+          <div className="sw-card">
+            <div className="sw-card-header">
+              <span className="sw-card-title">
+                {isHi ? 'शुभ अंक, रंग, दिन एवं दिशाएं' : 'Favorable Vibrations'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-color, #e2e8f0)' }}>
+                <span style={{ color: '#64748b' }}>{isHi ? 'अनुकूल अंक:' : 'Compatible Numbers:'}</span>
+                <strong style={{ color: '#b45309', fontFamily: 'monospace' }}>{report.compatibleNumbers.join(', ')}</strong>
               </div>
-              <div className="flex justify-between py-1 border-b border-neutral-800/60">
-                <span className="text-neutral-400">{isHi ? 'शुभ दिन:' : 'Lucky Days:'}</span>
-                <span className="text-amber-200">{isHi ? report.luckyDaysHi : report.luckyDaysEn}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-color, #e2e8f0)' }}>
+                <span style={{ color: '#64748b' }}>{isHi ? 'शुभ दिन:' : 'Lucky Days:'}</span>
+                <span style={{ fontWeight: 600 }}>{isHi ? report.luckyDaysHi : report.luckyDaysEn}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-neutral-800/60">
-                <span className="text-neutral-400">{isHi ? 'शुभ रंग:' : 'Lucky Colors:'}</span>
-                <span className="text-amber-200">{isHi ? report.luckyColorsHi : report.luckyColorsEn}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-color, #e2e8f0)' }}>
+                <span style={{ color: '#64748b' }}>{isHi ? 'शुभ रंग:' : 'Lucky Colors:'}</span>
+                <span style={{ fontWeight: 600 }}>{isHi ? report.luckyColorsHi : report.luckyColorsEn}</span>
               </div>
-              <div className="flex justify-between py-1">
-                <span className="text-neutral-400">{isHi ? 'कुआ शुभ दिशाएं:' : 'Kua Auspicious Vectors:'}</span>
-                <span className="text-amber-200">{isHi ? report.kuaDirectionsHi : report.kuaDirectionsEn}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                <span style={{ color: '#64748b' }}>{isHi ? 'कुआ शुभ दिशाएं:' : 'Kua Auspicious Vectors:'}</span>
+                <span style={{ fontWeight: 600 }}>{isHi ? report.kuaDirectionsHi : report.kuaDirectionsEn}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Detailed Predictions (7 Cols) */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* Right: Detailed Predictions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Mulank & Bhagyank Synthesis */}
-          <div className="oj-card">
-            <h4 className="text-sm font-bold text-amber-200 mb-2 pb-2 border-b border-amber-900/30">
-              {isHi ? 'मूलांक व्यक्तित्व एवं स्वभाव' : 'Mulank Personality Profile'}
-            </h4>
-            <p className="text-xs text-neutral-300 leading-relaxed mb-4">
+          <div className="sw-card">
+            <div className="sw-card-header">
+              <span className="sw-card-title">
+                {isHi ? 'मूलांक व्यक्तित्व एवं स्वभाव' : 'Mulank Personality Profile'}
+              </span>
+            </div>
+            <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-primary, #334155)', margin: '0 0 16px 0' }}>
               {isHi ? report.mulankProfileHi : report.mulankProfileEn}
             </p>
-            <h4 className="text-sm font-bold text-amber-200 mb-2 pb-2 border-b border-amber-900/30">
-              {isHi ? 'भाग्यांक जीवन लक्ष्य एवं कर्म' : 'Bhagyank Destiny Path'}
-            </h4>
-            <p className="text-xs text-neutral-300 leading-relaxed">
+            <div className="sw-card-header">
+              <span className="sw-card-title">
+                {isHi ? 'भाग्यांक जीवन लक्ष्य एवं कर्म' : 'Bhagyank Destiny Path'}
+              </span>
+            </div>
+            <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-primary, #334155)', margin: 0 }}>
               {isHi ? report.bhagyankProfileHi : report.bhagyankProfileEn}
             </p>
           </div>
 
           {/* Name Compatibility */}
-          <div className="oj-card">
-            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-amber-900/30">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <h4 className="text-sm font-bold text-amber-200">
+          <div className="sw-card">
+            <div className="sw-card-header">
+              <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles className="w-4 h-4 text-amber-500" />
                 {isHi ? 'नाम अनुकूलता एवं स्पंदन (Name Vibration Compatibility)' : 'Name Vibration Compatibility'}
-              </h4>
+              </span>
             </div>
-            <p className="text-xs text-neutral-300 leading-relaxed mb-3">
+            <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-primary, #334155)', margin: '0 0 12px 0' }}>
               {isHi ? report.nameCompatibilityHi : report.nameCompatibilityEn}
             </p>
-            <div className="p-3 bg-neutral-900/80 rounded-lg text-xs text-amber-300/90 border border-neutral-800">
+            <div style={{
+              padding: '12px',
+              borderRadius: '8px',
+              background: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
+              fontSize: '0.84rem',
+              lineHeight: 1.5,
+              color: 'var(--text-primary, #78350f)',
+            }}>
               <strong>{isHi ? 'शास्त्रीय परामर्श:' : 'Guidance:'}</strong>{' '}
               {isHi
                 ? `आपका कीरो नामांक ${report.chaldeanReduced} है। यदि नामांक और भाग्यांक (${report.bhagyank}) में नैसर्गिक सामंजस्य है, तो जीवन में अवरोध स्वतः दूर होते हैं।`
@@ -312,23 +365,32 @@ export const NumerologyView: React.FC<NumerologyViewProps> = ({ chart, onNavigat
 
           {/* Missing Numbers Remedies */}
           {report.missingNumbers.length > 0 && (
-            <div className="oj-card">
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-amber-900/30">
-                <Shield className="w-4 h-4 text-amber-400" />
-                <h4 className="text-sm font-bold text-amber-200">
+            <div className="sw-card">
+              <div className="sw-card-header">
+                <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Shield className="w-4 h-4 text-emerald-500" />
                   {isHi ? 'लो-शू ग्रिड में अनुपस्थित अंक एवं संतुलन उपाय' : 'Missing Numbers & Remedial Balances'}
-                </h4>
+                </span>
               </div>
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {report.missingNumbers.map((m) => (
-                  <div key={m.digit} className="p-2.5 bg-neutral-900/70 border border-neutral-800 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-amber-300 font-mono">
+                  <div key={m.digit} style={{
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    background: 'var(--bg-subtle, #f8fafc)',
+                    border: '1px solid var(--border-color, #e2e8f0)',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#b45309', fontFamily: 'monospace' }}>
                         {isHi ? `अंक ${m.digit} अनुपस्थित` : `Missing #${m.digit}`} ({isHi ? m.planetHi : m.planetEn})
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-400 mb-1">{isHi ? m.impactHi : m.impactEn}</p>
-                    <p className="text-xs text-amber-200/90"><strong>{isHi ? 'उपाय:' : 'Remedy:'}</strong> {isHi ? m.remedyHi : m.remedyEn}</p>
+                    <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0 0 4px 0', lineHeight: 1.4 }}>
+                      {isHi ? m.impactHi : m.impactEn}
+                    </p>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-primary, #0f172a)', margin: 0, lineHeight: 1.4 }}>
+                      <strong>{isHi ? 'उपाय:' : 'Remedy:'}</strong> {isHi ? m.remedyHi : m.remedyEn}
+                    </p>
                   </div>
                 ))}
               </div>

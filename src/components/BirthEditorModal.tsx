@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Globe, Loader2, MapPin, Save, Search, Sparkles, Trash2, X } from 'lucide-react';
-import { formatDateDmy, formatOffsetString, getIanaOffsetMinutes, parseOffsetString } from '../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatOffsetString, getIanaOffsetMinutes, parseOffsetString } from '../astro/time';
 import type { BirthInput } from '../astro/types';
 import {
   lookupTimezoneFromCoords,
@@ -342,7 +342,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                           style={{ padding: 0, height: 'auto' }}
                           onClick={() => onSelectProfile?.(p.id)}
                         >
-                          <strong>{p.name}</strong> ({formatDateDmy(p.date)})
+                          <strong>{p.name}</strong> ({formatDateTimeDmyAmPm(p.date, p.time)})
                         </button>
                         <button
                           type="button"

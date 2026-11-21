@@ -10,7 +10,7 @@ import { computeFullLalKitabReport } from '../astro/lalKitabExtended';
 import { generatePredictionReport } from '../astro/predictions/engine';
 import { buildSpecializedAstrologySuite } from '../astro/predictions/specialized';
 import { computeGemstoneAndRudraksha } from '../astro/rashifalBabyRudraksha';
-import { formatDateDmy, formatLocalDateTimeFromUtc } from '../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatLocalDateTimeFromUtc } from '../astro/time';
 import type { ChartData, ChartStyle } from '../astro/types';
 import {
   localizePredictionReportHi,
@@ -178,7 +178,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
               {isHi ? 'बृहत् जन्म पत्रिका' : 'Brihat Janam Patrika'} · {chart.input.name}
             </h2>
             <p className="mono">
-              {formatDateDmy(chart.input.date)} · {chart.input.time} · {chart.input.city} (
+              {formatDateTimeDmyAmPm(chart.input.date, chart.input.time)} · {chart.input.city} (
               {chart.input.latitude.toFixed(2)}°N, {chart.input.longitude.toFixed(2)}°E)
             </p>
             <p>

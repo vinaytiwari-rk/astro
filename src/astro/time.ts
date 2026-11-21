@@ -269,6 +269,37 @@ export function formatDateDmy(value: string | number | Date | null | undefined):
 }
 
 /**
+ * Formats HH:MM:SS or HH:MM into HH:MM:SS AM/PM (12-hour format).
+ */
+export function formatTime12h(timeStr: string | null | undefined): string {
+  if (!timeStr) return '';
+  const trimmed = timeStr.trim();
+  const parts = trimmed.split(':');
+  if (parts.length < 2) return trimmed;
+  let h = parseInt(parts[0], 10);
+  const m = String(parseInt(parts[1], 10) || 0).padStart(2, '0');
+  const s = String(parseInt(parts[2] ?? '0', 10) || 0).padStart(2, '0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12;
+  if (h === 0) h = 12;
+  const hh = String(h).padStart(2, '0');
+  return `${hh}:${m}:${s} ${ampm}`;
+}
+
+/**
+ * Formats Date and Time into canonical DD-MM-YYYY, HH:MM:SS AM/PM.
+ */
+export function formatDateTimeDmyAmPm(
+  dateVal: string | number | Date | null | undefined,
+  timeVal?: string | null
+): string {
+  const dmy = formatDateDmy(dateVal);
+  if (!timeVal) return dmy;
+  const t12 = formatTime12h(timeVal);
+  return t12 ? `${dmy}, ${t12}` : dmy;
+}
+
+/**
  * Parses DD-MM-YYYY (or DD/MM/YYYY or YYYY-MM-DD) to canonical YYYY-MM-DD if valid.
  */
 export function parseDateInputToIso(raw: string): string | null {

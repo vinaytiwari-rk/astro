@@ -210,7 +210,7 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                 style={{ fontWeight: rashifalSource === 'clickastro' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
                 <Rss size={14} />
-                <span>{isHi ? 'ClickAstro लाइव वेब फीड्स (दैनिक व साप्ताहिक)' : 'ClickAstro Live RSS Feeds (Daily & Weekly)'}</span>
+                <span>{isHi ? 'दैनिक व साप्ताहिक गोचर फलादेश (लाइव वेब फीड्स)' : 'Daily & Weekly Gochar Forecast (Live Feeds)'}</span>
               </button>
             </div>
 
@@ -439,13 +439,13 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Rss size={16} style={{ color: '#ea580c' }} />
                     {isHi
-                      ? `ClickAstro लाइव वेब फीड — ${feedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'} (${activeFeedItem.pubDateFormatted})`
-                      : `ClickAstro Live Web Feed — ${feedPeriod === 'daily' ? 'Daily Horoscope' : 'Weekly Horoscope'} (${activeFeedItem.pubDateFormatted})`}
+                      ? `लाइव गोचर वेब फलादेश — ${feedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'} (${activeFeedItem.pubDateFormatted})`
+                      : `Live Gochar Web Forecast — ${feedPeriod === 'daily' ? 'Daily Horoscope' : 'Weekly Horoscope'} (${activeFeedItem.pubDateFormatted})`}
                   </h3>
                   <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', display: 'block', marginTop: '2px' }}>
                     {isHi
-                      ? 'आधिकारिक FeedBurner RSS चैनल से सीधे प्राप्त प्रामाणिक राशिफल'
-                      : 'Live syndication feed from ClickAstro official FeedBurner channels'}
+                      ? 'प्रत्यक्ष वेब फीड्स द्वारा संकलित दैनिक व साप्ताहिक गोचर फलादेश'
+                      : 'Live syndication feed from official astronomical FeedBurner channels'}
                   </span>
                 </div>
 
@@ -526,7 +526,7 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                       className="btn btn-sm btn-secondary"
                       style={{ fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <span>{isHi ? 'ClickAstro मूल पृष्ठ' : 'View on ClickAstro'}</span>
+                      <span>{isHi ? 'विस्तृत संदर्भ लिंक' : 'Detailed Reference Link'}</span>
                       <ExternalLink size={12} />
                     </a>
                   </div>

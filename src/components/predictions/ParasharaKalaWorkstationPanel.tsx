@@ -10,7 +10,6 @@ import {
   ExternalLink,
   Flame,
   Layers,
-  Search,
   Shield,
   Sparkles,
   Sun,
@@ -36,6 +35,7 @@ import {
   type TajakaSahamsReport,
   type TajakaSahamResult,
 } from '../../astro/tajakaSahams';
+import { formatDateTimeDmyAmPm, formatDateDmy } from '../../astro/time';
 import type { BirthInput, ChartData } from '../../astro/types';
 import { RESEARCH_BENCHMARK_CHARTS, type ResearchBenchmarkChart } from '../../data/researchCharts';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -58,14 +58,11 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
 
   const [activeTab, setActiveTab] = useState<MainTab>('kakshya');
 
-  // Sub-filters for Sahams
+  // Sub-filters for Sahams (Direct categories, no manual search)
   const [sahamCategory, setSahamCategory] = useState<string>('all');
-  const [sahamSearch, setSahamSearch] = useState<string>('');
 
   // Sub-filters for Research Charts
   const [researchCategory, setResearchCategory] = useState<string>('all');
-  const [researchSearch, setResearchSearch] = useState<string>('');
-  const [selectedResearchChart, setSelectedResearchChart] = useState<ResearchBenchmarkChart | null>(null);
 
   // Selected planet for Kakshya detail
   const [selectedPlanetKakshya, setSelectedPlanetKakshya] = useState<string>('Saturn');
@@ -110,935 +107,883 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
     return computeBhavabalaReport(natalChart);
   }, [natalChart]);
 
-  // Filtered Sahams
+  // Filtered Sahams by category
   const filteredSahams = useMemo(() => {
-    return sahamsReport.sahams.filter((s) => {
-      const matchCat = sahamCategory === 'all' || s.category === sahamCategory;
-      const q = sahamSearch.trim().toLowerCase();
-      const matchSearch =
-        !q ||
-        s.nameEn.toLowerCase().includes(q) ||
-        s.nameHi.toLowerCase().includes(q) ||
-        s.lord.toLowerCase().includes(q) ||
-        s.signName.toLowerCase().includes(q) ||
-        String(s.house).includes(q);
-      return matchCat && matchSearch;
-    });
-  }, [sahamsReport, sahamCategory, sahamSearch]);
+    if (sahamCategory === 'all') return sahamsReport.sahams;
+    return sahamsReport.sahams.filter((s) => s.category === sahamCategory);
+  }, [sahamsReport, sahamCategory]);
 
-  // Filtered Research Charts
+  // Filtered Research Charts by category
   const filteredResearchCharts = useMemo(() => {
-    return RESEARCH_BENCHMARK_CHARTS.filter((c) => {
-      const matchCat = researchCategory === 'all' || c.category === researchCategory;
-      const q = researchSearch.trim().toLowerCase();
-      const matchSearch =
-        !q ||
-        c.name.toLowerCase().includes(q) ||
-        c.nameHi.toLowerCase().includes(q) ||
-        c.birthInput.city?.toLowerCase().includes(q) ||
-        c.birthInput.country?.toLowerCase().includes(q) ||
-        c.keyAstrologicalHighlightsEn.toLowerCase().includes(q);
-      return matchCat && matchSearch;
-    });
-  }, [researchCategory, researchSearch]);
+    if (researchCategory === 'all') return RESEARCH_BENCHMARK_CHARTS;
+    return RESEARCH_BENCHMARK_CHARTS.filter((c) => c.category === researchCategory);
+  }, [researchCategory]);
 
   const activeKakshyaDetail: PlanetKakshyaTransitDetail | undefined = useMemo(() => {
     return kakshyaReport.allPlanets.find((p) => p.planet === selectedPlanetKakshya) || kakshyaReport.allPlanets[0];
   }, [kakshyaReport, selectedPlanetKakshya]);
 
-  const activeCilCuspDetail: CilCuspRow | undefined = useMemo(() => {
-    return kpCilReport.cusps.find((c) => c.house === selectedCilCusp) || kpCilReport.cusps[6];
-  }, [kpCilReport, selectedCilCusp]);
-
   return (
-    <div className="space-y-6 text-slate-800 dark:text-slate-100">
-      {/* Header Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-indigo-500/10 p-5 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
-                {isHi ? 'शास्त्रीय सॉफ्टवेयर महा-संग्रह' : 'Classical Software Workstation'}
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                Parashara's Light 7.0.1 · True Astrology CIL · Kala 2018 · 11,500 Charts
-              </span>
-            </div>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {isHi
-                ? 'पाराशर-काला-ट्रू एस्ट्रोलॉजी उन्नत कार्यशाला'
-                : 'Parashara-Kala-True Astrology Master Workstation'}
-            </h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {isHi
-                ? 'अष्टकवर्ग कक्ष्य गोचर, ताजिक ५० सहम, केपी कस्पल इंटरलिंक्स (CIL 1-2193) एवं सम्पूर्ण भावबल का गणितीय फलक।'
-                : 'Mathematical Ashtakavarga Kakshya micro-transits, Tajaka 50 Sahams, KP Cuspal Interlinks (CIL 1-2193) and comprehensive Bhavabala.'}
-            </p>
+    <div className="sw-chassis">
+      {/* 1. Software Titlebar */}
+      <div className="sw-titlebar">
+        <div className="sw-title-left">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span className="sw-badge sw-badge-warning">
+              {isHi ? 'शास्त्रीय सॉफ्टवेयर महा-संग्रह' : 'Classical Software Workstation'}
+            </span>
+            <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              Parashara's Light · True Astrology CIL · Kala Software · 11,500 Charts
+            </span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 py-2 text-right">
-              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isHi ? 'सक्रिय जन्मपत्रिका' : 'Active Native'}
-              </div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                {natalChart.input.name}
-              </div>
-            </div>
-          </div>
+          <h2>
+            {isHi
+              ? 'पाराशर-काला-ट्रू एस्ट्रोलॉजी उन्नत कार्यशाला'
+              : 'Parashara-Kala-True Astrology Master Workstation'}
+          </h2>
+          <p>
+            {isHi
+              ? 'अष्टकवर्ग कक्ष्य गोचर, ताजिक ५० सहम, केपी कस्पल इंटरलिंक्स (CIL 1-2193) एवं सम्पूर्ण भावबल का शास्त्रीय फलादेश फलक।'
+              : 'Mathematical Ashtakavarga Kakshya micro-transits, Tajaka 50 Sahams, KP Cuspal Interlinks (CIL 1-2193) & comprehensive Bhavabala.'}
+          </p>
         </div>
 
-        {/* Master Navigation Tabs */}
-        <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-200/60 dark:border-slate-700/60 pt-4">
-          <button
-            type="button"
-            onClick={() => setActiveTab('kakshya')}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === 'kakshya'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            }`}
-          >
-            <Clock className="h-4 w-4" />
-            {isHi ? 'कक्ष्य गोचर (पाराशर)' : 'Kakshya Gochar (Parashara)'}
-            <span className="ml-1 rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-200">
-              {kakshyaReport.kakshyaFavorabilityPercent}%
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('sahams')}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === 'sahams'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            }`}
-          >
-            <Compass className="h-4 w-4" />
-            {isHi ? 'ताजिक ५० सहम' : 'Tajaka 50 Sahams'}
-            <span className="ml-1 rounded-full bg-indigo-500/20 px-1.5 py-0.5 text-[10px] text-indigo-200">
-              50
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('kp_cil')}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === 'kp_cil'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            }`}
-          >
-            <Layers className="h-4 w-4" />
-            {isHi ? 'कस्पल इंटरलिंक्स CIL (True Astrology)' : 'Cuspal Interlinks CIL (1-2193)'}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('bhavabala')}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === 'bhavabala'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            }`}
-          >
-            <Activity className="h-4 w-4" />
-            {isHi ? 'सम्पूर्ण भावबल (Kala 2018)' : 'Bhavabala Engine (Kala 2018)'}
-            <span className="ml-1 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] text-emerald-200">
-              {bhavabalaReport.averageRupas} Rupas
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('research_charts')}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === 'research_charts'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            }`}
-          >
-            <BookOpen className="h-4 w-4" />
-            {isHi ? '११,५०० शोध पत्रिका बैंक' : '11,500 Research Benchmark Charts'}
-            <span className="ml-1 rounded-full bg-purple-500/20 px-1.5 py-0.5 text-[10px] text-purple-200">
-              {RESEARCH_BENCHMARK_CHARTS.length}
-            </span>
-          </button>
+        <div className="sw-native-pill">
+          {isHi ? 'सक्रिय जातक: ' : 'Active Native: '}
+          <strong>{natalChart.input.name}</strong> ({formatDateTimeDmyAmPm(natalChart.input.date, natalChart.input.time)})
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* TAB 1: ASHTAKAVARGA KAKSHYA GOCHAR (PARASHARA'S LIGHT PARITY) */}
-      {/* ========================================================================= */}
-      {activeTab === 'kakshya' && (
-        <div className="space-y-6">
-          {/* Top Status & Summary Card */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm md:col-span-2">
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {isHi ? 'कक्ष्य गोचर समग्र अनुकूलता' : 'Kakshya Transit Favorability Meter'}
-                </div>
-                <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
-                  {kakshyaReport.activePlanetsWithBindu}/7 {isHi ? 'ग्रह बिंदु युक्त' : 'Planets with Bindus'}
-                </span>
+      {/* 2. Master Navigation Tabs */}
+      <div className="sw-tab-bar">
+        <button
+          type="button"
+          onClick={() => setActiveTab('kakshya')}
+          className={`sw-tab-btn ${activeTab === 'kakshya' ? 'is-active' : ''}`}
+        >
+          <Clock className="h-4 w-4" />
+          {isHi ? 'कक्ष्य गोचर (पाराशर)' : 'Kakshya Gochar (Parashara)'}
+          <span className="sw-tab-badge">{kakshyaReport.kakshyaFavorabilityPercent}%</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('sahams')}
+          className={`sw-tab-btn ${activeTab === 'sahams' ? 'is-active' : ''}`}
+        >
+          <Compass className="h-4 w-4" />
+          {isHi ? 'ताजिक ५० सहम' : 'Tajaka 50 Sahams'}
+          <span className="sw-tab-badge">50</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('kp_cil')}
+          className={`sw-tab-btn ${activeTab === 'kp_cil' ? 'is-active' : ''}`}
+        >
+          <Layers className="h-4 w-4" />
+          {isHi ? 'कस्पल इंटरलिंक्स CIL (True Astrology)' : 'Cuspal Interlinks CIL (1-2193)'}
+          <span className="sw-tab-badge">8 Pillars</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('bhavabala')}
+          className={`sw-tab-btn ${activeTab === 'bhavabala' ? 'is-active' : ''}`}
+        >
+          <Activity className="h-4 w-4" />
+          {isHi ? 'सम्पूर्ण भावबल (Kala Engine)' : 'Bhavabala Engine (Kala Engine)'}
+          <span className="sw-tab-badge">{bhavabalaReport.averageRupas} Rupas</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('research_charts')}
+          className={`sw-tab-btn ${activeTab === 'research_charts' ? 'is-active' : ''}`}
+        >
+          <BookOpen className="h-4 w-4" />
+          {isHi ? '११,५०० शोध पत्रिका बैंक' : '11,500 Research Benchmark Charts'}
+          <span className="sw-tab-badge">{RESEARCH_BENCHMARK_CHARTS.length}</span>
+        </button>
+      </div>
+
+      {/* 3. Software Content Panels */}
+      <div className="sw-content-body">
+        {/* ========================================================================= */}
+        {/* TAB 1: ASHTAKAVARGA KAKSHYA GOCHAR (PARASHARA'S LIGHT PARITY) */}
+        {/* ========================================================================= */}
+        {activeTab === 'kakshya' && (
+          <div>
+            {/* Purpose & Predictive Explanation Box */}
+            <div className="sw-purpose-box">
+              <h4>
+                <Compass className="h-4 w-4" />
+                {isHi
+                  ? 'अष्टकवर्ग कक्ष्य गोचर क्या है और इसका फलित उपयोग क्यों किया जाता है?'
+                  : 'What is Ashtakavarga Kakshya Gochar & Why is it Used in Parashara Software?'}
+              </h4>
+              <p>
+                {isHi
+                  ? 'शास्त्रीय सिद्धांत: महर्षि पाराशर (बृहत्पाराशर होराशास्त्र) के अनुसार प्रत्येक राशि के ३० अंशों को ८ समान भागों में विभाजित किया जाता है, जिसे "कक्ष्य" (प्रत्येक ३°४५\') कहते हैं। इसके स्वामी क्रमशः शनि, गुरु, मंगल, सूर्य, शुक्र, बुध, चंद्र और लग्न हैं। जब कोई गोचर ग्रह उस कक्ष्य से गुजरता है जहां जातक की जन्म कुंडली के प्रस्ताराष्टकवर्ग में १ बिंदु (शुभ रेखा) प्राप्त है, तो वह कालखंड आकस्मिक सफलता, धन लाभ और कार्य सिद्धि देता है। शून्य बिंदु होने पर वही गोचर निष्फल या कष्टप्रद रहता है।'
+                  : 'Classical Axiom: According to Maharishi Parashara, every 30° zodiac sign is divided into 8 equal micro-arcs of 3°45\' called Kakshyas, ruled in sequence by Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon, and Ascendant. When a transiting planet enters a Kakshya that contributed a Prastara Bindu (1) in the native\'s natal Ashtakavarga, that precise window unlocks immediate fruition, unexpected breakthroughs, and prosperity—even during otherwise challenging transits.'}
+              </p>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.3)' }}>
+                <strong>
+                  <Target className="h-4 w-4" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                  {isHi ? `जातक ${natalChart.input.name} की कुंडली के लिए प्रत्यक्ष भविष्यवाणी:` : `Direct Kundali Prediction for ${natalChart.input.name}:`}
+                </strong>{' '}
+                {isHi ? kakshyaReport.overallVerdictHi : kakshyaReport.overallVerdictEn}
               </div>
-              <div className="mt-3 flex items-center gap-4">
-                <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">
+            </div>
+
+            {/* Favorability & Golden Corridors Summary Grid */}
+            <div className="sw-grid-3" style={{ marginBottom: '20px' }}>
+              <div className="sw-card">
+                <div className="sw-card-header">
+                  <span className="sw-card-title">
+                    {isHi ? 'कक्ष्य गोचर अनुकूलता मीटर' : 'Kakshya Transit Favorability Meter'}
+                  </span>
+                  <span className="sw-badge sw-badge-warning">
+                    {kakshyaReport.activePlanetsWithBindu}/7 {isHi ? 'ग्रह बिंदु युक्त' : 'Planets with Bindus'}
+                  </span>
+                </div>
+                <div style={{ fontSize: '2rem', fontWeight: 800, color: '#d97706', margin: '4px 0' }}>
                   {kakshyaReport.kakshyaFavorabilityPercent}%
                 </div>
-                <div className="flex-1">
-                  <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-500"
-                      style={{ width: `${kakshyaReport.kakshyaFavorabilityPercent}%` }}
-                    />
-                  </div>
-                  <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {isHi ? kakshyaReport.overallVerdictHi : kakshyaReport.overallVerdictEn}
-                  </div>
+                <div className="sw-meter-track">
+                  <div
+                    className="sw-meter-fill"
+                    style={{
+                      width: `${kakshyaReport.kakshyaFavorabilityPercent}%`,
+                      background: 'linear-gradient(90deg, #d97706 0%, #10b981 100%)',
+                    }}
+                  />
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '8px' }}>
+                  {kakshyaReport.activePlanetsWithBindu >= 4
+                    ? isHi
+                      ? 'बहुसंख्यक ग्रह शुभ कक्ष्य में हैं। नए उपक्रम व निर्णय फलदायी रहेंगे।'
+                      : 'Majority of planets hold active bindus. Favorable time for key initiatives.'
+                    : isHi
+                      ? 'मध्यम प्रभाव। केवल बिंदु युक्त कक्ष्य वाले ग्रहों के क्षेत्रों में सक्रियता रखें।'
+                      : 'Moderate support. Focus energy on houses where transiting lords hold bindus.'}
+                </p>
+              </div>
+
+              <div className="sw-card" style={{ gridColumn: 'span 2' }}>
+                <div className="sw-card-header">
+                  <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Sparkles className="h-4 w-4 text-amber-500" />
+                    {isHi ? 'स्वर्णिम गोचर कालखंड (Golden Kakshya Corridors)' : 'Active Golden Kakshya Corridors'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+                  {(isHi ? kakshyaReport.goldenWindowsHi : kakshyaReport.goldenWindowsEn).length > 0 ? (
+                    (isHi ? kakshyaReport.goldenWindowsHi : kakshyaReport.goldenWindowsEn).map((g, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        <span style={{ color: 'var(--text-primary, #1e293b)' }}>{g}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{ fontStyle: 'italic', color: '#94a3b8' }}>
+                      {isHi ? 'वर्तमान में संतुलित गोचर प्रभाव।' : 'Moderate transit rhythm across Kakshyas.'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4 text-amber-500" />
-                {isHi ? 'स्वर्णिम गोचर कालखंड' : 'Golden Kakshya Corridors'}
-              </div>
-              <div className="mt-2 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
-                {(isHi ? kakshyaReport.goldenWindowsHi : kakshyaReport.goldenWindowsEn).length > 0 ? (
-                  (isHi ? kakshyaReport.goldenWindowsHi : kakshyaReport.goldenWindowsEn).map((g, i) => (
-                    <div key={i} className="flex items-start gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span>{g}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="italic text-slate-400">
-                    {isHi ? 'वर्तमान में मध्यम गोचर प्रभाव।' : 'Moderate transit rhythm across Kakshyas.'}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Planet Selector Bar */}
-          <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
-            {kakshyaReport.allPlanets.map((p) => (
-              <button
-                key={p.planet}
-                type="button"
-                onClick={() => setSelectedPlanetKakshya(p.planet)}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                  selectedPlanetKakshya === p.planet
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
-                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
-                }`}
-              >
-                <span>{p.planet}</span>
-                <span
-                  className={`rounded-full px-1.5 py-0.2 text-[10px] ${
-                    p.currentHasBindu
-                      ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-                      : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
-                  }`}
+            {/* 7 Planet Selector Bar */}
+            <div className="sw-planet-bar">
+              {kakshyaReport.allPlanets.map((p) => (
+                <button
+                  key={p.planet}
+                  type="button"
+                  onClick={() => setSelectedPlanetKakshya(p.planet)}
+                  className={`sw-planet-btn ${selectedPlanetKakshya === p.planet ? 'is-active' : ''}`}
                 >
-                  {p.currentHasBindu ? (isHi ? '१ बिंदु' : '1 Bindu') : (isHi ? '० बिंदु' : '0 Bindu')}
-                </span>
-              </button>
-            ))}
-          </div>
+                  <span>{p.planet}</span>
+                  <span className={`sw-badge ${p.currentHasBindu ? 'sw-badge-success' : 'sw-badge-danger'}`}>
+                    {p.currentHasBindu ? (isHi ? '1 बिंदु' : '1 Bindu') : (isHi ? '0 बिंदु' : '0 Bindu')}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-          {/* Active Planet Detail & 8-Kakshya Breakdown Table */}
-          {activeKakshyaDetail && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column: Planetary Current Transit Snapshot */}
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                      {activeKakshyaDetail.planet} {isHi ? 'गोचर विवरण' : 'Transit Status'}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {activeKakshyaDetail.transitSignName} ({activeKakshyaDetail.transitDms}) · House {activeKakshyaDetail.transitHouseFromAsc}
+            {/* Active Planet Detail & 8-Kakshya Breakdown Table */}
+            {activeKakshyaDetail && (
+              <div className="sw-grid-3">
+                {/* Left: Planetary Current Transit Snapshot */}
+                <div className="sw-card">
+                  <div className="sw-card-header">
+                    <div>
+                      <span className="sw-card-title">
+                        {activeKakshyaDetail.planet} {isHi ? 'गोचर स्थिति' : 'Transit Status'}
+                      </span>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        {activeKakshyaDetail.transitSignName} ({activeKakshyaDetail.transitDms}) · House {activeKakshyaDetail.transitHouseFromAsc}
+                      </div>
+                    </div>
+                    <span className={`sw-badge ${activeKakshyaDetail.currentHasBindu ? 'sw-badge-success' : 'sw-badge-warning'}`}>
+                      {activeKakshyaDetail.statusCategory}
+                    </span>
+                  </div>
+
+                  <div className="sw-stat-grid" style={{ marginBottom: '14px' }}>
+                    <div className="sw-stat-box">
+                      <span className="sw-stat-label">{isHi ? 'वर्तमान कक्ष्य स्वामी' : 'Current Kakshya Lord'}</span>
+                      <span className="sw-stat-value">
+                        {activeKakshyaDetail.currentKakshyaLord} (#{activeKakshyaDetail.currentKakshyaNumber})
+                      </span>
+                    </div>
+                    <div className="sw-stat-box">
+                      <span className="sw-stat-label">{isHi ? 'कक्ष्य विस्तार' : 'Kakshya Span'}</span>
+                      <span className="sw-stat-value" style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                        {activeKakshyaDetail.currentKakshyaSpan}
+                      </span>
+                    </div>
+                    <div className="sw-stat-box">
+                      <span className="sw-stat-label">{isHi ? 'भिन्नाष्टक बिंदु (BAV)' : 'Bhinna Bindus (BAV)'}</span>
+                      <span className="sw-stat-value">
+                        {activeKakshyaDetail.bhinnaBindusInSign} / 8
+                      </span>
+                    </div>
+                    <div className="sw-stat-box">
+                      <span className="sw-stat-label">{isHi ? 'सर्वाष्टक बिंदु (SAV)' : 'Sarva Bindus (SAV)'}</span>
+                      <span className="sw-stat-value">
+                        {activeKakshyaDetail.sarvaBindusInSign} / 56
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    padding: '12px',
+                    borderRadius: '8px',
+                    background: 'rgba(217, 119, 6, 0.08)',
+                    border: '1px solid rgba(217, 119, 6, 0.25)',
+                    fontSize: '0.82rem',
+                    lineHeight: 1.5,
+                  }}>
+                    <div style={{ fontWeight: 700, color: '#b45309', marginBottom: '4px' }}>
+                      <Compass className="h-4 w-4" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                      {isHi ? 'फलित शास्त्रीय निर्देश' : 'Predictive Direction for Native'}
+                    </div>
+                    <p style={{ margin: 0, color: 'var(--text-primary, #334155)' }}>
+                      {isHi ? activeKakshyaDetail.predictionHi : activeKakshyaDetail.predictionEn}
                     </p>
                   </div>
-                  <span
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold ${
-                      activeKakshyaDetail.currentHasBindu
-                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300'
-                        : 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
-                    }`}
-                  >
-                    {activeKakshyaDetail.statusCategory}
-                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 p-2.5">
-                    <span className="text-slate-500 dark:text-slate-400">{isHi ? 'वर्तमान कक्ष्य स्वामी' : 'Current Kakshya Lord'}</span>
-                    <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                      {activeKakshyaDetail.currentKakshyaLord} (#{activeKakshyaDetail.currentKakshyaNumber})
-                    </div>
+                {/* Right: Full 8-Kakshya Division Table */}
+                <div className="sw-card" style={{ gridColumn: 'span 2' }}>
+                  <div className="sw-card-header">
+                    <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Layers className="h-4 w-4 text-amber-500" />
+                      {isHi
+                        ? `${activeKakshyaDetail.transitSignName} राशि में सम्पूर्ण ८ कक्ष्य विभाजन`
+                        : `Full 8-Kakshya Division in ${activeKakshyaDetail.transitSignName}`}
+                    </span>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      3°45' {isHi ? 'प्रति कक्ष्य' : 'per Kakshya'}
+                    </span>
                   </div>
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 p-2.5">
-                    <span className="text-slate-500 dark:text-slate-400">{isHi ? 'कक्ष्य विस्तार' : 'Kakshya Span'}</span>
-                    <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                      {activeKakshyaDetail.currentKakshyaSpan}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 p-2.5">
-                    <span className="text-slate-500 dark:text-slate-400">{isHi ? 'भिन्नाष्टक बिंदु (BAV)' : 'Bhinna Bindus (BAV)'}</span>
-                    <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                      {activeKakshyaDetail.bhinnaBindusInSign} / 8
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 p-2.5">
-                    <span className="text-slate-500 dark:text-slate-400">{isHi ? 'सर्वाष्टक बिंदु (SAV)' : 'Sarva Bindus (SAV)'}</span>
-                    <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                      {activeKakshyaDetail.sarvaBindusInSign} / 56
-                    </div>
-                  </div>
-                </div>
 
-                <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-slate-700 dark:text-slate-300">
-                  <div className="font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5 mb-1">
-                    <Compass className="h-4 w-4" />
-                    {isHi ? 'फलित शास्त्रीय निर्देश' : 'Predictive Direction'}
-                  </div>
-                  <p className="leading-relaxed">
-                    {isHi ? activeKakshyaDetail.predictionHi : activeKakshyaDetail.predictionEn}
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Columns: Full 8-Kakshya Table (0° to 30°) */}
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm lg:col-span-2">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-amber-500" />
-                    {isHi
-                      ? `${activeKakshyaDetail.transitSignName} राशि में सम्पूर्ण ८ कक्ष्य विभाजन`
-                      : `Full 8-Kakshya Division in ${activeKakshyaDetail.transitSignName}`}
-                  </h3>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    3°45' {isHi ? 'प्रति कक्ष्य' : 'per Kakshya'}
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
-                        <th className="py-2.5 px-3">#</th>
-                        <th className="py-2.5 px-3">{isHi ? 'कक्ष्य स्वामी' : 'Kakshya Lord'}</th>
-                        <th className="py-2.5 px-3">{isHi ? 'अंश विस्तार' : 'Degree Arc'}</th>
-                        <th className="py-2.5 px-3 text-center">{isHi ? 'प्रस्ताराष्टक बिंदु' : 'Prastara Bindu'}</th>
-                        <th className="py-2.5 px-3">{isHi ? 'वर्तमान स्थिति' : 'Active Status'}</th>
-                        <th className="py-2.5 px-3">{isHi ? 'फल प्रभाव' : 'Fruition Potential'}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                      {activeKakshyaDetail.kakshyaSlots.map((slot) => (
-                        <tr
-                          key={slot.kakshyaNumber}
-                          className={`${
-                            slot.isActiveNow
-                              ? 'bg-amber-50/80 dark:bg-amber-950/20 font-medium'
-                              : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'
-                          }`}
-                        >
-                          <td className="py-2.5 px-3 text-slate-400">
-                            #{slot.kakshyaNumber}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <span className="font-semibold text-slate-900 dark:text-white">
-                              {slot.lord}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-slate-600 dark:text-slate-300">
-                            {slot.rangeDms}
-                          </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span
-                              className={`inline-flex items-center justify-center h-5 w-5 rounded-full text-xs font-bold ${
-                                slot.hasBindu
-                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
-                                  : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
-                              }`}
-                            >
-                              {slot.hasBindu ? '1' : '0'}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3">
-                            {slot.isActiveNow ? (
-                              <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
-                                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                                {isHi ? 'सक्रिय गोचर' : 'Stationed Now'}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">
-                            {isHi ? slot.verdictHi : slot.verdictEn}
-                          </td>
+                  <div className="sw-table-container">
+                    <table className="sw-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>{isHi ? 'कक्ष्य स्वामी' : 'Kakshya Lord'}</th>
+                          <th>{isHi ? 'अंश विस्तार' : 'Degree Arc'}</th>
+                          <th style={{ textAlign: 'center' }}>{isHi ? 'प्रस्ताराष्टक बिंदु' : 'Prastara Bindu'}</th>
+                          <th>{isHi ? 'वर्तमान स्थिति' : 'Active Status'}</th>
+                          <th>{isHi ? 'फल प्रभाव' : 'Fruition Potential'}</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {activeKakshyaDetail.kakshyaSlots.map((slot) => (
+                          <tr key={slot.kakshyaNumber} className={slot.isActiveNow ? 'is-active-row' : ''}>
+                            <td style={{ color: '#94a3b8' }}>#{slot.kakshyaNumber}</td>
+                            <td><strong>{slot.lord}</strong></td>
+                            <td style={{ fontFamily: 'monospace' }}>{slot.rangeDms}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              <span className={`sw-badge ${slot.hasBindu ? 'sw-badge-success' : 'sw-badge-neutral'}`}>
+                                {slot.hasBindu ? '1' : '0'}
+                              </span>
+                            </td>
+                            <td>
+                              {slot.isActiveNow ? (
+                                <span className="sw-badge sw-badge-warning">
+                                  {isHi ? 'सक्रिय गोचर' : 'Stationed Now'}
+                                </span>
+                              ) : (
+                                <span style={{ color: '#94a3b8' }}>—</span>
+                              )}
+                            </td>
+                            <td>{isHi ? slot.verdictHi : slot.verdictEn}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
 
-      {/* ========================================================================= */}
-      {/* TAB 2: TAJAKA 50 SAHAMS ENGINE */}
-      {/* ========================================================================= */}
-      {activeTab === 'sahams' && (
-        <div className="space-y-6">
-          {/* Sahams Top Info */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isHi ? 'ताजिक नीलकण्ठी शास्त्रीय सहम पद्धति' : 'Tajaka Neelakanthi Classical Saham Matrix'}
-              </div>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
+        {/* ========================================================================= */}
+        {/* TAB 2: TAJAKA 50 SAHAMS ENGINE */}
+        {/* ========================================================================= */}
+        {activeTab === 'sahams' && (
+          <div>
+            {/* Purpose & Predictive Explanation Box */}
+            <div className="sw-purpose-box">
+              <h4>
+                <Compass className="h-4 w-4" />
+                {isHi
+                  ? 'ताजिक ५० सहम क्या हैं और इनसे क्या फलित जाना जाता है?'
+                  : 'What are Tajaka 50 Sahams & What Do They Predict for Your Life?'}
+              </h4>
+              <p>
+                {isHi
+                  ? 'शास्त्रीय सिद्धांत: ताजिक नीलकण्ठी के अनुसार सहम कुंडली के अति-संवेदनशील गणितीय बिंदु हैं, जो दो ग्रहों के बीच के कोणीय विस्तार को लग्न से जोड़कर निकाले जाते हैं। जब किसी सहम का स्वामी लग्न स्वामी या कार्येश के साथ "इत्थशाल योग" (परस्पर दीप्तांश दृष्टि संबंध) बनाता है, तो उस सहम का फल (धन, विवाह, संतान, राजपद, विदेश यात्रा, रोग मुक्ति) निश्चित रूप से घटित होता है। यह व्यवस्था जातक के जीवन के ५० सूक्ष्म आयामों की सटीक भविष्यवाणी करती है।'
+                  : 'Classical Axiom: According to the classical Tajaka Neelakanthi, a Saham is an ultrasensitive mathematical focal point calculated by projecting the longitudinal arc between two planetary significators from the Ascendant. When a Saham lord forms an Ithasala Yoga (harmonious mutual aspect within deeptamsha orb) with the Lagna lord or Karyesha, the specific life event promised by that Saham is guaranteed to materialize with precision.'}
+              </p>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.3)' }}>
+                <strong>
+                  <Target className="h-4 w-4" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                  {isHi ? 'जन्म काल विभाजन:' : 'Birth Chart Archetype:'}
+                </strong>{' '}
                 {isHi ? sahamsReport.birthTypeHi : sahamsReport.birthTypeEn}
               </div>
             </div>
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Category Chips for Fast Switching without Manual Search */}
+            <div className="sw-category-strip">
               {[
                 { id: 'all', en: 'All 50 Sahams', hi: 'सभी ५० सहम' },
-                { id: 'Spiritual & Dharma', en: 'Dharma & Spirit', hi: 'धर्म व अध्यात्म' },
-                { id: 'Wealth & Career', en: 'Wealth & Career', hi: 'धन व कर्म' },
-                { id: 'Family & Relationships', en: 'Family & Love', hi: 'परिवार व संबंध' },
-                { id: 'Vitality & Health', en: 'Vitality & Health', hi: 'आरोग्य व आयु' },
-                { id: 'Enterprise & Travel', en: 'Enterprise & Travel', hi: 'पराक्रम व यात्रा' },
+                { id: 'Wealth & Career', en: 'Wealth & Career (अर्थ व कर्म)', hi: 'धन व कर्म सहम' },
+                { id: 'Spiritual & Dharma', en: 'Dharma & Spirit (धर्म व पुण्य)', hi: 'धर्म व पुण्य सहम' },
+                { id: 'Family & Relationships', en: 'Family & Love (परिवार व विवाह)', hi: 'परिवार व संबंध सहम' },
+                { id: 'Vitality & Health', en: 'Vitality & Health (आरोग्य व आयु)', hi: 'आरोग्य व आयु सहम' },
+                { id: 'Enterprise & Travel', en: 'Enterprise & Travel (पराक्रम व यात्रा)', hi: 'पराक्रम व यात्रा सहम' },
               ].map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setSahamCategory(cat.id)}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
-                    sahamCategory === cat.id
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                  }`}
+                  className={`sw-category-chip ${sahamCategory === cat.id ? 'is-active' : ''}`}
                 >
                   {isHi ? cat.hi : cat.en}
                 </button>
               ))}
             </div>
 
-            {/* Search Box */}
-            <div className="relative w-full md:w-60">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder={isHi ? 'सहम या स्वामी खोजें...' : 'Search Saham, lord...'}
-                value={sahamSearch}
-                onChange={(e) => setSahamSearch(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
-            </div>
-          </div>
-
-          {/* Sahams Table */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'सहम नाम' : 'Saham Name'}</th>
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'श्रेणी' : 'Category'}</th>
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'राशि एवं अंश' : 'Sign & Degree'}</th>
-                    <th className="py-3 px-3 font-semibold text-center">{isHi ? 'भाव' : 'House'}</th>
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'स्वामी' : 'Lord'}</th>
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'ताजिक इत्थशाल योग' : 'Ithasala Yoga'}</th>
-                    <th className="py-3 px-3 font-semibold">{isHi ? 'शास्त्रीय फलित' : 'Predictive Significance'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                  {filteredSahams.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-700/30">
-                      <td className="py-3 px-3">
-                        <div className="font-bold text-slate-900 dark:text-white">
-                          {isHi ? s.nameHi : s.nameEn}
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          {isHi ? s.formulaDescriptionHi : s.formulaDescriptionEn}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-600 dark:text-slate-300">
-                          {s.category}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="font-semibold text-slate-800 dark:text-slate-200">
-                          {s.signName}
-                        </div>
-                        <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                          {s.dms}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 text-center">
-                        <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold">
-                          {s.house}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 font-medium text-slate-700 dark:text-slate-300">
-                        {s.lord}
-                      </td>
-                      <td className="py-3 px-3">
-                        {s.ithasalaYoga.exists ? (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
-                            <Sparkles className="h-3 w-3" />
-                            {s.ithasalaYoga.partnerPlanet} ({s.ithasalaYoga.aspectType})
-                          </span>
-                        ) : (
-                          <span className="text-slate-400 text-[11px]">—</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-3 text-slate-600 dark:text-slate-300 max-w-xs">
-                        <p className="line-clamp-2" title={isHi ? s.predictionHi : s.predictionEn}>
-                          {isHi ? s.predictionHi : s.predictionEn}
-                        </p>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* TAB 3: TRUE ASTROLOGY KP CUSPAL INTERLINKS (CIL 1-2193) */}
-      {/* ========================================================================= */}
-      {activeTab === 'kp_cil' && (
-        <div className="space-y-6">
-          {/* CIL Top Banner */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isHi ? 'ट्रू एस्ट्रोलॉजी कस्पल इंटरलिंक्स सिद्धांत' : 'True Astrology Cuspal Interlinks (CIL 1-2193) Theory'}
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
-                {isHi ? 'उप-उप स्वामी (Sub-Sub Lord) आधारित भाव वचन सत्यापन' : 'Sub-Sub Lord (SSL) Cuspal Promise Verification'}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                {isHi ? kpCilReport.overallSummaryHi : kpCilReport.overallSummaryEn}
-              </p>
-            </div>
-            <div className="rounded-lg bg-amber-500/10 px-3 py-1.5 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300">
-              <span className="font-bold">2,193</span> {isHi ? 'सूक्ष्म उप-उप खंड' : 'Micro-SSL Divisions'}
-            </div>
-          </div>
-
-          {/* 8 Cuspal Promise Verification Cards Grid */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
-              <Award className="h-4 w-4 text-amber-500" />
-              {isHi ? '८ आधारभूत जीवन आयाम: कस्पल प्रॉमिस सत्यापन' : '8 Core Life Pillars: Cuspal Promise Verification'}
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {kpCilReport.cuspalPromises.map((p) => (
-                <div
-                  key={p.primaryCusp}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-md bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-                        {isHi ? `भाव ${p.primaryCusp}` : `Cusp ${p.primaryCusp}`}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          p.verdict.startsWith('Strong')
-                            ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20'
-                            : p.verdict.startsWith('Adverse')
-                              ? 'bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-500/20'
-                              : 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-500/20'
-                        }`}
-                      >
-                        {p.verdict.split('(')[0].trim()}
-                      </span>
-                    </div>
-
-                    <h5 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
-                      {isHi ? p.topicHi : p.topic}
-                    </h5>
-
-                    <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-                      <div>
-                        <span className="font-medium text-slate-700 dark:text-slate-300">SSL: </span>
-                        {p.sslLord} (Star: {p.sslStarLord}, Sub: {p.sslSubLord})
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          {isHi ? 'अनुकूल भाव:' : 'Fav Houses:'}{' '}
-                        </span>
-                        {p.favorableHouses.join(', ')}
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="mt-3 text-xs text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-2">
-                    {isHi ? p.analysisHi : p.analysisEn}
-                  </p>
+            {/* Active Ithasala Yogas Callout if any */}
+            {sahamsReport.sahams.some((s) => s.ithasalaYoga.exists) && (
+              <div className="sw-card" style={{ marginBottom: '16px', borderLeft: '4px solid #10b981' }}>
+                <div className="sw-card-header">
+                  <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles className="h-4 w-4 text-emerald-500" />
+                    {isHi ? 'कुंडली में सक्रिय ताजिक इत्थशाल योग (विशेष फलदायी सहम)' : 'Active Tajaka Ithasala Yogas in this Kundali'}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Full 12 Cusps CIL Table */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Layers className="h-4 w-4 text-amber-500" />
-                {isHi ? 'सम्पूर्ण १२ भाव कस्पल इंटरलिंक्स सारणी' : 'Full 12-Cusps Cuspal Interlinks (CIL) Table'}
-              </h4>
-              <span className="text-xs text-slate-400">
-                Sign Lord · Star Lord · Sub Lord · Sub-Sub Lord (SSL)
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold">
-                    <th className="py-2.5 px-3">Cusp</th>
-                    <th className="py-2.5 px-3">{isHi ? 'अंश एवं राशि' : 'Longitude & Sign'}</th>
-                    <th className="py-2.5 px-3">{isHi ? 'राशि स्वामी' : 'Sign Lord'}</th>
-                    <th className="py-2.5 px-3">{isHi ? 'नक्षत्र स्वामी' : 'Star Lord'}</th>
-                    <th className="py-2.5 px-3">{isHi ? 'उप स्वामी' : 'Sub Lord'}</th>
-                    <th className="py-2.5 px-3 font-bold text-amber-600 dark:text-amber-400">
-                      {isHi ? 'उप-उप स्वामी (SSL)' : 'Sub-Sub Lord'}
-                    </th>
-                    <th className="py-2.5 px-3">{isHi ? 'SSL नक्षत्र / उप' : 'SSL Star / Sub'}</th>
-                    <th className="py-2.5 px-3">{isHi ? 'सक्रिय भाव (Involvement)' : 'Involvement Houses'}</th>
-                    <th className="py-2.5 px-3">{isHi ? 'फल भाव (Commitment)' : 'Commitment Houses'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                  {kpCilReport.cusps.map((c) => (
-                    <tr
-                      key={c.house}
-                      onClick={() => setSelectedCilCusp(c.house)}
-                      className={`cursor-pointer transition-colors ${
-                        selectedCilCusp === c.house
-                          ? 'bg-amber-50/70 dark:bg-amber-950/20 font-medium'
-                          : 'hover:bg-slate-50/60 dark:hover:bg-slate-700/30'
-                      }`}
-                    >
-                      <td className="py-2.5 px-3">
-                        <span className="inline-flex items-center justify-center h-5 w-5 rounded bg-slate-100 dark:bg-slate-700 font-bold text-slate-700 dark:text-slate-200">
-                          {c.house}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                  {sahamsReport.sahams
+                    .filter((s) => s.ithasalaYoga.exists)
+                    .map((s) => (
+                      <div
+                        key={s.id}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: 'rgba(16, 185, 129, 0.08)',
+                          border: '1px solid rgba(16, 185, 129, 0.25)',
+                          fontSize: '0.82rem',
+                        }}
+                      >
+                        <strong>{isHi ? s.nameHi : s.nameEn}</strong> (House {s.house}, {s.signName}) →{' '}
+                        <span style={{ color: '#059669', fontWeight: 600 }}>
+                          {s.ithasalaYoga.partnerPlanet} ({s.ithasalaYoga.aspectType})
                         </span>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <span className="font-semibold text-slate-900 dark:text-white">
-                          {c.signName}
-                        </span>{' '}
-                        <span className="text-[11px] font-mono text-slate-400">{c.dms}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{c.signLord}</td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{c.starLord}</td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{c.subLord}</td>
-                      <td className="py-2.5 px-3 font-bold text-amber-700 dark:text-amber-300">
-                        {c.subSubLord}
-                        <span className="ml-1 text-[10px] text-slate-400 font-normal">
-                          (#{c.sslIndex2193})
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">
-                        {c.sslStarLord} / {c.sslSubLord}
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-indigo-600 dark:text-indigo-400">
-                        [{c.involvementHouses.join(', ') || 'none'}]
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-emerald-600 dark:text-emerald-400">
-                        [{c.commitmentHouses.join(', ') || 'none'}]
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* TAB 4: KALA 2018 MATHEMATICAL BHAVABALA ENGINE */}
-      {/* ========================================================================= */}
-      {activeTab === 'bhavabala' && (
-        <div className="space-y-6">
-          {/* Bhavabala Top Banner */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isHi ? 'बृहत्पाराशर होराशास्त्र एवं काला २०१८ गणितीय भावबल' : 'Brihat Parashara Hora Shastra & Kala 2018 Bhavabala'}
+                      </div>
+                    ))}
+                </div>
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+            )}
+
+            {/* Sahams Table */}
+            <div className="sw-card">
+              <div className="sw-card-header">
+                <span className="sw-card-title">
+                  {isHi ? `ताजिक ५० सहम तालिका (${filteredSahams.length} सहम प्रदर्शित)` : `Tajaka 50 Sahams Table (${filteredSahams.length} Displayed)`}
+                </span>
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  Tajaka Neelakanthi Formulations
+                </span>
+              </div>
+
+              <div className="sw-table-container">
+                <table className="sw-table">
+                  <thead>
+                    <tr>
+                      <th>{isHi ? 'सहम नाम व सूत्र' : 'Saham Name & Formula'}</th>
+                      <th>{isHi ? 'श्रेणी' : 'Category'}</th>
+                      <th>{isHi ? 'राशि एवं अंश' : 'Sign & Degree'}</th>
+                      <th style={{ textAlign: 'center' }}>{isHi ? 'भाव' : 'House'}</th>
+                      <th>{isHi ? 'स्वामी' : 'Lord'}</th>
+                      <th>{isHi ? 'इत्थशाल योग' : 'Ithasala Yoga'}</th>
+                      <th>{isHi ? 'जातक कुंडली फलित' : 'Kundali Predictive Significance'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSahams.map((s) => (
+                      <tr key={s.id}>
+                        <td>
+                          <strong>{isHi ? s.nameHi : s.nameEn}</strong>
+                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                            {isHi ? s.formulaDescriptionHi : s.formulaDescriptionEn}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="sw-badge sw-badge-neutral">{s.category}</span>
+                        </td>
+                        <td>
+                          <strong>{s.signName}</strong>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', fontFamily: 'monospace' }}>
+                            {s.dms}
+                          </div>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span className="sw-badge sw-badge-warning">{s.house}</span>
+                        </td>
+                        <td><strong>{s.lord}</strong></td>
+                        <td>
+                          {s.ithasalaYoga.exists ? (
+                            <span className="sw-badge sw-badge-success">
+                              <Sparkles className="h-3 w-3" />
+                              {s.ithasalaYoga.partnerPlanet} ({s.ithasalaYoga.aspectType})
+                            </span>
+                          ) : (
+                            <span style={{ color: '#94a3b8' }}>—</span>
+                          )}
+                        </td>
+                        <td style={{ maxWidth: '320px', lineHeight: 1.4 }}>
+                          {isHi ? s.predictionHi : s.predictionEn}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 3: TRUE ASTROLOGY KP CUSPAL INTERLINKS (CIL 1-2193) */}
+        {/* ========================================================================= */}
+        {activeTab === 'kp_cil' && (
+          <div>
+            {/* Purpose & Predictive Explanation Box */}
+            <div className="sw-purpose-box">
+              <h4>
+                <Layers className="h-4 w-4" />
                 {isHi
-                  ? `सर्वाधिक बली: भाव ${bhavabalaReport.strongestHouse} · औसत भावबल: ${bhavabalaReport.averageRupas} रूप`
-                  : `Strongest House: #${bhavabalaReport.strongestHouse} · Average Bhavabala: ${bhavabalaReport.averageRupas} Rupas`}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                {isHi ? bhavabalaReport.overallSummaryHi : bhavabalaReport.overallSummaryEn}
+                  ? 'ट्रू एस्ट्रोलॉजी कस्पल इंटरलिंक्स (CIL 1-2193) क्या है और यह क्या सिद्ध करता है?'
+                  : 'What is True Astrology KP Cuspal Interlinks (CIL 1-2193) & Sub-Sub Lord Theory?'}
+              </h4>
+              <p>
+                {isHi
+                  ? 'शास्त्रीय सिद्धांत: केपी कस्पल इंटरलिंक्स पद्धति में भाव के वचन (Promise) का अंतिम निर्णय उप-उप स्वामी (Sub-Sub Lord - SSL) द्वारा होता है, जो संपूर्ण भचक्र को २,१९३ सूक्ष्म भागों में विभाजित करता है। यदि किसी भाव का उप-उप स्वामी अपने नक्षत्र स्वामी और उप स्वामी के माध्यम से उस भाव के अनुकूल भावों (जैसे विवाह हेतु २, ७, ११; धन हेतु २, ६, १०, ११; उच्च शिक्षा हेतु ४, ९, ११) को जोड़ता है, तो वह कार्य अवश्य सिद्ध होता है। यदि ६, ८, १२ के संबंध बनते हैं, तो बाधाएं आती हैं।'
+                  : 'Classical Axiom: Under the Krishnamurti Paddhati (KP) Cuspal Interlinks (CIL 1-2193) doctrine, the static promise of any house is governed by its Sub-Sub Lord (SSL), dividing the 360° zodiac into 2,193 micro-arcs. If a cusp Sub-Sub Lord links via its Star and Sub Lords to favorable houses (e.g., 2, 7, 11 for marriage; 2, 6, 10, 11 for career; 4, 9, 11 for higher education), the matter manifests with certainty. Links to 6, 8, 12 indicate obstacles or delays.'}
               </p>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.3)' }}>
+                <strong>
+                  <Target className="h-4 w-4" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                  {isHi ? `जातक ${natalChart.input.name} की कुंडली का समग्र कस्पल विश्लेषण:` : `Kundali Synthesis for ${natalChart.input.name}:`}
+                </strong>{' '}
+                {isHi ? kpCilReport.overallSummaryHi : kpCilReport.overallSummaryEn}
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <span className="text-[11px] text-slate-400">{isHi ? 'प्रबल सामर्थ्य भाव' : 'High Potency Houses'}</span>
-                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            {/* 8 Cuspal Promise Verification Cards Grid */}
+            <div style={{ marginBottom: '20px' }}>
+              <div className="sw-card-header" style={{ marginBottom: '14px' }}>
+                <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Award className="h-4 w-4 text-amber-500" />
+                  {isHi ? '८ आधारभूत जीवन आयाम: कस्पल प्रॉमिस सत्यापन' : '8 Core Life Pillars: Cuspal Promise Verification'}
+                </span>
+                <span className="sw-badge sw-badge-warning">
+                  2,193 {isHi ? 'सूक्ष्म उप-उप खंड' : 'Micro-SSL Arcs'}
+                </span>
+              </div>
+
+              <div className="sw-grid-4">
+                {kpCilReport.cuspalPromises.map((p) => (
+                  <div key={p.primaryCusp} className="sw-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span className="sw-badge sw-badge-neutral">
+                          {isHi ? `भाव ${p.primaryCusp}` : `Cusp ${p.primaryCusp}`}
+                        </span>
+                        <span className={`sw-badge ${
+                          p.verdict.startsWith('Strong')
+                            ? 'sw-badge-success'
+                            : p.verdict.startsWith('Adverse')
+                              ? 'sw-badge-danger'
+                              : 'sw-badge-warning'
+                        }`}>
+                          {p.verdict.split('(')[0].trim()}
+                        </span>
+                      </div>
+
+                      <h4 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary, #0f172a)' }}>
+                        {isHi ? p.topicHi : p.topic}
+                      </h4>
+
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '8px' }}>
+                        <div>
+                          <strong>SSL: </strong>{p.sslLord} (Star: {p.sslStarLord}, Sub: {p.sslSubLord})
+                        </div>
+                        <div>
+                          <strong>{isHi ? 'अनुकूल भाव:' : 'Fav Houses:'} </strong>
+                          <span style={{ color: '#059669', fontWeight: 600 }}>{p.favorableHouses.join(', ')}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p style={{
+                      margin: 0,
+                      fontSize: '0.8rem',
+                      lineHeight: 1.45,
+                      color: 'var(--text-primary, #334155)',
+                      paddingTop: '8px',
+                      borderTop: '1px solid var(--border-color, #e2e8f0)',
+                    }}>
+                      {isHi ? p.analysisHi : p.analysisEn}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Full 12 Cusps CIL Table */}
+            <div className="sw-card">
+              <div className="sw-card-header">
+                <span className="sw-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Layers className="h-4 w-4 text-amber-500" />
+                  {isHi ? 'सम्पूर्ण १२ भाव कस्पल इंटरलिंक्स सारणी' : 'Full 12-Cusps Cuspal Interlinks (CIL) Table'}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                  Sign Lord · Star Lord · Sub Lord · Sub-Sub Lord (SSL)
+                </span>
+              </div>
+
+              <div className="sw-table-container">
+                <table className="sw-table">
+                  <thead>
+                    <tr>
+                      <th>Cusp</th>
+                      <th>{isHi ? 'अंश एवं राशि' : 'Longitude & Sign'}</th>
+                      <th>{isHi ? 'राशि स्वामी' : 'Sign Lord'}</th>
+                      <th>{isHi ? 'नक्षत्र स्वामी' : 'Star Lord'}</th>
+                      <th>{isHi ? 'उप स्वामी' : 'Sub Lord'}</th>
+                      <th style={{ color: '#b45309' }}>{isHi ? 'उप-उप स्वामी (SSL)' : 'Sub-Sub Lord'}</th>
+                      <th>{isHi ? 'SSL नक्षत्र / उप' : 'SSL Star / Sub'}</th>
+                      <th>{isHi ? 'सक्रिय भाव (Involvement)' : 'Involvement Houses'}</th>
+                      <th>{isHi ? 'फल भाव (Commitment)' : 'Commitment Houses'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kpCilReport.cusps.map((c) => (
+                      <tr
+                        key={c.house}
+                        onClick={() => setSelectedCilCusp(c.house)}
+                        className={selectedCilCusp === c.house ? 'is-active-row' : ''}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td><strong>#{c.house}</strong></td>
+                        <td>
+                          <strong>{c.signName}</strong>{' '}
+                          <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace' }}>{c.dms}</span>
+                        </td>
+                        <td>{c.signLord}</td>
+                        <td>{c.starLord}</td>
+                        <td>{c.subLord}</td>
+                        <td>
+                          <strong style={{ color: '#b45309' }}>{c.subSubLord}</strong>{' '}
+                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                            (#{c.sslIndex2193})
+                          </span>
+                        </td>
+                        <td>{c.sslStarLord} / {c.sslSubLord}</td>
+                        <td style={{ fontFamily: 'monospace', color: '#4f46e5' }}>
+                          [{c.involvementHouses.join(', ') || 'none'}]
+                        </td>
+                        <td style={{ fontFamily: 'monospace', color: '#059669' }}>
+                          [{c.commitmentHouses.join(', ') || 'none'}]
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 4: KALA 2018 MATHEMATICAL BHAVABALA ENGINE */}
+        {/* ========================================================================= */}
+        {activeTab === 'bhavabala' && (
+          <div>
+            {/* Purpose & Predictive Explanation Box */}
+            <div className="sw-purpose-box">
+              <h4>
+                <Activity className="h-4 w-4" />
+                {isHi
+                  ? 'भावबल क्या है और जातक की कुंडली में इसका क्या अर्थ है?'
+                  : 'What is Bhavabala & How Does it Direct Life Manifestation?'}
+              </h4>
+              <p>
+                {isHi
+                  ? 'शास्त्रीय सिद्धांत: महर्षि पाराशर के षड्बल एवं भावबल सिद्धांत (काला सॉफ्टवेयर इंजन समरूप) के अनुसार, प्रत्येक भाव का कुल बल रूप (Rupas) में मापा जाता है। इसमें भावाधिपति बल (स्वामी का सामर्थ्य), भाव दिग्बल (दिशा बल), भाव दृष्टि बल (शुभ एवं पापक ग्रहों की संयुक्त दृष्टि) और दिन-रात्रि बल सम्मिलित होते हैं। जिस भाव का भावबल अधिक होता है, उस भाव से संबंधित फल अल्प प्रयास में प्रचुर मात्रा में प्राप्त होते हैं।'
+                  : 'Classical Axiom: According to the classical Bhavabala doctrine (as implemented in professional astrological engines like Kala), each of the 12 houses possesses an absolute mathematical potency measured in Rupas (60 Virupas = 1 Rupa). Bhavabala integrates: 1) Bhavadhipati Bala (lord\'s strength), 2) Bhava Digbala (directional cusp strength), 3) Bhava Drishti Bala (net benefic/malefic aspectual impact), and 4) Dina-Ratri Bala. Houses with high Bhavabala yield massive achievements with effortless ease.'}
+              </p>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.3)' }}>
+                <strong>
+                  <Target className="h-4 w-4" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                  {isHi ? `जातक ${natalChart.input.name} का भावबल निष्कर्ष:` : `Bhavabala Direction for ${natalChart.input.name}:`}
+                </strong>{' '}
+                {isHi ? bhavabalaReport.overallSummaryHi : bhavabalaReport.overallSummaryEn}
+              </div>
+            </div>
+
+            {/* Bhavabala Stat Cards */}
+            <div className="sw-grid-3" style={{ marginBottom: '20px' }}>
+              <div className="sw-card">
+                <span className="sw-stat-label">{isHi ? 'सर्वाधिक शक्तिशाली भाव' : 'Strongest House'}</span>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', margin: '4px 0' }}>
+                  {isHi ? `भाव ${bhavabalaReport.strongestHouse}` : `House #${bhavabalaReport.strongestHouse}`}
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                  {isHi ? 'यह भाव जीवन में सर्वोच्च उत्कर्ष एवं सफलता का केंद्र है।' : 'Core powerhouse of life achievement & effortless fruition.'}
+                </p>
+              </div>
+
+              <div className="sw-card">
+                <span className="sw-stat-label">{isHi ? 'औसत भावबल' : 'Average Bhavabala'}</span>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#d97706', margin: '4px 0' }}>
+                  {bhavabalaReport.averageRupas} <span style={{ fontSize: '1rem', fontWeight: 500 }}>Rupas</span>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                  {isHi ? 'सामान्य सीमा: ५.० से ६.५ रूप से अधिक बलवान।' : 'Standard classical threshold: 5.0 to 6.5 Rupas.'}
+                </p>
+              </div>
+
+              <div className="sw-card">
+                <span className="sw-stat-label">{isHi ? 'उच्च सामर्थ्य भाव' : 'High Potency Houses'}</span>
+                <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#2563eb', margin: '6px 0' }}>
                   {bhavabalaReport.highPotencyHouses.map((h) => `H${h}`).join(', ') || 'None'}
                 </div>
-              </div>
-              <div className="text-right border-l border-slate-200 dark:border-slate-700 pl-3">
-                <span className="text-[11px] text-slate-400">{isHi ? 'पुरुषार्थ साध्य भाव' : 'Conscious Effort Houses'}</span>
-                <div className="text-xs font-bold text-amber-600 dark:text-amber-400">
-                  {bhavabalaReport.remedialHouses.map((h) => `H${h}`).join(', ') || 'None'}
-                </div>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                  {isHi ? 'इन भावों के फलों में स्वतः वृद्धि होती है।' : 'Houses generating organic, unhindered life expansion.'}
+                </p>
               </div>
             </div>
-          </div>
 
-          {/* 12 Bhavas Bhavabala Grid / Breakdown Table */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold">
-                    <th className="py-3 px-3">House</th>
-                    <th className="py-3 px-3">{isHi ? 'राशि एवं स्वामी' : 'Sign & Lord'}</th>
-                    <th className="py-3 px-3">{isHi ? 'भावाधिपति बल' : 'Bhavadhipati'}</th>
-                    <th className="py-3 px-3">{isHi ? 'भाव दिग्बल' : 'Bhava Digbala'}</th>
-                    <th className="py-3 px-3">{isHi ? 'भाव दृष्टि बल' : 'Drishti Bala'}</th>
-                    <th className="py-3 px-3">{isHi ? 'दिन-रात्रि बल' : 'Dina-Ratri'}</th>
-                    <th className="py-3 px-3 font-bold text-emerald-600 dark:text-emerald-400">
-                      {isHi ? 'कुल भावबल (रूप)' : 'Total Rupas'}
-                    </th>
-                    <th className="py-3 px-3 text-center">{isHi ? 'कोटि (Rank)' : 'Rank'}</th>
-                    <th className="py-3 px-3">{isHi ? 'फलित सामर्थ्य' : 'Potency Verdict'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                  {bhavabalaReport.houses.map((h) => (
-                    <tr key={h.house} className="hover:bg-slate-50/60 dark:hover:bg-slate-700/30">
-                      <td className="py-3 px-3">
-                        <span className="inline-flex items-center justify-center h-6 w-6 rounded bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold">
-                          {h.house}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="font-semibold text-slate-900 dark:text-white">
-                          {h.signName}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {h.lord} · {isHi ? h.signClassificationHi : h.signClassification}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
-                        {h.bhavadhipatiBalaVirupas} V
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
-                        {h.bhavaDigbalaVirupas} V
-                      </td>
-                      <td className="py-3 px-3 font-mono">
-                        <span
-                          className={
-                            h.bhavaDrishtiBalaVirupas >= 0
-                              ? 'text-emerald-600 dark:text-emerald-400'
-                              : 'text-rose-600 dark:text-rose-400'
-                          }
-                        >
-                          {h.bhavaDrishtiBalaVirupas >= 0 ? `+${h.bhavaDrishtiBalaVirupas}` : h.bhavaDrishtiBalaVirupas} V
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
-                        {h.bhavaDinaRatriBalaVirupas} V
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="font-bold text-sm text-slate-900 dark:text-white">
-                          {h.totalRupas} <span className="text-xs font-normal text-slate-400">R</span>
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          {h.totalVirupas} Virupas
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 text-center">
-                        <span
-                          className={`inline-flex items-center justify-center h-5 w-5 rounded-full text-xs font-bold ${
-                            h.rank <= 3
-                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
-                              : h.rank >= 10
-                                ? 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          {h.rank}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3">
-                        <span
-                          className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${
-                            h.potencyVerdict.startsWith('High')
-                              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
-                              : h.potencyVerdict.startsWith('Conscious')
-                                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-500/20'
-                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                          }`}
-                        >
-                          {h.potencyVerdict.split('(')[0].trim()}
-                        </span>
-                        <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1" title={isHi ? h.interpretationHi : h.interpretationEn}>
-                          {isHi ? h.interpretationHi : h.interpretationEn}
-                        </div>
-                      </td>
+            {/* 12 Bhavas Bhavabala Table */}
+            <div className="sw-card">
+              <div className="sw-card-header">
+                <span className="sw-card-title">
+                  {isHi ? 'सम्पूर्ण १२ भाव भावबल गणितीय सारणी' : 'Full 12 Bhavas Bhavabala Mathematical Table'}
+                </span>
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  Bhavadhipati · Digbala · Drishti Bala · Dina-Ratri
+                </span>
+              </div>
+
+              <div className="sw-table-container">
+                <table className="sw-table">
+                  <thead>
+                    <tr>
+                      <th>House</th>
+                      <th>{isHi ? 'राशि एवं स्वामी' : 'Sign & Lord'}</th>
+                      <th>{isHi ? 'भावाधिपति बल' : 'Bhavadhipati'}</th>
+                      <th>{isHi ? 'भाव दिग्बल' : 'Bhava Digbala'}</th>
+                      <th>{isHi ? 'भाव दृष्टि बल' : 'Drishti Bala'}</th>
+                      <th>{isHi ? 'दिन-रात्रि बल' : 'Dina-Ratri'}</th>
+                      <th style={{ color: '#059669' }}>{isHi ? 'कुल भावबल (रूप)' : 'Total Rupas'}</th>
+                      <th style={{ textAlign: 'center' }}>{isHi ? 'कोटि (Rank)' : 'Rank'}</th>
+                      <th>{isHi ? 'फलित सामर्थ्य' : 'Potency Verdict'}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {bhavabalaReport.houses.map((h) => (
+                      <tr key={h.house}>
+                        <td><strong>#{h.house}</strong></td>
+                        <td>
+                          <strong>{h.signName}</strong>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {h.lord} · {isHi ? h.signClassificationHi : h.signClassification}
+                          </div>
+                        </td>
+                        <td style={{ fontFamily: 'monospace' }}>{h.bhavadhipatiBalaVirupas} V</td>
+                        <td style={{ fontFamily: 'monospace' }}>{h.bhavaDigbalaVirupas} V</td>
+                        <td style={{ fontFamily: 'monospace' }}>
+                          <span style={{ color: h.bhavaDrishtiBalaVirupas >= 0 ? '#059669' : '#dc2626' }}>
+                            {h.bhavaDrishtiBalaVirupas >= 0 ? `+${h.bhavaDrishtiBalaVirupas}` : h.bhavaDrishtiBalaVirupas} V
+                          </span>
+                        </td>
+                        <td style={{ fontFamily: 'monospace' }}>{h.bhavaDinaRatriBalaVirupas} V</td>
+                        <td>
+                          <strong style={{ fontSize: '0.95rem', color: '#059669' }}>{h.totalRupas} R</strong>
+                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                            {h.totalVirupas} V
+                          </div>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span className={`sw-badge ${h.rank <= 3 ? 'sw-badge-warning' : 'sw-badge-neutral'}`}>
+                            #{h.rank}
+                          </span>
+                        </td>
+                        <td style={{ maxWidth: '300px', lineHeight: 1.4 }}>
+                          <span className={`sw-badge ${h.potencyVerdict.startsWith('High') ? 'sw-badge-success' : 'sw-badge-warning'}`} style={{ marginBottom: '4px' }}>
+                            {h.potencyVerdict.split('(')[0].trim()}
+                          </span>
+                          <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                            {isHi ? h.interpretationHi : h.interpretationEn}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ========================================================================= */}
-      {/* TAB 5: 11,500 RESEARCH BENCHMARK CHARTS BANK */}
-      {/* ========================================================================= */}
-      {activeTab === 'research_charts' && (
-        <div className="space-y-6">
-          {/* Top Filter & Search */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isHi ? 'ऐतिहासिक एवं शोध जन्मपत्रिका संग्रह' : 'Historical & Scientific Benchmark Charts'}
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
-                {isHi ? '११,५०० वैश्विक शोध संग्रह में से चयनित प्रामाणिक पत्रिकाएं' : 'Curated Landmark Benchmarks from 11,500 Global Archive'}
-              </h3>
+        {/* ========================================================================= */}
+        {/* TAB 5: 11,500 RESEARCH BENCHMARK CHARTS BANK */}
+        {/* ========================================================================= */}
+        {activeTab === 'research_charts' && (
+          <div>
+            {/* Purpose & Predictive Explanation Box */}
+            <div className="sw-purpose-box">
+              <h4>
+                <BookOpen className="h-4 w-4" />
+                {isHi
+                  ? '११,५०० शोध पत्रिका बैंक का उद्देश्य क्या है?'
+                  : 'Purpose of the 11,500 Classical Research Benchmark Charts Bank'}
+              </h4>
+              <p>
+                {isHi
+                  ? 'शास्त्रीय तुलना: वैदिक ज्योतिष में सिद्धांतों की प्रामाणिकता ऐतिहासिक महापुरुषों, वैज्ञानिकों, आध्यात्मिक संतों और राजनेताओं की जन्म कुंडलियों से सिद्ध होती है। इस शोध बैंक से आप किसी भी ऐतिहासिक पत्रिका को सीधे कार्यशाला में लोड कर सकते हैं और अपनी कुंडली के साथ तुलनात्मक अध्ययन (Comparative Jyotish Research) कर सकते हैं।'
+                  : 'Comparative Research Principle: Classical Jyotish principles are validated through benchmark horoscopes (Pramana Kundalis) demonstrating how archetypal Raja Yogas, Amala Yogas, Ruchaka Yogas, and Saraswati Yogas manifest in real life. Load any celebrated historical birth chart into your active workspace with one click to perform side-by-side comparative research.'}
+              </p>
             </div>
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Category Filter Chips */}
+            <div className="sw-category-strip">
               {[
-                { id: 'all', en: 'All Categories', hi: 'सभी श्रेणियां' },
-                { id: 'Scientists & Geniuses', en: 'Scientists', hi: 'वैज्ञानिक' },
+                { id: 'all', en: 'All Benchmark Charts', hi: 'सभी शोध पत्रिकाएं' },
+                { id: 'Scientists & Geniuses', en: 'Scientists & Geniuses', hi: 'वैज्ञानिक व मनीषी' },
                 { id: 'Spiritual Masters', en: 'Spiritual Masters', hi: 'आध्यात्मिक संत' },
-                { id: 'World Leaders', en: 'Leaders', hi: 'राष्ट्रनायक' },
+                { id: 'World Leaders', en: 'World Leaders', hi: 'राष्ट्रनायक' },
                 { id: 'Masters of Arts', en: 'Arts & Literature', hi: 'कला व साहित्य' },
-                { id: 'Industrial Pioneers', en: 'Industry & Wealth', hi: 'उद्योग व धन' },
+                { id: 'Industrial Pioneers', en: 'Industry & Wealth', hi: 'उद्योग व धनपति' },
               ].map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setResearchCategory(cat.id)}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
-                    researchCategory === cat.id
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                  }`}
+                  className={`sw-category-chip ${researchCategory === cat.id ? 'is-active' : ''}`}
                 >
                   {isHi ? cat.hi : cat.en}
                 </button>
               ))}
             </div>
 
-            {/* Search Input */}
-            <div className="relative w-full md:w-60">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder={isHi ? 'व्यक्तित्व, नगर, देश खोजें...' : 'Search chart, city...'}
-                value={researchSearch}
-                onChange={(e) => setResearchSearch(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              />
-            </div>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredResearchCharts.map((rc) => (
-              <div
-                key={rc.id}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm flex flex-col justify-between hover:border-purple-500/40 transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-purple-100 dark:bg-purple-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:text-purple-300">
-                      {isHi ? rc.categoryHi : rc.category}
-                    </span>
-                    <span className="text-xs font-mono text-slate-400">
-                      {rc.birthInput.date.split('-').reverse().join('-')}
-                    </span>
-                  </div>
-
-                  <h4 className="mt-2 text-base font-bold text-slate-900 dark:text-white">
-                    {isHi ? rc.nameHi : rc.name}
-                  </h4>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {rc.birthInput.city}, {rc.birthInput.country} ({rc.birthInput.time})
-                  </div>
-
-                  <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 p-3 text-xs space-y-2">
-                    <div>
-                      <div className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                        <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                        {isHi ? 'शास्त्रीय योग संयोजन' : 'Astrological Signatures'}
-                      </div>
-                      <p className="mt-0.5 text-slate-600 dark:text-slate-300 leading-relaxed">
-                        {isHi ? rc.keyAstrologicalHighlightsHi : rc.keyAstrologicalHighlightsEn}
-                      </p>
+            {/* Benchmark Cards Grid */}
+            <div className="sw-grid-3">
+              {filteredResearchCharts.map((rc) => (
+                <div key={rc.id} className="sw-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="sw-badge sw-badge-warning">
+                        {isHi ? rc.categoryHi : rc.category}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#64748b' }}>
+                        {formatDateDmy(rc.birthInput.date)}
+                      </span>
                     </div>
 
-                    <div className="border-t border-slate-200/60 dark:border-slate-600/60 pt-2">
-                      <div className="font-semibold text-slate-700 dark:text-slate-300">
-                        {isHi ? 'ऐतिहासिक संदर्भ' : 'Biographical Context'}
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary, #0f172a)' }}>
+                      {isHi ? rc.nameHi : rc.name}
+                    </h4>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
+                      {rc.birthInput.city}, {rc.birthInput.country} ({rc.birthInput.time})
+                    </div>
+
+                    <div style={{
+                      padding: '10px',
+                      borderRadius: '8px',
+                      background: 'var(--bg-subtle, #f8fafc)',
+                      border: '1px solid var(--border-color, #e2e8f0)',
+                      fontSize: '0.8rem',
+                      lineHeight: 1.5,
+                      marginBottom: '10px',
+                    }}>
+                      <div style={{ fontWeight: 700, color: '#b45309', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                        {isHi ? 'शास्त्रीय योग संयोजन:' : 'Astrological Signatures:'}
                       </div>
-                      <p className="mt-0.5 text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <p style={{ margin: '0 0 8px 0', color: 'var(--text-primary, #334155)' }}>
+                        {isHi ? rc.keyAstrologicalHighlightsHi : rc.keyAstrologicalHighlightsEn}
+                      </p>
+                      <div style={{ fontWeight: 600, color: '#64748b', marginBottom: '2px' }}>
+                        {isHi ? 'ऐतिहासिक संदर्भ:' : 'Biographical Context:'}
+                      </div>
+                      <p style={{ margin: 0, color: '#64748b' }}>
                         {isHi ? rc.biographicalNoteHi : rc.biographicalNoteEn}
                       </p>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">
-                    ID: {rc.id}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onLoadBenchmarkChart) {
-                        onLoadBenchmarkChart(rc.birthInput);
-                      }
-                    }}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 text-xs font-medium transition-colors shadow-sm"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    {isHi ? 'कार्यशाला में लोड करें' : 'Load into Workspace'}
-                  </button>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '10px',
+                    borderTop: '1px solid var(--border-color, #e2e8f0)',
+                  }}>
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                      ID: {rc.id}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onLoadBenchmarkChart) {
+                          onLoadBenchmarkChart(rc.birthInput);
+                        }
+                      }}
+                      className="sw-badge sw-badge-warning"
+                      style={{ cursor: 'pointer', padding: '6px 12px' }}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" style={{ marginRight: '4px' }} />
+                      {isHi ? 'कार्यशाला में लोड करें' : 'Load into Workspace'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

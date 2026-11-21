@@ -35,7 +35,7 @@ import {
   computeBasicDetailsSheet,
   type BasicDetailRow,
 } from '../astro/higherVargas';
-import { formatDateDmy, formatDms, formatOffsetString } from '../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatDms, formatOffsetString } from '../astro/time';
 import type {
   BirthInput,
   CalcSettings,
@@ -353,7 +353,7 @@ export const BasicsView: React.FC<BasicsViewProps> = ({
             </div>
           </div>
           <div className="muted small-text" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span>{formatDateDmy(chart.input.date)} {chart.input.time}</span>
+            <span>{formatDateTimeDmyAmPm(chart.input.date, chart.input.time)}</span>
             <span>{chart.input.city}, {chart.input.country}</span>
             <span className="mono">({Math.abs(chart.input.latitude).toFixed(2)}°{chart.input.latitude >= 0 ? 'N' : 'S'}, {Math.abs(chart.input.longitude).toFixed(2)}°{chart.input.longitude >= 0 ? 'E' : 'W'})</span>
           </div>

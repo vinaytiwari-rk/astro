@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { NINE_GRAHAS, SIGNS } from '../../astro/constants';
 import { computeKpReport } from '../../astro/kp';
-import { formatDateDmy, formatDms } from '../../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatDms } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign } from '../../i18n/translations';
@@ -82,7 +82,7 @@ export const OnlineJyotishKpView: React.FC<OnlineJyotishKpViewProps> = ({
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'जन्म विवरण' : 'Birth Particulars'}:</span>
-            <strong>{formatDateDmy(chart.input.date)} {chart.input.time} ({chart.input.city})</strong>
+            <strong>{formatDateTimeDmyAmPm(chart.input.date, chart.input.time)} ({chart.input.city})</strong>
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'केपी अयनांश' : 'KP Ayanamsha'}:</span>

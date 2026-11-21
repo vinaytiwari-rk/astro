@@ -21,7 +21,7 @@ import {
   Sun,
   User,
 } from 'lucide-react';
-import { formatDateDmy } from '../../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -273,7 +273,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           >
             {profiles.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.name} ({formatDateDmy(p.date)} · {p.city})
+                {p.name} ({formatDateTimeDmyAmPm(p.date, p.time)} · {p.city})
               </option>
             ))}
           </select>
@@ -476,8 +476,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <span className="oj-dd-sub">{isHi ? 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग' : 'Raja, Dhana, Mahapurusha & Classical Yogas'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('rashifal')}>
-                    <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (ClickAstro व गोचर)' : 'Daily & Weekly Rashifal (ClickAstro & Gochar)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव ClickAstro RSS फीड्स' : '5 Life Domains, 12 Signs & Live ClickAstro RSS Feeds'}</span>
+                    <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (वैदिक गोचर व लाइव फीड्स)' : 'Daily & Weekly Rashifal (Vedic Gochar & Live Feeds)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव गोचर वेब फीड्स' : '5 Life Domains, 12 Signs & Live Gochar Feeds'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
                     <strong>{isHi ? 'पाराशर-काला-CIL कार्यशाला' : 'Parashara-Kala-CIL Workstation'}</strong>

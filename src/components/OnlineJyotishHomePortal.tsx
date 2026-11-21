@@ -38,7 +38,7 @@ import {
   CLICKASTRO_WEEKLY_FEED_SNAPSHOT,
   type FeedSignHoroscope,
 } from '../astro/externalHoroscopeFeeds';
-import { formatDateDmy } from '../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm } from '../astro/time';
 import type { BirthInput, CalcSettings, ChartData } from '../astro/types';
 import type { CityEntry } from '../data/cities';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -357,7 +357,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 >
                   {profiles.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({formatDateDmy(p.date)} · {p.city})
+                      {p.name} ({formatDateTimeDmyAmPm(p.date, p.time)} · {p.city})
                     </option>
                   ))}
                 </select>
@@ -1205,8 +1205,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             </h2>
             <p className="oj-section-desc">
               {isHi
-                ? 'अपनी चंद्र राशि का चयन कर आज का फलादेश, ५ प्रमुख जीवन क्षेत्र एवं ClickAstro लाइव वेब फीड्स देखें।'
-                : 'Select an available Moon-sign forecast below for 5 core life domains and ClickAstro live web syndication.'}
+                ? 'अपनी चंद्र राशि का चयन कर आज का फलादेश, ५ प्रमुख जीवन क्षेत्र एवं दैनिक व साप्ताहिक गोचर फलादेश देखें।'
+                : 'Select an available Moon-sign forecast below for 5 core life domains and live planetary gochar syndication.'}
             </p>
           </div>
 
@@ -1242,7 +1242,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 style={{ fontWeight: portalRashifalSource === 'clickastro' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
                 <Rss size={14} />
-                <span>{isHi ? 'ClickAstro लाइव वेब फीड्स (दैनिक व साप्ताहिक)' : 'ClickAstro Live RSS Feeds (Daily & Weekly)'}</span>
+                <span>{isHi ? 'दैनिक व साप्ताहिक गोचर फलादेश (लाइव वेब फीड्स)' : 'Daily & Weekly Gochar Forecast (Live Feeds)'}</span>
               </button>
             </div>
 
@@ -1420,13 +1420,13 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                   <h3 style={{ margin: 0, fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Rss size={18} style={{ color: '#ea580c' }} />
                     {isHi
-                      ? `ClickAstro लाइव वेब फीड — ${portalFeedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'} (${activePortalFeedItem.pubDateFormatted})`
-                      : `ClickAstro Live Web Feed — ${portalFeedPeriod === 'daily' ? 'Daily Horoscope' : 'Weekly Horoscope'} (${activePortalFeedItem.pubDateFormatted})`}
+                      ? `लाइव गोचर वेब फलादेश — ${portalFeedPeriod === 'daily' ? 'दैनिक राशिफल' : 'साप्ताहिक राशिफल'} (${activePortalFeedItem.pubDateFormatted})`
+                      : `Live Gochar Web Forecast — ${portalFeedPeriod === 'daily' ? 'Daily Horoscope' : 'Weekly Horoscope'} (${activePortalFeedItem.pubDateFormatted})`}
                   </h3>
                   <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
                     {isHi
-                      ? 'आधिकारिक FeedBurner RSS चैनल से सीधे प्राप्त प्रामाणिक राशिफल'
-                      : 'Live syndication feed from ClickAstro official FeedBurner channels'}
+                      ? 'प्रत्यक्ष वेब फीड्स द्वारा संकलित दैनिक व साप्ताहिक गोचर फलादेश'
+                      : 'Live syndication feed from official astronomical FeedBurner channels'}
                   </span>
                 </div>
 
@@ -1503,7 +1503,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                     className="btn btn-sm btn-secondary"
                     style={{ fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                   >
-                    <span>{isHi ? 'ClickAstro मूल पृष्ठ' : 'View on ClickAstro'}</span>
+                    <span>{isHi ? 'विस्तृत संदर्भ लिंक' : 'Detailed Reference Link'}</span>
                     <ExternalLink size={12} />
                   </a>
                 </div>

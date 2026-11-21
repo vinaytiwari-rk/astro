@@ -13,7 +13,7 @@ import { computeKundaliDoshas } from '../../astro/predictions/familyDoshas';
 import { computeHouseWisePredictions } from '../../astro/predictions/houseWise';
 import { computeDeepGochar } from '../../astro/predictions/gocharDeep';
 import { computeGemstoneAndRudraksha } from '../../astro/rashifalBabyRudraksha';
-import { formatDateDmy, formatDms } from '../../astro/time';
+import { formatDateDmy, formatDateTimeDmyAmPm, formatDms } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartData, ChartStyle, DivisionalChartId, NineGrahaId } from '../../astro/types';
 import type { CityEntry } from '../../data/cities';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -289,7 +289,7 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'जन्म विवरण' : 'Birth'}:</span>
-            <strong>{formatDateDmy(chart.input.date)} {chart.input.time} ({chart.input.city}, {chart.input.country})</strong>
+            <strong>{formatDateTimeDmyAmPm(chart.input.date, chart.input.time)} ({chart.input.city}, {chart.input.country})</strong>
           </div>
           <div>
             <span className="oj-meta-label">{isHi ? 'अक्षांश / देशांतर' : 'Lat / Lon'}:</span>
