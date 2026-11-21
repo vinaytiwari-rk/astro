@@ -148,7 +148,7 @@ export const DashaWisePanel: React.FC<{
           onClick={() => setDashaTab('yogini')}
           style={{ fontWeight: dashaTab === 'yogini' ? 700 : 500, fontSize: '13px' }}
         >
-          {isHi ? 'योगिनी दशा व ६४ अंतर्दशा (AIFAS)' : 'Yogini Dasha & 64 Subs (AIFAS)'}
+          {isHi ? 'योगिनी दशा व ६४ अंतर्दशा' : 'Yogini Dasha & 64 Subs'}
         </button>
         <button
           type="button"
@@ -317,24 +317,14 @@ export const DashaWisePanel: React.FC<{
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '14px', color: 'var(--accent)' }}>
                 <BookOpen size={16} />
-                <span>{AIFAS_YOGINI_BOOK_METADATA.title}</span>
-                <span className="tag tag-varg" style={{ fontSize: '11px' }}>AIFAS Standard</span>
+                <span>{isHi ? 'शास्त्रीय योगिनी दशा एवं फलित संहिता' : 'Classical Yogini Dasha & Predictive Compendium'}</span>
+                <span className="tag tag-varg" style={{ fontSize: '11px' }}>{isHi ? 'प्रामाणिक फलित' : 'Classical Standard'}</span>
               </div>
               <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
                 <strong>{isHi ? 'मूल शास्त्रीय सिद्धांत: ' : 'Fundamental Shastric Axiom: '}</strong>
                 {isHi ? AIFAS_YOGINI_BOOK_METADATA.fundamentalAxiomHi : AIFAS_YOGINI_BOOK_METADATA.fundamentalAxiomEn}
               </p>
             </div>
-            <a
-              href={AIFAS_YOGINI_BOOK_METADATA.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-sm btn-secondary"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px' }}
-            >
-              <span>{isHi ? 'शास्त्रीय ग्रंथ देखें' : 'View Treatise PDF'}</span>
-              <ExternalLink size={13} />
-            </a>
           </div>
 
           {/* Speciality of Sankata Crisis Alert Box */}
@@ -357,8 +347,8 @@ export const DashaWisePanel: React.FC<{
                 </strong>
                 <p style={{ margin: '4px 0 8px 0', fontSize: '13px', lineHeight: 1.5 }}>
                   {isHi
-                    ? 'AIFAS शास्त्रीय ग्रंथ के अनुसार भ्रामरी, उल्का अथवा संकटा में संकटा की अंतर्दशा चलने पर जातक को गंभीर स्वास्थ्य संकट, पदच्युति, अपयश अथवा अचानक विपत्तियों का सामना करना पड़ सकता है। इस अवधि में नए जोखिम भरे निवेश व अनावश्यक यात्राएं टालें।'
-                    : 'According to AIFAS classical dasha shastra, when the sub-period of Sankata operates within Bhramari, Ulka, or Sankata Mahadasha, it is designated as a high-distress window causing acute physical, social, or financial turbulence. Avoid aggressive risks and adhere to prescribed pacifications.'}
+                    ? 'शास्त्रीय ग्रंथ के अनुसार भ्रामरी, उल्का अथवा संकटा में संकटा की अंतर्दशा चलने पर जातक को गंभीर स्वास्थ्य संकट, पदच्युति, अपयश अथवा अचानक विपत्तियों का सामना करना पड़ सकता है। इस अवधि में नए जोखिम भरे निवेश व अनावश्यक यात्राएं टालें।'
+                    : 'According to classical dasha shastra, when the sub-period of Sankata operates within Bhramari, Ulka, or Sankata Mahadasha, it is designated as a high-distress window causing acute physical, social, or financial turbulence. Avoid aggressive risks and adhere to prescribed pacifications.'}
                 </p>
                 <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text)' }}>
                   <strong>{isHi ? 'अचूक सुरक्षात्मक उपाय: ' : 'Mandatory Protective Upayas: '}</strong>
@@ -514,7 +504,7 @@ export const DashaWisePanel: React.FC<{
                     <th>{isHi ? 'अंतर्दशा' : 'Sub-Period'}</th>
                     <th>{isHi ? 'स्वामी' : 'Lord'}</th>
                     <th>{isHi ? 'शास्त्रीय अवधि' : 'Exact Duration'}</th>
-                    <th>{isHi ? 'AIFAS शास्त्रीय फलादेश' : 'AIFAS Classical Manifestation'}</th>
+                    <th>{isHi ? 'शास्त्रीय फलादेश' : 'Classical Manifestation'}</th>
                   </tr>
                 </thead>
                 <tbody>

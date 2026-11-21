@@ -159,7 +159,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           className={`sw-tab-btn ${activeTab === 'kakshya' ? 'is-active' : ''}`}
         >
           <Clock className="h-4 w-4" />
-          {isHi ? 'कक्ष्य गोचर (पाराशर)' : 'Kakshya Gochar (Parashara)'}
+          {isHi ? 'अष्टकवर्ग कक्ष्य गोचर' : 'Ashtakavarga Kakshya Gochar'}
           <span className="sw-tab-badge">{kakshyaReport.kakshyaFavorabilityPercent}%</span>
         </button>
 
@@ -179,7 +179,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           className={`sw-tab-btn ${activeTab === 'kp_cil' ? 'is-active' : ''}`}
         >
           <Layers className="h-4 w-4" />
-          {isHi ? 'कस्पल इंटरलिंक्स CIL (True Astrology)' : 'Cuspal Interlinks CIL (1-2193)'}
+          {isHi ? 'कस्पल इंटरलिंक्स CIL (1-2193)' : 'Cuspal Interlinks CIL (1-2193)'}
           <span className="sw-tab-badge">8 Pillars</span>
         </button>
 
@@ -217,7 +217,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
                 <Compass className="h-4 w-4" />
                 {isHi
                   ? 'अष्टकवर्ग कक्ष्य गोचर क्या है और इसका फलित उपयोग क्यों किया जाता है?'
-                  : 'What is Ashtakavarga Kakshya Gochar & Why is it Used in Parashara Software?'}
+                  : 'What is Ashtakavarga Kakshya Gochar & Why is it Used?'}
               </h4>
               <p>
                 {isHi
@@ -589,8 +589,8 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
               <h4>
                 <Layers className="h-4 w-4" />
                 {isHi
-                  ? 'ट्रू एस्ट्रोलॉजी कस्पल इंटरलिंक्स (CIL 1-2193) क्या है और यह क्या सिद्ध करता है?'
-                  : 'What is True Astrology KP Cuspal Interlinks (CIL 1-2193) & Sub-Sub Lord Theory?'}
+                  ? 'कस्पल इंटरलिंक्स (CIL 1-2193) क्या है और यह क्या सिद्ध करता है?'
+                  : 'What is Cuspal Interlinks (CIL 1-2193) & Sub-Sub Lord Theory?'}
               </h4>
               <p>
                 {isHi
@@ -747,8 +747,8 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
               </h4>
               <p>
                 {isHi
-                  ? 'शास्त्रीय सिद्धांत: महर्षि पाराशर के षड्बल एवं भावबल सिद्धांत (काला सॉफ्टवेयर इंजन समरूप) के अनुसार, प्रत्येक भाव का कुल बल रूप (Rupas) में मापा जाता है। इसमें भावाधिपति बल (स्वामी का सामर्थ्य), भाव दिग्बल (दिशा बल), भाव दृष्टि बल (शुभ एवं पापक ग्रहों की संयुक्त दृष्टि) और दिन-रात्रि बल सम्मिलित होते हैं। जिस भाव का भावबल अधिक होता है, उस भाव से संबंधित फल अल्प प्रयास में प्रचुर मात्रा में प्राप्त होते हैं।'
-                  : 'Classical Axiom: According to the classical Bhavabala doctrine (as implemented in professional astrological engines like Kala), each of the 12 houses possesses an absolute mathematical potency measured in Rupas (60 Virupas = 1 Rupa). Bhavabala integrates: 1) Bhavadhipati Bala (lord\'s strength), 2) Bhava Digbala (directional cusp strength), 3) Bhava Drishti Bala (net benefic/malefic aspectual impact), and 4) Dina-Ratri Bala. Houses with high Bhavabala yield massive achievements with effortless ease.'}
+                  ? 'शास्त्रीय सिद्धांत: महर्षि पाराशर के षड्बल एवं भावबल सिद्धांत के अनुसार, प्रत्येक भाव का कुल बल रूप (Rupas) में मापा जाता है। इसमें भावाधिपति बल (स्वामी का सामर्थ्य), भाव दिग्बल (दिशा बल), भाव दृष्टि बल (शुभ एवं पापक ग्रहों की संयुक्त दृष्टि) और दिन-रात्रि बल सम्मिलित होते हैं। जिस भाव का भावबल अधिक होता है, उस भाव से संबंधित फल अल्प प्रयास में प्रचुर मात्रा में प्राप्त होते हैं।'
+                  : 'Classical Axiom: According to the classical Bhavabala doctrine, each of the 12 houses possesses an absolute mathematical potency measured in Rupas (60 Virupas = 1 Rupa). Bhavabala integrates: 1) Bhavadhipati Bala (lord\'s strength), 2) Bhava Digbala (directional cusp strength), 3) Bhava Drishti Bala (net benefic/malefic aspectual impact), and 4) Dina-Ratri Bala. Houses with high Bhavabala yield massive achievements with effortless ease.'}
               </p>
               <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed rgba(217, 119, 6, 0.3)' }}>
                 <strong>

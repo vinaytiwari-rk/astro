@@ -40,6 +40,7 @@ import { AscendantWisePanel } from './predictions/AscendantWisePanel';
 import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
 import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 import { ParasharaKalaWorkstationPanel } from './predictions/ParasharaKalaWorkstationPanel';
+import { SpecializedVedicPanel } from './predictions/SpecializedVedicPanel';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
 interface PredictionsViewProps {
@@ -51,6 +52,7 @@ interface PredictionsViewProps {
 }
 
 export type PredSubTab =
+  | 'specializedVedic'
   | 'parasharaKala'
   | 'ascendantWise'
   | 'educationWise'
@@ -78,6 +80,18 @@ export type PredSubTab =
 
 function normalizeSubTab(id?: string): PredSubTab {
   if (!id) return 'deep_life';
+  if (
+    id === 'specializedVedic' ||
+    id === 'ishta' ||
+    id === 'ishtaDevata' ||
+    id === 'vakri' ||
+    id === 'tarabalam' ||
+    id === 'panchaPakshi' ||
+    id === 'kujaDosha' ||
+    id === 'manglik'
+  ) {
+    return 'specializedVedic';
+  }
   if (
     id === 'parasharaKala' ||
     id === 'parashara' ||
@@ -176,6 +190,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   // Seven independent prediction systems. Natal and timing-based readings stay separate.
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
+    { id: 'specializedVedic', labelEn: 'Ishta Dev, Vakri & Bio-Rhythm', labelHi: 'इष्ट देव, वक्री व पंच पक्षी' },
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
     { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
@@ -278,6 +293,10 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
               detectedYogas={report.classicalYogas}
               initialTab={currentTab === 'yogaWise' ? 'detected' : 'yuti'}
             />
+          )}
+
+          {currentTab === 'specializedVedic' && (
+            <SpecializedVedicPanel chart={chart} />
           )}
 
           {currentTab === 'deep_life' && (

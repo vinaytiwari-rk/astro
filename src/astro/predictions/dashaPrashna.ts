@@ -212,21 +212,21 @@ export function predictDashaDetail(params: {
               ? 'Mixed / Transformative'
               : 'Challenging';
 
-      const yMdSummary = `[AIFAS शास्त्रीय योगिनी साधना: ${aifasMaha.nameEn} Mahadasha · ${aifasMaha.years} Year${aifasMaha.years > 1 ? 's' : ''} · Lord: ${aifasMaha.lordEn} (${aifasMaha.nature}) · Nakshatras: ${aifasMaha.nakshatrasEn}] ${aifasMaha.predictionEn}`;
+      const yMdSummary = `[शास्त्रीय योगिनी साधना: ${aifasMaha.nameEn} Mahadasha · ${aifasMaha.years} Year${aifasMaha.years > 1 ? 's' : ''} · Lord: ${aifasMaha.lordEn} (${aifasMaha.nature}) · Nakshatras: ${aifasMaha.nakshatrasEn}] ${aifasMaha.predictionEn}`;
 
       const yAdSummary = aifasSub
-        ? `[AIFAS Sub-period: ${aifasSub.adName} in ${aifasSub.mdName} · ${aifasSub.durationStrEn} · Lord: ${aifasSub.adLordEn}] ${aifasSub.predictionEn}${aifasSub.isSpecialCrisisAlert ? ' (SPECIAL CRISIS ALERT: Sankata operating in ' + cleanMd + ' triggers acute vulnerability/reversals requiring immediate shastric remedies).' : ''}`
+        ? `[Sub-period: ${aifasSub.adName} in ${aifasSub.mdName} · ${aifasSub.durationStrEn} · Lord: ${aifasSub.adLordEn}] ${aifasSub.predictionEn}${aifasSub.isSpecialCrisisAlert ? ' (SPECIAL CRISIS ALERT: Sankata operating in ' + cleanMd + ' triggers acute vulnerability/reversals requiring immediate shastric remedies).' : ''}`
         : undefined;
 
       const yGuidance = aifasSub?.isSpecialCrisisAlert
-        ? `[AIFAS High Priority Alert] Sankata sub-period in ${cleanMd} demands spiritual and health protection. Prescribed Remedies: ${aifasMaha.remediesEn.join(' ')}`
-        : `AIFAS Classical Upayas for ${aifasMaha.nameEn} (${aifasMaha.lordEn}): ${aifasMaha.remediesEn.join(' ')}`;
+        ? `[High Priority Alert] Sankata sub-period in ${cleanMd} demands spiritual and health protection. Prescribed Remedies: ${aifasMaha.remediesEn.join(' ')}`
+        : `Classical Upayas for ${aifasMaha.nameEn} (${aifasMaha.lordEn}): ${aifasMaha.remediesEn.join(' ')}`;
 
       const yKeyEffects = [
         `Yogini 36-Year Cycle: ${aifasMaha.nameEn} Mahadasha operates for ${aifasMaha.years} year(s). Natural karakatva of ${aifasMaha.lordEn} dominates without Lagna lordship.`,
         ...(aifasSub ? [`Sub-period exact duration: ${aifasSub.durationStrEn} governed by ${aifasSub.adLordEn}.`] : []),
         ...(aifasSub?.isSpecialCrisisAlert ? [`CRITICAL VULNERABILITY: Sankata sub-period in ${cleanMd} is classified as high-risk for vitality and status in classical texts.`] : []),
-        `Classical Reference: Prediction through Dasha: Yogini & Vimshottari (AIFAS).`,
+        `Classical Reference: Prediction through Dasha: Yogini & Vimshottari.`,
       ];
 
       return {
@@ -320,23 +320,23 @@ export function predictDashaDetail(params: {
       : []),
     ...(mdBody.isCombust ? [`${mdId} is Combust — external recognition grows quietly after inner refinement.`] : []),
     ...(mdBody.dignity === 'Exalted' || mdBody.dignity === 'Moolatrikona'
-      ? [`AIFAS Rule 1: Exalted/Moolatrikona lord grants peak prosperity, public honor, and material advancement.`]
+      ? [`Classical Rule 1: Exalted/Moolatrikona lord grants peak prosperity, public honor, and material advancement.`]
       : mdBody.dignity === 'Debilitated'
-        ? [`AIFAS Rule 2: Debilitated planet brings testing obstacles and requires conscious remedial stabilization.`]
+        ? [`Classical Rule 2: Debilitated planet brings testing obstacles and requires conscious remedial stabilization.`]
         : []),
     ...(adBody
       ? relationLabel(mdBody.rasiHouseNumber, adBody.rasiHouseNumber).label.includes('6/8')
-        ? [`AIFAS Rule 10: MD–AD 6/8 (Shadashtaka) geometry signifies mutual friction, health care needs, or rivalry resistance.`]
+        ? [`Classical Rule 10: MD–AD 6/8 (Shadashtaka) geometry signifies mutual friction, health care needs, or rivalry resistance.`]
         : relationLabel(mdBody.rasiHouseNumber, adBody.rasiHouseNumber).label.includes('2/12')
-          ? [`AIFAS Rule 11: MD–AD 2/12 (Dwirdwadasha) disposition triggers financial expenditures and strategic adjustment.`]
+          ? [`Classical Rule 11: MD–AD 2/12 (Dwirdwadasha) disposition triggers financial expenditures and strategic adjustment.`]
           : relationLabel(mdBody.rasiHouseNumber, adBody.rasiHouseNumber).label.includes('5/9')
-            ? [`AIFAS Rule 9: MD–AD 5/9 (Trikona) trinal harmony bestows fortune, intellectual elevation, and mentors' grace.`]
+            ? [`Classical Rule 9: MD–AD 5/9 (Trikona) trinal harmony bestows fortune, intellectual elevation, and mentors' grace.`]
             : []
       : []),
     ...(['Saturn', 'Mars', 'Rahu'].includes(mdId)
-      ? [`AIFAS Rule 21 & 24 (Jeeva vs Dravya): Natural malefic when strong yields tangible assets and authority, but requires mindful physical health care.`]
+      ? [`Classical Rule 21 & 24 (Jeeva vs Dravya): Natural malefic when strong yields tangible assets and authority, but requires mindful physical health care.`]
       : ['Jupiter', 'Venus', 'Mercury'].includes(mdId)
-        ? [`AIFAS Rule 23 (Jeeva vs Dravya): Natural benefic fosters mental tranquility, family happiness, and ethical standing in proportion to Shadbala strength.`]
+        ? [`Classical Rule 23 (Jeeva vs Dravya): Natural benefic fosters mental tranquility, family happiness, and ethical standing in proportion to Shadbala strength.`]
         : []),
   ];
 

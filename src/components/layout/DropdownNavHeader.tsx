@@ -435,6 +435,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जीवन स्तर, स्वर्ण कालखंड, संकट काल व 6 जीवन क्षेत्र' : 'Life Stature, Peak Era & 6 Life Domains'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'specializedVedic')}>
+                    <strong>{isHi ? 'इष्ट देव, वक्री ग्रह, ताराबल व पंच पक्षी' : 'Ishta Dev, Vakri, Tarabalam & Pancha Pakshi'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कारकांश १२वां भाव, वक्री चेष्टा बल, दैनिक ऊर्जा मीटर व २० कुज परिहार' : 'Karakamsha 12th House, Vakri Cheshta Bala, Daily Meter & 20 Kuja Exceptions'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
                     <strong>{isHi ? 'दशा फलादेश' : 'Dasha Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं' : 'Running Mahadasha/Antardasha Manifestation'}</span>
@@ -480,8 +484,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव गोचर वेब फीड्स' : '5 Life Domains, 12 Signs & Live Gochar Feeds'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
-                    <strong>{isHi ? 'पाराशर-काला-CIL कार्यशाला' : 'Parashara-Kala-CIL Workstation'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, ताजिक 50 सहम, CIL 1-2193, भावबल व 11500 शोध चार्ट्स' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & 11,500 Charts'}</span>
+                    <strong>{isHi ? 'उन्नत फलित एवं शोध कार्यशाला' : 'Advanced Predictive & Research Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, ताजिक 50 सहम, CIL 1-2193, भावबल व शोध चार्ट्स' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & Research Charts'}</span>
                   </button>
                 </div>
               )}
@@ -669,8 +673,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
-                    <strong>{isHi ? 'पाराशर-काला-CIL कार्यशाला' : 'Parashara-Kala-CIL Workstation'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, 50 सहम, CIL 1-2193, भावबल एवं 11,500 शोध पत्रिकाएं' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & 11,500 Charts'}</span>
+                    <strong>{isHi ? 'उन्नत फलित एवं शोध कार्यशाला' : 'Advanced Predictive & Research Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, 50 सहम, CIL 1-2193, भावबल एवं शोध पत्रिकाएं' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & Research Charts'}</span>
                   </button>
                 </div>
               )}

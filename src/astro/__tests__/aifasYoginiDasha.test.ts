@@ -133,10 +133,10 @@ describe('AIFAS Yogini & Dasha Predictions System', () => {
       endMs: now + 86400000 * 210,
     });
 
-    expect(detail.mdSummary).toContain('AIFAS');
+    expect(detail.mdSummary).toContain('शास्त्रीय योगिनी साधना');
     expect(detail.mdSummary).toContain('Siddha');
     expect(detail.adSummary).toContain('Dhanya in Siddha');
-    expect(detail.guidance).toContain('AIFAS Classical Upayas');
+    expect(detail.guidance).toContain('Classical Upayas');
 
     // Test Sankata in Bhramari crisis alert
     const crisisDetail = predictDashaDetail({
@@ -150,7 +150,7 @@ describe('AIFAS Yogini & Dasha Predictions System', () => {
 
     expect(crisisDetail.score).toBeLessThanOrEqual(36);
     expect(crisisDetail.adSummary).toContain('SPECIAL CRISIS ALERT');
-    expect(crisisDetail.guidance).toContain('AIFAS High Priority Alert');
+    expect(crisisDetail.guidance).toContain('High Priority Alert');
 
     // Test Hindi localization of Yogini
     const localizedHi = localizeDashaDetailHi(detail, chart, 'yogini');
