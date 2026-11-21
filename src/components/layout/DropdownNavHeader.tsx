@@ -233,6 +233,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
     'split-studio',
     'workstation',
     'client-diary',
+    'classical-library',
   ].includes(currentView);
   const isRemediesActive = ['holistic-remedies', 'gemstones'].includes(currentView);
   const isFestivalsActive = ['festivals', 'daily-panchanga', 'choghadiya'].includes(currentView);
@@ -739,6 +740,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('client-diary')}>
                     <strong>{isHi ? 'ज्योतिषी परामर्श डायरी (Client Case Notes)' : 'Client Consultation Diary'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जातक प्रश्न, समयसीमा, उपाय पर्ची व फॉलो-अप' : 'Case History, Predictions & Printable Slips'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('classical-library')}>
+                    <strong>{isHi ? 'शास्त्रीय ग्रंथालय (Classical Library)' : 'Classical Shastra Library'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'PVR नरसिम्हा राव, डॉ. चरक, AIFAS, 1001 योग ग्रंथ' : 'PVR Narasimha Rao, Dr. Charak, AIFAS & Treatises'}</span>
                   </button>
                 </div>
               )}

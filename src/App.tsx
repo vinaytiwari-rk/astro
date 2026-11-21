@@ -43,6 +43,7 @@ import { KotaAndAyurdayaView } from './components/predictions/KotaAndAyurdayaVie
 import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalculatorsView';
 import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
 import { NumerologyView } from './components/onlinejyotish/NumerologyView';
+import { ClassicalLibraryPanel } from './components/library/ClassicalLibraryPanel';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
@@ -265,6 +266,8 @@ export function App() {
       target = 'vedic-horoscope';
     } else if (view === 'festivals' || view === 'festival-calendar') {
       target = 'festivals';
+    } else if (view === 'classical-library' || view === 'library') {
+      target = 'classical-library';
     }
 
     setCurrentView(target);
@@ -660,6 +663,10 @@ export function App() {
                 chart={chart}
                 onNavigate={navigateTo}
               />
+            )}
+
+            {(currentView === 'classical-library' || currentView === 'library') && (
+              <ClassicalLibraryPanel chart={chart} />
             )}
 
             {currentView === 'workstation' && (
