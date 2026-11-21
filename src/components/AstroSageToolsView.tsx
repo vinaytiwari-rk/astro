@@ -90,8 +90,8 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
   );
   const activeRashifal = rashifalList[selectedRashi] ?? rashifalList[0];
 
-  // ClickAstro Live Feeds State
-  const [rashifalSource, setRashifalSource] = useState<'engine' | 'clickastro'>('engine');
+  // Live Web Feeds State
+  const [rashifalSource, setRashifalSource] = useState<'engine' | 'live_feeds'>('engine');
   const [feedPeriod, setFeedPeriod] = useState<'daily' | 'weekly'>('daily');
   const [feedStatus, setFeedStatus] = useState<'online' | 'cached'>('cached');
   const [feedItems, setFeedItems] = useState<FeedSignHoroscope[]>(CLICKASTRO_DAILY_FEED_SNAPSHOT);
@@ -205,16 +205,16 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
               </button>
               <button
                 type="button"
-                className={`btn btn-sm ${rashifalSource === 'clickastro' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setRashifalSource('clickastro')}
-                style={{ fontWeight: rashifalSource === 'clickastro' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                className={`btn btn-sm ${rashifalSource === 'live_feeds' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setRashifalSource('live_feeds')}
+                style={{ fontWeight: rashifalSource === 'live_feeds' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
                 <Rss size={14} />
                 <span>{isHi ? 'दैनिक व साप्ताहिक गोचर फलादेश (लाइव वेब फीड्स)' : 'Daily & Weekly Gochar Forecast (Live Feeds)'}</span>
               </button>
             </div>
 
-            {rashifalSource === 'clickastro' && (
+            {rashifalSource === 'live_feeds' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span
                   style={{
@@ -431,8 +431,8 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
             </section>
           )}
 
-          {/* CLICKASTRO LIVE FEED VIEW */}
-          {rashifalSource === 'clickastro' && (
+          {/* LIVE WEB FEED VIEW */}
+          {rashifalSource === 'live_feeds' && (
             <section className="panel">
               <div className="panel-header">
                 <div>
@@ -518,17 +518,6 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
                         {isHi ? `प्रकाशन दिनांक: ${activeFeedItem.pubDateFormatted}` : `Published: ${activeFeedItem.pubDate}`}
                       </span>
                     </div>
-
-                    <a
-                      href={activeFeedItem.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm btn-secondary"
-                      style={{ fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                    >
-                      <span>{isHi ? 'विस्तृत संदर्भ लिंक' : 'Detailed Reference Link'}</span>
-                      <ExternalLink size={12} />
-                    </a>
                   </div>
 
                   {/* Bilingual Reading */}

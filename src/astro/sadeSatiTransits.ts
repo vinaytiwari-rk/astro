@@ -496,8 +496,12 @@ export function getSadeSatiCurrentStatus(
     statusSummaryEn = `Currently in Dhaiya — ${label}. Saturn in ${SIGN_NAMES[saturnSign]}.`;
     statusSummaryHi = `वर्तमान में ढय्या में हैं — ${labelHi}। शनि ${SIGN_NAMES_HI[saturnSign]} में है।`;
   } else if (isInKantaka) {
-    statusSummaryEn = `Currently in Kantaka Shani — ${activeKantakaHouse}th house from ${activeKantakaReference}. Saturn in ${SIGN_NAMES[saturnSign]}.`;
-    statusSummaryHi = `वर्तमान में कंटक शनि में हैं — ${activeKantakaReference === 'moon' ? 'चंद्र' : 'लग्न'} से ${activeKantakaHouse}वाँ। शनि ${SIGN_NAMES_HI[saturnSign]} में है।`;
+    const ordEn = activeKantakaHouse === 1 ? '1st' : activeKantakaHouse === 4 ? '4th' : activeKantakaHouse === 7 ? '7th' : '10th';
+    const ordHi = activeKantakaHouse === 1 ? 'प्रथम (1st)' : activeKantakaHouse === 4 ? 'चतुर्थ (4th)' : activeKantakaHouse === 7 ? 'सप्तम (7th)' : 'दशम (10th)';
+    const refEn = activeKantakaReference === 'moon' ? 'Moon' : 'Lagna';
+    const refHi = activeKantakaReference === 'moon' ? 'जन्म चंद्र' : 'जन्म लग्न';
+    statusSummaryEn = `Currently in Kantaka Shani — ${ordEn} house from ${refEn}. Saturn in ${SIGN_NAMES[saturnSign]}.`;
+    statusSummaryHi = `वर्तमान में कंटक शनि में हैं — ${refHi} से ${ordHi} भाव। शनि ${SIGN_NAMES_HI[saturnSign]} में है।`;
   } else {
     statusSummaryEn = `No major Shani transit affliction currently. Saturn in ${SIGN_NAMES[saturnSign]} — transiting ${12 - ((saturnSign - moonSignIndex + 12) % 12)}th from natal Moon.`;
     statusSummaryHi = `अभी कोई प्रमुख शनि गोचर दोष नहीं है। शनि ${SIGN_NAMES_HI[saturnSign]} में है।`;

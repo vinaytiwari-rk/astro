@@ -130,21 +130,18 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
         <div className="sw-title-left">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <span className="sw-badge sw-badge-warning">
-              {isHi ? 'शास्त्रीय सॉफ्टवेयर महा-संग्रह' : 'Classical Software Workstation'}
-            </span>
-            <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-              Parashara's Light · True Astrology CIL · Kala Software · 11,500 Charts
+              {isHi ? 'शास्त्रीय ज्योतिष कार्यशाला' : 'Classical Astrological Workstation'}
             </span>
           </div>
           <h2>
             {isHi
-              ? 'पाराशर-काला-ट्रू एस्ट्रोलॉजी उन्नत कार्यशाला'
-              : 'Parashara-Kala-True Astrology Master Workstation'}
+              ? 'उन्नत ज्योतिष फलित एवं शोध कार्यशाला'
+              : 'Advanced Vedic Astrology & Research Workstation'}
           </h2>
           <p>
             {isHi
-              ? 'अष्टकवर्ग कक्ष्य गोचर, ताजिक ५० सहम, केपी कस्पल इंटरलिंक्स (CIL 1-2193) एवं सम्पूर्ण भावबल का शास्त्रीय फलादेश फलक।'
-              : 'Mathematical Ashtakavarga Kakshya micro-transits, Tajaka 50 Sahams, KP Cuspal Interlinks (CIL 1-2193) & comprehensive Bhavabala.'}
+              ? 'अष्टकवर्ग कक्ष्य गोचर, ताजिक ५० सहम, केपी कस्पल इंटरलिंक्स एवं सम्पूर्ण भावबल का शास्त्रीय फलादेश फलक।'
+              : 'Mathematical Ashtakavarga Kakshya micro-transits, Tajaka 50 Sahams, KP Cuspal Interlinks & comprehensive Bhavabala.'}
           </p>
         </div>
 
@@ -192,7 +189,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           className={`sw-tab-btn ${activeTab === 'bhavabala' ? 'is-active' : ''}`}
         >
           <Activity className="h-4 w-4" />
-          {isHi ? 'सम्पूर्ण भावबल (Kala Engine)' : 'Bhavabala Engine (Kala Engine)'}
+          {isHi ? 'सम्पूर्ण भावबल' : 'Bhavabala Engine'}
           <span className="sw-tab-badge">{bhavabalaReport.averageRupas} Rupas</span>
         </button>
 
@@ -202,7 +199,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           className={`sw-tab-btn ${activeTab === 'research_charts' ? 'is-active' : ''}`}
         >
           <BookOpen className="h-4 w-4" />
-          {isHi ? '११,५०० शोध पत्रिका बैंक' : '11,500 Research Benchmark Charts'}
+          {isHi ? 'शोध पत्रिका बैंक' : 'Research Benchmark Charts'}
           <span className="sw-tab-badge">{RESEARCH_BENCHMARK_CHARTS.length}</span>
         </button>
       </div>
@@ -877,8 +874,8 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
               <h4>
                 <BookOpen className="h-4 w-4" />
                 {isHi
-                  ? '११,५०० शोध पत्रिका बैंक का उद्देश्य क्या है?'
-                  : 'Purpose of the 11,500 Classical Research Benchmark Charts Bank'}
+                  ? 'शोध पत्रिका बैंक का उद्देश्य क्या है?'
+                  : 'Purpose of the Classical Research Benchmark Charts Bank'}
               </h4>
               <p>
                 {isHi
@@ -926,7 +923,7 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
                       {isHi ? rc.nameHi : rc.name}
                     </h4>
                     <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
-                      {rc.birthInput.city}, {rc.birthInput.country} ({rc.birthInput.time})
+                      {rc.birthInput.city}, {rc.birthInput.country} · {formatDateTimeDmyAmPm(rc.birthInput.date, rc.birthInput.time)}
                     </div>
 
                     <div style={{

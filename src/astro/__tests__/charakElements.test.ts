@@ -17,12 +17,10 @@ describe('Classical Applied Vedic Analytics & Parashari Elements KB', () => {
     expect(DR_CHARAK_BOOK_METADATA.author).toBe('Bharatiya Jyotish Tradition');
     expect(DR_CHARAK_BOOK_METADATA.affiliation).toContain('Bharatiya Vidya Bhavan');
     expect(DR_CHARAK_BOOK_METADATA.pagesOrLength).toContain('518 Pages');
-    expect(DR_CHARAK_BOOK_METADATA.url).toContain('charak-1.pdf');
     expect(DR_CHARAK_BOOK_METADATA.fundamentalAxiomEn).toContain('interplay of three cosmic energies');
 
     expect(FARFARAWAY_SYNTHESIS_METADATA.title).toContain('Basics of Vedic Astrology');
     expect(FARFARAWAY_SYNTHESIS_METADATA.author).toBe('Classical Applied Vedic Analytics');
-    expect(FARFARAWAY_SYNTHESIS_METADATA.url).toContain('farfaraway.co');
     expect(FARFARAWAY_SYNTHESIS_METADATA.scope).toContain('33 Elemental energies');
   });
 

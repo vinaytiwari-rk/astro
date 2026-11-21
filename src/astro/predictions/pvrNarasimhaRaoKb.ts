@@ -33,7 +33,7 @@ export const PVR_NARASIMHA_RAO_BOOK_METADATA: PvrTreatiseMetadata = {
   author: 'Classical Vedic Tradition',
   affiliation: 'Sagar Publications Classical Edition · Comprehensive Vedic Shastra',
   forewordBy: 'Classical Parashari Authority',
-  url: 'https://lakshminarayanlenasia.com/articles/vedic-astrology-an-integrated-approach2.pdf',
+  url: '',
   totalPages: 442,
   partsAndChapters: '6 Major Parts, 37 Comprehensive Chapters, Real-life Illustrative Examples',
   scope: 'The definitive classical manual integrating Parashara, Jaimini, Tajaka, and Shodashavarga (16 divisional charts). Covers Arudha Padas (AL, UL, A1-A12), Special Lagnas (HL, GL, SL), Yogada & Maha Yogada doctrine, Argala & Virodhargala mechanics, Ashtakavarga, Rasi Dashas (Narayana, Shoola, Drig, Sudasa), Gochara Murthi Nirnaya, Birth Time Error Sensitivity, and Classical Remedial Upayas.',

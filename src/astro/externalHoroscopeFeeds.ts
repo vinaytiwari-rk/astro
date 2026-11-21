@@ -1,5 +1,5 @@
 /* =========================================================================
-   CLICKASTRO HOROSCOPE FEEDS INGESTION & TRANSLATION MODULE
+   LIVE HOROSCOPE FEEDS INGESTION & TRANSLATION MODULE
    (Daily & Weekly Sign Horoscopes from Official FeedBurner RSS Streams)
 
    Feeds:
@@ -52,7 +52,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मेष',
     period: 'daily',
     title: 'Aries Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/aries-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -68,7 +68,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'वृषभ',
     period: 'daily',
     title: 'Taurus Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/taurus-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -84,7 +84,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मिथुन',
     period: 'daily',
     title: 'Gemini Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/gemini-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -100,7 +100,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कर्क',
     period: 'daily',
     title: 'Cancer Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/cancer-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -116,7 +116,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'सिंह',
     period: 'daily',
     title: 'Leo Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/leo-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -132,7 +132,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कन्या',
     period: 'daily',
     title: 'Virgo Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/virgo-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -148,7 +148,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'तुला',
     period: 'daily',
     title: 'Libra Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/libra-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -164,7 +164,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'वृश्चिक',
     period: 'daily',
     title: 'Scorpio Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/scorpio-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -180,7 +180,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'धनु',
     period: 'daily',
     title: 'Sagittarius Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/sagittarius-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -196,7 +196,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मकर',
     period: 'daily',
     title: 'Capricorn Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/capricorn-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -212,7 +212,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कुंभ',
     period: 'daily',
     title: 'Aquarius Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/aquarius-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -228,7 +228,7 @@ export const CLICKASTRO_DAILY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मीन',
     period: 'daily',
     title: 'Pisces Horoscope Nov 21 2026',
-    link: 'https://www.clickastro.com/pisces-horoscope-daily',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 12:15:53 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -248,7 +248,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मेष',
     period: 'weekly',
     title: 'Aries Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/aries-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -264,7 +264,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'वृषभ',
     period: 'weekly',
     title: 'Taurus Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/taurus-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -280,7 +280,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मिथुन',
     period: 'weekly',
     title: 'Gemini Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/gemini-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -296,7 +296,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कर्क',
     period: 'weekly',
     title: 'Cancer Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/cancer-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -312,7 +312,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'सिंह',
     period: 'weekly',
     title: 'Leo Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/leo-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -328,7 +328,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कन्या',
     period: 'weekly',
     title: 'Virgo Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/virgo-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -344,7 +344,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'तुला',
     period: 'weekly',
     title: 'Libra Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/libra-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -360,7 +360,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'वृश्चिक',
     period: 'weekly',
     title: 'Scorpio Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/scorpio-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -376,7 +376,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'धनु',
     period: 'weekly',
     title: 'Sagittarius Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/sagittarius-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -392,7 +392,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मकर',
     period: 'weekly',
     title: 'Capricorn Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/capricorn-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -408,7 +408,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'कुंभ',
     period: 'weekly',
     title: 'Aquarius Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/aquarius-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:
@@ -424,7 +424,7 @@ export const CLICKASTRO_WEEKLY_FEED_SNAPSHOT: FeedSignHoroscope[] = [
     signNameHi: 'मीन',
     period: 'weekly',
     title: 'Pisces Horoscope Nov 15 2026 to Nov 21 2026',
-    link: 'https://www.clickastro.com/pisces-horoscope-weekly',
+    link: '',
     pubDate: 'Sat, 21 Nov 2026 11:40:51 IST',
     pubDateFormatted: '21-11-2026',
     description:

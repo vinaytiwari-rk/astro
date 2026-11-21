@@ -1036,14 +1036,14 @@ export function localizeDashaDetailHi(
         : undefined;
 
       const guidanceHi = aifasSub?.isSpecialCrisisAlert
-        ? `[AIFAS संकट चेतावनी] संकटा कालखंड में सतर्कता अनिवार्य है। शास्त्रीय उपाय: ${aifasMaha.remediesHi.join(' ')}`
+        ? `[विशेष शास्त्रीय संकट चेतावनी] संकटा कालखंड में सतर्कता अनिवार्य है। शास्त्रीय उपाय: ${aifasMaha.remediesHi.join(' ')}`
         : `शास्त्रीय उपाय (${aifasMaha.nameHi} - स्वामी ${aifasMaha.lordHi}): ${aifasMaha.remediesHi.join(' ')}`;
 
       const keyEffectsHi = [
         `योगिनी ३६-वर्षीय चक्र: ${aifasMaha.nameHi} महादशा की अवधि ${aifasMaha.years} वर्ष है। ${aifasMaha.lordHi} का नैसर्गिक कारकत्व बिना भाव-स्वामित्व के फलीभूत होता है।`,
         ...(aifasSub ? [`अंतर्दशा अवधि: ${aifasSub.durationStrHi}।`] : []),
         ...(aifasSub?.isSpecialCrisisAlert ? [`उच्च जोखिम चेतावनी: ${aifasMaha.nameHi} में संकटा अंतर्दशा स्वास्थ्य, प्रतिष्ठा व जीवन स्थिरता के लिए संकटकारक मानी गई है।`] : []),
-        `शास्त्रीय ग्रंथ प्रमाण: 'Prediction through Dasha: Yogini & Vimshottari' (AIFAS)।`,
+        `शास्त्रीय ग्रंथ प्रमाण: 'योगिनी एवं विंशोत्तरी दशा पद्धति' (बृहत्पाराशर एवं सर्वार्थ चिंतामणि)।`,
       ];
 
       return {

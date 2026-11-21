@@ -180,8 +180,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 
   const activeRashiItem = rashifalReport[selectedRashiIdx] || rashifalReport[0];
 
-  // ClickAstro Live Feeds State for Home Portal
-  const [portalRashifalSource, setPortalRashifalSource] = useState<'engine' | 'clickastro'>('engine');
+  // Live Web Feeds State for Home Portal
+  const [portalRashifalSource, setPortalRashifalSource] = useState<'engine' | 'live_feeds'>('engine');
   const [portalFeedPeriod, setPortalFeedPeriod] = useState<'daily' | 'weekly'>('daily');
   const [portalFeedStatus, setPortalFeedStatus] = useState<'online' | 'cached'>('cached');
   const [portalFeedItems, setPortalFeedItems] = useState<FeedSignHoroscope[]>(CLICKASTRO_DAILY_FEED_SNAPSHOT);
@@ -316,7 +316,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('parashara-workstation')}>
-              {isHi ? 'पाराशर-काला कार्यशाला (कक्ष्य, CIL, 11500 चार्ट्स)' : 'Parashara-Kala Workstation (CIL & 11,500 Charts)'}
+              {isHi ? 'पाराशर-काला कार्यशाला (कक्ष्य, CIL, भावबल)' : 'Parashara-Kala Workstation (Kakshya & CIL)'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('financial-astrology')}>
               {isHi ? 'शेयर बाजार व इंदु लग्न' : 'Financial Astrology & Indu Lagna'}
@@ -1237,16 +1237,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </button>
               <button
                 type="button"
-                className={`btn btn-sm ${portalRashifalSource === 'clickastro' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setPortalRashifalSource('clickastro')}
-                style={{ fontWeight: portalRashifalSource === 'clickastro' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                className={`btn btn-sm ${portalRashifalSource === 'live_feeds' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setPortalRashifalSource('live_feeds')}
+                style={{ fontWeight: portalRashifalSource === 'live_feeds' ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
                 <Rss size={14} />
                 <span>{isHi ? 'दैनिक व साप्ताहिक गोचर फलादेश (लाइव वेब फीड्स)' : 'Daily & Weekly Gochar Forecast (Live Feeds)'}</span>
               </button>
             </div>
 
-            {portalRashifalSource === 'clickastro' && (
+            {portalRashifalSource === 'live_feeds' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span
                   style={{
@@ -1401,8 +1401,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             </>
           )}
 
-          {/* CLICKASTRO LIVE FEED VIEW */}
-          {portalRashifalSource === 'clickastro' && (
+          {/* LIVE WEB FEED VIEW */}
+          {portalRashifalSource === 'live_feeds' && (
             <div className="oj-rashi-detail-card" style={{ marginTop: '10px' }}>
               <div
                 style={{
@@ -1495,17 +1495,6 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                       {isHi ? `प्रकाशन दिनांक: ${activePortalFeedItem.pubDateFormatted}` : `Published: ${activePortalFeedItem.pubDate}`}
                     </span>
                   </div>
-
-                  <a
-                    href={activePortalFeedItem.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-sm btn-secondary"
-                    style={{ fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <span>{isHi ? 'विस्तृत संदर्भ लिंक' : 'Detailed Reference Link'}</span>
-                    <ExternalLink size={12} />
-                  </a>
                 </div>
 
                 {/* Bilingual Reading */}

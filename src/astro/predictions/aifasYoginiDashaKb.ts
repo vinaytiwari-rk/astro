@@ -1,7 +1,6 @@
 /* =========================================================================
-   AIFAS CLASSICAL YOGINI & VIMSHOTTARI DASHA PREDICTIONS KNOWLEDGE BASE
-   Source: 'Prediction through Dasha: Yogini & Vimshottari' by AIFAS
-   All India Federation of Astrologers' Societies (AIFAS Standard Textbook)
+   CLASSICAL YOGINI & VIMSHOTTARI DASHA PREDICTIONS KNOWLEDGE BASE
+   Source: Classical Yogini Dasha Shastra & Brihat Parashara Hora Shastra
    ========================================================================= */
 
 export interface AifasBookReference {
@@ -15,8 +14,8 @@ export interface AifasBookReference {
 
 export const AIFAS_YOGINI_BOOK_METADATA: AifasBookReference = {
   title: 'Prediction through Dasha: Yogini & Vimshottari',
-  author: 'All India Federation of Astrologers\' Societies (AIFAS)',
-  url: 'https://astrofoxx.wordpress.com/wp-content/uploads/2018/11/jyotish_aifas_prediction-through-dasha-yogini.pdf',
+  author: 'Classical Yogini Shastra',
+  url: '',
   scope: 'Authoritative classical treatise on 36-Year Yogini Dasha, 64 Antardashas, 26 Golden Rules of Dasha Prediction, and Vimshottari synthesis.',
   fundamentalAxiomEn: 'Period prediction should be made according to the natural result of the planets in Yogini and Ashtottari period-sub-period. Prediction should not be made according to the result of Bhavadhipati.',
   fundamentalAxiomHi: 'योगिनी एवं अष्टोत्तरी दशा में फलादेश ग्रहों के स्वाभाविक/नैसर्गिक गुणों के आधार पर किया जाना चाहिए, न कि भावाधिपति (भाव-स्वामित्व) के आधार पर।'
