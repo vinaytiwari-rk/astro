@@ -271,7 +271,26 @@ export function App() {
 
     setCurrentView(target);
     if (sub) setWorkstationSubTab(sub);
+    try {
+      if (window.location.hash !== `#${target}`) {
+        window.location.hash = target;
+      }
+    } catch {
+      // ignore
+    }
   };
+
+  useEffect(() => {
+    const applyHash = () => {
+      const raw = window.location.hash.replace(/^#\/?/, '').trim();
+      if (raw) {
+        navigateTo(raw);
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
 
   const handleApplyBirth = (updated: BirthInput, saveAsNew: boolean) => {
     if (saveAsNew) {
