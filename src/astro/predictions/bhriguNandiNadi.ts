@@ -283,7 +283,7 @@ export function computeBhriguNandiNadi(chart: ChartData): BhriguNandiNadiReport 
     }
   }
 
-  // 6. Specific Nadi Disease Combinations (Nikhil Gupta / BNN Medical)
+  // 6. Specific Nadi Disease Combinations (Classical BNN Medical Sutras)
   const isNadiConnected = (pA: BodyPosition, pB: BodyPosition) =>
     getBnnLinkedPlanets(pA, grahas).some((x) => x.planet.id === pB.id);
 

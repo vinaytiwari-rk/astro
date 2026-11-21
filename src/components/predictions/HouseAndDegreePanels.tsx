@@ -65,87 +65,135 @@ function getHouseSpecificEventAnswers(
   switch (houseNum) {
     case 1:
       return {
-        qHi: 'देह, आरोग्य, दीर्घायु व सामाजिक प्रभाव:',
-        qEn: 'Vitality, Physique, Stature & Social Aura:',
-        aHi: isGood ? 'तेजस्वी व्यक्तित्व, उत्तम आरोग्य एवं समाज में स्वाभाविक नेतृत्व। आयु 24-28 वर्ष में स्वतंत्र पहचान का उदय।' : 'आरंभिक वर्षों में स्वास्थ्य के प्रति सतर्कता आवश्यक; नियमित योगाभ्यास व सूर्य उपासना से सर्वांगीण कल्याण।',
-        aEn: isGood ? 'Radiant persona, robust vitality and commanding leadership. Independent identity peaks at age 24–28.' : 'Cultivate disciplined wellness; Surya Upasana ensures vigorous longevity and immune resilience.',
+        qHi: 'देह, आरोग्य, दीर्घायु, आत्मबल व सामाजिक प्रभाव:',
+        qEn: 'Vitality, Physique, Stature, Willpower & Social Aura:',
+        aHi: isGood
+          ? 'बृहत्पाराशर होराशास्त्र अनुसार लग्नेश की अनुकूल स्थिति से जातक को तेजस्वी व्यक्तित्व, उत्कृष्ट शारीरिक रोग-प्रतिरोधक क्षमता (ओजस) एवं समाज में स्वाभाविक नेतृत्व प्राप्त होता है। आयु २१ से २४ वर्ष में बौद्धिक नींव पूर्ण होती है तथा २६ से २८ वर्ष में समाज में स्वतंत्र पहचान व मान-सम्मान का उत्कर्ष होता है।'
+          : 'प्रारंभिक वर्षों में शारीरिक स्वास्थ्य व मौसमी व्याधियों के प्रति सतर्कता अपेक्षित है। नियमित योगाभ्यास, सूर्य नमस्कार एवं सात्विक दिनचर्या अपनाने से आत्मबल में वृद्धि होती है और आयु २८ के बाद स्थायी स्वावलंबन व आरोग्यता स्थापित होती है।',
+        aEn: isGood
+          ? 'Per Brihat Parashara Hora Shastra, a fortified Lagna lord confers magnetic personality, robust immune vitality (Ojas), and commanding societal leadership. Core intellectual foundation solidifies at age 21–24, followed by independent recognition and executive identity at age 26–28.'
+          : 'Early years warrant attentive wellness care against lifestyle strain. Daily Surya Namaskar, pranayama, and disciplined habits strengthen constitutional vitality, unlocking firm self-reliance and vigor past age 28.',
       };
     case 2:
       return {
-        qHi: 'संचित धन, पैतृक संपत्ति व वाणी:',
-        qEn: 'Accumulated Wealth, Lineage & Speech:',
-        aHi: isGood ? 'स्थायी धन संचय, कुटुंब का सहयोग एवं आयु 28-32 वर्ष में पैतृक व स्व-अर्जित कोष में उल्लेखनीय वृद्धि।' : 'वाणी में कटुता से बचें; वित्तीय योजनाबद्धता व बचत पर ध्यान देने से धन स्थिरता प्राप्त होगी।',
-        aEn: isGood ? 'Steady wealth accumulation, solid family backing & significant wealth multiplication around age 28–32.' : 'Refrain from harsh speech; systematic financial planning safeguards assets.',
+        qHi: 'संचित कोष, पैतृक संपत्ति, वाणी प्रभाव व पारिवारिक सुख:',
+        qEn: 'Accumulated Treasury, Family Heritage, Speech & Stability:',
+        aHi: isGood
+          ? 'आचार्य रामानुजाचार्य कृत भावार्थ रत्नाकर के अनुसार द्वितीयेश की शुभ स्थिति से जातक को स्थायी धन संचय, कुल का पूर्ण सहयोग एवं वाणी में गंभीरता प्राप्त होती है। आयु २७ से २९ वर्ष में प्रथम स्थायी आय स्रोत की स्थापना तथा आयु ३१ से ३४ वर्ष में संचित कोष व पैतृक संपत्ति में उल्लेखनीय वृद्धि होती है।'
+          : 'वाणी में कटुता व अविवेकपूर्ण व्यय से बचाव रखें। सट्टेबाजी व असुरक्षित ऋण देने से बचें; सुव्यवस्थित बजट व अनुशासित बचत से आयु ३२ के पश्चात कोष में स्थायित्व व समृद्धि निर्मित होगी।',
+        aEn: isGood
+          ? 'In accordance with Sri Ramanujacharya’s Bhavartha Ratnakara, a favorable 2nd lord grants disciplined wealth preservation, steadfast family backing, and persuasive speech. A primary stable revenue stream forms at age 27–29, followed by significant treasury expansion during ages 31–34.'
+          : 'Guard against impulsive expenditure and harsh speech. Avoid speculative lending; disciplined budgeting and systematic savings build enduring financial security past age 32.',
       };
     case 3:
       return {
-        qHi: 'पराक्रम, छोटे भाई-बहन व यात्राएं:',
-        qEn: 'Courage, Siblings & Ventures:',
-        aHi: isGood ? 'अदम्य साहस, पुरुषार्थ से भाग्योदय, छोटे भाई-बहनों से स्नेह एवं सफल व्यावसायिक यात्राएं।' : 'अनावश्यक जोखिमपूर्ण निर्णयों से बचें; अपने पराक्रम को एक दिशा में केंद्रित करें।',
-        aEn: isGood ? 'Exceptional valour, self-made enterprise success, warm sibling ties & rewarding travels.' : 'Channel courageous drive constructively; avoid hasty impulse ventures.',
+        qHi: 'पराक्रम, पुरुषार्थ, छोटे भाई-बहन व उद्यम सिद्धि:',
+        qEn: 'Courage, Initiative, Co-born Siblings & Enterprise:',
+        aHi: isGood
+          ? 'कल्याण वर्मा कृत सारावली अनुसार अदम्य पराक्रम, स्वतंत्र पुरुषार्थ से भाग्योदय, छोटे भाई-बहनों से स्नेह एवं सफल व्यावसायिक यात्राएं। आयु २६ से २८ वर्ष में जातक अपने बाहुबल व कौशल से विशिष्ट व्यावसायिक सफलता व पहचान अर्जित करता है।'
+          : 'अनावश्यक जोखिमपूर्ण निर्णयों व जल्दबाजी से बचें। अपनी ऊर्जा को एकाग्र दिशा में लगाएं; भाइयों व सहयोगियों से पारदर्शिता रखने पर पुरुषार्थ का पूर्ण फल प्राप्त होगा।',
+        aEn: isGood
+          ? 'Per Kalyana Varma’s Saravali, dynamic valor, self-made initiative, affectionate sibling ties, and profitable ventures flourish. High enterprise milestones manifest around age 26–28 through personal competence.'
+          : 'Channel energetic initiative constructively; avoid scattered pursuits and impetuous disputes. Transparent collaboration with associates ensures steady fruition of hard work.',
       };
     case 4:
       return {
-        qHi: 'माता का सुख, भूमि-भवन व वाहन योग:',
-        qEn: 'Mother, Real Estate, Vehicle & Inner Peace:',
-        aHi: isGood ? 'माता का आशीर्वाद, आयु 27-31 वर्ष में वाहन सुख एवं 33-37 वर्ष में स्वयं का भव्य गृह निर्माण योग।' : 'पारिवारिक शांति बनाए रखें; आयु 30 के बाद धैर्य व परिश्रम से अचल संपत्ति का निर्माण संभव होगा।',
-        aEn: isGood ? 'Maternal grace, prime vehicle acquisition at age 27–31 and grand home ownership at age 33–37.' : 'Preserve domestic harmony; disciplined savings unlock real estate past age 30.',
+        qHi: 'मातृ सुख, भूमि, भवन, वाहन एवं गृहस्थ शांति:',
+        qEn: 'Maternal Grace, Landed Property, Vehicles & Inner Peace:',
+        aHi: isGood
+          ? 'फलदीपिका अनुसार माता का अगाध आशीर्वाद, पारिवारिक सौख्य, आयु २७ से ३१ वर्ष में मनपसंद वाहन सुख तथा आयु ३३ से ३७ वर्ष में स्वयं के भव्य गृह निर्माण/भूमि अर्जन का प्रबल मांगलिक योग।'
+          : 'पारिवारिक सौहार्द व माता के स्वास्थ्य के प्रति सजग रहें। संपत्ति क्रय-विक्रय में कानूनी जांच पूर्ण रखें; आयु ३२ के पश्चात धैर्य व योजनाबद्ध निवेश से अचल संपत्ति का स्थायी लाभ होगा।',
+        aEn: isGood
+          ? 'Per Phaladeepika, maternal blessings, domestic harmony, prime vehicle acquisition at age 27–31, and grand home or landed property ownership during ages 33–37 are strongly indicated.'
+          : 'Nurture domestic peace and attend to maternal wellness. Exercise legal diligence in real estate documentation; structured patience unlocks solid immovable assets past age 32.',
       };
     case 5:
       return {
-        qHi: 'संतान योग, उच्च विद्या व आकस्मिक लाभ:',
-        qEn: 'Progeny, Higher Intellect & Speculation:',
-        aHi: isGood ? 'कुशाग्र बुद्धि, उच्च शिक्षा में विशिष्ट सफलता, सुयोग्य संतान योग (आयु 26-30 वर्ष) एवं शोध/निवेश से लाभ।' : 'संतान की शिक्षा पर ध्यान दें; सट्टेबाजी व शेयर बाजार में अत्यधिक जोखिम से बचें।',
-        aEn: isGood ? 'Sharp intellect, academic distinction, dutiful progeny around age 26–30 & lucrative analytical gains.' : 'Focus on progeny mentoring; avoid speculative trading without deep research.',
+        qHi: 'संतान योग, उच्च मेधा, विवेक एवं पूर्व पुण्य फलोदय:',
+        qEn: 'Progeny Blessings, Higher Intellect, Wisdom & Purva Punya:',
+        aHi: isGood
+          ? 'बृहत्पाराशर होराशास्त्र अनुसार कुशाग्र बुद्धि, उच्च विद्या में विशिष्ट सम्मान, सुसंस्कृत एवं आज्ञाकारी संतान सुख (आयु २६ से ३० वर्ष) तथा पूर्व जन्म के संचित पुण्यों से संकटों में स्वतः ईश्वरीय मार्गदर्शन।'
+          : 'संतान के अध्ययन व स्वास्थ्य पर सतत ध्यान दें। शेयर बाजार या सट्टे में अत्यधिक जोखिम से बचें; विद्या व ज्ञान के निरंतर संवर्धन से भाग्योदय सुनिश्चित होता है।',
+        aEn: isGood
+          ? 'According to BPHS, keen intellect, academic distinction, dutiful and accomplished progeny around age 26–30, and divine intuition arising from past-life merits (Purva Punya) are assured.'
+          : 'Prioritize progeny mentoring and emotional bonding. Avoid speculative financial gambles; steady scholastic and analytical application steadily elevates status.',
       };
     case 6:
       return {
-        qHi: 'रोग, ऋण, शत्रु विजय व प्रतियोगी परीक्षा:',
-        qEn: 'Debts, Health Immunity, Competition & Victory:',
-        aHi: isGood ? 'शत्रुओं पर पूर्ण विजय, प्रतियोगी परीक्षाओं में उत्कृष्ट सफलता एवं किसी भी ऋण से शीघ्र मुक्ति।' : 'स्वास्थ्य में पाचन व उदर विकारों से बचाव रखें; बिना जांचे किसी को बड़ा उधार न दें।',
-        aEn: isGood ? 'Complete triumph over adversaries, competitive exam success and quick liquidation of liabilities.' : 'Safeguard digestive health; avoid informal unsecured loans to acquaintances.',
+        qHi: 'शत्रु शमन, रोग-प्रतिरोध, ऋण मुक्ति व प्रतियोगी विजय:',
+        qEn: 'Adversary Triumph, Disease Immunity, Debt Relief & Competition:',
+        aHi: isGood
+          ? 'फलदीपिका अनुसार शत्रुओं पर पूर्ण विजय, प्रतियोगी परीक्षाओं एवं साक्षात्कारों में उत्कृष्ट सफलता, ऋणों से त्वरित मुक्ति एवं कार्यक्षेत्र में विरोधियों पर स्वाभाविक वर्चस्व।'
+          : 'पाचन, उदर एवं वात-पित्त संतुलन के प्रति सावधान रहें। बिना लिखा-पढ़ी किसी को बड़ा उधार न दें; नियमित दिनचर्या व सात्विक खानपान से सभी व्याधियों पर नियंत्रण रहेगा।',
+        aEn: isGood
+          ? 'Per Phaladeepika, complete triumph over adversaries, outstanding competitive exam and interview performance, swift liquidation of debts, and effortless professional dominance.'
+          : 'Maintain digestive vigilance and dietary balance. Avoid uncollateralized lending to acquaintances; steady daily regimens protect against chronic inflammation.',
       };
     case 7:
       return {
-        qHi: 'विवाह काल, जीवनसाथी का स्वरूप व दांपत्य:',
-        qEn: 'Marriage Timing, Spouse Persona & Harmony:',
-        aHi: isGood ? 'आयु 25-29 वर्ष में विवाह; जीवनसाथी सुसंस्कृत, बुद्धिमान व पूर्व/उत्तर दिशा से आने का योग।' : 'विवाह में जल्दबाजी न करें; आयु 28 के पश्चात परिपक्वता से दांपत्य में स्थायी मधुरता आएगी।',
-        aEn: isGood ? 'Marriage favoured around age 25–29; spouse is dignified, intelligent & supportive.' : 'Avoid impulsive haste; union after age 28 brings mature, lasting harmony.',
+        qHi: 'विवाह काल, जीवनसाथी का स्वरूप व दांपत्य माधुर्य:',
+        qEn: 'Marriage Timing, Spouse Persona, Partnership & Matrimony:',
+        aHi: isGood
+          ? 'बृहत्पाराशर होराशास्त्र अनुसार आयु २५ से २९ वर्ष में विवाह का सर्वोत्तम योग; जीवनसाथी सुसंस्कृत, बुद्धिमान, रूपवान, प्रतिष्ठित कुल से संबंध रखने वाला एवं वैवाहिक जीवन में परस्पर निष्ठा व समृद्धि देने वाला होगा।'
+          : 'विवाह निर्णय में जल्दबाजी न करें; कुंडली मिलान व आपसी समझ को प्राथमिकता दें। आयु २८ के पश्चात परिपक्वता से दांपत्य में स्थायी स्थायित्व व मधुरता आएगी।',
+        aEn: isGood
+          ? 'Per BPHS, prime auspicious marriage window opens at age 25–29; spouse is cultured, intelligent, dignified, aesthetic, from an honorable lineage, bringing mutual prosperity and harmony.'
+          : 'Avoid impulsive haste in marital alliances; prioritize deep compatibility and shared values. Nuptials past age 28 yield seasoned emotional grounding and lasting companionship.',
       };
     case 8:
       return {
-        qHi: 'अचानक धन लाभ, आयु व गुप्त विद्या:',
-        qEn: 'Sudden Wealth, Longevity & Transformation:',
-        aHi: isGood ? 'दीर्घायु योग (75+ वर्ष), शोध/गूढ़ विज्ञान में रुचि तथा वसीयत या अप्रत्याशित लाभ।' : 'वाहन सावधानी से चलाएं; शनि व महामृत्युंजय मंत्र जप से आयु-आरोग्य की पूर्ण रक्षा होती है।',
-        aEn: isGood ? 'Long life (75+ years), fascination with deep research & sudden windfall gains.' : 'Drive with disciplined care; Maha Mrityunjaya mantra shields health and longevity.',
+        qHi: 'दीर्घायु योग, गूढ़ अनुसंधान, पैतृक लाभ व रूपांतरण:',
+        qEn: 'Longevity Assurance, Occult Depth, Inheritance & Transformation:',
+        aHi: isGood
+          ? 'पृथु यशस् कृत होरासार अनुसार दीर्घायु योग (७५+ वर्ष), गूढ़ विद्याओं, ज्योतिष व शोध में असाधारण रुचि तथा वसीयत, बीमा या अप्रत्याशित स्रोतों से आकस्मिक लाभ का योग।'
+          : 'वाहन सावधानी से चलाएं एवं रात्रि में यात्राओं में सतर्क रहें। भगवान शिव की आराधना व महामृत्युंजय मंत्र जप से आयु-आरोग्य की पूर्ण रक्षा एवं मानसिक शांति प्राप्त होती है।',
+        aEn: isGood
+          ? 'Per Horasara of Prithu Yasas, Full Longevity (Dirghayu 75+ years) is assured, accompanied by deep fascination with occult research, analytics, and unexpected windfall or inheritance gains.'
+          : 'Exercise vehicular caution and avoid late-night road risks. Devotion to Lord Shiva and Maha Mrityunjaya Japa provides an unshakeable protective shield for life and health.',
       };
     case 9:
       return {
-        qHi: 'भाग्य, धर्म, पिता व तीर्थाटन:',
-        qEn: 'Fortune, Dharma, Father & Pilgrimage:',
-        aHi: isGood ? 'ईश्वरीय कृपा से संकटों में स्वतः रक्षा, पिता का आशीर्वाद एवं जीवन में सुदूर तीर्थ यात्राएं।' : 'धर्म-कर्म का मार्ग न छोड़ें; गुरुजनों का आदर करने से भाग्य के अवरोध दूर होते हैं।',
-        aEn: isGood ? 'Divine protection in crises, paternal blessing, and fulfilling spiritual travels.' : 'Stay anchored to ethical dharma; respecting elders steadily unlocks fortune.',
+        qHi: 'भाग्योदय, पिता का आशीष, गुरु कृपा व तीर्थाटन:',
+        qEn: 'Fortune Awakening, Paternal Grace, Dharma & Pilgrimages:',
+        aHi: isGood
+          ? 'बृहत्पाराशर होराशास्त्र अनुसार ईश्वरीय कृपा से संकटों में स्वतः रक्षा, पिता व गुरुजनों का स्नेहमयी मार्गदर्शन, धार्मिक निष्ठा एवं आयु २५, २९ व ३६ वर्ष में महत्वपूर्ण भाग्योदय व पवित्र तीर्थ यात्राएं।'
+          : 'धार्मिक मर्यादाओं व नीति का मार्ग कभी न छोड़ें। पिता एवं वरिष्ठों का सम्मान करने से भाग्य के समस्त अवरोध स्वतः समाप्त होकर उन्नति का मार्ग प्रशस्त होता है।',
+        aEn: isGood
+          ? 'Per BPHS, providential protection in worldly crises, profound paternal blessings, spiritual mentor guidance, and major fortune breakthroughs at ages 25, 29, and 36 alongside sacred travels.'
+          : 'Remain anchored to ethical dharma and truth. Reverence toward parents and spiritual teachers systematically dissolves karmic bottlenecks and unlocks auspicious fortune.',
       };
     case 10:
       return {
-        qHi: 'करियर, पद-प्रतिष्ठा व शासन से लाभ:',
-        qEn: 'Career Authority, Status & Governance:',
-        aHi: isGood ? 'प्रशासनिक अधिकार, नेतृत्व पद एवं आयु 32-36 वर्ष में करियर का ऐतिहासिक उत्कर्ष।' : 'कार्यस्थल की राजनीति से दूर रहें; अपनी कार्यकुशलता से ही स्थायी सम्मान प्राप्त होगा।',
-        aEn: isGood ? 'Commanding executive authority, leadership rank & major zenith around age 32–36.' : 'Steer clear of office gossip; technical expertise ensures lasting prestige.',
+        qHi: 'करियर उत्कर्ष, प्रशासनिक अधिकार, पद-प्रतिष्ठा व शासन लाभ:',
+        qEn: 'Career Zenith, Administrative Authority, Rank & Governance:',
+        aHi: isGood
+          ? 'फलदीपिका एवं सारावली अनुसार प्रशासनिक अधिकार, उच्च प्रबंधकीय पद, नेतृत्व कीर्ति एवं आयु ३० से ३३ वर्ष में पदोन्नति तथा आयु ३६ से ४० वर्ष में करियर का ऐतिहासिक स्वर्णिम उत्कर्ष (Zenith)।'
+          : 'कार्यस्थल की आंतरिक राजनीति व विवादों से दूर रहें। अपनी व्यावसायिक निपुणता व निष्ठा को ही आधार बनाएं; सतत पुरुषार्थ से आयु ३४ के बाद स्थायी पद-प्रतिष्ठा प्राप्त होगी।',
+        aEn: isGood
+          ? 'Per Phaladeepika and Saravali, executive administrative authority, leadership status, institutional honor, decisive promotion at age 30–33, and monumental career zenith during ages 36–40.'
+          : 'Steer clear of office factionalism and workplace gossip. Cultivate technical mastery and professional integrity; consistent effort establishes enduring stature past age 34.',
       };
     case 11:
       return {
-        qHi: 'स्थायी आय, बड़े मित्र व मनोकामना पूर्ति:',
-        qEn: 'Inflow Streams, Elder Siblings & Desires:',
-        aHi: isGood ? 'जीवन में आय के एकाधिक स्थायी स्रोत, प्रभावशाली मित्रों का नेटवर्क व इच्छाओं की पूर्ति।' : 'आय की तुलना में व्यय का अनुपात संतुलित रखें; मित्रों के साथ वित्तीय पारदर्शिता रखें।',
-        aEn: isGood ? 'Multiple streams of income, influential high-status network & fulfillment of aims.' : 'Balance cash outflow against inflow; maintain strict transparency with friends.',
+        qHi: 'स्थायी आय स्रोत, प्रतिष्ठित मित्र, लाभ व महत्वाकांक्षा पूर्ति:',
+        qEn: 'Recurring Income Streams, Elite Network, Gains & Aspirations:',
+        aHi: isGood
+          ? 'भावार्थ रत्नाकर अनुसार जीवन में आय के एकाधिक स्थायी स्रोत, प्रभावशाली व उच्च पदस्थ मित्रों का सहयोग एवं आयु ३२ से ३५ व ४२+ वर्ष में सभी दीर्घकालिक महत्वाकांक्षाओं की पूर्ण सिद्धि।'
+          : 'आय व व्यय के संतुलन पर ध्यान दें। मित्रों के साथ व्यावसायिक लेन-देन में स्पष्टता रखें; विवेकपूर्ण निवेश से वित्तीय समृद्धि निरंतर बढ़ती रहेगी।',
+        aEn: isGood
+          ? 'Per Bhavartha Ratnakara, multiple diversified revenue streams, influential high-status social networks, and full realization of long-cherished life ambitions at ages 32–35 and 42+.'
+          : 'Balance cash retention against operational expenditures. Maintain commercial clarity in shared endeavors with peers; prudent investing compounds wealth steadily.',
       };
     case 12:
       return {
-        qHi: 'विदेश गमन, व्यय व मोक्ष गति:',
-        qEn: 'Foreign Settlement, Expenditure & Moksha:',
-        aHi: isGood ? 'सुदूर विदेश यात्रा, विदेशी कंपनियों/मुद्रा से लाभ अथवा स्थायी निवास (PR) का योग।' : 'अनावश्यक अपव्यय से बचें; रात्रि में ध्यान व प्राणायाम से मानसिक शांति व अनिद्रा से मुक्ति मिलेगी।',
-        aEn: isGood ? 'Foreign travel, lucrative cross-border commerce, or permanent foreign residency.' : 'Curtail impulsive expenses; evening meditation grants deep sleep and serenity.',
+        qHi: 'विदेश गमन, सुदूर व्यापार, व्यय संतुलन, शयन सुख व मोक्ष:',
+        qEn: 'Foreign Settlement, Cross-border Trade, Bed Comfort & Moksha:',
+        aHi: isGood
+          ? 'उत्तर कालामृत अनुसार सुदूर विदेश यात्रा, बहुराष्ट्रीय कंपनियों/विदेशी मुद्रा से प्रचुर लाभ अथवा स्थायी विदेशी निवास (PR) का योग; परोपकारी कार्यों में व्यय तथा अंतर्मुखी आध्यात्मिक शांति।'
+          : 'अनावश्यक दिखावे व अपव्यय पर नियंत्रण रखें। सोने से पूर्व ध्यान, प्राणायाम व सात्विक चिंतन करने से गहरी आरामदायक निद्रा व मानसिक शांति की प्राप्ति होगी।',
+        aEn: isGood
+          ? 'Per Uttara Kalamrita, foreign travel, lucrative cross-border commerce, permanent foreign residency, philanthropic stewardship, and profound inner spiritual contemplation.'
+          : 'Curtail ostentatious expenditure. Evening meditation, pranayama, and detached contemplation grant restorative sleep and mental equanimity.',
       };
     default:
       return { qHi: '', qEn: '', aHi: '', aEn: '' };
@@ -267,120 +315,84 @@ export const HouseWisePanel: React.FC<{
             const tone = h.score >= 75 ? 'high' : h.score >= 55 ? 'mid' : 'low';
             const eventQa = getHouseSpecificEventAnswers(h.houseNumber, h.lordPlanet, h.lordDignity, isHi);
             return (
-              <article key={h.houseNumber} className="domain-card">
-                <div className="domain-top">
+              <article key={h.houseNumber} className="domain-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* 1. Header with House Title & Lord summary */}
+                <div className="domain-top" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '8px', marginBottom: '2px' }}>
                   <div>
-                    <h4>{isHi ? h.titleHi : h.titleEn}</h4>
-                    <div className="muted small-text">
+                    <h4 style={{ margin: 0, fontSize: '15.5px', fontWeight: 700 }}>{isHi ? h.titleHi : h.titleEn}</h4>
+                    <div className="muted small-text" style={{ marginTop: '3px' }}>
                       {trSign(h.signIndex, lang)} · {isHi ? 'भावेश:' : 'Lord:'}{' '}
-                      {trPlanet(h.lordPlanet, lang)} → {t.common.house}{h.lordPlacedHouse} (
-                      {trTerm(h.lordDignity, lang)})
+                      <strong>{trPlanet(h.lordPlanet, lang)}</strong> → {t.common.house}{h.lordPlacedHouse} ({trTerm(h.lordDignity, lang)})
                     </div>
                   </div>
-                  {!simple && (
-                    <div className="domain-score-badge">
-                      <strong className={`mono tone-text-${tone}`}>{h.score}</strong>
-                      <span>/100</span>
-                    </div>
-                  )}
-                </div>
-
-                {!simple && (
-                  <div className="bar-track">
-                    <div className={`bar-fill tone-${tone}`} style={{ width: `${h.score}%` }} />
-                  </div>
-                )}
-
-                <div className="domain-verdict-row">
-                  {!simple && (
-                    <span className={`tag ${
-                      h.score >= 70 ? 'tag-varg' : h.score >= 55 ? 'tag-karaka' : 'tag-combust'
-                    }`}>
-                      {isHi ? h.verdictHi : h.verdictEn}
-                    </span>
-                  )}
-                  <span className="muted small-text mono">
-                    SAV: {h.savBindus} · {isHi ? 'कारक:' : 'Karaka:'} {trPlanet(h.naturalKaraka, lang)}
+                  <span className={`tag ${
+                    h.score >= 70 ? 'tag-varg' : h.score >= 55 ? 'tag-karaka' : 'tag-combust'
+                  }`}>
+                    {isHi ? h.verdictHi : h.verdictEn}
                   </span>
                 </div>
 
-                {/* Classical Sanskrit Bhavam Names */}
-                {h.bhavamNames && h.bhavamNames.length > 0 && (
-                  <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
-                    <span className="muted small-text" style={{ fontSize: '0.75rem' }}>
-                      {isHi ? 'शास्त्रीय संज्ञाएं:' : 'Bhavam Names:'}
-                    </span>
-                    {h.bhavamNames.map((name) => (
-                      <span key={name} className="tag tag-varg" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Sthanas & Sub-Karakas */}
-                <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-                  {h.sthanangal && h.sthanangal.length > 0 && (
-                    <span className="tag tag-karaka" style={{ fontSize: '0.75rem' }}>
-                      {isHi ? 'स्थान:' : 'Sthana:'} {h.sthanangal.join(' · ')}
-                    </span>
-                  )}
-                  {h.subKarakas && h.subKarakas.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {h.subKarakas.map((sk) => (
-                        <span key={sk.domain} className="factor-chip" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
-                          {sk.domain}: <strong>{trPlanet(sk.graha, lang)}</strong>
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                {/* 2. TOP: Rich Decisive Prediction Narrative */}
+                <div style={{
+                  padding: '12px 14px',
+                  background: 'var(--accent-soft)',
+                  borderRadius: 8,
+                  borderLeft: '4px solid var(--accent)',
+                  fontSize: '13.5px',
+                  lineHeight: 1.6,
+                  whiteSpace: 'pre-line',
+                }}>
+                  <strong style={{ color: 'var(--accent)', display: 'block', marginBottom: '4px' }}>
+                    {isHi ? 'प्रामाणिक शास्त्रीय फलादेश (Classical Shastric Reading):' : 'Authoritative Shastric Reading:'}
+                  </strong>
+                  {isHi ? h.synthesisHi : h.synthesisEn}
                 </div>
 
-                <p className="domain-summary" style={{ marginTop: 8 }}>{isHi ? h.synthesisHi : h.synthesisEn}</p>
-                <p className="yoga-desc">
-                  <strong>
-                    {isHi
-                      ? `${h.houseNumber}वें भावेश का ${h.lordPlacedHouse}वें भाव में फल (Karma):`
-                      : `House ${h.houseNumber} Lord in House ${h.lordPlacedHouse} (Karma):`}
-                  </strong>{' '}
-                  {isHi
-                    ? (h.lordPlacementKarmaHi || h.lordReadingHi)
-                    : (h.lordPlacementKarmaEn || h.lordReadingEn)}
-                </p>
-
-                {/* Concrete Event Timing & Prediction Block */}
+                {/* 3. Concrete Event Timing & Prediction Q&A Block */}
                 <div style={{
-                  margin: '10px 0',
-                  padding: '10px 12px',
+                  padding: '12px 14px',
                   background: 'rgba(217, 119, 6, 0.08)',
                   borderLeft: '4px solid #d97706',
-                  borderRadius: 6,
-                  fontSize: '0.88rem',
-                  lineHeight: 1.5,
+                  borderRadius: 8,
+                  fontSize: '13px',
+                  lineHeight: 1.55,
                 }}>
-                  <strong style={{ color: '#b45309' }}>
+                  <strong style={{ color: '#b45309', display: 'block', marginBottom: '4px', fontSize: '13.5px' }}>
                     {isHi ? eventQa.qHi : eventQa.qEn}
                   </strong>
-                  <div style={{ marginTop: 4, color: 'var(--text)' }}>
+                  <div style={{ color: 'var(--text)' }}>
                     {isHi ? eventQa.aHi : eventQa.aEn}
                   </div>
                 </div>
 
-                {/* Sign Archetype & Demeanor */}
+                {/* 4. House Lord's Placement Karma */}
+                <div style={{ fontSize: '13px', lineHeight: 1.5, padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 6 }}>
+                  <strong>
+                    {isHi
+                      ? `${h.houseNumber}वें भावेश का ${h.lordPlacedHouse}वें भाव में फल (Karma): `
+                      : `House ${h.houseNumber} Lord in House ${h.lordPlacedHouse} (Karma): `}
+                  </strong>
+                  <span>
+                    {isHi
+                      ? (h.lordPlacementKarmaHi || h.lordReadingHi)
+                      : (h.lordPlacementKarmaEn || h.lordReadingEn)}
+                  </span>
+                </div>
+
+                {/* 5. Sign Archetype & Demeanor */}
                 {(h.signPersonalityHi || h.signPersonalityEn) && (
                   <div style={{
-                    margin: '8px 0',
                     padding: '8px 10px',
                     background: 'rgba(59, 130, 246, 0.05)',
                     borderLeft: '3px solid #3b82f6',
-                    borderRadius: 4,
-                    fontSize: '0.84rem',
+                    borderRadius: 6,
+                    fontSize: '12.5px',
                     lineHeight: 1.45,
                   }}>
                     <strong>{isHi ? `${trSign(h.signIndex, lang)} राशि का इस भाव में स्वभाव:` : `${h.signNameEn} Sign Archetype in this House:`}</strong>{' '}
                     {isHi ? h.signPersonalityHi : h.signPersonalityEn}
                     {h.signPositiveTrait && (
-                      <div style={{ marginTop: 3, fontSize: '0.78rem' }}>
+                      <div style={{ marginTop: 3, fontSize: '11.5px' }}>
                         <span style={{ color: '#16a34a' }}>+ {isHi ? 'सकारात्मक गुण:' : 'Strengths:'} {h.signPositiveTrait}</span>
                         {' · '}
                         <span style={{ color: '#dc2626' }}>- {isHi ? 'चुनौती:' : 'Shadow:'} {h.signNegativeTrait}</span>
@@ -389,9 +401,9 @@ export const HouseWisePanel: React.FC<{
                   </div>
                 )}
 
-                {/* Occupants with Dignity Relation & Classical Effects */}
+                {/* 6. Occupants with Dignity Relation & Classical Effects */}
                 {h.occupantEffects && h.occupantEffects.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
+                  <div>
                     <div className="small-text" style={{ fontWeight: 600, marginBottom: 4 }}>
                       {isHi ? 'स्थित ग्रहों का शास्त्रीय प्रभाव व संबंध:' : 'Occupant Classical Impacts & Sign Relationship:'}
                     </div>
@@ -402,18 +414,18 @@ export const HouseWisePanel: React.FC<{
                           background: 'rgba(255,255,255,0.03)',
                           border: '1px solid rgba(255,255,255,0.08)',
                           borderRadius: 4,
-                          fontSize: '0.82rem',
+                          fontSize: '12.5px',
                           lineHeight: 1.45,
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                             <strong>{trPlanet(occ.graha, lang)}</strong>
-                            <span className={`tag ${occ.dignityRelation === 'Friend' ? 'tag-varg' : occ.dignityRelation === 'Enemy' ? 'tag-combust' : 'tag-karaka'}`} style={{ fontSize: '0.72rem', padding: '0 4px' }}>
+                            <span className={`tag ${occ.dignityRelation === 'Friend' ? 'tag-varg' : occ.dignityRelation === 'Enemy' ? 'tag-combust' : 'tag-karaka'}`} style={{ fontSize: '11px', padding: '0 4px' }}>
                               {isHi ? (occ.dignityRelation === 'Friend' ? 'मित्र राशि' : occ.dignityRelation === 'Enemy' ? 'शत्रु राशि' : 'सम राशि') : `${occ.dignityRelation} Sign`}
                             </span>
                           </div>
                           <div>{isHi ? occ.generalHi : occ.generalEn}</div>
                           {occ.afflictedHi && (
-                            <div style={{ color: '#dc2626', fontSize: '0.78rem', marginTop: 2 }}>
+                            <div style={{ color: '#dc2626', fontSize: '11.5px', marginTop: 2 }}>
                               {isHi ? 'पीड़ित होने पर: ' + occ.afflictedHi : 'If Afflicted: ' + occ.afflictedEn}
                             </div>
                           )}
@@ -423,49 +435,14 @@ export const HouseWisePanel: React.FC<{
                   </div>
                 )}
 
-                {/* Argala & Virodhargala Mechanics */}
-                {h.pvrArgalaItems && h.pvrArgalaItems.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
-                    <div className="small-text" style={{ fontWeight: 600, marginBottom: 4 }}>
-                      {isHi ? 'अर्गला एवं विरोधागला विश्लेषण (हस्तक्षेप तंत्र):' : 'Argala & Virodhargala Intervention Dynamics:'}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {h.pvrArgalaItems.map((arg, aIdx) => (
-                        <div key={aIdx} style={{
-                          padding: '6px 8px',
-                          background: 'rgba(139, 92, 246, 0.05)',
-                          borderLeft: '3px solid #8b5cf6',
-                          borderRadius: 4,
-                          fontSize: '0.82rem',
-                          lineHeight: 1.45,
-                        }}>
-                          <div>
-                            <strong>{arg.argalaType}:</strong> {arg.argalaPlanets.map((p) => trPlanet(p, lang)).join(', ')} ({arg.nature})
-                            {' · '}
-                            <span style={{ color: arg.isObstructed ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
-                              {arg.isObstructed
-                                ? (isHi ? `अवरुद्ध (भाव ${arg.obstructingHouse} में ${arg.obstructingPlanets.map((p) => trPlanet(p, lang)).join(', ')} द्वारा)` : `Obstructed by H${arg.obstructingHouse} (${arg.obstructingPlanets.join(', ')})`)
-                                : (isHi ? 'निर्बाध (Unobstructed — पूर्ण सक्रिय)' : 'Unobstructed (Active)')}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 2 }}>
-                            {isHi ? arg.manifestationHi : arg.manifestationEn}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Classical Vedic Remedies (Upayas) */}
+                {/* 7. Classical Vedic Remedies (Upayas) */}
                 {(h.remedyMantraHi || h.remedyMantraEn) && (
                   <div style={{
-                    marginTop: 10,
                     padding: '8px 10px',
                     background: 'rgba(234, 179, 8, 0.07)',
                     border: '1px solid rgba(234, 179, 8, 0.3)',
                     borderRadius: 6,
-                    fontSize: '0.84rem',
+                    fontSize: '12.5px',
                     lineHeight: 1.5,
                   }}>
                     <div style={{ fontWeight: 700, color: '#ca8a04', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -487,65 +464,158 @@ export const HouseWisePanel: React.FC<{
                   </div>
                 )}
 
-                {/* Granular Karakatwas & Bhavat Bhavam Significations */}
-                {h.karakatwams && h.karakatwams.length > 0 && (
-                  <details style={{ marginTop: 8, fontSize: '0.83rem' }}>
-                    <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--accent, #d97706)' }}>
-                      {isHi
-                        ? `${h.houseNumber}वें भाव के 30+ सूक्ष्म कारकत्व एवं भावत् भावम् संबंध (विस्तार देखें)`
-                        : `30+ Granular Karakatwas & Derived Relations for House ${h.houseNumber} (Click to expand)`}
-                    </summary>
-                    <div style={{
-                      marginTop: 6,
-                      padding: '8px 10px',
-                      background: 'rgba(0,0,0,0.02)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 4,
-                      maxHeight: 180,
-                      overflowY: 'auto',
-                    }}>
-                      <ol style={{ margin: 0, paddingLeft: 18 }}>
-                        {h.karakatwams.map((k, kIdx) => (
-                          <li key={kIdx} style={{ marginBottom: 2 }}>{k}</li>
-                        ))}
-                      </ol>
+                {/* 8. BOTTOM: Secondary Shastric Calculations & Technical Drawer */}
+                <details style={{ marginTop: '8px', borderTop: '1px dashed var(--border)', paddingTop: '8px' }}>
+                  <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-muted)', fontSize: '12.5px' }}>
+                    {isHi ? 'शास्त्रीय गणना, अष्टकवर्ग एवं तकनीकी आधार (विस्तार देखें)' : 'Astrological Calculations & Technical Details (Click to expand)'}
+                  </summary>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                    {/* Score Bar & SAV */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="small-text muted">{isHi ? 'भाव बल स्कोर:' : 'House Score:'}</span>
+                        <strong className={`mono tone-text-${tone}`}>{h.score}/100</strong>
+                      </div>
+                      <span className="muted small-text mono">
+                        SAV: {h.savBindus} {isHi ? 'बिंदु' : 'bindus'} · {isHi ? 'कारक:' : 'Karaka:'} {trPlanet(h.naturalKaraka, lang)}
+                      </span>
                     </div>
-                  </details>
-                )}
 
-                <div className="small-text muted" style={{ marginTop: 8, lineHeight: 1.5 }}>
-                  <strong>{isHi ? 'भावेश का कार्यात्मक स्वामित्व:' : 'Lord’s Functional House Ownership:'}</strong>{' '}
-                  {isHi ? h.lordFunctionalRolesHi.join(' · ') : h.lordFunctionalRolesEn.join(' · ')}
-                  <div>{isHi ? h.lordFunctionalLordshipNoteHi : h.lordFunctionalLordshipNoteEn}</div>
-                </div>
+                    {!simple && (
+                      <div className="bar-track" style={{ height: '5px' }}>
+                        <div className={`bar-fill tone-${tone}`} style={{ width: `${h.score}%` }} />
+                      </div>
+                    )}
 
-                {(h.chalitShiftNoteHi || h.chalitShiftNoteEn) && (
-                  <div className="gochar-banner is-info">
-                    {isHi ? h.chalitShiftNoteHi : h.chalitShiftNoteEn}
+                    {/* Sthanas & Sub-Karakas */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                      {h.sthanangal && h.sthanangal.length > 0 && (
+                        <span className="tag tag-karaka" style={{ fontSize: '0.75rem' }}>
+                          {isHi ? 'स्थान:' : 'Sthana:'} {h.sthanangal.join(' · ')}
+                        </span>
+                      )}
+                      {h.subKarakas && h.subKarakas.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                          {h.subKarakas.map((sk) => (
+                            <span key={sk.domain} className="factor-chip" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
+                              {sk.domain}: <strong>{trPlanet(sk.graha, lang)}</strong>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Classical Sanskrit Bhavam Names */}
+                    {h.bhavamNames && h.bhavamNames.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+                        <span className="muted small-text" style={{ fontSize: '0.75rem' }}>
+                          {isHi ? 'शास्त्रीय संज्ञाएं:' : 'Bhavam Names:'}
+                        </span>
+                        {h.bhavamNames.map((name) => (
+                          <span key={name} className="tag tag-varg" style={{ fontSize: '0.72rem', padding: '1px 5px' }}>
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Functional Lordship */}
+                    <div className="small-text muted" style={{ lineHeight: 1.45 }}>
+                      <strong>{isHi ? 'भावेश का कार्यात्मक स्वामित्व:' : 'Lord’s Functional Ownership:'}</strong>{' '}
+                      {isHi ? h.lordFunctionalRolesHi.join(' · ') : h.lordFunctionalRolesEn.join(' · ')}
+                      <div>{isHi ? h.lordFunctionalLordshipNoteHi : h.lordFunctionalLordshipNoteEn}</div>
+                    </div>
+
+                    {/* Argala */}
+                    {h.pvrArgalaItems && h.pvrArgalaItems.length > 0 && (
+                      <div>
+                        <div className="small-text" style={{ fontWeight: 600, marginBottom: 4 }}>
+                          {isHi ? 'अर्गला एवं विरोधागला विश्लेषण:' : 'Argala & Virodhargala Dynamics:'}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {h.pvrArgalaItems.map((arg, aIdx) => (
+                            <div key={aIdx} style={{
+                              padding: '5px 7px',
+                              background: 'rgba(139, 92, 246, 0.05)',
+                              borderLeft: '3px solid #8b5cf6',
+                              borderRadius: 4,
+                              fontSize: '11.5px',
+                              lineHeight: 1.4,
+                            }}>
+                              <div>
+                                <strong>{arg.argalaType}:</strong> {arg.argalaPlanets.map((p) => trPlanet(p, lang)).join(', ')} ({arg.nature})
+                                {' · '}
+                                <span style={{ color: arg.isObstructed ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+                                  {arg.isObstructed
+                                    ? (isHi ? `अवरुद्ध (भाव ${arg.obstructingHouse} में ${arg.obstructingPlanets.map((p) => trPlanet(p, lang)).join(', ')} द्वारा)` : `Obstructed by H${arg.obstructingHouse} (${arg.obstructingPlanets.join(', ')})`)
+                                    : (isHi ? 'निर्बाध (Unobstructed — पूर्ण सक्रिय)' : 'Unobstructed (Active)')}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: 2 }}>
+                                {isHi ? arg.manifestationHi : arg.manifestationEn}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {(h.chalitShiftNoteHi || h.chalitShiftNoteEn) && (
+                      <div className="gochar-banner is-info" style={{ fontSize: '12px' }}>
+                        {isHi ? h.chalitShiftNoteHi : h.chalitShiftNoteEn}
+                      </div>
+                    )}
+
+                    {(h.primaryFactorsHi || h.primaryFactorsEn) && (
+                      <div className="small-text" style={{ lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+                        <strong>{isHi ? 'विस्तृत ग्रह-प्रमाण:' : 'Detailed Planetary Evidence:'}</strong>{' '}
+                        {isHi ? h.primaryFactorsHi : h.primaryFactorsEn}
+                      </div>
+                    )}
+
+                    <div className="domain-factors">
+                      <span className="factor-chip">
+                        {isHi ? 'स्थित ग्रह:' : 'Occupants:'}{' '}
+                        {h.occupants.length
+                          ? h.occupants.map((o) => trPlanet(o, lang)).join(', ')
+                          : isHi ? 'रिक्त' : 'None'}
+                      </span>
+                      <span className="factor-chip">
+                        {isHi ? 'दृष्टि:' : 'Aspects:'}{' '}
+                        {h.aspectingPlanets.length
+                          ? h.aspectingPlanets.map((a) => trPlanet(a, lang)).join(', ')
+                          : isHi ? 'कोई नहीं' : 'None'}
+                      </span>
+                    </div>
+
+                    {/* 30+ Granular Karakatwas */}
+                    {h.karakatwams && h.karakatwams.length > 0 && (
+                      <details style={{ marginTop: 4, fontSize: '11.5px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--accent, #d97706)' }}>
+                          {isHi
+                            ? `${h.houseNumber}वें भाव के 30+ सूक्ष्म कारकत्व (विस्तार देखें)`
+                            : `30+ Granular Karakatwas for House ${h.houseNumber} (Click to expand)`}
+                        </summary>
+                        <div style={{
+                          marginTop: 4,
+                          padding: '6px 8px',
+                          background: 'rgba(0,0,0,0.02)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          borderRadius: 4,
+                          maxHeight: 140,
+                          overflowY: 'auto',
+                        }}>
+                          <ol style={{ margin: 0, paddingLeft: 16 }}>
+                            {h.karakatwams.map((k, kIdx) => (
+                              <li key={kIdx} style={{ marginBottom: 2 }}>{k}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      </details>
+                    )}
                   </div>
-                )}
-
-                {(h.primaryFactorsHi || h.primaryFactorsEn) && (
-                  <div className="small-text" style={{ marginTop: 8, lineHeight: 1.55, whiteSpace: 'pre-line' }}>
-                    <strong>{isHi ? 'विस्तृत ग्रह-प्रमाण:' : 'Detailed Planetary Evidence:'}</strong>{' '}
-                    {isHi ? h.primaryFactorsHi : h.primaryFactorsEn}
-                  </div>
-                )}
-
-                <div className="domain-factors">
-                  <span className="factor-chip">
-                    {isHi ? 'स्थित ग्रह:' : 'Occupants:'}{' '}
-                    {h.occupants.length
-                      ? h.occupants.map((o) => trPlanet(o, lang)).join(', ')
-                      : isHi ? 'रिक्त' : 'None'}
-                  </span>
-                  <span className="factor-chip">
-                    {isHi ? 'दृष्टि:' : 'Aspects:'}{' '}
-                    {h.aspectingPlanets.length
-                      ? h.aspectingPlanets.map((a) => trPlanet(a, lang)).join(', ')
-                      : isHi ? 'कोई नहीं' : 'None'}
-                  </span>
-                </div>
+                </details>
               </article>
             );
           })}

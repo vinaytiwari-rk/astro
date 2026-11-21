@@ -146,13 +146,158 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </div>
       </div>
 
+      {/* Domain Quick Dropdown Selector */}
+      <div className="card" style={{ padding: '10px 14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: 600, fontSize: '13px' }}>
+              {isHi ? 'जीवन क्षेत्र चुनें (Select Domain):' : 'Select Life Domain:'}
+            </span>
+            <select
+              aria-label="Select Domain"
+              className="select-compact"
+              value={selectedDomainId}
+              onChange={(e) => setSelectedDomainId(e.target.value)}
+              style={{ minWidth: '240px', fontWeight: 600 }}
+            >
+              <option value="all">{isHi ? 'सभी 6 जीवन क्षेत्र (View All)' : 'All 6 Life Spheres'}</option>
+              {report.domains.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {isHi ? d.titleHi : d.titleEn}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="muted small-text">
+            {isHi
+              ? 'प्रत्येक क्षेत्र में स्पष्ट फलादेश, अनुकूल संकेत, चुनौतियां एवं शास्त्रीय परामर्श दिए गए हैं। दशा और गोचर का समय-फल उनके अलग अनुभागों में है।'
+              : 'Each sphere shows a clear reading, supporting factors, cautions and practical guidance. Dasha and transit timing are shown in their own sections.'}
+          </div>
+        </div>
+      </div>
+
+      {/* Render Domains */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {filteredDomains.map((domain) => (
+          <div key={domain.id} className="card" style={{ padding: '16px' }}>
+            {/* Domain Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'var(--accent)', display: 'flex' }}>
+                  {domainIcons[domain.id] || <Sparkles size={16} />}
+                </span>
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
+                  {isHi ? domain.titleHi : domain.titleEn}
+                </h3>
+              </div>
+
+              <span className="badge badge-subtle">
+                {isHi ? 'संकेतात्मक विश्लेषण' : 'Indicative analysis'}
+              </span>
+            </div>
+
+            <div style={{ padding: '14px 16px', background: 'var(--accent-soft)', borderRadius: '8px', borderLeft: '4px solid var(--accent)', marginBottom: '14px', fontSize: '13.5px', lineHeight: 1.65, whiteSpace: 'pre-line' }}>
+              <div style={{ fontWeight: 700, color: 'var(--accent)', marginBottom: '8px', fontSize: '14px' }}>
+                {isHi ? 'प्रामाणिक शास्त्रीय फलादेश (Core Classical Prophecy):' : 'Authoritative Classical Prediction:'}
+              </div>
+              {isHi ? domain.predictionHi : domain.predictionEn}
+            </div>
+
+            {/* Active Timing Window & Concrete Event Milestones */}
+            {(domain.timingWindowHi || domain.timingWindowEn) && (
+              <div
+                style={{
+                  padding: '10px 14px',
+                  background: 'rgba(217, 119, 6, 0.08)',
+                  borderLeft: '4px solid #d97706',
+                  borderRadius: '6px',
+                  marginBottom: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#b45309', fontWeight: 700, fontSize: '13px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                  <Clock size={14} />
+                  <span>{isHi ? 'सक्रिय फलन समय-सीमा (Timing Window):' : 'Active Manifestation Window:'}</span>
+                  <span style={{ color: 'var(--text)', fontWeight: 600 }}>{isHi ? domain.timingWindowHi : domain.timingWindowEn}</span>
+                </div>
+                {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).length > 0 && (
+                  <div>
+                    <div style={{ fontWeight: 650, fontSize: '12.5px', marginBottom: '4px' }}>
+                      {isHi ? 'ठोस संभावित जीवन घटनाएं (Concrete Predicted Events):' : 'Concrete Manifesting Events:'}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
+                      {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).map((ev, evIdx) => (
+                        <li key={evIdx} style={{ marginBottom: '3px' }}>{ev}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* In-depth Detailed Narrative */}
+            <p style={{ margin: '0 0 14px', fontSize: '13.5px', lineHeight: 1.55 }}>
+              {isHi ? domain.summaryHi : domain.summaryEn}
+            </p>
+
+            {/* Strengths & Watchouts Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', marginBottom: '14px' }}>
+              {/* Key Strengths */}
+              <div style={{ padding: '10px 12px', background: 'var(--good-soft)', borderRadius: '8px', border: '1px solid rgba(21, 128, 61, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--good)', fontWeight: 700, fontSize: '12.5px', marginBottom: '6px' }}>
+                  <CheckCircle size={14} />
+                  <span>{isHi ? 'सकारात्मक पक्ष व अनुकूल प्रभाव' : 'Key Auspicious Strengths'}</span>
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
+                  {(isHi ? domain.keyStrengthsHi : domain.keyStrengthsEn).map((st, sIdx) => (
+                    <li key={sIdx}>{st}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Watchouts & Caution */}
+              <div style={{ padding: '10px 12px', background: 'var(--warn-soft)', borderRadius: '8px', border: '1px solid rgba(180, 83, 9, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--warn)', fontWeight: 700, fontSize: '12.5px', marginBottom: '6px' }}>
+                  <Shield size={14} />
+                  <span>{isHi ? 'सावधानियां एवं चुनौतियां' : 'Areas Requiring Caution'}</span>
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
+                  {(isHi ? domain.watchoutsHi : domain.watchoutsEn).map((wo, wIdx) => (
+                    <li key={wIdx}>{wo}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Practical Guidance */}
+            <div style={{ padding: '8px 12px', background: 'var(--accent-soft)', borderRadius: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+              <div>
+                <strong>{isHi ? 'शास्त्रीय परामर्श व उपाय: ' : 'Classical Guidance & Remedy: '}</strong>
+                <span>{isHi ? domain.classicalAdviceHi : domain.classicalAdviceEn}</span>
+              </div>
+            </div>
+
+            {/* Secondary Technical Factors Drawer */}
+            <details style={{ marginTop: '12px', fontSize: '12px' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-muted)' }}>
+                {isHi ? 'ज्योतिषीय गणना एवं तकनीकी आधार (Astrological Factors & Technical Basis - विस्तार देखें)' : 'Astrological Factors & Technical Basis (Click to expand)'}
+              </summary>
+              <div style={{ marginTop: '8px', padding: '10px 12px', background: 'var(--bg-subtle)', borderRadius: '6px', lineHeight: 1.55 }}>
+                {isHi ? domain.astrologicalFactorsHi : domain.astrologicalFactorsEn}
+              </div>
+            </details>
+          </div>
+        ))}
+      </div>
+
       {/* Comprehensive Shastric Birth Foundations Section */}
       <div className="card" style={{ padding: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <BookOpen size={18} style={{ color: 'var(--accent)' }} />
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
-              {isHi ? 'जन्म पंचांग, नित्या देवी एवं पृथु यशस् नवांश फलादेश' : 'Classical Panchanga, Nitya Devi & Prithu Yasas Navamsha'}
+              {isHi ? 'शास्त्रीय जन्म आधार एवं पंचांगीय गणना (Classical Foundations & Astrological Calculations)' : 'Classical Foundations & Astrological Calculations'}
             </h3>
           </div>
           <span className="badge badge-subtle">
@@ -869,138 +1014,7 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </p>
       </div>
 
-      {/* Domain Quick Dropdown Selector */}
-      <div className="card" style={{ padding: '10px 14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontWeight: 600, fontSize: '13px' }}>
-              {isHi ? 'जीवन क्षेत्र चुनें (Select Domain):' : 'Select Life Domain:'}
-            </span>
-            <select
-              aria-label="Select Domain"
-              className="select-compact"
-              value={selectedDomainId}
-              onChange={(e) => setSelectedDomainId(e.target.value)}
-              style={{ minWidth: '240px', fontWeight: 600 }}
-            >
-              <option value="all">{isHi ? 'सभी 6 जीवन क्षेत्र (View All)' : 'All 6 Life Spheres'}</option>
-              {report.domains.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {isHi ? d.titleHi : d.titleEn}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          <div className="muted small-text">
-            {isHi
-              ? 'प्रत्येक क्षेत्र में स्पष्ट फलादेश, अनुकूल संकेत, चुनौतियां एवं शास्त्रीय परामर्श दिए गए हैं। दशा और गोचर का समय-फल उनके अलग अनुभागों में है।'
-              : 'Each sphere shows a clear reading, supporting factors, cautions and practical guidance. Dasha and transit timing are shown in their own sections.'}
-          </div>
-        </div>
-      </div>
-
-      {/* Render Domains */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {filteredDomains.map((domain) => (
-          <div key={domain.id} className="card" style={{ padding: '16px' }}>
-            {/* Domain Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: 'var(--accent)', display: 'flex' }}>
-                  {domainIcons[domain.id] || <Sparkles size={16} />}
-                </span>
-                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
-                  {isHi ? domain.titleHi : domain.titleEn}
-                </h3>
-              </div>
-
-              <span className="badge badge-subtle">
-                {isHi ? 'संकेतात्मक विश्लेषण' : 'Indicative analysis'}
-              </span>
-            </div>
-
-            <div style={{ padding: '10px 12px', background: 'var(--accent-soft)', borderRadius: '8px', marginBottom: '12px', fontSize: '13.5px', lineHeight: 1.55 }}>
-              <strong>{isHi ? 'फलादेश: ' : 'Prediction: '}</strong>
-              {isHi ? domain.predictionHi : domain.predictionEn}
-            </div>
-
-            {/* Active Timing Window & Concrete Event Milestones */}
-            {(domain.timingWindowHi || domain.timingWindowEn) && (
-              <div
-                style={{
-                  padding: '10px 14px',
-                  background: 'rgba(217, 119, 6, 0.08)',
-                  borderLeft: '4px solid #d97706',
-                  borderRadius: '6px',
-                  marginBottom: '12px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#b45309', fontWeight: 700, fontSize: '13px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                  <Clock size={14} />
-                  <span>{isHi ? 'सक्रिय फलन समय-सीमा (Timing Window):' : 'Active Manifestation Window:'}</span>
-                  <span style={{ color: 'var(--text)', fontWeight: 600 }}>{isHi ? domain.timingWindowHi : domain.timingWindowEn}</span>
-                </div>
-                {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).length > 0 && (
-                  <div>
-                    <div style={{ fontWeight: 650, fontSize: '12.5px', marginBottom: '4px' }}>
-                      {isHi ? 'ठोस संभावित जीवन घटनाएं (Concrete Predicted Events):' : 'Concrete Manifesting Events:'}
-                    </div>
-                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
-                      {((isHi ? domain.concreteEventsHi : domain.concreteEventsEn) || []).map((ev, evIdx) => (
-                        <li key={evIdx} style={{ marginBottom: '3px' }}>{ev}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* In-depth Detailed Narrative */}
-            <p style={{ margin: '0 0 14px', fontSize: '13.5px', lineHeight: 1.55 }}>
-              {isHi ? domain.summaryHi : domain.summaryEn}
-            </p>
-
-            {/* Strengths & Watchouts Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', marginBottom: '14px' }}>
-              {/* Key Strengths */}
-              <div style={{ padding: '10px 12px', background: 'var(--good-soft)', borderRadius: '8px', border: '1px solid rgba(21, 128, 61, 0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--good)', fontWeight: 700, fontSize: '12.5px', marginBottom: '6px' }}>
-                  <CheckCircle size={14} />
-                  <span>{isHi ? 'सकारात्मक पक्ष व अनुकूल प्रभाव' : 'Key Auspicious Strengths'}</span>
-                </div>
-                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
-                  {(isHi ? domain.keyStrengthsHi : domain.keyStrengthsEn).map((st, sIdx) => (
-                    <li key={sIdx}>{st}</li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Watchouts & Caution */}
-              <div style={{ padding: '10px 12px', background: 'var(--warn-soft)', borderRadius: '8px', border: '1px solid rgba(180, 83, 9, 0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--warn)', fontWeight: 700, fontSize: '12.5px', marginBottom: '6px' }}>
-                  <Shield size={14} />
-                  <span>{isHi ? 'सावधानियां एवं चुनौतियां' : 'Areas Requiring Caution'}</span>
-                </div>
-                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5 }}>
-                  {(isHi ? domain.watchoutsHi : domain.watchoutsEn).map((wo, wIdx) => (
-                    <li key={wIdx}>{wo}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Practical Guidance */}
-            <div style={{ padding: '8px 12px', background: 'var(--accent-soft)', borderRadius: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-              <div>
-                <strong>{isHi ? 'शास्त्रीय परामर्श व उपाय: ' : 'Classical Guidance & Remedy: '}</strong>
-                <span>{isHi ? domain.classicalAdviceHi : domain.classicalAdviceEn}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

@@ -12,7 +12,7 @@ export interface Bhavesha144Entry {
 type TupleEntry = [headlineEn: string, headlineHi: string, readingEn: string, readingHi: string, eventEn: string, eventHi: string];
 
 // Complete 12 House Lords x 12 Placed Houses = 144 Classical + Practical Matrix
-// Synthesized from BPHS Ch. 24, Astro Pankaj Seth & Nikhil Gupta references.
+// Synthesized from Brihat Parashara Hora Shastra (BPHS Ch. 24) and Phaladeepika.
 const MATRIX: TupleEntry[][] = [
   // 1st Lord (Lagna Lord) in Houses 1..12
   [
