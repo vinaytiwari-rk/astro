@@ -6,6 +6,7 @@ import {
   Clock,
   Compass,
   Edit3,
+  FileSpreadsheet,
   FileText,
   Globe,
   Heart,
@@ -73,6 +74,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
   const navLinks: Array<{ view: string; sub?: string; labelEn: string; labelHi: string; icon: React.ReactNode }> = [
     { view: 'home', labelEn: 'Home', labelHi: 'होम', icon: <Home size={16} /> },
     { view: 'vedic-horoscope', labelEn: 'Janam Kundli (Horoscope)', labelHi: 'वैदिक जन्म कुंडली', icon: <FileText size={16} /> },
+    { view: 'calculations', labelEn: 'Astrological Calculations', labelHi: 'ज्योतिषीय गणना व तकनीकी विवरण', icon: <FileSpreadsheet size={16} /> },
     { view: 'predictions', sub: 'deep_life', labelEn: 'Prediction', labelHi: 'फलादेश', icon: <Sparkles size={16} /> },
     { view: 'marriage-matching', labelEn: 'Kundali Milan & Vivaha Muhurta', labelHi: 'कुण्डली मिलान व विवाह मुहूर्त', icon: <Heart size={16} /> },
     { view: 'dual-transit', labelEn: 'Live Dual Transit & Event Machine', labelHi: 'द्वि-चक्र गोचर व टाइम मशीन', icon: <Clock size={16} /> },

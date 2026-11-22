@@ -44,6 +44,8 @@ import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalcul
 import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
 import { NumerologyView } from './components/onlinejyotish/NumerologyView';
 import { AstroSageToolsView } from './components/AstroSageToolsView';
+import { CalculationsDossierView } from './components/CalculationsDossierView';
+import { PrasnaMargaWorkstationPanel } from './components/predictions/PrasnaMargaWorkstationPanel';
 import { ParasharaKalaWorkstationPanel } from './components/predictions/ParasharaKalaWorkstationPanel';
 import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
@@ -265,6 +267,12 @@ export function App() {
       target = 'house-wise-prediction';
     } else if (view === 'vedic' || view === 'vedic-horoscope' || view === 'janam-kundli') {
       target = 'vedic-horoscope';
+    } else if (view === 'calculations' || view === 'astrological-calculations') {
+      target = 'calculations';
+    } else if (view === 'prasna-marga') {
+      target = 'prasna-marga';
+    } else if (view === 'beeja-kshetra') {
+      target = 'beeja-kshetra';
     } else if (view === 'festivals' || view === 'festival-calendar') {
       target = 'festivals';
     }
@@ -393,6 +401,15 @@ export function App() {
               />
             )}
 
+            {currentView === 'calculations' && (
+              <CalculationsDossierView
+                chart={chart}
+                activeInput={activeInput}
+                settings={settings}
+                onNavigate={navigateTo}
+              />
+            )}
+
             {currentView === 'kp-horoscope' && (
               <OnlineJyotishKpView
                 chart={chart}
@@ -492,6 +509,20 @@ export function App() {
             {currentView === 'medical-astrology' && (
               <MedicalAstrologyView
                 chart={chart}
+              />
+            )}
+
+            {currentView === 'prasna-marga' && (
+              <PrasnaMargaWorkstationPanel
+                chart={chart}
+                initialSubTab="badhaka"
+              />
+            )}
+
+            {currentView === 'beeja-kshetra' && (
+              <PrasnaMargaWorkstationPanel
+                chart={chart}
+                initialSubTab="progeny"
               />
             )}
 

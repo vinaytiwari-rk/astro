@@ -28,11 +28,7 @@ import {
 import type { ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-export interface PrasnaMargaWorkstationPanelProps {
-  chart: ChartData;
-}
-
-type SubTabKey =
+export type SubTabKey =
   | 'medical'
   | 'progeny'
   | 'badhaka'
@@ -41,11 +37,16 @@ type SubTabKey =
   | 'chakras'
   | 'mundane';
 
-export const PrasnaMargaWorkstationPanel: React.FC<PrasnaMargaWorkstationPanelProps> = ({ chart }) => {
+export interface PrasnaMargaWorkstationPanelProps {
+  chart: ChartData;
+  initialSubTab?: SubTabKey;
+}
+
+export const PrasnaMargaWorkstationPanel: React.FC<PrasnaMargaWorkstationPanelProps> = ({ chart, initialSubTab }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [activeTab, setActiveTab] = useState<SubTabKey>('medical');
+  const [activeTab, setActiveTab] = useState<SubTabKey>(initialSubTab || 'medical');
 
   const report: MasterPrasnaMargaReport = useMemo(() => computeMasterPrasnaMargaReport(chart), [chart]);
 

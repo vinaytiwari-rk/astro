@@ -8,6 +8,7 @@ import {
   Clock,
   Compass,
   Edit3,
+  FileSpreadsheet,
   FileText,
   Heart,
   Home,
@@ -406,7 +407,19 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
-            {/* One Prediction menu with ten independent sub-menus */}
+            {/* 2B. Astrological Calculations & Technical Details — Dedicated Link */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'calculations' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('calculations')}
+              >
+                <FileSpreadsheet size={13} />
+                <span>{isHi ? 'ज्योतिषीय गणना' : 'Calculations'}</span>
+              </button>
+            </li>
+
+            {/* One Prediction menu with pure predictions */}
             <li
               className="oj-nav-item oj-dropdown-parent"
               onMouseEnter={(e) => handleMouseEnter('predictions-menu', e)}
@@ -435,13 +448,9 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जीवन स्तर, स्वर्ण कालखंड, संकट काल व 6 जीवन क्षेत्र' : 'Life Stature, Peak Era & 6 Life Domains'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('predictions', 'specializedVedic')}>
-                    <strong>{isHi ? 'इष्ट देव, वक्री ग्रह, ताराबल व पंच पक्षी' : 'Ishta Dev, Vakri, Tarabalam & Pancha Pakshi'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कारकांश १२वां भाव, वक्री चेष्टा बल, दैनिक ऊर्जा मीटर व २० कुज परिहार' : 'Karakamsha 12th House, Vakri Cheshta Bala, Daily Meter & 20 Kuja Exceptions'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('predictions', 'prasnaMargaSuite')}>
-                    <strong>{isHi ? 'प्रश्न मार्ग, चिकित्सा फलित व बीज-क्षेत्र स्फुट' : 'Prasna Marga, Medical & Beeja-Kshetra'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'रोग परीक्षा (वात-पित्त-कफ), बीज/क्षेत्र स्फुट, बाधक स्थान, त्रिपताकी व मेदिनी' : 'Roga Prasna (Tridosha), Beeja/Kshetra Sphutas, Badhakasthana, Tripataki & Mundane'}</span>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'houseWise')}>
+                    <strong>{isHi ? 'भाववार फलादेश' : 'House-wise Prediction'}</strong>
+                    <span className="oj-dd-sub">{isHi ? '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल' : '1st to 12th House Specific Events & Timing'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
                     <strong>{isHi ? 'दशा फलादेश' : 'Dasha Prediction'}</strong>
@@ -450,10 +459,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   <button type="button" onClick={() => handleLinkClick('predictions', 'gocharWise')}>
                     <strong>{isHi ? 'गोचर फलादेश' : 'Transit Prediction'}</strong>
                     <span className="oj-dd-sub">{isHi ? '12-24 माह का गोचर रोडमैप, गुरु-शनि दोहरा गोचर फल' : '12-24 Month Transit Roadmap & Double Transit'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('predictions', 'houseWise')}>
-                    <strong>{isHi ? 'भाववार फलादेश' : 'House-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल' : '1st to 12th House Specific Events & Timing'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'educationWise')}>
                     <strong>{isHi ? 'शिक्षा व उच्च विद्या फलादेश' : 'Education & Higher Studies'}</strong>
@@ -616,6 +621,18 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   onMouseLeave={handleMenuMouseLeave}
                   style={getDropdownMenuInlineStyle()}
                 >
+                  <button type="button" onClick={() => handleLinkClick('prasna-marga')}>
+                    <strong>{isHi ? 'प्रश्न मार्ग (Prasna Marga)' : 'Prasna Marga (Horary)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'आरूढ़ लग्न, त्रिसफुट, अष्टमंगल प्रश्न व तात्कालिक फल' : 'Arudha, Trisphuta, Ashtamangala & Horary'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('medical-astrology')}>
+                    <strong>{isHi ? 'चिकित्सा फलित (Medical Astrology)' : 'Medical Astrology & Tridosha'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'रोग परीक्षा, वात-पित्त-कफ त्रिदोष व बाधक स्थान' : 'Tridosha Roga Prasna & Organ Vulnerability'}</span>
+                  </button>
+                  <button type="button" onClick={() => handleLinkClick('beeja-kshetra')}>
+                    <strong>{isHi ? 'बीज एवं क्षेत्र स्फुट (Beeja & Kshetra Sphuta)' : 'Beeja & Kshetra Sphutas'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'संतान सुख, पुरुष बीज स्फुट व स्त्री क्षेत्र स्फुट' : 'Fertility Sphutas & Progeny Windows'}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('numerology')}>
                     <strong>{isHi ? 'वैदिक व चालडियन अंकज्योतिष (Numerology)' : 'Vedic & Chaldean Numerology'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'मूलांक, भाग्यांक, नामांक, ३x३ लो-शू ग्रिड व कुआ अंक' : 'Mulank, Bhagyank, Lo Shu Grid, Kua & Name Number'}</span>

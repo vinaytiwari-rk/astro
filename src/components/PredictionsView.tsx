@@ -207,14 +207,12 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     [rawReport, lang, chart]
   );
 
-  // Seven independent prediction systems. Natal and timing-based readings stay separate.
+  // Pure prediction systems. Calculations and specialized horary modules reside in their dedicated workstations.
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
-    { id: 'prasnaMargaSuite', labelEn: 'Prasna Marga & Medical', labelHi: 'प्रश्न मार्ग व चिकित्सा फलित' },
-    { id: 'specializedVedic', labelEn: 'Ishta Dev, Vakri & Bio-Rhythm', labelHi: 'इष्ट देव, वक्री व पंच पक्षी' },
+    { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
-    { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
     { id: 'educationWise', labelEn: 'Education & Higher Studies', labelHi: 'शिक्षा व उच्च विद्या' },
     { id: 'ascendantWise', labelEn: 'Ascendant-wise Prediction', labelHi: 'लग्नवार फलादेश' },
     { id: 'planetInNakshatra', labelEn: 'Nakshatra-wise Prediction', labelHi: 'नक्षत्रवार फलादेश' },

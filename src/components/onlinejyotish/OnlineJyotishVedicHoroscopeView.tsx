@@ -10,7 +10,11 @@ import { computeAvakahadaChakra, computeBhavaChalitPlacements, computeGhatakChak
 import { computeAvasthasAndUpagrahas } from '../../astro/avasthasUpagrahas';
 import { DIVISIONAL_META, NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../../astro/constants';
 import { computeKundaliDoshas } from '../../astro/predictions/familyDoshas';
-import { computeHouseWisePredictions } from '../../astro/predictions/houseWise';
+import {
+  computeIshtaDevata,
+  computePanchaPakshi,
+  computeVakriPlanetsAnalysis,
+} from '../../astro/predictions/specializedVedicEngines';
 import { computeDeepGochar } from '../../astro/predictions/gocharDeep';
 import { computeGemstoneAndRudraksha } from '../../astro/rashifalBabyRudraksha';
 import { formatDateDmy, formatDateTimeDmyAmPm, formatDms } from '../../astro/time';
@@ -56,7 +60,9 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
   const avasthas = useMemo(() => computeAvasthasAndUpagrahas(chart), [chart]);
   const chalit = useMemo(() => computeBhavaChalitPlacements(chart), [chart]);
   const doshas = useMemo(() => computeKundaliDoshas(chart), [chart]);
-  const housePreds = useMemo(() => computeHouseWisePredictions(chart), [chart]);
+  const ishtaReport = useMemo(() => computeIshtaDevata(chart), [chart]);
+  const panchaPakshiReport = useMemo(() => computePanchaPakshi(chart), [chart]);
+  const vakriReport = useMemo(() => computeVakriPlanetsAnalysis(chart), [chart]);
   const todayIso = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const gochar = useMemo(() => computeDeepGochar(chart, todayIso), [chart, todayIso]);
   const gemstones = useMemo(() => computeGemstoneAndRudraksha(chart), [chart]);
@@ -741,61 +747,222 @@ export const OnlineJyotishVedicHoroscopeView: React.FC<OnlineJyotishVedicHorosco
         </div>
       </div>
 
-      {/* Section 14: House-by-House Predictions */}
+      {/* Section 14: Ishta Devata & Dharma Devata */}
       <div className="oj-card">
         <div className="oj-card-header">
-          <h2>{isHi ? '14. द्वादश भाव विस्तृत फलादेश (House-by-House Predictions)' : '14. Detailed House-by-House Predictions'}</h2>
+          <h2>{isHi ? '14. इष्ट देवता, कुलदेवी एवं धर्म देवता निर्णय (Ishta Devata & Divine Lineage)' : '14. Ishta Devata, Kula Devata & Divine Lineage (Jaimini Sutras)'}</h2>
         </div>
-        <div className="oj-predictions-accordion">
-          {housePreds.map((hp) => (
-            <div key={hp.houseNumber} className="oj-pred-house-block">
-              <div className="oj-pred-house-header">
-                <h4>
-                  {isHi ? `${hp.houseNumber}वां भाव (${hp.titleHi}): ${hp.signNameHi} राशि` : `House ${hp.houseNumber} (${hp.titleEn}): ${hp.signNameEn}`}
-                </h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
-                  <span className="oj-house-lord-tag">
-                    {isHi ? `भावेश: ${trPlanet(hp.lordPlanet, lang)} (${hp.lordPlacedHouse}वें भाव में)` : `Lord: ${trPlanet(hp.lordPlanet, lang)} in H${hp.lordPlacedHouse}`}
-                  </span>
-                  {hp.lordNakshatraName && (
-                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(217, 119, 6, 0.12)', color: '#b45309', fontWeight: 600 }}>
-                      {isHi ? `नक्षत्र: ${hp.lordNakshatraName} (पद ${hp.lordPada})` : `Nakshatra: ${hp.lordNakshatraName} (P${hp.lordPada})`}
-                    </span>
-                  )}
-                  {hp.lordBaladiAvasthaHi && (
-                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.12)', color: '#047857', fontWeight: 600 }}>
-                      {isHi ? hp.lordBaladiAvasthaHi : hp.lordBaladiAvasthaEn}
-                    </span>
-                  )}
-                  {hp.lordCombust && (
-                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', color: '#b91c1c', fontWeight: 700 }}>
-                      {isHi ? 'अस्त (Combust)' : 'Combust'}
-                    </span>
-                  )}
-                  {hp.kartariYoga && hp.kartariYoga !== 'None' && (
-                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: hp.kartariYoga === 'Papakartari' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', color: hp.kartariYoga === 'Papakartari' ? '#b91c1c' : '#047857', fontWeight: 700 }}>
-                      {hp.kartariYoga === 'Papakartari' ? (isHi ? 'पापकर्तरी योग' : 'Papakartari') : (isHi ? 'शुभकर्तरी योग' : 'Subhakartari')}
-                    </span>
-                  )}
-                  <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(0,0,0,0.06)', color: 'var(--text-muted, #64748b)', fontWeight: 600 }}>
-                    {isHi ? `SAV (गौण): ${hp.savBindus} बिंदु` : `SAV (Auxiliary): ${hp.savBindus}`}
-                  </span>
-                </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '6px 2px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+            {/* Ishta Devata Card */}
+            <div style={{ padding: '14px 16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #b45309' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: '#b45309' }}>
+                  {isHi ? 'मुख्य इष्ट देवता' : 'Primary Ishta Devata'}
+                </span>
+                <span className="badge" style={{ background: 'rgba(180, 83, 9, 0.12)', color: '#b45309', fontWeight: 650 }}>
+                  {isHi ? `प्रतिनिधि ग्रह: ${ishtaReport.rulingPlanetHi}` : `Planet: ${ishtaReport.rulingPlanetEn}`}
+                </span>
               </div>
-              <div className="oj-pred-house-body">
-                <div style={{ whiteSpace: 'pre-line', lineHeight: '1.65', color: 'var(--text, #1e293b)' }}>
-                  {isHi ? hp.synthesisHi : hp.synthesisEn}
-                </div>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text, #1e293b)', marginBottom: '6px' }}>
+                {isHi ? ishtaReport.ishtaDevataNameHi : ishtaReport.ishtaDevataNameEn}
+              </div>
+              <div style={{ fontSize: '12.5px', fontStyle: 'italic', color: '#b45309', background: 'rgba(180, 83, 9, 0.08)', padding: '6px 10px', borderRadius: '6px', marginBottom: '8px' }}>
+                {ishtaReport.sacredMantra}
+              </div>
+              <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-muted, #64748b)' }}>
+                <strong>{isHi ? 'साधना विधान: ' : 'Upasana Protocol: '}</strong>
+                {isHi ? ishtaReport.upasanaMethodHi : ishtaReport.upasanaMethodEn}
               </div>
             </div>
-          ))}
+
+            {/* Dharma & Kula Devata Card */}
+            <div style={{ padding: '14px 16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #7c3aed' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: '#7c3aed' }}>
+                  {isHi ? 'कारकांश एवं कुलदेवी' : 'Karakamsha & Kula Devata'}
+                </span>
+                <span className="badge" style={{ background: 'rgba(124, 58, 237, 0.12)', color: '#7c3aed', fontWeight: 650 }}>
+                  {isHi ? `कारकांश: ${ishtaReport.karakamshaSignHi}` : `Karakamsha: ${ishtaReport.karakamshaSignEn}`}
+                </span>
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>{isHi ? 'कारकांश से १२वां भाव (मोक्ष द्वार):' : '12th from Karakamsha (Moksha Gateway):'}</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text, #1e293b)' }}>
+                  {isHi ? `${ishtaReport.twelfthHouseSignHi} राशि` : `${ishtaReport.twelfthHouseSignEn} Sign`}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>{isHi ? 'कुलदेवी / कुलदेवता (वंश रक्षा):' : 'Kula Devata (Lineage Protection):'}</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text, #1e293b)' }}>
+                  {isHi ? ishtaReport.kulaDevataHi : ishtaReport.kulaDevataEn}
+                </div>
+              </div>
+              <div style={{ fontSize: '11.5px', marginTop: '10px', color: 'var(--text-muted, #64748b)', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '6px' }}>
+                <strong>{isHi ? 'आत्मकारक (AK): ' : 'Atmakaraka: '}</strong>
+                {isHi ? ishtaReport.atmakarakaNameHi : ishtaReport.atmakarakaNameEn}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ fontSize: '12px', lineHeight: 1.55, background: 'var(--bg-elevated, #ffffff)', padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--border-color, #e2e8f0)', color: 'var(--text-muted, #64748b)' }}>
+            <strong>{isHi ? 'शास्त्रीय आध्यात्मिक महत्त्व: ' : 'Classical Spiritual Significance: '}</strong>
+            {isHi ? ishtaReport.spiritualSignificanceHi : ishtaReport.spiritualSignificanceEn}
+          </div>
         </div>
       </div>
 
-      {/* Section 15: Major Transits Today */}
+      {/* Section 15: Pancha Pakshi Shastra */}
       <div className="oj-card">
         <div className="oj-card-header">
-          <h2>{isHi ? '15. वर्तमान प्रमुख गोचर फल (Live Transits from Moon)' : '15. Major Planetary Transits from Natal Moon'}</h2>
+          <h2>{isHi ? '15. पंच पक्षी सिद्धांत (Pancha Pakshi Bio-Rhythms)' : '15. Pancha Pakshi Shastra (Bio-Rhythmic Energy Cycle)'}</h2>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '6px 2px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+            {/* Bird Profile Card */}
+            <div style={{ padding: '14px 16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #0284c7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: '#0284c7' }}>
+                  {isHi ? 'आपका जन्म पक्षी' : 'Natal Birth Bird'}
+                </span>
+                <span className="badge" style={{ background: 'rgba(2, 132, 199, 0.12)', color: '#0284c7', fontWeight: 650 }}>
+                  {isHi ? panchaPakshiReport.birdNameHi : panchaPakshiReport.birdNameEn} ({isHi ? panchaPakshiReport.pakshaHi : panchaPakshiReport.pakshaEn})
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px', fontSize: '12px' }}>
+                <span className="factor-chip">
+                  {isHi ? 'तत्व:' : 'Element:'} <strong>{panchaPakshiReport.elementEn}</strong>
+                </span>
+                <span className="factor-chip">
+                  {isHi ? 'स्वामी ग्रह:' : 'Ruling Planet:'} <strong>{panchaPakshiReport.rulingPlanetEn}</strong>
+                </span>
+              </div>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.55, color: 'var(--text, #1e293b)' }}>
+                {isHi ? panchaPakshiReport.bioRhythmOverviewHi : panchaPakshiReport.bioRhythmOverviewEn}
+              </div>
+            </div>
+
+            {/* Favorable Days & Guidelines Card */}
+            <div style={{ padding: '14px 16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #16a34a' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: '#16a34a' }}>
+                  {isHi ? 'रणनीतिक मार्गदर्शन' : 'Strategic Timing Guidance'}
+                </span>
+                <span className="badge" style={{ background: 'rgba(22, 163, 74, 0.12)', color: '#16a34a', fontWeight: 650 }}>
+                  {isHi ? 'सर्वोत्तम परिणाम' : 'Optimal Energy'}
+                </span>
+              </div>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.55, marginBottom: '8px' }}>
+                {isHi ? panchaPakshiReport.strategicGuidanceHi : panchaPakshiReport.strategicGuidanceEn}
+              </div>
+              <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-muted, #64748b)' }}>
+                {isHi
+                  ? 'पंच पक्षी शास्त्र अनुसार जब आपका पक्षी "राज्य" अथवा "भोजन" अवस्था में हो, तब किए गए महत्वपूर्ण कार्य, साक्षात्कार, समझौता एवं यात्रा निर्विघ्न सफल होते हैं। "मरण" अवस्था में महत्वपूर्ण निर्णय टालें।'
+                  : 'According to Pancha Pakshi, activities undertaken during Ruling (Rajya) and Eating (Bhojana) phases yield maximum success. Avoid high-stakes ventures during the Dying (Marana) phase.'}
+              </div>
+            </div>
+          </div>
+
+          {/* 5 Activities Matrix Table */}
+          <div className="oj-table-wrapper" style={{ overflowX: 'auto' }}>
+            <table className="oj-table">
+              <thead>
+                <tr>
+                  <th>{isHi ? 'पंच पक्षी अवस्था' : 'Bird Activity'}</th>
+                  <th>{isHi ? 'तमिल नाम' : 'Tamil Name'}</th>
+                  <th>{isHi ? 'शक्ति स्तर' : 'Power Level'}</th>
+                  <th>{isHi ? 'सफलता दर' : 'Success Rate'}</th>
+                  <th>{isHi ? 'अनुकूल कार्य' : 'Ideal For'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {panchaPakshiReport.dailyRhythms.map((act, aIdx) => (
+                  <tr key={aIdx}>
+                    <td><strong>{isHi ? act.stateHi : act.stateEn}</strong></td>
+                    <td className="muted">{act.tamilName}</td>
+                    <td>
+                      <span className="badge" style={{
+                        background: act.powerPercent >= 80 ? 'rgba(22, 163, 74, 0.12)' : act.powerPercent >= 50 ? 'rgba(2, 132, 199, 0.12)' : 'rgba(220, 38, 38, 0.12)',
+                        color: act.powerPercent >= 80 ? '#16a34a' : act.powerPercent >= 50 ? '#0284c7' : '#dc2626',
+                        fontWeight: 650,
+                      }}>
+                        {act.powerPercent}%
+                      </span>
+                    </td>
+                    <td>{act.successRatePercent}%</td>
+                    <td style={{ fontSize: '12px' }}>{isHi ? act.idealForHi : act.idealForEn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 16: Vakri Planets (Retrograde Analysis) */}
+      <div className="oj-card">
+        <div className="oj-card-header">
+          <h2>{isHi ? '16. वक्री ग्रह विशेष विश्लेषण (Retrograde Planets & Cheshta Bala)' : '16. Retrograde Planets Analysis & Cheshta Bala'}</h2>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '6px 2px' }}>
+          {!vakriReport.hasRetrogradePlanets || vakriReport.retrogradeCount === 0 ? (
+            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #16a34a', fontSize: '13px', lineHeight: 1.6 }}>
+              <strong>{isHi ? 'जन्मपत्रिका में कोई ग्रह वक्री नहीं है: ' : 'No Planets Retrograde in Natal Chart: '}</strong>
+              {isHi ? vakriReport.overallSummaryHi : vakriReport.overallSummaryEn}
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: '13px', lineHeight: 1.6, padding: '12px 14px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #ea580c' }}>
+                <div style={{ fontWeight: 700, color: '#ea580c', marginBottom: '4px' }}>
+                  {isHi ? `कुल वक्री ग्रह: ${vakriReport.retrogradeCount}` : `Total Retrograde Planets: ${vakriReport.retrogradeCount}`}
+                </div>
+                <div>{isHi ? vakriReport.overallSummaryHi : vakriReport.overallSummaryEn}</div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                {vakriReport.planets.map((vp) => (
+                  <div key={vp.id} style={{ padding: '14px 16px', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', borderLeft: '4px solid #8b5cf6' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '14.5px', color: '#8b5cf6' }}>
+                        {isHi ? `${vp.nameHi} (वक्री)` : `${vp.nameEn} (Retrograde)`}
+                      </span>
+                      <span className="badge" style={{ background: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6', fontWeight: 650 }}>
+                        {isHi ? `भाव ${vp.currentHouse} (गत भाव ${vp.priorHouse} चेष्टा)` : `H${vp.currentHouse} (Influencing H${vp.priorHouse})`}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '12px' }}>
+                      <span className="factor-chip">
+                        {isHi ? 'चेष्टा स्तर:' : 'Cheshta Level:'} <strong>{vp.cheshtaBalaLevel}</strong>
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.55, marginBottom: '8px', color: 'var(--text, #1e293b)' }}>
+                      <strong>{isHi ? 'पूर्वजन्म कार्मिक संकेत: ' : 'Karmic Indicator: '}</strong>
+                      {isHi ? vp.pastLifeKarmaHi : vp.pastLifeKarmaEn}
+                    </div>
+
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.55, marginBottom: '8px', color: 'var(--text, #1e293b)' }}>
+                      <strong>{isHi ? 'आजीविका व प्रभाव: ' : 'Career & Realization: '}</strong>
+                      {isHi ? vp.careerImpactHi : vp.careerImpactEn}
+                    </div>
+
+                    <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--text-muted, #64748b)', background: 'var(--bg-elevated, #ffffff)', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-color, #e2e8f0)' }}>
+                      <strong>{isHi ? 'शास्त्रीय उपाय: ' : 'Classical Remedy: '}</strong>
+                      {isHi ? vp.remedyHi : vp.remedyEn}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Section 17: Major Transits Today */}
+      <div className="oj-card">
+        <div className="oj-card-header">
+          <h2>{isHi ? '17. वर्तमान प्रमुख गोचर फल (Live Transits from Moon)' : '17. Major Planetary Transits from Natal Moon'}</h2>
         </div>
         <div className="oj-gochar-grid">
           {saturnTransit && (
