@@ -492,10 +492,6 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (वैदिक गोचर व लाइव फीड्स)' : 'Daily & Weekly Rashifal (Vedic Gochar & Live Feeds)'}</strong>
                     <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव गोचर वेब फीड्स' : '5 Life Domains, 12 Signs & Live Gochar Feeds'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
-                    <strong>{isHi ? 'उन्नत फलित एवं शोध कार्यशाला' : 'Advanced Predictive & Research Workstation'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, ताजिक 50 सहम, CIL 1-2193, भावबल व शोध चार्ट्स' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & Research Charts'}</span>
-                  </button>
                 </div>
               )}
             </li>
@@ -755,17 +751,9 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'केपी प्रश्न कुण्डली (1–249)' : 'KP Prashna Horary (1–249)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'तात्कालिक प्रश्न: हाँ/ना/सशर्त उत्तर' : 'Instant Yes/No/Conditional Outcome'}</span>
                   </button>
-                  <button type="button" onClick={() => handleLinkClick('synastry')}>
-                    <strong>{isHi ? 'कुण्डली मिलान व सिनैस्ट्री' : 'Matching & Synastry'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '36 गुण मिलान, दोष भंग एवं सिनैस्ट्री' : 'Ashtakoota & Cross-Chart Overlays'}</span>
-                  </button>
                   <button type="button" onClick={() => handleLinkClick('btr')}>
                     <strong>{isHi ? 'जन्म समय संशोधन (BTR)' : 'Birth Time Rectification (BTR)'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'जीवन घटनाओं से समय सुधार' : 'Event Timeline Calibration'}</span>
-                  </button>
-                  <button type="button" onClick={() => handleLinkClick('medical-astrology')}>
-                    <strong>{isHi ? 'चिकित्सा ज्योतिष व लाल किताब' : 'Medical Astrology & Lal Kitab'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'त्रिदोष, खरेश 22वां द्रेष्काण व फरमान' : 'Tridosha, Kharesh & Lal Kitab Upaya'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('financial-astrology')}>
                     <strong>{isHi ? 'वित्तीय व शेयर बाजार ज्योतिष' : 'Financial & Stock Market Astrology'}</strong>

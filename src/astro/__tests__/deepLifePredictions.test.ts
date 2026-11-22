@@ -8,7 +8,7 @@ describe('Chart-specific General Prediction synthesis', () => {
     const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
       computeDeepLifePredictions(calculateChart(sample, DEFAULT_SETTINGS)),
     );
-    expect(reports.every((report) => report.domains.length === 6)).toBe(true);
+    expect(reports.every((report) => report.domains.length === 12)).toBe(true);
     for (const report of reports) {
       for (const domain of report.domains) {
         expect(domain.astrologicalFactorsEn.length).toBeGreaterThan(80);

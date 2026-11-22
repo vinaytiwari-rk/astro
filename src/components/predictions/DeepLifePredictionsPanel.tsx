@@ -1,18 +1,22 @@
 import React, { useMemo, useState } from 'react';
 import {
   Activity,
-  Crown,
-  Flame,
-  Gem,
   Award,
+  BookOpen,
   Briefcase,
   CheckCircle,
   Clock,
   Coins,
+  Compass,
+  Crown,
+  Flame,
+  Gem,
   Heart,
+  Home,
   Shield,
   Sparkles,
   User,
+  Users,
 } from 'lucide-react';
 import {
   computeDeepLifePredictions,
@@ -35,11 +39,17 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
   const domainIcons: Record<string, React.ReactNode> = {
     personality: <User size={16} />,
-    wealth: <Coins size={16} />,
+    education: <BookOpen size={16} />,
     career: <Briefcase size={16} />,
+    wealth: <Coins size={16} />,
     marriage: <Heart size={16} />,
+    children: <Users size={16} />,
+    property: <Home size={16} />,
     health: <Shield size={16} />,
+    travels: <Compass size={16} />,
     spirituality: <Sparkles size={16} />,
+    milestones: <Award size={16} />,
+    remedies: <Gem size={16} />,
   };
 
   const filteredDomains =
@@ -129,24 +139,24 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </div>
       </div>
 
-      {/* Domain Quick Dropdown Selector */}
-      <div className="card" style={{ padding: '10px 14px' }}>
+      {/* 12 Life Chapters Quick Dropdown & Jump Pills */}
+      <div className="card" style={{ padding: '12px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontWeight: 600, fontSize: '13px' }}>
-              {isHi ? 'जीवन क्षेत्र चुनें (Select Domain):' : 'Select Life Domain:'}
+            <span style={{ fontWeight: 700, fontSize: '13px' }}>
+              {isHi ? 'जीवन अध्याय चुनें (Select Chapter):' : 'Select Life Chapter:'}
             </span>
             <select
               aria-label="Select Domain"
               className="select-compact"
               value={selectedDomainId}
               onChange={(e) => setSelectedDomainId(e.target.value)}
-              style={{ minWidth: '240px', fontWeight: 600 }}
+              style={{ minWidth: '260px', fontWeight: 700 }}
             >
-              <option value="all">{isHi ? 'सभी 6 जीवन क्षेत्र (View All)' : 'All 6 Life Spheres'}</option>
-              {report.domains.map((d) => (
+              <option value="all">{isHi ? 'संपूर्ण जीवन फलादेश — सभी १२ अध्याय (View All 12 Chapters)' : 'Complete Life Horoscope — All 12 Chapters'}</option>
+              {report.domains.map((d, dIdx) => (
                 <option key={d.id} value={d.id}>
-                  {isHi ? d.titleHi : d.titleEn}
+                  {dIdx + 1}. {isHi ? d.titleHi : d.titleEn}
                 </option>
               ))}
             </select>
@@ -154,9 +164,44 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
 
           <div className="muted small-text">
             {isHi
-              ? 'प्रत्येक क्षेत्र में स्पष्ट फलादेश, अनुकूल संकेत, चुनौतियां एवं शास्त्रीय परामर्श दिए गए हैं। दशा और गोचर का समय-फल उनके अलग अनुभागों में है।'
-              : 'Each sphere shows a clear reading, supporting factors, cautions and practical guidance. Dasha and transit timing are shown in their own sections.'}
+              ? 'व्यावसायिक सॉफ़्टवेयर फलादेश: प्रत्येक अध्याय में त्वरित निष्कर्ष, ठोस भविष्यवाणियां, समय-सीमा व अचूक उपाय।'
+              : 'Software-grade report: Executive verdict, concrete predicted events, timing windows and Vedic remedies.'}
           </div>
+        </div>
+
+        {/* Horizontal Quick-Jump Pills for all 12 chapters */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
+          <button
+            type="button"
+            className={`btn btn-xs ${selectedDomainId === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setSelectedDomainId('all')}
+            style={{ fontSize: '11.5px', padding: '4px 8px', borderRadius: '4px', fontWeight: 600 }}
+          >
+            {isHi ? 'सभी १२ अध्याय' : 'All 12 Chapters'}
+          </button>
+          {report.domains.map((d, dIdx) => {
+            const isActive = selectedDomainId === d.id;
+            return (
+              <button
+                key={d.id}
+                type="button"
+                className={`btn btn-xs ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setSelectedDomainId(d.id)}
+                style={{
+                  fontSize: '11.5px',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontWeight: isActive ? 700 : 500,
+                }}
+              >
+                <span>{domainIcons[d.id]}</span>
+                <span>{dIdx + 1}. {isHi ? d.titleHi.split(' ')[0] : d.titleEn.split(' ')[0]}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -175,9 +220,25 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
                 </h3>
               </div>
 
-              <span className="badge badge-subtle">
-                {isHi ? 'संकेतात्मक विश्लेषण' : 'Indicative analysis'}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  className={`badge ${
+                    domain.ratingEn === 'Excellent'
+                      ? 'badge-good'
+                      : domain.ratingEn === 'Very Good'
+                        ? 'badge-accent'
+                        : domain.ratingEn === 'Moderate'
+                          ? 'badge-subtle'
+                          : 'badge-warn'
+                  }`}
+                  style={{ fontWeight: 700 }}
+                >
+                  {isHi ? domain.ratingHi : domain.ratingEn}
+                </span>
+                <span className="badge badge-subtle">
+                  {isHi ? 'वैदिक संहिता फलादेश' : 'Classical Standard'}
+                </span>
+              </div>
             </div>
 
             <div style={{ padding: '14px 16px', background: 'var(--accent-soft)', borderRadius: '8px', borderLeft: '4px solid var(--accent)', marginBottom: '14px', fontSize: '13.5px', lineHeight: 1.65, whiteSpace: 'pre-line' }}>

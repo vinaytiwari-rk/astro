@@ -167,12 +167,18 @@ type DomainConfig = {
   adviceEn: string; adviceHi: string;
 };
 const DOMAINS: DomainConfig[] = [
-  { id: 'personality', titleEn: 'Personality, Vitality & Mind', titleHi: 'व्यक्तित्व, आत्मबल एवं मन', icon: 'user', houses: [1, 5, 9], karakas: ['Sun', 'Moon'], varga: 'D9', adviceEn: 'Use initiative, self-awareness and consistent routines to develop the strengths shown by the chart.', adviceHi: 'कुंडली में दिखने वाली क्षमताओं को आत्मविश्वास, आत्मजागरूकता और नियमित दिनचर्या से विकसित करें।' },
-  { id: 'wealth', titleEn: 'Wealth, Savings & Resources', titleHi: 'धन, बचत एवं संसाधन', icon: 'coins', houses: [2, 11, 5, 9], karakas: ['Jupiter', 'Venus', 'Mercury'], varga: 'D2', adviceEn: 'Build financial stability through disciplined saving, careful budgeting and informed decisions.', adviceHi: 'अनुशासित बचत, सुविचारित बजट और जानकारीपूर्ण निर्णयों से आर्थिक स्थिरता विकसित करें।' },
-  { id: 'career', titleEn: 'Career, Work & Public Role', titleHi: 'करियर, कार्य एवं सामाजिक भूमिका', icon: 'briefcase', houses: [10, 6, 2, 11], karakas: ['Sun', 'Saturn', 'Mercury', 'Jupiter'], varga: 'D10', adviceEn: 'Strengthen professional skills, document achievements and build dependable working relationships.', adviceHi: 'पेशेवर कौशल बढ़ाएं, उपलब्धियों का अभिलेख रखें और भरोसेमंद कार्य-संबंध विकसित करें।' },
-  { id: 'marriage', titleEn: 'Marriage & Relationships', titleHi: 'विवाह एवं संबंध', icon: 'heart', houses: [7, 2, 5, 8], karakas: ['Venus', 'Jupiter'], varga: 'D9', adviceEn: 'Nurture relationships through mutual respect, honest communication and thoughtful compatibility.', adviceHi: 'आपसी सम्मान, स्पष्ट संवाद और समझदारीपूर्ण अनुकूलता से संबंधों को मजबूत बनाएं।' },
-  { id: 'health', titleEn: 'Health, Habits & Resilience', titleHi: 'स्वास्थ्य, आदतें एवं सहनशक्ति', icon: 'shield', houses: [1, 6, 8, 12], karakas: ['Sun', 'Moon', 'Saturn'], varga: 'D30', adviceEn: 'Support vitality with regular sleep, balanced activity, nutritious food and consistent preventive care.', adviceHi: 'नियमित नींद, संतुलित गतिविधि, पौष्टिक भोजन और समयानुसार स्वास्थ्य-जांच से जीवनशक्ति बनाए रखें।' },
-  { id: 'spirituality', titleEn: 'Dharma, Learning & Spirituality', titleHi: 'धर्म, अध्ययन एवं आध्यात्म', icon: 'sparkles', houses: [9, 12, 5, 8], karakas: ['Jupiter', 'Ketu'], varga: 'D20', adviceEn: 'Deepen learning and inner growth through regular study, reflection, service and a steady spiritual practice.', adviceHi: 'नियमित अध्ययन, आत्मचिंतन, सेवा और साधना से ज्ञान तथा आंतरिक विकास को गहराई दें।' },
+  { id: 'personality', titleEn: 'Personality, Vitality & Temperament', titleHi: 'व्यक्तित्व, शारीरिक बनावट व स्वभाव', icon: 'user', houses: [1, 5, 9], karakas: ['Sun', 'Moon'], varga: 'D9', adviceEn: 'Develop natural self-awareness, leadership confidence and consistent physical routines.', adviceHi: 'आत्मविश्वास, आत्मजागरूकता और नियमित दिनचर्या से अपनी अंतर्निहित क्षमताओं को निरंतर निखारें।' },
+  { id: 'education', titleEn: 'Education, Intellect & Field of Study', titleHi: 'शिक्षा, बौद्धिक क्षमता एवं अध्ययन क्षेत्र', icon: 'book', houses: [4, 5, 9], karakas: ['Mercury', 'Jupiter'], varga: 'D24', adviceEn: 'Focus deeply on specialized intellectual mastery, technical competence and structured analytical training.', adviceHi: 'गहन बौद्धिक अध्ययन, तकनीकी दक्षता एवं अनुशासित विश्लेषणात्मक प्रशिक्षण पर ध्यान केंद्रित करें।' },
+  { id: 'career', titleEn: 'Career, Profession & Job vs Business', titleHi: 'आजीविका, करियर, नौकरी बनाम व्यवसाय', icon: 'briefcase', houses: [10, 6, 2, 11], karakas: ['Sun', 'Saturn', 'Mercury', 'Jupiter'], varga: 'D10', adviceEn: 'Build commanding executive competence, document professional milestones and foster dependable institutional alliances.', adviceHi: 'कार्यक्षेत्र में रणनीतिक नेतृत्व विकसित करें, उपलब्धियों का सम्मान करें और स्थायी संस्थागत संबंध बनाएं।' },
+  { id: 'wealth', titleEn: 'Wealth, Savings & Financial Assets', titleHi: 'आर्थिक स्थिति, धन लाभ व संचित संपत्ति', icon: 'coins', houses: [2, 11, 5, 9], karakas: ['Jupiter', 'Venus', 'Mercury'], varga: 'D2', adviceEn: 'Build generational prosperity through disciplined capital accumulation, diversified investments and prudent asset preservation.', adviceHi: 'अनुशासित बचत, सुविचारित वित्तीय निवेश और अचल संपत्ति के संचय से स्थायी आर्थिक संप्रभुता स्थापित करें।' },
+  { id: 'marriage', titleEn: 'Marriage, Spouse & Marital Harmony', titleHi: 'विवाह, दांपत्य जीवन, समय व जीवनसाथी', icon: 'heart', houses: [7, 2, 5, 8], karakas: ['Venus', 'Jupiter'], varga: 'D9', adviceEn: 'Cultivate enduring matrimonial serenity through mutual veneration, transparent dialogue and shared spiritual values.', adviceHi: 'परस्पर आदर, पारदर्शी संवाद और नैतिक जीवन-मूल्यों से दांपत्य जीवन में अखंड माधुर्य व सामंजस्य बनाए रखें।' },
+  { id: 'children', titleEn: 'Children, Progeny & Family Lineage', titleHi: 'संतान सुख, पारिवारिक जीवन एवं कुल वृद्धि', icon: 'users', houses: [5, 9, 2], karakas: ['Jupiter'], varga: 'D7', adviceEn: 'Nurture familial bonds with warmth, instill virtuous ethical values and support children’s natural talents.', adviceHi: 'संतान को उच्च नैतिक संस्कार, गुणवत्तापूर्ण शिक्षा और स्नेहपूर्ण पारिवारिक वातावरण प्रदान करें।' },
+  { id: 'property', titleEn: 'Property, Real Estate & Vehicles', titleHi: 'मकान, भूमि, वाहन एवं भौतिक सुख-साधन', icon: 'home', houses: [4, 11, 2], karakas: ['Mars', 'Venus', 'Saturn'], varga: 'D4', adviceEn: 'Channel capital into tangible real estate, verify legal documentation diligently and maintain home sanctity.', adviceHi: 'ठोस अचल संपत्ति (भूमि/भवन) व प्रतिष्ठित वाहन में पूंजी निवेश करें तथा गृह-शांति का वातावरण बनाए रखें।' },
+  { id: 'health', titleEn: 'Health, Vitality & Disease Prevention', titleHi: 'स्वास्थ्य, शारीरिक संवेदनशीलता एवं रोग निवारण', icon: 'shield', houses: [1, 6, 8, 12], karakas: ['Sun', 'Moon', 'Saturn'], varga: 'D30', adviceEn: 'Preserve physical ojas through circadian rhythm alignment, sattvic nutrition, yogic breathing and preventive screenings.', adviceHi: 'सात्विक आहार, पर्याप्त निद्रा, योग-प्राणायाम और समयानुकूल स्वास्थ्य परीक्षणों से शारीरिक ओज व दीर्घायु सुरक्षित रखें।' },
+  { id: 'travels', titleEn: 'Travels, Foreign Settlement & Location of Rise', titleHi: 'यात्राएं, विदेश गमन एवं भाग्योदय स्थल', icon: 'compass', houses: [9, 12, 3, 7], karakas: ['Moon', 'Rahu', 'Venus'], varga: 'D9', adviceEn: 'Embrace geographic mobility, explore global horizons and channel international connections for life elevation.', adviceHi: 'व्यावसायिक व व्यक्तिगत विकास हेतु देशांतर व विदेश यात्राओं के अवसरों का पूर्ण लाभ उठाएं।' },
+  { id: 'spirituality', titleEn: 'Dharma, Learning & Spirituality', titleHi: 'धर्म, दर्शन, साधना एवं आत्मिक शांति', icon: 'sparkles', houses: [9, 12, 5, 8], karakas: ['Jupiter', 'Ketu'], varga: 'D20', adviceEn: 'Deepen spiritual evolution through sacred scriptural reflection, righteous karma, selfless charity and meditative stillness.', adviceHi: 'ईश्वरीय साधना, परोपकारी कर्म, सात्विक दान और अंतर्मुखी चिंतन से जीवन में परम आत्मिक शांति प्राप्त करें।' },
+  { id: 'milestones', titleEn: 'Golden Milestone Ages of Fortune', titleHi: 'भाग्योदय के स्वर्णिम वर्ष एवं जीवन के प्रमुख पड़ाव', icon: 'award', houses: [1, 9, 10, 11], karakas: ['Sun', 'Jupiter'], varga: 'D1', adviceEn: 'Synchronize major enterprise initiatives with calculated astrological golden milestone windows.', adviceHi: 'अपने जीवन के प्रमुख कार्यों एवं निवेशों को ज्योतिषीय भाग्योदय स्वर्णिम वर्षों के साथ संयोजित करें।' },
+  { id: 'remedies', titleEn: 'Authentic Shastric Remedies & Recommendations', titleHi: 'अचूक शास्त्रीय वैदिक समाधान एवं अनुकूल उपाय', icon: 'sparkles', houses: [1, 5, 9], karakas: ['Jupiter', 'Sun'], varga: 'D9', adviceEn: 'Perform prescribed daily Vedic japa, wear tested auspicious gemstones and observe righteous charitable daana.', adviceHi: 'नियमित इष्ट देव मंत्र जप, शास्त्रसम्मत अनुकूल रत्न धारण एवं निर्दिष्ट वार पर दान से समस्त ग्रह-दोषों का शमन करें।' },
 ];
 const CLASSICAL_PLANETS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
 const CLASSICAL_GRAHAS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
@@ -474,6 +480,219 @@ function synthesizeDeepClassicalDomainPrediction(
         'सुदीर्घ आयु (75+ वर्ष) एवं वृद्धावस्था में मानसिक चेतना व शारीरिक संतुलन की पूर्ण रक्षा।',
       ],
     };
+
+  if (domainId === 'education') {
+    const h4 = getHouseLordDesc(chart, 4);
+    const h5 = getHouseLordDesc(chart, 5);
+    const h9 = getHouseLordDesc(chart, 9);
+    const mercDesc = getPlanetDesc(chart, 'Mercury');
+    const jupDesc = getPlanetDesc(chart, 'Jupiter');
+
+    const predictionHi = `महर्षि पराशर विरचित बृहत्पाराशर होराशास्त्र (अध्याय २४) एवं कल्याण वर्मा कृत 'सारावली' के अनुसार, विद्या, प्रज्ञा एवं बौद्धिक सामर्थ्य का निर्धारण चतुर्थ भाव (औपचारिक विद्या), पंचम भाव (मेधा, विवेक व अंतःप्रज्ञा) एवं नवम भाव (उच्च शोध व दर्शन) से होता है। इस कुंडली में चतुर्थेश (${h4.hi}) एवं पंचमेश (${h5.hi}) की युति/दृष्टि संबंध जातक को गहन विश्लेषणात्मक चिंतन, उत्कृष्ट स्मरण शक्ति तथा उच्च शैक्षणिक योग्यता का वरदान प्रदान करते हैं।\n\nबुध (${mercDesc.hi} - तर्क व विद्या कारक) एवं देवगुरु बृहस्पति (${jupDesc.hi} - ज्ञान व प्रज्ञा कारक) की स्थिति यह स्पष्ट करती है कि जातक सिद्धांत एवं व्यावहारिक अनुप्रयोग दोनों में पारंगत होगा। जातक हेतु तकनीकी, वित्तीय प्रबंधन, प्रशासनिक सेवा, न्याय शास्त्र अथवा वैज्ञानिक शोध का क्षेत्र सर्वाधिक फलदायी सिद्ध होगा।\n\nशास्त्रीय शैक्षणिक फलोदय काल: आयु १८ से २१ वर्ष में स्नातक स्तरीय अध्ययन में विशिष्ट सफलता, आयु २२ से २५ वर्ष में व्यावसायिक प्रमाणन, प्रतियोगी परीक्षा अथवा उच्च उपाधि (Master's / Ph.D.) की प्राप्ति होती है।`;
+
+    const predictionEn = `Under Maharishi Parashara's BPHS (Ch. 24) and Kalyana Varma's Saravali, intellectual competence and academic trajectory are shaped by the 4th house (formal learning), 5th house (intellect and insight), and 9th house (higher research). In this chart, the synergistic alignment of 4th lord (${h4.en}) and 5th lord (${h5.en}) grants profound analytical depth, sharp retention, and scholastic excellence.\n\nThe disposition of Mercury (${mercDesc.en} - analytical logic) and Jupiter (${jupDesc.en} - wisdom and discrimination) confirms intellectual versatility. The native thrives exceptionally in technology, management, administration, finance, or higher research.\n\nClassical Academic Milestones: Ages 18–21 mark foundational scholastic excellence; ages 22–25 witness competitive examination triumph, specialized professional accreditation, or advanced postgraduate credentials.`;
+
+    const summaryEn = `${config.titleEn}: ${toneEn} indications across houses ${config.houses.join(', ')}. Synthesizes 4th and 5th lords, Mercury-Jupiter matrix, and Chaturvimshamsha (D24) academic strengths.`;
+    const summaryHi = `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं। चतुर्थेश, पंचमेश, नवमेश, बुध-गुरु प्रभाव एवं चतुर्विंशांश (D24) विद्या बल का शास्त्रीय फलादेश।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Age 18 to 25 (Scholastic excellence, competitive credentials & intellectual mastery)',
+      timingWindowHi: 'आयु 18 से 25 वर्ष (शैक्षणिक उत्कर्ष, प्रतियोगी परीक्षाओं में सफलता एवं बौद्धिक प्रतिष्ठा)',
+      concreteEventsEn: [
+        'Age 18–21: Scholastic distinction in undergraduate studies and deep intellectual validation.',
+        'Age 22–25: Competitive exam breakthrough, professional accreditation or prestigious Master’s degree.',
+        'Lifelong analytical acumen and respected intellectual authority in chosen discipline.',
+      ],
+      concreteEventsHi: [
+        'आयु 18-21 वर्ष: स्नातक स्तर के अध्ययन में विशिष्ट सम्मान एवं बौद्धिक नींव का सुदृढ़ीकरण।',
+        'आयु 22-25 वर्ष: प्रतियोगी परीक्षाओं में सफलता, व्यावसायिक प्रमाणन अथवा उच्च शोध उपाधि।',
+        'आजीवन तीक्ष्ण विश्लेषणात्मक क्षमता एवं समाज में एक विद्वान व प्रबुद्ध व्यक्ति के रूप में प्रतिष्ठा।',
+      ],
+    };
+  }
+
+  if (domainId === 'children') {
+    const h5 = getHouseLordDesc(chart, 5);
+    const h9 = getHouseLordDesc(chart, 9);
+    const jupDesc = getPlanetDesc(chart, 'Jupiter');
+
+    const predictionHi = `महर्षि पराशर विरचित बृहत्पाराशर होराशास्त्र एवं मंत्रेश्वर कृत 'फलदीपिका' के अनुसार, संतान सुख, वंश परंपरा एवं कुल वृद्धि का विचार पंचम भाव (सुत स्थान) एवं नैसर्गिक पुत्रकारक देवगुरु बृहस्पति से किया जाता है। कुंडली में पंचमेश (${h5.hi}) एवं नवमेश (${h9.hi}) का शुभ प्रभाव जातक को सुयोग्य, आज्ञाकारी, बुद्धिमान एवं कुल की कीर्ति बढ़ाने वाली संतान का पूर्ण सुख प्रदान करता है।\n\nबृहस्पति (${jupDesc.hi}) की शुभ दृष्टि यह सुनिश्चित करती है कि संतान उच्च संस्कारों से युक्त होगी और शिक्षा व कार्यक्षेत्र में उत्कृष्ट सफलता प्राप्त कर माता-पिता का नाम रोशन करेगी। जातक को संतान के माध्यम से मानसिक संतोष, कुल का विस्तार एवं वृद्धावस्था में पूर्ण भावनात्मक संबल प्राप्त होगा।\n\nशास्त्रीय संतान फलोदय काल: विवाह उपरांत आयु २७ से ३१ वर्ष में प्रथम संतान का अत्यंत मांगलिक योग बनता है। संतान के जन्म से जातक के भाग्य में वृद्धि एवं पारिवारिक ऐश्वर्य का विस्तार होता है।`;
+
+    const predictionEn = `Under Maharishi Parashara's BPHS and Mantreswara's Phaladeepika, progeny blessings and ancestral continuation are evaluated through the 5th house (Suta Bhava) and natural significator Jupiter. The harmonious disposition of 5th lord (${h5.en}) and 9th lord (${h9.en}) endows the native with virtuous, intellectually gifted, and devoted children.\n\nJupiter (${jupDesc.en}) guarantees that progeny will uphold noble values, achieve scholastic and professional distinction, and elevate family prestige. The native experiences deep domestic fulfillment and dependable generational support.\n\nClassical Progeny Milestones: The primary auspicious window for child blessing activates during ages 27–31. The advent of children heralds accelerated familial prosperity and enduring fortune.`;
+
+    const summaryEn = `${config.titleEn}: ${toneEn} indications across houses ${config.houses.join(', ')}. Synthesizes 5th and 9th lords, Putrakaraka Jupiter, and Saptamsha (D7) progeny dynamics.`;
+    const summaryHi = `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं। पंचमेश, नवमेश, पुत्रकारक गुरु एवं सप्तांश (D7) संतान सुख का शास्त्रीय फलादेश।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Age 27 to 32 (Auspicious progeny blessings, domestic joy & family expansion)',
+      timingWindowHi: 'आयु 27 से 32 वर्ष (संतान प्राप्ति का मांगलिक योग, पारिवारिक उल्लास व कुल वृद्धि)',
+      concreteEventsEn: [
+        'Age 27–31: Blessing of virtuous, healthy and intellectually gifted first child.',
+        'Children attain scholastic honors, sound moral character and bring societal pride to clan.',
+        'Enduring emotional bonding and steadfast generational support into mature years.',
+      ],
+      concreteEventsHi: [
+        'आयु 27-31 वर्ष: कुलदीपक, स्वस्थ एवं संस्कारवान प्रथम संतान का मांगलिक जन्म।',
+        'संतान की शैक्षणिक व चारित्रिक उन्नति तथा समाज में परिवार के गौरव में वृद्धि।',
+        'प्रौढ़ावस्था में संतान द्वारा आदर, स्नेह एवं पूर्ण पारिवारिक व भावनात्मक संबल की प्राप्ति।',
+      ],
+    };
+  }
+
+  if (domainId === 'property') {
+    const h4 = getHouseLordDesc(chart, 4);
+    const h11 = getHouseLordDesc(chart, 11);
+    const marsDesc = getPlanetDesc(chart, 'Mars');
+    const venDesc = getPlanetDesc(chart, 'Venus');
+
+    const predictionHi = `बृहत्पाराशर होराशास्त्र (अध्याय २४) एवं आचार्य वराहमिहिर कृत 'बृहज्जातक' के अनुसार, भूमि, भवन, वाहन एवं अचल संपत्ति का आधिपत्य चतुर्थ भाव (सुख एवं मातृ स्थान) के अधीन होता है। कुंडली में चतुर्थेश (${h4.hi}) एवं एकादशेश (${h11.hi}) का प्रभाव जातक को अपने जीवन में एक से अधिक अचल संपत्तियों (भूमि/भवन) तथा प्रतिष्ठित वाहनों के स्वामी बनने का प्रबल योग निर्मित करता है।\n\nमंगल (${marsDesc.hi} - भूमि कारक) एवं शुक्र (${venDesc.hi} - वाहन व भौतिक ऐश्वर्य कारक) की कृपा से जातक को आकर्षक गृह, सुसज्जित आवास तथा आधुनिक सुख-साधनों से युक्त वाहन का सुख निरंतर प्राप्त होगा। पैतृक संपत्ति से भी लाभ की संभावना है और स्व-अर्जित संपत्ति जीवन में स्थिरता प्रदान करेगी।\n\nशास्त्रीय संपत्ति फलोदय काल: आयु २८ से ३१ वर्ष में प्रथम स्वतंत्र प्रतिष्ठित वाहन का अर्जन, तथा आयु ३१ से ३५ वर्ष में अपने निजी स्वतंत्र भवन/फ्लैट अथवा मूल्यवान भूमि का मांगलिक क्रय संपन्न होता है।`;
+
+    const predictionEn = `In BPHS (Ch. 24) and Brihat Jataka, real estate, residential dwelling, and vehicular conveyances are governed by the 4th house. The dignified alignment of 4th lord (${h4.en}) and 11th lord (${h11.en}) guarantees substantial immovable property, home ownership, and prestigious vehicular assets.\n\nMars (${marsDesc.en} - land significator) and Venus (${venDesc.en} - luxury vehicles and comfort) ensure aesthetically pleasing residential architecture and seamless conveyance comforts. Immovable capital provides rock-solid domestic sovereignty.\n\nClassical Property Milestones: Ages 28–31 bring acquisition of a major personal vehicle; ages 31–35 inaugurate the purchase or construction of an independent home, apartment, or prime real estate holding.`;
+
+    const summaryEn = `${config.titleEn}: ${toneEn} indications across houses ${config.houses.join(', ')}. Synthesizes 4th lord, Mars-Venus real estate karakatwas, and Chaturthamsha (D4) assets.`;
+    const summaryHi = `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं। चतुर्थेश, लाभेश, भूमि कारक मंगल, वाहन कारक शुक्र एवं चतुर्थांश (D4) संपत्ति का शास्त्रीय फलादेश।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Age 28 to 35 (Acquisition of personal vehicle, independent home & prime real estate)',
+      timingWindowHi: 'आयु 28 से 35 वर्ष (नवीन वाहन सुख, स्वतंत्र भवन निर्माण अथवा भूमि क्रय का योग)',
+      concreteEventsEn: [
+        'Age 28–31: Acquisition of comfortable, prestigious personal vehicle and conveyance ease.',
+        'Age 31–35: Landmark purchase or construction of independent residence / prime residential property.',
+        'Long-term capital appreciation and domestic security anchored in tangible landed assets.',
+      ],
+      concreteEventsHi: [
+        'आयु 28-31 वर्ष: प्रतिष्ठित स्वतंत्र वाहन का मांगलिक अर्जन एवं सुख-सुविधाओं का विस्तार।',
+        'आयु 31-35 वर्ष: अपने निजी स्वतंत्र भवन/मकान का निर्माण अथवा मूल्यवान अचल संपत्ति का क्रय।',
+        'स्थायी अचल संपत्ति के संचय से पारिवारिक जीवन में अखंड सुरक्षा एवं ऐश्वर्य की स्थापना।',
+      ],
+    };
+  }
+
+  if (domainId === 'travels') {
+    const h9 = getHouseLordDesc(chart, 9);
+    const h12 = getHouseLordDesc(chart, 12);
+    const h3 = getHouseLordDesc(chart, 3);
+    const moonDesc = getPlanetDesc(chart, 'Moon');
+    const rahuDesc = getPlanetDesc(chart, 'Rahu');
+
+    const predictionHi = `कल्याण वर्मा कृत 'सारावली' एवं पृथु यशस् विरचित 'होरासार' के अनुसार, तीर्थ यात्राएं, देशांतर प्रवास एवं विदेश गमन का मुख्य संचालन नवम भाव (लंबी यात्राएं), द्वादश भाव (विदेश/दूरस्थ भूमि) एवं तृतीय भाव (लघु यात्राएं) से होता है। कुंडली में नवमेश (${h9.hi}) एवं द्वादशेश (${h12.hi}) का संबंध यह स्पष्ट करता है कि जातक को जीवन में सुदूर यात्राओं, विदेशों से संपर्क तथा जन्मस्थान से दूर कार्य करने पर असाधारण भाग्योदय प्राप्त होता है।\n\nचंद्र (${moonDesc.hi} - गतिशीलता कारक) एवं राहु (${rahuDesc.hi} - विदेशी व सीमा पार संपर्क कारक) का प्रभाव जातक को बहुसांस्कृतिक वातावरण में सहजता, अंतरराष्ट्रीय व्यावसायिक अवसरों से लाभ तथा पवित्र तीर्थ स्थलों की शुभ यात्राएं प्रदान करता है।\n\nशास्त्रीय प्रवास फलोदय काल: आयु २४ से २८ वर्ष में उच्च शिक्षा अथवा करियर के सिलसिले में जन्मस्थान से दूर प्रवास का योग बनता है। आयु ३३ से ३८ वर्ष में विदेश यात्रा, अंतरराष्ट्रीय अनुबंध अथवा सुदूर क्षेत्रों से बड़े पैमाने पर धनोपार्जन होता है।`;
+
+    const predictionEn = `Under Kalyana Varma's Saravali and Prithu Yasas in Horasara, long-distance journeys, relocations, and foreign settlements are ruled by the 9th, 12th, and 3rd houses. The synergy between 9th lord (${h9.en}) and 12th lord (${h12.en}) confirms that relocations away from birthplace accelerate professional ascent and fortune.\n\nMoon (${moonDesc.en} - mobility) and Rahu (${rahuDesc.en} - foreign domains) endow the native with cross-cultural adaptability, international professional exposure, and auspicious spiritual pilgrimages.\n\nClassical Travel Milestones: Ages 24–28 initiate professional/educational relocations away from native roots; ages 33–38 open lucrative foreign contracts, overseas journeys, and global commercial recognition.`;
+
+    const summaryEn = `${config.titleEn}: ${toneEn} indications across houses ${config.houses.join(', ')}. Synthesizes 9th and 12th lords, Moon-Rahu cross-border indicators, and Navamsha foreign links.`;
+    const summaryHi = `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं। नवमेश, द्वादशेश, चंद्र-राहु गतिशीलता सूत्र एवं विदेश भाग्योदय का शास्त्रीय फलादेश।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Age 24 to 38 (Relocation away from birthplace, foreign travels & cross-border expansion)',
+      timingWindowHi: 'आयु 24 से 38 वर्ष (जन्मस्थान से दूर भाग्योदय, देशांतर प्रवास व विदेश यात्राओं से लाभ)',
+      concreteEventsEn: [
+        'Age 24–28: Educational or professional relocation away from birthplace unlocking rapid growth.',
+        'Age 33–38: International journeys, lucrative overseas alliances or cross-border professional roles.',
+        'Rewarding spiritual pilgrimages to sacred teerthas yielding deep inner elevation.',
+      ],
+      concreteEventsHi: [
+        'आयु 24-28 वर्ष: शिक्षा अथवा आजीविका हेतु जन्मस्थान से दूर देशांतर प्रवास, जिससे भाग्योदय का मार्ग खुले।',
+        'आयु 33-38 वर्ष: विदेश यात्राएं, अंतरराष्ट्रीय संपर्क अथवा विदेशी अनुबंधों से प्रचुर आर्थिक लाभ।',
+        'सिद्ध तीर्थ स्थलों की पवित्र यात्राएं, जिससे मानसिक शांति एवं आत्मिक बल में वृद्धि हो।',
+      ],
+    };
+  }
+
+  if (domainId === 'milestones') {
+    const h1 = getHouseLordDesc(chart, 1);
+    const h9 = getHouseLordDesc(chart, 9);
+    const h10 = getHouseLordDesc(chart, 10);
+    const h11 = getHouseLordDesc(chart, 11);
+
+    const predictionHi = `महर्षि पराशर विरचित बृहत्पाराशर होराशास्त्र एवं भृगु संहिता के ग्रह परिपक्वता (Planetary Maturation) सूत्रों के अनुसार, प्रत्येक जातक के जीवन में निश्चित स्वर्णिम पड़ाव होते हैं जब भाग्य, कर्म एवं पुरुषार्थ मिलकर ऐतिहासिक उत्कर्ष प्रदान करते हैं। इस कुंडली में लग्नेश (${h1.hi}), नवमेश (${h9.hi}), दशमेश (${h10.hi}) एवं एकादशेश (${h11.hi}) जीवन के निम्नलिखित प्रमुख वर्षों को भाग्योदय के स्वर्णिम काल के रूप में निर्धारित करते हैं:\n\n• आयु २२ से २५ वर्ष: विद्या की पूर्णता, प्रारंभिक करियर में प्रवेश एवं स्वावलंबन का उदय।\n• आयु २६ से २९ वर्ष: विवाह संस्कार, सामाजिक प्रतिष्ठा में वृद्धि एवं प्रथम स्थायी संपत्ति/वाहन प्राप्ति।\n• आयु ३२ से ३६ वर्ष: महा-भाग्योदय स्वर्ण कालखंड—कार्यक्षेत्र में सर्वोच्च पदोन्नति, नेतृत्व अधिकार, स्थायी भवन निर्माण एवं वित्तीय समृद्धि।\n• आयु ४० से ४६ वर्ष: व्यावसायिक साम्राज्य का विस्तार, संचित पूंजी का बहुगुणा निवेश एवं सामाजिक प्रभाव की चरम सीमा।\n• आयु ५० वर्ष उपरांत: संस्थागत मार्गदर्शक की भूमिका, परोपकारी कीर्ति एवं आत्मिक संतुष्टि।`;
+
+    const predictionEn = `Under the authoritative planetary maturation doctrines of Maharishi Parashara's BPHS and Bhrigu Samhita, destiny unfolds across pivotal chronological milestones. The unified matrix of Lagna lord (${h1.en}), 9th lord (${h9.en}), 10th lord (${h10.en}), and 11th lord (${h11.en}) delineates the definitive Golden Milestones of life:\n\n• Ages 22–25: Educational culmination, initial professional entry and founding of financial independence.\n• Ages 26–29: Auspicious matrimony, rising social honor and establishment of permanent domestic anchors.\n• Ages 32–36: Peak Golden Rise Era—commanding executive promotion, home construction, and compounding wealth.\n• Ages 40–46: Enterprise expansion, multi-fold investment yield, and broad societal influence.\n• Ages 50+: Institutional advisory status, philanthropic legacy and profound philosophical serenity.`;
+
+    const summaryEn = `${config.titleEn}: ${toneEn} indications across houses ${config.houses.join(', ')}. Synthesizes Parashari maturation cycles, Lagna-Bhagya-Karma-Labha axes, and Golden Milestones.`;
+    const summaryHi = `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं। पराशरीय ग्रह परिपक्वता सिद्धांत, लग्न, भाग्य, कर्म व लाभ भावों का समन्वित स्वर्णिम कालक्रम।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Ages 24, 28, 32, 36, 42 (Pivotal Golden Milestones of fortune, authority & wealth)',
+      timingWindowHi: 'आयु 24, 28, 32, 36, 42 वर्ष (भाग्योदय के निर्णायक स्वर्णिम मील के पत्थर)',
+      concreteEventsEn: [
+        'Ages 22–25: Foundational career establishment and emergence of personal financial autonomy.',
+        'Ages 28–32: Matrimony, domestic grounding, independent asset acquisition and social esteem.',
+        'Ages 36–42: Zenith of executive authority, compounding capital wealth and enduring community legacy.',
+      ],
+      concreteEventsHi: [
+        'आयु 22-25 वर्ष: आजीविका की सुदृढ़ स्थापना एवं स्वावलंबी आर्थिक जीवन का प्रथम शुभ शंखनाद।',
+        'आयु 28-32 वर्ष: शुभ विवाह संस्कार, गृहस्थ सुख, स्वतंत्र संपत्ति क्रय एवं सामाजिक मान-सम्मान।',
+        'आयु 36-42 वर्ष: करियर का सर्वोच्च उत्कर्ष, संचित पूंजी का बहुगुणा विस्तार एवं ऐतिहासिक कीर्ति।',
+      ],
+    };
+  }
+
+  if (domainId === 'remedies') {
+    const lagnaLord = SIGNS[chart.ascendant.signIndex]?.lord || 'Mars';
+    const ninthLord = SIGNS[(chart.ascendant.signIndex + 8) % 12]?.lord || 'Jupiter';
+    const fifthLord = SIGNS[(chart.ascendant.signIndex + 4) % 12]?.lord || 'Sun';
+
+    const GEM_MAP: Record<string, { hi: string; en: string; metalHi: string; metalEn: string; fingerHi: string; fingerEn: string }> = {
+      Sun: { hi: 'माणिक्य (Ruby)', en: 'Ruby', metalHi: 'स्वर्ण या तांबा', metalEn: 'Gold or Copper', fingerHi: 'अनामिका', fingerEn: 'Ring Finger' },
+      Moon: { hi: 'मोती (Pearl)', en: 'Pearl', metalHi: 'चांदी', metalEn: 'Silver', fingerHi: 'कनिष्ठिका', fingerEn: 'Little Finger' },
+      Mars: { hi: 'मूंगा (Red Coral)', en: 'Red Coral', metalHi: 'तांबा या स्वर्ण', metalEn: 'Copper or Gold', fingerHi: 'अनामिका', fingerEn: 'Ring Finger' },
+      Mercury: { hi: 'पन्ना (Emerald)', en: 'Emerald', metalHi: 'स्वर्ण या कांस्य', metalEn: 'Gold or Bronze', fingerHi: 'कनिष्ठिका', fingerEn: 'Little Finger' },
+      Jupiter: { hi: 'पुखराज (Yellow Sapphire)', en: 'Yellow Sapphire', metalHi: 'स्वर्ण या पीतल', metalEn: 'Gold or Brass', fingerHi: 'तर्जनी', fingerEn: 'Index Finger' },
+      Venus: { hi: 'हीरा / ओपल (Diamond/Opal)', en: 'Diamond or Opal', metalHi: 'चांदी या प्लैटिनम', metalEn: 'Silver or Platinum', fingerHi: 'मध्यमा या अनामिका', fingerEn: 'Middle or Ring Finger' },
+      Saturn: { hi: 'नीलम / नीली (Blue Sapphire/Amethyst)', en: 'Blue Sapphire or Amethyst', metalHi: 'पंचधातु या चांदी', metalEn: 'Panchadhatu or Silver', fingerHi: 'मध्यमा', fingerEn: 'Middle Finger' },
+    };
+
+    const lagnaGem = GEM_MAP[lagnaLord] || GEM_MAP['Sun'];
+    const bhagyaGem = GEM_MAP[ninthLord] || GEM_MAP['Jupiter'];
+
+    const predictionHi = `अग्नि पुराण, गरुड़ पुराण एवं महर्षि पराशर विरचित बृहत्पाराशर होराशास्त्र के अनुसार, कुंडली के अनिष्ट प्रभावों का शमन तथा शुभ ग्रहों के बल संवर्धन हेतु त्रिविध शास्त्रीय उपचार (रत्न, मंत्र एवं दान) सर्वोत्तम सिद्ध होते हैं:\n\n१. जीवन रत्न (Life Stone): लग्नेश (${GRAHA_NAMES_HI[lagnaLord] || lagnaLord}) को बलवान करने हेतु ${lagnaGem.hi} को ${lagnaGem.metalHi} में बनवाकर शुभ शुक्ल पक्ष के दिन ${lagnaGem.fingerHi} उंगली में धारण करना जातक के स्वास्थ्य, आत्मबल एवं सामाजिक ओज को अभेद्य सुरक्षा प्रदान करता है।\n\n२. भाग्य रत्न (Lucky Stone): नवमेश (${GRAHA_NAMES_HI[ninthLord] || ninthLord}) का रत्न ${bhagyaGem.hi} धारण करने से भाग्य की रुकावटें स्वतः दूर होती हैं और कार्यों में त्वरित सफलता मिलती है।\n\n३. अचूक वैदिक मंत्र जप: प्रतिदिन प्रातः स्नानोपरांत गायत्री मंत्र अथवा अपने इष्ट देव के बीज मंत्र का १०८ बार शांत चित्त से जप करने पर संपूर्ण ग्रह-बाधाएं शांत होकर मानसिक शांति की प्राप्ति होती है।\n\n४. शास्त्रीय दान (Daana): शनिवार को निराश्रितों को तिल, उड़द या अन्न का दान, तथा गुरुवार को गौमाता को हरा चारा या चना दाल अर्पित करना अत्यंत कल्याणकारी सिद्ध होगा।`;
+
+    const predictionEn = `Under the sacred authority of the Agni Purana, Garuda Purana, and BPHS, neutralizing planetary afflictions and amplifying auspicious fortunes require the threefold Vedic protocol of Gemstones, Mantras, and Charity:\n\n1. Life Stone (Jeevan Ratna): To empower Lagna lord (${lagnaLord}), wearing ${lagnaGem.en} set in ${lagnaGem.metalEn} on the ${lagnaGem.fingerEn} during Shukla Paksha strengthens vital immunity, mental fortitude, and societal stature.\n\n2. Fortune Stone (Bhagya Ratna): Wearing ${bhagyaGem.en} for the 9th lord (${ninthLord}) clears karmic impediments and triggers auspicious opportunities.\n\n3. Vedic Japa: Daily recitation of the Gayatri Mantra or Ishta Devata Beej Mantra (108 repetitions) dissolves subtle negative energetic currents and installs psychological serenity.\n\n4. Charitable Daana: Donating food, sesame, or warm clothing on Saturdays to the needy and offering green fodder or lentils on Thursdays yield profound karmic merit.`;
+
+    const summaryEn = `${config.titleEn}: Auspicious Shastric Remedial Prescriptions. Synthesizes Lagna-Bhagya gemstones, Vedic Mantras, Rudraksha, and weekly charity.`;
+    const summaryHi = `${config.titleHi}: प्रामाणिक शास्त्रीय वैदिक उपचार संहिता। लग्नेश-नवमेश रत्न, वैदिक मंत्र जप, रुद्राक्ष एवं वार अनुसार दान का अचूक फलादेश।`;
+
+    return {
+      predictionEn,
+      predictionHi,
+      summaryEn,
+      summaryHi,
+      timingWindowEn: 'Lifelong practice (Gemstone consecration during auspicious Shukla Paksha muhurta)',
+      timingWindowHi: 'आजीवन अनुपालन (शुभ शुक्ल पक्षीय मुहूर्त में रत्न धारण व नित्य मंत्र साधना)',
+      concreteEventsEn: [
+        `Consecration of Life Stone (${lagnaGem.en}) & Fortune Stone (${bhagyaGem.en}) for sustained vitality.`,
+        'Daily 108 repetitions of sacred Gayatri / Ishta Devata Beej Mantra for spiritual shielding.',
+        'Weekly charitable donations on designated planetary weekdays mitigating all karmic obstacles.',
+      ],
+      concreteEventsHi: [
+        `विधि-विधानपूर्वक जीवन रत्न (${lagnaGem.hi}) एवं भाग्य रत्न (${bhagyaGem.hi}) का शुभ मुहूर्त में धारण।`,
+        'प्रतिदिन १०८ बार इष्ट देव बीज मंत्र अथवा गायत्री मंत्र का नित्य पाठ, जिससे आत्मिक बल बढ़े।',
+        'अनुकूल वार पर निराश्रितों को अन्न, वस्त्र व जल का नियमित दान, जिससे समस्त ग्रह-दोष शांत हों।',
+      ],
+    };
+  }
+
+
   }
 
   // spirituality
