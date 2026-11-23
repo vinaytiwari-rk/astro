@@ -46,7 +46,23 @@ import { detectClassicalYogas, type DetectedClassicalYoga } from './classicalYog
 import { computeDinaMrityuAndRoga, type DinaMrityuRogaResult } from './dinaMrityuRoga';
 import { computeTwelveBhavaAndParivartanaYogas, type TwelveBhavaAndParivartanaReport } from './twelveBhavaYogas';
 import { computeBadhakaAndFunctionalDoshas, type BadhakaAndFunctionalDoshaReport } from './badhakaAndKendradhipatya';
-export type { DinaMrityuRogaResult, TwelveBhavaAndParivartanaReport, BadhakaAndFunctionalDoshaReport };
+import {
+  computeComprehensiveChikitsaReport,
+  type ComprehensiveChikitsaReport,
+  type SpecificDiseaseAlert,
+  type ProgenyDiagnosticReport,
+  type VulnerableOrganSystem,
+} from './medicalAstrologyEngine';
+export type {
+  DinaMrityuRogaResult,
+  TwelveBhavaAndParivartanaReport,
+  BadhakaAndFunctionalDoshaReport,
+  ComprehensiveChikitsaReport,
+  SpecificDiseaseAlert,
+  ProgenyDiagnosticReport,
+  VulnerableOrganSystem,
+};
+export { computeComprehensiveChikitsaReport };
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -180,6 +196,7 @@ export interface DeepLifePredictionsReport {
   dinaMrityuRoga: DinaMrityuRogaResult;
   twelveBhavaYogas: TwelveBhavaAndParivartanaReport;
   badhakaDosha: BadhakaAndFunctionalDoshaReport;
+  chikitsaReport: ComprehensiveChikitsaReport;
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
   lifeStatureClassEn?: string;
@@ -1633,7 +1650,51 @@ export function computePurusharthaBalance(chart: ChartData): PurusharthaReport {
 
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
   const classicalYogas = detectClassicalYogas(chart);
+  const chikitsaReport = computeComprehensiveChikitsaReport(chart);
   const domains = DOMAINS.map((config) => buildDomain(chart, config, classicalYogas));
+
+  const childrenDomain = domains.find((d) => d.id === 'children');
+  if (childrenDomain) {
+    if (chikitsaReport.progenyDiagnostic.hasNagaSarpaDosha && chikitsaReport.progenyDiagnostic.nagaDoshaDetailsEn) {
+      childrenDomain.watchoutsEn.push(chikitsaReport.progenyDiagnostic.nagaDoshaDetailsEn);
+      if (chikitsaReport.progenyDiagnostic.nagaDoshaDetailsHi) {
+        childrenDomain.watchoutsHi.push(chikitsaReport.progenyDiagnostic.nagaDoshaDetailsHi);
+      }
+    }
+    if (chikitsaReport.progenyDiagnostic.hasPitruDoshaInProgeny && chikitsaReport.progenyDiagnostic.pitruDoshaDetailsEn) {
+      childrenDomain.watchoutsEn.push(chikitsaReport.progenyDiagnostic.pitruDoshaDetailsEn);
+      if (chikitsaReport.progenyDiagnostic.pitruDoshaDetailsHi) {
+        childrenDomain.watchoutsHi.push(chikitsaReport.progenyDiagnostic.pitruDoshaDetailsHi);
+      }
+    }
+    if (chikitsaReport.progenyDiagnostic.timingPredictionEn) {
+      if (!childrenDomain.concreteEventsEn) childrenDomain.concreteEventsEn = [];
+      childrenDomain.concreteEventsEn.push(chikitsaReport.progenyDiagnostic.timingPredictionEn);
+    }
+    if (chikitsaReport.progenyDiagnostic.timingPredictionHi) {
+      if (!childrenDomain.concreteEventsHi) childrenDomain.concreteEventsHi = [];
+      childrenDomain.concreteEventsHi.push(chikitsaReport.progenyDiagnostic.timingPredictionHi);
+    }
+  }
+
+  const healthDomain = domains.find((d) => d.id === 'health');
+  if (healthDomain) {
+    healthDomain.keyStrengthsEn.push(`Dominant Dosha: ${chikitsaReport.dominantDosha}. ${chikitsaReport.constitutionalAdviceEn}`);
+    healthDomain.keyStrengthsHi.push(`प्रमुख त्रिदोष प्रकृति: ${chikitsaReport.dominantDoshaHi}। ${chikitsaReport.constitutionalAdviceHi}`);
+
+    const vulnerableSystems = chikitsaReport.vulnerableOrganSystems.filter((v) => v.severity !== 'Safe').slice(0, 2);
+    for (const vs of vulnerableSystems) {
+      healthDomain.watchoutsEn.push(`Kalapurusha Organ Focus: ${vs.organEn} (${vs.severity}) - ${vs.factorsEn}`);
+      healthDomain.watchoutsHi.push(`कालपुरुष अंग संवेदनशीलता: ${vs.organHi} (${vs.severity}) - ${vs.factorsHi}`);
+    }
+
+    const activeAlerts = chikitsaReport.diseaseAlerts.filter((a) => a.isVulnerable);
+    for (const al of activeAlerts) {
+      healthDomain.watchoutsEn.push(`Specific Alert: ${al.diseaseNameEn} (${al.severity}) - ${al.planetaryCausesEn.join(', ')}. Remedy: ${al.ayurvedicUpayaEn}`);
+      healthDomain.watchoutsHi.push(`विशिष्ट स्वास्थ्य संकेत: ${al.diseaseNameHi} (${al.severity}) - ${al.planetaryCausesHi.join(', ')}। शास्त्रीय उपाय: ${al.ayurvedicUpayaHi}`);
+    }
+  }
+
   const birthProfile = buildGeneralBirthProfile(chart);
   const supportive = domains.filter((d) => !d.keyStrengthsEn[0].startsWith('No clearly')).length;
   const challenging = domains.filter((d) => !d.watchoutsEn[0].startsWith('No major')).length;
@@ -1708,6 +1769,7 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
     dinaMrityuRoga,
     twelveBhavaYogas,
     badhakaDosha,
+    chikitsaReport,
     executiveSummaryEn,
     executiveSummaryHi,
     domains,

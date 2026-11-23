@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { computeMedicalAstrology } from '../../astro/medicalAstrology';
 import { computeLalKitabFull } from '../../astro/lalKitabFull';
+import { computeComprehensiveChikitsaReport } from '../../astro/predictions/medicalAstrologyEngine';
 import type { ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign } from '../../i18n/translations';
@@ -9,14 +10,17 @@ interface MedicalAstrologyViewProps {
   chart: ChartData;
 }
 
+type MedicalTab = 'tridosha' | 'systems' | 'classicalDiseases' | 'progeny' | 'critical' | 'lalkitab';
+
 export const MedicalAstrologyView: React.FC<MedicalAstrologyViewProps> = ({ chart }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
-  const [activeTab, setActiveTab] = useState<'tridosha' | 'systems' | 'critical' | 'lalkitab'>('tridosha');
+  const [activeTab, setActiveTab] = useState<MedicalTab>('tridosha');
 
   const medReport = useMemo(() => computeMedicalAstrology(chart), [chart]);
   const lkReport = useMemo(() => computeLalKitabFull(chart), [chart]);
+  const chikitsa = useMemo(() => computeComprehensiveChikitsaReport(chart), [chart]);
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -47,6 +51,20 @@ export const MedicalAstrologyView: React.FC<MedicalAstrologyViewProps> = ({ char
             className={`oj-tab-pill ${activeTab === 'systems' ? 'is-active' : ''}`}
           >
             {isHi ? 'अंग संस्थान (12 भाव)' : 'Body Systems (12 Bhavas)'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('classicalDiseases')}
+            className={`oj-tab-pill ${activeTab === 'classicalDiseases' ? 'is-active' : ''}`}
+          >
+            {isHi ? 'शास्त्रीय रोग निर्णय (6 व्याधियां)' : 'Disease Diagnosis (6 Profiles)'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('progeny')}
+            className={`oj-tab-pill ${activeTab === 'progeny' ? 'is-active' : ''}`}
+          >
+            {isHi ? 'संतान बाधा व कुल वृद्धि' : 'Progeny & Lineage'}
           </button>
           <button
             type="button"
@@ -126,6 +144,28 @@ export const MedicalAstrologyView: React.FC<MedicalAstrologyViewProps> = ({ char
                   <span>{rec}</span>
                 </div>
               ))}
+            </div>
+
+            {/* Charaka & Sushruta Lifestyle Synthesis */}
+            <div style={{ marginTop: '16px', padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--accent)', marginBottom: '4px' }}>
+                {isHi ? 'चरक व सुश्रुत संहिता सम्मत जीवनशैली निर्देश:' : 'Charaka & Sushruta Lifestyle Counsel:'}
+              </div>
+              <div style={{ fontSize: '12.5px', lineHeight: 1.55, color: 'var(--text)' }}>
+                {isHi ? chikitsa.constitutionalAdviceHi : chikitsa.constitutionalAdviceEn}
+              </div>
+            </div>
+
+            {/* Critical Health Phases */}
+            <div style={{ marginTop: '12px', padding: '14px', borderRadius: '8px', background: 'rgba(217, 119, 6, 0.08)', borderLeft: '4px solid #d97706' }}>
+              <div style={{ fontWeight: 700, fontSize: '13px', color: '#b45309', marginBottom: '6px' }}>
+                {isHi ? 'दशा व गोचर में स्वास्थ्य संवेदनशीलता चरण:' : 'Critical Health Dasha & Transit Phases:'}
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                {(isHi ? chikitsa.criticalHealthPhasesHi : chikitsa.criticalHealthPhasesEn).map((phase, pIdx) => (
+                  <li key={pIdx} style={{ marginBottom: '4px' }}>{phase}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -207,6 +247,257 @@ export const MedicalAstrologyView: React.FC<MedicalAstrologyViewProps> = ({ char
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Tab: Classical Diseases Diagnosis (6 Profiles) */}
+      {activeTab === 'classicalDiseases' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+            <h3 style={{ margin: '0 0 6px', fontSize: '17px', color: 'var(--text)' }}>
+              {isHi
+                ? 'शास्त्रीय रोग निर्णय एवं पैथोलॉजिकल संवेदनशीलता (चरक, सुश्रुत, यवनजातक)'
+                : 'Classical Disease Diagnosis & Pathological Vulnerability Profiles'}
+            </h3>
+            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              {isHi
+                ? '६ठे, ८वें व १२वें भाव, कालपुरुष अंग संस्थान, सूर्य/चंद्र/शनि/मंगल की स्थिति एवं त्रिदोष विकृति पर आधारित रोग मूल्यांकन।'
+                : 'Diagnostic assessment of 6, 8, 12 bhavas, Kalapurusha body chakras, and planetary afflictions from ancient treatises.'}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px' }}>
+            {chikitsa.diseaseAlerts.map((disease) => {
+              const borderCol =
+                disease.severity === 'Alert'
+                  ? '#dc2626'
+                  : disease.severity === 'Moderate'
+                    ? '#d97706'
+                    : disease.severity === 'Mild'
+                      ? '#2563eb'
+                      : '#16a34a';
+
+              return (
+                <div
+                  key={disease.category}
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border)',
+                    borderLeft: `4px solid ${borderCol}`,
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                    <div style={{ fontWeight: 700, fontSize: '14.5px', color: 'var(--text)' }}>
+                      {isHi ? disease.diseaseNameHi : disease.diseaseNameEn}
+                    </div>
+                    <span
+                      className={`tag ${
+                        disease.severity === 'Alert'
+                          ? 'tag-retro'
+                          : disease.severity === 'Moderate'
+                            ? 'tag-special'
+                            : disease.severity === 'Mild'
+                              ? 'tag-accent'
+                              : 'tag-varg'
+                      }`}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
+                    >
+                      {disease.severity === 'Alert'
+                        ? (isHi ? 'सतर्कता अपेक्षित (Alert)' : 'High Vigilance')
+                        : disease.severity === 'Moderate'
+                          ? (isHi ? 'मध्यम संवेदनशीलता' : 'Moderate Care')
+                          : disease.severity === 'Mild'
+                            ? (isHi ? 'हल्की संवेदनशीलता' : 'Mild Sensitivity')
+                            : (isHi ? 'सुरक्षित (Safe)' : 'Safe Profile')}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: '11.5px', fontWeight: 650, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      {isHi ? 'ज्योतिषीय कारक व भाव योग:' : 'Astrological Combinations & Planetary Causes:'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text)', background: 'var(--bg-subtle)', padding: '8px', borderRadius: '6px' }}>
+                      {(isHi ? disease.planetaryCausesHi : disease.planetaryCausesEn).join(' · ')}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: '11.5px', fontWeight: 650, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      {isHi ? 'बचाव व नैदानिक दिशानिर्देश:' : 'Preventive Clinical Guidelines:'}
+                    </div>
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.45, color: 'var(--text)' }}>
+                      {isHi ? disease.preventiveGuidelinesHi : disease.preventiveGuidelinesEn}
+                    </div>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 650, color: '#059669', marginBottom: '2px' }}>
+                      {isHi ? 'आयुर्वेदिक एवं वैदिक निवारण उपाय:' : 'Ayurvedic & Vedic Remedies:'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#059669', fontWeight: 500 }}>
+                      {isHi ? disease.ayurvedicUpayaHi : disease.ayurvedicUpayaEn}
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'right' }}>
+                    {disease.classicalSource}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Holistic Chikitsa Upayas */}
+          <div style={{ background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)', padding: '20px' }}>
+            <h4 style={{ margin: '0 0 12px', fontSize: '15px', color: 'var(--accent)' }}>
+              {isHi ? 'समग्र आयुर्वेदिक व वैदिक स्वास्थ्य रक्षा उपाय (चरक सूत्र):' : 'Holistic Ayurvedic & Vedic Wellness Upayas:'}
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px' }}>
+              {(isHi ? chikitsa.holisticChikitsaUpayaHi : chikitsa.holisticChikitsaUpayaEn).map((upaya, uIdx) => (
+                <div key={uIdx} style={{ padding: '10px 12px', borderRadius: '6px', background: 'var(--bg-subtle)', border: '1px solid var(--border)', fontSize: '12px', lineHeight: 1.45 }}>
+                  <span style={{ color: 'var(--accent)', fontWeight: 700, marginRight: '6px' }}>{uIdx + 1}.</span>
+                  <span>{upaya}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Progeny & Lineage Diagnostics */}
+      {activeTab === 'progeny' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {isHi ? 'शास्त्रीय संतान सुख व कुल वृद्धि निर्णय' : 'Classical Progeny Promise & Lineage Diagnostics'}
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--accent)', marginTop: '2px' }}>
+                {isHi ? chikitsa.progenyDiagnostic.overallPromiseHi : chikitsa.progenyDiagnostic.overallPromise}
+              </div>
+            </div>
+            <span
+              className={`tag ${
+                chikitsa.progenyDiagnostic.overallPromise.includes('Auspicious')
+                  ? 'tag-varg'
+                  : 'tag-retro'
+              }`}
+              style={{ fontSize: '12px', fontWeight: 700, padding: '4px 12px' }}
+            >
+              {isHi ? 'बृहत पराशर होरा शास्त्र' : 'BPHS Santan Adhyaya'}
+            </span>
+          </div>
+
+          {/* Planetary Diagnostics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
+            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {isHi ? 'पंचम भाव स्वामी (पंचमेश)' : '5th House Lord (Panchamesha)'}
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '4px 0' }}>
+                {chikitsa.progenyDiagnostic.fifthHouseLord}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                {isHi ? `भाव ${chikitsa.progenyDiagnostic.fifthHousePlaced} में स्थित` : `Placed in House ${chikitsa.progenyDiagnostic.fifthHousePlaced}`} · {chikitsa.progenyDiagnostic.fifthLordDignity}
+              </div>
+            </div>
+
+            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {isHi ? 'पुत्रकारक नैसर्गिक गुरु' : 'Natural Putrakaraka Jupiter'}
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', margin: '4px 0' }}>
+                Jupiter (बृहस्पति)
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                {isHi ? 'गरिमा स्थिति:' : 'Dignity:'} {chikitsa.progenyDiagnostic.putrakarakaJupiterDignity}
+              </div>
+            </div>
+
+            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {isHi ? 'सर्प/नाग दोष परीक्षण' : 'Naga / Sarpa Dosha Audit'}
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: chikitsa.progenyDiagnostic.hasNagaSarpaDosha ? '#dc2626' : '#16a34a', margin: '4px 0' }}>
+                {chikitsa.progenyDiagnostic.hasNagaSarpaDosha ? (isHi ? 'नाग दोष उपस्थित' : 'Naga Dosha Present') : (isHi ? 'दोष मुक्त' : 'Clean Axis')}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                {isHi ? 'राहु/केतु अक्ष परीक्षण' : 'Nodal 5th house evaluation'}
+              </div>
+            </div>
+
+            <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {isHi ? 'पितृ ऋण / वंश बाधा' : 'Pitru Rin / Ancestral Lineage'}
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: chikitsa.progenyDiagnostic.hasPitruDoshaInProgeny ? '#d97706' : '#16a34a', margin: '4px 0' }}>
+                {chikitsa.progenyDiagnostic.hasPitruDoshaInProgeny ? (isHi ? 'पितृ दोष प्रभाव' : 'Pitru Dosha Influence') : (isHi ? 'पितृ कृपा' : 'Ancestral Grace')}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                {isHi ? 'सूर्य व नवमेश परीक्षण' : 'Solar & 9th lord evaluation'}
+              </div>
+            </div>
+          </div>
+
+          {/* Dosha Detailed Notifications if present */}
+          {(chikitsa.progenyDiagnostic.hasNagaSarpaDosha || chikitsa.progenyDiagnostic.hasPitruDoshaInProgeny) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {chikitsa.progenyDiagnostic.hasNagaSarpaDosha && (
+                <div style={{ padding: '14px', borderRadius: '8px', background: 'rgba(220, 38, 38, 0.08)', borderLeft: '4px solid #dc2626' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px', color: '#dc2626', marginBottom: '4px' }}>
+                    {isHi ? 'पंचम भाव नाग दोष निदान:' : 'Naga Dosha Diagnostic Detail:'}
+                  </div>
+                  <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? chikitsa.progenyDiagnostic.nagaDoshaDetailsHi : chikitsa.progenyDiagnostic.nagaDoshaDetailsEn}
+                  </div>
+                </div>
+              )}
+              {chikitsa.progenyDiagnostic.hasPitruDoshaInProgeny && (
+                <div style={{ padding: '14px', borderRadius: '8px', background: 'rgba(217, 119, 6, 0.08)', borderLeft: '4px solid #d97706' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px', color: '#b45309', marginBottom: '4px' }}>
+                    {isHi ? 'पितृ ऋण व वंश शांति निर्देश:' : 'Pitru Rin & Lineage Guidance:'}
+                  </div>
+                  <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? chikitsa.progenyDiagnostic.pitruDoshaDetailsHi : chikitsa.progenyDiagnostic.pitruDoshaDetailsEn}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Timing Prediction */}
+          <div style={{ padding: '16px', borderRadius: '8px', background: 'rgba(37, 99, 235, 0.08)', borderLeft: '4px solid #2563eb' }}>
+            <div style={{ fontWeight: 700, fontSize: '13.5px', color: '#2563eb', marginBottom: '6px' }}>
+              {isHi ? 'संतान प्राप्ति का शास्त्रीय समय-सीमा निर्धारण (Timing of Progeny):' : 'Classical Progeny Timing Window:'}
+            </div>
+            <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.6, color: 'var(--text)' }}>
+              {isHi ? chikitsa.progenyDiagnostic.timingPredictionHi : chikitsa.progenyDiagnostic.timingPredictionEn}
+            </p>
+          </div>
+
+          {/* Authentic Santana Gopala & Vedic Upayas */}
+          <div style={{ background: 'var(--bg-elevated)', borderRadius: '10px', border: '1px solid var(--border)', padding: '20px' }}>
+            <h4 style={{ margin: '0 0 12px', fontSize: '15px', color: 'var(--text)' }}>
+              {isHi ? 'शास्त्रीय संतान गोपाल स्तोत्र एवं अचूक वैदिक उपाय:' : 'Authentic Santana Gopala & Vedic Remedies:'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {(isHi ? chikitsa.progenyDiagnostic.vedicRemediesHi : chikitsa.progenyDiagnostic.vedicRemediesEn).map((rem, rIdx) => (
+                <div key={rIdx} style={{ display: 'flex', gap: '8px', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                  <span style={{ color: '#059669', fontWeight: 700 }}>•</span>
+                  <span>{rem}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'right' }}>
+              {isHi ? 'शास्त्रीय स्रोत: ' : 'Classical Source: '}
+              {chikitsa.progenyDiagnostic.classicalSource}
+            </div>
+          </div>
         </div>
       )}
 

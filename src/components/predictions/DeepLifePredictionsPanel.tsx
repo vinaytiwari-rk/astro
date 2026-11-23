@@ -434,6 +434,214 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </div>
             )}
 
+            {/* Tridosha Constitution & Kalapurusha Organ Systems Card */}
+            {domain.id === 'health' && report.chikitsaReport && (
+              <div
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  borderLeft: '4px solid #059669',
+                  marginBottom: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Activity size={15} color="#059669" />
+                    <span>{isHi ? 'आयुर्वेदिक त्रिदोष प्रकृति व कालपुरुष अंग संस्थान:' : 'Ayurvedic Tridosha & Kalapurusha Organ Systems:'}</span>
+                  </div>
+                  <span className="tag tag-varg" style={{ fontSize: '11px', fontWeight: 700 }}>
+                    {isHi
+                      ? `प्रमुख: ${report.chikitsaReport.dominantDoshaHi}`
+                      : `Dominant: ${report.chikitsaReport.dominantDosha}`}
+                  </span>
+                </div>
+
+                {/* Tridosha Bars */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '10px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', fontWeight: 600, marginBottom: '4px' }}>
+                      <span style={{ color: '#2563eb' }}>{isHi ? 'वात' : 'Vata'}</span>
+                      <span>{report.chikitsaReport.doshaBreakdown.vata}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'var(--bg-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${report.chikitsaReport.doshaBreakdown.vata}%`, height: '100%', background: '#2563eb' }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', fontWeight: 600, marginBottom: '4px' }}>
+                      <span style={{ color: '#dc2626' }}>{isHi ? 'पित्त' : 'Pitta'}</span>
+                      <span>{report.chikitsaReport.doshaBreakdown.pitta}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'var(--bg-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${report.chikitsaReport.doshaBreakdown.pitta}%`, height: '100%', background: '#dc2626' }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', fontWeight: 600, marginBottom: '4px' }}>
+                      <span style={{ color: '#059669' }}>{isHi ? 'कफ' : 'Kapha'}</span>
+                      <span>{report.chikitsaReport.doshaBreakdown.kapha}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'var(--bg-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${report.chikitsaReport.doshaBreakdown.kapha}%`, height: '100%', background: '#059669' }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '12px', lineHeight: 1.45, color: 'var(--text)', marginBottom: '10px' }}>
+                  {isHi ? report.chikitsaReport.constitutionalAdviceHi : report.chikitsaReport.constitutionalAdviceEn}
+                </div>
+
+                {/* Top Kalapurusha Organ Systems Needing Care */}
+                <div style={{ fontSize: '12px', fontWeight: 650, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  {isHi ? 'कालपुरुष अंग संवेदनशीलता (भाव संस्थान):' : 'Kalapurusha Organ Vulnerability Ranking:'}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+                  {report.chikitsaReport.vulnerableOrganSystems.slice(0, 3).map((org) => (
+                    <div
+                      key={org.house}
+                      style={{
+                        padding: '6px 10px',
+                        borderRadius: '4px',
+                        background: 'var(--bg-subtle)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: '11.5px',
+                      }}
+                    >
+                      <span>
+                        <strong>H{org.house}:</strong> {isHi ? org.organHi : org.organEn}
+                      </span>
+                      <span
+                        className={`tag ${
+                          org.severity === 'High Care'
+                            ? 'tag-retro'
+                            : org.severity === 'Moderate Vigilance'
+                              ? 'tag-special'
+                              : 'tag-varg'
+                        }`}
+                        style={{ fontSize: '10.5px' }}
+                      >
+                        {org.severity}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Specific Disease Alerts if vulnerable */}
+                {report.chikitsaReport.diseaseAlerts.some((a) => a.isVulnerable) && (
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: '8px', marginTop: '6px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#dc2626', marginBottom: '6px' }}>
+                      {isHi ? 'विशिष्ट शास्त्रीय रोग संकेत व बचाव (चरक/यवनजातक):' : 'Classical Disease Alert & Prevention:'}
+                    </div>
+                    {report.chikitsaReport.diseaseAlerts.filter((a) => a.isVulnerable).map((alert) => (
+                      <div
+                        key={alert.category}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '4px',
+                          background: 'rgba(220, 38, 38, 0.05)',
+                          borderLeft: '3px solid #dc2626',
+                          marginBottom: '4px',
+                          fontSize: '11.5px',
+                        }}
+                      >
+                        <span style={{ fontWeight: 700 }}>{isHi ? alert.diseaseNameHi : alert.diseaseNameEn}</span>
+                        {' — '}
+                        <span>{isHi ? alert.preventiveGuidelinesHi : alert.preventiveGuidelinesEn}</span>
+                        <div style={{ fontSize: '11px', color: '#059669', marginTop: '2px' }}>
+                          <strong>{isHi ? 'आयुर्वेदिक उपाय: ' : 'Ayurvedic Upaya: '}</strong>
+                          {isHi ? alert.ayurvedicUpayaHi : alert.ayurvedicUpayaEn}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Progeny & Lineage Diagnostic Card */}
+            {domain.id === 'children' && report.chikitsaReport?.progenyDiagnostic && (
+              <div
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  borderLeft: `4px solid ${
+                    report.chikitsaReport.progenyDiagnostic.overallPromise === 'Highly Auspicious' ||
+                    report.chikitsaReport.progenyDiagnostic.overallPromise === 'Auspicious'
+                      ? '#16a34a'
+                      : '#d97706'
+                  }`,
+                  marginBottom: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users size={15} color="var(--accent)" />
+                    <span>{isHi ? 'शास्त्रीय संतान सुख व वंश वृद्धि परीक्षण:' : 'Classical Progeny & Lineage Diagnostic:'}</span>
+                  </div>
+                  <span
+                    className={`tag ${
+                      report.chikitsaReport.progenyDiagnostic.overallPromise.includes('Auspicious')
+                        ? 'tag-varg'
+                        : 'tag-retro'
+                    }`}
+                    style={{ fontSize: '11px', fontWeight: 700 }}
+                  >
+                    {isHi
+                      ? report.chikitsaReport.progenyDiagnostic.overallPromiseHi
+                      : report.chikitsaReport.progenyDiagnostic.overallPromise}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{isHi ? 'पंचमेश स्थिति: ' : '5th Lord: '}</span>
+                    <strong>{report.chikitsaReport.progenyDiagnostic.fifthHouseLord}</strong> ({isHi ? `भाव ${report.chikitsaReport.progenyDiagnostic.fifthHousePlaced} में` : `in H${report.chikitsaReport.progenyDiagnostic.fifthHousePlaced}`})
+                  </div>
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{isHi ? 'पंचमेश गरिमा: ' : '5th Lord Dignity: '}</span>
+                    <strong>{report.chikitsaReport.progenyDiagnostic.fifthLordDignity}</strong>
+                  </div>
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{isHi ? 'पुत्रकारक गुरु: ' : 'Putrakaraka Jupiter: '}</span>
+                    <strong>{report.chikitsaReport.progenyDiagnostic.putrakarakaJupiterDignity}</strong>
+                  </div>
+                </div>
+
+                {report.chikitsaReport.progenyDiagnostic.hasNagaSarpaDosha && (
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'rgba(220, 38, 38, 0.08)', borderLeft: '3px solid #dc2626', marginBottom: '8px', fontSize: '12px', color: 'var(--text)' }}>
+                    <strong>{isHi ? 'नाग/सर्प दोष संकेत: ' : 'Naga / Sarpa Dosha Alert: '}</strong>
+                    {isHi ? report.chikitsaReport.progenyDiagnostic.nagaDoshaDetailsHi : report.chikitsaReport.progenyDiagnostic.nagaDoshaDetailsEn}
+                  </div>
+                )}
+
+                {report.chikitsaReport.progenyDiagnostic.hasPitruDoshaInProgeny && (
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'rgba(217, 119, 6, 0.08)', borderLeft: '3px solid #d97706', marginBottom: '8px', fontSize: '12px', color: 'var(--text)' }}>
+                    <strong>{isHi ? 'पितृ ऋण/दोष प्रभाव: ' : 'Pitru Dosha Influence: '}</strong>
+                    {isHi ? report.chikitsaReport.progenyDiagnostic.pitruDoshaDetailsHi : report.chikitsaReport.progenyDiagnostic.pitruDoshaDetailsEn}
+                  </div>
+                )}
+
+                <div style={{ fontSize: '12px', marginBottom: '8px', color: 'var(--text)' }}>
+                  <strong>{isHi ? 'संतान प्राप्ति अनुकूल काल: ' : 'Auspicious Conception Window: '}</strong>
+                  {isHi ? report.chikitsaReport.progenyDiagnostic.timingPredictionHi : report.chikitsaReport.progenyDiagnostic.timingPredictionEn}
+                </div>
+
+                <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
+                  <strong>{isHi ? 'शास्त्रीय संतान गोपाल व कुल वृद्धि उपाय: ' : 'Santana Gopala & Lineage Upayas: '}</strong>
+                  {(isHi
+                    ? report.chikitsaReport.progenyDiagnostic.vedicRemediesHi
+                    : report.chikitsaReport.progenyDiagnostic.vedicRemediesEn
+                  ).join(' · ')}
+                </div>
+              </div>
+            )}
+
             {/* Active Timing Window & Concrete Event Milestones */}
             {(domain.timingWindowHi || domain.timingWindowEn) && (
               <div
