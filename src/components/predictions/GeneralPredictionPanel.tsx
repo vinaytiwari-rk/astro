@@ -25,7 +25,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
         {report.domains.map((domain, index) => (
           <article className="card" key={domain.id} style={{ padding: '16px' }}>
             <div className="muted" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em' }}>
-              {isHi ? `जीवन का क्षेत्र ${index + 1} / 12` : `LIFE STORY ${index + 1} / 12`}
+              {isHi ? `जीवन का क्षेत्र ${index + 1} / ${report.domains.length}` : `LIFE STORY ${index + 1} / ${report.domains.length}`}
             </div>
             <h3 style={{ margin: '5px 0 0', fontSize: '18px' }}>
               {isHi ? domain.titleHi : domain.titleEn}
