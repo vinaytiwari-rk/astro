@@ -88,7 +88,7 @@ const YOGA_DOMAIN_TARGETS: Record<string, string[]> = {
 };
 
 function hasUsableYogaSource(source: string): boolean {
-  return !/not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|300 classical yogas/i.test(source);
+  return !/not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|classical vedic shastra|300 classical yogas/i.test(source);
 }
 
 function yogaAppliesToDomain(category: string, domain: DomainDefinition): boolean {
