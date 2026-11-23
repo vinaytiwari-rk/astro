@@ -36,8 +36,8 @@ export interface KarakatwaPredictionReport {
   predictions: KarakatwaPrediction[];
 }
 
-const BENEFICS = new Set<NineGrahaId>(['Jupiter', 'Venus', 'Mercury', 'Moon']);
-const MALEFICS = new Set<NineGrahaId>(['Sun', 'Mars', 'Saturn', 'Rahu', 'Ketu']);
+const BENEFICS = new Set<NineGrahaId>(['Jupiter', 'Venus']);
+const FIXED_MALEFICS = new Set<NineGrahaId>(['Sun', 'Mars', 'Saturn', 'Rahu', 'Ketu']);
 const HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
@@ -82,8 +82,36 @@ function houseIsKendraOrTrikona(house: number): boolean {
   return [1, 4, 5, 7, 9, 10].includes(house);
 }
 
+function isBenefic(chart: ChartData, planet: BodyPosition): boolean {
+  if (planet.id === 'Moon') return chart.panchang?.tithi?.paksha === 'Shukla';
+  if (planet.id === 'Mercury') {
+    return !chart.planets.some((other) => other.id !== 'Mercury'
+      && other.rasiHouseNumber === planet.rasiHouseNumber
+      && FIXED_MALEFICS.has(other.id as NineGrahaId));
+  }
+  return BENEFICS.has(planet.id as NineGrahaId);
+}
+
+function isMalefic(chart: ChartData, planet: BodyPosition): boolean {
+  if (planet.id === 'Moon') return chart.panchang?.tithi?.paksha === 'Krishna';
+  if (planet.id === 'Mercury') return !isBenefic(chart, planet);
+  return FIXED_MALEFICS.has(planet.id as NineGrahaId);
+}
+
+function addNakshatraContext(evidence: KarakatwaEvidence[], planet: BodyPosition | undefined, label: string): void {
+  if (!planet) return;
+  evidence.push(makeEvidence(
+    `nakshatra-${label}-${planet.id.toLowerCase()}`, 'context', `${label}: sign and nakshatra context`,
+    `${planet.id} is in ${planet.signName}, ${planet.nakshatraName} pada ${planet.pada}; the nakshatra lord is ${planet.nakshatraLord}. This is retained as a separate interpretive layer and is not used as a stand-alone prediction until its specific rule and source are verified.`,
+    `${HI[planet.id] ?? planet.id} ${planet.signName} राशि में ${planet.nakshatraName} नक्षत्र के पाद ${planet.pada} में हैं; नक्षत्र स्वामी ${HI[planet.nakshatraLord] ?? planet.nakshatraLord} हैं। इसे अलग व्याख्यात्मक स्तर पर रखा गया है; विशिष्ट नियम और ग्रंथ-संदर्भ सत्यापित हुए बिना इसे स्वतंत्र फलादेश नहीं बनाया जाता।`,
+    'Nakshatra interpretive layer — rule-level source verification pending',
+    'research-hypothesis',
+    '',
+  ));
+}
+
 function evidenceLevel(supportive: number, caution: number, total: number): KarakatwaEvidenceLevel {
-  if (total === 0) return 'insufficient';
+  if (total === 0 || (supportive === 0 && caution === 0)) return 'insufficient';
   if (supportive > 0 && caution > 0) return 'mixed';
   if (total >= 3) return 'corroborated';
   return 'single-indication';
@@ -107,15 +135,16 @@ function makeEvidence(
   detailHi: string,
   source: string,
   sourceStatus: KarakatwaSourceStatus = 'primary-text',
+  sourceUrl = BPHS_URL,
 ): KarakatwaEvidence {
-  return { id, kind, factor, detailEn, detailHi, source, sourceStatus, sourceUrl: BPHS_URL };
+  return { id, kind, factor, detailEn, detailHi, source, sourceStatus, sourceUrl };
 }
 
 function appearancePrediction(chart: ChartData): KarakatwaPrediction {
   const evidence: KarakatwaEvidence[] = [];
   const lagnaOccupants = occupants(chart, 1);
-  const beneficOccupants = lagnaOccupants.filter((p) => BENEFICS.has(p.id as NineGrahaId));
-  const beneficAspects = aspectsHouse(chart, 1).filter((p) => BENEFICS.has(p.id as NineGrahaId));
+  const beneficOccupants = lagnaOccupants.filter((p) => isBenefic(chart, p));
+  const beneficAspects = aspectsHouse(chart, 1).filter((p) => isBenefic(chart, p));
   const lagnaLord = lordOfHouse(chart, 1);
   const moon = chart.planets.find((p) => p.id === 'Moon');
   const venus = chart.planets.find((p) => p.id === 'Venus');
@@ -146,6 +175,7 @@ function appearancePrediction(chart: ChartData): KarakatwaPrediction {
     ));
   }
   if (lagnaLord) {
+    addNakshatraContext(evidence, lagnaLord, 'Ascendant lord');
     const supportive = dignitySupport(lagnaLord) && !lagnaLord.isCombust;
     const caution = dignityCaution(lagnaLord) || lagnaLord.isCombust;
     evidence.push(makeEvidence(
@@ -193,8 +223,8 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
   const thirdAspects = aspectsHouse(chart, 3);
   const thirdLord = lordOfHouse(chart, 3);
   const mars = chart.planets.find((p) => p.id === 'Mars');
-  const benefics = [...thirdOccupants, ...thirdAspects].filter((p) => BENEFICS.has(p.id as NineGrahaId));
-  const malefics = [...thirdOccupants, ...thirdAspects].filter((p) => MALEFICS.has(p.id as NineGrahaId));
+  const benefics = [...thirdOccupants, ...thirdAspects].filter((p) => isBenefic(chart, p));
+  const malefics = [...thirdOccupants, ...thirdAspects].filter((p) => isMalefic(chart, p));
 
   if (benefics.length) {
     evidence.push(makeEvidence(
@@ -206,6 +236,7 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
     ));
   }
   if (thirdLord) {
+    addNakshatraContext(evidence, thirdLord, 'Third-house lord');
     const supportive = dignitySupport(thirdLord) || houseIsKendraOrTrikona(thirdLord.rasiHouseNumber);
     const caution = dignityCaution(thirdLord) || thirdLord.isCombust;
     evidence.push(makeEvidence(
@@ -218,6 +249,7 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
     ));
   }
   if (mars) {
+    addNakshatraContext(evidence, mars, 'Sibling significator');
     const connected = mars.rasiHouseNumber === 3 || thirdAspects.some((p) => p.id === 'Mars');
     const supportive = connected && dignitySupport(mars) && !mars.isCombust;
     const caution = connected && (dignityCaution(mars) || mars.isCombust);
@@ -230,6 +262,19 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
       'translation-check',
     ));
   }
+  const drekkana = chart.divisionalCharts?.D3;
+  if (drekkana) {
+    const d3Mars = drekkana.placements.find((p) => p.id === 'Mars');
+    evidence.push(makeEvidence(
+      'siblings-d3-cross-check', 'context', 'Drekkana (D3) supplementary cross-check',
+      `D3 is available; its ascendant sign index is ${drekkana.lagnaSignIndex}${d3Mars ? ` and Mars is in D3 house ${d3Mars.houseFromVargaLagna} with ${d3Mars.dignity} dignity` : ''}. This is recorded as supplementary context, not as a stand-alone sibling-count rule.`,
+      `द्रेष्काण (D3) उपलब्ध है; इसका लग्न राशि-सूचकांक ${drekkana.lagnaSignIndex} है${d3Mars ? ` और मंगल D3 के भाव ${d3Mars.houseFromVargaLagna} में ${d3Mars.dignity} गरिमा के साथ हैं` : ''}। इसे सहायक संदर्भ के रूप में रखा गया है, भाई-बहनों की संख्या का स्वतंत्र नियम नहीं बनाया गया है।`,
+      'Drekkana (D3) — supplementary divisional-chart cross-check',
+      'research-hypothesis',
+      '',
+    ));
+  }
+
   if (malefics.length) {
     evidence.push(makeEvidence(
       'siblings-malefic-third', 'caution', 'Malefic influence on the third house',
@@ -274,6 +319,12 @@ const PLANET_TEMPERAMENT: Record<string, { en: string; hi: string }> = {
   Ketu: { en: 'independent, inward-looking and selective about involvement', hi: 'स्वतंत्र, अंतर्मुखी और सहभागिता के विषय में चयनशील' },
 };
 
+function connectedLabel(planet: BodyPosition, lagnaLord: BodyPosition | undefined): string {
+  return planet.id === lagnaLord?.id ? 'Ascendant lord'
+    : planet.id === 'Moon' ? 'Moon'
+      : 'Sun';
+}
+
 function personalityPrediction(chart: ChartData): KarakatwaPrediction {
   const evidence: KarakatwaEvidence[] = [];
   const lagnaLord = lordOfHouse(chart, 1);
@@ -287,6 +338,7 @@ function personalityPrediction(chart: ChartData): KarakatwaPrediction {
     seen.add(planet.id);
     const trait = PLANET_TEMPERAMENT[planet.id];
     if (!trait) continue;
+    addNakshatraContext(evidence, planet, connectedLabel(planet, lagnaLord));
     const connected = planet.id === lagnaLord?.id ? 'ascendant lord' : planet.id === 'Moon' ? 'Moon (emotional responses)' : 'Sun (purpose and self-expression)';
     const kind = dignitySupport(planet) && !planet.isCombust ? 'supportive'
       : dignityCaution(planet) || planet.isCombust ? 'caution' : 'context';
