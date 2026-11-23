@@ -545,6 +545,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{isHi ? 'द्वादश भाव, D9 नवांश व संतान स्फुट' : 'Synastry, D9 Navamsha & Progeny'}</strong>
                     <span className="oj-dd-sub">{isHi ? 'बीज स्फुट, क्षेत्र स्फुट व पारस्परिक भाव सादृश्य' : 'Beeja & Kshetra Sphuta, Navamsha Overlay'}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
+                    <strong>{isHi ? 'दांपत्य, अंकज्योतिष व आयुर्दाय कैलकुलेटर (15 Tools)' : 'Relationship, Numerology & Longevity Calculators (15 Tools)'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्रेम vs पारंपरिक, समय, नामाक्षर, अंक अनुकूलता, आयुर्दाय वर्ग' : 'Love vs Arranged, Timing, Partner Initial, Numerology & Ayurdaya'}</span>
+                  </button>
                 </div>
               )}
             </li>
