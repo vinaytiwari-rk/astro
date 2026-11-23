@@ -2,16 +2,18 @@
  * Authentic Relationship, Marriage, Numerology & Longevity Calculators Suite
  * AV Astro Vibe — 100% Offline, Classical Shastric & Scientific Jyotish Engine
  *
- * Implements exclusively 15 Authentic & Classical Calculators:
+ * Implements exclusively 15 Authentic & Classical Calculators with Full Real-time Dynamic Coupling:
+ * When the user changes names or dates of birth, all relationship, vibration, elemental,
+ * compatibility and initial-matching scores update dynamically in real time.
  *
  * Category 1: Vedic Shastric Relationship & Marriage Calculators (8)
- * 1. Love vs Arranged Marriage Calculator
- * 2. Marriage Timing & Double Transit Calculator
- * 3. Life Partner Name Initial Finder (via 7th House, UL & 108 Nakshatra Padas)
- * 4. Marital Harmony & Separation Risk Analyzer (Nadi 2, 7, 11 vs 1, 6, 10)
+ * 1. Love vs Arranged Marriage Calculator (Natal + Couple Name Vibration Coupling)
+ * 2. Marriage Timing & Double Transit Calculator (Jupiter & Saturn Double Transit)
+ * 3. Life Partner Name Initial Finder (108 Padas + Real-time Entered Partner Verification)
+ * 4. Marital Harmony & Separation Risk Analyzer (Natal + Dynamic Name/Birth Vibration Coupling)
  * 5. Karmic Soul Bond Calculator (Rinanubandha, Poorvapunya 5th house & Rahu-Ketu axis)
  * 6. Varahamihira Stree Jataka & Saubhagya Calculator (Brihat Jataka Ch. 24 Trimsamsha)
- * 7. Zodiac Element & Planetary Resonance Match (12 Rashis, Agni-Prithvi-Vayu-Jala)
+ * 7. Zodiac Element & Planetary Resonance Match (Dynamic Nama Rashi & Elemental Synergy)
  * 8. Relationship Puja & Vedic Upayas Consultation (Katyayani, Patni Manoramam, Gauri-Shankar)
  *
  * Category 2: Authentic Numerology Calculators (4)
@@ -88,6 +90,78 @@ export const PLANET_FRIENDSHIP_MATRIX: Record<number, Record<number, number>> = 
 };
 
 // ============================================================================
+// NAMA RASHI (NAME PHONETICS TO VEDIC RASHI & ELEMENT MAPPER)
+// ============================================================================
+
+export interface NamaRashiProfile {
+  rashiIndex: number;
+  rashiHi: string;
+  rashiEn: string;
+  nakshatraName: string;
+  elementHi: string;
+  elementEn: string;
+  lordHi: string;
+  lordEn: string;
+}
+
+function makeRashiProfile(rIdx: number, nak: string, lordEn: string, lordHi: string): NamaRashiProfile {
+  const normIdx = ((rIdx % 12) + 12) % 12;
+  const elemIdx = normIdx % 4;
+  return {
+    rashiIndex: normIdx,
+    rashiHi: DEVANAGARI_SIGN_NAMES[normIdx],
+    rashiEn: SIGNS[normIdx].name,
+    nakshatraName: nak,
+    elementHi: ELEMENT_PROFILES[elemIdx].hi,
+    elementEn: ELEMENT_PROFILES[elemIdx].en,
+    lordHi,
+    lordEn,
+  };
+}
+
+export function getNamaRashiFromName(name: string): NamaRashiProfile {
+  if (!name || name.trim().length === 0) {
+    return makeRashiProfile(0, 'Ashwini', 'Mars', 'मंगल');
+  }
+
+  const clean = name.trim();
+  const lower = clean.toLowerCase();
+
+  // 1. Devanagari first letter matching
+  if (/^[अआचचुचेचोलालीलूलेलो]/.test(clean)) return makeRashiProfile(0, 'Ashwini', 'Mars', 'मंगल');
+  if (/^[इईउऊएऐओवावीवूवेवोब]/.test(clean)) return makeRashiProfile(1, 'Rohini', 'Venus', 'शुक्र');
+  if (/^[ककाकीकूघछकेकोहा]/.test(clean)) return makeRashiProfile(2, 'Ardra', 'Mercury', 'बुध');
+  if (/^[हीहूहेहोडडाडीडूडेडो]/.test(clean)) return makeRashiProfile(3, 'Pushya', 'Moon', 'चंद्र');
+  if (/^[ममामीमूमेमोटटाटीटूटे]/.test(clean)) return makeRashiProfile(4, 'Magha', 'Sun', 'सूर्य');
+  if (/^[टोपापीपूषणठपेपो]/.test(clean)) return makeRashiProfile(5, 'Hasta', 'Mercury', 'बुध');
+  if (/^[ररारीरूरेरोततातीतूते]/.test(clean)) return makeRashiProfile(6, 'Chitra', 'Venus', 'शुक्र');
+  if (/^[तोनानीनूनेनोययायीयू]/.test(clean)) return makeRashiProfile(7, 'Anuradha', 'Mars', 'मंगल');
+  if (/^[येयोभभाभीभूधधाफफाढाभे]/.test(clean)) return makeRashiProfile(8, 'Mula', 'Jupiter', 'बृहस्पति');
+  if (/^[भोजाजीखखीखूखेखोगगागी]/.test(clean)) return makeRashiProfile(9, 'Shravana', 'Saturn', 'शनि');
+  if (/^[गूगेगोससासीसूसोदा]/.test(clean)) return makeRashiProfile(10, 'Shatabhisha', 'Saturn', 'शनि');
+  if (/^[दीदूथझञदेदोचाची]/.test(clean)) return makeRashiProfile(11, 'Revati', 'Jupiter', 'बृहस्पति');
+
+  // 2. Roman / Latin Alphabet Parsing
+  if (lower.startsWith('ch') || lower.startsWith('l') || lower.startsWith('a')) return makeRashiProfile(0, 'Ashwini', 'Mars', 'मंगल');
+  if (lower.startsWith('b') || lower.startsWith('v') || lower.startsWith('w') || lower.startsWith('u') || lower.startsWith('i')) return makeRashiProfile(1, 'Rohini', 'Venus', 'शुक्र');
+  if (lower.startsWith('k') || lower.startsWith('gh') || lower.startsWith('h')) return makeRashiProfile(2, 'Ardra', 'Mercury', 'बुध');
+  if (lower.startsWith('d') || lower.startsWith('he')) return makeRashiProfile(3, 'Pushya', 'Moon', 'चंद्र');
+  if (lower.startsWith('m') || lower.startsWith('t')) return makeRashiProfile(4, 'Magha', 'Sun', 'सूर्य');
+  if (lower.startsWith('p') || lower.startsWith('sh') || lower.startsWith('th')) return makeRashiProfile(5, 'Hasta', 'Mercury', 'बुध');
+  if (lower.startsWith('r')) return makeRashiProfile(6, 'Swati', 'Venus', 'शुक्र');
+  if (lower.startsWith('n') || lower.startsWith('y')) return makeRashiProfile(7, 'Anuradha', 'Mars', 'मंगल');
+  if (lower.startsWith('bh') || lower.startsWith('dh') || lower.startsWith('f')) return makeRashiProfile(8, 'Mula', 'Jupiter', 'बृहस्पति');
+  if (lower.startsWith('j') || lower.startsWith('kh') || lower.startsWith('g')) return makeRashiProfile(9, 'Shravana', 'Saturn', 'शनि');
+  if (lower.startsWith('s')) return makeRashiProfile(10, 'Shatabhisha', 'Saturn', 'शनि');
+  if (lower.startsWith('z')) return makeRashiProfile(11, 'Revati', 'Jupiter', 'बृहस्पति');
+
+  // Fallback via Chaldean letter vibration modulo 12
+  const cNum = computeNameNumber(clean, 'chaldean').reduced;
+  const mapIdx = [0, 4, 1, 8, 10, 2, 6, 7, 9, 0][cNum] ?? 0;
+  return makeRashiProfile(mapIdx, 'Ashwini', SIGNS[mapIdx].lord, DEVANAGARI_PLANET_NAMES[SIGNS[mapIdx].lord]);
+}
+
+// ============================================================================
 // 1. LOVE VS ARRANGED MARRIAGE CALCULATOR
 // ============================================================================
 
@@ -106,7 +180,11 @@ export interface LoveVsArrangedResult {
   classicalReference: string;
 }
 
-export function computeLoveVsArrangedMarriage(chart: ChartData): LoveVsArrangedResult {
+export function computeLoveVsArrangedMarriage(
+  chart: ChartData,
+  p1?: { name: string; dob: string },
+  p2?: { name: string; dob: string }
+): LoveVsArrangedResult {
   const ascSign = chart.ascendant.signIndex;
   const h5Sign = (ascSign + 4) % 12;
   const h7Sign = (ascSign + 6) % 12;
@@ -209,6 +287,34 @@ export function computeLoveVsArrangedMarriage(chart: ChartData): LoveVsArrangedR
       favors: 'Arranged',
       weight: 18,
     });
+  }
+
+  // Dynamic Couple Name Coupling Factor:
+  if (p1?.name && p2?.name && p2.name.trim().length > 0) {
+    const c1 = computeNameNumber(p1.name, 'chaldean').reduced;
+    const c2 = computeNameNumber(p2.name, 'chaldean').reduced;
+    const nameFriendship = PLANET_FRIENDSHIP_MATRIX[c1]?.[c2] ?? 1;
+
+    // Romantic numbers (Venus 6, Mars 9, Moon 2, Rahu 4) boost love attraction
+    if ([2, 4, 6, 9].includes(c2) || nameFriendship === 2) {
+      const boost = nameFriendship === 2 ? 18 : 10;
+      loveWeight += boost;
+      factors.push({
+        factorHi: `युगल नामांक कंपन ('${p1.name}' नामांक ${c1} एवं '${p2.name}' नामांक ${c2}): दोनों के ध्वनि कंपनों में परस्पर आकर्षण प्रेम विवाह के पक्ष में ${boost} अंक जोड़ता है।`,
+        factorEn: `Couple name vibrations (${p1.name} & ${p2.name}) add +${boost} romantic pull towards love marriage.`,
+        favors: 'Love',
+        weight: boost,
+      });
+    } else if ([1, 3, 5, 8].includes(c2)) {
+      const boost = 14;
+      arrangedWeight += boost;
+      factors.push({
+        factorHi: `जीवनसाथी नामांक '${p2.name}' (${c2}): स्थिरता व कुल परंपरा के ग्रह का प्रभाव पारंपरिक पारिवारिक विवाह के पक्ष में ${boost} अंक जोड़ता है।`,
+        factorEn: `Partner name number (${p2.name} - ${c2}) strengthens family-arranged marriage alignment.`,
+        favors: 'Arranged',
+        weight: boost,
+      });
+    }
   }
 
   // Normalization to 100% total
@@ -350,7 +456,7 @@ export function computeMarriageTimingAndTransit(chart: ChartData): MarriageTimin
 }
 
 // ============================================================================
-// 3. LIFE PARTNER NAME INITIAL FINDER (108 PADAS)
+// 3. LIFE PARTNER NAME INITIAL FINDER (108 PADAS) & DYNAMIC NAME MATCH
 // ============================================================================
 
 export interface PartnerInitialItem {
@@ -362,6 +468,18 @@ export interface PartnerInitialItem {
   sourceEn: string;
 }
 
+export interface PartnerNameMatchAnalysis {
+  partnerName: string;
+  firstChar: string;
+  isMatched: boolean;
+  matchGradeHi: string;
+  matchGradeEn: string;
+  matchedSyllable?: string;
+  matchScore: number; // 0..100
+  explanationHi: string;
+  explanationEn: string;
+}
+
 export interface LifePartnerInitialsResult {
   primaryInitials: PartnerInitialItem[];
   secondaryInitials: PartnerInitialItem[];
@@ -369,9 +487,10 @@ export interface LifePartnerInitialsResult {
   seventhLordHi: string;
   seventhLordNakshatra: string;
   classicalExplanationHi: string;
+  partnerNameMatch?: PartnerNameMatchAnalysis;
 }
 
-export function computeLifePartnerInitials(chart: ChartData): LifePartnerInitialsResult {
+export function computeLifePartnerInitials(chart: ChartData, partnerName?: string): LifePartnerInitialsResult {
   const ascSign = chart.ascendant.signIndex;
   const h7Sign = (ascSign + 6) % 12;
   const h7LordId = SIGNS[h7Sign].lord as SevenPlanetId;
@@ -452,6 +571,72 @@ export function computeLifePartnerInitials(chart: ChartData): LifePartnerInitial
     });
   }
 
+  // Real-time Match Analysis of entered partner name:
+  let partnerNameMatch: PartnerNameMatchAnalysis | undefined = undefined;
+  if (partnerName && partnerName.trim().length > 0) {
+    const cleanName = partnerName.trim();
+    const firstLetter = cleanName[0].toUpperCase();
+    const firstTwo = cleanName.slice(0, 2).toLowerCase();
+
+    // Check primary syllables
+    const matchedPrimary = primaryInitials.find(
+      (p) =>
+        p.roman.toLowerCase().startsWith(firstTwo) ||
+        p.roman.toUpperCase().startsWith(firstLetter) ||
+        cleanName.startsWith(p.devanagari)
+    );
+
+    // Check secondary syllables
+    const matchedSecondary = secondaryInitials.find(
+      (p) =>
+        p.roman.toLowerCase().startsWith(firstTwo) ||
+        p.roman.toUpperCase().startsWith(firstLetter) ||
+        cleanName.startsWith(p.devanagari)
+    );
+
+    if (matchedPrimary) {
+      partnerNameMatch = {
+        partnerName: cleanName,
+        firstChar: firstLetter,
+        isMatched: true,
+        matchGradeHi: 'उत्कृष्ट शास्त्रीय मिलान (Primary Match - 95%)',
+        matchGradeEn: 'Primary Shastric Match (95%)',
+        matchedSyllable: `${matchedPrimary.devanagari} (${matchedPrimary.roman})`,
+        matchScore: 95,
+        explanationHi: `अद्भुत! आपके द्वारा प्रविष्ट नाम '${cleanName}' (नामाक्षर '${firstLetter}') सप्तमेश के प्राथमिक नक्षत्र चरण (${matchedPrimary.nakshatraName} - ${matchedPrimary.devanagari}) से शत-प्रतिशत मेल खाता है।`,
+        explanationEn: `Excellent! The entered name '${cleanName}' directly matches the primary 7th lord nakshatra pada initial (${matchedPrimary.roman}).`,
+      };
+    } else if (matchedSecondary) {
+      partnerNameMatch = {
+        partnerName: cleanName,
+        firstChar: firstLetter,
+        isMatched: true,
+        matchGradeHi: 'शुभ द्वितीयक मिलान (Secondary Match - 82%)',
+        matchGradeEn: 'Secondary Auspicious Match (82%)',
+        matchedSyllable: `${matchedSecondary.devanagari} (${matchedSecondary.roman})`,
+        matchScore: 82,
+        explanationHi: `शुभ सामंजस्य! प्रविष्ट नाम '${cleanName}' (नामाक्षर '${firstLetter}') उपपद लग्न व चंद्र त्रिकोण के अनुकूल नामाक्षर (${matchedSecondary.nakshatraName}) से मेल खाता है।`,
+        explanationEn: `Harmonious! Entered name matches secondary Upapada/Trine pada initial.`,
+      };
+    } else {
+      const pRashi = getNamaRashiFromName(cleanName);
+      const rashiDist = Math.abs(pRashi.rashiIndex - h7Sign);
+      const isHarmoniousRashi = [0, 4, 8, 2, 6, 10].includes(rashiDist);
+      const score = isHarmoniousRashi ? 72 : 58;
+
+      partnerNameMatch = {
+        partnerName: cleanName,
+        firstChar: firstLetter,
+        isMatched: false,
+        matchGradeHi: isHarmoniousRashi ? 'मित्र राशि सामंजस्य (Harmonious Sign - 72%)' : 'सामान्य अनुकूलता (Neutral Affinity - 58%)',
+        matchGradeEn: isHarmoniousRashi ? 'Harmonious Sign Affinity (72%)' : 'Neutral Affinity (58%)',
+        matchScore: score,
+        explanationHi: `प्रविष्ट नाम '${cleanName}' की नाम राशि ${pRashi.rashiHi} है। यह सप्तम भाव (${DEVANAGARI_SIGN_NAMES[h7Sign]}) के साथ ${isHarmoniousRashi ? 'मित्रवत संबंध रखती है' : 'सामान्य संतुलन रखती है'}।`,
+        explanationEn: `Partner name has Nama Rashi ${pRashi.rashiEn}, holding ${isHarmoniousRashi ? 'harmonious' : 'neutral'} affinity with your 7th house.`,
+      };
+    }
+  }
+
   return {
     primaryInitials,
     secondaryInitials,
@@ -460,6 +645,7 @@ export function computeLifePartnerInitials(chart: ChartData): LifePartnerInitial
     seventhLordNakshatra: h7Lord?.nakshatraName || 'Ashwini',
     classicalExplanationHi:
       'महर्षि पराशर के नियमानुसार जीवनसाथी का संभावित नाम सप्तमेश के नक्षत्र चरण, सप्तम भाव में स्थित ग्रह अथवा उपपद लग्न के नामाक्षरों से प्रारंभ होता है।',
+    partnerNameMatch,
   };
 }
 
@@ -479,7 +665,11 @@ export interface MaritalHarmonyAndRiskResult {
   classicalSource: string;
 }
 
-export function computeMaritalHarmonyAndRisk(chart: ChartData): MaritalHarmonyAndRiskResult {
+export function computeMaritalHarmonyAndRisk(
+  chart: ChartData,
+  p1?: { name: string; dob: string },
+  p2?: { name: string; dob: string }
+): MaritalHarmonyAndRiskResult {
   const ascSign = chart.ascendant.signIndex;
   const h7Sign = (ascSign + 6) % 12;
   const h7LordId = SIGNS[h7Sign].lord as SevenPlanetId;
@@ -498,7 +688,6 @@ export function computeMaritalHarmonyAndRisk(chart: ChartData): MaritalHarmonyAn
   const saturn = chart.planets.find((p) => p.id === 'Saturn');
   const mars = chart.planets.find((p) => p.id === 'Mars');
   const rahu = chart.planets.find((p) => p.id === 'Rahu');
-  const sun = chart.planets.find((p) => p.id === 'Sun');
 
   if (jupiter && [1, 3, 5, 7, 9, 11].includes(jupiter.rasiHouseNumber)) {
     harmonyScore += 20;
@@ -547,9 +736,49 @@ export function computeMaritalHarmonyAndRisk(chart: ChartData): MaritalHarmonyAn
     protectiveFactorsHi.push('सप्तम भाव पापकर्तरी से मुक्त है, जो गृहस्थ जीवन की सामान्य शांति सुनिश्चित करता है।');
   }
 
+  // Dynamic Couple Name Coupling Factor:
+  if (p1?.name && p2?.name && p2.name.trim().length > 0) {
+    const c1 = computeNameNumber(p1.name, 'chaldean').reduced;
+    const c2 = computeNameNumber(p2.name, 'chaldean').reduced;
+    const nameFriendship = PLANET_FRIENDSHIP_MATRIX[c1]?.[c2] ?? 1;
+
+    let birthFriendship = 1;
+    if (p1.dob && p2.dob) {
+      const m1 = reduceToSingleDigit(parseInt(p1.dob.replace(/\D/g, '').slice(-2), 10) || 1);
+      const m2 = reduceToSingleDigit(parseInt(p2.dob.replace(/\D/g, '').slice(-2), 10) || 1);
+      birthFriendship = PLANET_FRIENDSHIP_MATRIX[m1]?.[m2] ?? 1;
+    }
+
+    if (nameFriendship === 2 && birthFriendship === 2) {
+      harmonyScore += 22;
+      riskScore -= 16;
+      protectiveFactorsHi.unshift(
+        `युगल नामांक एवं मूलांक का पूर्ण सामंजस्य: '${p1.name}' (नामांक ${c1}) एवं '${p2.name}' (नामांक ${c2}) के स्वामी परस्पर परम मित्र हैं, जो दांपत्य में मधुरता एवं विश्वास को बहुत अधिक बढ़ाते हैं।`
+      );
+    } else if (nameFriendship === 2 || birthFriendship === 2) {
+      harmonyScore += 12;
+      riskScore -= 8;
+      protectiveFactorsHi.unshift(
+        `नामांक मित्रता: '${p1.name}' एवं '${p2.name}' के ध्वनि कंपनों में परस्पर सकारात्मक आकर्षण है।`
+      );
+    } else if (nameFriendship === 0 && birthFriendship === 0) {
+      harmonyScore -= 18;
+      riskScore += 20;
+      vulnerabilityFactorsHi.unshift(
+        `नामांक व मूलांक विरोध: '${p1.name}' (नामांक ${c1}) एवं '${p2.name}' (नामांक ${c2}) के स्वामी परस्पर शत्रु हैं, जिससे बात-बात पर अहंकार व वैचारिक टकराव संभव है।`
+      );
+    } else if (nameFriendship === 0 || birthFriendship === 0) {
+      harmonyScore -= 10;
+      riskScore += 12;
+      vulnerabilityFactorsHi.unshift(
+        `नामांक संवेदनशीलता: '${p1.name}' एवं '${p2.name}' के नामांकों में मध्यम मतभेद के संकेत हैं। परस्पर धैर्य अपेक्षित रहेगा।`
+      );
+    }
+  }
+
   // Bounds
-  harmonyScore = Math.max(15, Math.min(95, harmonyScore));
-  riskScore = Math.max(5, Math.min(85, riskScore));
+  harmonyScore = Math.max(15, Math.min(98, harmonyScore));
+  riskScore = Math.max(5, Math.min(88, riskScore));
 
   let statusGradeHi: MaritalHarmonyAndRiskResult['statusGradeHi'] = 'अति सुरक्षित व सामंजस्यपूर्ण';
   let statusGradeEn: MaritalHarmonyAndRiskResult['statusGradeEn'] = 'Highly Harmonious & Protected';
@@ -610,10 +839,8 @@ export function computeKarmicSoulBond(
   const h5Lord = chart.planets.find((p) => p.id === h5LordId);
   const ketu = chart.planets.find((p) => p.id === 'Ketu');
   const rahu = chart.planets.find((p) => p.id === 'Rahu');
-  const moon = chart.planets.find((p) => p.id === 'Moon');
-  const jupiter = chart.planets.find((p) => p.id === 'Jupiter');
 
-  // Ketu in 5th or 7th or with Moon indicates deep past-life connection
+  // Ketu in 5th or 7th indicates deep past-life connection
   if (ketu && (ketu.rasiHouseNumber === 5 || ketu.rasiHouseNumber === 7)) {
     bondScore += 18;
     signaturesHi.push('केतु का पंचम/सप्तम भाव में संबंध पूर्व जन्म के अधूरे संस्कारों व ऋणानुबंध को दर्शाता है।');
@@ -631,12 +858,19 @@ export function computeKarmicSoulBond(
     signaturesHi.push('पूर्व पुण्य भाव (पंचमेश) की शुभ स्थिति इस जन्म में सात्विक प्रेम फलित होने का योग बनाती है।');
   }
 
-  // Numerological vibrational synergy if partner data is provided
-  if (p1 && p2 && p1.dob && p2.dob) {
-    const m1 = reduceToSingleDigit(parseInt(p1.dob.replace(/-/g, '').slice(-2), 10) || 5);
-    const m2 = reduceToSingleDigit(parseInt(p2.dob.replace(/-/g, '').slice(-2), 10) || 7);
+  // Dynamic Name and DOB vibrational synergy
+  if (p1?.name && p2?.name && p2.name.trim().length > 0) {
+    const c1 = computeNameNumber(p1.name, 'chaldean').reduced;
+    const c2 = computeNameNumber(p2.name, 'chaldean').reduced;
+    const cRel = PLANET_FRIENDSHIP_MATRIX[c1]?.[c2] ?? 1;
+    bondScore += cRel === 2 ? 14 : cRel === 0 ? -12 : 4;
+  }
+
+  if (p1?.dob && p2?.dob) {
+    const m1 = reduceToSingleDigit(parseInt(p1.dob.replace(/\D/g, '').slice(-2), 10) || 5);
+    const m2 = reduceToSingleDigit(parseInt(p2.dob.replace(/\D/g, '').slice(-2), 10) || 7);
     const rel = PLANET_FRIENDSHIP_MATRIX[m1]?.[m2] ?? 1;
-    bondScore += rel === 2 ? 15 : rel === 1 ? 8 : -5;
+    bondScore += rel === 2 ? 12 : rel === 1 ? 6 : -8;
   }
 
   bondScore = Math.max(30, Math.min(98, bondScore));
@@ -714,7 +948,6 @@ export function computeStreeJatakaAnalysis(chart: ChartData): StreeJatakaResult 
   }
 
   // 8th House (Mangalya Sthana) analysis
-  const h8Sign = (ascSign + 7) % 12;
   const h8Occupants = chart.planets.filter((p) => p.id !== 'Asc' && p.rasiHouseNumber === 8);
   const hasBeneficsIn8th = h8Occupants.some((p) => ['Jupiter', 'Venus', 'Mercury'].includes(p.id));
   const hasMaleficsIn8th = h8Occupants.some((p) => ['Mars', 'Saturn', 'Rahu'].includes(p.id));
@@ -775,7 +1008,7 @@ export function computeStreeJatakaAnalysis(chart: ChartData): StreeJatakaResult 
 }
 
 // ============================================================================
-// 7. ZODIAC ELEMENT & PLANETARY RESONANCE MATCH
+// 7. ZODIAC ELEMENT & PLANETARY RESONANCE MATCH (DYNAMIC NAMA RASHI)
 // ============================================================================
 
 export interface ZodiacElementMatchResult {
@@ -790,9 +1023,24 @@ export interface ZodiacElementMatchResult {
   practicalCounselHi: string;
 }
 
-export function computeZodiacElementMatch(rashi1: number, rasi2: number): ZodiacElementMatchResult {
-  const r1 = ((rashi1 % 12) + 12) % 12;
-  const r2 = ((rasi2 % 12) + 12) % 12;
+export function computeZodiacElementMatch(
+  rashi1: number,
+  rashi2: number,
+  p1Name?: string,
+  p2Name?: string
+): ZodiacElementMatchResult {
+  let r1 = ((rashi1 % 12) + 12) % 12;
+  let r2 = ((rashi2 % 12) + 12) % 12;
+
+  // Dynamically resolve Rashi from Name if name is present
+  if (p2Name && p2Name.trim().length > 0) {
+    const nr2 = getNamaRashiFromName(p2Name);
+    r2 = nr2.rashiIndex;
+  }
+  if (p1Name && p1Name.trim().length > 0 && rashi1 === undefined) {
+    const nr1 = getNamaRashiFromName(p1Name);
+    r1 = nr1.rashiIndex;
+  }
 
   const sign1Info = SIGNS[r1];
   const sign2Info = SIGNS[r2];
@@ -800,9 +1048,7 @@ export function computeZodiacElementMatch(rashi1: number, rasi2: number): Zodiac
   const elem1Idx = Math.floor(r1 % 4); // 0=Fire, 1=Earth, 2=Air, 3=Water
   const elem2Idx = Math.floor(r2 % 4);
 
-  // Elemental compatibility logic:
-  // Fire + Air = 95, Earth + Water = 95, Fire + Fire = 85, Earth + Earth = 85, Air + Air = 85, Water + Water = 85
-  // Fire + Earth = 60, Air + Water = 60, Fire + Water = 45, Earth + Air = 50
+  // Elemental compatibility logic
   let elemScore = 75;
   let verdictHi = '';
 
@@ -888,7 +1134,6 @@ export function computeRelationshipPujaRecommendations(chart: ChartData): Relati
   const mars = chart.planets.find((p) => p.id === 'Mars');
   const venus = chart.planets.find((p) => p.id === 'Venus');
   const rahu = chart.planets.find((p) => p.id === 'Rahu');
-  const saturn = chart.planets.find((p) => p.id === 'Saturn');
 
   const isManglik = mars && [1, 4, 7, 8, 12].includes(mars.rasiHouseNumber);
   const isVenusAfflicted = venus && ['Debilitated', 'Combust'].includes(venus.dignity);
@@ -993,25 +1238,21 @@ const PLANET_NAMES_BY_NUM: Record<number, { hi: string; en: string }> = {
 };
 
 export function computeBirthDateMatch(dob1: string, dob2: string): BirthDateMatchResult {
-  // Extract digits
   const clean1 = dob1.replace(/\D/g, '');
   const clean2 = dob2.replace(/\D/g, '');
 
-  // Mulank (Day digits sum)
   const day1 = clean1.length >= 2 ? parseInt(clean1.slice(-2), 10) : 1;
   const day2 = clean2.length >= 2 ? parseInt(clean2.slice(-2), 10) : 1;
 
   const mulank1 = reduceToSingleDigit(day1 || 1);
   const mulank2 = reduceToSingleDigit(day2 || 1);
 
-  // Bhagyank (All digits sum)
   const sum1 = clean1.split('').reduce((acc, ch) => acc + (parseInt(ch, 10) || 0), 0);
   const sum2 = clean2.split('').reduce((acc, ch) => acc + (parseInt(ch, 10) || 0), 0);
 
   const bhagyank1 = reduceToSingleDigit(sum1 || 1);
   const bhagyank2 = reduceToSingleDigit(sum2 || 1);
 
-  // Synergy scores from Friendship Matrix
   const mRel = PLANET_FRIENDSHIP_MATRIX[mulank1]?.[mulank2] ?? 1;
   const bRel = PLANET_FRIENDSHIP_MATRIX[bhagyank1]?.[bhagyank2] ?? 1;
 
@@ -1069,6 +1310,8 @@ export interface NameVibrationMatchResult {
   p2Chaldean: number;
   p2Pythagorean: number;
   vibrationalScore: number; // 0..100
+  statusGradeHi: string;
+  statusGradeEn: string;
   vibrationVerdictHi: string;
   soundHarmonizationAdviceHi: string;
 }
@@ -1088,6 +1331,24 @@ export function computeNameVibrationMatch(name1: string, name2: string): NameVib
   else if (chaldeanFriendship === 0 && pythagoreanFriendship === 0) vibrationalScore = 48;
   else if (chaldeanFriendship === 0 || pythagoreanFriendship === 0) vibrationalScore = 60;
 
+  const statusGradeHi =
+    vibrationalScore >= 90
+      ? 'परम ध्वनि सामंजस्य (Excellent)'
+      : vibrationalScore >= 75
+      ? 'शुभ सामंजस्य (Favorable)'
+      : vibrationalScore >= 60
+      ? 'मध्यम संतुलन (Average)'
+      : 'सतर्कता अपेक्षित (Sensitive)';
+
+  const statusGradeEn =
+    vibrationalScore >= 90
+      ? 'Excellent Resonance'
+      : vibrationalScore >= 75
+      ? 'Favorable Harmony'
+      : vibrationalScore >= 60
+      ? 'Average Balance'
+      : 'Sensitive Vibration';
+
   let vibrationVerdictHi = 'ध्वनि कंपनों का श्रेष्ठ तालमेल: दोनों के नामों की ध्वनियां एक-दूसरे के व्यक्तित्व में आकर्षण व सम्मान उत्पन्न करती हैं।';
   if (vibrationalScore < 60) {
     vibrationVerdictHi = 'ध्वनि तरंगों में संवेदनशीलता: सार्वजनिक व्यवहार में कभी-कभी एक-दूसरे की बात का गलत अर्थ निकल सकता है। शांत भाव से श्रवण आवश्यक है।';
@@ -1103,6 +1364,8 @@ export function computeNameVibrationMatch(name1: string, name2: string): NameVib
     p2Chaldean: c2.reduced,
     p2Pythagorean: p2.reduced,
     vibrationalScore,
+    statusGradeHi,
+    statusGradeEn,
     vibrationVerdictHi,
     soundHarmonizationAdviceHi:
       'यदि आवश्यकता हो तो नाम के स्पेलिंग में एक स्वर (A, E, I) का समायोजन कर दोनों के संयुक्त नामांक को १, ३, ५ या ६ पर लाया जा सकता है।',
@@ -1126,7 +1389,6 @@ export function computeCoupleAuspiciousDates(dob1: string, dob2: string): Couple
   const m1 = reduceToSingleDigit(parseInt(dob1.replace(/\D/g, '').slice(-2), 10) || 1);
   const m2 = reduceToSingleDigit(parseInt(dob2.replace(/\D/g, '').slice(-2), 10) || 5);
 
-  // Friendly numbers pool for both
   const friendlyToBoth: number[] = [];
   for (let n = 1; n <= 9; n++) {
     const f1 = PLANET_FRIENDSHIP_MATRIX[m1]?.[n] ?? 1;
@@ -1136,7 +1398,6 @@ export function computeCoupleAuspiciousDates(dob1: string, dob2: string): Couple
     }
   }
 
-  // Derive calendar dates (1..31) that reduce to friendly numbers
   const auspiciousMonthlyDates: number[] = [];
   const cautionaryDates: number[] = [];
 
@@ -1155,7 +1416,6 @@ export function computeCoupleAuspiciousDates(dob1: string, dob2: string): Couple
     }
   }
 
-  // Auspicious weekdays
   const auspiciousWeekdaysHi = ['गुरुवार (बृहस्पतिवार - ज्ञान व स्थिरता)', 'शुक्रवार (सौभाग्य व दांपत्य सुख)', 'सोमवार (मानसिक शांति व प्रेम)'];
   const auspiciousWeekdaysEn = ['Thursday (Jupiter)', 'Friday (Venus)', 'Monday (Moon)'];
 
@@ -1291,10 +1551,6 @@ function evaluateJaiminiPair(
   type1: 'Chara (Movable)' | 'Sthira (Fixed)' | 'Dwisvabhava (Dual)',
   type2: 'Chara (Movable)' | 'Sthira (Fixed)' | 'Dwisvabhava (Dual)'
 ): { span: 'Alpayu' | 'Madhyayu' | 'Deerghayu'; spanHi: string } {
-  // Classical Jaimini Upadesha Sutra Table:
-  // Chara + Chara = Deerghayu; Chara + Sthira = Madhyayu; Chara + Dwi = Alpayu
-  // Sthira + Chara = Madhyayu; Sthira + Sthira = Alpayu; Sthira + Dwi = Deerghayu
-  // Dwi + Chara = Alpayu; Dwi + Sthira = Deerghayu; Dwi + Dwi = Madhyayu
   if (type1 === 'Chara (Movable)') {
     if (type2 === 'Chara (Movable)') return { span: 'Deerghayu', spanHi: 'दीर्घायु' };
     if (type2 === 'Sthira (Fixed)') return { span: 'Madhyayu', spanHi: 'मध्यायु' };
@@ -1305,7 +1561,6 @@ function evaluateJaiminiPair(
     if (type2 === 'Sthira (Fixed)') return { span: 'Alpayu', spanHi: 'अल्पायु' };
     return { span: 'Deerghayu', spanHi: 'दीर्घायु' };
   }
-  // Dwisvabhava
   if (type2 === 'Chara (Movable)') return { span: 'Alpayu', spanHi: 'अल्पायु' };
   if (type2 === 'Sthira (Fixed)') return { span: 'Deerghayu', spanHi: 'दीर्घायु' };
   return { span: 'Madhyayu', spanHi: 'मध्यायु' };
@@ -1323,18 +1578,15 @@ export function computeParasharaJaiminiAyurdaya(chart: ChartData): AyurdayaClass
   const moon = chart.planets.find((p) => p.id === 'Moon');
   const saturn = chart.planets.find((p) => p.id === 'Saturn');
 
-  // Pair 1: Lagna Lord Sign Type + 8th Lord Sign Type
   const p1Type1 = SIGN_MODALITY[lagnaLord ? (lagnaLord.rasiHouseNumber - 1 + ascSign) % 12 : ascSign];
   const p1Type2 = SIGN_MODALITY[h8Lord ? (h8Lord.rasiHouseNumber - 1 + ascSign) % 12 : h8Sign];
   const pair1 = evaluateJaiminiPair(p1Type1, p1Type2);
 
-  // Pair 2: Lagna Sign Type + Hora Lagna Sign Type (Approximated by Sun Sign)
   const sun = chart.planets.find((p) => p.id === 'Sun');
   const p2Type1 = SIGN_MODALITY[ascSign];
   const p2Type2 = SIGN_MODALITY[sun ? (sun.rasiHouseNumber - 1 + ascSign) % 12 : (ascSign + 4) % 12];
   const pair2 = evaluateJaiminiPair(p2Type1, p2Type2);
 
-  // Pair 3: Moon Sign Type + Saturn Sign Type
   const p3Type1 = SIGN_MODALITY[moon ? (moon.rasiHouseNumber - 1 + ascSign) % 12 : ascSign];
   const p3Type2 = SIGN_MODALITY[saturn ? (saturn.rasiHouseNumber - 1 + ascSign) % 12 : (ascSign + 9) % 12];
   const pair3 = evaluateJaiminiPair(p3Type1, p3Type2);
@@ -1363,7 +1615,6 @@ export function computeParasharaJaiminiAyurdaya(chart: ChartData): AyurdayaClass
     },
   ];
 
-  // Majority vote
   const counts = { Alpayu: 0, Madhyayu: 0, Deerghayu: 0 };
   counts[pair1.span]++;
   counts[pair2.span]++;
@@ -1374,7 +1625,6 @@ export function computeParasharaJaiminiAyurdaya(chart: ChartData): AyurdayaClass
   let estimatedSpanYears = '७२ से ९६+ वर्ष';
 
   if (counts.Alpayu >= 2) {
-    // Check for Kakshya Vriddhi (exalted lords or Jupiter aspect pushes to Madhyayu)
     const jupiter = chart.planets.find((p) => p.id === 'Jupiter');
     if (jupiter && [1, 5, 8, 9].includes(jupiter.rasiHouseNumber)) {
       longevityClassHi = 'मध्यायु (३६–७२ वर्ष)';
@@ -1434,7 +1684,6 @@ export interface MarakaAndVulnerabilityResult {
 export function computeMarakaAndVulnerabilityCycles(chart: ChartData): MarakaAndVulnerabilityResult {
   const ascSign = chart.ascendant.signIndex;
 
-  // 2nd and 7th Lords are Prime Marakas
   const h2Sign = (ascSign + 1) % 12;
   const h7Sign = (ascSign + 6) % 12;
 
@@ -1456,7 +1705,6 @@ export function computeMarakaAndVulnerabilityCycles(chart: ChartData): MarakaAnd
     },
   ];
 
-  // Badhaka Lord (Chara -> 11th, Sthira -> 9th, Dwisvabhava -> 7th)
   const modality = SIGNS[ascSign].modality;
   let badhakaHouse = 11;
   if (modality === 'Fixed') badhakaHouse = 9;
@@ -1472,11 +1720,9 @@ export function computeMarakaAndVulnerabilityCycles(chart: ChartData): MarakaAnd
     reasonHi: `${modality} लग्न हेतु ${badhakaHouse}वां भाव बाधक स्थान होता है, जिसके स्वामी की दशा में स्वास्थ्य पर विशेष ध्यान देना चाहिए।`,
   };
 
-  // 22nd Drekkana (Kharesha) is 8th house Drekkana
   const h8Sign = (ascSign + 7) % 12;
   const khareshaId = SIGNS[h8Sign].lord;
 
-  // Vulnerable Age Milestones based on Saturn & Rahu cycles
   const vulnerableAgeMilestones = [28, 36, 44, 52, 60, 68].filter((age) => age <= 80);
 
   return {
@@ -1508,29 +1754,23 @@ export function computeLongevityProtectionAndUpayas(chart: ChartData): Longevity
   const activeBhangaYogasHi: string[] = [];
 
   const jupiter = chart.planets.find((p) => p.id === 'Jupiter');
-  const venus = chart.planets.find((p) => p.id === 'Venus');
   const moon = chart.planets.find((p) => p.id === 'Moon');
-  const mercury = chart.planets.find((p) => p.id === 'Mercury');
 
-  // 1. Jupiter in Lagna destroys hundreds of doshas
   if (jupiter && jupiter.rasiHouseNumber === 1) {
     activeBhangaYogasHi.push(
       'लग्ने देवगुरु बृहस्पति: "एक एव गुरुर्लग्ने हन्ति दोषसहस्रकम्" — लग्न में स्थित देवगुरु हजारों अरिष्टों व दोषों का शमन कर दीर्घायु प्रदान करते हैं।'
     );
   }
 
-  // 2. Benefics in Kendras
   const kendraOccupants = chart.planets.filter((p) => p.id !== 'Asc' && [1, 4, 7, 10].includes(p.rasiHouseNumber));
   if (kendraOccupants.some((p) => ['Jupiter', 'Venus', 'Mercury'].includes(p.id))) {
     activeBhangaYogasHi.push('केंद्रस्थ शुभ ग्रह: केंद्र भावों (१, ४, ७, १०) में शुभ ग्रहों की उपस्थिति जीवन शक्ति एवं आरोग्यता की ढाल बनती है।');
   }
 
-  // 3. Strong Moon or Exalted Moon
   if (moon && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(moon.dignity)) {
     activeBhangaYogasHi.push('बली चंद्र योग: चंद्रदेव स्वराशि या उच्च राशि में स्थित होकर बालारिष्ट का निवारण करते हैं।');
   }
 
-  // 4. Malefics in Upachaya (3, 6, 11)
   const upachayaMalefics = chart.planets.filter(
     (p) => p.id !== 'Asc' && [3, 6, 11].includes(p.rasiHouseNumber) && ['Sun', 'Mars', 'Saturn', 'Rahu'].includes(p.id)
   );
@@ -1563,7 +1803,7 @@ export function computeLongevityProtectionAndUpayas(chart: ChartData): Longevity
 }
 
 // ============================================================================
-// MASTER SUITE EVALUATOR (ALL 15 CALCULATORS IN ONE CONVENIENT CALL)
+// MASTER SUITE EVALUATOR (ALL 15 CALCULATORS WITH DYNAMIC COUPLING)
 // ============================================================================
 
 export interface AuthenticCalculatorsSuiteReport {
@@ -1607,23 +1847,23 @@ export function computeAuthenticCalculatorsSuite(
 
   const p1MoonSign = chart.planets.find((p) => p.id === 'Moon')?.rasiHouseNumber
     ? (chart.planets.find((p) => p.id === 'Moon')!.rasiHouseNumber - 1 + chart.ascendant.signIndex) % 12
-    : 0;
+    : getNamaRashiFromName(p1Details.name).rashiIndex;
 
   const p2MoonSign = partnerChart
     ? (partnerChart.planets.find((p) => p.id === 'Moon')?.rasiHouseNumber
         ? (partnerChart.planets.find((p) => p.id === 'Moon')!.rasiHouseNumber - 1 + partnerChart.ascendant.signIndex) % 12
         : 6)
-    : (p1MoonSign + 6) % 12;
+    : getNamaRashiFromName(p2Details.name).rashiIndex;
 
   return {
     // Category 1
-    loveVsArranged: computeLoveVsArrangedMarriage(chart),
+    loveVsArranged: computeLoveVsArrangedMarriage(chart, p1Details, p2Details),
     marriageTiming: computeMarriageTimingAndTransit(chart),
-    lifePartnerInitials: computeLifePartnerInitials(chart),
-    maritalHarmonyAndRisk: computeMaritalHarmonyAndRisk(chart),
+    lifePartnerInitials: computeLifePartnerInitials(chart, p2Details.name),
+    maritalHarmonyAndRisk: computeMaritalHarmonyAndRisk(chart, p1Details, p2Details),
     karmicSoulBond: computeKarmicSoulBond(chart, partnerChart, p1Details, p2Details),
     streeJataka: computeStreeJatakaAnalysis(chart),
-    zodiacElementMatch: computeZodiacElementMatch(p1MoonSign, p2MoonSign),
+    zodiacElementMatch: computeZodiacElementMatch(p1MoonSign, p2MoonSign, p1Details.name, p2Details.name),
     relationshipPuja: computeRelationshipPujaRecommendations(chart),
 
     // Category 2

@@ -503,6 +503,28 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
                 <h2 style={{ margin: '8px 0 4px 0', fontSize: '22px', color: '#581c87', fontWeight: 800 }}>
                   {p1Name} &amp; {p2Name}
                 </h2>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '6px 0 8px 0' }}>
+                  <span style={{ background: '#e0e7ff', color: '#3730a3', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+                    {p1Name}: {suite.zodiacElementMatch.moonSign1Hi} ({suite.zodiacElementMatch.element1Hi})
+                  </span>
+                  <span style={{ background: '#fce7f3', color: '#9d174d', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+                    {p2Name}: {suite.zodiacElementMatch.moonSign2Hi} ({suite.zodiacElementMatch.element2Hi})
+                  </span>
+                  {suite.lifePartnerInitials.partnerNameMatch && (
+                    <span
+                      style={{
+                        background: suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#dcfce7' : '#fef3c7',
+                        color: suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#166534' : '#92400e',
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {isHi ? 'नामाक्षर सत्यापन:' : 'Name Match:'} {suite.lifePartnerInitials.partnerNameMatch.matchScore}%
+                    </span>
+                  )}
+                </div>
                 <div style={{ fontSize: '13px', color: '#6b21a8' }}>
                   {isHi
                     ? `विवाह स्वरूप: ${suite.loveVsArranged.verdictType} | विवाह काल: ${suite.marriageTiming.primeAgeWindowHi} | आयुर्दाय: ${suite.ayurdayaClass.longevityClassHi}`
@@ -593,7 +615,9 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
                 {suite.lifePartnerInitials.primaryInitials.slice(0, 3).map((p) => p.devanagari).join(', ')} ({suite.lifePartnerInitials.primaryInitials.slice(0, 3).map((p) => p.roman).join(', ')})
               </h3>
               <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
-                {isHi
+                {suite.lifePartnerInitials.partnerNameMatch
+                  ? `${p2Name}: ${suite.lifePartnerInitials.partnerNameMatch.matchScore}% (${suite.lifePartnerInitials.partnerNameMatch.matchGradeHi.split('(')[0].trim()})`
+                  : isHi
                   ? `सप्तमेश: ${suite.lifePartnerInitials.seventhLordHi} (${suite.lifePartnerInitials.seventhSignHi})`
                   : `7th Lord: ${suite.lifePartnerInitials.seventhLordHi}`}
               </p>
@@ -656,6 +680,46 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
               </h3>
               <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
                 {isHi ? 'महर्षि जैमिनी त्रिक सूत्र द्वारा प्रमाणित' : 'Certified via Maharishi Jaimini 3-Pair Rule'}
+              </p>
+            </div>
+
+            {/* Card 7: Name Vibration Match */}
+            <div
+              className="oj-card"
+              style={{ borderLeft: '4px solid #06b6d4', cursor: 'pointer' }}
+              onClick={() => setCategoryAndTab('numerology', 'name_vibration')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#0891b2' }}>
+                  {isHi ? 'नामांक कंपन मिलान' : 'Name Vibration'}
+                </span>
+                <Zap size={14} color="#0891b2" />
+              </div>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#0f172a' }}>
+                {suite.nameVibrationMatch.vibrationalScore}% ({isHi ? suite.nameVibrationMatch.statusGradeHi.split('(')[0] : suite.nameVibrationMatch.statusGradeEn})
+              </h3>
+              <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
+                {p1Name} ({suite.nameVibrationMatch.p1Chaldean}) + {p2Name} ({suite.nameVibrationMatch.p2Chaldean})
+              </p>
+            </div>
+
+            {/* Card 8: Zodiac Element Resonance */}
+            <div
+              className="oj-card"
+              style={{ borderLeft: '4px solid #f97316', cursor: 'pointer' }}
+              onClick={() => setCategoryAndTab('vedic_relationship', 'zodiac_element')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#ea580c' }}>
+                  {isHi ? 'तत्व व राशि मिलान' : 'Element Match'}
+                </span>
+                <Flame size={14} color="#ea580c" />
+              </div>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#0f172a' }}>
+                {suite.zodiacElementMatch.overallResonanceScore}% ({suite.zodiacElementMatch.element1Hi} + {suite.zodiacElementMatch.element2Hi})
+              </h3>
+              <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
+                {suite.zodiacElementMatch.elementalSynergyVerdictHi.slice(0, 42)}...
               </p>
             </div>
           </div>
@@ -823,6 +887,44 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
           <p style={{ fontSize: '13px', color: '#475569', marginBottom: '20px', lineHeight: 1.5 }}>
             {suite.lifePartnerInitials.classicalExplanationHi}
           </p>
+
+          {/* Real-time Entered Partner Verification */}
+          {suite.lifePartnerInitials.partnerNameMatch && (
+            <div
+              style={{
+                marginBottom: '20px',
+                padding: '16px',
+                borderRadius: '10px',
+                background: suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#f0fdf4' : '#f8fafc',
+                border: `2px solid ${suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#22c55e' : '#cbd5e1'}`,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={18} color={suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#16a34a' : '#0284c7'} />
+                  <span style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a' }}>
+                    {isHi ? 'प्रविष्ट जीवनसाथी नाम सत्यापन:' : 'Entered Partner Name Verification:'}{' '}
+                    <span style={{ color: '#0284c7', textDecoration: 'underline' }}>{suite.lifePartnerInitials.partnerNameMatch.partnerName}</span>
+                  </span>
+                </div>
+                <span
+                  style={{
+                    background: suite.lifePartnerInitials.partnerNameMatch.isMatched ? '#16a34a' : '#0284c7',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                  }}
+                >
+                  {isHi ? suite.lifePartnerInitials.partnerNameMatch.matchGradeHi : suite.lifePartnerInitials.partnerNameMatch.matchGradeEn}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
+                {isHi ? suite.lifePartnerInitials.partnerNameMatch.explanationHi : suite.lifePartnerInitials.partnerNameMatch.explanationEn}
+              </p>
+            </div>
+          )}
 
           <div style={{ marginBottom: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#0369a1', marginBottom: '10px' }}>

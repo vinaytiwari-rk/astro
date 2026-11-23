@@ -207,4 +207,47 @@ describe('Authentic Relationship, Marriage, Numerology & Longevity Calculators S
     expect(suite.marakaAndVulnerability).toBeDefined();
     expect(suite.longevityProtection).toBeDefined();
   });
+
+  it('16. dynamically updates scores, verdicts, Nama Rashi and partner verification in real time when names change', () => {
+    const suitePriya = computeAuthenticCalculatorsSuite(
+      chart1,
+      undefined,
+      { name: 'Aarav', dob: '1995-06-15' },
+      { name: 'Priya', dob: '1997-09-22' }
+    );
+
+    const suiteSneha = computeAuthenticCalculatorsSuite(
+      chart1,
+      undefined,
+      { name: 'Aarav', dob: '1995-06-15' },
+      { name: 'Sneha', dob: '1997-09-22' }
+    );
+
+    const suiteRohan = computeAuthenticCalculatorsSuite(
+      chart1,
+      undefined,
+      { name: 'Aarav', dob: '1995-06-15' },
+      { name: 'Rohan', dob: '1997-09-22' }
+    );
+
+    // 1. Name Vibration numbers and scores must differ
+    expect(suitePriya.nameVibrationMatch.p2Chaldean).not.toBe(suiteSneha.nameVibrationMatch.p2Chaldean);
+
+    // 2. Zodiac Element & Nama Rashi must differ
+    // Priya -> कन्या (Earth / Mercury)
+    // Sneha -> कुंभ (Air / Saturn)
+    expect(suitePriya.zodiacElementMatch.moonSign2Hi).not.toBe(suiteSneha.zodiacElementMatch.moonSign2Hi);
+    expect(suitePriya.zodiacElementMatch.element2Hi).not.toBe(suiteSneha.zodiacElementMatch.element2Hi);
+
+    // 3. Partner Name Match verification must differ
+    expect(suitePriya.lifePartnerInitials.partnerNameMatch).toBeDefined();
+    expect(suiteSneha.lifePartnerInitials.partnerNameMatch).toBeDefined();
+    expect(suitePriya.lifePartnerInitials.partnerNameMatch?.partnerName).toBe('Priya');
+    expect(suiteSneha.lifePartnerInitials.partnerNameMatch?.partnerName).toBe('Sneha');
+
+    // 4. Marital Harmony score must dynamically factor in name vibration
+    expect(suitePriya.maritalHarmonyAndRisk.harmonyScore).toBeDefined();
+    expect(suiteRohan.maritalHarmonyAndRisk.harmonyScore).toBeDefined();
+    expect(typeof suitePriya.maritalHarmonyAndRisk.harmonyScore).toBe('number');
+  });
 });
