@@ -965,7 +965,7 @@ function buildSpecialEmpiricalModules(
     ? `दारकारक (DK) ${PLANET_HI[darakaraka]} भाव ${dkBody!.rasiHouseNumber} (${SIGN_HI[dkBody!.signIndex]}) में है — ${PLANET_HI[darakaraka]} की दशा/अंतर्दशा जीवनसाथी प्राप्ति व संबंध मोड़ का मुख्य समय होती है।`
     : 'विवाह विचार सप्तमेश व शुक्र से किया गया है।';
 
-  // 2. Education & Parental Stress (M.N. Kedar / D24)
+  // 2. Education & Parental Stress (Classical Shastric D24)
   const h4Sign = getHouseSign(ascSign, 4);
   const h5Sign = getHouseSign(ascSign, 5);
   const h9Sign = getHouseSign(ascSign, 9);

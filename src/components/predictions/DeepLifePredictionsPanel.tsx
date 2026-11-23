@@ -244,6 +244,44 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </div>
       )}
 
+      {/* Classical Bhava Yogas & Badhaka Architectural Banner */}
+      {report.twelveBhavaYogas && (report.twelveBhavaYogas.bhavaYogas.length > 0 || report.twelveBhavaYogas.parivartanaYogas.length > 0) && (
+        <div className="card" style={{ padding: '14px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '14px' }}>
+              <Crown size={15} color="var(--accent)" />
+              <span>{isHi ? 'शास्त्रीय भाव-योग एवं राशि परिवर्तन योग:' : 'Classical Bhava Yogas & Sign Exchanges:'}</span>
+            </div>
+            <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+              {isHi
+                ? `बाधकेश: ${report.badhakaDosha?.badhaka.badhakaLord} (भाव ${report.badhakaDosha?.badhaka.badhakaHouseNumber})`
+                : `Badhaka Lord: ${report.badhakaDosha?.badhaka.badhakaLord} (H${report.badhakaDosha?.badhaka.badhakaHouseNumber})`}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+            {report.twelveBhavaYogas.bhavaYogas.map((by, bIdx) => (
+              <span key={bIdx} className="badge badge-accent" style={{ fontSize: '11.5px', padding: '4px 8px' }}>
+                {isHi ? by.yogaNameHi : by.yogaNameEn.split(' (')[0]} ({isHi ? `भाव ${by.houseNumber}` : `H${by.houseNumber}`})
+              </span>
+            ))}
+            {report.twelveBhavaYogas.parivartanaYogas.map((py, pIdx) => (
+              <span
+                key={`p-${pIdx}`}
+                className={`badge ${py.type === 'Maha' ? 'badge-good' : py.type === 'Khala' ? 'badge-subtle' : 'badge-warn'}`}
+                style={{ fontSize: '11.5px', padding: '4px 8px' }}
+              >
+                {isHi ? py.nameHi : py.nameEn}
+              </span>
+            ))}
+          </div>
+
+          <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+            {isHi ? report.twelveBhavaYogas.prominentSummaryHi : report.twelveBhavaYogas.prominentSummaryEn}
+          </div>
+        </div>
+      )}
+
       {/* 12 Life Chapters Quick Dropdown & Jump Pills */}
       <div className="card" style={{ padding: '12px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
@@ -352,6 +390,49 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               </div>
               {isHi ? domain.predictionHi : domain.predictionEn}
             </div>
+
+            {/* Dina Mrityu & Dina Roga Health Diagnostic Card */}
+            {domain.id === 'health' && report.dinaMrityuRoga && (
+              <div
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  background: report.dinaMrityuRoga.isCancelled
+                    ? 'rgba(22, 163, 74, 0.08)'
+                    : 'rgba(220, 38, 38, 0.08)',
+                  borderLeft: `4px solid ${report.dinaMrityuRoga.isCancelled ? '#16a34a' : '#dc2626'}`,
+                  border: '1px solid var(--border)',
+                  marginBottom: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px' }}>
+                    <Shield size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
+                    <span>{isHi ? 'शास्त्रीय दिवा-दोष परीक्षण: ' : 'Diurnal Constellation Diagnostic: '}</span>
+                    <span style={{ color: report.dinaMrityuRoga.isCancelled ? '#16a34a' : '#dc2626' }}>
+                      {report.dinaMrityuRoga.hasDosha
+                        ? (isHi ? report.dinaMrityuRoga.doshaNameHi : report.dinaMrityuRoga.doshaNameEn)
+                        : (isHi ? 'दिवा-दोष मुक्त' : 'Clean Diurnal Moon')}
+                    </span>
+                  </div>
+                  <span
+                    className={`tag ${report.dinaMrityuRoga.isCancelled ? 'tag-varg' : 'tag-retro'}`}
+                    style={{ fontSize: '11px', fontWeight: 700 }}
+                  >
+                    {report.dinaMrityuRoga.isCancelled
+                      ? (isHi ? 'बालारिष्ट भंग / दोष शमित' : 'Balarishta Bhanga (Protected)')
+                      : (isHi ? 'विशेष सतर्कता अपेक्षित' : 'Active Vulnerability')}
+                  </span>
+                </div>
+                <p style={{ margin: '0 0 6px', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
+                  {isHi ? report.dinaMrityuRoga.verdictHi : report.dinaMrityuRoga.verdictEn}
+                </p>
+                <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                  <strong>{isHi ? 'शास्त्रीय शांति उपाय: ' : 'Classical Remedy: '}</strong>
+                  {isHi ? report.dinaMrityuRoga.classicalRemedyHi : report.dinaMrityuRoga.classicalRemedyEn}
+                </div>
+              </div>
+            )}
 
             {/* Active Timing Window & Concrete Event Milestones */}
             {(domain.timingWindowHi || domain.timingWindowEn) && (

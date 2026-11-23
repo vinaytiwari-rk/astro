@@ -13,6 +13,7 @@ import { PLANET_IN_HOUSE_KB } from './bhavaKb';
 import { LAGNA_EXTENDED_KB } from './extendedKb';
 import { evaluateParamayusStatus } from './paramayus';
 import { getAifasYoginiMaha, getAifasYoginiSub } from './aifasYoginiDashaKb';
+import { computeBadhakaAndFunctionalDoshas } from './badhakaAndKendradhipatya';
 import type { DashaMutualAxisInfo } from './types';
 export type { DashaMutualAxisInfo };
 
@@ -451,6 +452,18 @@ export function predictDashaDetail(params: {
       : ['Jupiter', 'Venus', 'Mercury'].includes(mdId)
         ? [`Classical Rule 23 (Jeeva vs Dravya): Natural benefic fosters mental tranquility, family happiness, and ethical standing in proportion to Shadbala strength.`]
         : []),
+    ...(() => {
+      const bInfo = computeBadhakaAndFunctionalDoshas(chart, mdId);
+      const notes: string[] = [];
+      if (bInfo.badhaka.isDashaActive) {
+        notes.push(`Classical Rule (Badhakadhipati Alert): ${mdId} is the Badhaka Lord for ${chart.ascendant.signName} Lagna (House ${bInfo.badhaka.badhakaHouseNumber}) — pace major initiatives cautiously and propitiate Lord Shiva.`);
+      }
+      const kDosha = bInfo.kendradhipatya.find((k) => k.planet === mdId && !k.isCancelled);
+      if (kDosha) {
+        notes.push(`Classical Rule (Kendradhipatya Blemish): ${mdId} owns Kendra House(s) ${kDosha.ruledKendras.join(' & ')} (${kDosha.severity}) — requires strict ethical compliance in commitments.`);
+      }
+      return notes;
+    })(),
   ];
 
   const guidance =

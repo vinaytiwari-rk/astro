@@ -43,6 +43,10 @@ import { NAKSHATRAS, SIGNS } from '../constants';
 import { computeCharaKarakas } from '../jaimini';
 import { getFunctionalLordship } from './functionalLordship';
 import { detectClassicalYogas, type DetectedClassicalYoga } from './classicalYogasKb';
+import { computeDinaMrityuAndRoga, type DinaMrityuRogaResult } from './dinaMrityuRoga';
+import { computeTwelveBhavaAndParivartanaYogas, type TwelveBhavaAndParivartanaReport } from './twelveBhavaYogas';
+import { computeBadhakaAndFunctionalDoshas, type BadhakaAndFunctionalDoshaReport } from './badhakaAndKendradhipatya';
+export type { DinaMrityuRogaResult, TwelveBhavaAndParivartanaReport, BadhakaAndFunctionalDoshaReport };
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -173,6 +177,9 @@ export interface PurusharthaReport {
 
 export interface DeepLifePredictionsReport {
   purusharthas: PurusharthaReport;
+  dinaMrityuRoga: DinaMrityuRogaResult;
+  twelveBhavaYogas: TwelveBhavaAndParivartanaReport;
+  badhakaDosha: BadhakaAndFunctionalDoshaReport;
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
   lifeStatureClassEn?: string;
@@ -1681,6 +1688,9 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
   const purusharthas = computePurusharthaBalance(chart);
   const karmicMissionEn = purusharthas.soulMissionEn;
   const karmicMissionHi = purusharthas.soulMissionHi;
+  const dinaMrityuRoga = computeDinaMrityuAndRoga(chart);
+  const twelveBhavaYogas = computeTwelveBhavaAndParivartanaYogas(chart);
+  const badhakaDosha = computeBadhakaAndFunctionalDoshas(chart);
 
   return {
     overallLifeScore,
@@ -1695,6 +1705,9 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
     karmicMissionEn,
     karmicMissionHi,
     purusharthas,
+    dinaMrityuRoga,
+    twelveBhavaYogas,
+    badhakaDosha,
     executiveSummaryEn,
     executiveSummaryHi,
     domains,

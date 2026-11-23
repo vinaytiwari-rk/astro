@@ -3,6 +3,9 @@ import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeDeepLifePredictions, computePurusharthaBalance } from '../predictions/deepLifePredictions';
 import { computeDashaBhuktiMutualAxis } from '../predictions/dashaPrashna';
+import { computeDinaMrityuAndRoga } from '../predictions/dinaMrityuRoga';
+import { computeTwelveBhavaAndParivartanaYogas } from '../predictions/twelveBhavaYogas';
+import { computeBadhakaAndFunctionalDoshas } from '../predictions/badhakaAndKendradhipatya';
 
 describe('Chart-specific General Prediction synthesis', () => {
   it('derives distinct domain evidence from three different natal charts', () => {
@@ -183,5 +186,61 @@ describe('Chart-specific General Prediction synthesis', () => {
     const axis11 = computeDashaBhuktiMutualAxis(10, 10, 'Mercury', 'Venus');
     expect(axis11.axisType).toBe('1/1');
     expect(axis11.isAuspicious).toBe(true);
+  });
+
+  it('computes Dina Mrityu and Dina Roga with day/night awareness and Balarishta Bhanga', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(report.dinaMrityuRoga).toBeDefined();
+    expect(typeof report.dinaMrityuRoga.isDayBirth).toBe('boolean');
+    expect(report.dinaMrityuRoga.verdictEn.length).toBeGreaterThan(20);
+    expect(report.dinaMrityuRoga.verdictHi.length).toBeGreaterThan(20);
+    expect(report.dinaMrityuRoga.classicalSource).toContain('Brihat Parashara');
+
+    // Test a synthetic day birth chart with Bharani Pada 4 (Dina Mrityu)
+    const bharaniChart = {
+      ...chart,
+      planets: chart.planets.map((p) => {
+        if (p.id === 'Sun') return { ...p, rasiHouseNumber: 10 }; // day birth
+        if (p.id === 'Moon') return { ...p, nakshatraName: 'Bharani', pada: 4 };
+        return p;
+      }),
+    };
+    const dinaRes = computeDinaMrityuAndRoga(bharaniChart);
+    expect(dinaRes.hasDosha).toBe(true);
+    expect(dinaRes.doshaType).toBe('Dina Mrityu');
+    expect(dinaRes.isDayBirth).toBe(true);
+  });
+
+  it('computes 12 Bhava Yogas and 30 Parivartana Yogas accurately', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(report.twelveBhavaYogas).toBeDefined();
+    expect(Array.isArray(report.twelveBhavaYogas.bhavaYogas)).toBe(true);
+    expect(Array.isArray(report.twelveBhavaYogas.parivartanaYogas)).toBe(true);
+    expect(report.twelveBhavaYogas.prominentSummaryEn.length).toBeGreaterThan(15);
+    expect(report.twelveBhavaYogas.prominentSummaryHi.length).toBeGreaterThan(15);
+
+    // If any Bhava Yogas detected, verify classical structure
+    for (const yoga of report.twelveBhavaYogas.bhavaYogas) {
+      expect(yoga.houseNumber).toBeGreaterThanOrEqual(1);
+      expect(yoga.houseNumber).toBeLessThanOrEqual(12);
+      expect(yoga.effectEn.length).toBeGreaterThan(20);
+      expect(yoga.classicalSource).toContain('Phaladeepika');
+    }
+  });
+
+  it('computes Badhaka Sthana, Badhaka Lord and Kendradhipatya Dosha for 12 Lagnas', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(report.badhakaDosha).toBeDefined();
+    expect(report.badhakaDosha.badhaka).toBeDefined();
+
+    // Verify Badhaka house: Chara -> 11, Sthira -> 9, Dwiswabhava -> 7
+    const ascSign = chart.ascendant.signIndex;
+    const expectedBadhakaH = ascSign % 3 === 0 ? 11 : ascSign % 3 === 1 ? 9 : 7;
+    expect(report.badhakaDosha.badhaka.badhakaHouseNumber).toBe(expectedBadhakaH);
+    expect(report.badhakaDosha.badhaka.effectEn.length).toBeGreaterThan(30);
+    expect(report.badhakaDosha.trishadaya).toHaveLength(3);
   });
 });
