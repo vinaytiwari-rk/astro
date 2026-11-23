@@ -724,8 +724,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
-                    <strong>{isHi ? 'भाग्य एवं कार्मिक कैलकुलेटर' : 'Fortune & Karmic Calculators'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'प्रेम, मित्रता, पूर्व जन्म कर्म व अगला जन्म' : 'Love, Friendship, Past Life & Future Rebirth'}</span>
+                    <strong>{isHi ? 'दांपत्य, अंकज्योतिष व आयुर्दाय कैलकुलेटर' : 'Relationship, Numerology & Longevity Calculators'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'प्रेम vs पारंपरिक विवाह, समय, नामाक्षर, अंक अनुकूलता, आयुर्दाय' : 'Love vs Arranged, Timing, Partner Initial, Numerology & Ayurdaya'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('interactive-palmistry')}>
                     <strong>{isHi ? 'इंटरैक्टिव हस्तरेखा प्रश्नावली' : 'Interactive Palmistry Q&A'}</strong>

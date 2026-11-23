@@ -1127,25 +1127,25 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               </button>
             </article>
 
-            {/* Card 27: Fortune & Karmic Calculators */}
+            {/* Card 27: Authentic Relationship, Numerology & Longevity Calculators */}
             <article className="oj-service-card" style={{ borderLeft: '3px solid #ec4899' }}>
               <div className="oj-card-badge-row">
                 <span className="oj-card-tag" style={{ background: '#ec4899', color: '#fff' }}>
-                  {isHi ? 'कैलकुलेटर' : 'Calculators'}
+                  {isHi ? 'प्रामाणिक कैलकुलेटर' : 'Authentic Calculators'}
                 </span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'भाग्य एवं कार्मिक कैलकुलेटर हब (Fortune Calculators)' : 'Fortune & Karmic Calculators Hub'}</h3>
+              <h3 className="oj-card-title">{isHi ? 'दांपत्य, अंकज्योतिष व आयुर्दाय कैलकुलेटर हब' : 'Relationship, Numerology & Longevity Suite'}</h3>
               <p className="oj-card-text">
                 {isHi
-                  ? 'प्रेम कम्पैटिबिलिटी (मूलांक-भाग्यांक), मित्रता स्कोर, गरुड़ पुराण व भृगु संहिता आधारित पूर्व जन्म संस्कार एवं आगामी जन्म सद्गति निर्धारण।'
-                  : 'Love compatibility, friendship synergy, past life karmic debts, and next reincarnation trajectory.'}
+                  ? 'प्रेम बनाम पारंपरिक विवाह, सटीक विवाह समय (द्वि-गोचर), जीवनसाथी का संभावित नामाक्षर, दांपत्य सामंजस्य, मूलांक-भाग्यांक अनुकूलता, तथा शास्त्रीय आयुर्दाय व महामृत्युंजय रक्षा विधान।'
+                  : 'Love vs arranged marriage, marriage timing, partner initials, marital harmony, numerology compatibility, and authentic Vedic ayurdaya longevity protection.'}
               </p>
               <button
                 type="button"
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('fortune-calculators')}
               >
-                <span>{isHi ? 'कैलकुलेटर खोलें →' : 'Open Fortune Calculators →'}</span>
+                <span>{isHi ? 'कैलकुलेटर हब खोलें →' : 'Open Calculators Hub →'}</span>
               </button>
             </article>
 
