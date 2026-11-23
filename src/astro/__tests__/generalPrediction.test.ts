@@ -39,7 +39,7 @@ describe('Natal-only General Prediction reconstruction', () => {
     expect('timingWindowEn' in career!).toBe(false);
     expect('concreteEventsEn' in career!).toBe(false);
     expect(report.methodEn).toContain('Dasha and transit are separate');
-    expect(report.summaryEn).toContain('No Dasha');
+    expect(report.summaryEn).toContain('natal-chart-based');
   });
 
   it('produces chart-dependent evidence for different natal charts', () => {
