@@ -90,7 +90,9 @@ export const KarakatwaPredictionPanel: React.FC<KarakatwaPredictionPanelProps> =
                         ? (isHi ? 'प्राथमिक ग्रंथ' : 'Primary text')
                         : item.sourceStatus === 'translation-check'
                           ? (isHi ? 'अनुवाद का पुनःमिलान आवश्यक' : 'Translation verification required')
-                          : (isHi ? 'अनुसंधान-परिकल्पना' : 'Research hypothesis')}
+                          : item.sourceStatus === 'calculated-data'
+                            ? (isHi ? 'गणना-आधारित कुंडली डेटा' : 'Calculated chart data')
+                            : (isHi ? 'अनुसंधान-परिकल्पना' : 'Research hypothesis')}
                     </div>
                   </li>
                 ))}
