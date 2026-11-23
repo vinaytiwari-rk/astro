@@ -64,10 +64,6 @@ const HI_NAMES: Record<string, string> = {
   Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
 
-function houseForSign(chart: ChartData, signIndex: number): number {
-  return ((signIndex - chart.ascendant.signIndex + 12) % 12) + 1;
-}
-
 function signForHouse(chart: ChartData, house: number): number {
   return (chart.ascendant.signIndex + house - 1) % 12;
 }
