@@ -87,7 +87,7 @@ const YOGA_DOMAIN_TARGETS: Record<string, string[]> = {
   Nabhasa: ['personality', 'career', 'spirituality'],
 };
 
-function hasUsableYogaSource(source: string): boolean {
+export function isClassicalYogaSourceUsable(source: string): boolean {
   return !/not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|classical vedic shastra|300 classical yogas/i.test(source);
 }
 
@@ -227,7 +227,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
   for (const yoga of detectedYogas) {
     if (!yogaAppliesToDomain(yoga.category, domain)) continue;
     const definition = CLASSICAL_YOGAS_KB.find((item) => item.id === yoga.id);
-    if (!definition || !hasUsableYogaSource(definition.source)) continue;
+    if (!definition || !isClassicalYogaSourceUsable(definition.source)) continue;
     evidence.push({
       kind: 'context',
       source: `Classical yoga rule: ${yoga.name} — ${definition.source}`,
