@@ -31,6 +31,7 @@ import {
   computeMasterMarriageMuhurtaReport,
   type MasterMarriageMuhurtaReport,
 } from '../../astro/marriageMuhurtaEngine';
+import { computeComprehensiveMarriageReport } from '../../astro/predictions/marriageAstrologyEngine';
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -123,6 +124,10 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
   const muhurtaReport: MasterMarriageMuhurtaReport = useMemo(() => {
     return computeMasterMarriageMuhurtaReport(groomChart, brideChart);
   }, [groomChart, brideChart]);
+
+  // Execute Classical Nadi, Stree Jataka & Double Transit Marriage Engine
+  const groomMarriage = useMemo(() => computeComprehensiveMarriageReport(groomChart), [groomChart]);
+  const brideMarriage = useMemo(() => computeComprehensiveMarriageReport(brideChart), [brideChart]);
 
   // Chart Badges for Visual Displays
   const groomD1Badges: ChartBadgeItem[] = useMemo(() => [
@@ -1463,6 +1468,67 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
                 {isHi ? matchReport.ayushyaSafety.verdictHi : matchReport.ayushyaSafety.verdictEn}
               </p>
             </div>
+          </div>
+
+          {/* Classical Nadi 2-7-11, Stri Jataka Trimsamsha & Double Transit Diagnostic */}
+          <div style={{ margin: '14px 0 24px', padding: '16px', borderRadius: '12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderLeft: '5px solid #ec4899' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#be185d', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Heart size={16} />
+                <span>{isHi ? 'नाड़ी विवाह भाव समीकरण (२, ७, ११), स्त्री जातक त्रिंशांश एवं पराशर द्वि-गोचर' : 'Nadi Marriage Significations (2, 7, 11), Stri Jataka & Double Transit'}</span>
+              </h3>
+              <span className="amm-synastry-badge badge-strong" style={{ fontSize: '0.8rem' }}>
+                {isHi ? 'वराहमिहिर · पराशर संहिता · चंद्रकला नाड़ी' : 'Varahamihira · Parashara · Nadi'}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px', marginBottom: '12px' }}>
+              {/* Groom Diagnostic */}
+              <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#2563eb' }}>
+                    {groomInput.name} ({isHi ? 'वर' : 'Groom'})
+                  </strong>
+                  <span className="tag tag-accent" style={{ fontSize: '10.5px' }}>
+                    {isHi ? groomMarriage.marriageNatureHi : groomMarriage.marriageNature}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text)', lineHeight: 1.5, marginBottom: '6px' }}>
+                  <div><strong>{isHi ? 'नाड़ी विवाह बल (२, ७, ११): ' : 'Nadi Marriage: '}</strong>{groomMarriage.nadiSignifications.marriageScore} | <strong>{isHi ? 'प्रेम बल (५, ८, १२): ' : 'Love: '}</strong>{groomMarriage.nadiSignifications.loveScore}</div>
+                  <div><strong>{isHi ? 'उपपद लग्न (UL): ' : 'Upapada Lagna: '}</strong>{groomMarriage.timingAndDoubleTransit.upapadaLagnaSign} ({isHi ? 'स्वामी:' : 'Lord:'} {groomMarriage.timingAndDoubleTransit.upapadaLord})</div>
+                  <div><strong>{isHi ? 'स्वर्णिम विवाह काल: ' : 'Prime Marriage Window: '}</strong>{isHi ? groomMarriage.timingAndDoubleTransit.primeMarriageAgeWindowHi : groomMarriage.timingAndDoubleTransit.primeMarriageAgeWindowEn}</div>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
+                  <strong>{isHi ? 'वर उपाय: ' : 'Remedy: '}</strong>{isHi ? groomMarriage.authenticVedicRemediesHi[0] : groomMarriage.authenticVedicRemediesEn[0]}
+                </div>
+              </div>
+
+              {/* Bride Diagnostic */}
+              <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#ec4899' }}>
+                    {brideInput.name} ({isHi ? 'कन्या' : 'Bride'})
+                  </strong>
+                  <span className="tag tag-accent" style={{ fontSize: '10.5px' }}>
+                    {isHi ? brideMarriage.marriageNatureHi : brideMarriage.marriageNature}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text)', lineHeight: 1.5, marginBottom: '6px' }}>
+                  <div><strong>{isHi ? 'त्रिंशांश स्वभाव (वराहमिहिर): ' : 'Trimsamsha: '}</strong>{isHi ? brideMarriage.streeJataka.trimsamshaNatureHi : brideMarriage.streeJataka.trimsamshaNatureEn}</div>
+                  <div><strong>{isHi ? 'मांगल्य स्थिति (८म भाव): ' : 'Mangalya Sthana: '}</strong>{isHi ? brideMarriage.streeJataka.mangalyaHouse8StatusHi : brideMarriage.streeJataka.mangalyaHouse8Status}</div>
+                  <div><strong>{isHi ? 'स्वर्णिम विवाह काल: ' : 'Prime Marriage Window: '}</strong>{isHi ? brideMarriage.timingAndDoubleTransit.primeMarriageAgeWindowHi : brideMarriage.timingAndDoubleTransit.primeMarriageAgeWindowEn}</div>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
+                  <strong>{isHi ? 'कन्या उपाय (कात्यायनी): ' : 'Katyayani Upaya: '}</strong>{isHi ? brideMarriage.authenticVedicRemediesHi[0] : brideMarriage.authenticVedicRemediesEn[0]}
+                </div>
+              </div>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.45 }}>
+              {isHi
+                ? 'पराशर संहिता द्वि-गोचर सिद्धांत: जब गोचर में देवगुरु बृहस्पति एवं कर्मफलदाता शनि देव दोनों जन्म लग्न, सप्तम भाव अथवा उपपद लग्न को एक साथ सक्रिय करते हैं, तभी पाणिग्रहण संस्कार का निर्विघ्न योग बनता है।'
+                : 'Brihat Parashara Double Transit Principle: When transit Jupiter and Saturn simultaneously activate natal Lagna, 7th house, or Upapada Lagna, the matrimonial alliance is peacefully solemnized.'}
+            </p>
           </div>
 
           {/* House-to-House 12-Bhava Synastry Matrix Table */}

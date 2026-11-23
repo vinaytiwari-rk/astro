@@ -391,6 +391,106 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
               {isHi ? domain.predictionHi : domain.predictionEn}
             </div>
 
+            {/* Classical Marriage, Stree Jataka & Double Transit Diagnostic Card */}
+            {domain.id === 'marriage' && report.marriageReport && (
+              <div
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  borderLeft: '4px solid #ec4899',
+                  marginBottom: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Heart size={15} color="#ec4899" />
+                    <span>{isHi ? 'शास्त्रीय विवाह स्वरूप, जीवनसाथी व द्वि-गोचर फलादेश:' : 'Classical Marriage Nature, Spouse & Timing Diagnostic:'}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="tag tag-accent" style={{ fontSize: '11px', fontWeight: 700 }}>
+                      {isHi ? report.marriageReport.marriageNatureHi : report.marriageReport.marriageNature}
+                    </span>
+                    <span
+                      className={`tag ${
+                        report.marriageReport.marriagePromiseRating.includes('Auspicious')
+                          ? 'tag-varg'
+                          : 'tag-retro'
+                      }`}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
+                    >
+                      {isHi ? report.marriageReport.marriagePromiseRatingHi : report.marriageReport.marriagePromiseRating}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 3 Pillar Summary Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--accent)', marginBottom: '2px' }}>
+                      {isHi ? 'नाड़ी भाव समीकरण (२, ७, ११):' : 'Nadi House Harmony:'}
+                    </div>
+                    <div>
+                      {isHi ? 'विवाह बल: ' : 'Marriage: '}<strong>{report.marriageReport.nadiSignifications.marriageScore}</strong> · {isHi ? 'प्रेम बल: ' : 'Love: '}<strong>{report.marriageReport.nadiSignifications.loveScore}</strong>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <div style={{ fontWeight: 700, color: '#ec4899', marginBottom: '2px' }}>
+                      {isHi ? 'स्त्री जातक व सौभाग्य (८म भाव):' : 'Stree Jataka & Saubhagya:'}
+                    </div>
+                    <div style={{ fontWeight: 600 }}>
+                      {isHi ? report.marriageReport.streeJataka.mangalyaHouse8StatusHi : report.marriageReport.streeJataka.mangalyaHouse8Status}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-subtle)', fontSize: '12px' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--accent)', marginBottom: '2px' }}>
+                      {isHi ? 'उपपद लग्न (UL):' : 'Upapada Lagna (UL):'}
+                    </div>
+                    <div>
+                      <strong>{report.marriageReport.timingAndDoubleTransit.upapadaLagnaSign}</strong> ({isHi ? 'स्वामी:' : 'Lord:'} {report.marriageReport.timingAndDoubleTransit.upapadaLord})
+                    </div>
+                  </div>
+                </div>
+
+                {/* Spouse Persona */}
+                <div style={{ padding: '8px 10px', borderRadius: '6px', background: 'rgba(236, 72, 153, 0.06)', borderLeft: '3px solid #ec4899', marginBottom: '8px', fontSize: '12px', color: 'var(--text)' }}>
+                  <strong>{isHi ? 'जीवनसाथी का स्वरूप व आचरण: ' : 'Spouse Persona: '}</strong>
+                  {isHi ? report.marriageReport.streeJataka.spousePersonaHi : report.marriageReport.streeJataka.spousePersonaEn}
+                  <div style={{ marginTop: '2px', color: 'var(--text-muted)' }}>
+                    <strong>{isHi ? 'संभावित आजीविका: ' : 'Profession/Status: '}</strong>
+                    {isHi ? report.marriageReport.streeJataka.spouseProfessionAndStatusHi : report.marriageReport.streeJataka.spouseProfessionAndStatusEn}
+                  </div>
+                </div>
+
+                {/* Timing & Double Transit Window */}
+                <div style={{ fontSize: '12px', marginBottom: '8px', color: 'var(--text)' }}>
+                  <strong>{isHi ? 'स्वर्णिम विवाह समय-सीमा (द्वि-गोचर): ' : 'Prime Marriage Window (Double Transit): '}</strong>
+                  <span style={{ color: '#b45309', fontWeight: 700 }}>
+                    {isHi
+                      ? report.marriageReport.timingAndDoubleTransit.primeMarriageAgeWindowHi
+                      : report.marriageReport.timingAndDoubleTransit.primeMarriageAgeWindowEn}
+                  </span>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    {isHi
+                      ? report.marriageReport.timingAndDoubleTransit.currentTimingVerdictHi
+                      : report.marriageReport.timingAndDoubleTransit.currentTimingVerdictEn}
+                  </div>
+                </div>
+
+                {/* Classical Vedic Vivaha Remedies */}
+                <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
+                  <strong>{isHi ? 'अचूक शास्त्रीय विवाह व दांपत्य उपाय (कात्यायनी / पत्नी मनोरमां): ' : 'Vedic Vivaha Upayas: '}</strong>
+                  {(isHi
+                    ? report.marriageReport.authenticVedicRemediesHi
+                    : report.marriageReport.authenticVedicRemediesEn
+                  ).join(' · ')}
+                </div>
+              </div>
+            )}
+
             {/* Dina Mrityu & Dina Roga Health Diagnostic Card */}
             {domain.id === 'health' && report.dinaMrityuRoga && (
               <div

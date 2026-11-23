@@ -53,6 +53,14 @@ import {
   type ProgenyDiagnosticReport,
   type VulnerableOrganSystem,
 } from './medicalAstrologyEngine';
+import {
+  computeComprehensiveMarriageReport,
+  type ComprehensiveMarriageReport,
+  type MarriageNature,
+  type StreeJatakaDiagnostic,
+  type DoubleTransitAndTimingWindow,
+  type KootaLongevityAlert,
+} from './marriageAstrologyEngine';
 export type {
   DinaMrityuRogaResult,
   TwelveBhavaAndParivartanaReport,
@@ -61,8 +69,13 @@ export type {
   SpecificDiseaseAlert,
   ProgenyDiagnosticReport,
   VulnerableOrganSystem,
+  ComprehensiveMarriageReport,
+  MarriageNature,
+  StreeJatakaDiagnostic,
+  DoubleTransitAndTimingWindow,
+  KootaLongevityAlert,
 };
-export { computeComprehensiveChikitsaReport };
+export { computeComprehensiveChikitsaReport, computeComprehensiveMarriageReport };
 
 export interface DeepDomainPrediction {
   id: string; titleEn: string; titleHi: string; icon: string;
@@ -197,6 +210,7 @@ export interface DeepLifePredictionsReport {
   twelveBhavaYogas: TwelveBhavaAndParivartanaReport;
   badhakaDosha: BadhakaAndFunctionalDoshaReport;
   chikitsaReport: ComprehensiveChikitsaReport;
+  marriageReport: ComprehensiveMarriageReport;
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
   lifeStatureClassEn?: string;
@@ -1651,7 +1665,34 @@ export function computePurusharthaBalance(chart: ChartData): PurusharthaReport {
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
   const classicalYogas = detectClassicalYogas(chart);
   const chikitsaReport = computeComprehensiveChikitsaReport(chart);
+  const marriageReport = computeComprehensiveMarriageReport(chart);
   const domains = DOMAINS.map((config) => buildDomain(chart, config, classicalYogas));
+
+  const marriageDomain = domains.find((d) => d.id === 'marriage');
+  if (marriageDomain) {
+    if (!marriageDomain.concreteEventsEn) marriageDomain.concreteEventsEn = [];
+    if (!marriageDomain.concreteEventsHi) marriageDomain.concreteEventsHi = [];
+    marriageDomain.concreteEventsEn.push(`Marriage Nature: ${marriageReport.marriageNature}. Expected Timing: ${marriageReport.timingAndDoubleTransit.primeMarriageAgeWindowEn}`);
+    marriageDomain.concreteEventsHi.push(`विवाह स्वरूप: ${marriageReport.marriageNatureHi}। संभावित विवाह काल: ${marriageReport.timingAndDoubleTransit.primeMarriageAgeWindowHi}`);
+
+    marriageDomain.keyStrengthsEn.push(`Spouse Persona: ${marriageReport.streeJataka.spousePersonaEn} Career: ${marriageReport.streeJataka.spouseProfessionAndStatusEn}`);
+    marriageDomain.keyStrengthsHi.push(`जीवनसाथी का स्वरूप: ${marriageReport.streeJataka.spousePersonaHi} आजीविका: ${marriageReport.streeJataka.spouseProfessionAndStatusHi}`);
+
+    if (marriageReport.streeJataka.mangalyaHouse8Status.includes('Auspicious')) {
+      marriageDomain.keyStrengthsEn.push(`Saubhagya Sthana: ${marriageReport.streeJataka.mangalyaDetailsEn}`);
+      marriageDomain.keyStrengthsHi.push(`सौभाग्य स्थान: ${marriageReport.streeJataka.mangalyaDetailsHi}`);
+    }
+
+    if (marriageReport.maritalDiscordRisk !== 'Low') {
+      marriageDomain.watchoutsEn.push(`Marital Harmony Vigilance: ${marriageReport.maritalDiscordDetailsEn}`);
+      marriageDomain.watchoutsHi.push(`दांपत्य सामंजस्य सतर्कता: ${marriageReport.maritalDiscordDetailsHi}`);
+    }
+
+    if (marriageReport.streeJataka.mangalyaHouse8Status === 'Requires Shanti') {
+      marriageDomain.watchoutsEn.push(`8th House Mangalya Alert: ${marriageReport.streeJataka.mangalyaDetailsEn}`);
+      marriageDomain.watchoutsHi.push(`अष्टम भाव मांगल्य संकेत: ${marriageReport.streeJataka.mangalyaDetailsHi}`);
+    }
+  }
 
   const childrenDomain = domains.find((d) => d.id === 'children');
   if (childrenDomain) {
@@ -1770,6 +1811,7 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
     twelveBhavaYogas,
     badhakaDosha,
     chikitsaReport,
+    marriageReport,
     executiveSummaryEn,
     executiveSummaryHi,
     domains,
