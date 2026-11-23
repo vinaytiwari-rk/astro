@@ -48,7 +48,10 @@ describe('Natal-only General Prediction reconstruction', () => {
     const evidence = report.domains.flatMap((domain) => domain.evidence);
 
     expect(evidence.some((item) => item.source.startsWith('Graha degree and placement:'))).toBe(true);
-    expect(evidence.some((item) => item.source.startsWith('Same-sign yuti review:'))).toBe(true);
+    const hasSameSignPair = chart.planets.some((planet, index) =>
+      chart.planets.slice(index + 1).some((other) => other.signIndex === planet.signIndex),
+    );
+    expect(evidence.some((item) => item.source.startsWith('Same-sign yuti review:'))).toBe(hasSameSignPair);
     expect(evidence.some((item) => item.source.startsWith('Calculated graha drishti:'))).toBe(chart.aspects.length > 0);
     expect(evidence.some((item) => item.detailEn.includes('Whole-sign rasi house:') && item.detailEn.includes('selected bhava house:'))).toBe(true);
     expect(evidence.some((item) => item.detailHi.includes('पूर्ण राशि पद्धति से भाव:') && item.detailHi.includes('भाव-चालित पद्धति से भाव:'))).toBe(true);
