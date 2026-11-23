@@ -339,7 +339,8 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
     ? `भाव ${primaryHouse} के स्वामी ${HI_NAMES[primaryLord.id] ?? primaryLord.id} भाव ${primaryLord.rasiHouseNumber} में ${primaryLord.signName} राशि में ${primaryLord.dignity} गरिमा के साथ स्थित हैं।`
     : `भाव ${primaryHouse} के स्वामी की गणित स्थिति उपलब्ध नहीं है।`;
 
-  const prediction = buildReaderPrediction(domain, primaryLord);\n  const supportive = evidence.filter((item) => item.kind === 'supportive').length;
+  const prediction = buildReaderPrediction(domain, primaryLord);
+  const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
   const completeness = availableCoreFactors >= expectedCoreFactors ? 'complete'
     : availableCoreFactors > 0 ? 'partial' : 'limited';
@@ -350,7 +351,9 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
 
   return {
     ...domain,
-    predictionEn: prediction.en,\n    predictionHi: prediction.hi,\n    interpretationBasisEn: interpretationBasis.en,
+    predictionEn: prediction.en,
+    predictionHi: prediction.hi,
+    interpretationBasisEn: interpretationBasis.en,
     interpretationBasisHi: interpretationBasis.hi,
     primaryAnchorEn,
     primaryAnchorHi,
