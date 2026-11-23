@@ -1,6 +1,7 @@
 import type { ChartData, DivisionalChartId, NineGrahaId, SevenPlanetId } from '../types';
 import { SIGNS } from '../constants';
 import { getFunctionalLordship } from './functionalLordship';
+import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from './classicalYogasKb';
 
 export type GeneralEvidenceKind = 'supportive' | 'caution' | 'context';
 export interface GeneralPredictionEvidence {
@@ -75,6 +76,25 @@ const DOMAIN_BASIS: Record<string, { en: string; hi: string }> = {
   remedies: { en: 'This domain describes the traditional ethical and spiritual context of the 1st, 5th and 9th houses. It does not prescribe gemstones or claim that a remedy guarantees an outcome.', hi: 'यह क्षेत्र प्रथम, पंचम और नवम भाव से जुड़े पारंपरिक नैतिक एवं आध्यात्मिक संदर्भ बताता है। इसमें रत्न-निर्देश या उपाय से निश्चित फल की गारंटी नहीं दी जाती।' },
 };
 
+
+const YOGA_DOMAIN_TARGETS: Record<string, string[]> = {
+  Mahapurusha: ['personality', 'career', 'milestones'],
+  Chandra: ['personality', 'wealth', 'milestones'],
+  Surya: ['personality', 'career'],
+  Raja: ['career', 'milestones'],
+  Dhana: ['wealth'],
+  Viparita: ['career', 'wealth'],
+  Nabhasa: ['personality', 'career', 'spirituality'],
+};
+
+function hasUsableYogaSource(source: string): boolean {
+  return !/not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|300 classical yogas/i.test(source);
+}
+
+function yogaAppliesToDomain(category: string, domain: DomainDefinition): boolean {
+  return YOGA_DOMAIN_TARGETS[category]?.includes(domain.id) ?? false;
+}
+
 const SEVEN_PLANETS = new Set<SevenPlanetId>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
 const CLASSICAL_GRAHAS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
 const SUPPORTIVE_DIGNITIES = new Set(['Exalted', 'Moolatrikona', 'Own Sign', 'Great Friend', 'Friend']);
@@ -113,6 +133,7 @@ function dignityKind(dignity: string): GeneralEvidenceKind {
 function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredictionDomain {
   const evidence: GeneralPredictionEvidence[] = [];
   const relatedPlanets = new Set<string>();
+  const detectedYogas = detectClassicalYogas(chart);
   let availableCoreFactors = 0;
   const expectedCoreFactors = domain.houses.length + domain.karakas.length;
 
@@ -137,6 +158,20 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
           detailEn: `${lord.id} owns houses ${roles.ownedHouses.join(', ') || 'not available'}; roles: ${roles.rolesEn.join('; ') || 'not assigned'}.`,
           detailHi: `${HI_NAMES[lord.id] ?? lord.id} भाव ${roles.ownedHouses.join(', ') || 'उपलब्ध नहीं'} के स्वामी हैं; कार्यात्मक भूमिका: ${roles.rolesHi.join('؛ ') || 'निर्धारित नहीं'}।`,
         });
+        const ownershipFlags = [
+          roles.yogakarakaProfile ? 'Kendra + trikona ownership (traditional yogakaraka profile)' : '',
+          roles.kendradhipatiCaution ? 'Kendradhipati caution' : '',
+          roles.ownsDusthana ? 'Dusthana ownership' : '',
+          roles.ownsMarakaHouse ? 'Maraka-house ownership (2nd/7th)' : '',
+        ].filter(Boolean);
+        if (ownershipFlags.length) {
+          evidence.push({
+            kind: 'context',
+            source: `Classical functional-lordship flags: ${lord.id}`,
+            detailEn: `${lord.id}: ${ownershipFlags.join('; ')}. These are traditional ownership classifications only; weigh them with placement, dignity, aspects, strength and the complete chart.`,
+            detailHi: `${HI_NAMES[lord.id] ?? lord.id}: ${ownershipFlags.join('؛ ')}। ये केवल पारंपरिक भाव-स्वामित्व वर्गीकरण हैं; इन्हें स्थिति, गरिमा, दृष्टि, बल और पूरी कुंडली के साथ समझें।`,
+          });
+        }
       }
       const strength = chart.shadbala.find((row) => row.planet === lord.id);
       if (strength) {
@@ -187,6 +222,19 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
         detailHi: `भाव ${house} की राशि में सर्वाष्टकवर्ग के ${sav} बिंदु हैं। इसे गणितीय मान के रूप में दिखाया गया है, स्वतंत्र घटना-भविष्यवाणी के रूप में नहीं।`,
       });
     }
+  }
+
+
+  for (const yoga of detectedYogas) {
+    if (!yogaAppliesToDomain(yoga.category, domain)) continue;
+    const definition = CLASSICAL_YOGAS_KB.find((item) => item.id === yoga.id);
+    if (!definition || !hasUsableYogaSource(definition.source)) continue;
+    evidence.push({
+      kind: 'context',
+      source: `Classical yoga rule: ${yoga.name} — ${definition.source}`,
+      detailEn: `The implemented rule detector identifies ${yoga.name} (${yoga.strength}) involving ${yoga.planets.join(', ') || 'unspecified planets'} in houses ${yoga.houses.join(', ') || 'not specified'}. Rule condition: ${definition.conditionEn}. This records a rule match, not a guaranteed result; assess cancellation, dignity, functional ownership, strength and corroborating factors separately.`,
+      detailHi: `गणना-इंजन के नियम-परीक्षक ने ${yoga.nameHi} (${yoga.strength}) का संकेत पाया है। संबंधित ग्रह: ${yoga.planets.join(', ') || 'निर्दिष्ट नहीं'}; भाव: ${yoga.houses.join(', ') || 'निर्दिष्ट नहीं'}। शास्त्रीय शर्त: ${definition.conditionHi}। यह केवल नियम-मिलान का अभिलेख है, निश्चित फल नहीं; भंग, ग्रह-गरिमा, कार्यात्मक स्वामित्व, बल और अन्य पुष्टिकारक संकेत अलग से जाँचें।`,
+    });
   }
 
   for (const id of domain.karakas) {
@@ -259,8 +307,8 @@ export function computeGeneralPrediction(chart: ChartData): GeneralPredictionRep
   const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain));
   const evidenceCount = domains.reduce((sum, domain) => sum + domain.evidence.length, 0);
   const partialDomains = domains.filter((domain) => domain.dataCompleteness !== 'complete').length;
-  const summaryEn = `This natal-only overview evaluates ${domains.length} life domains using house lords, occupants, natural significators, planetary dignity, available Shadbala, Sarvashtakavarga, graha aspects and the relevant divisional chart. It records ${evidenceCount} chart observations; ${partialDomains} domains have incomplete core data. No Dasha, current transit, fixed age range, event guarantee, medical diagnosis or probability estimate is included.`;
-  const summaryHi = `यह केवल जन्मकुंडली पर आधारित सार ${domains.length} जीवन-क्षेत्रों में भावेश, भावस्थित ग्रह, नैसर्गिक कारक, ग्रह-गरिमा, उपलब्ध षड्बल, सर्वाष्टकवर्ग, ग्रह-दृष्टि और संबंधित वर्ग-कुंडली का परीक्षण करता है। कुल ${evidenceCount} कुंडली-प्रेक्षण दर्ज हैं; ${partialDomains} क्षेत्रों में मूल डेटा अपूर्ण है। इसमें दशा, वर्तमान गोचर, निश्चित आयु-सीमा, घटना की गारंटी, चिकित्सकीय निदान या संभाव्यता-प्रतिशत शामिल नहीं है।`;
+  const summaryEn = `This natal-only overview evaluates ${domains.length} life domains using house lords, functional lordship, classical yoga rule matches, occupants, natural significators, planetary dignity, available Shadbala, Sarvashtakavarga, graha aspects and the relevant divisional chart. It records ${evidenceCount} chart observations; ${partialDomains} domains have incomplete core data. No Dasha, current transit, fixed age range, event guarantee, medical diagnosis or probability estimate is included.`;
+  const summaryHi = `यह केवल जन्मकुंडली पर आधारित सार ${domains.length} जीवन-क्षेत्रों में भावेश, कार्यात्मक स्वामित्व, शास्त्रीय योग-नियम मिलान, भावस्थित ग्रह, नैसर्गिक कारक, ग्रह-गरिमा, उपलब्ध षड्बल, सर्वाष्टकवर्ग, ग्रह-दृष्टि और संबंधित वर्ग-कुंडली का परीक्षण करता है। कुल ${evidenceCount} कुंडली-प्रेक्षण दर्ज हैं; ${partialDomains} क्षेत्रों में मूल डेटा अपूर्ण है। इसमें दशा, वर्तमान गोचर, निश्चित आयु-सीमा, घटना की गारंटी, चिकित्सकीय निदान या संभाव्यता-प्रतिशत शामिल नहीं है।`;
 
   return {
     titleEn: 'General Prediction — Natal Chart Synthesis',
