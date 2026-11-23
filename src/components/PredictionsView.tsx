@@ -37,7 +37,7 @@ import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { ActiveYogasAndYutiPanel } from './predictions/ActiveYogasAndYutiPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { AscendantWisePanel } from './predictions/AscendantWisePanel';
-import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
+import { GeneralPredictionPanel } from './predictions/GeneralPredictionPanel';
 import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 import { ParasharaKalaWorkstationPanel } from './predictions/ParasharaKalaWorkstationPanel';
 import { SpecializedVedicPanel } from './predictions/SpecializedVedicPanel';
@@ -323,7 +323,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
           )}
 
           {currentTab === 'deep_life' && (
-            <DeepLifePredictionsPanel chart={chart} />
+            <GeneralPredictionPanel chart={chart} />
           )}
 
           {currentTab === 'eventsLedger' && (
