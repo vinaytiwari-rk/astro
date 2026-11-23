@@ -248,8 +248,6 @@ function appearancePrediction(chart: ChartData): KarakatwaPrediction {
 
   addCalculatedGrahaFactors(evidence, chart, [...lagnaOccupants, ...beneficAspects, lagnaLord, moon, venus], true);
 
-  addCalculatedGrahaFactors(evidence, chart, [...thirdOccupants, ...thirdAspects, thirdLord, mars]);
-
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
   const level = evidenceLevel(supportive, caution, evidence.length);
@@ -348,7 +346,7 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
     ));
   }
 
-  addCalculatedGrahaFactors(evidence, chart, keyPlanets);
+  addCalculatedGrahaFactors(evidence, chart, [...thirdOccupants, ...thirdAspects, thirdLord, mars]);
 
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
@@ -414,6 +412,8 @@ function personalityPrediction(chart: ChartData): KarakatwaPrediction {
       `${BPHS}, Chapter 3, verses 23–31; Chapter 12`,
     ));
   }
+
+  addCalculatedGrahaFactors(evidence, chart, keyPlanets);
 
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
