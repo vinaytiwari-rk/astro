@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeGeneralPrediction } from '../predictions/generalPrediction';
+import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from '../predictions/classicalYogasKb';
 
 describe('Natal-only General Prediction reconstruction', () => {
   it('returns the twelve approved life domains with explicit chart evidence', () => {
@@ -46,6 +47,51 @@ describe('Natal-only General Prediction reconstruction', () => {
         .map((item) => item.detailEn).join('|'),
     );
     expect(new Set(careerEvidence).size).toBeGreaterThan(1);
+  });
+
+  it('surfaces only sourced classical yoga rule matches in relevant domains', () => {
+    const targets: Record<string, string[]> = {
+      Mahapurusha: ['personality', 'career', 'milestones'],
+      Chandra: ['personality', 'wealth', 'milestones'],
+      Surya: ['personality', 'career'],
+      Raja: ['career', 'milestones'],
+      Dhana: ['wealth'],
+      Viparita: ['career', 'wealth'],
+      Nabhasa: ['personality', 'career', 'spirituality'],
+    };
+    const charts = SAMPLE_CHARTS.slice(0, 3).map((sample) => calculateChart(sample, DEFAULT_SETTINGS));
+
+    for (const chart of charts) {
+      const detected = detectClassicalYogas(chart);
+      const report = computeGeneralPrediction(chart);
+      for (const yoga of detected) {
+        const definition = CLASSICAL_YOGAS_KB.find((item) => item.id === yoga.id);
+        if (!definition || /not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|300 classical yogas/i.test(definition.source)) continue;
+        for (const domainId of targets[yoga.category] ?? []) {
+          const domain = report.domains.find((item) => item.id === domainId);
+          expect(domain?.evidence.some((item) =>
+            item.source.startsWith(`Classical yoga rule: ${yoga.name} — ${definition.source}`)
+            && item.detailEn.includes(definition.conditionEn),
+          )).toBe(true);
+        }
+      }
+      const yogaEvidence = report.domains.flatMap((domain) => domain.evidence)
+        .filter((item) => item.source.startsWith('Classical yoga rule:'));
+      expect(yogaEvidence.every((item) =>
+        !/not verified|unverified|verify the individual/i.test(item.source),
+      )).toBe(true);
+    }
+  });
+
+  it('records functional-lordship flags as context rather than stand-alone verdicts', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeGeneralPrediction(chart);
+    const flags = report.domains.flatMap((domain) => domain.evidence)
+      .filter((item) => item.source.startsWith('Classical functional-lordship flags:'));
+    for (const item of flags) {
+      expect(item.kind).toBe('context');
+      expect(item.detailEn).toContain('traditional ownership classifications only');
+    }
   });
 
   it('provides Hindi and English explanations without probability claims', () => {
