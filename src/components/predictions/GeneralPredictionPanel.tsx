@@ -102,11 +102,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
             ? 'यह पारंपरिक ज्योतिषीय व्याख्या है, वैज्ञानिक रूप से प्रमाणित भविष्यवाणी नहीं। दशा और गोचर से समय-निर्धारण अलग से होगा। स्वास्थ्य संबंधी भाग चिकित्सकीय सलाह नहीं है।'
             : 'This is a traditional astrological interpretation, not a scientifically validated forecast. Dasha and transit timing are separate. The health section is not medical advice.'}
         </p>
-        <ul style={{ margin: '10px 0 0', paddingLeft: '18px', display: 'grid', gap: '6px', fontSize: '12px' }}>
-          <li><a href="https://vedicpupil.in/library/books/brihat-parashara-hora-shastra/chapter-24" target="_blank" rel="noreferrer">Brihat Parashara Hora Shastra — Chapter 24: House Lord Results</a></li>
-          <li><a href="https://www.wisdomlib.org/hinduism/book/phaladeepika-by-mantreswara-text-and-translation" target="_blank" rel="noreferrer">Phaladeepika — Mantreswara (text and translation)</a></li>
-          <li><a href="https://astravya.co.in/library/text/saravali" target="_blank" rel="noreferrer">Saravali — Kalyana Varma (text overview and chapter map)</a></li>
-        </ul>
+
       </section>
     </div>
   );
