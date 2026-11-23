@@ -89,6 +89,18 @@ export const PLANET_FRIENDSHIP_MATRIX: Record<number, Record<number, number>> = 
   9: { 1: 2, 2: 2, 3: 2, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0, 9: 2 }, // Mars
 };
 
+export const PLANET_NUMEROLOGY_MAP: Record<string, number> = {
+  Sun: 1,
+  Moon: 2,
+  Jupiter: 3,
+  Rahu: 4,
+  Mercury: 5,
+  Venus: 6,
+  Ketu: 7,
+  Saturn: 8,
+  Mars: 9,
+};
+
 // ============================================================================
 // NAMA RASHI (NAME PHONETICS TO VEDIC RASHI & ELEMENT MAPPER)
 // ============================================================================
@@ -159,6 +171,156 @@ export function getNamaRashiFromName(name: string): NamaRashiProfile {
   const cNum = computeNameNumber(clean, 'chaldean').reduced;
   const mapIdx = [0, 4, 1, 8, 10, 2, 6, 7, 9, 0][cNum] ?? 0;
   return makeRashiProfile(mapIdx, 'Ashwini', SIGNS[mapIdx].lord, DEVANAGARI_PLANET_NAMES[SIGNS[mapIdx].lord]);
+}
+
+// ============================================================================
+// 0. AUTHENTIC LOVE CALCULATOR (LOVE PERCENTAGE & COMPATIBILITY)
+// ============================================================================
+
+export interface LoveCalculatorResult {
+  p1Name: string;
+  p2Name: string;
+  p1SignHi: string;
+  p2SignHi: string;
+  p1ElementHi: string;
+  p2ElementHi: string;
+  p1Chaldean: number;
+  p2Chaldean: number;
+  overallLoveScore: number; // 0..100
+  romanticChemistryScore: number; // 0..100
+  emotionalBondScore: number; // 0..100
+  communicationScore: number; // 0..100
+  longTermPotentialScore: number; // 0..100
+  verdictTitleHi: string;
+  verdictTitleEn: string;
+  verdictDescriptionHi: string;
+  verdictDescriptionEn: string;
+  strengthsHi: string[];
+  growthAreasHi: string[];
+  relationshipAdviceHi: string;
+}
+
+export function computeLoveCalculator(
+  p1: { name: string; dob?: string; signIndex?: number },
+  p2: { name: string; dob?: string; signIndex?: number }
+): LoveCalculatorResult {
+  const name1 = p1.name && p1.name.trim().length > 0 ? p1.name.trim() : 'जातक १';
+  const name2 = p2.name && p2.name.trim().length > 0 ? p2.name.trim() : 'जातक २';
+
+  const nr1 = getNamaRashiFromName(name1);
+  const nr2 = getNamaRashiFromName(name2);
+
+  const sign1 = p1.signIndex !== undefined ? ((p1.signIndex % 12) + 12) % 12 : nr1.rashiIndex;
+  const sign2 = p2.signIndex !== undefined ? ((p2.signIndex % 12) + 12) % 12 : nr2.rashiIndex;
+
+  const elem1 = ELEMENT_PROFILES[sign1 % 4];
+  const elem2 = ELEMENT_PROFILES[sign2 % 4];
+
+  // Chaldean Numerology
+  const c1 = computeNameNumber(name1, 'chaldean');
+  const c2 = computeNameNumber(name2, 'chaldean');
+  const nameFriendship = PLANET_FRIENDSHIP_MATRIX[c1.reduced]?.[c2.reduced] ?? 1;
+
+  // Planetary Lord Friendship
+  const lord1 = SIGNS[sign1].lord as SevenPlanetId;
+  const lord2 = SIGNS[sign2].lord as SevenPlanetId;
+  const lord1Num = PLANET_NUMEROLOGY_MAP[lord1] || 1;
+  const lord2Num = PLANET_NUMEROLOGY_MAP[lord2] || 1;
+  const lordFriendship = PLANET_FRIENDSHIP_MATRIX[lord1Num]?.[lord2Num] ?? 1;
+
+  // Elemental Synergy
+  const e1 = sign1 % 4; // 0: Fire, 1: Earth, 2: Air, 3: Water
+  const e2 = sign2 % 4;
+  let elemScore = 75;
+  if (e1 === e2) elemScore = e1 === 3 ? 92 : e1 === 1 ? 88 : 85;
+  else if ((e1 === 0 && e2 === 2) || (e1 === 2 && e2 === 0)) elemScore = 93; // Fire + Air
+  else if ((e1 === 1 && e2 === 3) || (e1 === 3 && e2 === 1)) elemScore = 95; // Earth + Water
+  else if ((e1 === 2 && e2 === 3) || (e1 === 3 && e2 === 2)) elemScore = 74; // Air + Water
+  else if ((e1 === 0 && e2 === 1) || (e1 === 1 && e2 === 0)) elemScore = 68; // Fire + Earth
+  else if ((e1 === 0 && e2 === 3) || (e1 === 3 && e2 === 0)) elemScore = 62; // Fire + Water
+
+  // DOB Mulank synergy (if provided)
+  let dobScore = 75;
+  if (p1.dob && p2.dob) {
+    const m1 = reduceToSingleDigit(parseInt(p1.dob.replace(/\D/g, '').slice(-2), 10) || 1);
+    const m2 = reduceToSingleDigit(parseInt(p2.dob.replace(/\D/g, '').slice(-2), 10) || 1);
+    const mf = PLANET_FRIENDSHIP_MATRIX[m1]?.[m2] ?? 1;
+    dobScore = mf === 2 ? 94 : mf === 1 ? 80 : 58;
+  }
+
+  // Sub-scores computation
+  let chemistry = Math.round(elemScore * 0.45 + (nameFriendship === 2 ? 45 : nameFriendship === 1 ? 35 : 20) + (lordFriendship === 2 ? 10 : 0));
+  let emotional = Math.round(elemScore * 0.4 + dobScore * 0.4 + (nameFriendship === 2 ? 20 : 10));
+  let communication = Math.round((nameFriendship === 2 ? 50 : nameFriendship === 1 ? 38 : 25) + (lordFriendship === 2 ? 45 : lordFriendship === 1 ? 35 : 25));
+  let longTerm = Math.round(dobScore * 0.45 + elemScore * 0.35 + (lordFriendship === 2 ? 20 : 10));
+
+  chemistry = Math.max(45, Math.min(98, chemistry));
+  emotional = Math.max(45, Math.min(98, emotional));
+  communication = Math.max(45, Math.min(98, communication));
+  longTerm = Math.max(45, Math.min(98, longTerm));
+
+  let overallLoveScore = Math.round(chemistry * 0.3 + emotional * 0.3 + communication * 0.2 + longTerm * 0.2);
+  overallLoveScore = Math.max(50, Math.min(98, overallLoveScore));
+
+  let verdictTitleHi = 'प्रगाढ़ प्रेम व गहरा भावनात्मक आकर्षण';
+  let verdictTitleEn = 'Strong Romantic & Emotional Affinity';
+  let verdictDescHi = `नाम '${name1}' (${nr1.rashiHi}, ${elem1.hi}) एवं '${name2}' (${nr2.rashiHi}, ${elem2.hi}) के मध्य ध्वनि कंपन और तत्वीय ऊर्जा का अत्यंत सुंदर संगम है। दोनों एक-दूसरे की भावनाओं को स्वाभाविक रूप से समझते हैं।`;
+  let verdictDescEn = `Harmonious synergy between ${name1} (${elem1.en}) and ${name2} (${elem2.en}).`;
+
+  if (overallLoveScore >= 90) {
+    verdictTitleHi = 'अटूट प्रेम एवं अलौकिक आत्मिक सामंजस्य (Exceptional Cosmic Bond)';
+    verdictTitleEn = 'Exceptional Cosmic Bond & Divine Love';
+    verdictDescHi = `परम शुभ योग! '${name1}' (नामांक ${c1.reduced}) और '${name2}' (नामांक ${c2.reduced}) के बीच ध्वनि तरंगों, राशियों व तत्वों का दुर्लभ सामंजस्य है। यह प्रेम गहरा, स्थायी व प्रेरणादायक रहेगा।`;
+  } else if (overallLoveScore >= 80) {
+    verdictTitleHi = 'प्रगाढ़ प्रेम व गहरा भावनात्मक आकर्षण (Strong Romantic Bond)';
+    verdictTitleEn = 'Strong Romantic & Emotional Harmony';
+    verdictDescHi = `'${name1}' और '${name2}' के मध्य स्वाभाविक आकर्षण एवं आत्मीयता है। आपसी संवाद व सम्मान से यह संबंध उत्तरोत्तर अधिक प्रगाढ़ होगा।`;
+  } else if (overallLoveScore >= 70) {
+    verdictTitleHi = 'मधुर प्रेम व संतुलित दांपत्य योग (Sweet & Balanced Connection)';
+    verdictTitleEn = 'Balanced & Affectionate Connection';
+    verdictDescHi = `दोनों के मध्य मधुर संतुलन है। यदा-कदा विचारों में अंतर हो सकता है, परंतु आपसी समझ व विश्वास से प्रेम सदैव प्रफुल्लित रहेगा।`;
+  } else {
+    verdictTitleHi = 'परस्पर समझ व अनुकूलन से विकसित होने वाला प्रेम (Nurtured Love)';
+    verdictTitleEn = 'Love Nurtured with Patience & Care';
+    verdictDescHi = `यह संबंध धैर्य, स्पष्ट संवाद और एक-दूसरे के दृष्टिकोण को सम्मान देने से प्रगाढ़ होगा। शांत मन से श्रवण करने पर प्रेम का प्रवाह सुदृढ़ होगा।`;
+  }
+
+  const strengthsHi = [
+    `${elem1.hi} एवं ${elem2.hi} तत्वों का पारस्परिक पूरक स्वभाव`,
+    `चालडियन नामांक ${c1.reduced} एवं ${c2.reduced} के मध्य ${nameFriendship === 2 ? 'परम मित्रवत' : nameFriendship === 1 ? 'सम-संतुलित' : 'सकारात्मक'} ध्वनि संबंध`,
+    'भावनात्मक संवेदनशीलता एवं जीवन के प्रति पारस्परिक निष्ठा',
+  ];
+
+  const growthAreasHi = [
+    'व्यस्तता के क्षणों में भी प्रतिदिन आत्मीय संवाद का समय निकालें।',
+    'महत्वपूर्ण निर्णयों में एक-दूसरे के सुझाव को आदरपूर्वक सुनें।',
+  ];
+
+  const relationshipAdviceHi =
+    'शुक्रवार को मां लक्ष्मी व भगवान विष्णु के युगल स्वरूप का स्मरण करें तथा एक-दूसरे को आदर व कृतज्ञता व्यक्त करें।';
+
+  return {
+    p1Name: name1,
+    p2Name: name2,
+    p1SignHi: DEVANAGARI_SIGN_NAMES[sign1],
+    p2SignHi: DEVANAGARI_SIGN_NAMES[sign2],
+    p1ElementHi: elem1.hi,
+    p2ElementHi: elem2.hi,
+    p1Chaldean: c1.reduced,
+    p2Chaldean: c2.reduced,
+    overallLoveScore,
+    romanticChemistryScore: chemistry,
+    emotionalBondScore: emotional,
+    communicationScore: communication,
+    longTermPotentialScore: longTerm,
+    verdictTitleHi,
+    verdictTitleEn,
+    verdictDescriptionHi: verdictDescHi,
+    verdictDescriptionEn: verdictDescEn,
+    strengthsHi,
+    growthAreasHi,
+    relationshipAdviceHi,
+  };
 }
 
 // ============================================================================
@@ -1807,6 +1969,9 @@ export function computeLongevityProtectionAndUpayas(chart: ChartData): Longevity
 // ============================================================================
 
 export interface AuthenticCalculatorsSuiteReport {
+  // Primary Love Compatibility Calculator
+  loveCalculator: LoveCalculatorResult;
+
   // Category 1: Vedic Shastric Relationship Calculators
   loveVsArranged: LoveVsArrangedResult;
   marriageTiming: MarriageTimingResult;
@@ -1856,6 +2021,9 @@ export function computeAuthenticCalculatorsSuite(
     : getNamaRashiFromName(p2Details.name).rashiIndex;
 
   return {
+    // Primary Love Compatibility
+    loveCalculator: computeLoveCalculator(p1Details, p2Details),
+
     // Category 1
     loveVsArranged: computeLoveVsArrangedMarriage(chart, p1Details, p2Details),
     marriageTiming: computeMarriageTimingAndTransit(chart),

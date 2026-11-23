@@ -27,6 +27,7 @@ import {
   computeKarmicSoulBond,
   computeLifePartnerInitials,
   computeLongevityProtectionAndUpayas,
+  computeLoveCalculator,
   computeLoveVsArrangedMarriage,
   computeMarakaAndVulnerabilityCycles,
   computeMaritalHarmonyAndRisk,
@@ -37,6 +38,7 @@ import {
   computeStreeJatakaAnalysis,
   computeZodiacElementMatch,
   type AuthenticCalculatorsSuiteReport,
+  type LoveCalculatorResult,
 } from '../../astro/relationshipCalculatorsEngine';
 import {
   computeFutureLifeReading,
@@ -56,6 +58,7 @@ export type MainCalculatorCategory =
 
 export type SpecificCalculatorId =
   | 'overview'
+  | 'love_calculator'
   // Category 1
   | 'love_vs_arranged'
   | 'marriage_timing'
@@ -277,12 +280,21 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
         </button>
 
         <button
-          onClick={() => setCategoryAndTab('vedic_relationship', 'love_vs_arranged')}
-          className={`oj-tab-pill ${activeCategory === 'vedic_relationship' ? 'is-active' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          onClick={() => setCategoryAndTab('vedic_relationship', 'love_calculator')}
+          className={`oj-tab-pill ${activeTab === 'love_calculator' ? 'is-active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', background: activeTab === 'love_calculator' ? '#e11d48' : '#fff1f2', color: activeTab === 'love_calculator' ? '#ffffff' : '#be123c', border: '1px solid #fecdd3' }}
         >
           <Heart size={14} />
-          <span>{isHi ? '१. वैदिक दांपत्य कैलकुलेटर (८)' : '1. Vedic Marriage Tools (8)'}</span>
+          <span>{isHi ? 'लव कैलकुलेटर (Love %)' : 'Love Calculator (%)'}</span>
+        </button>
+
+        <button
+          onClick={() => setCategoryAndTab('vedic_relationship', 'love_vs_arranged')}
+          className={`oj-tab-pill ${activeCategory === 'vedic_relationship' && activeTab !== 'love_calculator' ? 'is-active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <Flame size={14} />
+          <span>{isHi ? '१. वैदिक दांपत्य व विवाह (८)' : '1. Vedic Marriage Tools (8)'}</span>
         </button>
 
         <button
@@ -328,6 +340,7 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
           }}
         >
           {[
+            { id: 'love_calculator', labelHi: 'लव कैलकुलेटर (Love %)', labelEn: 'Love Calculator' },
             { id: 'love_vs_arranged', labelHi: 'प्रेम vs पारंपरिक', labelEn: 'Love vs Arranged' },
             { id: 'marriage_timing', labelHi: 'सटीक विवाह समय (द्वि-गोचर)', labelEn: 'Marriage Timing' },
             { id: 'partner_initials', labelHi: 'जीवनसाथी का नामाक्षर', labelEn: 'Partner Initials' },
@@ -535,21 +548,21 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
               <div
                 style={{
                   background: '#ffffff',
-                  border: '2px solid #c084fc',
+                  border: '2px solid #fb7185',
                   padding: '10px 22px',
                   borderRadius: '12px',
                   textAlign: 'center',
-                  boxShadow: '0 2px 8px rgba(168,85,247,0.15)',
+                  boxShadow: '0 2px 8px rgba(225,29,72,0.12)',
                 }}
               >
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#6b21a8', textTransform: 'uppercase' }}>
-                  {isHi ? 'दांपत्य स्थिरता स्कोर' : 'Harmony Score'}
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#9f1239', textTransform: 'uppercase' }}>
+                  {isHi ? 'लव व दांपत्य स्कोर' : 'Love & Harmony'}
                 </div>
-                <div style={{ fontSize: '32px', fontWeight: 900, color: '#7e22ce' }}>
-                  {suite.maritalHarmonyAndRisk.harmonyScore}%
+                <div style={{ fontSize: '32px', fontWeight: 900, color: '#e11d48' }}>
+                  {suite.loveCalculator.overallLoveScore}%
                 </div>
                 <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 600 }}>
-                  {isHi ? suite.maritalHarmonyAndRisk.statusGradeHi : suite.maritalHarmonyAndRisk.statusGradeEn}
+                  {isHi ? suite.loveCalculator.verdictTitleHi.split('(')[0] : suite.loveCalculator.verdictTitleEn}
                 </div>
               </div>
             </div>
@@ -557,17 +570,39 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
 
           {/* Quick Snapshot Cards Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+            {/* Card 0: Love Calculator (InstaAstro #1 Primary Tool) */}
+            <div
+              className="oj-card"
+              style={{ borderLeft: '4px solid #e11d48', cursor: 'pointer', background: '#fff1f2' }}
+              onClick={() => setCategoryAndTab('vedic_relationship', 'love_calculator')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#e11d48' }}>
+                  {isHi ? 'लव कैलकुलेटर (Love %)' : 'Love Calculator'}
+                </span>
+                <Heart size={14} color="#e11d48" />
+              </div>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#9f1239', fontWeight: 900 }}>
+                {suite.loveCalculator.overallLoveScore}% — {isHi ? suite.loveCalculator.verdictTitleHi.split('(')[0].trim() : suite.loveCalculator.verdictTitleEn}
+              </h3>
+              <p style={{ margin: 0, fontSize: '12px', color: '#881337' }}>
+                {isHi
+                  ? `केमिस्ट्री: ${suite.loveCalculator.romanticChemistryScore}% | जुड़ाव: ${suite.loveCalculator.emotionalBondScore}% | संचार: ${suite.loveCalculator.communicationScore}%`
+                  : `Chemistry: ${suite.loveCalculator.romanticChemistryScore}% | Bond: ${suite.loveCalculator.emotionalBondScore}%`}
+              </p>
+            </div>
+
             {/* Card 1: Love vs Arranged */}
             <div
               className="oj-card"
-              style={{ borderLeft: '4px solid #e11d48', cursor: 'pointer' }}
+              style={{ borderLeft: '4px solid #f43f5e', cursor: 'pointer' }}
               onClick={() => setCategoryAndTab('vedic_relationship', 'love_vs_arranged')}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#e11d48' }}>
                   {isHi ? 'विवाह स्वरूप निर्णय' : 'Marriage Mode'}
                 </span>
-                <Heart size={14} color="#e11d48" />
+                <Sparkles size={14} color="#e11d48" />
               </div>
               <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#0f172a' }}>
                 {suite.loveVsArranged.verdictType}
@@ -720,6 +755,149 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
               </h3>
               <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
                 {suite.zodiacElementMatch.elementalSynergyVerdictHi.slice(0, 42)}...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 0. AUTHENTIC LOVE CALCULATOR (LOVE PERCENTAGE & COMPATIBILITY) */}
+      {/* ========================================================================= */}
+      {activeTab === 'love_calculator' && (
+        <div className="oj-card" style={{ padding: '24px', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <Heart size={22} color="#e11d48" />
+            <h2 style={{ margin: 0, fontSize: '22px', color: '#0f172a', fontWeight: 800 }}>
+              {isHi ? 'लव कैलकुलेटर (Love Percentage & Compatibility)' : 'Authentic Love Calculator'}
+            </h2>
+          </div>
+
+          <p style={{ fontSize: '13px', color: '#475569', marginBottom: '20px', lineHeight: 1.5 }}>
+            {isHi
+              ? `यह कैलकुलेटर '${p1Name}' एवं '${p2Name}' के नामों की ध्वनि तरंगों (चालडियन नामांक), वैदिक नाम राशियों, उनके तत्वों (अग्नि, पृथ्वी, वायु, जल) और मूलांकों के वास्तविक ग्रहीय सामंजस्य का सटीक विश्लेषण करता है।`
+              : `Evaluates romantic resonance between ${p1Name} and ${p2Name} using name sound phonetics, zodiac elements, and planetary friendship.`}
+          </p>
+
+          {/* Grand Love Score Banner */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #fff1f2 0%, #fdf2f8 100%)',
+              border: '2px solid #fb7185',
+              padding: '24px',
+              borderRadius: '14px',
+              textAlign: 'center',
+              marginBottom: '24px',
+              boxShadow: '0 4px 12px rgba(225,29,72,0.08)',
+            }}
+          >
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#9f1239', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {isHi ? 'कुल प्रेम एवं अनुकूलता स्कोर' : 'Overall Love Compatibility Score'}
+            </div>
+            <div style={{ fontSize: '56px', fontWeight: 900, color: '#e11d48', margin: '8px 0 4px 0' }}>
+              {suite.loveCalculator.overallLoveScore}%
+            </div>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: '#881337', marginBottom: '8px' }}>
+              {isHi ? suite.loveCalculator.verdictTitleHi : suite.loveCalculator.verdictTitleEn}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '10px' }}>
+              <span style={{ background: '#ffffff', border: '1px solid #fecdd3', color: '#9f1239', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: 700 }}>
+                {p1Name}: {suite.loveCalculator.p1SignHi} ({suite.loveCalculator.p1ElementHi}) | नामांक {suite.loveCalculator.p1Chaldean}
+              </span>
+              <span style={{ background: '#ffffff', border: '1px solid #fecdd3', color: '#9f1239', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: 700 }}>
+                {p2Name}: {suite.loveCalculator.p2SignHi} ({suite.loveCalculator.p2ElementHi}) | नामांक {suite.loveCalculator.p2Chaldean}
+              </span>
+            </div>
+          </div>
+
+          {/* 4 Core Dimension Progress Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
+            {/* 1. Chemistry */}
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', padding: '14px', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#9a3412', marginBottom: '6px' }}>
+                <span>{isHi ? 'रोमांटिक केमिस्ट्री' : 'Romantic Chemistry'}</span>
+                <span>{suite.loveCalculator.romanticChemistryScore}%</span>
+              </div>
+              <div style={{ width: '100%', background: '#ffedd5', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${suite.loveCalculator.romanticChemistryScore}%`, background: '#ea580c', height: '100%' }} />
+              </div>
+              <div style={{ fontSize: '11px', color: '#c2410c', marginTop: '6px' }}>
+                {isHi ? 'तत्व व शुक्र-मंगल आकर्षण' : 'Element & Venus-Mars attraction'}
+              </div>
+            </div>
+
+            {/* 2. Emotional Bond */}
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '14px', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#1e40af', marginBottom: '6px' }}>
+                <span>{isHi ? 'भावनात्मक जुड़ाव' : 'Emotional Bond'}</span>
+                <span>{suite.loveCalculator.emotionalBondScore}%</span>
+              </div>
+              <div style={{ width: '100%', background: '#dbeafe', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${suite.loveCalculator.emotionalBondScore}%`, background: '#2563eb', height: '100%' }} />
+              </div>
+              <div style={{ fontSize: '11px', color: '#1d4ed8', marginTop: '6px' }}>
+                {isHi ? 'चंद्र-गुरु एवं आत्मीय समझ' : 'Moon-Jupiter soul connection'}
+              </div>
+            </div>
+
+            {/* 3. Communication */}
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '14px', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#166534', marginBottom: '6px' }}>
+                <span>{isHi ? 'संचार व समझ' : 'Communication'}</span>
+                <span>{suite.loveCalculator.communicationScore}%</span>
+              </div>
+              <div style={{ width: '100%', background: '#dcfce7', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${suite.loveCalculator.communicationScore}%`, background: '#16a34a', height: '100%' }} />
+              </div>
+              <div style={{ fontSize: '11px', color: '#15803d', marginTop: '6px' }}>
+                {isHi ? 'बुध व नामांक ध्वनि मैत्री' : 'Mercury & name sound harmony'}
+              </div>
+            </div>
+
+            {/* 4. Long Term Potential */}
+            <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', padding: '14px', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#6b21a8', marginBottom: '6px' }}>
+                <span>{isHi ? 'दीर्घकालिक स्थिरता' : 'Long-term Potential'}</span>
+                <span>{suite.loveCalculator.longTermPotentialScore}%</span>
+              </div>
+              <div style={{ width: '100%', background: '#f3e8ff', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${suite.loveCalculator.longTermPotentialScore}%`, background: '#9333ea', height: '100%' }} />
+              </div>
+              <div style={{ fontSize: '11px', color: '#7e22ce', marginTop: '6px' }}>
+                {isHi ? 'मूलांक व सातत्य शक्ति' : 'Mulank & enduring harmony'}
+              </div>
+            </div>
+          </div>
+
+          {/* Reading & Verdict */}
+          <div style={{ padding: '18px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+            <div style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a', marginBottom: '8px' }}>
+              {isHi ? 'विस्तृत प्रेम फलादेश (Astrological Love Reading):' : 'Detailed Astrological Reading:'}
+            </div>
+            <p style={{ margin: 0, fontSize: '14px', color: '#334155', lineHeight: 1.7 }}>
+              {isHi ? suite.loveCalculator.verdictDescriptionHi : suite.loveCalculator.verdictDescriptionEn}
+            </p>
+          </div>
+
+          {/* Strengths & Remedies Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div style={{ background: '#f0fdf4', padding: '16px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+              <div style={{ fontWeight: 800, fontSize: '14px', color: '#166534', marginBottom: '10px' }}>
+                {isHi ? 'संबंध की प्रमुख शक्तियां:' : 'Key Relationship Strengths:'}
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#14532d', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {suite.loveCalculator.strengthsHi.map((s, idx) => (
+                  <li key={idx}>{s}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div style={{ background: '#eff6ff', padding: '16px', borderRadius: '10px', border: '1px solid #bfdbfe' }}>
+              <div style={{ fontWeight: 800, fontSize: '14px', color: '#1e40af', marginBottom: '10px' }}>
+                {isHi ? 'प्रेम प्रगाढ़ करने हेतु शास्त्रीय उपाय:' : 'Love Harmonization Upayas:'}
+              </div>
+              <p style={{ margin: 0, fontSize: '13px', color: '#1e3a8a', lineHeight: 1.6 }}>
+                {suite.loveCalculator.relationshipAdviceHi}
               </p>
             </div>
           </div>

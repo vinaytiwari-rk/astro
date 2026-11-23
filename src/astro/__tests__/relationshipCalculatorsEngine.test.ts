@@ -206,6 +206,8 @@ describe('Authentic Relationship, Marriage, Numerology & Longevity Calculators S
     expect(suite.ayurdayaClass).toBeDefined();
     expect(suite.marakaAndVulnerability).toBeDefined();
     expect(suite.longevityProtection).toBeDefined();
+    expect(suite.loveCalculator).toBeDefined();
+    expect(suite.loveCalculator.overallLoveScore).toBeGreaterThanOrEqual(50);
   });
 
   it('16. dynamically updates scores, verdicts, Nama Rashi and partner verification in real time when names change', () => {
@@ -249,5 +251,30 @@ describe('Authentic Relationship, Marriage, Numerology & Longevity Calculators S
     expect(suitePriya.maritalHarmonyAndRisk.harmonyScore).toBeDefined();
     expect(suiteRohan.maritalHarmonyAndRisk.harmonyScore).toBeDefined();
     expect(typeof suitePriya.maritalHarmonyAndRisk.harmonyScore).toBe('number');
+
+    // 5. Love Calculator must dynamically update love score, chemistry and elements
+    expect(suitePriya.loveCalculator.overallLoveScore).toBeGreaterThanOrEqual(50);
+    expect(suiteSneha.loveCalculator.overallLoveScore).toBeGreaterThanOrEqual(50);
+    expect(suitePriya.loveCalculator.p2SignHi).toContain('कन्या');
+    expect(suiteSneha.loveCalculator.p2SignHi).toContain('कुंभ');
+  });
+
+  it('17. computes authentic Love Calculator with romantic chemistry, emotional bond and communication', () => {
+    const loveRes = computeAuthenticCalculatorsSuite(
+      chart1,
+      undefined,
+      { name: 'Aarav', dob: '1995-06-15' },
+      { name: 'Priya', dob: '1997-09-22' }
+    ).loveCalculator;
+
+    expect(loveRes.overallLoveScore).toBeGreaterThanOrEqual(50);
+    expect(loveRes.overallLoveScore).toBeLessThanOrEqual(98);
+    expect(loveRes.romanticChemistryScore).toBeGreaterThan(0);
+    expect(loveRes.emotionalBondScore).toBeGreaterThan(0);
+    expect(loveRes.communicationScore).toBeGreaterThan(0);
+    expect(loveRes.longTermPotentialScore).toBeGreaterThan(0);
+    expect(loveRes.verdictTitleHi.length).toBeGreaterThan(5);
+    expect(loveRes.strengthsHi.length).toBeGreaterThanOrEqual(2);
+    expect(loveRes.relationshipAdviceHi.length).toBeGreaterThan(10);
   });
 });
