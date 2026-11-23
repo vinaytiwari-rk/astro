@@ -28,8 +28,8 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
 
   const description = isGeneral
     ? (isHi
-      ? 'जन्म कुंडली के प्रमुख योग, भाव, भावेश, ग्रहबल और दशा संकेतों का समन्वित जीवन-विश्लेषण।'
-      : 'An integrated life reading from the natal chart, combining key planetary and house indications with available strength and dasha context.')
+      ? 'केवल जन्मकुंडली के भावेश, भावस्थित ग्रह, नैसर्गिक कारक, ग्रह-गरिमा, उपलब्ध षड्बल और संबंधित वर्ग-कुंडली का प्रमाण-आधारित विश्लेषण। दशा और गोचर अलग अनुभागों में हैं।'
+      : 'A natal-only evidence review of house lords, occupants, natural significators, dignity, available Shadbala and relevant divisional charts. Dasha and transits remain separate.')
     : isPlanets
       ? (isHi
         ? 'प्रत्येक ग्रह की राशि, भाव, नक्षत्र, गरिमा, वक्री/अस्त स्थिति और संबंधित संकेतों का अलग-अलग विश्लेषण।'
