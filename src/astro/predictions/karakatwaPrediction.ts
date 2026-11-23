@@ -250,8 +250,6 @@ function appearancePrediction(chart: ChartData): KarakatwaPrediction {
 
   addCalculatedGrahaFactors(evidence, chart, [...thirdOccupants, ...thirdAspects, thirdLord, mars]);
 
-  addCalculatedGrahaFactors(evidence, chart, keyPlanets);
-
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
   const level = evidenceLevel(supportive, caution, evidence.length);
@@ -349,6 +347,8 @@ function siblingPrediction(chart: ChartData): KarakatwaPrediction {
       'translation-check',
     ));
   }
+
+  addCalculatedGrahaFactors(evidence, chart, keyPlanets);
 
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
