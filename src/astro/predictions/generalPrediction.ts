@@ -369,13 +369,13 @@ export function computeGeneralPrediction(chart: ChartData): GeneralPredictionRep
   const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain, detectedYogas));
   const evidenceCount = domains.reduce((sum, domain) => sum + domain.evidence.length, 0);
   const partialDomains = domains.filter((domain) => domain.dataCompleteness !== 'complete').length;
-  const summaryEn = `A personal reading across ${domains.length} areas of life. Each section begins with the interpretation; the chart calculations and classical reasoning are available separately below it. ${partialDomains} sections have incomplete supporting data, which is disclosed rather than filled with assumptions.`;
-  const summaryHi = `जीवन के ${domains.length} क्षेत्रों का व्यक्तिगत फलादेश। प्रत्येक अनुभाग में पहले सरल भाषा में व्याख्या दी गई है; उसके बाद अलग से कुंडली-गणना और शास्त्रीय आधार देखे जा सकते हैं। ${partialDomains} क्षेत्रों में सहायक डेटा अधूरा है, जिसे अनुमान से भरने के बजाय स्पष्ट बताया गया है।`;
+  const summaryEn = `A natal-chart-based personal reading across ${domains.length} areas of life. Each section begins with the interpretation; the chart calculations and classical reasoning are available separately below it. ${partialDomains} sections have incomplete supporting data, which is disclosed rather than filled with assumptions.`;
+  const summaryHi = `जन्मकुंडली के आधार पर जीवन के ${domains.length} क्षेत्रों का व्यक्तिगत फलादेश। प्रत्येक अनुभाग में पहले सरल भाषा में व्याख्या दी गई है; उसके बाद अलग से कुंडली-गणना और शास्त्रीय आधार देखे जा सकते हैं। ${partialDomains} क्षेत्रों में सहायक डेटा अधूरा है, जिसे अनुमान से भरने के बजाय स्पष्ट बताया गया है।`;
 
   return {
     titleEn: 'General Prediction — Natal Chart Synthesis',
     titleHi: 'सामान्य फलादेश — जन्मकुंडली समन्वित विश्लेषण',
-    methodEn: 'Read the prediction first. Open the technical notes only if you want to inspect the chart factors and classical rules behind it.',
+    methodEn: 'Read the prediction first. Open the technical notes only if you want to inspect the chart factors and classical rules behind it. Dasha and transit timing remain separate modules.',
     methodHi: 'पहले फलादेश पढ़ें। उसके पीछे के कुंडली-संकेत और शास्त्रीय नियम जानने के लिए तकनीकी विवरण खोलें।',
     summaryEn,
     summaryHi,
