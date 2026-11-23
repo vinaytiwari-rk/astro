@@ -71,8 +71,16 @@ describe('Karakatwa-based reader-first predictions', () => {
         expect(evidence.source).toContain('Calculated');
       }
     }
-    const allEvidence = report.predictions.flatMap((item) => item.evidence);
-    expect(allEvidence.some((item) => item.factor.startsWith('Same-sign yuti review:'))).toBe(true);
+    const chart = baseChart();
+    const moon = chart.planets.find((planet) => planet.id === 'Moon')!;
+    const modified = {
+      ...chart,
+      planets: chart.planets.map((planet) => planet.id === 'Sun'
+        ? { ...planet, signIndex: moon.signIndex, longitude: moon.longitude + 2 }
+        : planet),
+    };
+    const personality = computeKarakatwaPredictions(modified).predictions.find((item) => item.id === 'personality');
+    expect(personality?.evidence.some((item) => item.factor.startsWith('Same-sign yuti review:'))).toBe(true);
   });
 
   it('produces chart-specific evidence across multiple natal charts', () => {
