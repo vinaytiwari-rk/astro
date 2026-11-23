@@ -187,30 +187,53 @@ const DOMAIN_STORY: Record<string, { en: string; hi: string }> = {
   foreign_residence: { en: 'Distance may enter life through travel, study, work, relationships or the search for a different home environment. Temporary travel and permanent relocation require different evidence.', hi: 'दूरस्थ स्थानों से संबंध यात्रा, शिक्षा, काम, संबंध या नए निवास की खोज से बन सकते हैं। अस्थायी यात्रा और स्थायी स्थानांतरण के लिए अलग प्रमाण आवश्यक हैं।' },
 };
 
-function buildReaderPrediction(domain: DomainDefinition, lord: ChartData['planets'][number] | undefined): { en: string; hi: string } {
-  const opening = DOMAIN_STORY[domain.id];
-  if (!lord) return { en: opening.en + ' The chart data needed for a more specific conclusion is incomplete, so this section deliberately avoids a stronger claim.', hi: opening.hi + ' अधिक विशिष्ट निष्कर्ष के लिए आवश्यक कुंडली-डेटा अधूरा है, इसलिए यहाँ बढ़ा-चढ़ाकर दावा नहीं किया गया है।' };
-  const destination = HOUSE_THEMES[lord.rasiHouseNumber];
-  const strong = SUPPORTIVE_DIGNITIES.has(lord.dignity);
-  const strained = CAUTION_DIGNITIES.has(lord.dignity);
-  const qualityEn = strong
-    ? 'This placement has a comparatively supportive foundation, so the constructive side of this connection deserves attention.'
-    : strained
-      ? 'This connection may require patience and conscious effort; the subject can develop through delays, course-corrections or learning from difficult experiences.'
-      : 'The placement is mixed by itself. Its outcome depends on the planet’s relationships, strength and the other chart factors shown below.';
-  const qualityHi = strong
-    ? 'इस स्थिति में अपेक्षाकृत सहायक आधार दिखाई देता है; इसलिए इस संबंध का रचनात्मक पक्ष विशेष ध्यान देने योग्य है।'
-    : strained
-      ? 'इस संबंध में धैर्य और सजग प्रयास की आवश्यकता हो सकती है। यह विषय देरी, दिशा-सुधार या कठिन अनुभवों से सीखते हुए विकसित हो सकता है।'
-      : 'यह स्थिति अकेले में मिश्रित संकेत देती है। इसका वास्तविक फल ग्रह-संबंध, बल और नीचे दिए गए अन्य कुंडली-संकेतों पर निर्भर करेगा।';
-  const retroEn = lord.isRetrograde ? ' The matter may also unfold in a reflective or non-linear way, with revisions before clarity.' : '';
-  const retroHi = lord.isRetrograde ? ' इस विषय में स्पष्टता आने से पहले पुनर्विचार या कुछ उतार-चढ़ाव भी हो सकते हैं।' : '';
-  const combustEn = lord.isCombust ? ' Because the planet is close to the Sun, its themes may need more deliberate handling rather than being assumed to operate effortlessly.' : '';
-  const combustHi = lord.isCombust ? ' सूर्य के निकट होने के कारण इस ग्रह से जुड़े विषयों में सहजता मान लेने के बजाय अधिक सजगता आवश्यक हो सकती है।' : '';
-  return {
-    en: opening.en + ' The central connection is with ' + destination.en + '. ' + qualityEn + retroEn + combustEn + ' Treat this as a life-pattern interpretation, not a promise that a particular event must occur.',
-    hi: opening.hi + ' इसका मुख्य संबंध ' + destination.hi + ' से बनता है। ' + qualityHi + retroHi + combustHi + ' इसे जीवन-प्रवृत्ति का संकेत समझें, किसी निश्चित घटना का वादा नहीं।',
+function buildReaderPrediction(chart: ChartData, domain: DomainDefinition): { en: string; hi: string } {
+  const en: string[] = [];
+  const hi: string[] = [];
+  const dignityHi: Record<string, string> = {
+    Exalted: 'उच्च', Moolatrikona: 'मूलत्रिकोण', 'Own Sign': 'स्वराशि',
+    'Great Friend': 'अधिमित्र राशि', Friend: 'मित्र राशि',
+    Neutral: 'सम राशि', Enemy: 'शत्रु राशि', 'Great Enemy': 'अधिशत्रु राशि',
+    Debilitated: 'नीच',
   };
+  for (const house of domain.houses) {
+    const sign = SIGNS[signForHouse(chart, house)];
+    const lord = chart.planets.find((planet) => planet.id === sign.lord);
+    if (!lord) continue;
+    const destination = HOUSE_THEMES[lord.rasiHouseNumber];
+    const strength = chart.shadbala?.find((row) => row.planet === lord.id);
+    const balaEn = strength ? ` Shadbala ${strength.totalRupas.toFixed(2)} rupas (required ${strength.requiredRupas.toFixed(2)}).` : '';
+    const balaHi = strength ? ` षड्बल ${strength.totalRupas.toFixed(2)} रूप (आवश्यक ${strength.requiredRupas.toFixed(2)} रूप)।` : '';
+    en.push(`House ${house} is in ${sign.name}; its lord ${lord.id} is in house ${lord.rasiHouseNumber}, linking this subject with ${destination.en}. Dignity: ${lord.dignity}; retrograde: ${lord.isRetrograde}; combust: ${lord.isCombust}.${balaEn}`);
+    hi.push(`भाव ${house} की राशि ${sign.name} है; भावेश ${HI_NAMES[lord.id] ?? lord.id} भाव ${lord.rasiHouseNumber} में हैं, जिससे इस विषय का संबंध ${destination.hi} से बनता है। गरिमा: ${dignityHi[lord.dignity] ?? lord.dignity}; वक्री: ${lord.isRetrograde ? 'हाँ' : 'नहीं'}; अस्त: ${lord.isCombust ? 'हाँ' : 'नहीं'}।${balaHi}`);
+  }
+  const karakas = domain.karakas.flatMap((id) => {
+    const p = chart.planets.find((item) => item.id === id);
+    return p ? [{ en: `${id} in house ${p.rasiHouseNumber} (${p.signName}), ${p.dignity}.`, hi: `${HI_NAMES[id] ?? id} भाव ${p.rasiHouseNumber} (${p.signName}), ${dignityHi[p.dignity] ?? p.dignity} गरिमा।` }] : [];
+  });
+  if (karakas.length) {
+    en.push('Natural significators: ' + karakas.map((x) => x.en).join(' '));
+    hi.push('नैसर्गिक कारक ग्रह: ' + karakas.map((x) => x.hi).join(' '));
+  }
+  const primaryHouse = domain.houses[0];
+  const occupants = chart.planets.filter((p) => p.rasiHouseNumber === primaryHouse && CLASSICAL_GRAHAS.has(p.id));
+  if (occupants.length) {
+    en.push(`Primary house ${primaryHouse} occupants: ${occupants.map((p) => `${p.id} (${p.dignity})`).join(', ')}.`);
+    hi.push(`मुख्य भाव ${primaryHouse} में ग्रह: ${occupants.map((p) => `${HI_NAMES[p.id] ?? p.id} (${dignityHi[p.dignity] ?? p.dignity})`).join(', ')}।`);
+  } else {
+    en.push(`No classical graha occupies primary house ${primaryHouse}; judge it through its lord, aspects and significators, not as an inactive house.`);
+    hi.push(`मुख्य भाव ${primaryHouse} में कोई शास्त्रीय ग्रह नहीं है; इसका विचार भावेश, दृष्टि और कारक से होगा।`);
+  }
+  const varga = chart.divisionalCharts?.[domain.varga];
+  const vargaSign = varga ? SIGNS[varga.lagnaSignIndex] : undefined;
+  const vargaLord = vargaSign ? varga.placements.find((p) => p.id === vargaSign.lord) : undefined;
+  if (vargaSign && vargaLord) {
+    en.push(`${domain.varga}: divisional ascendant lord ${vargaSign.lord} occupies Varga house ${vargaLord.houseFromVargaLagna} with ${vargaLord.dignity} dignity.`);
+    hi.push(`${domain.varga}: वर्ग लग्नेश ${HI_NAMES[vargaSign.lord] ?? vargaSign.lord} वर्ग के भाव ${vargaLord.houseFromVargaLagna} में ${dignityHi[vargaLord.dignity] ?? vargaLord.dignity} गरिमा में हैं।`);
+  }
+  const limitEn = 'A complete favourable/adverse phala is withheld: the engine must first validate the applicable classical combination, functional lordship, aspect/yuti strength, divisional confirmation and dasha. No event is inferred from one placement.';
+  const limitHi = 'पूर्ण शुभ-अशुभ फलादेश अभी रोककर रखा गया है: लागू शास्त्रीय योग, कार्यात्मक स्वामित्व, दृष्टि-युति बल, वर्ग-पुष्टि और दशा का नियम-आधारित परीक्षण आवश्यक है। एक ग्रह-स्थिति से घटना घोषित नहीं की जाती।';
+  return { en: en.join(' ') + ' ' + limitEn, hi: hi.join(' ') + ' ' + limitHi };
 }
 
 function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas: ReturnType<typeof detectClassicalYogas>): GeneralPredictionDomain {
@@ -425,21 +448,11 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
     ? `भाव ${primaryHouse} के स्वामी ${HI_NAMES[primaryLord.id] ?? primaryLord.id} भाव ${primaryLord.rasiHouseNumber} में ${primaryLord.signName} राशि में ${primaryLord.dignity} गरिमा के साथ स्थित हैं।`
     : `भाव ${primaryHouse} के स्वामी की गणित स्थिति उपलब्ध नहीं है।`;
 
-  const prediction = buildReaderPrediction(domain, primaryLord);
+  const prediction = buildReaderPrediction(chart, domain);
   const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
-  const integratedHi = supportive > caution
-    ? 'समग्र संकेतों में सहायक पक्ष अपेक्षाकृत अधिक दिखाई देता है; फिर भी संबंधित भावेश, कारक ग्रह, दृष्टि-युति और वर्ग-कुंडली की पुष्टि के बिना इसे निश्चित सफलता नहीं माना जाना चाहिए।'
-    : caution > supportive
-      ? 'समग्र संकेतों में कुछ चुनौतीपूर्ण पक्ष भी उभरते हैं; इन्हें बाधा की निश्चित घोषणा न मानें। ग्रहबल, शुभ प्रभाव, अन्य भावों के सहयोग और दशा-गोचर से इनका वास्तविक परिणाम बदल सकता है।'
-      : 'समग्र संकेत मिश्रित हैं या किसी एक दिशा में स्पष्ट नहीं हैं; इसलिए इस विषय पर एकतरफा शुभ या अशुभ निष्कर्ष उचित नहीं होगा।';
-  const integratedEn = supportive > caution
-    ? 'The combined evidence leans relatively supportive, but this is not a guarantee of success; the relevant lords, significators, aspects, conjunctions and divisional confirmation must be weighed together.'
-    : caution > supportive
-      ? 'The combined evidence also contains challenging indications; these are not a certainty of failure. Planetary strength, supportive influences, other houses and later dasha/transit context can materially modify the outcome.'
-      : 'The combined evidence is mixed or not clearly directional, so a one-sided favourable or unfavourable verdict would not be justified.';
-  const predictionHi = prediction.hi + ' ' + integratedHi;
-  const predictionEn = prediction.en + ' ' + integratedEn;
+  const predictionHi = prediction.hi;
+  const predictionEn = prediction.en;
   const completeness = availableCoreFactors >= expectedCoreFactors ? 'complete'
     : availableCoreFactors > 0 ? 'partial' : 'limited';
 
