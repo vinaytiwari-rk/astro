@@ -1,4 +1,5 @@
 import type { ChartData, BodyPosition, NineGrahaId } from '../types';
+import { SIGNS } from '../constants';
 
 export type KarakatwaDomainId = 'appearance' | 'siblings' | 'personality';
 export type KarakatwaEvidenceLevel = 'single-indication' | 'corroborated' | 'mixed' | 'insufficient';
@@ -49,7 +50,7 @@ function houseSignIndex(chart: ChartData, house: number): number {
 }
 
 function lordOfHouse(chart: ChartData, house: number): BodyPosition | undefined {
-  const lordId = chart.planets.find((p) => p.signIndex === houseSignIndex(chart, house))?.signLord;
+  const lordId = SIGNS[houseSignIndex(chart, house)]?.lord;
   return lordId ? chart.planets.find((p) => p.id === lordId) : undefined;
 }
 
