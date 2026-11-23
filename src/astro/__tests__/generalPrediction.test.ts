@@ -26,6 +26,15 @@ describe('Natal-only General Prediction reconstruction', () => {
     }
   });
 
+  it('cross-checks the divisional ascendant and includes a balanced integrated conclusion', () => {
+    const report = computeGeneralPrediction(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    for (const domain of report.domains) {
+      expect(domain.evidence.some((item) => item.source === `${domain.varga} ascendant cross-check`)).toBe(true);
+      expect(domain.predictionHi.length).toBeGreaterThan(180);
+      expect(domain.predictionEn.length).toBeGreaterThan(180);
+    }
+  });
+
   it('uses career house-lord and D10 evidence without generating timing claims', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeGeneralPrediction(chart);
