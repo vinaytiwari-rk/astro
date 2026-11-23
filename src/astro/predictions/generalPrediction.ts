@@ -362,6 +362,16 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
 
   const varga = chart.divisionalCharts?.[domain.varga];
   if (varga) {
+    const vargaAscSign = SIGNS[varga.lagnaSignIndex];
+    const vargaAscLord = vargaAscSign
+      ? varga.placements.find((item) => item.id === vargaAscSign.lord)
+      : undefined;
+    evidence.push({
+      kind: 'context',
+      source: `${domain.varga} ascendant cross-check`,
+      detailEn: `${domain.varga} ascendant falls in ${vargaAscSign?.name ?? 'an unavailable sign'}; its lord is ${vargaAscSign?.lord ?? 'unavailable'}${vargaAscLord ? `, placed in Varga house ${vargaAscLord.houseFromVargaLagna} with ${vargaAscLord.dignity} dignity` : ', whose divisional placement is unavailable'}. This is a divisional-chart cross-check, not a replacement for the natal chart.`,
+      detailHi: `${domain.varga} का वर्ग लग्न ${vargaAscSign?.name ?? 'अज्ञात राशि'} में है; इसका स्वामी ${vargaAscSign?.lord ?? 'उपलब्ध नहीं'} ${vargaAscLord ? `वर्ग में भाव ${vargaAscLord.houseFromVargaLagna} में ${vargaAscLord.dignity} गरिमा के साथ स्थित है` : 'की वर्ग-स्थिति उपलब्ध नहीं है'}। यह वर्ग-कुंडली से पुष्टिकरण है, जन्मकुंडली का विकल्प नहीं।`,
+    });
     for (const id of relatedPlanets) {
       const placement = varga.placements.find((item) => item.id === id);
       if (!placement) continue;
@@ -394,6 +404,18 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
   const prediction = buildReaderPrediction(domain, primaryLord);
   const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
+  const integratedHi = supportive > caution
+    ? 'समग्र संकेतों में सहायक पक्ष अपेक्षाकृत अधिक दिखाई देता है; फिर भी संबंधित भावेश, कारक ग्रह, दृष्टि-युति और वर्ग-कुंडली की पुष्टि के बिना इसे निश्चित सफलता नहीं माना जाना चाहिए।'
+    : caution > supportive
+      ? 'समग्र संकेतों में कुछ चुनौतीपूर्ण पक्ष भी उभरते हैं; इन्हें बाधा की निश्चित घोषणा न मानें। ग्रहबल, शुभ प्रभाव, अन्य भावों के सहयोग और दशा-गोचर से इनका वास्तविक परिणाम बदल सकता है।'
+      : 'समग्र संकेत मिश्रित हैं या किसी एक दिशा में स्पष्ट नहीं हैं; इसलिए इस विषय पर एकतरफा शुभ या अशुभ निष्कर्ष उचित नहीं होगा।';
+  const integratedEn = supportive > caution
+    ? 'The combined evidence leans relatively supportive, but this is not a guarantee of success; the relevant lords, significators, aspects, conjunctions and divisional confirmation must be weighed together.'
+    : caution > supportive
+      ? 'The combined evidence also contains challenging indications; these are not a certainty of failure. Planetary strength, supportive influences, other houses and later dasha/transit context can materially modify the outcome.'
+      : 'The combined evidence is mixed or not clearly directional, so a one-sided favourable or unfavourable verdict would not be justified.';
+  const predictionHi = prediction.hi + ' ' + integratedHi;
+  const predictionEn = prediction.en + ' ' + integratedEn;
   const completeness = availableCoreFactors >= expectedCoreFactors ? 'complete'
     : availableCoreFactors > 0 ? 'partial' : 'limited';
 
@@ -403,8 +425,8 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
 
   return {
     ...domain,
-    predictionEn: prediction.en,
-    predictionHi: prediction.hi,
+    predictionEn,
+    predictionHi,
     interpretationBasisEn: interpretationBasis.en,
     interpretationBasisHi: interpretationBasis.hi,
     primaryAnchorEn,
