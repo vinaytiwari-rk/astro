@@ -15,10 +15,13 @@ export type MuhurtaPurpose =
 export interface MuhurtaQuery {
   purpose: MuhurtaPurpose;
   startDate: string; // YYYY-MM-DD
+  endDate?: string;   // YYYY-MM-DD
   daysToScan?: number; // 7..90, default 30
   latitude: number;
   longitude: number;
   timezone: string;
+  natalMoonNakshatraIndex?: number;
+  natalMoonSignIndex?: number;
 }
 
 export interface AuspiciousWindow {
@@ -200,6 +203,55 @@ export function findAuspiciousMuhurtas(query: MuhurtaQuery): MuhurtaReport {
       score += 10;
       strengthsEn.push(`Abhijit Muhurta active: ${panchang.abhijitMuhurta}`);
       strengthsHi.push(`अभिजीत मुहूर्त उपस्थित: ${panchang.abhijitMuhurta}`);
+    }
+
+    // Personal Tarabala from Natal Moon (Parashari Navatara system)
+    if (query.natalMoonNakshatraIndex !== undefined) {
+      const taraIdx = ((nakIdx - query.natalMoonNakshatraIndex + 27) % 27) % 9;
+      const taraNamesEn = ['Janma', 'Sampat', 'Vipat', 'Kshema', 'Pratyak', 'Sadhana', 'Naidhana', 'Mitra', 'Parama Mitra'];
+      const taraNamesHi = ['जन्म', 'सम्पत', 'विपत्', 'क्षेम', 'प्रत्यरि', 'साधक', 'निधन', 'मित्र', 'परम मित्र'];
+      const isGoodTara = [1, 3, 5, 7, 8].includes(taraIdx);
+      if (isGoodTara) {
+        score += 15;
+        strengthsEn.push(`Benefic Tara Bala: ${taraNamesEn[taraIdx]} Tara`);
+        strengthsHi.push(`शुभ ताराबल: ${taraNamesHi[taraIdx]} तारा`);
+      } else if ([2, 4, 6].includes(taraIdx)) {
+        score -= 15;
+        cautionsEn.push(`Inauspicious Tara: ${taraNamesEn[taraIdx]} (Requires Tara Parihara)`);
+        cautionsHi.push(`प्रतिकूल तारा: ${taraNamesHi[taraIdx]} (परिहार आवश्यक)`);
+      }
+    }
+
+    // Personal Chandrabala (avoiding 6th, 8th, 12th from natal Moon)
+    if (query.natalMoonSignIndex !== undefined) {
+      const dayMoon = tempChart.planets.find((pl) => pl.id === 'Moon');
+      if (dayMoon) {
+        const chandraDist = ((dayMoon.signIndex - query.natalMoonSignIndex + 12) % 12) + 1;
+        if ([6, 8, 12].includes(chandraDist)) {
+          score -= 15;
+          cautionsEn.push(`Dusthana Chandrabala: Moon in house ${chandraDist} from natal Moon`);
+          cautionsHi.push(`अशुभ चंद्रबल: जन्म राशि से ${chandraDist}वां चंद्र`);
+        } else {
+          score += 10;
+          strengthsEn.push(`Strong Chandrabala: House ${chandraDist} from natal Moon`);
+          strengthsHi.push(`अनुकूल चंद्रबल: जन्म राशि से ${chandraDist}वां चंद्र`);
+        }
+      }
+    }
+
+    // Bhadra (Vishti) Karana Avoidance
+    if (panchang.karana.name.includes('Vishti')) {
+      score -= 25;
+      cautionsEn.push('Severe Dosha: Vishti (Bhadra) Karana present');
+      cautionsHi.push('विष्टि (भद्रा) करण दोष उपस्थित - शुभ कार्य वर्जित');
+    }
+
+    // Inauspicious Yogas (Vyatipata, Vaidhriti, Ganda, Atiganda, Shoola)
+    const badYogas = ['Vyatipata', 'Vaidhriti', 'Parigha', 'Atiganda', 'Ganda', 'Shoola', 'Vyaghata'];
+    if (badYogas.includes(panchang.yoga.name)) {
+      score -= 15;
+      cautionsEn.push(`Cautionary Yoga: ${panchang.yoga.name}`);
+      cautionsHi.push(`प्रतिकूल योग: ${panchang.yoga.name}`);
     }
 
     score = Math.max(10, Math.min(100, score));

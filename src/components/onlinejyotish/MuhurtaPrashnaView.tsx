@@ -40,6 +40,8 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [daysCount, setDaysCount] = useState(30);
 
+  const natalMoon = useMemo(() => chart.planets.find((p) => p.id === 'Moon'), [chart]);
+
   const muhurtaReport = useMemo(() => {
     return findAuspiciousMuhurtas({
       purpose,
@@ -48,8 +50,10 @@ export const MuhurtaPrashnaView: React.FC<MuhurtaPrashnaViewProps> = ({ chart, i
       latitude: chart.input.latitude,
       longitude: chart.input.longitude,
       timezone: chart.input.timezone,
+      natalMoonNakshatraIndex: natalMoon?.nakshatraIndex,
+      natalMoonSignIndex: natalMoon?.signIndex,
     });
-  }, [purpose, startDate, daysCount, chart.input]);
+  }, [purpose, startDate, daysCount, chart.input, natalMoon]);
 
   // KP Prashna State
   const [horaryNum, setHoraryNum] = useState(108);

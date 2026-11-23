@@ -8,7 +8,7 @@ import type { PredictionReport } from '../../astro/predictions/types';
 import { formatDateDmy, formatLocalDateTimeFromUtc } from '../../astro/time';
 import type { ChartData, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { trPlanet, trPlanetShort, trSign } from '../../i18n/translations';
+import { trPlanet, trPlanetShort, trSign, type AppLanguage } from '../../i18n/translations';
 import { VedicChartSvg } from '../VedicChartSvg';
 
 type PatrikaSectionTab =
@@ -19,11 +19,11 @@ type PatrikaSectionTab =
   | 'dosha_gems_gochar'
   | 'classical_branches';
 
-function signTxt(idx: number, lang: 'en' | 'hi') {
+function signTxt(idx: number, lang: AppLanguage) {
   return trSign(idx, lang);
 }
 
-function planetTxt(id: string, lang: 'en' | 'hi') {
+function planetTxt(id: string, lang: AppLanguage) {
   return trPlanet(id, lang);
 }
 
@@ -810,9 +810,9 @@ export const PatrikaBookFullPrintEdition: React.FC<{
   chart: ChartData;
   chartStyle: ChartStyle;
   report: PredictionReport;
-  language: 'en' | 'hi';
+  language: AppLanguage;
 }> = ({ chart, chartStyle, report, language }) => {
-  const isHi = language === 'hi';
+  const isHi = language !== 'en';
   const refPdf = useMemo(() => computeReferencePdfPredictions(chart), [chart]);
   const [edition, setEdition] = useState<'complete' | 'concise'>('complete');
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);

@@ -99,13 +99,19 @@ const BODY_MAP: Partial<Record<PlanetId, Astronomy.Body>> = {
 export function getTropicalPosition(
   id: PlanetId,
   time: Astronomy.AstroTime,
-  nodeMode: NodeMode
+  nodeMode: NodeMode,
+  observer?: Astronomy.Observer | null
 ): { lon: number; lat: number } {
   if (id === 'Sun') {
     const sun = Astronomy.SunPosition(time);
     return { lon: normalizeDeg(sun.elon), lat: sun.elat };
   }
   if (id === 'Moon') {
+    if (observer) {
+      const eqTopo = Astronomy.Equator(Astronomy.Body.Moon, time, observer, true, true);
+      const eclTopo = Astronomy.Ecliptic(eqTopo.vec);
+      return { lon: normalizeDeg(eclTopo.elon), lat: eclTopo.elat };
+    }
     const moon = Astronomy.EclipticGeoMoon(time);
     return { lon: normalizeDeg(moon.lon), lat: moon.lat };
   }
@@ -127,11 +133,12 @@ export function getTropicalPosition(
 export function getTropicalSpeedDegPerDay(
   id: PlanetId,
   time: Astronomy.AstroTime,
-  nodeMode: NodeMode
+  nodeMode: NodeMode,
+  observer?: Astronomy.Observer | null
 ): number {
   const dt = id === 'Moon' ? 0.02 : 0.05;
-  const p1 = getTropicalPosition(id, time.AddDays(-dt), nodeMode).lon;
-  const p2 = getTropicalPosition(id, time.AddDays(dt), nodeMode).lon;
+  const p1 = getTropicalPosition(id, time.AddDays(-dt), nodeMode, observer).lon;
+  const p2 = getTropicalPosition(id, time.AddDays(dt), nodeMode, observer).lon;
   let diff = p2 - p1;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;

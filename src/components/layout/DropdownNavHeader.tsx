@@ -10,12 +10,14 @@ import {
   Edit3,
   FileSpreadsheet,
   FileText,
+  Globe,
   Heart,
   Home,
   Layers,
   Menu,
   Moon,
   Plus,
+  Search,
   Settings,
   Sparkles,
   Star,
@@ -25,6 +27,7 @@ import {
 import { formatDateDmy, formatDateTimeDmyAmPm } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { LANGUAGE_LABELS, type AppLanguage } from '../../i18n/translations';
 
 export interface DropdownNavHeaderProps {
   currentView: string;
@@ -36,6 +39,7 @@ export interface DropdownNavHeaderProps {
   onNewKundli: () => void;
   onOpenBooklet: () => void;
   onOpenSettings: () => void;
+  onOpenCommandPalette?: () => void;
   settings: CalcSettings;
   onChangeChartStyle: (style: ChartStyle) => void;
   theme: 'light' | 'dark';
@@ -52,13 +56,14 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   onNewKundli,
   onOpenBooklet,
   onOpenSettings,
+  onOpenCommandPalette,
   settings,
   onChangeChartStyle,
   theme,
   onToggleTheme,
 }) => {
   const { lang, setLang } = useLanguage();
-  const isHi = lang === 'hi';
+  const isHi = lang !== 'en';
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number } | null>(null);
@@ -302,22 +307,22 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
 
         {/* Right Tools: Language, Chart Style, Birth Report, Theme, Settings */}
         <div className="dropdown-utilities-group">
-          {/* Language Toggle */}
-          <div className="pro-lang-toggle" role="group" aria-label="Language">
-            <button
-              type="button"
-              className={`pro-lang-btn ${lang === 'en' ? 'is-active' : ''}`}
-              onClick={() => setLang('en')}
+          {/* Language Selector */}
+          <div className="pro-lang-select-wrap" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Globe size={13} style={{ opacity: 0.7 }} />
+            <select
+              aria-label="Language Selector"
+              className="select-compact"
+              value={lang}
+              onChange={(e) => setLang(e.target.value as AppLanguage)}
+              style={{ fontWeight: 600, padding: '3px 6px', fontSize: '11px', height: '28px' }}
             >
-              EN
-            </button>
-            <button
-              type="button"
-              className={`pro-lang-btn ${lang === 'hi' ? 'is-active' : ''}`}
-              onClick={() => setLang('hi')}
-            >
-              हिन्दी
-            </button>
+              {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
+                <option key={code} value={code}>
+                  {label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Chart Style */}
@@ -341,6 +346,30 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           >
             <FileText size={14} />
             <span className="hide-on-mobile">{isHi ? 'जन्म पत्रिका' : 'Birth Report'}</span>
+          </button>
+
+          {/* Quick Search Palette (Ctrl + K) */}
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={onOpenCommandPalette}
+            title={isHi ? 'त्वरित सर्च / खोजें (Ctrl + K)' : 'Quick Search Palette (Ctrl + K)'}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Search size={14} />
+            <span className="hide-on-mobile">{isHi ? 'सर्च' : 'Search'}</span>
+            <kbd
+              style={{
+                fontSize: '10px',
+                opacity: 0.75,
+                background: 'rgba(0,0,0,0.06)',
+                padding: '1px 5px',
+                borderRadius: '3px',
+                fontWeight: 600,
+              }}
+            >
+              Ctrl K
+            </kbd>
           </button>
 
           {/* Settings */}

@@ -248,3 +248,237 @@ export function computeSudarshanaChakra(chart: ChartData, targetYear: number): S
     }`,
   };
 }
+
+// --------------------------------------------------------------------------
+// 3. Kalachakra Dasha (कालचक्र दशा - Maharishi Parashara BPHS)
+// --------------------------------------------------------------------------
+
+export interface KalachakraPeriod {
+  signIndex: number;
+  signName: string;
+  signNameHi: string;
+  years: number;
+  startDate: string;
+  endDate: string;
+  startMs: number;
+  endMs: number;
+  gati: 'Normal' | 'Mandooki' | 'Markati' | 'Simhavalokana';
+  gatiHi: string;
+  isDehaRasi: boolean;
+  isJeevaRasi: boolean;
+  note: string;
+}
+
+export interface KalachakraDashaReport {
+  isSavya: boolean;
+  movementType: 'Savya (Direct Clockwise)' | 'Apasavya (Indirect Counter-Clockwise)';
+  movementTypeHi: string;
+  nakshatraName: string;
+  pada: number;
+  dehaRasiIndex: number;
+  dehaRasiName: string;
+  dehaRasiNameHi: string;
+  jeevaRasiIndex: number;
+  jeevaRasiName: string;
+  jeevaRasiNameHi: string;
+  periods: KalachakraPeriod[];
+}
+
+const KALACHAKRA_SIGN_YEARS = [7, 16, 9, 21, 5, 9, 16, 7, 10, 4, 4, 10]; // Aries(0)..Pisces(11)
+const SIGN_NAMES_HI = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'];
+
+// Savya Nakshatras: 0, 2, 6, 8, 9, 11, 15, 17, 18, 20, 24, 26
+const SAVYA_NAKSHATRAS = new Set([0, 2, 6, 8, 9, 11, 15, 17, 18, 20, 24, 26]);
+
+export function computeKalachakraDasha(chart: ChartData): KalachakraDashaReport {
+  const daysPerYear = getDaysPerYear(chart.settings.dashaYearType);
+  const msPerYear = daysPerYear * 86_400_000;
+  const moon = chart.planets.find((p) => p.id === 'Moon')!;
+  const moonLon = normalizeDeg(moon.longitude);
+  const nakSpan = 360 / 27;
+  const nakIdx = Math.floor(moonLon / nakSpan) % 27;
+  const padaSpan = nakSpan / 4;
+  const padaIdx = Math.floor((moonLon % nakSpan) / padaSpan); // 0..3 (Pada 1..4)
+  const isSavya = SAVYA_NAKSHATRAS.has(nakIdx);
+
+  // Sequences based on Pada (0..3)
+  let signProgression: number[];
+  let dehaIdx: number;
+  let jeevaIdx: number;
+
+  if (isSavya) {
+    if (padaIdx === 0) {
+      // Pada 1: Aries to Sagittarius
+      signProgression = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+      dehaIdx = 0; // Aries
+      jeevaIdx = 8; // Sagittarius
+    } else if (padaIdx === 1) {
+      // Pada 2: Capricorn to Gemini with leaps
+      signProgression = [9, 10, 11, 7, 6, 5, 3, 4, 2];
+      dehaIdx = 9; // Capricorn
+      jeevaIdx = 2; // Gemini
+    } else if (padaIdx === 2) {
+      // Pada 3: Taurus to Gemini with leaps
+      signProgression = [1, 0, 11, 10, 9, 8, 0, 1, 2];
+      dehaIdx = 1; // Taurus
+      jeevaIdx = 2; // Gemini
+    } else {
+      // Pada 4: Cancer to Pisces
+      signProgression = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+      dehaIdx = 3; // Cancer
+      jeevaIdx = 11; // Pisces
+    }
+  } else {
+    // Apasavya
+    if (padaIdx === 0) {
+      signProgression = [7, 6, 5, 4, 3, 2, 1, 0, 11];
+      dehaIdx = 7;
+      jeevaIdx = 11;
+    } else if (padaIdx === 1) {
+      signProgression = [10, 9, 8, 0, 1, 2, 6, 7, 5];
+      dehaIdx = 10;
+      jeevaIdx = 5;
+    } else if (padaIdx === 2) {
+      signProgression = [4, 3, 2, 1, 0, 11, 10, 9, 8];
+      dehaIdx = 4;
+      jeevaIdx = 8;
+    } else {
+      signProgression = [2, 1, 0, 11, 10, 9, 8, 7, 6];
+      dehaIdx = 2;
+      jeevaIdx = 6;
+    }
+  }
+
+  // Fraction elapsed in current pada
+  const padaStart = nakIdx * nakSpan + padaIdx * padaSpan;
+  const fracElapsed = Math.min(0.999, Math.max(0, (moonLon - padaStart) / padaSpan));
+
+  const firstSign = signProgression[0];
+  const firstYears = KALACHAKRA_SIGN_YEARS[firstSign];
+  const birthRemYears = firstYears * (1 - fracElapsed);
+
+  const periods: KalachakraPeriod[] = [];
+  let cursor = chart.utcMs;
+
+  for (let i = 0; i < signProgression.length; i++) {
+    const sIdx = signProgression[i];
+    const prevIdx = i > 0 ? signProgression[i - 1] : sIdx;
+    const totalYears = KALACHAKRA_SIGN_YEARS[sIdx];
+    const activeYears = i === 0 ? birthRemYears : totalYears;
+    const endMs = cursor + activeYears * msPerYear;
+
+    // Detect Gati
+    let gati: KalachakraPeriod['gati'] = 'Normal';
+    let gatiHi = 'सामान्य गति';
+    const diff = (sIdx - prevIdx + 12) % 12;
+    if (diff === 2 || diff === 10) {
+      gati = 'Mandooki';
+      gatiHi = 'मंडूक गति (Frog Leap)';
+    } else if (diff === 11 || (prevIdx === 4 && sIdx === 3)) {
+      gati = 'Markati';
+      gatiHi = 'मर्कट गति (Monkey Leap)';
+    } else if (diff >= 4 && diff <= 8) {
+      gati = 'Simhavalokana';
+      gatiHi = 'सिंहावलोकन गति (Lion Glance)';
+    }
+
+    const isDeha = sIdx === dehaIdx;
+    const isJeeva = sIdx === jeevaIdx;
+
+    periods.push({
+      signIndex: sIdx,
+      signName: SIGNS[sIdx].name,
+      signNameHi: SIGN_NAMES_HI[sIdx],
+      years: Math.round(activeYears * 10) / 10,
+      startDate: formatLocalDateTimeFromUtc(cursor, chart.offsetMinutesUsed).slice(0, 10),
+      endDate: formatLocalDateTimeFromUtc(endMs, chart.offsetMinutesUsed).slice(0, 10),
+      startMs: cursor,
+      endMs,
+      gati,
+      gatiHi,
+      isDehaRasi: isDeha,
+      isJeevaRasi: isJeeva,
+      note: isDeha
+        ? 'देह राशि (Deha Rasi - Physical body & health anchor)'
+        : isJeeva
+          ? 'जीव राशि (Jeeva Rasi - Vital soul, longevity & consciousness)'
+          : `${gati !== 'Normal' ? gatiHi + ': ' : ''}${SIGNS[sIdx].name} कालचक्र दशा प्रभाव`,
+    });
+
+    cursor = endMs;
+  }
+
+  return {
+    isSavya,
+    movementType: isSavya ? 'Savya (Direct Clockwise)' : 'Apasavya (Indirect Counter-Clockwise)',
+    movementTypeHi: isSavya ? 'सव्य चक्र (दक्षिणावर्त गति)' : 'अपसव्य चक्र (वामावर्त गति)',
+    nakshatraName: moon.nakshatraName || 'Ashwini',
+    pada: padaIdx + 1,
+    dehaRasiIndex: dehaIdx,
+    dehaRasiName: SIGNS[dehaIdx].name,
+    dehaRasiNameHi: SIGN_NAMES_HI[dehaIdx],
+    jeevaRasiIndex: jeevaIdx,
+    jeevaRasiName: SIGNS[jeevaIdx].name,
+    jeevaRasiNameHi: SIGN_NAMES_HI[jeevaIdx],
+    periods,
+  };
+}
+
+// --------------------------------------------------------------------------
+// 4. Mandook Dasha (मंडूक दशा - Jaimini Frog Leap System)
+// --------------------------------------------------------------------------
+
+export interface MandookDashaPeriod {
+  signIndex: number;
+  signName: string;
+  signNameHi: string;
+  years: number;
+  startDate: string;
+  endDate: string;
+  startMs: number;
+  endMs: number;
+  houseFromLagna: number;
+  note: string;
+}
+
+export function computeMandookDasha(chart: ChartData): MandookDashaPeriod[] {
+  const daysPerYear = getDaysPerYear(chart.settings.dashaYearType);
+  const msPerYear = daysPerYear * 86_400_000;
+  const ascSign = chart.ascendant.signIndex;
+
+  // Mandook leap: jumps 3 signs (1st, 4th, 7th, 10th kendras, then panapharas, then apoklimas)
+  const sequence: number[] = [];
+  for (let round = 0; round < 3; round++) {
+    for (let step = 0; step < 4; step++) {
+      const s = (ascSign + round + step * 3) % 12;
+      if (!sequence.includes(s)) sequence.push(s);
+    }
+  }
+
+  const periods: MandookDashaPeriod[] = [];
+  let cursor = chart.utcMs;
+
+  for (const sIdx of sequence) {
+    const isOdd = sIdx % 2 === 0; // Aries(0)=Odd, Taurus(1)=Even
+    const years = isOdd ? 7 : 8; // Standard Jaimini Mandook duration
+    const endMs = cursor + years * msPerYear;
+    const hFromLagna = ((sIdx - ascSign + 12) % 12) + 1;
+
+    periods.push({
+      signIndex: sIdx,
+      signName: SIGNS[sIdx].name,
+      signNameHi: SIGN_NAMES_HI[sIdx],
+      years,
+      startDate: formatLocalDateTimeFromUtc(cursor, chart.offsetMinutesUsed).slice(0, 10),
+      endDate: formatLocalDateTimeFromUtc(endMs, chart.offsetMinutesUsed).slice(0, 10),
+      startMs: cursor,
+      endMs,
+      houseFromLagna: hFromLagna,
+      note: `मंडूक छलांग (House ${hFromLagna}): ${SIGNS[sIdx].name} (${years} वर्ष)`,
+    });
+
+    cursor = endMs;
+  }
+
+  return periods;
+}

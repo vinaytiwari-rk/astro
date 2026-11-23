@@ -1087,6 +1087,35 @@ h1, h2, h3, h4, .serif-heading {
 .matrix-table td:first-child {
   text-align: left;
   padding-left: 12px;
+  position: sticky;
+  left: 0;
+  background: var(--bg-card, #ffffff);
+  z-index: 2;
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.08);
+}
+
+.matrix-table th:first-child {
+  background: var(--bg-subtle, #f8fafc);
+  z-index: 3;
+}
+
+.table-sticky-col {
+  position: sticky;
+  left: 0;
+  background: var(--bg-card, #ffffff);
+  z-index: 2;
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .matrix-table th:first-child,
+[data-theme='dark'] .matrix-table td:first-child,
+[data-theme='dark'] .table-sticky-col {
+  background: var(--bg-card, #1e293b);
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .matrix-table th:first-child {
+  background: var(--bg-subtle, #0f172a);
 }
 
 .summary-row td {

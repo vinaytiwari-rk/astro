@@ -1,8 +1,13 @@
-export type AppLanguage = 'en' | 'hi';
+export type AppLanguage = 'en' | 'hi' | 'ta' | 'te' | 'kn' | 'gu' | 'bn';
 
 export const LANGUAGE_LABELS: Record<AppLanguage, string> = {
   en: 'English',
   hi: 'हिन्दी (Hindi)',
+  ta: 'தமிழ் (Tamil)',
+  te: 'తెలుగు (Telugu)',
+  kn: 'ಕನ್ನಡ (Kannada)',
+  gu: 'ગુજરાતી (Gujarati)',
+  bn: 'বাংলা (Bengali)',
 };
 
 export const SIGN_NAMES_I18N: Record<AppLanguage, string[]> = {
@@ -14,11 +19,36 @@ export const SIGN_NAMES_I18N: Record<AppLanguage, string[]> = {
     'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
     'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
   ],
+  ta: [
+    'மேஷம்', 'ரிஷபம்', 'மிதுனம்', 'கடகம்', 'சிம்மம்', 'கன்னி',
+    'துலாம்', 'விருச்சிகம்', 'தனுசு', 'மகரம்', 'கும்பம்', 'மீனம்',
+  ],
+  te: [
+    'మేషం', 'వృషభం', 'మిథునం', 'కర్కాటకం', 'సింహం', 'కన్య',
+    'తులా', 'వృశ్చికం', 'ధనుస్సు', 'మకరం', 'కుంభం', 'మీనం',
+  ],
+  kn: [
+    'ಮೇಷ', 'ವೃಷಭ', 'ಮಿಥುನ', 'ಕರ್ಕಾಟಕ', 'ಸಿಂಹ', 'ಕನ್ಯಾ',
+    'ತುಲಾ', 'ವೃಶ್ಚಿಕ', 'ಧನು', 'ಮಕರ', 'ಕುಂಭ', 'ಮೀನ',
+  ],
+  gu: [
+    'મેષ', 'વૃષભ', 'મિથુન', 'કર્ક', 'સિંહ', 'કન્યા',
+    'તુલા', 'વૃશ્ચિક', 'ધન', 'મકર', 'કુંભ', 'મીન',
+  ],
+  bn: [
+    'মেষ', 'বৃষ', 'মিথুন', 'কর্কট', 'সিংহ', 'কন্যা',
+    'তুলা', 'বৃশ্চিক', 'ধনু', 'মকর', 'কুম্ভ', 'মীন',
+  ],
 };
 
 export const SIGN_SHORT_I18N: Record<AppLanguage, string[]> = {
   en: ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi'],
   hi: ['मेष', 'वृष', 'मिथु', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चि', 'धनु', 'मकर', 'कुंभ', 'मीन'],
+  ta: ['மே', 'ரி', 'மி', 'கட', 'சிம்', 'கன்', 'து', 'விரு', 'தனு', 'மக', 'கும்', 'மீ'],
+  te: ['మేష', 'వృష', 'మిథు', 'కర్కా', 'సింహ', 'కన్య', 'తులా', 'వృశ్చి', 'ధను', 'మకర', 'కుంభ', 'మీన'],
+  kn: ['ಮೇಷ', 'ವೃಷ', 'ಮಿಥು', 'ಕರ್ಕ', 'ಸಿಂಹ', 'ಕನ್ಯಾ', 'ತುಲಾ', 'ವೃಶ್ಚಿ', 'ಧನು', 'ಮಕರ', 'ಕುಂಭ', 'ಮೀನ'],
+  gu: ['મેષ', 'વૃષ', 'મિથુ', 'કર્ક', 'સિંહ', 'કન્યા', 'તુલા', 'વૃશ્ચિ', 'ધન', 'મકર', 'કુંભ', 'મીન'],
+  bn: ['মেষ', 'বৃষ', 'মিথু', 'কর্ক', 'সিংহ', 'কন্যা', 'তুলা', 'বৃশ্চি', 'ধনু', 'মকর', 'কুম্ভ', 'মীন'],
 };
 
 export const PLANET_NAMES_I18N: Record<AppLanguage, Record<string, string>> = {
@@ -31,6 +61,31 @@ export const PLANET_NAMES_I18N: Record<AppLanguage, Record<string, string>> = {
     Asc: 'लग्न', Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
     Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
     Uranus: 'अरुण', Neptune: 'वरुण', Pluto: 'यम',
+  },
+  ta: {
+    Asc: 'லக்னம்', Sun: 'சூரியன்', Moon: 'சந்திரன்', Mars: 'செவ்வாய்', Mercury: 'புதன்',
+    Jupiter: 'குரு', Venus: 'சுக்கிரன்', Saturn: 'சனி', Rahu: 'ராகு', Ketu: 'கேது',
+    Uranus: 'யுரேனஸ்', Neptune: 'நெப்டியூன்', Pluto: 'புளூட்டோ',
+  },
+  te: {
+    Asc: 'లగ్నం', Sun: 'సూర్యుడు', Moon: 'చంద్రుడు', Mars: 'కుజుడు', Mercury: 'బుధుడు',
+    Jupiter: 'గురువు', Venus: 'శుక్రుడు', Saturn: 'శని', Rahu: 'రాహువు', Ketu: 'కేతువు',
+    Uranus: 'యురేనస్', Neptune: 'నెప్ట్యూన్', Pluto: 'ప్లూటో',
+  },
+  kn: {
+    Asc: 'ಲಗ್ನ', Sun: 'ಸೂರ್ಯ', Moon: 'ಚಂದ್ರ', Mars: 'ಮಂಗಳ', Mercury: 'ಬುಧ',
+    Jupiter: 'ಗುರು', Venus: 'ಶುಕ್ರ', Saturn: 'ಶನಿ', Rahu: 'ರಾಹು', Ketu: 'ಕೇತು',
+    Uranus: 'ಯುರೇನಸ್', Neptune: 'ನೆಪ್ಚೂನ್', Pluto: 'ಪ್ಲೂಟೋ',
+  },
+  gu: {
+    Asc: 'લગ્ન', Sun: 'સૂર્ય', Moon: 'ચંદ્ર', Mars: 'મંગળ', Mercury: 'બુધ',
+    Jupiter: 'ગુરુ', Venus: 'શુક્ર', Saturn: 'શનિ', Rahu: 'રાહુ', Ketu: 'કેતુ',
+    Uranus: 'યુરેનસ', Neptune: 'નેપ્ચ્યુન', Pluto: 'પ્લુટો',
+  },
+  bn: {
+    Asc: 'লগ্ন', Sun: 'সূর্য', Moon: 'চন্দ্র', Mars: 'মঙ্গল', Mercury: 'বুধ',
+    Jupiter: 'বৃহস্পতি', Venus: 'শুক্র', Saturn: 'শনি', Rahu: 'রাহু', Ketu: 'কেতু',
+    Uranus: 'ইউরেনাস', Neptune: 'নেপচুন', Pluto: 'প্লুটো',
   },
 };
 
@@ -46,6 +101,36 @@ export const PLANET_SHORT_I18N: Record<AppLanguage, Record<string, string>> = {
     Jupiter: 'गु', Venus: 'शु', Saturn: 'श', Rahu: 'रा', Ketu: 'के',
     Uranus: 'अ', Neptune: 'व', Pluto: 'य',
     BL: 'भल', HL: 'होल', GL: 'घल', Mandi: 'मं', AL: 'आल', UL: 'उल', Muntha: 'मुं', Ref: 'आ',
+  },
+  ta: {
+    Asc: 'லக்', Sun: 'சூ', Moon: 'சந்', Mars: 'செவ்', Mercury: 'பு',
+    Jupiter: 'குரு', Venus: 'சுக்', Saturn: 'சனி', Rahu: 'ராகு', Ketu: 'கேது',
+    Uranus: 'யு', Neptune: 'நெ', Pluto: 'புள்',
+    BL: 'BL', HL: 'HL', GL: 'GL', Mandi: 'மாந்தி', AL: 'AL', UL: 'UL', Muntha: 'முந்', Ref: 'Ref',
+  },
+  te: {
+    Asc: 'ల', Sun: 'సూ', Moon: 'చం', Mars: 'కు', Mercury: 'బు',
+    Jupiter: 'గు', Venus: 'శు', Saturn: 'శ', Rahu: 'రా', Ketu: 'కే',
+    Uranus: 'యు', Neptune: 'నె', Pluto: 'ప్లూ',
+    BL: 'BL', HL: 'HL', GL: 'GL', Mandi: 'మాంది', AL: 'AL', UL: 'UL', Muntha: 'ముం', Ref: 'Ref',
+  },
+  kn: {
+    Asc: 'ಲ', Sun: 'ಸೂ', Moon: 'ಚಂ', Mars: 'ಮಂ', Mercury: 'ಬು',
+    Jupiter: 'ಗು', Venus: 'ಶು', Saturn: 'ಶ', Rahu: 'ರಾ', Ketu: 'ಕೇ',
+    Uranus: 'ಯು', Neptune: 'ನೆ', Pluto: 'ಪ್ಲೂ',
+    BL: 'BL', HL: 'HL', GL: 'GL', Mandi: 'ಮಾಂದಿ', AL: 'AL', UL: 'UL', Muntha: 'ಮುಂ', Ref: 'Ref',
+  },
+  gu: {
+    Asc: 'લ', Sun: 'સૂર્ય', Moon: 'ચં', Mars: 'મં', Mercury: 'બુ',
+    Jupiter: 'ગુ', Venus: 'શુ', Saturn: 'શ', Rahu: 'રા', Ketu: 'કે',
+    Uranus: 'યુ', Neptune: 'ને', Pluto: 'પ્લુ',
+    BL: 'BL', HL: 'HL', GL: 'GL', Mandi: 'માંદી', AL: 'AL', UL: 'UL', Muntha: 'મું', Ref: 'Ref',
+  },
+  bn: {
+    Asc: 'ল', Sun: 'সূ', Moon: 'চং', Mars: 'মং', Mercury: 'বু',
+    Jupiter: 'বৃহ', Venus: 'শু', Saturn: 'শ', Rahu: 'রা', Ketu: 'কে',
+    Uranus: 'ইউ', Neptune: 'নে', Pluto: 'প্লু',
+    BL: 'BL', HL: 'HL', GL: 'GL', Mandi: 'মান্দি', AL: 'AL', UL: 'UL', Muntha: 'মুং', Ref: 'Ref',
   },
 };
 
@@ -287,9 +372,8 @@ export interface UiTextBundle {
   toolsTabs: Record<string, string>;
 }
 
-export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
-  en: {
-    appSub: 'Vedic Ephemeris & Kundali Studio',
+export const UI_TEXT_EN: UiTextBundle = {
+  appSub: 'Vedic Ephemeris & Kundali Studio',
     tabs: {
       basics: 'Basics & Charts',
       predictions: 'Predictions & Life Reading',
@@ -419,9 +503,10 @@ export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
       muhurta: 'Muhurta Date Finder',
       calendar: '10-Year Transit & Eclipse Calendar',
     },
-  },
-  hi: {
-    appSub: 'वैदिक पंचांग एवं कुंडली ज्योतिष सॉफ्टवेयर',
+  };
+
+export const UI_TEXT_HI: UiTextBundle = {
+  appSub: 'वैदिक पंचांग एवं कुंडली ज्योतिष सॉफ्टवेयर',
     tabs: {
       basics: 'कुंडली एवं ग्रह',
       predictions: 'फलादेश (Predictions)',
@@ -550,6 +635,130 @@ export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
       avasthas: 'ग्रह अवस्था · ग्रह युद्ध · उपग्रह',
       muhurta: 'शुभ मुहूर्त खोजें',
       calendar: '10-वर्षीय गोचर व ग्रहण पंचांग',
+    },
+};
+
+export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
+  en: UI_TEXT_EN,
+  hi: UI_TEXT_HI,
+  ta: {
+    ...UI_TEXT_HI,
+    appSub: 'வேத ஜோதிட கணக்கீட்டு மென்பொருள்',
+    tabs: {
+      ...UI_TEXT_HI.tabs,
+      basics: 'ஜாதகம் & கிரகங்கள்',
+      predictions: 'பலன்கள் (Predictions)',
+      branches: 'ஜோதிட பிரிவுகள்',
+      prashna: 'பிரசன்ன ஜாதகம்',
+      match: 'திருமண பொருத்தம்',
+    },
+    chartStyles: { north: 'வட இந்திய முறை', south: 'தென் இந்திய முறை', east: 'கிழக்கு இந்திய முறை' },
+    common: {
+      ...UI_TEXT_HI.common,
+      lagna: 'லக்னம்',
+      moon: 'சந்திரன்',
+      ayanamsa: 'அயனாம்சம்',
+      body: 'கிரகம்',
+      sign: 'ராசி',
+      degree: 'பாகை',
+      nakshatra: 'நட்சத்திரம்',
+      house: 'பாவம்',
+    },
+  },
+  te: {
+    ...UI_TEXT_HI,
+    appSub: 'వేద జ్యోతిష లెక్కల సాఫ్ట్‌వేర్',
+    tabs: {
+      ...UI_TEXT_HI.tabs,
+      basics: 'జాతకం & గ్రహాలు',
+      predictions: 'ఫలితాలు (Predictions)',
+      branches: 'జ్యోతిష విభాగాలు',
+      prashna: 'ప్రశ్న జాతకం',
+      match: 'జాతక పొంతన',
+    },
+    chartStyles: { north: 'ఉత్తర భారత పద్ధతి', south: 'దక్షిణ భారత పద్ధతి', east: 'తూర్పు భారత పద్ధతి' },
+    common: {
+      ...UI_TEXT_HI.common,
+      lagna: 'లగ్నం',
+      moon: 'చంద్రుడు',
+      ayanamsa: 'అయనాంశ',
+      body: 'గ్రహం',
+      sign: 'రాశి',
+      degree: 'అంశ',
+      nakshatra: 'నక్షత్రం',
+      house: 'భావం',
+    },
+  },
+  kn: {
+    ...UI_TEXT_HI,
+    appSub: 'ವೇದ ಜ್ಯೋತಿಷ್ಯ ಲೆಕ್ಕಾಚಾರ ತಂತ್ರಾಂಶ',
+    tabs: {
+      ...UI_TEXT_HI.tabs,
+      basics: 'ಜಾತಕ ಮತ್ತು ಗ್ರಹಗಳು',
+      predictions: 'ಫಲಿತಾಂಶಗಳು (Predictions)',
+      branches: 'ಜ್ಯೋತಿಷ್ಯ ಶಾಖೆಗಳು',
+      prashna: 'ಪ್ರಶ್ನ ಜಾತಕ',
+      match: 'ಕುಂಡಲಿ ಮಿಲನ',
+    },
+    chartStyles: { north: 'ಉತ್ತರ ಭಾರತೀಯ ಶೈಲಿ', south: 'ದಕ್ಷಿಣ ಭಾರತೀಯ ಶೈಲಿ', east: 'ಪೂರ್ವ ಭಾರತೀಯ ಶೈಲಿ' },
+    common: {
+      ...UI_TEXT_HI.common,
+      lagna: 'ಲಗ್ನ',
+      moon: 'ಚಂದ್ರ',
+      ayanamsa: 'ಅಯನಾಂಶ',
+      body: 'ಗ್ರಹ',
+      sign: 'ರಾಶಿ',
+      degree: 'ಅಂಶ',
+      nakshatra: 'ನಕ್ಷತ್ರ',
+      house: 'ಭಾವ',
+    },
+  },
+  gu: {
+    ...UI_TEXT_HI,
+    appSub: 'વૈદિક જ્યોતિષ ગણતરી સોફ્ટવેર',
+    tabs: {
+      ...UI_TEXT_HI.tabs,
+      basics: 'કુંડળી અને ગ્રહો',
+      predictions: 'ફળાદેશ (Predictions)',
+      branches: 'જ્યોતિષ શાખાઓ',
+      prashna: 'પ્રશ્ન કુંડળી',
+      match: 'કુંડળી મેળવણી',
+    },
+    chartStyles: { north: 'ઉત્તર ભારતીય', south: 'દક્ષિણ ભારતીય', east: 'પૂર્વ ભારતીય' },
+    common: {
+      ...UI_TEXT_HI.common,
+      lagna: 'લગ્ન',
+      moon: 'ચંદ્ર',
+      ayanamsa: 'અયનાંશ',
+      body: 'ગ્રહ',
+      sign: 'રાશિ',
+      degree: 'અંશ',
+      nakshatra: 'નક્ષત્ર',
+      house: 'ભાવ',
+    },
+  },
+  bn: {
+    ...UI_TEXT_HI,
+    appSub: 'বৈদিক জ্যোতিষ গণনা সফটওয়্যার',
+    tabs: {
+      ...UI_TEXT_HI.tabs,
+      basics: 'জন্মছক ও গ্রহ',
+      predictions: 'ফলাদেশ (Predictions)',
+      branches: 'জ্যোতিষ শাখা',
+      prashna: 'প্রশ্ন কুণ্ডলী',
+      match: 'যোটক বিচার',
+    },
+    chartStyles: { north: 'উত্তর ভারতীয়', south: 'দক্ষিণ ভারতীয়', east: 'পূর্ব ভারতীয়' },
+    common: {
+      ...UI_TEXT_HI.common,
+      lagna: 'লগ্ন',
+      moon: 'চন্দ্র',
+      ayanamsa: 'অয়নাংশ',
+      body: 'গ্রহ',
+      sign: 'রাশি',
+      degree: 'অংশ',
+      nakshatra: 'নক্ষত্র',
+      house: 'ভাব',
     },
   },
 };

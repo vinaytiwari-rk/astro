@@ -11,7 +11,7 @@ import type {
 import { SIGNS } from '../../astro/constants';
 import type { ChartData, BirthInput, CalcSettings } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { trPlanet, trSign } from '../../i18n/translations';
+import { trPlanet, trSign, type AppLanguage } from '../../i18n/translations';
 import { formatDateDmy } from '../../astro/time';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ function NetBadge({ net }: { net: 'positive' | 'negative' | 'neutral' }) {
 
 // ─── Tab 1: Chara Karakas ─────────────────────────────────────────────────────
 
-function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: boolean; lang: 'hi' | 'en' }) {
+function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: boolean; lang: AppLanguage }) {
   if (!karakas || karakas.length === 0) {
     return (
       <div className="jm-section">
@@ -107,7 +107,7 @@ function KarakasTab({ karakas, isHi, lang }: { karakas: JaiminiKaraka[]; isHi: b
 
 // ─── Tab 2: Arudha Padas ─────────────────────────────────────────────────────
 
-function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; lang: 'hi' | 'en' }) {
+function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; lang: AppLanguage }) {
   if (!padas || padas.length === 0) {
     return (
       <div className="jm-section">
@@ -165,7 +165,7 @@ function ArudhaTab({ padas, isHi, lang }: { padas: ArudhaPada[]; isHi: boolean; 
 
 // ─── Tab 3: Karakamsha ───────────────────────────────────────────────────────
 
-function KarakamshaTab({ data, isHi, lang }: { data: KarakamshaData; isHi: boolean; lang: 'hi' | 'en' }) {
+function KarakamshaTab({ data, isHi, lang }: { data: KarakamshaData; isHi: boolean; lang: AppLanguage }) {
   if (!data) {
     return (
       <div className="jm-section">
@@ -237,7 +237,7 @@ function DashaRow({ md, nowMs, isHi, lang }: {
   md: JaiminiCharaDashaPeriod;
   nowMs: number;
   isHi: boolean;
-  lang: 'hi' | 'en';
+  lang: AppLanguage;
 }) {
   const [expanded, setExpanded] = useState(md?.isCurrentPeriod ?? false);
   if (!md) return null;
@@ -285,7 +285,7 @@ function DashaTab({ dasha, nowMs, isHi, lang }: {
   dasha: JaiminiCharaDashaPeriod[];
   nowMs: number;
   isHi: boolean;
-  lang: 'hi' | 'en';
+  lang: AppLanguage;
 }) {
   if (!dasha || dasha.length === 0) {
     return (
@@ -316,7 +316,7 @@ function DashaTab({ dasha, nowMs, isHi, lang }: {
 
 // ─── Tab 5: Argala ───────────────────────────────────────────────────────────
 
-function ArgalaTab({ argala, isHi, lang }: { argala: ArgalaEntry[]; isHi: boolean; lang: 'hi' | 'en' }) {
+function ArgalaTab({ argala, isHi, lang }: { argala: ArgalaEntry[]; isHi: boolean; lang: AppLanguage }) {
   if (!argala || argala.length === 0) {
     return (
       <div className="jm-section">

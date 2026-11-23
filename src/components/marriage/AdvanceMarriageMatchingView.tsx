@@ -19,6 +19,7 @@ import {
   Sparkles,
   Sun,
   User,
+  UserPlus,
   Users,
 } from 'lucide-react';
 import { calculateChart } from '../../astro/calculator';
@@ -55,6 +56,7 @@ interface AdvanceMarriageMatchingViewProps {
   initialSubTab?: MarriageSubTab;
   onChangeChartStyle?: (style: ChartStyle) => void;
   onNavigate?: (view: string, sub?: string) => void;
+  onSaveProfile?: (profile: BirthInput) => void;
 }
 
 export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewProps> = ({
@@ -64,9 +66,11 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
   initialSubTab = 'ashtakoota',
   onChangeChartStyle,
   onNavigate,
+  onSaveProfile,
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<MarriageSubTab>(initialSubTab);
   const [muhurtaCeremonyFilter, setMuhurtaCeremonyFilter] = useState<'all' | 'Vivaha' | 'Sagai' | 'Tilak'>('all');
@@ -366,6 +370,24 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
             {isHi ? 'नक्षत्र:' : 'Nakshatra:'}{' '}
             <strong>{groomMoon.nakshatraName}</strong> ({isHi ? 'पाद' : 'Pada'} {groomMoon.pada})
           </div>
+          {onSaveProfile && (
+            <div style={{ marginTop: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  const p: BirthInput = { ...groomInput, id: groomInput.id.startsWith('groom-default') ? `groom-${Date.now()}` : groomInput.id };
+                  onSaveProfile(p);
+                  setSaveSuccessMsg(isHi ? 'वर की प्रोफाइल सुरक्षित की गई!' : 'Groom profile saved!');
+                  setTimeout(() => setSaveSuccessMsg(null), 3000);
+                }}
+                style={{ fontSize: '11px', padding: '3px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                <UserPlus size={12} />
+                <span>{isHi ? 'वर को प्रोफाइल के रूप में सहेजें' : 'Save Groom as Profile'}</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Bride Profile Card */}
@@ -445,6 +467,27 @@ export const AdvanceMarriageMatchingView: React.FC<AdvanceMarriageMatchingViewPr
             {isHi ? 'नक्षत्र:' : 'Nakshatra:'}{' '}
             <strong>{brideMoon.nakshatraName}</strong> ({isHi ? 'पाद' : 'Pada'} {brideMoon.pada})
           </div>
+          {onSaveProfile && (
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  const p: BirthInput = { ...brideInput, id: brideInput.id.startsWith('bride-default') ? `bride-${Date.now()}` : brideInput.id };
+                  onSaveProfile(p);
+                  setSaveSuccessMsg(isHi ? 'कन्या की प्रोफाइल सुरक्षित की गई!' : 'Bride profile saved!');
+                  setTimeout(() => setSaveSuccessMsg(null), 3000);
+                }}
+                style={{ fontSize: '11px', padding: '3px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                <UserPlus size={12} />
+                <span>{isHi ? 'कन्या को प्रोफाइल के रूप में सहेजें' : 'Save Bride as Profile'}</span>
+              </button>
+              {saveSuccessMsg && (
+                <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>{saveSuccessMsg}</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

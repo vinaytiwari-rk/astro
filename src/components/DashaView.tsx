@@ -16,7 +16,7 @@ import {
   trBadge,
 } from '../i18n/hindiPredictions';
 import { useLanguage } from '../i18n/LanguageContext';
-import { trPlanet } from '../i18n/translations';
+import { trPlanet, type AppLanguage } from '../i18n/translations';
 import { DateDmyInput } from './DateDmyInput';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
 
@@ -31,7 +31,7 @@ const YOGINI_HI: Record<string, string> = {
   Sankata: 'संकटा',
 };
 
-function fmtDashaLord(lord: string, system: DashaSystemId, lang: 'en' | 'hi'): string {
+function fmtDashaLord(lord: string, system: DashaSystemId, lang: AppLanguage): string {
   if (lang === 'en') return lord;
   if (system === 'yogini') {
     const clean = lord.split(' ')[0];

@@ -201,9 +201,19 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
     setTransitDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
   };
 
+  const stepWeek = (weeks: number) => {
+    stepDate(weeks * 7);
+  };
+
   const stepMonth = (months: number) => {
     const d = new Date(`${transitDate}T${transitTime}`);
     d.setMonth(d.getMonth() + months);
+    setTransitDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
+  };
+
+  const stepYear = (years: number) => {
+    const d = new Date(`${transitDate}T${transitTime}`);
+    d.setFullYear(d.getFullYear() + years);
     setTransitDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
   };
 
@@ -429,35 +439,39 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px' }}>
             <button
               type="button"
-              onClick={() => stepDate(-1)}
+              onClick={() => stepYear(-1)}
               className="oj-tab-pill"
-              style={{ padding: '6px 12px', fontSize: '11.5px' }}
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="-1 Year"
             >
-              -1 दिन
-            </button>
-            <button
-              type="button"
-              onClick={() => stepDate(1)}
-              className="oj-tab-pill"
-              style={{ padding: '6px 12px', fontSize: '11.5px' }}
-            >
-              +1 दिन
+              -1 वर्ष
             </button>
             <button
               type="button"
               onClick={() => stepMonth(-1)}
               className="oj-tab-pill"
-              style={{ padding: '6px 12px', fontSize: '11.5px' }}
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="-1 Month"
             >
               -1 माह
             </button>
             <button
               type="button"
-              onClick={() => stepMonth(1)}
+              onClick={() => stepWeek(-1)}
               className="oj-tab-pill"
-              style={{ padding: '6px 12px', fontSize: '11.5px' }}
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="-1 Week"
             >
-              +1 माह
+              -1 सप्ताह
+            </button>
+            <button
+              type="button"
+              onClick={() => stepDate(-1)}
+              className="oj-tab-pill"
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="-1 Day"
+            >
+              -1 दिन
             </button>
             <button
               type="button"
@@ -466,6 +480,42 @@ export const DualTransitWheelView: React.FC<DualTransitWheelViewProps> = ({
               style={{ padding: '6px 14px', fontSize: '11.5px' }}
             >
               वर्तमान (Now)
+            </button>
+            <button
+              type="button"
+              onClick={() => stepDate(1)}
+              className="oj-tab-pill"
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="+1 Day"
+            >
+              +1 दिन
+            </button>
+            <button
+              type="button"
+              onClick={() => stepWeek(1)}
+              className="oj-tab-pill"
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="+1 Week"
+            >
+              +1 सप्ताह
+            </button>
+            <button
+              type="button"
+              onClick={() => stepMonth(1)}
+              className="oj-tab-pill"
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="+1 Month"
+            >
+              +1 माह
+            </button>
+            <button
+              type="button"
+              onClick={() => stepYear(1)}
+              className="oj-tab-pill"
+              style={{ padding: '6px 10px', fontSize: '11px' }}
+              title="+1 Year"
+            >
+              +1 वर्ष
             </button>
             <button
               type="button"

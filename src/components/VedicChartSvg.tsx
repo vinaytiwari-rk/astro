@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from 'react';
-import { Download } from 'lucide-react';
+import React, { useMemo, useRef, useState } from 'react';
+import { Download, Maximize2, X } from 'lucide-react';
 import type { ChartStyle } from '../astro/types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { trPlanetShort, trSign, trSignShort, type AppLanguage } from '../i18n/translations';
@@ -155,6 +155,7 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
   centerLabel,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { lang, t } = useLanguage();
 
   const groupedBySign = useMemo(() => {
@@ -186,16 +187,26 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
           <div className="vedic-chart-title">{title}</div>
           {subtitle && <div className="vedic-chart-subtitle">{subtitle}</div>}
         </div>
-        {showDownload && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <button
             type="button"
             className="icon-btn"
-            onClick={handleDownload}
-            title={lang === 'hi' ? 'SVG कुंडली डाउनलोड करें' : 'Download SVG Chart'}
+            onClick={() => setIsFullscreen(true)}
+            title={lang === 'hi' ? 'पूर्ण स्क्रीन ज़ूम' : 'Full-Screen Zoom'}
           >
-            <Download size={14} />
+            <Maximize2 size={14} />
           </button>
-        )}
+          {showDownload && (
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={handleDownload}
+              title={lang === 'hi' ? 'SVG कुंडली डाउनलोड करें' : 'Download SVG Chart'}
+            >
+              <Download size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       <svg
@@ -329,6 +340,200 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
           </g>
         )}
       </svg>
+
+      {/* Full-Screen Zoom Modal */}
+      {isFullscreen && (
+        <div
+          className="no-print"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.82)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setIsFullscreen(false)}
+        >
+          <div
+            style={{
+              background: 'var(--bg-card, #ffffff)',
+              borderRadius: '14px',
+              padding: '16px',
+              maxWidth: '560px',
+              width: '92vw',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
+              border: '1px solid var(--border, #cbd5e1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '10px',
+                paddingBottom: '8px',
+                borderBottom: '1px solid var(--border, #e2e8f0)',
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '15px' }}>{title}</div>
+                {subtitle && <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{subtitle}</div>}
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={handleDownload}
+                  title={lang === 'hi' ? 'डाउनलोड' : 'Download'}
+                >
+                  <Download size={15} />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => setIsFullscreen(false)}
+                  title={lang === 'hi' ? 'बंद करें' : 'Close'}
+                >
+                  <X size={17} />
+                </button>
+              </div>
+            </div>
+
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <svg
+                viewBox="0 0 400 400"
+                style={{ width: '100%', height: 'auto', maxHeight: '70vh' }}
+                className="vedic-chart-svg"
+                role="img"
+                aria-label={title}
+              >
+                <rect x="8" y="8" width="384" height="384" rx="4" className="chart-bg" />
+                {style === 'north' && (
+                  <g>
+                    <rect x="8" y="8" width="384" height="384" className="chart-line-outer" />
+                    <line x1="8" y1="8" x2="392" y2="392" className="chart-line" />
+                    <line x1="392" y1="8" x2="8" y2="392" className="chart-line" />
+                    <polygon points="200,8 392,200 200,392 8,200" className="chart-line-inner" />
+                    {NORTH_REGIONS.map((reg) => {
+                      const signIdx = (lagnaSignIndex + reg.house - 1) % 12;
+                      const signItems = groupedBySign[signIdx];
+                      const bindu = savBindus ? savBindus[signIdx] : undefined;
+                      return (
+                        <g key={reg.house}>
+                          <text
+                            x={reg.signPos[0]}
+                            y={reg.signPos[1]}
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            className="chart-rasi-num"
+                          >
+                            {signIdx + 1}
+                            {bindu !== undefined ? ` (${bindu})` : ''}
+                          </text>
+                          {renderItemsCluster(signItems, reg.center[0], reg.center[1], reg.maxPerRow, false, lang)}
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+                {style === 'south' && (
+                  <g>
+                    <rect x="8" y="8" width="384" height="384" className="chart-line-outer" />
+                    <line x1="104" y1="8" x2="104" y2="392" className="chart-line" />
+                    <line x1="200" y1="8" x2="200" y2="104" className="chart-line" />
+                    <line x1="200" y1="296" x2="200" y2="392" className="chart-line" />
+                    <line x1="296" y1="8" x2="296" y2="392" className="chart-line" />
+                    <line x1="8" y1="104" x2="392" y2="104" className="chart-line" />
+                    <line x1="8" y1="200" x2="104" y2="200" className="chart-line" />
+                    <line x1="296" y1="200" x2="392" y2="200" className="chart-line" />
+                    <line x1="8" y1="296" x2="392" y2="296" className="chart-line" />
+                    <text x="200" y="182" textAnchor="middle" className="chart-center-title">
+                      {centerLabel || title}
+                    </text>
+                    <text x="200" y="205" textAnchor="middle" className="chart-center-sub">
+                      {t.common.lagna}: {trSign(lagnaSignIndex, lang)}
+                    </text>
+                    {savBindus && (
+                      <text x="200" y="226" textAnchor="middle" className="chart-center-sub">
+                        {lang === 'hi' ? 'SAV योग' : 'SAV Total'}: {savBindus.reduce((a, b) => a + b, 0)}
+                      </text>
+                    )}
+                    {SOUTH_SIGN_CELLS.map(({ sign, col, row }) => {
+                      const x0 = 8 + col * 96;
+                      const y0 = 8 + row * 96;
+                      const isLagnaSign = sign === lagnaSignIndex;
+                      const signItems = groupedBySign[sign];
+                      const bindu = savBindus ? savBindus[sign] : undefined;
+                      return (
+                        <g key={sign}>
+                          {isLagnaSign && (
+                            <line x1={x0} y1={y0 + 22} x2={x0 + 22} y2={y0} className="chart-lagna-slash" />
+                          )}
+                          <text x={x0 + 90} y={y0 + 13} textAnchor="end" className="chart-sign-tag">
+                            {trSignShort(sign, lang)}
+                          </text>
+                          {bindu !== undefined && (
+                            <text x={x0 + 6} y={y0 + 90} textAnchor="start" className="chart-bindu-tag">
+                              {bindu}
+                            </text>
+                          )}
+                          {renderItemsCluster(signItems, x0 + 48, y0 + 52, 2, false, lang)}
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+                {style === 'east' && (
+                  <g>
+                    <rect x="8" y="8" width="384" height="384" className="chart-line-outer" />
+                    <line x1="200" y1="8" x2="392" y2="200" className="chart-line" />
+                    <line x1="392" y1="200" x2="200" y2="392" className="chart-line" />
+                    <line x1="200" y1="392" x2="8" y2="200" className="chart-line" />
+                    <line x1="8" y1="200" x2="200" y2="8" className="chart-line" />
+                    <line x1="136" y1="8" x2="136" y2="392" className="chart-line" />
+                    <line x1="264" y1="8" x2="264" y2="392" className="chart-line" />
+                    <line x1="8" y1="136" x2="392" y2="136" className="chart-line" />
+                    <line x1="8" y1="264" x2="392" y2="264" className="chart-line" />
+                    <line x1="8" y1="8" x2="136" y2="136" className="chart-line" />
+                    <line x1="264" y1="136" x2="392" y2="8" className="chart-line" />
+                    <line x1="8" y1="392" x2="136" y2="264" className="chart-line" />
+                    <line x1="264" y1="264" x2="392" y2="392" className="chart-line" />
+                    <text x="200" y="190" textAnchor="middle" className="chart-center-title">
+                      {centerLabel || title}
+                    </text>
+                    <text x="200" y="212" textAnchor="middle" className="chart-center-sub">
+                      {trSign(lagnaSignIndex, lang)}
+                    </text>
+                    {EAST_SIGN_CENTERS.map(({ sign, cx, cy, numPos }) => {
+                      const signItems = groupedBySign[sign];
+                      const bindu = savBindus ? savBindus[sign] : undefined;
+                      return (
+                        <g key={sign}>
+                          <text x={numPos[0]} y={numPos[1]} textAnchor="middle" className="chart-rasi-num">
+                            {sign + 1}
+                            {bindu !== undefined ? `·${bindu}` : ''}
+                          </text>
+                          {renderItemsCluster(signItems, cx, cy, 2, false, lang)}
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

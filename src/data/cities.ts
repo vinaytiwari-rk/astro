@@ -1,6 +1,7 @@
 import rawCities from 'city-timezones/data/cityMap.json';
 import tzlookup from 'tz-lookup';
 import type { BirthInput, CalcSettings } from '../astro/types';
+import type { AppLanguage } from '../i18n/translations';
 import { INDIAN_DISTRICTS_ATLAS } from './indianDistricts';
 
 export interface CityEntry {
@@ -436,7 +437,7 @@ interface OpenMeteoGeoResult {
 
 export async function searchPlacesOnline(
   query: string,
-  lang: 'en' | 'hi' = 'en',
+  lang: AppLanguage = 'en',
   limit = 15,
   signal?: AbortSignal
 ): Promise<CityEntry[]> {

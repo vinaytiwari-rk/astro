@@ -165,6 +165,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
             <span>{lang === 'hi' ? 'बाहरी ग्रह शामिल करें (अरुण, वरुण, यम)' : 'Include Outer Planets (Uranus, Neptune, Pluto)'}</span>
           </label>
+
+          <label className="checkbox-inline" style={{ marginTop: '10px', alignItems: 'flex-start' }}>
+            <input
+              type="checkbox"
+              checked={!!settings.topocentric}
+              onChange={(e) =>
+                onChange({
+                  ...settings,
+                  topocentric: e.target.checked,
+                  coordinateSystem: e.target.checked ? 'topocentric' : 'geocentric',
+                })
+              }
+              style={{ marginTop: '3px' }}
+            />
+            <div>
+              <span style={{ fontWeight: 600 }}>
+                {lang === 'hi' ? 'टॉपोसेंट्रिक चंद्र स्थिति (लंबन परिशोधन)' : 'Topocentric Lunar Coordinates (Parallax Correction)'}
+              </span>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                {lang === 'hi'
+                  ? 'ग्रहण काल एवं केपी उप-उप स्वामी सीमा संक्रमण में भू-सतह दर्शक आधारित शुद्धिकरण'
+                  : 'Earth-surface observer parallax correction for eclipse timing & KP sub-sub boundaries'}
+              </div>
+            </div>
+          </label>
         </div>
 
         <div className="modal-footer">

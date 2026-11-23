@@ -100,6 +100,8 @@ export interface CalcSettings {
   includeOuterPlanets: boolean;
   karakaCount: 7 | 8;
   horaMode: 'parashara' | 'samasaptama';
+  coordinateSystem?: 'geocentric' | 'topocentric';
+  topocentric?: boolean;
 }
 
 export interface SignPlacement {

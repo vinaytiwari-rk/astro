@@ -13,7 +13,7 @@ import {
 import type { ChartData, CalcSettings, BirthInput, DashaPeriod } from '../../astro/types';
 import { computeYoginiDasha } from '../../astro/dasha';
 import { computeCharaDasha } from '../../astro/jaimini';
-import { computeAdvancedDashas } from '../../astro/advancedDashas';
+import { computeAdvancedDashas, computeKalachakraDasha, computeMandookDasha } from '../../astro/advancedDashas';
 import { formatDateDmy, resolveUtcFromBirth } from '../../astro/time';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trSign } from '../../i18n/translations';
@@ -96,6 +96,20 @@ export const MultiDashaMatrixView: React.FC<MultiDashaMatrixViewProps> = ({
     const act = advDashas.ashtottari.find((a) => nowMs >= a.startMs && nowMs <= a.endMs);
     return act || advDashas.ashtottari[0];
   }, [advDashas, nowMs]);
+
+  // 5. Kalachakra Dasha (Parashari Savya/Apasavya)
+  const kalachakraReport = useMemo(() => computeKalachakraDasha(chart), [chart]);
+  const activeKalachakra = useMemo(() => {
+    const act = kalachakraReport.periods.find((kp) => nowMs >= kp.startMs && nowMs <= kp.endMs);
+    return act || kalachakraReport.periods[0];
+  }, [kalachakraReport, nowMs]);
+
+  // 6. Mandook Dasha (Jaimini Frog Leap)
+  const mandookPeriods = useMemo(() => computeMandookDasha(chart), [chart]);
+  const activeMandook = useMemo(() => {
+    const act = mandookPeriods.find((mp) => nowMs >= mp.startMs && nowMs <= mp.endMs);
+    return act || mandookPeriods[0];
+  }, [mandookPeriods, nowMs]);
 
   // Multi-Dasha Convergence Synthesis
   const convergencePoints = useMemo(() => {
@@ -333,6 +347,83 @@ export const MultiDashaMatrixView: React.FC<MultiDashaMatrixViewProps> = ({
             <span>{activeAshtottari?.startDate}</span>
             <span>108-वर्षीय</span>
             <span>{activeAshtottari?.endDate}</span>
+          </div>
+        </div>
+
+        {/* 5. Kalachakra Dasha */}
+        <div
+          style={{
+            background: 'var(--bg-elevated)',
+            borderRadius: '14px',
+            padding: '18px',
+            border: '1px solid var(--border)',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase' }}>
+              5. {isHi ? 'कालचक्र दशा' : 'Kalachakra Dasha'}
+            </span>
+            <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.15)', color: '#dc2626', fontWeight: 700 }}>
+              {isHi ? kalachakraReport.movementTypeHi : kalachakraReport.movementType}
+            </span>
+          </div>
+
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', marginBottom: '4px' }}>
+            {isHi ? activeKalachakra?.signNameHi : activeKalachakra?.signName} ({activeKalachakra?.years} Y)
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+            {isHi ? `देह: ${kalachakraReport.dehaRasiNameHi} · जीव: ${kalachakraReport.jeevaRasiNameHi}` : `Deha: ${kalachakraReport.dehaRasiName} · Jeeva: ${kalachakraReport.jeevaRasiName}`}
+          </div>
+          <div style={{ fontSize: '11.5px', color: '#b45309', fontWeight: 600, marginBottom: '12px' }}>
+            {activeKalachakra?.note}
+          </div>
+
+          <div style={{ height: '6px', background: 'var(--bg-subtle)', borderRadius: '9999px', overflow: 'hidden', marginBottom: '8px' }}>
+            <div style={{ width: '60%', height: '100%', background: '#dc2626' }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)' }}>
+            <span>{activeKalachakra?.startDate}</span>
+            <span>{isHi ? activeKalachakra?.gatiHi : activeKalachakra?.gati}</span>
+            <span>{activeKalachakra?.endDate}</span>
+          </div>
+        </div>
+
+        {/* 6. Mandook Dasha */}
+        <div
+          style={{
+            background: 'var(--bg-elevated)',
+            borderRadius: '14px',
+            padding: '18px',
+            border: '1px solid var(--border)',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase' }}>
+              6. {isHi ? 'मंडूक दशा (जैमिनी)' : 'Mandook Dasha (Jaimini)'}
+            </span>
+            <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '9999px', background: 'rgba(59, 130, 246, 0.15)', color: '#2563eb', fontWeight: 700 }}>
+              {isHi ? 'त्रिकोण मंडूक छलांग' : 'Frog Leap Jumps'}
+            </span>
+          </div>
+
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', marginBottom: '4px' }}>
+            {isHi ? activeMandook?.signNameHi : activeMandook?.signName} ({activeMandook?.years} Y)
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+            {activeMandook?.note}
+          </div>
+
+          <div style={{ height: '6px', background: 'var(--bg-subtle)', borderRadius: '9999px', overflow: 'hidden', marginBottom: '8px' }}>
+            <div style={{ width: '50%', height: '100%', background: '#2563eb' }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)' }}>
+            <span>{activeMandook?.startDate}</span>
+            <span>H{activeMandook?.houseFromLagna}</span>
+            <span>{activeMandook?.endDate}</span>
           </div>
         </div>
       </div>

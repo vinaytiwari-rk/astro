@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Award,
@@ -16,6 +16,7 @@ import {
   Sparkles,
   Star,
   User,
+  UserPlus,
   Users,
   Zap,
 } from 'lucide-react';
@@ -46,7 +47,7 @@ import {
   type FutureLifeReport,
   type PastLifeReport,
 } from '../../astro/fortuneCalculators';
-import type { ChartData } from '../../astro/types';
+import type { BirthInput, ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export type MainCalculatorCategory =
@@ -81,22 +82,61 @@ export type SpecificCalculatorId =
   | 'past_life'
   | 'future_life';
 
-interface FortuneCalculatorsViewProps {
+export interface FortuneCalculatorsViewProps {
   chart: ChartData;
   onNavigate?: (view: string) => void;
   initialTab?: SpecificCalculatorId;
+  profiles?: BirthInput[];
+  onSaveProfile?: (profile: BirthInput) => void;
 }
 
 export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
   chart,
   onNavigate,
   initialTab = 'overview',
+  profiles = [],
+  onSaveProfile,
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
 
   const [activeTab, setActiveTab] = useState<SpecificCalculatorId>(initialTab);
   const [activeCategory, setActiveCategory] = useState<MainCalculatorCategory>('overview');
+  const [partnerSavedMsg, setPartnerSavedMsg] = useState<string | null>(null);
+
+  // Sync when initialTab prop changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+      if (
+        initialTab === 'love_calculator' ||
+        [
+          'love_vs_arranged',
+          'marriage_timing',
+          'partner_initials',
+          'marital_harmony',
+          'karmic_soul_bond',
+          'stree_jataka',
+          'zodiac_element',
+          'relationship_puja',
+        ].includes(initialTab)
+      ) {
+        setActiveCategory('vedic_relationship');
+      } else if (
+        ['birth_date_match', 'name_vibration', 'auspicious_dates', 'friendship_loyalty'].includes(
+          initialTab
+        )
+      ) {
+        setActiveCategory('numerology');
+      } else if (
+        ['ayurdaya_class', 'maraka_vulnerability', 'longevity_protection'].includes(initialTab)
+      ) {
+        setActiveCategory('ayurdaya_protection');
+      } else if (['past_life', 'future_life'].includes(initialTab)) {
+        setActiveCategory('past_future_life');
+      }
+    }
+  }, [initialTab]);
 
   // Input states for Person 1 (Native) and Person 2 (Partner/Friend)
   const nativeName = chart.input.name || (isHi ? 'जातक' : 'Native');
@@ -106,6 +146,26 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
   const [p1Dob, setP1Dob] = useState<string>(nativeDob);
   const [p2Name, setP2Name] = useState<string>(isHi ? 'प्रिया' : 'Priya');
   const [p2Dob, setP2Dob] = useState<string>('1997-09-22');
+
+  const handleSavePartnerAsProfile = () => {
+    if (!p2Name.trim() || !onSaveProfile) return;
+    const newProfile: BirthInput = {
+      id: `partner-${Date.now()}`,
+      name: p2Name.trim(),
+      gender: 'female',
+      date: p2Dob || '1998-01-01',
+      time: '12:00:00',
+      city: chart.input.city || 'New Delhi',
+      country: chart.input.country || 'India',
+      latitude: chart.input.latitude || 28.6139,
+      longitude: chart.input.longitude || 77.209,
+      timezone: chart.input.timezone || 'Asia/Kolkata',
+      notes: 'Saved from Fortune & Relationship Calculator',
+    };
+    onSaveProfile(newProfile);
+    setPartnerSavedMsg(isHi ? 'साथी की प्रोफाइल सुरक्षित की गई!' : 'Partner profile saved!');
+    setTimeout(() => setPartnerSavedMsg(null), 3000);
+  };
 
   // Compute master suite
   const suite: AuthenticCalculatorsSuiteReport = useMemo(() => {
@@ -206,8 +266,33 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
           {/* Person 1 */}
           <div style={{ background: '#eff6ff', padding: '12px 16px', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
-            <div style={{ fontWeight: 700, fontSize: '13px', color: '#1e40af', marginBottom: '8px' }}>
-              {isHi ? 'प्रथम व्यक्ति (जातक / मुख्य कुंडली)' : 'Person 1 (Native)'}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontWeight: 700, fontSize: '13px', color: '#1e40af' }}>
+                {isHi ? 'प्रथम व्यक्ति (जातक / मुख्य कुंडली)' : 'Person 1 (Native)'}
+              </span>
+              {profiles.length > 0 && (
+                <select
+                  aria-label="Select Person 1 from Saved Profiles"
+                  style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                  onChange={(e) => {
+                    const found = profiles.find((p) => p.id === e.target.value);
+                    if (found) {
+                      setP1Name(found.name);
+                      setP1Dob(found.date);
+                    }
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    {isHi ? 'सहेजी गई प्रोफाइल से चुनें...' : 'Select from Profiles...'}
+                  </option>
+                  {profiles.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.date})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <div>
@@ -237,8 +322,33 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
 
           {/* Person 2 */}
           <div style={{ background: '#fdf2f8', padding: '12px 16px', borderRadius: '8px', border: '1px solid #fbcfe8' }}>
-            <div style={{ fontWeight: 700, fontSize: '13px', color: '#9d174d', marginBottom: '8px' }}>
-              {isHi ? 'द्वितीय व्यक्ति (जीवनसाथी / मित्र / प्रेमी)' : 'Person 2 (Partner / Friend)'}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontWeight: 700, fontSize: '13px', color: '#9d174d' }}>
+                {isHi ? 'द्वितीय व्यक्ति (जीवनसाथी / मित्र / प्रेमी)' : 'Person 2 (Partner / Friend)'}
+              </span>
+              {profiles.length > 0 && (
+                <select
+                  aria-label="Select Person 2 from Saved Profiles"
+                  style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                  onChange={(e) => {
+                    const found = profiles.find((p) => p.id === e.target.value);
+                    if (found) {
+                      setP2Name(found.name);
+                      setP2Dob(found.date);
+                    }
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    {isHi ? 'सहेजी गई प्रोफाइल से चुनें...' : 'Select from Profiles...'}
+                  </option>
+                  {profiles.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.date})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <div>
@@ -264,6 +374,24 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
                 />
               </div>
             </div>
+            {onSaveProfile && (
+              <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={handleSavePartnerAsProfile}
+                  className="oj-action-btn secondary btn-sm"
+                  style={{ fontSize: '11px', padding: '3px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <UserPlus size={12} />
+                  <span>{isHi ? 'साथी को सहेजें' : 'Save Partner as Profile'}</span>
+                </button>
+                {partnerSavedMsg && (
+                  <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>
+                    {partnerSavedMsg}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -710,9 +710,19 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(findAuspiciousMuhurtas(chart, 'marriage', '2026-11-10', 14).length).toBe(0);
     expect(computeMultiYearCalendar(chart, '2026-11-10', 10).ingresses.length).toBe(0);
 
-    expect(Object.keys(LANGUAGE_LABELS)).toEqual(['en', 'hi']);
+    expect(Object.keys(LANGUAGE_LABELS)).toEqual(['en', 'hi', 'ta', 'te', 'kn', 'gu', 'bn']);
     expect(trSign(0, 'hi')).toBe('मेष');
+    expect(trSign(0, 'ta')).toBe('மேஷம்');
+    expect(trSign(0, 'te')).toBe('మేషం');
+    expect(trSign(0, 'kn')).toBe('ಮೇಷ');
+    expect(trSign(0, 'gu')).toBe('મેષ');
+    expect(trSign(0, 'bn')).toBe('মেষ');
     expect(trPlanet('Sun', 'hi')).toBe('सूर्य');
+    expect(trPlanet('Sun', 'ta')).toBe('சூரியன்');
+    expect(trPlanet('Sun', 'te')).toBe('సూర్యుడు');
+    expect(trPlanet('Sun', 'kn')).toBe('ಸೂರ್ಯ');
+    expect(trPlanet('Sun', 'gu')).toBe('સૂર્ય');
+    expect(trPlanet('Sun', 'bn')).toBe('সূর্য');
     expect(trPlanetShort('Sun', 'hi')).toBe('सू');
     expect(trTerm('Ashwini', 'hi')).toBe('अश्विनी');
     expect(trTerm('Exalted', 'hi')).toBe('उच्च');

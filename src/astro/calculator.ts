@@ -80,14 +80,17 @@ export function calculateChart(input: BirthInput, settings: CalcSettings = DEFAU
     ascSignIndex,
   });
 
-  const sunTrop = getTropicalPosition('Sun', time, settings.nodeMode);
+  const isTopo = settings.topocentric || settings.coordinateSystem === 'topocentric';
+  const observer = isTopo ? new Astronomy.Observer(input.latitude, input.longitude, 0) : null;
+
+  const sunTrop = getTropicalPosition('Sun', time, settings.nodeMode, observer);
   const sunSid = normalizeDeg(sunTrop.lon - ayanamsaDeg);
 
   const planetIds = getPlanetIds(settings.includeOuterPlanets);
   const planets: BodyPosition[] = planetIds.map((id) => {
-    const pos = getTropicalPosition(id, time, settings.nodeMode);
+    const pos = getTropicalPosition(id, time, settings.nodeMode, observer);
     const sidLon = normalizeDeg(pos.lon - ayanamsaDeg);
-    const speed = getTropicalSpeedDegPerDay(id, time, settings.nodeMode);
+    const speed = getTropicalSpeedDegPerDay(id, time, settings.nodeMode, observer);
     const isRetro = id !== 'Sun' && id !== 'Moon' && speed < 0;
     const isCombust = isBodyCombust(id, sidLon, sunSid, isRetro);
     const d1Sign = Math.floor(sidLon / 30) % 12;

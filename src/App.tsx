@@ -1,53 +1,60 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { calculateChart } from './astro/calculator';
 import type { BirthInput, CalcSettings, ChartStyle } from './astro/types';
-import { BirthEditorModal } from './components/BirthEditorModal';
-import { KundaliBookletModal } from './components/KundaliBookletModal';
-import { SettingsModal } from './components/SettingsModal';
 import { OnlineJyotishHomePortal } from './components/OnlineJyotishHomePortal';
-import { OnlineJyotishVedicHoroscopeView } from './components/onlinejyotish/OnlineJyotishVedicHoroscopeView';
-import { OnlineJyotishKpView } from './components/onlinejyotish/OnlineJyotishKpView';
-import { AdvanceMarriageMatchingView, type MarriageSubTab } from './components/marriage/AdvanceMarriageMatchingView';
-import { OnlineJyotishPanchangView } from './components/onlinejyotish/OnlineJyotishPanchangView';
+import { GlobalCommandPaletteModal } from './components/GlobalCommandPaletteModal';
+import type { MarriageSubTab } from './components/marriage/AdvanceMarriageMatchingView';
+import type { AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
+import type { SpecificCalculatorId } from './components/onlinejyotish/FortuneCalculatorsView';
 
-import { OnlineJyotishFestivalsView } from './components/onlinejyotish/OnlineJyotishFestivalsView';
-import { OnlineJyotishToolsView, type AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
-import SadeSatiView from './components/onlinejyotish/SadeSatiView';
-import { JaiminiView } from './components/onlinejyotish/JaiminiView';
-import { KPEnterpriseView } from './components/onlinejyotish/KPEnterpriseView';
-import { MedicalAstrologyView } from './components/onlinejyotish/MedicalAstrologyView';
-import { SynastryBTRView } from './components/onlinejyotish/SynastryBTRView';
-import { MuhurtaPrashnaView } from './components/onlinejyotish/MuhurtaPrashnaView';
-import { HolisticRemediesView } from './components/onlinejyotish/HolisticRemediesView';
-import { DualTransitWheelView } from './components/onlinejyotish/DualTransitWheelView';
-import { SarvatobhadraChakraView } from './components/onlinejyotish/SarvatobhadraChakraView';
-import { LalKitabView } from './components/onlinejyotish/LalKitabView';
-import { SplitStudioWorkstationView } from './components/onlinejyotish/SplitStudioWorkstationView';
-import { MultiDashaMatrixView } from './components/onlinejyotish/MultiDashaMatrixView';
-import { SudarshanaChakraView } from './components/onlinejyotish/SudarshanaChakraView';
-import { ClientConsultationDiaryView } from './components/onlinejyotish/ClientConsultationDiaryView';
-import { TransitCalendar365View } from './components/onlinejyotish/TransitCalendar365View';
-import { FinancialAstrologyView } from './components/onlinejyotish/FinancialAstrologyView';
-import { SamudrikaShastraView } from './components/onlinejyotish/SamudrikaShastraView';
-import { AstrocartographyView } from './components/onlinejyotish/AstrocartographyView';
-import { CelebrityTwinView } from './components/onlinejyotish/CelebrityTwinView';
-import { HumanDesignView } from './components/onlinejyotish/HumanDesignView';
-import { VarshaphalaView } from './components/onlinejyotish/VarshaphalaView';
-import { WesternAstrologyView } from './components/WesternAstrologyView';
-import { LifeDossierView } from './components/LifeDossierView';
-import { PredictionsView } from './components/PredictionsView';
-import { LifeEventTimingView } from './components/predictions/LifeEventTimingView';
-import { ClassicalDoshasView } from './components/predictions/ClassicalDoshasView';
-import { DashaMatrix81View } from './components/predictions/DashaMatrix81View';
-import { KotaAndAyurdayaView } from './components/predictions/KotaAndAyurdayaView';
-import { FortuneCalculatorsView } from './components/onlinejyotish/FortuneCalculatorsView';
-import { InteractivePalmistryView } from './components/onlinejyotish/InteractivePalmistryView';
-import { NumerologyView } from './components/onlinejyotish/NumerologyView';
-import { AstroSageToolsView } from './components/AstroSageToolsView';
-import { CalculationsDossierView } from './components/CalculationsDossierView';
-import { PrasnaMargaWorkstationPanel } from './components/predictions/PrasnaMargaWorkstationPanel';
-import { ParasharaKalaWorkstationPanel } from './components/predictions/ParasharaKalaWorkstationPanel';
-import { VedicMasterWorkstation } from './components/VedicMasterWorkstation';
+// Modals lazy-loaded on demand
+const BirthEditorModal = React.lazy(() => import('./components/BirthEditorModal').then(m => ({ default: m.BirthEditorModal })));
+const KundaliBookletModal = React.lazy(() => import('./components/KundaliBookletModal').then(m => ({ default: m.KundaliBookletModal })));
+const SettingsModal = React.lazy(() => import('./components/SettingsModal').then(m => ({ default: m.SettingsModal })));
+
+// Asynchronously code-split all heavy views for lightning-fast initial load
+const OnlineJyotishVedicHoroscopeView = React.lazy(() => import('./components/onlinejyotish/OnlineJyotishVedicHoroscopeView').then(m => ({ default: m.OnlineJyotishVedicHoroscopeView })));
+const OnlineJyotishKpView = React.lazy(() => import('./components/onlinejyotish/OnlineJyotishKpView').then(m => ({ default: m.OnlineJyotishKpView })));
+const AdvanceMarriageMatchingView = React.lazy(() => import('./components/marriage/AdvanceMarriageMatchingView').then(m => ({ default: m.AdvanceMarriageMatchingView })));
+const OnlineJyotishPanchangView = React.lazy(() => import('./components/onlinejyotish/OnlineJyotishPanchangView').then(m => ({ default: m.OnlineJyotishPanchangView })));
+const OnlineJyotishFestivalsView = React.lazy(() => import('./components/onlinejyotish/OnlineJyotishFestivalsView').then(m => ({ default: m.OnlineJyotishFestivalsView })));
+const OnlineJyotishToolsView = React.lazy(() => import('./components/onlinejyotish/OnlineJyotishToolsView').then(m => ({ default: m.OnlineJyotishToolsView })));
+const SadeSatiView = React.lazy(() => import('./components/onlinejyotish/SadeSatiView'));
+const JaiminiView = React.lazy(() => import('./components/onlinejyotish/JaiminiView').then(m => ({ default: m.JaiminiView })));
+const KPEnterpriseView = React.lazy(() => import('./components/onlinejyotish/KPEnterpriseView').then(m => ({ default: m.KPEnterpriseView })));
+const MedicalAstrologyView = React.lazy(() => import('./components/onlinejyotish/MedicalAstrologyView').then(m => ({ default: m.MedicalAstrologyView })));
+const SynastryBTRView = React.lazy(() => import('./components/onlinejyotish/SynastryBTRView').then(m => ({ default: m.SynastryBTRView })));
+const MuhurtaPrashnaView = React.lazy(() => import('./components/onlinejyotish/MuhurtaPrashnaView').then(m => ({ default: m.MuhurtaPrashnaView })));
+const HolisticRemediesView = React.lazy(() => import('./components/onlinejyotish/HolisticRemediesView').then(m => ({ default: m.HolisticRemediesView })));
+const DualTransitWheelView = React.lazy(() => import('./components/onlinejyotish/DualTransitWheelView').then(m => ({ default: m.DualTransitWheelView })));
+const SarvatobhadraChakraView = React.lazy(() => import('./components/onlinejyotish/SarvatobhadraChakraView').then(m => ({ default: m.SarvatobhadraChakraView })));
+const LalKitabView = React.lazy(() => import('./components/onlinejyotish/LalKitabView').then(m => ({ default: m.LalKitabView })));
+const SplitStudioWorkstationView = React.lazy(() => import('./components/onlinejyotish/SplitStudioWorkstationView').then(m => ({ default: m.SplitStudioWorkstationView })));
+const MultiDashaMatrixView = React.lazy(() => import('./components/onlinejyotish/MultiDashaMatrixView').then(m => ({ default: m.MultiDashaMatrixView })));
+const SudarshanaChakraView = React.lazy(() => import('./components/onlinejyotish/SudarshanaChakraView').then(m => ({ default: m.SudarshanaChakraView })));
+const ClientConsultationDiaryView = React.lazy(() => import('./components/onlinejyotish/ClientConsultationDiaryView').then(m => ({ default: m.ClientConsultationDiaryView })));
+const TransitCalendar365View = React.lazy(() => import('./components/onlinejyotish/TransitCalendar365View').then(m => ({ default: m.TransitCalendar365View })));
+const FinancialAstrologyView = React.lazy(() => import('./components/onlinejyotish/FinancialAstrologyView').then(m => ({ default: m.FinancialAstrologyView })));
+const SamudrikaShastraView = React.lazy(() => import('./components/onlinejyotish/SamudrikaShastraView').then(m => ({ default: m.SamudrikaShastraView })));
+const AstrocartographyView = React.lazy(() => import('./components/onlinejyotish/AstrocartographyView').then(m => ({ default: m.AstrocartographyView })));
+const CelebrityTwinView = React.lazy(() => import('./components/onlinejyotish/CelebrityTwinView').then(m => ({ default: m.CelebrityTwinView })));
+const HumanDesignView = React.lazy(() => import('./components/onlinejyotish/HumanDesignView').then(m => ({ default: m.HumanDesignView })));
+const VarshaphalaView = React.lazy(() => import('./components/onlinejyotish/VarshaphalaView').then(m => ({ default: m.VarshaphalaView })));
+const WesternAstrologyView = React.lazy(() => import('./components/WesternAstrologyView').then(m => ({ default: m.WesternAstrologyView })));
+const LifeDossierView = React.lazy(() => import('./components/LifeDossierView').then(m => ({ default: m.LifeDossierView })));
+const PredictionsView = React.lazy(() => import('./components/PredictionsView').then(m => ({ default: m.PredictionsView })));
+const LifeEventTimingView = React.lazy(() => import('./components/predictions/LifeEventTimingView').then(m => ({ default: m.LifeEventTimingView })));
+const ClassicalDoshasView = React.lazy(() => import('./components/predictions/ClassicalDoshasView').then(m => ({ default: m.ClassicalDoshasView })));
+const DashaMatrix81View = React.lazy(() => import('./components/predictions/DashaMatrix81View').then(m => ({ default: m.DashaMatrix81View })));
+const KotaAndAyurdayaView = React.lazy(() => import('./components/predictions/KotaAndAyurdayaView').then(m => ({ default: m.KotaAndAyurdayaView })));
+const FortuneCalculatorsView = React.lazy(() => import('./components/onlinejyotish/FortuneCalculatorsView').then(m => ({ default: m.FortuneCalculatorsView })));
+const InteractivePalmistryView = React.lazy(() => import('./components/onlinejyotish/InteractivePalmistryView').then(m => ({ default: m.InteractivePalmistryView })));
+const NumerologyView = React.lazy(() => import('./components/onlinejyotish/NumerologyView').then(m => ({ default: m.NumerologyView })));
+const AstroSageToolsView = React.lazy(() => import('./components/AstroSageToolsView').then(m => ({ default: m.AstroSageToolsView })));
+const CalculationsDossierView = React.lazy(() => import('./components/CalculationsDossierView').then(m => ({ default: m.CalculationsDossierView })));
+const PrasnaMargaWorkstationPanel = React.lazy(() => import('./components/predictions/PrasnaMargaWorkstationPanel').then(m => ({ default: m.PrasnaMargaWorkstationPanel })));
+const ParasharaKalaWorkstationPanel = React.lazy(() => import('./components/predictions/ParasharaKalaWorkstationPanel').then(m => ({ default: m.ParasharaKalaWorkstationPanel })));
+const VedicMasterWorkstation = React.lazy(() => import('./components/VedicMasterWorkstation').then(m => ({ default: m.VedicMasterWorkstation })));
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
@@ -56,6 +63,7 @@ import {
   DEFAULT_SETTINGS,
 } from './data/cities';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { type AppLanguage, LANGUAGE_LABELS } from './i18n/translations';
 
 const STORAGE_PROFILES_KEY = 'jyotish_hora_profiles_v1';
 const STORAGE_ACTIVE_KEY = 'jyotish_hora_active_v1';
@@ -140,6 +148,34 @@ function loadStoredSettings(): CalcSettings {
   return DEFAULT_SETTINGS;
 }
 
+const ViewLoadingFallback: React.FC = () => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      gap: '16px',
+      color: '#64748b',
+    }}
+  >
+    <div
+      style={{
+        width: '40px',
+        height: '40px',
+        border: '3px solid #e2e8f0',
+        borderTopColor: '#2563eb',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }}
+    />
+    <div style={{ fontSize: '13px', fontWeight: 600 }}>
+      गणना मॉड्यूल लोड हो रहा है... (Loading Module...)
+    </div>
+  </div>
+);
+
 export function App() {
   const [profiles, setProfiles] = useState<BirthInput[]>(loadStoredProfiles);
   const [activeId, setActiveId] = useState<string>(() => {
@@ -159,10 +195,16 @@ export function App() {
   const [workstationSubTab, setWorkstationSubTab] = useState<string>('1');
   const [predictionsSubTab, setPredictionsSubTab] = useState<string>('deep_life');
   const [marriageSubTab, setMarriageSubTab] = useState<MarriageSubTab>('ashtakoota');
+  const [fortuneCalcSubTab, setFortuneCalcSubTab] = useState<SpecificCalculatorId>('overview');
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  const [language, setLanguage] = useState<'en' | 'hi'>(() => {
+  const [language, setLanguage] = useState<AppLanguage>(() => {
     try {
-      return localStorage.getItem(STORAGE_LANG_KEY) === 'hi' ? 'hi' : 'en';
+      const saved = localStorage.getItem(STORAGE_LANG_KEY);
+      if (saved && saved in LANGUAGE_LABELS) {
+        return saved as AppLanguage;
+      }
+      return 'en';
     } catch {
       return 'en';
     }
@@ -177,6 +219,18 @@ export function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_THEME_KEY, theme);
   }, [theme]);
+
+  // Global Ctrl + K / Cmd + K Command Palette Shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     try {
@@ -275,6 +329,26 @@ export function App() {
       target = 'beeja-kshetra';
     } else if (view === 'festivals' || view === 'festival-calendar') {
       target = 'festivals';
+    } else if (view === 'love-calculator' || view === 'love-percentage') {
+      target = 'fortune-calculators';
+      setFortuneCalcSubTab('love_calculator');
+    } else if (view === 'marriage-calculator' || view === 'marriage-timing') {
+      target = 'fortune-calculators';
+      setFortuneCalcSubTab('marriage_timing');
+    } else if (view === 'partner-initials' || view === 'spouse-initials') {
+      target = 'fortune-calculators';
+      setFortuneCalcSubTab('partner_initials');
+    } else if (view === 'soulmate-calculator' || view === 'karmic-bond') {
+      target = 'fortune-calculators';
+      setFortuneCalcSubTab('karmic_soul_bond');
+    } else if (view === 'ayurdaya-calculator' || view === 'longevity-calculator') {
+      target = 'fortune-calculators';
+      setFortuneCalcSubTab('ayurdaya_class');
+    } else if (view === 'fortune-calculators') {
+      target = 'fortune-calculators';
+      if (sub) {
+        setFortuneCalcSubTab(sub as SpecificCalculatorId);
+      }
     }
 
     setCurrentView(target);
@@ -333,13 +407,14 @@ export function App() {
           onNewKundli={() => {
             const newChart = createNowPrashnaInput();
             newChart.id = `kundli-${Date.now()}`;
-            newChart.name = language === 'hi' ? 'नवीन जातक' : 'New Native';
+            newChart.name = language !== 'en' ? 'नवीन जातक' : 'New Native';
             setProfiles((prev) => [newChart, ...prev]);
             setActiveId(newChart.id);
             setEditorOpen(true);
           }}
           onOpenBooklet={() => setBookletOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           settings={settings}
           onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
           theme={theme}
@@ -359,13 +434,14 @@ export function App() {
           onNewKundli={() => {
             const newChart = createNowPrashnaInput();
             newChart.id = `kundli-${Date.now()}`;
-            newChart.name = language === 'hi' ? 'नवीन जातक' : 'New Native';
+            newChart.name = language !== 'en' ? 'नवीन जातक' : 'New Native';
             setProfiles((prev) => [newChart, ...prev]);
             setActiveId(newChart.id);
             setEditorOpen(true);
           }}
           onOpenSettings={() => setSettingsOpen(true)}
           onOpenBooklet={() => setBookletOpen(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           settings={settings}
           onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
           theme={theme}
@@ -375,6 +451,7 @@ export function App() {
         {/* View Router Shell */}
         <div className="workspace-shell">
           <main className="main-content">
+            <React.Suspense fallback={<ViewLoadingFallback />}>
             {currentView === 'home' && (
               <OnlineJyotishHomePortal
                 chart={chart}
@@ -428,6 +505,10 @@ export function App() {
                 initialSubTab={marriageSubTab}
                 onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
                 onNavigate={navigateTo}
+                onSaveProfile={(newProf) => {
+                  setProfiles((prev) => [newProf, ...prev]);
+                  setActiveId(newProf.id);
+                }}
               />
             )}
 
@@ -536,7 +617,7 @@ export function App() {
                 onNewKundli={() => {
                   const newChart = createNowPrashnaInput();
                   newChart.id = `kundli-${Date.now()}`;
-                  newChart.name = language === 'hi' ? 'नवीन जातक' : 'New Native';
+                  newChart.name = language !== 'en' ? 'नवीन जातक' : 'New Native';
                   setProfiles((prev) => [newChart, ...prev]);
                   setActiveId(newChart.id);
                   setEditorOpen(true);
@@ -696,7 +777,13 @@ export function App() {
             {currentView === 'fortune-calculators' && (
               <FortuneCalculatorsView
                 chart={chart}
+                profiles={profiles}
+                onSaveProfile={(newProf) => {
+                  setProfiles((prev) => [newProf, ...prev]);
+                  setActiveId(newProf.id);
+                }}
                 onNavigate={navigateTo}
+                initialTab={fortuneCalcSubTab}
               />
             )}
 
@@ -751,6 +838,7 @@ export function App() {
                 requestedMenu={{ id: workstationSubTab, nonce: 0 }}
               />
             )}
+            </React.Suspense>
           </main>
         </div>
 
@@ -762,36 +850,47 @@ export function App() {
         />
 
         {/* Modals */}
-        {editorOpen && (
-          <BirthEditorModal
-            open={editorOpen}
-            initial={activeInput}
-            profiles={profiles}
-            onClose={() => setEditorOpen(false)}
-            onApply={handleApplyBirth}
-            onSelectProfile={(id) => setActiveId(id)}
-            onDeleteProfile={(id) => handleDeleteProfile(id)}
-          />
-        )}
+        <React.Suspense fallback={null}>
+          {editorOpen && (
+            <BirthEditorModal
+              open={editorOpen}
+              initial={activeInput}
+              profiles={profiles}
+              onClose={() => setEditorOpen(false)}
+              onApply={handleApplyBirth}
+              onSelectProfile={(id) => setActiveId(id)}
+              onDeleteProfile={(id) => handleDeleteProfile(id)}
+            />
+          )}
 
-        {settingsOpen && (
-          <SettingsModal
-            open={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-            settings={settings}
-            onChange={setSettings}
-          />
-        )}
+          {settingsOpen && (
+            <SettingsModal
+              open={settingsOpen}
+              onClose={() => setSettingsOpen(false)}
+              settings={settings}
+              onChange={setSettings}
+            />
+          )}
 
-        {bookletOpen && (
-          <KundaliBookletModal
-            open={bookletOpen}
-            onClose={() => setBookletOpen(false)}
-            chart={chart}
-            chartStyle={settings.chartStyle}
-            language={language}
-          />
-        )}
+          {bookletOpen && (
+            <KundaliBookletModal
+              open={bookletOpen}
+              onClose={() => setBookletOpen(false)}
+              chart={chart}
+              chartStyle={settings.chartStyle}
+              language={language}
+            />
+          )}
+        </React.Suspense>
+
+        {/* Global Command Palette & Quick Search Modal (Ctrl + K) */}
+        <GlobalCommandPaletteModal
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onNavigate={(targetView, subTab) => {
+            navigateTo(targetView, subTab);
+          }}
+        />
       </div>
     </LanguageProvider>
   );

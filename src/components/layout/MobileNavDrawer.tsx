@@ -13,6 +13,7 @@ import {
   Home,
   Layers,
   Plus,
+  Search,
   Settings,
   Shield,
   ShieldAlert,
@@ -25,6 +26,7 @@ import {
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { LANGUAGE_LABELS, type AppLanguage } from '../../i18n/translations';
 
 interface MobileNavDrawerProps {
   open: boolean;
@@ -38,6 +40,7 @@ interface MobileNavDrawerProps {
   onNewKundli: () => void;
   onOpenSettings: () => void;
   onOpenBooklet: () => void;
+  onOpenCommandPalette?: () => void;
   settings: CalcSettings;
   onChangeChartStyle: (style: ChartStyle) => void;
   theme: 'light' | 'dark';
@@ -56,13 +59,14 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
   onNewKundli,
   onOpenSettings,
   onOpenBooklet,
+  onOpenCommandPalette,
   settings,
   onChangeChartStyle,
   theme,
   onToggleTheme,
 }) => {
   const { lang, setLang } = useLanguage();
-  const isHi = lang === 'hi';
+  const isHi = lang !== 'en';
 
   if (!open) return null;
 
@@ -163,6 +167,62 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
         {/* Navigation Items */}
         <div className="pro-drawer-content">
+          {/* Quick Search Palette Trigger */}
+          <div style={{ padding: '0 0 12px 0' }}>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                if (onOpenCommandPalette) onOpenCommandPalette();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                padding: '9px 12px',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                borderRadius: '8px',
+                color: '#334155',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Search size={15} style={{ color: '#2563eb' }} />
+                <span>{isHi ? 'त्वरित खोजें (सर्च बार)...' : 'Quick Search (Ctrl + K)...'}</span>
+              </span>
+              <kbd style={{ fontSize: '10px', background: '#e2e8f0', padding: '2px 5px', borderRadius: '4px' }}>
+                Ctrl K
+              </kbd>
+            </button>
+          </div>
+
+          {/* Regional Language Selector */}
+          <div style={{ padding: '0 0 12px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '6px 10px', borderRadius: '8px' }}>
+              <Globe size={15} style={{ color: '#0284c7' }} />
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                {isHi ? 'भाषा (Language):' : 'Language:'}
+              </span>
+              <select
+                aria-label="Language Selector"
+                className="select-compact"
+                value={lang}
+                onChange={(e) => setLang(e.target.value as AppLanguage)}
+                style={{ flex: 1, fontSize: '12px', fontWeight: 600, padding: '3px 6px', height: '28px' }}
+              >
+                {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
+                  <option key={code} value={code}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="pro-drawer-section">
             <div className="pro-drawer-section-title">
               {isHi ? 'नेविगेशन सेवाएं (100% निःशुल्क)' : 'Navigation Services (100% Free)'}
