@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import type { ChartData } from '../astro/types';
 import { computeHouseWisePredictions } from '../astro/predictions/houseWise';
 import { useLanguage } from '../i18n/LanguageContext';
-import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
+import { GeneralPredictionPanel } from './predictions/GeneralPredictionPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { HouseWisePanel } from './predictions/HouseAndDegreePanels';
 
@@ -44,7 +44,7 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
         <h1 style={{ margin: 0, fontSize: '20px' }}>{title}</h1>
         <p className="muted" style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: 1.5 }}>{description}</p>
       </header>
-      {isGeneral && <DeepLifePredictionsPanel chart={chart} />}
+      {isGeneral && <GeneralPredictionPanel chart={chart} />}
       {isPlanets && <TwelvePlanetsPanel chart={chart} />}
       {!isGeneral && !isPlanets && (
         <HouseWisePanel houses={housePredictions} simple />
