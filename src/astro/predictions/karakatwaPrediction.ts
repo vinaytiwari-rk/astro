@@ -3,7 +3,7 @@ import { SIGNS } from '../constants';
 
 export type KarakatwaDomainId = 'appearance' | 'siblings' | 'personality';
 export type KarakatwaEvidenceLevel = 'single-indication' | 'corroborated' | 'mixed' | 'insufficient';
-export type KarakatwaSourceStatus = 'primary-text' | 'translation-check' | 'research-hypothesis';
+export type KarakatwaSourceStatus = 'primary-text' | 'translation-check' | 'research-hypothesis' | 'calculated-data';
 
 export interface KarakatwaEvidence {
   id: string;
@@ -140,6 +140,65 @@ function makeEvidence(
   return { id, kind, factor, detailEn, detailHi, source, sourceStatus, sourceUrl };
 }
 
+function addCalculatedGrahaFactors(
+  evidence: KarakatwaEvidence[],
+  chart: ChartData,
+  candidates: Array<BodyPosition | undefined>,
+  includeAscendantAspects = false,
+): void {
+  const relevant = [...new Map(candidates.filter((p): p is BodyPosition => !!p).map((p) => [p.id, p])).values()];
+  const ids = new Set(relevant.map((p) => p.id));
+
+  for (const planet of relevant) {
+    evidence.push(makeEvidence(
+      `calculated-degree-${planet.id.toLowerCase()}`, 'context', `Calculated placement: ${planet.id}`,
+      `${planet.id} is at ${planet.dms} in ${planet.signName}; degree in sign ${planet.degreeInSign.toFixed(4)}°. Rasi house: ${planet.rasiHouseNumber}; selected bhava house: ${planet.houseNumber}. Dignity: ${planet.dignity}; retrograde: ${planet.isRetrograde ? 'yes' : 'no'}; combust: ${planet.isCombust ? 'yes' : 'no'}.`,
+      `${HI[planet.id] ?? planet.id} ${planet.signName} राशि में ${planet.dms} पर हैं; राशि में अंश ${planet.degreeInSign.toFixed(4)}°। राशि-भाव: ${planet.rasiHouseNumber}; चुनी हुई भाव-पद्धति का भाव: ${planet.houseNumber}। गरिमा: ${planet.dignity}; वक्री: ${planet.isRetrograde ? 'हाँ' : 'नहीं'}; अस्त: ${planet.isCombust ? 'हाँ' : 'नहीं'}।`,
+      'Calculated chart data (not a separate textual rule)', 'calculated-data', '',
+    ));
+    const strength = chart.shadbala?.find((row) => row.planet === planet.id);
+    if (strength) {
+      evidence.push(makeEvidence(
+        `calculated-shadbala-${planet.id.toLowerCase()}`, 'context', `Shadbala: ${planet.id}`,
+        `Total ${strength.totalRupas.toFixed(2)} rupas against ${strength.requiredRupas.toFixed(2)} required; ratio ${strength.ratio.toFixed(2)}×; Ishta phala ${strength.ishtaPhala.toFixed(2)} and Kashta phala ${strength.kashtaPhala.toFixed(2)}.`,
+        `कुल षड्बल ${strength.totalRupas.toFixed(2)} रूप; आवश्यक ${strength.requiredRupas.toFixed(2)} रूप; अनुपात ${strength.ratio.toFixed(2)}×; इष्टफल ${strength.ishtaPhala.toFixed(2)} और कष्टफल ${strength.kashtaPhala.toFixed(2)}।`,
+        'Calculated Shadbala data', 'calculated-data', '',
+      ));
+    }
+  }
+
+  for (let i = 0; i < relevant.length; i++) {
+    for (let j = i + 1; j < relevant.length; j++) {
+      const a = relevant[i];
+      const b = relevant[j];
+      if (a.signIndex !== b.signIndex) continue;
+      const raw = Math.abs(a.longitude - b.longitude);
+      const separation = Math.min(raw, 360 - raw);
+      evidence.push(makeEvidence(
+        `calculated-yuti-${a.id.toLowerCase()}-${b.id.toLowerCase()}`, 'context',
+        `Same-sign yuti review: ${a.id} + ${b.id}`,
+        `Both planets occupy ${a.signName}; their angular separation is ${separation.toFixed(3)}°. This is a measured association for interpretation, not an automatic conjunction verdict; no universal orb is assumed.`,
+        `दोनों ग्रह ${a.signName} राशि में हैं; इनके बीच कोणीय अंतर ${separation.toFixed(3)}° है। यह व्याख्या हेतु मापा गया संबंध है, अपने-आप में युति का अंतिम निर्णय नहीं; कोई सार्वभौमिक ऑर्ब नहीं माना गया है।`,
+        'Calculated sign and longitude data', 'calculated-data', '',
+      ));
+    }
+  }
+
+  for (const aspect of chart.aspects ?? []) {
+    const touchesRelevant = ids.has(aspect.from)
+      || (aspect.to !== 'Asc' && ids.has(aspect.to))
+      || (includeAscendantAspects && aspect.to === 'Asc');
+    if (!touchesRelevant) continue;
+    evidence.push(makeEvidence(
+      `calculated-aspect-${aspect.from.toLowerCase()}-${String(aspect.to).toLowerCase()}`, 'context',
+      `Calculated drishti: ${aspect.from} → ${aspect.to}`,
+      `${aspect.type}; orb ${aspect.orbDeg.toFixed(3)}°; calculated aspect strength ${aspect.strengthPercent.toFixed(1)}%. Interpret through the planets' ownership, dignity, strength and this domain's significations.`,
+      `${aspect.from} से ${aspect.to} पर ${aspect.type}; ऑर्ब ${aspect.orbDeg.toFixed(3)}°; गणितीय दृष्टि-बल ${aspect.strengthPercent.toFixed(1)}%। फलादेश में ग्रहों का भाव-स्वामित्व, गरिमा, बल और इस विषय से उनका संबंध साथ देखें।`,
+      'Calculated aspect engine data', 'calculated-data', '',
+    ));
+  }
+}
+
 function appearancePrediction(chart: ChartData): KarakatwaPrediction {
   const evidence: KarakatwaEvidence[] = [];
   const lagnaOccupants = occupants(chart, 1);
@@ -186,6 +245,12 @@ function appearancePrediction(chart: ChartData): KarakatwaPrediction {
       `${BPHS}, Chapter 12, verses 1–7`,
     ));
   }
+
+  addCalculatedGrahaFactors(evidence, chart, [...lagnaOccupants, ...beneficAspects, lagnaLord, moon, venus], true);
+
+  addCalculatedGrahaFactors(evidence, chart, [...thirdOccupants, ...thirdAspects, thirdLord, mars]);
+
+  addCalculatedGrahaFactors(evidence, chart, keyPlanets);
 
   const supportive = evidence.filter((e) => e.kind === 'supportive').length;
   const caution = evidence.filter((e) => e.kind === 'caution').length;
