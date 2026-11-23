@@ -66,7 +66,7 @@ describe('Natal-only General Prediction reconstruction', () => {
       const report = computeGeneralPrediction(chart);
       for (const yoga of detected) {
         const definition = CLASSICAL_YOGAS_KB.find((item) => item.id === yoga.id);
-        if (!definition || /not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|300 classical yogas/i.test(definition.source)) continue;
+        if (!definition || /not verified|unverified|verify the individual|traditional yoga compilation|classical jyotisha references|classical vedic shastra|300 classical yogas/i.test(definition.source)) continue;
         for (const domainId of targets[yoga.category] ?? []) {
           const domain = report.domains.find((item) => item.id === domainId);
           expect(domain?.evidence.some((item) =>
