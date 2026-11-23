@@ -13,6 +13,8 @@ import { PLANET_IN_HOUSE_KB } from './bhavaKb';
 import { LAGNA_EXTENDED_KB } from './extendedKb';
 import { evaluateParamayusStatus } from './paramayus';
 import { getAifasYoginiMaha, getAifasYoginiSub } from './aifasYoginiDashaKb';
+import type { DashaMutualAxisInfo } from './types';
+export type { DashaMutualAxisInfo };
 
 export interface DashaPredictionDetail {
   title: string;
@@ -26,6 +28,7 @@ export interface DashaPredictionDetail {
   mdSummary: string;
   adSummary?: string;
   pdSummary?: string;
+  mutualAxis?: DashaMutualAxisInfo;
   activatedHouses: number[];
   d9AndD10Note: string;
   keyEffects: string[];
@@ -124,6 +127,113 @@ function relationLabel(h1: number, h2: number): { label: string; delta: number }
   if (d === 7) return { label: 'Mutual 7th Aspect (7/7)', delta: 2 };
   if (d === 6 || d === 8) return { label: 'Shadashtaka Friction (6/8)', delta: -11 };
   return { label: 'Dwirdwadasha Adjustment (2/12)', delta: -6 };
+}
+
+export function computeDashaBhuktiMutualAxis(
+  h1: number,
+  h2: number,
+  mdLord?: string,
+  adLord?: string
+): DashaMutualAxisInfo {
+  const d = ((h2 - h1 + 12) % 12) + 1;
+  const mdName = mdLord || 'Mahadasha Lord';
+  const adName = adLord || 'Antardasha Lord';
+
+  if (d === 1) {
+    return {
+      axisType: '1/1',
+      houseDistance: 1,
+      isAuspicious: true,
+      axisLabelEn: '1/1 Axis (Conjunction in Same House / युति संबंध)',
+      axisLabelHi: '१/१ अक्ष (एक ही भाव में युति संबंध)',
+      verdictEn: `${mdName} and ${adName} conjoin in the same bhava (House ${h1}). All planetary energy focuses entirely upon this sphere. Strong natural benefics generate concentrated prosperity and quick outcomes, while conflicting planets demand emotional balance.`,
+      verdictHi: `${mdName} व ${adName} दोनों एक ही भाव (भाव ${h1}) में स्थित हैं। इस अवधि में समस्त ग्रह-ऊर्जा इसी भाव के विषयों पर केंद्रित रहेगी। शुभ स्थिति में यह तीव्र भाग्योदय व केंद्रित सफलता प्रदान करता है।`,
+      remedyEn: 'Worship the combined deities of the two lords and recite the Gayatri Mantra daily.',
+      remedyHi: 'दोनों ग्रहों के मंत्रों का संतुलन बनाए रखें और प्रतिदिन गायत्री मंत्र का जप करें।',
+    };
+  }
+
+  if (d === 7) {
+    return {
+      axisType: '1/7',
+      houseDistance: 7,
+      isAuspicious: true,
+      axisLabelEn: '1/7 Axis (Samasaptaka Mutual Aspect / समसप्तक दृष्टि संबंध)',
+      axisLabelHi: '१/७ अक्ष (समसप्तक प्रत्यक्ष दृष्टि संबंध)',
+      verdictEn: `${mdName} (House ${h1}) and ${adName} (House ${h2}) sit in direct mutual 7th aspect across the chart. This classical Samasaptaka axis brings prominent public manifestations, partnership negotiations, marriage milestones, and balance between home and career.`,
+      verdictHi: `${mdName} (भाव ${h1}) व ${adName} (भाव ${h2}) परस्पर सप्तम दृष्टि में आमने-सामने स्थित हैं। यह समसप्तक अक्ष जीवन में बड़े सार्वजनिक अवसर, साझेदारी या दांपत्य के निर्णायक मोड़ तथा घरेलू व सामाजिक जीवन में संतुलन स्थापित करता है।`,
+      remedyEn: 'Offer Arghya (water) to the rising Sun daily and maintain transparent communications in all agreements.',
+      remedyHi: 'प्रतिदिन सूर्य देव को अर्घ्य दें और साझेदारी अथवा दांपत्य संवाद में पूर्ण पारदर्शिता रखें।',
+    };
+  }
+
+  if (d === 5 || d === 9) {
+    return {
+      axisType: '5/9',
+      houseDistance: d,
+      isAuspicious: true,
+      axisLabelEn: '5/9 Axis (Nava-Panchama Supreme Trinal Harmony / नव-पंचम संबंध)',
+      axisLabelHi: '५/९ अक्ष (नव-पंचम परम कल्याणकारी त्रिकोण संबंध)',
+      verdictEn: `The 5/9 Nava-Panchama axis between ${mdName} and ${adName} is classical Jyotish’s most auspicious dasha geometry. Representing Lakshmi-Narayana grace, it activates past life merits (Purva Punya), mentor blessings, higher learning, and effortless progress in noble pursuits.`,
+      verdictHi: `${mdName} और ${adName} के मध्य नव-पंचम (५/९) अक्ष महर्षि पराशर के अनुसार सर्वाधिक मंगलकारी व भाग्यवर्धक योग है। इसमें पूर्व जन्म के संचित पुण्य फलित होते हैं, गुरु कृपा मिलती है, ज्ञान व विवेक में वृद्धि होती है तथा कार्य निर्विघ्न संपन्न होते हैं।`,
+      remedyEn: 'Express gratitude through philanthropic charity, guru seva, and recitation of Sri Suktam or Vishnu Sahasranama.',
+      remedyHi: 'श्री सूक्त अथवा विष्णु सहस्रनाम का पाठ करें, गुरु व वरिष्ठों का आशीर्वाद लें और सात्विक दान करें।',
+    };
+  }
+
+  if (d === 3 || d === 11) {
+    return {
+      axisType: '3/11',
+      houseDistance: d,
+      isAuspicious: true,
+      axisLabelEn: '3/11 Axis (Triteeya-Ekadasha Upachaya Growth / तृतीय-एकादश संबंध)',
+      axisLabelHi: '३/११ अक्ष (तृतीय-एकादश उपचय लाभ व पुरुषार्थ संबंध)',
+      verdictEn: `The 3/11 Triteeya-Ekadasha disposition operates under Upachaya laws (fruitful growth through self-effort). Dynamic initiatives, business enterprise, networking, and sibling/peer collaboration yield substantial monetary and professional gains.`,
+      verdictHi: `${mdName} और ${adName} के मध्य तृतीय-एकादश (३/११) अक्ष पराक्रम और लाभ का शास्त्रीय उपचय संबंध है। स्वयं के पुरुषार्थ, नए व्यापारिक उद्यम, जनसंपर्क तथा सहयोगियों के साथ से निरंतर आर्थिक व सामाजिक लाभ प्राप्त होता है।`,
+      remedyEn: 'Support younger colleagues or siblings, and recite Hanuman Chalisa or Aditya Hridaya Stotram for enduring vitality.',
+      remedyHi: 'हनुमान चालीसा या आदित्य हृदय स्तोत्र का पाठ करें तथा अपने स्वावलंबन व पराक्रम को बनाए रखें।',
+    };
+  }
+
+  if (d === 4 || d === 10) {
+    return {
+      axisType: '4/10',
+      houseDistance: d,
+      isAuspicious: true,
+      axisLabelEn: '4/10 Axis (Kendra Quadrant Dynamic Drive / चतुर्थ-दशम केन्द्र संबंध)',
+      axisLabelHi: '४/१० अक्ष (चतुर्थ-दशम केन्द्र क्रियाशीलता व पद-प्रतिष्ठा संबंध)',
+      verdictEn: `The 4/10 quadrant alignment between ${mdName} and ${adName} generates vigorous action in professional and domestic spheres. It fosters career advancement, administrative accountability, and potential acquisition of conveyance or real estate.`,
+      verdictHi: `${mdName} और ${adName} के मध्य चतुर्थ-दशम (४/१०) केन्द्र संबंध कार्यक्षेत्र में पदोन्नति, प्रशासनिक अधिकार, गृह-वाहन की प्राप्ति तथा सार्वजनिक जीवन में सक्रियता का निर्माण करता है।`,
+      remedyEn: 'Honor parents and teachers, maintain domestic serenity, and uphold high professional ethics.',
+      remedyHi: 'माता-पिता का आदर करें, गृह-शांति बनाए रखें और कार्यक्षेत्र में पूर्ण निष्ठा व सत्यता का पालन करें।',
+    };
+  }
+
+  if (d === 2 || d === 12) {
+    return {
+      axisType: '2/12',
+      houseDistance: d,
+      isAuspicious: false,
+      axisLabelEn: '2/12 Axis (Dwi-Dwadasha Adjustment & Prudent Expenditure / द्वि-द्वादश संबंध)',
+      axisLabelHi: '२/१२ अक्ष (द्वि-द्वादश व्यय, स्थान परिवर्तन व संतुलन संबंध)',
+      verdictEn: `The 2/12 Dwi-Dwadasha geometry between ${mdName} and ${adName} governs expenditure, foreign journeys, and asset readjustment. Speculative ventures should be avoided; channeling capital into dharmic causes or long-term secure holdings brings constructive stability.`,
+      verdictHi: `${mdName} और ${adName} के मध्य द्वि-द्वादश (२/१२) अक्ष धन व्यय, स्थान परिवर्तन, विदेश गमन अथवा संचित संपत्तियों के पुनर्गठन को दर्शाता है। सट्टेबाजी व अनावश्यक खर्चों से बचें; पूंजी को सुरक्षित संपत्तियों या परोपकार में लगाएं।`,
+      remedyEn: 'Practice regular charitable giving to hospitals/sanctuaries and chant the Maha Mrityunjaya or Shiva Panchakshara Stotram.',
+      remedyHi: 'नियमित सात्विक दान करें, असहायों की सेवा करें और नमः शिवाय का शांत जप करें।',
+    };
+  }
+
+  return {
+    axisType: '6/8',
+    houseDistance: d,
+    isAuspicious: false,
+    axisLabelEn: '6/8 Axis (Shadashtaka Karmic Friction & Vigilance / षडाष्टक संबंध)',
+    axisLabelHi: '६/८ अक्ष (षडाष्टक शास्त्रीय सतर्कता, स्वास्थ्य व विवाद निवारण संबंध)',
+    verdictEn: `The 6/8 Shadashtaka axis between ${mdName} and ${adName} is classical Jyotish’s primary cautionary disposition. It denotes potential mutual friction, rivalry resistance, health sensitivities, or debt/litigation risks. Prudence, patience, and remedial pacification are advised.`,
+    verdictHi: `${mdName} और ${adName} के मध्य षडाष्टक (६/८) अक्ष महर्षि पराशर व मंत्रेश्वर द्वारा विशेष सतर्कता का काल बताया गया है। इसमें गुप्त विरोध, स्वास्थ्य संवेदनशीलता, ऋण अथवा कानूनी विवाद की संभावना रहती है। अनावश्यक टकराव से दूर रहें।`,
+    remedyEn: 'Chant the Maha Mrityunjaya Mantra (108 times daily), feed birds or stray animals on Saturdays, and avoid initiating contentious legal disputes.',
+    remedyHi: 'प्रतिदिन १०८ बार महामृत्युंजय मंत्र का जप करें, शनिवार को असहायों या पक्षियों को अन्न दें और विवादों से पूर्णतः बचें।',
+  };
 }
 
 export function predictDashaDetail(params: {
@@ -241,6 +351,7 @@ export function predictDashaDetail(params: {
         mdSummary: yMdSummary,
         adSummary: yAdSummary,
         pdSummary: undefined,
+        mutualAxis: adBody ? computeDashaBhuktiMutualAxis(mdBody.rasiHouseNumber, adBody.rasiHouseNumber, mdId, adId) : undefined,
         activatedHouses: [mdBody.rasiHouseNumber, ...(adBody ? [adBody.rasiHouseNumber] : [])].sort((a, b) => a - b),
         d9AndD10Note: `Yogini ${aifasMaha.nameEn} lord ${mdId} is placed in ${chart.divisionalCharts.D9.placements.find((p) => p.id === mdId)?.signName ?? ''} in Navamsha (D9).`,
         keyEffects: yKeyEffects,
@@ -257,10 +368,12 @@ export function predictDashaDetail(params: {
     (isMdBenefic ? 8 : isMdMalefic ? -5 : 0);
 
   let relNote = '';
+  let mutualAxis: DashaMutualAxisInfo | undefined;
   if (adBody) {
     const rel = relationLabel(mdBody.rasiHouseNumber, adBody.rasiHouseNumber);
     score += rel.delta + digScore(adBody.dignity) * 0.35;
     relNote = `MD–AD geometry is ${rel.label}.`;
+    mutualAxis = computeDashaBhuktiMutualAxis(mdBody.rasiHouseNumber, adBody.rasiHouseNumber, mdId, adId);
   }
 
   score = Math.max(25, Math.min(96, Math.round(score)));
@@ -363,6 +476,7 @@ export function predictDashaDetail(params: {
     mdSummary,
     adSummary,
     pdSummary,
+    mutualAxis,
     activatedHouses,
     d9AndD10Note,
     keyEffects,

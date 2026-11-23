@@ -75,6 +75,18 @@ export interface HouseLordPrediction {
   source: string;
 }
 
+export interface DashaMutualAxisInfo {
+  axisLabelEn: string;
+  axisLabelHi: string;
+  axisType: '1/1' | '1/7' | '5/9' | '3/11' | '4/10' | '2/12' | '6/8';
+  houseDistance: number;
+  isAuspicious: boolean;
+  verdictEn: string;
+  verdictHi: string;
+  remedyEn?: string;
+  remedyHi?: string;
+}
+
 export interface DashaPrediction {
   targetDate: string;
   mahadashaLord: string;
@@ -85,6 +97,7 @@ export interface DashaPrediction {
   mdPlacedHouse: number;
   adPlacedHouse: number;
   mutualRelation: string;
+  mutualAxis?: DashaMutualAxisInfo;
   favorability: 'Very Favorable' | 'Supportive' | 'Mixed / Transformative' | 'Challenging';
   summary: string;
   mahadashaReading: string;

@@ -40,6 +40,7 @@ import { computeBhriguSaralPaddhati } from './bhriguSaralPaddhati';
 import { computeKpFourStepReport } from './kpFourStepEngine';
 import { computeLalKitabSystemReport } from './lalKitabSystem';
 import { computeBhavarthaRatnakaraReport } from './bhavarthaRatnakara';
+import { computeDashaBhuktiMutualAxis } from './dashaPrashna';
 import type {
   DashaPrediction,
   DivisionalPredictionItem,
@@ -439,6 +440,12 @@ function buildDashaPrediction(chart: ChartData, targetDate: string): DashaPredic
     : [];
 
   const rel = describeMutualRelation(mdBody.rasiHouseNumber, adBody.rasiHouseNumber);
+  const mutualAxis = computeDashaBhuktiMutualAxis(
+    mdBody.rasiHouseNumber,
+    adBody.rasiHouseNumber,
+    mdId,
+    adId
+  );
   const score =
     60 +
     rel.delta +
@@ -468,6 +475,7 @@ function buildDashaPrediction(chart: ChartData, targetDate: string): DashaPredic
     mdPlacedHouse: mdBody.rasiHouseNumber,
     adPlacedHouse: adBody.rasiHouseNumber,
     mutualRelation: rel.label,
+    mutualAxis,
     favorability,
     summary: `Active ${mdId} Mahadasha / ${adId} Antardasha / ${pd.lord} Pratyantardasha exhibits a ${rel.label} dynamic (${favorability}).`,
     mahadashaReading: `${mdId} (in House ${mdBody.rasiHouseNumber}, ${mdBody.signName}, ${mdBody.dignity}${mdHouses.length ? `, ruling House${mdHouses.length > 1 ? 's' : ''} ${mdHouses.join(' & ')}` : ''}) sets the multi-year backdrop: ${mdTheme.headline}. ${mdTheme.reading}`,

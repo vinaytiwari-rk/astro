@@ -139,6 +139,111 @@ export const DeepLifePredictionsPanel: React.FC<DeepLifePredictionsPanelProps> =
         </div>
       </div>
 
+      {/* Four Purushartha Trines Balance (Dharma, Artha, Kama, Moksha) */}
+      {report.purusharthas && (
+        <div className="card" style={{ padding: '16px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Flame size={16} color="var(--accent)" />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
+                {isHi
+                  ? 'चार पुरुषार्थ त्रिकोण संतुलन (Dharma, Artha, Kama, Moksha Balance)'
+                  : 'Four Purushartha Trines Balance (Dharma · Artha · Kama · Moksha)'}
+              </h3>
+            </div>
+            <span
+              className="tag tag-varg"
+              style={{ fontSize: '11.5px', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}
+            >
+              {isHi ? report.purusharthas.dominantTitleHi : report.purusharthas.dominantTitleEn}
+            </span>
+          </div>
+
+          <p style={{ margin: '0 0 14px', fontSize: '13px', lineHeight: 1.55, color: 'var(--text)' }}>
+            {isHi ? report.purusharthas.balanceSynthesisHi : report.purusharthas.balanceSynthesisEn}
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '12px',
+              marginBottom: '10px',
+            }}
+          >
+            {report.purusharthas.trines.map((t) => {
+              const colorMap: Record<string, string> = {
+                Dharma: '#d97706',
+                Artha: '#059669',
+                Kama: '#2563eb',
+                Moksha: '#7c3aed',
+              };
+              const trineColor = colorMap[t.type] || 'var(--accent)';
+              const isDominant = t.type === report.purusharthas.dominant;
+
+              return (
+                <div
+                  key={t.type}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '8px',
+                    background: 'var(--bg-subtle)',
+                    border: `1.5px solid ${isDominant ? trineColor : 'var(--border)'}`,
+                    position: 'relative',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: trineColor }}>
+                      {isHi ? t.nameHi.split(' (')[0] : t.type + ' Trikona'} ({t.houses.join(', ')})
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: 800, color: trineColor }}>
+                      {t.percentage}%
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div
+                    style={{
+                      height: '6px',
+                      borderRadius: '3px',
+                      background: 'var(--border)',
+                      overflow: 'hidden',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${t.percentage}%`,
+                        height: '100%',
+                        background: trineColor,
+                        borderRadius: '3px',
+                        transition: 'width 0.4s ease',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginBottom: '6px', lineHeight: 1.4 }}>
+                    <strong>{isHi ? 'सर्वाष्टकवर्ग: ' : 'SAV: '}</strong>{t.savBindus} {isHi ? 'बिंदु' : 'bindus'}
+                    {t.occupantPlanets.length > 0 && (
+                      <span> · <strong>{isHi ? 'स्थित ग्रह: ' : 'Occupants: '}</strong>{t.occupantPlanets.join(', ')}</span>
+                    )}
+                  </div>
+
+                  <div style={{ fontSize: '12px', lineHeight: 1.45, color: 'var(--text)' }}>
+                    {isHi ? t.guidanceHi : t.guidanceEn}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'right' }}>
+            {isHi ? 'शास्त्रीय ग्रंथ आधार: ' : 'Classical Source Reference: '}
+            {report.purusharthas.classicalReference}
+          </div>
+        </div>
+      )}
+
       {/* 12 Life Chapters Quick Dropdown & Jump Pills */}
       <div className="card" style={{ padding: '12px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>

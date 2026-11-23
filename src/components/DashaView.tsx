@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar, ChevronRight, Sparkles } from 'lucide-react';
+import { Activity, Calendar, ChevronRight, Sparkles } from 'lucide-react';
 import {
   computeAdvancedDashas,
   computeSudarshanaChakra,
@@ -564,6 +564,39 @@ export const DashaView: React.FC<DashaViewProps> = ({ chart, requestedSystem }) 
               {selectedPrediction.adSummary && (
                 <div>
                   <strong>{lang === 'hi' ? 'अंतरदशा फल:' : 'Antardasha Trigger:'}</strong> {selectedPrediction.adSummary}
+                </div>
+              )}
+              {selectedPrediction.mutualAxis && (
+                <div
+                  style={{
+                    margin: '8px 0',
+                    padding: '10px 12px',
+                    background: 'var(--bg-elevated)',
+                    borderRadius: '6px',
+                    border: '1px solid var(--border)',
+                    borderLeft: `3px solid ${selectedPrediction.mutualAxis.isAuspicious ? '#16a34a' : '#d97706'}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px' }}>
+                      {lang === 'hi' ? 'पारस्परिक अक्ष संबंध: ' : 'Mutual Axis: '}
+                      <span style={{ color: selectedPrediction.mutualAxis.isAuspicious ? '#16a34a' : '#d97706' }}>
+                        {lang === 'hi' ? selectedPrediction.mutualAxis.axisLabelHi : selectedPrediction.mutualAxis.axisLabelEn}
+                      </span>
+                    </span>
+                    <span className={`tag ${selectedPrediction.mutualAxis.isAuspicious ? 'tag-varg' : 'tag-retro'}`} style={{ fontSize: '10.5px' }}>
+                      {selectedPrediction.mutualAxis.axisType}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12.5px', lineHeight: 1.45, color: 'var(--text)', marginBottom: '4px' }}>
+                    {lang === 'hi' ? selectedPrediction.mutualAxis.verdictHi : selectedPrediction.mutualAxis.verdictEn}
+                  </div>
+                  {(selectedPrediction.mutualAxis.remedyHi || selectedPrediction.mutualAxis.remedyEn) && (
+                    <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                      <strong>{lang === 'hi' ? 'शास्त्रीय उपाय: ' : 'Remedy: '}</strong>
+                      {lang === 'hi' ? selectedPrediction.mutualAxis.remedyHi : selectedPrediction.mutualAxis.remedyEn}
+                    </div>
+                  )}
                 </div>
               )}
               {selectedPrediction.pdSummary && (

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
-import { computeDeepLifePredictions } from '../predictions/deepLifePredictions';
+import { computeDeepLifePredictions, computePurusharthaBalance } from '../predictions/deepLifePredictions';
+import { computeDashaBhuktiMutualAxis } from '../predictions/dashaPrashna';
 
 describe('Chart-specific General Prediction synthesis', () => {
   it('derives distinct domain evidence from three different natal charts', () => {
@@ -128,4 +129,59 @@ describe('Chart-specific General Prediction synthesis', () => {
     expect(report.executiveSummaryEn).toContain('Birth foundation');
   });
 
+  it('computes Four Purushartha Trines balance with exact 100% total and classical guidance', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeDeepLifePredictions(chart);
+    expect(report.purusharthas).toBeDefined();
+    expect(report.purusharthas.trines).toHaveLength(4);
+
+    const sumPercentage = report.purusharthas.trines.reduce((sum, t) => sum + t.percentage, 0);
+    expect(sumPercentage).toBe(100);
+
+    const types = report.purusharthas.trines.map((t) => t.type);
+    expect(types).toEqual(['Dharma', 'Artha', 'Kama', 'Moksha']);
+
+    for (const trine of report.purusharthas.trines) {
+      expect(trine.percentage).toBeGreaterThan(0);
+      expect(trine.score).toBeGreaterThan(0);
+      expect(trine.savBindus).toBeGreaterThan(50);
+      expect(trine.guidanceEn.length).toBeGreaterThan(20);
+      expect(trine.guidanceHi.length).toBeGreaterThan(20);
+      expect(trine.classicalSource).toContain('Brihat Parashara');
+    }
+
+    expect(['Dharma', 'Artha', 'Kama', 'Moksha']).toContain(report.purusharthas.dominant);
+    expect(report.purusharthas.balanceSynthesisEn.length).toBeGreaterThan(30);
+    expect(report.purusharthas.balanceSynthesisHi.length).toBeGreaterThan(30);
+    expect(report.karmicMissionEn).toBe(report.purusharthas.soulMissionEn);
+    expect(report.karmicMissionHi).toBe(report.purusharthas.soulMissionHi);
+  });
+
+  it('computes Dasha-Bhukti mutual axis with accurate house distance and classical effects', () => {
+    // 5/9 Axis
+    const axis59 = computeDashaBhuktiMutualAxis(1, 5, 'Jupiter', 'Sun');
+    expect(axis59.axisType).toBe('5/9');
+    expect(axis59.isAuspicious).toBe(true);
+    expect(axis59.axisLabelHi).toContain('५/९ अक्ष');
+    expect(axis59.verdictEn).toContain('Nava-Panchama');
+
+    // 6/8 Shadashtaka Axis
+    const axis68 = computeDashaBhuktiMutualAxis(1, 6, 'Saturn', 'Mars');
+    expect(axis68.axisType).toBe('6/8');
+    expect(axis68.isAuspicious).toBe(false);
+    expect(axis68.axisLabelHi).toContain('६/८ अक्ष');
+    expect(axis68.verdictEn).toContain('Shadashtaka');
+    expect(axis68.remedyHi).toContain('महामृत्युंजय');
+
+    // 1/7 Samasaptaka Axis
+    const axis17 = computeDashaBhuktiMutualAxis(1, 7, 'Sun', 'Saturn');
+    expect(axis17.axisType).toBe('1/7');
+    expect(axis17.isAuspicious).toBe(true);
+    expect(axis17.axisLabelHi).toContain('१/७ अक्ष');
+
+    // 1/1 Conjunction Axis
+    const axis11 = computeDashaBhuktiMutualAxis(10, 10, 'Mercury', 'Venus');
+    expect(axis11.axisType).toBe('1/1');
+    expect(axis11.isAuspicious).toBe(true);
+  });
 });

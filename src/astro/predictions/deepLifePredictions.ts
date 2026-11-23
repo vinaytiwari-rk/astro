@@ -143,7 +143,36 @@ export interface GeneralBirthProfile {
   };
 }
 
+export interface PurusharthaTrineScore {
+  type: 'Dharma' | 'Artha' | 'Kama' | 'Moksha';
+  nameEn: string;
+  nameHi: string;
+  houses: number[];
+  percentage: number;
+  score: number;
+  occupantPlanets: NineGrahaId[];
+  savBindus: number;
+  orientationEn: string;
+  orientationHi: string;
+  guidanceEn: string;
+  guidanceHi: string;
+  classicalSource: string;
+}
+
+export interface PurusharthaReport {
+  dominant: 'Dharma' | 'Artha' | 'Kama' | 'Moksha';
+  dominantTitleEn: string;
+  dominantTitleHi: string;
+  soulMissionEn: string;
+  soulMissionHi: string;
+  trines: PurusharthaTrineScore[];
+  balanceSynthesisEn: string;
+  balanceSynthesisHi: string;
+  classicalReference: string;
+}
+
 export interface DeepLifePredictionsReport {
+  purusharthas: PurusharthaReport;
   /** Retained for compatibility; never presented as a statistical score. */
   overallLifeScore: number;
   lifeStatureClassEn?: string;
@@ -1415,6 +1444,186 @@ function buildGeneralBirthProfile(chart: ChartData): GeneralBirthProfile {
   };
 }
 
+export function computePurusharthaBalance(chart: ChartData): PurusharthaReport {
+  const ascSign = chart.ascendant.signIndex;
+
+  const trineDefs: Array<{
+    type: 'Dharma' | 'Artha' | 'Kama' | 'Moksha';
+    nameEn: string;
+    nameHi: string;
+    houses: number[];
+    orientationEn: string;
+    orientationHi: string;
+    guidanceEn: string;
+    guidanceHi: string;
+    classicalSource: string;
+  }> = [
+    {
+      type: 'Dharma',
+      nameEn: 'Dharma Trikona (Righteousness, Duty & Soul Evolution)',
+      nameHi: 'धर्म त्रिकोण (कर्तव्य, सदाचार, विवेक व आत्मिक उत्थान)',
+      houses: [1, 5, 9],
+      orientationEn: 'Houses 1, 5, 9 govern physical vitality, creative intellect, purva-punya (past life merits), moral integrity, and divine guidance.',
+      orientationHi: 'लग्न (प्रथम), पंचम व नवम भाव आत्म-तेज, प्रज्ञा, पूर्वजन्म के संचित पुण्य, नैतिक मर्यादा व ईश्वरीय कृपा का संचालन करते हैं।',
+      guidanceEn: 'Uphold satya (truth) and ethical principles; invest in higher learning, mentoring and philosophical study to unlock your highest potential.',
+      guidanceHi: 'सत्य एवं उच्च नैतिक जीवन मूल्यों का पालन करें; स्वाध्याय, गुरु सेवा एवं परोपकार से भाग्योदय के द्वार खुलते हैं।',
+      classicalSource: 'Brihat Parashara Hora Shastra (Ch. 11 & 14) · Four Trines in Vedic Astrology',
+    },
+    {
+      type: 'Artha',
+      nameEn: 'Artha Trikona (Material Security, Livelihood & Status)',
+      nameHi: 'अर्थ त्रिकोण (धन, व्यावसायिक प्रभुत्व, आजीविका व संचित साधन)',
+      houses: [2, 6, 10],
+      orientationEn: 'Houses 2, 6, 10 govern accumulated wealth, daily disciplined service, professional authority, executive competence, and economic sovereignty.',
+      orientationHi: 'द्वितीय, षष्ठ एवं दशम भाव संचित धन, अनुशासित कर्म, कार्यक्षेत्र में नेतृत्व, व्यावसायिक प्रतिष्ठा एवं आर्थिक संप्रभुता का निर्धारण करते हैं।',
+      guidanceEn: 'Cultivate meticulous fiscal discipline, build enduring institutional competencies, and channel professional authority toward structured public good.',
+      guidanceHi: 'अनुशासित वित्तीय प्रबंधन रखें, कार्यक्षेत्र में तकनीकी व प्रशासनिक दक्षता बढ़ाएं और दीर्घकालिक स्थायी संपत्तियों का निर्माण करें।',
+      classicalSource: 'Brihat Parashara Hora Shastra (Ch. 12 & 20) · Bepin Behari Karmic Astrological Systems',
+    },
+    {
+      type: 'Kama',
+      nameEn: 'Kama Trikona (Desires, Dynamic Enterprise & Alliances)',
+      nameHi: 'काम त्रिकोण (महत्वाकांक्षा, पुरुषार्थ, सामाजिक संबंध व अभीष्ट लाभ)',
+      houses: [3, 7, 11],
+      orientationEn: 'Houses 3, 7, 11 govern initiative, enterprise courage, marital partnership, social influence, lucrative networks, and realization of aspirations.',
+      orientationHi: 'तृतीय, सप्तम एवं एकादश भाव पराक्रम, व्यापारिक साझेदारी, सामाजिक प्रतिष्ठा, दांपत्य सामंजस्य तथा आर्थिक व सामाजिक अभिलाषाओं की पूर्ति करते हैं।',
+      guidanceEn: 'Channel personal drive into strategic teamwork and honorable partnerships; maintain clarity in commitments and balance ambition with empathy.',
+      guidanceHi: 'अपने पराक्रम को संगठित टीमवर्क एवं पारदर्शी साझेदारियों में लगाएं; संबंधों में परस्पर विश्वास और महत्वाकांक्षा में संतुलन बनाए रखें।',
+      classicalSource: 'Brihat Parashara Hora Shastra (Ch. 13 & 21) · Phaladeepika',
+    },
+    {
+      type: 'Moksha',
+      nameEn: 'Moksha Trikona (Inner Peace, Detachment & Liberation)',
+      nameHi: 'मोक्ष त्रिकोण (आत्म-शांति, वैराग्य, आध्यात्मिक अनुसंधान व मुक्ति)',
+      houses: [4, 8, 12],
+      orientationEn: 'Houses 4, 8, 12 govern heart happiness, psychological resilience, esoteric exploration, selfless charity, foreign horizons, and spiritual liberation.',
+      orientationHi: 'चतुर्थ, अष्टम एवं द्वादश भाव हार्दिक सुख, मानसिक दृढ़ता, गूढ़ आध्यात्मिक शोध, परोपकारी दान, विदेश संपर्क तथा परम आत्म-मुक्ति का नियमन करते हैं।',
+      guidanceEn: 'Reserve regular daily time for contemplative silence, meditation, and devotional detachment; align worldly actions with universal selfless service.',
+      guidanceHi: 'नियमित ध्यान, प्राणायाम और एकांत आत्म-चिंतन का अभ्यास करें; भौतिक गतिविधियों के बीच अनासक्ति और सात्विक दान से शांति प्राप्त करें।',
+      classicalSource: 'Brihat Parashara Hora Shastra (Ch. 14 & 24) · Jaimini Upadesha Sutras',
+    },
+  ];
+
+  const rawScores: number[] = [];
+  const trineDetails = trineDefs.map((def) => {
+    let score = 25;
+    let savSum = 0;
+    const occupants: NineGrahaId[] = [];
+
+    for (const h of def.houses) {
+      const sIdx = (ascSign + h - 1) % 12;
+      const sav = chart.ashtakavarga?.sarva?.[sIdx] ?? 28;
+      savSum += sav;
+      score += (sav - 26) * 1.5;
+
+      const planetsInH = chart.planets.filter((p) => p.rasiHouseNumber === h);
+      for (const p of planetsInH) {
+        occupants.push(p.id as NineGrahaId);
+        score += 10;
+        if (p.dignity === 'Exalted') score += 8;
+        else if (p.dignity === 'Moolatrikona' || p.dignity === 'Own Sign') score += 6;
+        else if (p.dignity === 'Friend' || p.dignity === 'Great Friend') score += 3;
+        else if (p.dignity === 'Debilitated') score -= 5;
+        if (p.isCombust) score -= 3;
+      }
+
+      const lordId = SIGNS[sIdx]?.lord;
+      const lordPlanet = chart.planets.find((p) => p.id === lordId);
+      if (lordPlanet) {
+        if (lordPlanet.dignity === 'Exalted') score += 6;
+        else if (lordPlanet.dignity === 'Moolatrikona' || lordPlanet.dignity === 'Own Sign') score += 4;
+        else if (lordPlanet.dignity === 'Friend' || lordPlanet.dignity === 'Great Friend') score += 2;
+        else if (lordPlanet.dignity === 'Debilitated') score -= 4;
+        if ([1, 4, 5, 7, 9, 10].includes(lordPlanet.rasiHouseNumber)) score += 3;
+      }
+    }
+
+    const safeScore = Math.max(10, Math.round(score));
+    rawScores.push(safeScore);
+    return {
+      def,
+      score: safeScore,
+      savSum,
+      occupants,
+    };
+  });
+
+  const totalRaw = rawScores.reduce((a, b) => a + b, 0);
+  const pCentages = trineDetails.map((t) => Math.round((t.score / totalRaw) * 100));
+  const diff = 100 - pCentages.reduce((a, b) => a + b, 0);
+  pCentages[0] += diff;
+
+  let dominantIdx = 0;
+  let maxScore = -1;
+  pCentages.forEach((p, idx) => {
+    if (p > maxScore) {
+      maxScore = p;
+      dominantIdx = idx;
+    }
+  });
+
+  const dominant = trineDefs[dominantIdx].type;
+  const domDef = trineDefs[dominantIdx];
+
+  const dominantTitleEn = `${domDef.type}-Dominant Purushartha Life Orientation`;
+  const dominantTitleHi = `${domDef.type === 'Dharma' ? 'धर्म' : domDef.type === 'Artha' ? 'अर्थ' : domDef.type === 'Kama' ? 'काम' : 'मोक्ष'} प्रधान पुरुषार्थ जीवन पथ`;
+
+  let soulMissionEn = '';
+  let soulMissionHi = '';
+  let balanceSynthesisEn = '';
+  let balanceSynthesisHi = '';
+
+  if (dominant === 'Dharma') {
+    soulMissionEn = 'Moral leadership, ethical teaching, philosophical wisdom and purva-punya fruition';
+    soulMissionHi = 'नैतिक नेतृत्व, शास्त्रीय विद्या, लोक-कल्याणकारी मार्ग एवं पूर्व पुण्य का सदुपयोग';
+    balanceSynthesisEn = `Dharma Trikona (Houses 1, 5, 9) leads with ${pCentages[0]}% dominance. Cosmic energy is dedicated to establishing righteousness, higher knowledge, and spiritual integrity. Material success is an instrument to support noble dharma.`;
+    balanceSynthesisHi = `धर्म त्रिकोण (१, ५, ९ भाव) ${pCentages[0]}% की सर्वोच्च प्रधानता के साथ सक्रिय है। आपकी आत्मा का मूल संकल्प सत्य, नैतिकता, विद्या और आदर्श जीवन मूल्यों की प्रतिष्ठा करना है। भौतिक साधन केवल धर्म-पालन में सहायक होंगे।`;
+  } else if (dominant === 'Artha') {
+    soulMissionEn = 'Executive stewardship, material wealth accumulation, institutional leadership and structured enterprise';
+    soulMissionHi = 'संगठनात्मक नेतृत्व, स्थायी धन सृजन, प्रशासनिक दक्षता एवं सुदृढ़ आजीविका';
+    balanceSynthesisEn = `Artha Trikona (Houses 2, 6, 10) leads with ${pCentages[1]}% dominance. Your life path centers on practical executive authority, systematic wealth building, disciplined problem solving, and establishing enduring economic security.`;
+    balanceSynthesisHi = `अर्थ त्रिकोण (२, ६, १० भाव) ${pCentages[1]}% की सर्वोच्च प्रधानता के साथ सक्रिय है। आपकी कुंडली की प्रमुख शक्ति व्यावसायिक दक्षता, धन संचय, अनुशासित कर्मठता एवं समाज में स्थायी आर्थिक व प्रशासनिक प्रभाव स्थापित करने में है।`;
+  } else if (dominant === 'Kama') {
+    soulMissionEn = 'Dynamic enterprise, relationship fulfillment, strategic partnerships and realization of ambitious milestones';
+    soulMissionHi = 'सक्रिय पुरुषार्थ, दांपत्य व सामाजिक सामंजस्य, व्यापारिक विस्तार एवं महत्वाकांक्षाओं की सिद्धि';
+    balanceSynthesisEn = `Kama Trikona (Houses 3, 7, 11) leads with ${pCentages[2]}% dominance. Initiative, social intelligence, dynamic networking, and cooperative enterprise drive your major life accomplishments and happiness.`;
+    balanceSynthesisHi = `काम त्रिकोण (३, ७, ११ भाव) ${pCentages[2]}% की सर्वोच्च प्रधानता के साथ सक्रिय है। आपका पराक्रम, जनसंपर्क, सहयोगियों का साथ और रणनीतिक संबंध आपके भाग्योदय और अभीष्ट लाभ के मुख्य प्रेरक हैं।`;
+  } else {
+    soulMissionEn = 'Inner serenity, psychological transcendence, esoteric research, charitable service and spiritual liberation';
+    soulMissionHi = 'आत्म-शांति, आंतरिक वैराग्य, आध्यात्मिक अनुसंधान, परोपकार एवं मोक्ष मार्ग';
+    balanceSynthesisEn = `Moksha Trikona (Houses 4, 8, 12) leads with ${pCentages[3]}% dominance. Your chart channels deepest fulfillment through contemplative peace, psychological resilience, altruistic giving, and transcendental wisdom beyond material attachments.`;
+    balanceSynthesisHi = `मोक्ष त्रिकोण (४, ८, १२ भाव) ${pCentages[3]}% की सर्वोच्च प्रधानता के साथ सक्रिय है। सांसारिक उपलब्धियों के परे आत्म-साक्षात्कार, आंतरिक वैराग्य, ध्यान और आध्यात्मिक शांति ही आपके जीवन का सर्वोच्च गंतव्य है।`;
+  }
+
+  const trines: PurusharthaTrineScore[] = trineDetails.map((td, idx) => ({
+    type: td.def.type,
+    nameEn: td.def.nameEn,
+    nameHi: td.def.nameHi,
+    houses: td.def.houses,
+    percentage: pCentages[idx],
+    score: td.score,
+    occupantPlanets: td.occupants,
+    savBindus: td.savSum,
+    orientationEn: td.def.orientationEn,
+    orientationHi: td.def.orientationHi,
+    guidanceEn: td.def.guidanceEn,
+    guidanceHi: td.def.guidanceHi,
+    classicalSource: td.def.classicalSource,
+  }));
+
+  return {
+    dominant,
+    dominantTitleEn,
+    dominantTitleHi,
+    soulMissionEn,
+    soulMissionHi,
+    trines,
+    balanceSynthesisEn,
+    balanceSynthesisHi,
+    classicalReference: 'Brihat Parashara Hora Shastra · Four Trines in Vedic Astrology · Bepin Behari Astrological Systems',
+  };
+}
+
 export function computeDeepLifePredictions(chart: ChartData): DeepLifePredictionsReport {
   const classicalYogas = detectClassicalYogas(chart);
   const domains = DOMAINS.map((config) => buildDomain(chart, config, classicalYogas));
@@ -1469,8 +1678,9 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
     `आयु 52 से 54 वर्ष (ई. सन् ${birthYear + 52}–${birthYear + 54}): पारिवारिक जिम्मेदारियों का दबाव, वात/जोड़ों की देखभाल व धैर्य काल`,
   ];
 
-  const karmicMissionEn = 'Executive Leadership, Wealth Stewardship & Higher Institutional Dharma';
-  const karmicMissionHi = 'संगठनात्मक नेतृत्व, स्थायी धन सृजन एवं उच्च संस्थागत धर्म का निर्वाह';
+  const purusharthas = computePurusharthaBalance(chart);
+  const karmicMissionEn = purusharthas.soulMissionEn;
+  const karmicMissionHi = purusharthas.soulMissionHi;
 
   return {
     overallLifeScore,
@@ -1484,6 +1694,7 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
     crisisErasHi,
     karmicMissionEn,
     karmicMissionHi,
+    purusharthas,
     executiveSummaryEn,
     executiveSummaryHi,
     domains,

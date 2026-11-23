@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  Activity,
   AlertTriangle,
   BookOpen,
   Calendar,
@@ -193,6 +194,47 @@ export const DashaWisePanel: React.FC<{
             </div>
             <div className="pred-card-body">
               <p className="lead-text" style={{ fontSize: '14px', fontWeight: 600 }}>{report.dashaForecast.summary}</p>
+
+              {/* Dasha-Bhukti Mutual Axis Analysis (दशा-अंतर्दशा पारस्परिक अक्ष संबंध) */}
+              {report.dashaForecast.mutualAxis && (
+                <div
+                  style={{
+                    margin: '12px 0',
+                    padding: '12px 14px',
+                    background: 'var(--bg-elevated)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    borderLeft: `4px solid ${report.dashaForecast.mutualAxis.isAuspicious ? '#16a34a' : '#d97706'}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px' }}>
+                      <Activity size={15} color={report.dashaForecast.mutualAxis.isAuspicious ? '#16a34a' : '#d97706'} />
+                      <span>{isHi ? 'दशा-अंतर्दशा पारस्परिक अक्ष संबंध: ' : 'Dasha-Bhukti Mutual Axis: '}</span>
+                      <span style={{ color: report.dashaForecast.mutualAxis.isAuspicious ? '#16a34a' : '#d97706' }}>
+                        {isHi ? report.dashaForecast.mutualAxis.axisLabelHi : report.dashaForecast.mutualAxis.axisLabelEn}
+                      </span>
+                    </div>
+                    <span
+                      className={`tag ${report.dashaForecast.mutualAxis.isAuspicious ? 'tag-varg' : 'tag-retro'}`}
+                      style={{ fontSize: '11px', fontWeight: 700 }}
+                    >
+                      {report.dashaForecast.mutualAxis.axisType}
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '0 0 6px', fontSize: '13px', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? report.dashaForecast.mutualAxis.verdictHi : report.dashaForecast.mutualAxis.verdictEn}
+                  </p>
+
+                  {(report.dashaForecast.mutualAxis.remedyHi || report.dashaForecast.mutualAxis.remedyEn) && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.45, fontStyle: 'italic' }}>
+                      <strong>{isHi ? 'अक्षीय शास्त्रीय उपाय: ' : 'Axis Harmonization Upaya: '}</strong>
+                      {isHi ? report.dashaForecast.mutualAxis.remedyHi : report.dashaForecast.mutualAxis.remedyEn}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Concrete Events in Current Running Dasha */}
               <div style={{ margin: '12px 0', padding: '12px 14px', background: 'var(--bg-subtle)', borderRadius: '8px', border: '1px solid var(--border)' }}>
