@@ -110,3 +110,4 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
       </section>
     </div>
   );
+};
