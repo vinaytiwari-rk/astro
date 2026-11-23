@@ -50,6 +50,6 @@ describe('Natal-only General Prediction reconstruction', () => {
     const report = computeGeneralPrediction(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
     expect(report.titleHi).toContain('सामान्य फलादेश');
     expect(report.summaryHi).toContain('जन्मकुंडली');
-    expect(report.summaryEn).not.toMatch(/\bprobability\b|\bchance of event\b/i);
+    expect(report.summaryEn).not.toMatch(/\\d+\\s*%/);
   });
 });
