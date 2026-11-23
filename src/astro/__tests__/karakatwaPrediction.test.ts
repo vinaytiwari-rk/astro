@@ -62,6 +62,19 @@ describe('Karakatwa-based reader-first predictions', () => {
       .every((item) => item.kind === 'context' && /does not establish/i.test(item.detailEn))).toBe(true);
   });
 
+  it('includes calculated degree, yuti and drishti evidence without mislabelling it as a text citation', () => {
+    const report = computeKarakatwaPredictions(baseChart());
+    for (const item of report.predictions) {
+      expect(item.evidence.some((evidence) => evidence.sourceStatus === 'calculated-data'
+        && evidence.factor.startsWith('Calculated placement:'))).toBe(true);
+      for (const evidence of item.evidence.filter((entry) => entry.sourceStatus === 'calculated-data')) {
+        expect(evidence.source).toContain('Calculated');
+      }
+    }
+    const allEvidence = report.predictions.flatMap((item) => item.evidence);
+    expect(allEvidence.some((item) => item.factor.startsWith('Same-sign yuti review:'))).toBe(true);
+  });
+
   it('produces chart-specific evidence across multiple natal charts', () => {
     const reports = SAMPLE_CHARTS.slice(0, 4).map((sample) =>
       computeKarakatwaPredictions(calculateChart(sample, DEFAULT_SETTINGS)),
