@@ -98,7 +98,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
   const evidence: GeneralPredictionEvidence[] = [];
   const relatedPlanets = new Set<string>();
   let availableCoreFactors = 0;
-  let expectedCoreFactors = domain.houses.length * 2 + domain.karakas.length;
+  let expectedCoreFactors = domain.houses.length + domain.karakas.length;
 
   for (const house of domain.houses) {
     const signIndex = signForHouse(chart, house);
