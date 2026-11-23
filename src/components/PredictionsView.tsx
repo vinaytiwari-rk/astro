@@ -37,7 +37,8 @@ import { PastLifeFuturePanel } from './predictions/PastLifeFuturePanel';
 import { ActiveYogasAndYutiPanel } from './predictions/ActiveYogasAndYutiPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { AscendantWisePanel } from './predictions/AscendantWisePanel';
-import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
+import { GeneralPredictionPanel } from './predictions/GeneralPredictionPanel';
+import { KarakatwaPredictionPanel } from './predictions/KarakatwaPredictionPanel';
 import { EducationAstrologyPanel } from './predictions/EducationAstrologyPanel';
 import { ParasharaKalaWorkstationPanel } from './predictions/ParasharaKalaWorkstationPanel';
 import { SpecializedVedicPanel } from './predictions/SpecializedVedicPanel';
@@ -63,6 +64,7 @@ export type PredSubTab =
   | 'yutiWise'
   | 'yogaWise'
   | 'deep_life'
+  | 'karakatwa'
   | 'eventsLedger'
   | 'houseWise'
   | 'bhriguNadi'
@@ -124,6 +126,7 @@ function normalizeSubTab(id?: string): PredSubTab {
   ) {
     return 'parasharaKala';
   }
+  if (id === 'karakatwa' || id === 'karakatwaWise' || id === 'karaka' || id === 'karakatwaPrediction') return 'karakatwa';
   if (id === 'deep_life' || id === 'general' || id === 'samanya') return 'deep_life';
   if (id === 'dashaWise' || id === 'dasha' || id === 'dashawise') return 'dashaWise';
   if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
@@ -210,6 +213,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
   // Pure prediction systems. Calculations and specialized horary modules reside in their dedicated workstations.
   const predictionPills: Array<{ id: PredSubTab; labelEn: string; labelHi: string }> = [
     { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
+    { id: 'karakatwa', labelEn: 'Karakatwa Prediction', labelHi: 'कारकत्व फलादेश' },
     { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
@@ -323,7 +327,11 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
           )}
 
           {currentTab === 'deep_life' && (
-            <DeepLifePredictionsPanel chart={chart} />
+            <GeneralPredictionPanel chart={chart} />
+          )}
+
+          {currentTab === 'karakatwa' && (
+            <KarakatwaPredictionPanel chart={chart} />
           )}
 
           {currentTab === 'eventsLedger' && (

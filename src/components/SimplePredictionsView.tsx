@@ -2,11 +2,12 @@ import React, { useMemo } from 'react';
 import type { ChartData } from '../astro/types';
 import { computeHouseWisePredictions } from '../astro/predictions/houseWise';
 import { useLanguage } from '../i18n/LanguageContext';
-import { DeepLifePredictionsPanel } from './predictions/DeepLifePredictionsPanel';
+import { GeneralPredictionPanel } from './predictions/GeneralPredictionPanel';
 import { TwelvePlanetsPanel } from './predictions/TwelvePlanetsPanel';
 import { HouseWisePanel } from './predictions/HouseAndDegreePanels';
+import { KarakatwaPredictionPanel } from './predictions/KarakatwaPredictionPanel';
 
-export type SimplePredictionMode = 'general' | 'planets' | 'houses';
+export type SimplePredictionMode = 'general' | 'planets' | 'houses' | 'karakatwa';
 
 interface SimplePredictionsViewProps {
   chart: ChartData;
@@ -17,20 +18,27 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
   const isGeneral = mode === 'general';
+  const isKarakatwa = mode === 'karakatwa';
   const isPlanets = mode === 'planets';
   const housePredictions = useMemo(() => computeHouseWisePredictions(chart), [chart]);
 
   const title = isGeneral
     ? (isHi ? 'सामान्य फलादेश' : 'General Prediction')
-    : isPlanets
+    : isKarakatwa
+      ? (isHi ? 'कारकत्व फलादेश' : 'Karakatwa Prediction')
+      : isPlanets
       ? (isHi ? 'ग्रह-वार फलादेश' : 'Planets-wise Prediction')
       : (isHi ? 'भाव-वार फलादेश' : 'House-wise Prediction');
 
   const description = isGeneral
     ? (isHi
-      ? 'जन्म कुंडली के प्रमुख योग, भाव, भावेश, ग्रहबल और दशा संकेतों का समन्वित जीवन-विश्लेषण।'
-      : 'An integrated life reading from the natal chart, combining key planetary and house indications with available strength and dasha context.')
-    : isPlanets
+      ? 'केवल जन्मकुंडली के भावेश, भावस्थित ग्रह, नैसर्गिक कारक, ग्रह-गरिमा, उपलब्ध षड्बल और संबंधित वर्ग-कुंडली का प्रमाण-आधारित विश्लेषण। दशा और गोचर अलग अनुभागों में हैं।'
+      : 'A natal-only evidence review of house lords, occupants, natural significators, dignity, available Shadbala and relevant divisional charts. Dasha and transits remain separate.')
+    : isKarakatwa
+      ? (isHi
+        ? 'रूप-रंग, भाई-बहन और व्यक्तित्व का कारकत्व-आधारित फलादेश; प्रत्येक संकेत के साथ शास्त्रीय आधार और उसकी सीमा अलग दिखाई जाती है।'
+        : 'Karakatwa-based readings for appearance, siblings and personality, with the textual basis and limits shown separately for each indication.')
+      : isPlanets
       ? (isHi
         ? 'प्रत्येक ग्रह की राशि, भाव, नक्षत्र, गरिमा, वक्री/अस्त स्थिति और संबंधित संकेतों का अलग-अलग विश्लेषण।'
         : 'Separate analysis of each planet using its sign, house, nakshatra, dignity, retrograde/combust state and related indications.')
@@ -44,9 +52,10 @@ export const SimplePredictionsView: React.FC<SimplePredictionsViewProps> = ({ ch
         <h1 style={{ margin: 0, fontSize: '20px' }}>{title}</h1>
         <p className="muted" style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: 1.5 }}>{description}</p>
       </header>
-      {isGeneral && <DeepLifePredictionsPanel chart={chart} />}
+      {isGeneral && <GeneralPredictionPanel chart={chart} />}
+      {isKarakatwa && <KarakatwaPredictionPanel chart={chart} />}
       {isPlanets && <TwelvePlanetsPanel chart={chart} />}
-      {!isGeneral && !isPlanets && (
+      {!isGeneral && !isKarakatwa && !isPlanets && (
         <HouseWisePanel houses={housePredictions} simple />
       )}
     </div>
