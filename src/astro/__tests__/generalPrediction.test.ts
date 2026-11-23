@@ -21,7 +21,7 @@ describe('Natal-only General Prediction reconstruction', () => {
       expect(domain.predictionEn.length).toBeGreaterThan(120);
       expect(domain.predictionHi.length).toBeGreaterThan(120);
       expect(domain.predictionEn).not.toMatch(/\b(?:house|D1|D9|D10|Shadbala|Sarvashtakavarga)\b/i);
-      expect(domain.predictionHi).not.toMatch(/भाव\s*\\d|षड्बल|सर्वाष्टकवर्ग|दशमांश|नवांश/);
+      expect(domain.predictionHi).not.toMatch(/भाव\s*\d|षड्बल|सर्वाष्टकवर्ग|दशमांश|नवांश/);
       expect(['complete', 'partial', 'limited']).toContain(domain.dataCompleteness);
     }
   });
