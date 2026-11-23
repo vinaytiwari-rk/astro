@@ -78,7 +78,7 @@ describe('Natal-only General Prediction reconstruction', () => {
       const yogaEvidence = report.domains.flatMap((domain) => domain.evidence)
         .filter((item) => item.source.startsWith('Classical yoga rule:'));
       expect(yogaEvidence.every((item) =>
-        !/not verified|unverified|verify the individual/i.test(item.source),
+        !/not verified|unverified|verify the individual|classical vedic shastra/i.test(item.source),
       )).toBe(true);
     }
   });
