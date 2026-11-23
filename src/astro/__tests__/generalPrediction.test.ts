@@ -42,6 +42,18 @@ describe('Natal-only General Prediction reconstruction', () => {
     expect(report.summaryEn).toContain('natal-chart-based');
   });
 
+  it('records planetary degrees, bhava/rasi distinction, same-sign yuti and calculated drishti', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+    const report = computeGeneralPrediction(chart);
+    const evidence = report.domains.flatMap((domain) => domain.evidence);
+
+    expect(evidence.some((item) => item.source.startsWith('Graha degree and placement:'))).toBe(true);
+    expect(evidence.some((item) => item.source.startsWith('Same-sign yuti review:'))).toBe(true);
+    expect(evidence.some((item) => item.source.startsWith('Calculated graha drishti:'))).toBe(chart.aspects.length > 0);
+    expect(evidence.some((item) => item.detailEn.includes('Whole-sign rasi house:') && item.detailEn.includes('selected bhava house:'))).toBe(true);
+    expect(evidence.some((item) => item.detailHi.includes('पूर्ण राशि पद्धति से भाव:') && item.detailHi.includes('भाव-चालित पद्धति से भाव:'))).toBe(true);
+  });
+
   it('produces chart-dependent evidence for different natal charts', () => {
     const reports = SAMPLE_CHARTS.slice(0, 3).map((sample) =>
       computeGeneralPrediction(calculateChart(sample, DEFAULT_SETTINGS)),
