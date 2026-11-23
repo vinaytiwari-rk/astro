@@ -308,6 +308,58 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
     });
   }
 
+  // Planet condition layer: degrees, chosen bhava vs whole-sign rasi, yuti and
+  // calculated graha-to-graha drishti are recorded before any domain synthesis.
+  // Same-sign association is reported with its actual angular separation; no
+  // universal conjunction orb is silently imposed.
+  const relevantPlanets = chart.planets.filter((planet) => relatedPlanets.has(planet.id));
+  for (const planet of relevantPlanets) {
+    const strength = chart.shadbala?.find((row) => row.planet === planet.id);
+    evidence.push({
+      kind: 'context',
+      source: `Graha degree and placement: ${planet.id}`,
+      detailEn: `${planet.id} is at ${planet.dms} in ${planet.signName}; degree in sign ${planet.degreeInSign.toFixed(4)}°. Whole-sign rasi house: ${planet.rasiHouseNumber}; selected bhava house: ${planet.houseNumber}. Dignity: ${planet.dignity}; retrograde: ${planet.isRetrograde ? 'yes' : 'no'}; combust: ${planet.isCombust ? 'yes' : 'no'}.`,
+      detailHi: `${HI_NAMES[planet.id] ?? planet.id} ${planet.signName} राशि में ${planet.dms} पर हैं; राशि में अंश ${planet.degreeInSign.toFixed(4)}°। पूर्ण राशि पद्धति से भाव: ${planet.rasiHouseNumber}; चुनी हुई भाव-चालित पद्धति से भाव: ${planet.houseNumber}। गरिमा: ${planet.dignity}; वक्री: ${planet.isRetrograde ? 'हाँ' : 'नहीं'}; अस्त: ${planet.isCombust ? 'हाँ' : 'नहीं'}।`,
+    });
+    if (strength) {
+      evidence.push({
+        kind: strength.isStrong ? 'supportive' : 'context',
+        source: `Shadbala detail: ${planet.id}`,
+        detailEn: `Total ${strength.totalRupas.toFixed(2)} rupas (required ${strength.requiredRupas.toFixed(2)}); ratio ${strength.ratio.toFixed(2)}×; Ishta phala ${strength.ishtaPhala.toFixed(2)}, Kashta phala ${strength.kashtaPhala.toFixed(2)}. Strength is one factor, not a stand-alone verdict.`,
+        detailHi: `कुल षड्बल ${strength.totalRupas.toFixed(2)} रूप (आवश्यक ${strength.requiredRupas.toFixed(2)}); अनुपात ${strength.ratio.toFixed(2)}×; इष्टफल ${strength.ishtaPhala.toFixed(2)}, कष्टफल ${strength.kashtaPhala.toFixed(2)}। ग्रहबल एक कारक है, अपने-आप में अंतिम निर्णय नहीं।`,
+      });
+    }
+  }
+
+  for (let i = 0; i < relevantPlanets.length; i++) {
+    for (let j = i + 1; j < relevantPlanets.length; j++) {
+      const a = relevantPlanets[i];
+      const b = relevantPlanets[j];
+      if (a.signIndex !== b.signIndex) continue;
+      const rawSeparation = Math.abs(a.longitude - b.longitude);
+      const separation = Math.min(rawSeparation, 360 - rawSeparation);
+      evidence.push({
+        kind: 'context',
+        source: `Same-sign yuti review: ${a.id} + ${b.id}`,
+        detailEn: `${a.id} and ${b.id} occupy ${a.signName} in the same sign, separated by ${separation.toFixed(3)}°. This is shown for conjunction assessment; interpretation must consider the actual degrees, graha nature, dignity and domain. No fixed orb threshold is assumed here.`,
+        detailHi: `${HI_NAMES[a.id] ?? a.id} और ${HI_NAMES[b.id] ?? b.id} दोनों ${a.signName} राशि में हैं; इनके बीच कोणीय अंतर ${separation.toFixed(3)}° है। इसे युति के परीक्षण हेतु दिखाया गया है; फलादेश में वास्तविक अंश, ग्रह-स्वभाव, गरिमा और संबंधित जीवन-विषय साथ देखे जाएँगे। यहाँ कोई मनमाना सार्वभौमिक ऑर्ब नहीं माना गया है।`,
+      });
+    }
+  }
+
+  const relevantIds = new Set(relevantPlanets.map((planet) => planet.id));
+  const aspectRecords = (chart.aspects ?? []).filter((aspect) =>
+    relevantIds.has(aspect.from) || (aspect.to !== 'Asc' && relevantIds.has(aspect.to)),
+  );
+  for (const aspect of aspectRecords) {
+    evidence.push({
+      kind: 'context',
+      source: `Calculated graha drishti: ${aspect.from} → ${aspect.to}`,
+      detailEn: `${aspect.type}; orb ${aspect.orbDeg.toFixed(3)}°; calculated aspect strength ${aspect.strengthPercent.toFixed(1)}%. The aspect is interpreted through both planets' domain relevance, ownership, dignity and strength, not by aspect label alone.`,
+      detailHi: `${aspect.from} से ${aspect.to} पर ${aspect.type}; ऑर्ब ${aspect.orbDeg.toFixed(3)}°; गणितीय दृष्टि-बल ${aspect.strengthPercent.toFixed(1)}%। इसका फल केवल दृष्टि के नाम से नहीं, दोनों ग्रहों की विषयगत भूमिका, भाव-स्वामित्व, गरिमा और बल से समझा जाएगा।`,
+    });
+  }
+
   const varga = chart.divisionalCharts?.[domain.varga];
   if (varga) {
     for (const id of relatedPlanets) {
