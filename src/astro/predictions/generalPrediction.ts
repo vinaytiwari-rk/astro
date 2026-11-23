@@ -17,6 +17,8 @@ export interface GeneralPredictionDomain {
   houses: number[];
   karakas: NineGrahaId[];
   varga: DivisionalChartId;
+  predictionEn: string;
+  predictionHi: string;
   interpretationBasisEn: string;
   interpretationBasisHi: string;
   primaryAnchorEn: string;
@@ -128,6 +130,63 @@ function dignityKind(dignity: string): GeneralEvidenceKind {
   if (SUPPORTIVE_DIGNITIES.has(dignity)) return 'supportive';
   if (CAUTION_DIGNITIES.has(dignity)) return 'caution';
   return 'context';
+}
+
+
+const HOUSE_THEMES: Record<number, { en: string; hi: string }> = {
+  1: { en: 'self-direction, confidence and personal initiative', hi: 'स्व-निर्णय, आत्मविश्वास और अपनी पहल' },
+  2: { en: 'family resources, savings, speech and accumulated wealth', hi: 'परिवार, बचत, वाणी और संचित धन' },
+  3: { en: 'effort, communication, skills and independent enterprise', hi: 'प्रयास, संवाद, कौशल और स्व-प्रेरित कार्य' },
+  4: { en: 'home, education, emotional foundations and property', hi: 'घर, शिक्षा, भावनात्मक आधार और संपत्ति' },
+  5: { en: 'learning, creativity, judgement and the next generation', hi: 'अध्ययन, सृजन, निर्णय-क्षमता और अगली पीढ़ी' },
+  6: { en: 'service, daily responsibilities, competition and problem-solving', hi: 'सेवा, दैनिक जिम्मेदारियाँ, प्रतिस्पर्धा और समस्याओं का समाधान' },
+  7: { en: 'partnerships, clients, agreements and public interaction', hi: 'साझेदारी, ग्राहक, समझौते और जन-संपर्क' },
+  8: { en: 'research, deep change, shared resources and hidden matters', hi: 'अनुसंधान, गहरे परिवर्तन, साझा संसाधन और गोपनीय विषय' },
+  9: { en: 'higher learning, mentors, long journeys and guiding principles', hi: 'उच्च शिक्षा, मार्गदर्शक, लंबी यात्राएँ और जीवन-मूल्य' },
+  10: { en: 'career, responsibility, public contribution and recognition', hi: 'करियर, उत्तरदायित्व, सार्वजनिक योगदान और प्रतिष्ठा' },
+  11: { en: 'income, networks, ambitions and the fulfilment of goals', hi: 'आय, संपर्क-वृत्त, महत्वाकांक्षाएँ और लक्ष्य-पूर्ति' },
+  12: { en: 'distant places, retreat, expenditure and work behind the scenes', hi: 'दूरस्थ स्थान, एकांत, व्यय और पर्दे के पीछे का काम' },
+};
+
+const DOMAIN_STORY: Record<string, { en: string; hi: string }> = {
+  personality: { en: 'Your personality is not meant to be read as a single label. The chart points to the life experiences that shape your confidence, temperament and way of taking initiative.', hi: 'आपके व्यक्तित्व को किसी एक विशेषण में बाँधना उचित नहीं होगा। कुंडली उन अनुभवों की दिशा दिखाती है जो आत्मविश्वास, स्वभाव और पहल करने के तरीके को आकार देते हैं।' },
+  education: { en: 'Your learning story is about the way curiosity, discipline and practical experience combine. It can describe not only formal education, but also the subjects and skills you keep returning to.', hi: 'आपकी शिक्षा का संकेत केवल डिग्री तक सीमित नहीं है। यह बताता है कि जिज्ञासा, अनुशासन और व्यावहारिक अनुभव किस तरह मिलकर सीखने की आपकी शैली बनाते हैं।' },
+  career: { en: 'Your professional story is best understood through the kind of responsibility you are drawn towards, the people or systems you work with, and the way your efforts become visible.', hi: 'आपके करियर की कहानी केवल नौकरी के पद से तय नहीं होती। यह जिम्मेदारियों के प्रकार, जिन लोगों या व्यवस्थाओं के साथ आप काम करते हैं, और आपके प्रयासों को मिलने वाली पहचान से बनती है।' },
+  wealth: { en: 'Your financial pattern concerns both earning and retaining. The chart should be read for the channels through which resources build, as well as the habits and obligations that can redirect them.', hi: 'धन का विषय केवल कमाई नहीं, उसे सँभालकर रखने का भी है। कुंडली यह समझने में मदद करती है कि संसाधन किन रास्तों से बनते हैं और कौन-सी आदतें या जिम्मेदारियाँ उन्हें दूसरी दिशा दे सकती हैं।' },
+  marriage: { en: 'Your relationship story is about the balance between personal expectations and the realities of sharing life with another person. The chart can describe the style of partnership you seek and the adjustments that matter.', hi: 'विवाह और संबंधों की कहानी अपनी अपेक्षाओं तथा दूसरे व्यक्ति के साथ जीवन बाँटने की वास्तविकता के बीच संतुलन की है। कुंडली साझेदारी की आपकी शैली और आवश्यक समझौतों के संकेत देती है।' },
+  children: { en: 'This area speaks not only about children, but also about what you create, nurture and pass forward. Its promise must be judged carefully from the complete chart, never from one placement alone.', hi: 'यह क्षेत्र केवल संतान नहीं, बल्कि आपकी सृजनशीलता, पालन-पोषण और आगे आने वाली पीढ़ी को दिए जाने वाले संस्कारों से भी जुड़ा है। इसका निष्कर्ष पूरी कुंडली से ही निकालना चाहिए, किसी एक स्थिति से नहीं।' },
+  property: { en: 'Your home and property story is linked with security, roots and the practical foundations you build. The chart may show whether these matters connect more strongly with family, work, effort or changing circumstances.', hi: 'घर और संपत्ति का विषय सुरक्षा, जड़ों और जीवन की व्यावहारिक नींव से जुड़ा है। कुंडली संकेत दे सकती है कि ये विषय परिवार, काम, स्वयं के प्रयास या बदलती परिस्थितियों से अधिक जुड़े हैं।' },
+  health: { en: 'This reading is limited to traditional themes of vitality, stamina and daily rhythm. It is not a diagnosis, a prediction of illness or a substitute for medical advice.', hi: 'यह व्याख्या केवल पारंपरिक ज्योतिष में जीवनशक्ति, सहनशीलता और दिनचर्या से जुड़े संकेतों तक सीमित है। यह रोग का निदान या चिकित्सकीय सलाह का विकल्प नहीं है।' },
+  travels: { en: 'Your movement and distance story can involve learning, work, relationships or the need for a different environment. A natal chart alone cannot promise a specific journey or date.', hi: 'यात्रा और स्थान परिवर्तन के पीछे शिक्षा, काम, संबंध या नए वातावरण की आवश्यकता जैसे कारण हो सकते हैं। केवल जन्मकुंडली किसी निश्चित यात्रा या तारीख की गारंटी नहीं देती।' },
+  spirituality: { en: 'Your inner life is shaped by the questions you keep asking, the principles you trust and the experiences that make you look beyond immediate results.', hi: 'आपका आंतरिक जीवन उन प्रश्नों, जीवन-मूल्यों और अनुभवों से आकार लेता है जो आपको तात्कालिक लाभ से आगे देखने की प्रेरणा देते हैं।' },
+  milestones: { en: 'Recognition and major progress are not always sudden. The chart is read for the environments in which your effort can become visible and the kind of contribution that may earn lasting respect.', hi: 'पहचान और बड़ी प्रगति हमेशा अचानक नहीं आती। कुंडली उन परिस्थितियों के संकेत देती है जहाँ आपका प्रयास सामने आ सकता है और किस प्रकार का योगदान स्थायी सम्मान दिला सकता है।' },
+  remedies: { en: 'The most useful traditional remedy begins with conduct: clarity, restraint, generosity and a steady practice aligned with one’s values. No ritual or object can guarantee an outcome.', hi: 'सबसे उपयोगी पारंपरिक उपाय आचरण से शुरू होता है—स्पष्टता, संयम, उदारता और अपने मूल्यों के अनुरूप नियमित साधना। कोई अनुष्ठान या वस्तु निश्चित फल की गारंटी नहीं देती।' },
+};
+
+function buildReaderPrediction(domain: DomainDefinition, lord: ChartData['planets'][number] | undefined): { en: string; hi: string } {
+  const opening = DOMAIN_STORY[domain.id];
+  if (!lord) return { en: opening.en + ' The chart data needed for a more specific conclusion is incomplete, so this section deliberately avoids a stronger claim.', hi: opening.hi + ' अधिक विशिष्ट निष्कर्ष के लिए आवश्यक कुंडली-डेटा अधूरा है, इसलिए यहाँ बढ़ा-चढ़ाकर दावा नहीं किया गया है।' };
+  const destination = HOUSE_THEMES[lord.rasiHouseNumber];
+  const strong = SUPPORTIVE_DIGNITIES.has(lord.dignity);
+  const strained = CAUTION_DIGNITIES.has(lord.dignity);
+  const qualityEn = strong
+    ? 'This placement has a comparatively supportive foundation, so the constructive side of this connection deserves attention.'
+    : strained
+      ? 'This connection may require patience and conscious effort; the subject can develop through delays, course-corrections or learning from difficult experiences.'
+      : 'The placement is mixed by itself. Its outcome depends on the planet’s relationships, strength and the other chart factors shown below.';
+  const qualityHi = strong
+    ? 'इस स्थिति में अपेक्षाकृत सहायक आधार दिखाई देता है; इसलिए इस संबंध का रचनात्मक पक्ष विशेष ध्यान देने योग्य है।'
+    : strained
+      ? 'इस संबंध में धैर्य और सजग प्रयास की आवश्यकता हो सकती है। यह विषय देरी, दिशा-सुधार या कठिन अनुभवों से सीखते हुए विकसित हो सकता है।'
+      : 'यह स्थिति अकेले में मिश्रित संकेत देती है। इसका वास्तविक फल ग्रह-संबंध, बल और नीचे दिए गए अन्य कुंडली-संकेतों पर निर्भर करेगा।';
+  const retroEn = lord.isRetrograde ? ' The matter may also unfold in a reflective or non-linear way, with revisions before clarity.' : '';
+  const retroHi = lord.isRetrograde ? ' इस विषय में स्पष्टता आने से पहले पुनर्विचार या कुछ उतार-चढ़ाव भी हो सकते हैं।' : '';
+  const combustEn = lord.isCombust ? ' Because the planet is close to the Sun, its themes may need more deliberate handling rather than being assumed to operate effortlessly.' : '';
+  const combustHi = lord.isCombust ? ' सूर्य के निकट होने के कारण इस ग्रह से जुड़े विषयों में सहजता मान लेने के बजाय अधिक सजगता आवश्यक हो सकती है।' : '';
+  return {
+    en: opening.en + ' The central connection is with ' + destination.en + '. ' + qualityEn + retroEn + combustEn + ' Treat this as a life-pattern interpretation, not a promise that a particular event must occur.',
+    hi: opening.hi + ' इसका मुख्य संबंध ' + destination.hi + ' से बनता है। ' + qualityHi + retroHi + combustHi + ' इसे जीवन-प्रवृत्ति का संकेत समझें, किसी निश्चित घटना का वादा नहीं।',
+  };
 }
 
 function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas: ReturnType<typeof detectClassicalYogas>): GeneralPredictionDomain {
@@ -280,7 +339,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
     ? `भाव ${primaryHouse} के स्वामी ${HI_NAMES[primaryLord.id] ?? primaryLord.id} भाव ${primaryLord.rasiHouseNumber} में ${primaryLord.signName} राशि में ${primaryLord.dignity} गरिमा के साथ स्थित हैं।`
     : `भाव ${primaryHouse} के स्वामी की गणित स्थिति उपलब्ध नहीं है।`;
 
-  const supportive = evidence.filter((item) => item.kind === 'supportive').length;
+  const prediction = buildReaderPrediction(domain, primaryLord);\n  const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
   const completeness = availableCoreFactors >= expectedCoreFactors ? 'complete'
     : availableCoreFactors > 0 ? 'partial' : 'limited';
@@ -291,7 +350,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
 
   return {
     ...domain,
-    interpretationBasisEn: interpretationBasis.en,
+    predictionEn: prediction.en,\n    predictionHi: prediction.hi,\n    interpretationBasisEn: interpretationBasis.en,
     interpretationBasisHi: interpretationBasis.hi,
     primaryAnchorEn,
     primaryAnchorHi,
@@ -307,14 +366,14 @@ export function computeGeneralPrediction(chart: ChartData): GeneralPredictionRep
   const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain, detectedYogas));
   const evidenceCount = domains.reduce((sum, domain) => sum + domain.evidence.length, 0);
   const partialDomains = domains.filter((domain) => domain.dataCompleteness !== 'complete').length;
-  const summaryEn = `This natal-only overview evaluates ${domains.length} life domains using house lords, functional lordship, classical yoga rule matches, occupants, natural significators, planetary dignity, available Shadbala, Sarvashtakavarga, graha aspects and the relevant divisional chart. It records ${evidenceCount} chart observations; ${partialDomains} domains have incomplete core data. No Dasha, current transit, fixed age range, event guarantee, medical diagnosis or probability estimate is included.`;
-  const summaryHi = `यह केवल जन्मकुंडली पर आधारित सार ${domains.length} जीवन-क्षेत्रों में भावेश, कार्यात्मक स्वामित्व, शास्त्रीय योग-नियम मिलान, भावस्थित ग्रह, नैसर्गिक कारक, ग्रह-गरिमा, उपलब्ध षड्बल, सर्वाष्टकवर्ग, ग्रह-दृष्टि और संबंधित वर्ग-कुंडली का परीक्षण करता है। कुल ${evidenceCount} कुंडली-प्रेक्षण दर्ज हैं; ${partialDomains} क्षेत्रों में मूल डेटा अपूर्ण है। इसमें दशा, वर्तमान गोचर, निश्चित आयु-सीमा, घटना की गारंटी, चिकित्सकीय निदान या संभाव्यता-प्रतिशत शामिल नहीं है।`;
+  const summaryEn = `A personal reading across ${domains.length} areas of life. Each section begins with the interpretation; the chart calculations and classical reasoning are available separately below it. ${partialDomains} sections have incomplete supporting data, which is disclosed rather than filled with assumptions.`;
+  const summaryHi = `जीवन के ${domains.length} क्षेत्रों का व्यक्तिगत फलादेश। प्रत्येक अनुभाग में पहले सरल भाषा में व्याख्या दी गई है; उसके बाद अलग से कुंडली-गणना और शास्त्रीय आधार देखे जा सकते हैं। ${partialDomains} क्षेत्रों में सहायक डेटा अधूरा है, जिसे अनुमान से भरने के बजाय स्पष्ट बताया गया है।`;
 
   return {
     titleEn: 'General Prediction — Natal Chart Synthesis',
     titleHi: 'सामान्य फलादेश — जन्मकुंडली समन्वित विश्लेषण',
-    methodEn: 'Scope: natal chart only (D1 plus the domain-relevant varga). Dasha and transit are separate modules. Evidence labels describe dignity or engine strength thresholds; they are not probabilities or event forecasts.',
-    methodHi: 'विश्लेषण सीमा: केवल जन्मकुंडली (D1 तथा संबंधित वर्ग-कुंडली)। दशा और गोचर अलग अनुभाग हैं। प्रमाण-लेबल ग्रह-गरिमा अथवा गणना-इंजन के बल-मानदंड बताते हैं; ये संभाव्यता या घटना-भविष्यवाणी नहीं हैं।',
+    methodEn: 'Read the prediction first. Open the technical notes only if you want to inspect the chart factors and classical rules behind it.',
+    methodHi: 'पहले फलादेश पढ़ें। उसके पीछे के कुंडली-संकेत और शास्त्रीय नियम जानने के लिए तकनीकी विवरण खोलें।',
     summaryEn,
     summaryHi,
     domains,
