@@ -130,10 +130,9 @@ function dignityKind(dignity: string): GeneralEvidenceKind {
   return 'context';
 }
 
-function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredictionDomain {
+function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas: ReturnType<typeof detectClassicalYogas>): GeneralPredictionDomain {
   const evidence: GeneralPredictionEvidence[] = [];
   const relatedPlanets = new Set<string>();
-  const detectedYogas = detectClassicalYogas(chart);
   let availableCoreFactors = 0;
   const expectedCoreFactors = domain.houses.length + domain.karakas.length;
 
@@ -232,8 +231,8 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
     evidence.push({
       kind: 'context',
       source: `Classical yoga rule: ${yoga.name} — ${definition.source}`,
-      detailEn: `The implemented rule detector identifies ${yoga.name} (${yoga.strength}) involving ${yoga.planets.join(', ') || 'unspecified planets'} in houses ${yoga.houses.join(', ') || 'not specified'}. Rule condition: ${definition.conditionEn}. This records a rule match, not a guaranteed result; assess cancellation, dignity, functional ownership, strength and corroborating factors separately.`,
-      detailHi: `गणना-इंजन के नियम-परीक्षक ने ${yoga.nameHi} (${yoga.strength}) का संकेत पाया है। संबंधित ग्रह: ${yoga.planets.join(', ') || 'निर्दिष्ट नहीं'}; भाव: ${yoga.houses.join(', ') || 'निर्दिष्ट नहीं'}। शास्त्रीय शर्त: ${definition.conditionHi}। यह केवल नियम-मिलान का अभिलेख है, निश्चित फल नहीं; भंग, ग्रह-गरिमा, कार्यात्मक स्वामित्व, बल और अन्य पुष्टिकारक संकेत अलग से जाँचें।`,
+      detailEn: `The implemented rule detector identifies ${yoga.name} (${yoga.strength}) involving ${yoga.planets.join(', ') || 'unspecified planets'} in houses ${yoga.houses.join(', ') || 'not specified'}. Rule condition: ${definition.conditionEn}. This is a rule-match record only. Yoga-bhanga and full strength validation are not established by this match alone, and no guaranteed result is inferred.`,
+      detailHi: `गणना-इंजन के नियम-परीक्षक ने ${yoga.nameHi} (${yoga.strength}) का संकेत पाया है। संबंधित ग्रह: ${yoga.planets.join(', ') || 'निर्दिष्ट नहीं'}; भाव: ${yoga.houses.join(', ') || 'निर्दिष्ट नहीं'}। शास्त्रीय शर्त: ${definition.conditionHi}। यह केवल नियम-मिलान का अभिलेख है, निश्चित फल नहीं। केवल इस मिलान से योगभंग अथवा पूर्ण फल-बल की पुष्टि नहीं होती और किसी निश्चित परिणाम का निष्कर्ष नहीं निकाला जाता।`,
     });
   }
 
@@ -304,7 +303,8 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
 }
 
 export function computeGeneralPrediction(chart: ChartData): GeneralPredictionReport {
-  const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain));
+  const detectedYogas = detectClassicalYogas(chart);
+  const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain, detectedYogas));
   const evidenceCount = domains.reduce((sum, domain) => sum + domain.evidence.length, 0);
   const partialDomains = domains.filter((domain) => domain.dataCompleteness !== 'complete').length;
   const summaryEn = `This natal-only overview evaluates ${domains.length} life domains using house lords, functional lordship, classical yoga rule matches, occupants, natural significators, planetary dignity, available Shadbala, Sarvashtakavarga, graha aspects and the relevant divisional chart. It records ${evidenceCount} chart observations; ${partialDomains} domains have incomplete core data. No Dasha, current transit, fixed age range, event guarantee, medical diagnosis or probability estimate is included.`;
