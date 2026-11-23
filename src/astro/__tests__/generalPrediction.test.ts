@@ -5,7 +5,7 @@ import { computeGeneralPrediction, isClassicalYogaSourceUsable } from '../predic
 import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from '../predictions/classicalYogasKb';
 
 describe('Natal-only General Prediction reconstruction', () => {
-  it('returns the twelve approved life domains with explicit chart evidence', () => {
+  it('returns the twenty approved life domains with explicit chart evidence', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeGeneralPrediction(chart);
 
