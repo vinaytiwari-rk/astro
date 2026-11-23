@@ -9,10 +9,12 @@ describe('Natal-only General Prediction reconstruction', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeGeneralPrediction(chart);
 
-    expect(report.domains).toHaveLength(12);
+    expect(report.domains).toHaveLength(20);
     expect(report.domains.map((domain) => domain.id)).toEqual([
       'personality', 'education', 'career', 'wealth', 'marriage', 'children',
       'property', 'health', 'travels', 'spirituality', 'milestones', 'remedies',
+      'family', 'parents', 'siblings', 'romance', 'business', 'debt_disputes',
+      'income_networks', 'foreign_residence',
     ]);
     for (const domain of report.domains) {
       expect(domain.evidence.length).toBeGreaterThan(0);
