@@ -94,7 +94,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
   const evidence: GeneralPredictionEvidence[] = [];
   const relatedPlanets = new Set<string>();
   let availableCoreFactors = 0;
-  let expectedCoreFactors = domain.houses.length + domain.karakas.length;
+  const expectedCoreFactors = domain.houses.length + domain.karakas.length;
 
   for (const house of domain.houses) {
     const signIndex = signForHouse(chart, house);
@@ -138,7 +138,6 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
 
     const occupants = chart.planets.filter((planet) => planet.rasiHouseNumber === house && CLASSICAL_GRAHAS.has(planet.id));
     for (const planet of occupants) {
-      availableCoreFactors++;
       relatedPlanets.add(planet.id);
       evidence.push({
         kind: dignityKind(planet.dignity),
