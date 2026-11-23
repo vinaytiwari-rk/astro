@@ -16,6 +16,10 @@ export interface GeneralPredictionDomain {
   houses: number[];
   karakas: NineGrahaId[];
   varga: DivisionalChartId;
+  interpretationBasisEn: string;
+  interpretationBasisHi: string;
+  primaryAnchorEn: string;
+  primaryAnchorHi: string;
   synthesisEn: string;
   synthesisHi: string;
   evidence: GeneralPredictionEvidence[];
@@ -54,6 +58,22 @@ const DOMAINS: DomainDefinition[] = [
   { id: 'milestones', titleEn: 'Life Direction, Recognition & Gains', titleHi: 'जीवन-दिशा, प्रतिष्ठा एवं लाभ', houses: [1, 9, 10, 11], karakas: ['Sun', 'Jupiter'], varga: 'D1' },
   { id: 'remedies', titleEn: 'Values, Conduct & Traditional Practices', titleHi: 'मूल्य, आचरण एवं पारंपरिक साधना', houses: [1, 5, 9], karakas: ['Jupiter', 'Sun'], varga: 'D9' },
 ];
+
+
+const DOMAIN_BASIS: Record<string, { en: string; hi: string }> = {
+  personality: { en: 'Personality is read primarily from the ascendant and its lord, then checked against the 5th and 9th houses, the Sun and Moon, and Navamsha context.', hi: 'व्यक्तित्व का मुख्य आधार लग्न और लग्नेश हैं; इसके साथ पंचम एवं नवम भाव, सूर्य-चंद्र तथा नवांश के संकेत देखे जाते हैं।' },
+  education: { en: 'Education is assessed through the 4th, 5th and 9th houses, Mercury and Jupiter, with the Chaturvimshamsha (D24) as supplementary context.', hi: 'शिक्षा का आकलन चतुर्थ, पंचम एवं नवम भाव, बुध-बृहस्पति तथा सहायक रूप से चतुर्विंशांश (D24) से किया जाता है।' },
+  career: { en: 'Career is assessed through the 10th house and its lord, supported by the 6th (service), 2nd (livelihood) and 11th (gains) houses, with Dashamsha (D10) as a key cross-check.', hi: 'करियर का मुख्य आधार दशम भाव और दशमेश हैं; षष्ठ (सेवा), द्वितीय (आजीविका) और एकादश (लाभ) भाव तथा दशमांश (D10) से पुष्टिकरण देखा जाता है।' },
+  wealth: { en: 'Wealth is assessed through the 2nd house (accumulation) and 11th (income/gains), with the 5th and 9th as supporting houses and Hora (D2) as supplementary context.', hi: 'धन का आकलन द्वितीय भाव (संचय) और एकादश भाव (आय/लाभ) से होता है; पंचम-नवम सहायक भाव तथा होरा (D2) पूरक संदर्भ देते हैं।' },
+  marriage: { en: 'Partnership is assessed through the 7th house and its lord, with the 2nd, 5th and 8th houses, Venus/Jupiter and Navamsha (D9) considered together.', hi: 'विवाह एवं साझेदारी का मुख्य आधार सप्तम भाव और सप्तमेश हैं; द्वितीय, पंचम, अष्टम भाव, शुक्र-बृहस्पति तथा नवांश (D9) साथ देखे जाते हैं।' },
+  children: { en: 'Children and creative continuity are traditionally assessed through the 5th house and its lord, the 9th house and Jupiter, with Saptamsha (D7) as supplementary context.', hi: 'संतान एवं सृजनात्मक निरंतरता का पारंपरिक आकलन पंचम भाव-पंचमेश, नवम भाव और बृहस्पति से होता है; सप्तमांश (D7) पूरक संदर्भ है।' },
+  property: { en: 'Home and property are assessed through the 4th house and its lord, supported by the 2nd and 11th houses, Mars/Venus and Chaturthamsha (D4).', hi: 'गृह एवं संपत्ति का आकलन चतुर्थ भाव और चतुर्थेश से होता है; द्वितीय-एकादश भाव, मंगल-शुक्र और चतुर्थांश (D4) सहायक संदर्भ हैं।' },
+  health: { en: 'This section is limited to traditional symbolism around vitality and resilience using the 1st, 6th, 8th and 12th houses. It does not identify diseases or estimate medical risk.', hi: 'यह अनुभाग केवल जीवनशक्ति एवं सहनशीलता से जुड़े पारंपरिक ज्योतिषीय संकेतों तक सीमित है। इससे रोग की पहचान या चिकित्सकीय जोखिम का अनुमान नहीं लगाया जाता।' },
+  travels: { en: 'Travel and relocation are considered through the 3rd, 7th, 9th and 12th houses, their lords and relevant planetary significators; this is not a dated travel forecast.', hi: 'यात्रा एवं स्थान परिवर्तन के संकेत तृतीय, सप्तम, नवम और द्वादश भाव, उनके स्वामियों तथा संबंधित कारक ग्रहों से देखे जाते हैं; यह तिथि-विशिष्ट यात्रा-भविष्यवाणी नहीं है।' },
+  spirituality: { en: 'Dharma and spiritual practice are considered through the 5th, 8th, 9th and 12th houses, Jupiter/Ketu and Vimshamsha (D20) context.', hi: 'धर्म एवं साधना के संकेत पंचम, अष्टम, नवम और द्वादश भाव, गुरु-केतु तथा विंशांश (D20) से देखे जाते हैं।' },
+  milestones: { en: 'Life direction and recognition are considered through the 1st, 9th, 10th and 11th houses. No fixed milestone ages are inferred in this natal-only section.', hi: 'जीवन-दिशा एवं प्रतिष्ठा के संकेत प्रथम, नवम, दशम और एकादश भाव से देखे जाते हैं। इस जन्मकुंडली-आधारित अनुभाग में निश्चित भाग्योदय आयु निर्धारित नहीं की जाती।' },
+  remedies: { en: 'This domain describes the traditional ethical and spiritual context of the 1st, 5th and 9th houses. It does not prescribe gemstones or claim that a remedy guarantees an outcome.', hi: 'यह क्षेत्र प्रथम, पंचम और नवम भाव से जुड़े पारंपरिक नैतिक एवं आध्यात्मिक संदर्भ बताता है। इसमें रत्न-निर्देश या उपाय से निश्चित फल की गारंटी नहीं दी जाती।' },
+};
 
 const SEVEN_PLANETS = new Set<SevenPlanetId>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']);
 const CLASSICAL_GRAHAS = new Set<string>(['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
@@ -203,26 +223,31 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition): GeneralPredi
     });
   }
 
+  const primaryHouse = domain.houses[0];
+  const primarySign = SIGNS[signForHouse(chart, primaryHouse)];
+  const primaryLord = chart.planets.find((planet) => planet.id === primarySign.lord);
+  const primaryAnchorEn = primaryLord
+    ? `House ${primaryHouse} lord ${primaryLord.id} is placed in house ${primaryLord.rasiHouseNumber} (${primaryLord.signName}) with ${primaryLord.dignity} dignity.`
+    : `The calculated position of the lord of house ${primaryHouse} is unavailable.`;
+  const primaryAnchorHi = primaryLord
+    ? `भाव ${primaryHouse} के स्वामी ${HI_NAMES[primaryLord.id] ?? primaryLord.id} भाव ${primaryLord.rasiHouseNumber} में ${primaryLord.signName} राशि में ${primaryLord.dignity} गरिमा के साथ स्थित हैं।`
+    : `भाव ${primaryHouse} के स्वामी की गणित स्थिति उपलब्ध नहीं है।`;
+
   const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
   const completeness = availableCoreFactors >= expectedCoreFactors ? 'complete'
     : availableCoreFactors > 0 ? 'partial' : 'limited';
 
-  let synthesisEn = 'The available natal indicators are mixed or require contextual interpretation. Read the house lords, occupants, natural significators and divisional placements together; no event or timing conclusion is inferred here.';
-  let synthesisHi = 'उपलब्ध जन्मकुंडली संकेत मिश्रित हैं अथवा संदर्भ सहित समझने योग्य हैं। भावेश, भावस्थित ग्रह, नैसर्गिक कारक और वर्ग-कुंडली को साथ पढ़ें; यहाँ किसी घटना या समय का निष्कर्ष नहीं निकाला गया है।';
-  if (supportive > 0 && caution === 0) {
-    synthesisEn = 'The assessed natal factors contain supportive dignity or strength indications. Their actual results still depend on ownership, relationships, chart context and corroboration; this is not a guarantee of an event.';
-    synthesisHi = 'जाँचे गए जन्मकुंडली कारकों में सहायक गरिमा अथवा बल के संकेत हैं। वास्तविक फल स्वामित्व, ग्रह-संबंध, संपूर्ण कुंडली और पुष्टिकरण पर निर्भर करेगा; इसे किसी घटना की गारंटी न समझें।';
-  } else if (caution > 0 && supportive === 0) {
-    synthesisEn = 'The assessed natal factors include dignity-related cautions. These are interpretive considerations, not a denial of outcomes; weigh them against strength, aspects, ownership and other chart factors.';
-    synthesisHi = 'जाँचे गए जन्मकुंडली कारकों में ग्रह-गरिमा से जुड़ी सावधानियाँ हैं। ये विचारणीय संकेत हैं, किसी फल का निषेध नहीं; इन्हें बल, दृष्टि, स्वामित्व और अन्य कुंडली कारकों के साथ तौलें।';
-  } else if (supportive > 0 && caution > 0) {
-    synthesisEn = 'The natal evidence is mixed: supportive and cautionary factors coexist. Avoid a one-factor verdict; assess the dignity, functional ownership, strength and divisional corroboration of each relevant planet.';
-    synthesisHi = 'जन्मकुंडली प्रमाण मिश्रित हैं: सहायक और सावधानी वाले दोनों संकेत साथ हैं। किसी एक कारक से निर्णय न करें; संबंधित ग्रहों की गरिमा, कार्यात्मक स्वामित्व, बल और वर्ग-कुंडली से पुष्टिकरण देखें।';
-  }
+  const interpretationBasis = DOMAIN_BASIS[domain.id];
+  const synthesisEn = `${interpretationBasis.en} Primary chart anchor: ${primaryAnchorEn} The evidence set contains ${supportive} supportive and ${caution} cautionary observations. These are chart factors to weigh together, not a prediction of a guaranteed event or its timing.`;
+  const synthesisHi = `${interpretationBasis.hi} मुख्य कुंडली-आधार: ${primaryAnchorHi} उपलब्ध प्रमाणों में ${supportive} सहायक और ${caution} सावधानी वाले प्रेक्षण हैं। इन्हें एक साथ तौलना चाहिए; ये किसी घटना या उसके समय की गारंटी नहीं हैं।`;
 
   return {
     ...domain,
+    interpretationBasisEn: interpretationBasis.en,
+    interpretationBasisHi: interpretationBasis.hi,
+    primaryAnchorEn,
+    primaryAnchorHi,
     synthesisEn,
     synthesisHi,
     evidence,
