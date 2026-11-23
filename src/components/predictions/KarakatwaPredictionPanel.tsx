@@ -82,7 +82,9 @@ export const KarakatwaPredictionPanel: React.FC<KarakatwaPredictionPanelProps> =
                     <div>{isHi ? item.detailHi : item.detailEn}</div>
                     <div className="muted" style={{ marginTop: '4px' }}>
                       {isHi ? 'ग्रंथ-संदर्भ: ' : 'Textual source: '}
-                      <a href={item.sourceUrl} target="_blank" rel="noreferrer">{item.source}</a>
+                      {item.sourceUrl
+                        ? <a href={item.sourceUrl} target="_blank" rel="noreferrer">{item.source}</a>
+                        : <span>{item.source}</span>}
                       {' · '}
                       {item.sourceStatus === 'primary-text'
                         ? (isHi ? 'प्राथमिक ग्रंथ' : 'Primary text')
