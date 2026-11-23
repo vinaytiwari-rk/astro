@@ -29,6 +29,8 @@ describe('Natal-only General Prediction reconstruction', () => {
     expect(career).toBeDefined();
     expect(career!.evidence.some((item) => item.source.startsWith('House 10 lord:'))).toBe(true);
     expect(career!.evidence.some((item) => item.source.startsWith('D10 placement:'))).toBe(true);
+    expect(career!.interpretationBasisEn).toContain('10th house');
+    expect(career!.primaryAnchorEn).toContain('House 10 lord');
     expect('timingWindowEn' in career!).toBe(false);
     expect('concreteEventsEn' in career!).toBe(false);
     expect(report.methodEn).toContain('Dasha and transit are separate');
