@@ -49,6 +49,7 @@ import {
 } from '../../astro/fortuneCalculators';
 import type { BirthInput, ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { trCalc, trTerm } from '../../i18n/translations';
 
 export type MainCalculatorCategory =
   | 'overview'
@@ -99,6 +100,14 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
+
+  const trC = (key: string, hiText: string, enText: string): string => {
+    if (lang === 'en') return enText;
+    if (lang === 'hi') return hiText;
+    const mapped = trCalc(key, lang);
+    if (mapped && mapped !== key) return mapped;
+    return enText;
+  };
 
   const [activeTab, setActiveTab] = useState<SpecificCalculatorId>(initialTab);
   const [activeCategory, setActiveCategory] = useState<MainCalculatorCategory>('overview');
@@ -220,14 +229,10 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
             : 'Classical Parashari, Varahamihira, Jaimini & Chaldean Shastras'}
         </div>
         <h1 className="oj-page-title">
-          {isHi
-            ? 'प्रामाणिक दांपत्य, अंकज्योतिष एवं आयुर्दाय कैलकुलेटर हब'
-            : 'Authentic Relationship, Numerology & Longevity Calculators'}
+          {trC('heading', 'प्रामाणिक दांपत्य, अंकज्योतिष एवं आयुर्दाय कैलकुलेटर हब', 'Authentic Relationship, Numerology & Longevity Calculators')}
         </h1>
         <p className="oj-page-subtitle">
-          {isHi
-            ? '१००% वैज्ञानिक व शास्त्रीय ज्योतिष: प्रेम बनाम पारंपरिक विवाह, सटीक विवाह समय (द्वि-गोचर), जीवनसाथी का नामाक्षर, दांपत्य सामंजस्य, अंक अनुकूलता, तथा शास्त्रीय आयुर्दाय व महामृत्युंजय रक्षा विधान। शून्य फोन नंबर, शून्य भय-व्यापार।'
-            : '100% Classical Vedic Astrology: Love vs Arranged Marriage, Marriage Timing & Double Transit, Partner Name Initials, Numerology Vibrations, and Authentic Ayurdaya Longevity Protection.'}
+          {trC('subheading', '१००% वैज्ञानिक व शास्त्रीय ज्योतिष: प्रेम बनाम पारंपरिक विवाह, सटीक विवाह समय (द्वि-गोचर), जीवनसाथी का नामाक्षर, दांपत्य सामंजस्य, अंक अनुकूलता, तथा शास्त्रीय आयुर्दाय व महामृत्युंजय रक्षा विधान। शून्य फोन नंबर, शून्य भय-व्यापार।', '100% Classical Vedic Astrology: Love vs Arranged Marriage, Marriage Timing & Double Transit, Partner Name Initials, Numerology Vibrations, and Authentic Ayurdaya Longevity Protection.')}
         </p>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
@@ -383,7 +388,7 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
                   style={{ fontSize: '11px', padding: '3px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >
                   <UserPlus size={12} />
-                  <span>{isHi ? 'साथी को सहेजें' : 'Save Partner as Profile'}</span>
+                  <span>{trC('savePartner', 'साथी को सहेजें', 'Save Partner as Profile')}</span>
                 </button>
                 {partnerSavedMsg && (
                   <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>
@@ -413,7 +418,7 @@ export const FortuneCalculatorsView: React.FC<FortuneCalculatorsViewProps> = ({
           style={{ display: 'flex', alignItems: 'center', gap: '6px', background: activeTab === 'love_calculator' ? '#e11d48' : '#fff1f2', color: activeTab === 'love_calculator' ? '#ffffff' : '#be123c', border: '1px solid #fecdd3' }}
         >
           <Heart size={14} />
-          <span>{isHi ? 'लव कैलकुलेटर (Love %)' : 'Love Calculator (%)'}</span>
+          <span>{trC('calc_love', 'लव कैलकुलेटर (Love %)', 'Love Calculator (%)')}</span>
         </button>
 
         <button

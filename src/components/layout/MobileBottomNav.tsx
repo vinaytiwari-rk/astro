@@ -1,6 +1,7 @@
 import React from 'react';
-import { Calendar, FileText, Heart, Home, Menu, Sparkles } from 'lucide-react';
+import { FileText, Heart, Home, Menu, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { trNav } from '../../i18n/translations';
 
 interface MobileBottomNavProps {
   currentView: string;
@@ -14,7 +15,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenDrawer,
 }) => {
   const { lang } = useLanguage();
-  const isHi = lang === 'hi';
 
   return (
     <nav className="pro-mobile-bottom-bar no-print" aria-label="Mobile Navigation">
@@ -24,7 +24,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         onClick={() => onNavigate('home')}
       >
         <Home size={18} />
-        <span className="pro-mob-label">{isHi ? 'होम' : 'Home'}</span>
+        <span className="pro-mob-label">{trNav('home', lang)}</span>
       </button>
 
       <button
@@ -33,7 +33,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         onClick={() => onNavigate('vedic-horoscope')}
       >
         <FileText size={18} />
-        <span className="pro-mob-label">{isHi ? 'कुंडली' : 'Kundli'}</span>
+        <span className="pro-mob-label">{trNav('kundliMob', lang)}</span>
       </button>
 
       <button
@@ -42,7 +42,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         onClick={() => onNavigate('predictions', 'deep_life')}
       >
         <Sparkles size={18} />
-        <span className="pro-mob-label">{isHi ? 'फलादेश' : 'Prediction'}</span>
+        <span className="pro-mob-label">{trNav('predictions', lang)}</span>
       </button>
 
       <button
@@ -51,7 +51,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         onClick={() => onNavigate('marriage-matching')}
       >
         <Heart size={18} />
-        <span className="pro-mob-label">{isHi ? 'मिलान' : 'Match'}</span>
+        <span className="pro-mob-label">{trNav('matchMob', lang)}</span>
       </button>
 
       <button
@@ -61,7 +61,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         aria-label="Open More Menu"
       >
         <Menu size={18} />
-        <span className="pro-mob-label">{isHi ? 'मेन्यू' : 'Menu'}</span>
+        <span className="pro-mob-label">{trNav('menu', lang)}</span>
       </button>
     </nav>
   );

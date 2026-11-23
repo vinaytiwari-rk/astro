@@ -42,7 +42,7 @@ import { formatDateDmy, formatDateTimeDmyAmPm } from '../astro/time';
 import type { BirthInput, CalcSettings, ChartData } from '../astro/types';
 import type { CityEntry } from '../data/cities';
 import { useLanguage } from '../i18n/LanguageContext';
-import { trPlanet, trSign } from '../i18n/translations';
+import { trPlanet, trSign, trPortal, trTerm, trNav } from '../i18n/translations';
 import { DateDmyInput } from './DateDmyInput';
 import { InlineCityAutocomplete } from './InlineCityAutocomplete';
 
@@ -87,6 +87,14 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 }) => {
   const { lang, setLang } = useLanguage();
   const isHi = lang === 'hi';
+
+  const trP = (key: string, hiText: string, enText: string): string => {
+    if (lang === 'en') return enText;
+    if (lang === 'hi') return hiText;
+    const mapped = trPortal(key, lang);
+    if (mapped && mapped !== key) return mapped;
+    return enText;
+  };
 
   // --- Quick Kundli Generator Form ---
   const [quickForm, setQuickForm] = useState<BirthInput>(activeInput);
@@ -230,7 +238,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
           </div>
 
           <h1 className="oj-hero-heading">
-            {isHi ? 'दैनिक जीवन के प्रश्नों हेतु प्रामाणिक वैदिक ज्योतिष' : 'Vedic astrology for your everyday questions'}
+            {trP('heroHeading', 'दैनिक जीवन के प्रश्नों हेतु प्रामाणिक वैदिक ज्योतिष', 'Vedic astrology for your everyday questions')}
           </h1>
           <p className="oj-hero-subtitle">
             {isHi
@@ -246,7 +254,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               onClick={() => onNavigate('vedic-horoscope')}
             >
               <FileText size={17} />
-              <span>{isHi ? 'निःशुल्क कुंडली बनाएं' : 'Create free Kundli'}</span>
+              <span>{trP('createKundli', 'निःशुल्क कुंडली बनाएं', 'Create free Kundli')}</span>
             </button>
 
             <button
@@ -255,7 +263,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               onClick={() => onNavigate('daily-panchanga')}
             >
               <Calendar size={17} />
-              <span>{isHi ? 'पंचांग देखें' : 'View Panchang'}</span>
+              <span>{trP('viewPanchang', 'पंचांग देखें', 'View Panchang')}</span>
             </button>
 
             <button
@@ -264,7 +272,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               onClick={() => onNavigate('marriage-matching')}
             >
               <Heart size={17} />
-              <span>{isHi ? 'कुंडली मिलान' : 'Check matching'}</span>
+              <span>{trP('checkMatching', 'कुंडली मिलान', 'Check matching')}</span>
             </button>
 
             <button
@@ -273,7 +281,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               onClick={() => onNavigate('general-prediction')}
             >
               <Sparkles size={17} />
-              <span>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</span>
+              <span>{trP('generalPrediction', 'सामान्य फलादेश', 'General Prediction')}</span>
             </button>
 
             <button
@@ -282,7 +290,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               onClick={() => onNavigate('general-prediction')}
             >
               <Star size={17} />
-              <span>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</span>
+              <span>{trP('generalPrediction', 'सामान्य फलादेश', 'General Prediction')}</span>
             </button>
           </div>
 
@@ -339,12 +347,10 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <div>
                 <h3 className="oj-entry-title">
                   <User size={18} />
-                  {isHi ? 'त्वरित जन्म विवरण प्रविष्टि (Quick Birth Entry)' : 'Quick Birth Details & Instant Horoscope'}
+                  {trP('quickEntryTitle', 'त्वरित जन्म विवरण प्रविष्टि (Quick Birth Entry)', 'Quick Birth Details & Instant Horoscope')}
                 </h3>
                 <p className="oj-entry-sub">
-                  {isHi
-                    ? 'जातक का नाम, जन्म दिनांक, समय व स्थान दर्ज करें। तुरंत संपूर्ण कुंडली गणना व फलादेश प्राप्त करें।'
-                    : 'Enter birth date, exact time, and location to generate comprehensive Vedic calculations.'}
+                  {trP('quickEntrySub', 'जातक का नाम, जन्म दिनांक, समय व स्थान दर्ज करें। तुरंत संपूर्ण कुंडली गणना व फलादेश प्राप्त करें।', 'Enter birth date, exact time, and location to generate comprehensive Vedic calculations.')}
                 </p>
               </div>
               <div className="oj-profile-switch-inline">
@@ -384,7 +390,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                   onChange={(e) => setQuickForm({ ...quickForm, gender: e.target.value as any })}
                   className="oj-input"
                 >
-                  <option value="male">{isHi ? 'पुरुष (Male)' : 'Male'}</option>
+                  <option value="male">{trP('male', 'पुरुष (Male)', 'Male')}</option>
                   <option value="female">{isHi ? 'स्त्री (Female)' : 'Female'}</option>
                   <option value="other">{isHi ? 'अन्य (Other)' : 'Other'}</option>
                 </select>
@@ -426,7 +432,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <div className="oj-form-actions oj-form-group-full">
                 <button type="submit" className="oj-btn-primary">
                   <FileText size={16} />
-                  <span>{isHi ? 'जन्म कुंडली बनाएं (Open Kundli) →' : 'Generate Janam Kundli →'}</span>
+                  <span>{trP('generateKundli', 'जन्म कुंडली बनाएं (Open Kundli) →', 'Generate Janam Kundli →')}</span>
                 </button>
                 <button
                   type="button"
@@ -452,7 +458,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <div className="oj-strip-head">
               <div className="oj-strip-title">
                 <Clock size={16} />
-                <strong>{isHi ? 'आज का स्थानीय पंचांग एवं ग्रह गोचर' : "Today's Live Panchang & Planetary Transits"}</strong>
+                <strong>{trP('todayPanchang', 'आज का स्थानीय पंचांग एवं ग्रह गोचर', "Today's Live Panchang & Planetary Transits")}</strong>
                 <span className="oj-badge-city">{activeInput.city || 'New Delhi'} · {formatDateDmy(currentMoment.date)}</span>
               </div>
               <button
@@ -466,21 +472,21 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 
             <div className="oj-strip-grid">
               <div className="oj-strip-item">
-                <span className="oj-label">{isHi ? 'तिथि:' : 'Tithi:'}</span>
+                <span className="oj-label">{trP('tithi', 'तिथि:', 'Tithi:')}</span>
                 <span className="oj-val">
-                  {livePanchangChart.panchang.tithi.name} ({livePanchangChart.panchang.tithi.paksha})
+                  {trTerm(livePanchangChart.panchang.tithi.name, lang)} ({trTerm(livePanchangChart.panchang.tithi.paksha, lang)})
                 </span>
               </div>
               <div className="oj-strip-item">
-                <span className="oj-label">{isHi ? 'नक्षत्र:' : 'Nakshatra:'}</span>
+                <span className="oj-label">{trP('nakshatra', 'नक्षत्र:', 'Nakshatra:')}</span>
                 <span className="oj-val">
-                  {livePanchangChart.panchang.nakshatra.name} (P{livePanchangChart.panchang.nakshatra.pada})
+                  {trTerm(livePanchangChart.panchang.nakshatra.name, lang)} (P{livePanchangChart.panchang.nakshatra.pada})
                 </span>
               </div>
               <div className="oj-strip-item">
-                <span className="oj-label">{isHi ? 'योग / करण:' : 'Yoga / Karana:'}</span>
+                <span className="oj-label">{trP('yoga', 'योग / करण:', 'Yoga / Karana:')}</span>
                 <span className="oj-val">
-                  {livePanchangChart.panchang.yoga.name} · {livePanchangChart.panchang.karana.name}
+                  {trTerm(livePanchangChart.panchang.yoga.name, lang)} · {trTerm(livePanchangChart.panchang.karana.name, lang)}
                 </span>
               </div>
               <div className="oj-strip-item">
@@ -488,7 +494,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 <span className="oj-val">{choghadiyaToday.sunrise} · {choghadiyaToday.sunset}</span>
               </div>
               <div className="oj-strip-item">
-                <span className="oj-label">{isHi ? 'राहु काल:' : 'Rahu Kalam:'}</span>
+                <span className="oj-label">{trP('rahuKalam', 'राहु काल:', 'Rahu Kalam:')}</span>
                 <span className="oj-val" style={{ color: 'var(--bad, #b91c1c)' }}>
                   {livePanchangChart.panchang.rahuKalam || '--'}
                 </span>
@@ -528,9 +534,9 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             {/* Card 1: Free Janam Kundli */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'सर्वाधिक लोकप्रिय' : 'Most Popular'}</span>
+                <span className="oj-card-tag">{trP('mostPopular', 'सर्वाधिक लोकप्रिय', 'Most Popular')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'निःशुल्क जन्म कुंडली (Free Janam Kundli)' : 'Free Janam Kundli'}</h3>
+              <h3 className="oj-card-title">{trP('freeKundliTitle', 'निःशुल्क जन्म कुंडली (Free Janam Kundli)', 'Free Janam Kundli')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'लग्न, राशि, नक्षत्र, ग्रह स्थिति, षोडशवर्ग (D-1 से D-60) तथा विंशोत्तरी व त्रिभागी दशा विवरण के साथ प्रामाणिक वैदिक कुंडली बनाएं।'
@@ -541,16 +547,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('vedic-horoscope')}
               >
-                <span>{isHi ? 'कुंडली बनाएं →' : 'Create your Kundli →'}</span>
+                <span>{trP('freeKundliBtn', 'कुंडली बनाएं →', 'Create your Kundli →')}</span>
               </button>
             </article>
 
             {/* Card 2: Daily Panchang */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'दैनिक पंचांग' : 'Daily Panchang'}</span>
+                <span className="oj-card-tag">{trP('dailyPanchangTag', 'दैनिक पंचांग', 'Daily Panchang')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'दैनिक एवं मासिक पंचांग (Daily Panchang)' : 'Daily Panchang'}</h3>
+              <h3 className="oj-card-title">{trP('dailyPanchangTitle', 'दैनिक एवं मासिक पंचांग (Daily Panchang)', 'Daily Panchang')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'तिथि, नक्षत्र, योग, करण, सूर्योदय, सूर्यास्त, राहु काल, चौघड़िया, होरा एवं अपने स्थान हेतु सटीक मुहूर्त समय देखें।'
@@ -561,16 +567,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('daily-panchanga')}
               >
-                <span>{isHi ? 'पंचांग देखें →' : "View today's Panchang →"}</span>
+                <span>{trP('dailyPanchangBtn', 'पंचांग देखें →', "View today's Panchang →")}</span>
               </button>
             </article>
 
             {/* Card 3: Marriage Matching */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'विवाह मिलान व मुहूर्त' : 'Marriage Matching & Muhurta'}</span>
+                <span className="oj-card-tag">{trP('matchingTag', 'विवाह मिलान व मुहूर्त', 'Marriage Matching & Muhurta')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'उन्नत कुण्डली मिलान व विवाह मुहूर्त' : 'Advance Kundali Milan & Vivaha Muhurta'}</h3>
+              <h3 className="oj-card-title">{trP('matchingTitle', 'उन्नत कुण्डली मिलान व विवाह मुहूर्त', 'Advance Kundali Milan & Vivaha Muhurta')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'अष्टकूट ३६ गुण, दक्षिण भारतीय दशकूट (१० कूट), १६ मांगलिक परिहार नियम, त्रिबल शुद्धि (सूर्य/गुरु/चंद्र बल), संपूर्ण लाल व पीली पूजा विधान एवं शुद्ध विवाह, सगाई व तिलक मुहूर्त।'
@@ -581,16 +587,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('marriage-matching')}
               >
-                <span>{isHi ? 'कुण्डली मिलान व मुहूर्त देखें →' : 'Advance Marriage Matching & Muhurta →'}</span>
+                <span>{trP('matchingBtn', 'कुण्डली मिलान व मुहूर्त देखें →', 'Advance Marriage Matching & Muhurta →')}</span>
               </button>
             </article>
 
             {/* Card 4: Daily, Monthly & Yearly Rashifal */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? '12 राशियां' : 'All 12 Signs'}</span>
+                <span className="oj-card-tag">{trP('rashifalTag', '12 राशियां', 'All 12 Signs')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'दैनिक, मासिक व वार्षिक राशिफल' : 'Daily, Monthly & Yearly Rashifal'}</h3>
+              <h3 className="oj-card-title">{trP('rashifalTitle', 'दैनिक, मासिक व वार्षिक राशिफल', 'Daily, Monthly & Yearly Rashifal')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'सभी 12 चंद्र राशियों हेतु आज का राशिफल, मासिक मार्गदर्शन एवं 2026-2027 के प्रमुख ग्रह गोचर का विस्तृत फलादेश पढ़ें।'
@@ -601,16 +607,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('rashifal')}
               >
-                <span>{isHi ? 'राशिफल पढ़ें →' : 'Read Rashifal →'}</span>
+                <span>{trP('rashifalBtn', 'राशिफल पढ़ें →', 'Read Rashifal →')}</span>
               </button>
             </article>
 
             {/* Card 5: KP Horoscope */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'केपी ज्योतिष' : 'KP System'}</span>
+                <span className="oj-card-tag">{trP('kpTag', 'केपी ज्योतिष', 'KP System')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'केपी कुंडली (KP Horoscope)' : 'KP Horoscope'}</h3>
+              <h3 className="oj-card-title">{trP('kpTitle', 'केपी कुंडली (KP Horoscope)', 'KP Horoscope')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'कृष्णमूर्ति पद्धति (KP) चार्ट, भाव संधि (Cusps), नक्षत्र स्वामी (Star Lords), उप-स्वामी (Sub Lords) एवं कारक ग्रहों का विश्लेषण।'
@@ -621,16 +627,16 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('kp-horoscope')}
               >
-                <span>{isHi ? 'KP चार्ट बनाएं →' : 'Generate a KP chart →'}</span>
+                <span>{trP('kpBtn', 'KP चार्ट बनाएं →', 'Generate a KP chart →')}</span>
               </button>
             </article>
 
             {/* Card 6: Newborn Horoscope */}
             <article className="oj-service-card">
               <div className="oj-card-badge-row">
-                <span className="oj-card-tag">{isHi ? 'शिशु नामकरण' : 'Newborn Baby'}</span>
+                <span className="oj-card-tag">{trP('babyTag', 'शिशु नामकरण', 'Newborn Baby')}</span>
               </div>
-              <h3 className="oj-card-title">{isHi ? 'नवजात शिशु कुंडली (Newborn Horoscope)' : 'Newborn Horoscope'}</h3>
+              <h3 className="oj-card-title">{trP('babyTitle', 'नवजात शिशु कुंडली (Newborn Horoscope)', 'Newborn Horoscope')}</h3>
               <p className="oj-card-text">
                 {isHi
                   ? 'नवजात शिशु की राशि, नक्षत्र, चरण, नामाक्षर, गंडमूल दोष जांच तथा प्रारंभिक जन्म कुंडली विवरण प्राप्त करें।'
@@ -641,7 +647,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
                 className="oj-card-link-btn"
                 onClick={() => onNavigate('baby-names')}
               >
-                <span>{isHi ? 'शिशु विवरण देखें →' : 'Check newborn details →'}</span>
+                <span>{trP('babyBtn', 'शिशु विवरण देखें →', 'Check newborn details →')}</span>
               </button>
             </article>
 

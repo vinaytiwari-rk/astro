@@ -26,7 +26,7 @@ import {
 import { formatDateDmy } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { LANGUAGE_LABELS, type AppLanguage } from '../../i18n/translations';
+import { LANGUAGE_LABELS, type AppLanguage, trNav } from '../../i18n/translations';
 
 interface MobileNavDrawerProps {
   open: boolean;
@@ -66,13 +66,21 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
   onToggleTheme,
 }) => {
   const { lang, setLang } = useLanguage();
-  const isHi = lang !== 'en';
+  const isHi = lang === 'hi';
 
   if (!open) return null;
 
   const handleItemClick = (view: string, sub?: string) => {
     onNavigate(view, sub);
     onClose();
+  };
+
+  const getLinkLabel = (item: typeof navLinks[0]) => {
+    if (lang === 'hi') return item.labelHi;
+    if (lang === 'en') return item.labelEn;
+    const mapped = trNav(item.view, lang);
+    if (mapped && mapped !== item.view) return mapped;
+    return item.labelEn;
   };
 
   const navLinks: Array<{ view: string; sub?: string; labelEn: string; labelHi: string; icon: React.ReactNode }> = [
@@ -128,7 +136,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
             <div>
               <div className="pro-drawer-title">AV Astro Vibe</div>
               <div className="pro-drawer-sub">
-                {isHi ? 'वैदिक ज्योतिष एवं पंचांग संस्थान' : 'Vedic Astrology & Free Predictions'}
+                {trNav('brandTag', lang)}
               </div>
             </div>
           </div>
@@ -158,7 +166,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
                 onOpenEditor();
                 onClose();
               }}
-              title={isHi ? 'विवरण बदलें' : 'Edit Details'}
+              title={trNav('edit', lang)}
             >
               <Edit3 size={15} />
             </button>
@@ -192,7 +200,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Search size={15} style={{ color: '#2563eb' }} />
-                <span>{isHi ? 'त्वरित खोजें (सर्च बार)...' : 'Quick Search (Ctrl + K)...'}</span>
+                <span>{trNav('search', lang)} (Ctrl + K)</span>
               </span>
               <kbd style={{ fontSize: '10px', background: '#e2e8f0', padding: '2px 5px', borderRadius: '4px' }}>
                 Ctrl K
@@ -205,7 +213,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '6px 10px', borderRadius: '8px' }}>
               <Globe size={15} style={{ color: '#0284c7' }} />
               <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
-                {isHi ? 'भाषा (Language):' : 'Language:'}
+                Language:
               </span>
               <select
                 aria-label="Language Selector"
@@ -225,7 +233,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
           <div className="pro-drawer-section">
             <div className="pro-drawer-section-title">
-              {isHi ? 'नेविगेशन सेवाएं (100% निःशुल्क)' : 'Navigation Services (100% Free)'}
+              {trNav('calculations', lang)} & {trNav('predictions', lang)}
             </div>
             <div className="pro-drawer-list">
               {navLinks.map((item) => (
@@ -237,7 +245,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
                 >
                   <span className="pro-drawer-item-icon">{item.icon}</span>
                   <span className="pro-drawer-item-label">
-                    {isHi ? item.labelHi : item.labelEn}
+                    {getLinkLabel(item)}
                   </span>
                 </button>
               ))}
@@ -256,7 +264,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
               }}
             >
               <FileText size={15} />
-              <span>{isHi ? 'जन्म पत्रिका PDF (निःशुल्क)' : 'Birth Report (जन्म पत्रिका) (Free)'}</span>
+              <span>{trNav('birthReport', lang)}</span>
             </button>
           </div>
         </div>

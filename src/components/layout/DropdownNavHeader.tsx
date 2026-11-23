@@ -27,7 +27,7 @@ import {
 import { formatDateDmy, formatDateTimeDmyAmPm } from '../../astro/time';
 import type { BirthInput, CalcSettings, ChartStyle } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { LANGUAGE_LABELS, type AppLanguage } from '../../i18n/translations';
+import { LANGUAGE_LABELS, type AppLanguage, trNav, NAV_ITEMS_I18N } from '../../i18n/translations';
 
 export interface DropdownNavHeaderProps {
   currentView: string;
@@ -63,7 +63,15 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
   onToggleTheme,
 }) => {
   const { lang, setLang } = useLanguage();
-  const isHi = lang !== 'en';
+  const isHi = lang === 'hi';
+
+  const trD = (key: string, hiText: string, enText: string): string => {
+    if (lang === 'en') return enText;
+    if (lang === 'hi') return hiText;
+    const mapped = trNav(key, lang);
+    if (mapped && mapped !== key) return mapped;
+    return enText;
+  };
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number } | null>(null);
@@ -254,7 +262,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
         <div
           className="dropdown-brand-btn"
           onClick={() => handleLinkClick('home')}
-          title={isHi ? 'मुख्य पृष्ठ पर जाएं' : 'Go to Home'}
+          title={trNav('home', lang)}
           style={{ cursor: 'pointer' }}
         >
           <span className="dropdown-brand-om" aria-hidden="true">
@@ -263,7 +271,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           <div className="dropdown-brand-text">
             <span className="dropdown-brand-name">AV Astro Vibe</span>
             <span className="dropdown-brand-tag">
-              {isHi ? 'वैदिक ज्योतिष, पंचांग एवं संपूर्ण फलादेश' : 'Vedic Astrology, Panchang & Free Predictions'}
+              {trNav('brandTag', lang)}
             </span>
           </div>
         </div>
@@ -288,20 +296,20 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenEditor}
-            title={isHi ? 'जन्म विवरण संशोधित करें' : 'Edit Native Details'}
+            title={trNav('edit', lang)}
           >
             <Edit3 size={13} />
-            <span className="hide-on-mobile">{isHi ? 'संशोधन' : 'Edit'}</span>
+            <span className="hide-on-mobile">{trNav('edit', lang)}</span>
           </button>
 
           <button
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onNewKundli}
-            title={isHi ? 'नई कुंडली' : 'New Horoscope'}
+            title={trNav('new', lang)}
           >
             <Plus size={13} />
-            <span className="hide-on-mobile">{isHi ? 'नई' : 'New'}</span>
+            <span className="hide-on-mobile">{trNav('new', lang)}</span>
           </button>
         </div>
 
@@ -342,10 +350,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenBooklet}
-            title={isHi ? 'जन्म पत्रिका PDF (100% निःशुल्क)' : 'Birth Report PDF (100% Free)'}
+            title={trNav('birthReport', lang)}
           >
             <FileText size={14} />
-            <span className="hide-on-mobile">{isHi ? 'जन्म पत्रिका' : 'Birth Report'}</span>
+            <span className="hide-on-mobile">{trNav('birthReport', lang)}</span>
           </button>
 
           {/* Quick Search Palette (Ctrl + K) */}
@@ -353,11 +361,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={onOpenCommandPalette}
-            title={isHi ? 'त्वरित सर्च / खोजें (Ctrl + K)' : 'Quick Search Palette (Ctrl + K)'}
+            title={trNav('search', lang)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
             <Search size={14} />
-            <span className="hide-on-mobile">{isHi ? 'सर्च' : 'Search'}</span>
+            <span className="hide-on-mobile">{trNav('search', lang)}</span>
             <kbd
               style={{
                 fontSize: '10px',
@@ -377,7 +385,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
             type="button"
             className="icon-tool-btn"
             onClick={onOpenSettings}
-            title={isHi ? 'गणना सेटिंग्स' : 'Settings'}
+            title={trNav('settings', lang)}
           >
             <Settings size={15} />
           </button>
@@ -420,7 +428,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('home')}
               >
                 <Home size={13} />
-                <span>{isHi ? 'होम' : 'Home'}</span>
+                <span>{trNav('home', lang)}</span>
               </button>
             </li>
 
@@ -432,7 +440,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('vedic-horoscope')}
               >
                 <Compass size={13} />
-                <span>{isHi ? 'जन्म कुंडली' : 'Janam Kundli'}</span>
+                <span>{trNav('janamKundli', lang)}</span>
               </button>
             </li>
 
@@ -444,7 +452,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 onClick={() => handleLinkClick('calculations')}
               >
                 <FileSpreadsheet size={13} />
-                <span>{isHi ? 'ज्योतिषीय गणना' : 'Calculations'}</span>
+                <span>{trNav('calculations', lang)}</span>
               </button>
             </li>
 
@@ -462,7 +470,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Sparkles size={13} />
-                <span>{isHi ? 'फलादेश' : 'Prediction'}</span>
+                <span>{trNav('predictions', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
               {openDropdown === 'predictions-menu' && (
@@ -474,52 +482,52 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('predictions', 'deep_life')}>
-                    <strong>{isHi ? 'सामान्य फलादेश' : 'General Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'जीवन स्तर, स्वर्ण कालखंड, संकट काल व 6 जीवन क्षेत्र' : 'Life Stature, Peak Era & 6 Life Domains'}</span>
+                    <strong>{trD('pred_general', 'सामान्य फलादेश', 'General Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_general_sub', 'जीवन स्तर, स्वर्ण कालखंड, संकट काल व 6 जीवन क्षेत्र', 'Life Stature, Peak Era & 6 Life Domains')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'houseWise')}>
-                    <strong>{isHi ? 'भाववार फलादेश' : 'House-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल' : '1st to 12th House Specific Events & Timing'}</span>
+                    <strong>{trD('pred_house', 'भाववार फलादेश', 'House-wise Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_house_sub', '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल', '1st to 12th House Specific Events & Timing')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
-                    <strong>{isHi ? 'दशा फलादेश' : 'Dasha Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं' : 'Running Mahadasha/Antardasha Manifestation'}</span>
+                    <strong>{trD('pred_dasha', 'दशा फलादेश', 'Dasha Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_dasha_sub', 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं', 'Running Mahadasha/Antardasha Manifestation')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'gocharWise')}>
-                    <strong>{isHi ? 'गोचर फलादेश' : 'Transit Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '12-24 माह का गोचर रोडमैप, गुरु-शनि दोहरा गोचर फल' : '12-24 Month Transit Roadmap & Double Transit'}</span>
+                    <strong>{trD('pred_transit', 'गोचर फलादेश', 'Transit Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_transit_sub', '12-24 माह का गोचर रोडमैप, गुरु-शनि दोहरा गोचर फल', '12-24 Month Transit Roadmap & Double Transit')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'educationWise')}>
-                    <strong>{isHi ? 'शिक्षा व उच्च विद्या फलादेश' : 'Education & Higher Studies'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '१० भंग नियम, सर्वभौम व सरस्वती योग, शोध Ph.D. व संकाय' : '10 Break Rules, Sarvabhouma, Ph.D. Research & College Streams'}</span>
+                    <strong>{trD('pred_edu', 'शिक्षा व उच्च विद्या फलादेश', 'Education & Higher Studies')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_edu_sub', '१० भंग नियम, सर्वभौम व सरस्वती योग, शोध Ph.D. व संकाय', '10 Break Rules, Sarvabhouma, Ph.D. Research & College Streams')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'ascendantWise')}>
-                    <strong>{isHi ? 'लग्नवार फलादेश' : 'Ascendant-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '१२ लग्न: स्वरूप, कारक-मारक, धन, दांपत्य, करियर व भाग्योदय वर्ष' : '12 Ascendants: Temperament, Benefics, Marakas, Marriage & Milestones'}</span>
+                    <strong>{trD('pred_asc', 'लग्नवार फलादेश', 'Ascendant-wise Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_asc_sub', '१२ लग्न: स्वरूप, कारक-मारक, धन, दांपत्य, करियर व भाग्योदय वर्ष', '12 Ascendants: Temperament, Benefics, Marakas, Marriage & Milestones')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'planetInNakshatra')}>
-                    <strong>{isHi ? 'नक्षत्रवार फलादेश' : 'Nakshatra-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '27 नक्षत्र, 4 चरण, तारा चक्र व अनुकूल कार्यक्षेत्र' : '27 Nakshatras, 4 Padas, Tara & Career Nuance'}</span>
+                    <strong>{trD('pred_nakshatra', 'नक्षत्रवार फलादेश', 'Nakshatra-wise Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_nakshatra_sub', '27 नक्षत्र, 4 चरण, तारा चक्र व अनुकूल कार्यक्षेत्र', '27 Nakshatras, 4 Padas, Tara & Career Nuance')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'planetInSign')}>
-                    <strong>{isHi ? 'राशिवार फलादेश' : 'Sign-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '12 राशियों में ग्रहों की शास्त्रीय स्थिति व स्वभाव' : 'Planets in 12 Signs Classical Findings'}</span>
+                    <strong>{trD('pred_sign', 'राशिवार फलादेश', 'Sign-wise Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_sign_sub', '12 राशियों में ग्रहों की शास्त्रीय स्थिति व स्वभाव', 'Planets in 12 Signs Classical Findings')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'yutiWise')}>
-                    <strong>{isHi ? 'युति फलादेश' : 'Yuti (Conjunction) Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कुंडली के ग्रह युति योग, युति अंश व अनुकूल-प्रतिकूल फल' : 'Planetary Conjunctions, Degrees & Exact Effects'}</span>
+                    <strong>{trD('pred_yuti', 'युति फलादेश', 'Yuti (Conjunction) Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_yuti_sub', 'कुंडली के ग्रह युति योग, युति अंश व अनुकूल-प्रतिकूल फल', 'Planetary Conjunctions, Degrees & Exact Effects')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'drishtiWise')}>
-                    <strong>{isHi ? 'दृष्टि फलादेश' : 'Drishti (Aspect) Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'समसप्तक व विशेष दृष्टियां, दृष्टि वीरुपा व घटना प्रभाव' : 'Full & Special Aspects, Virupas & Event Impacts'}</span>
+                    <strong>{trD('pred_drishti', 'दृष्टि फलादेश', 'Drishti (Aspect) Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_drishti_sub', 'समसप्तक व विशेष दृष्टियां, दृष्टि वीरुपा व घटना प्रभाव', 'Full & Special Aspects, Virupas & Event Impacts')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'yogaWise')}>
-                    <strong>{isHi ? 'योगवार फलादेश' : 'Yoga-wise Prediction'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग' : 'Raja, Dhana, Mahapurusha & Classical Yogas'}</span>
+                    <strong>{trD('pred_yoga', 'योगवार फलादेश', 'Yoga-wise Prediction')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_yoga_sub', 'पंचमहापुरुष, राजयोग, धनयोग, विपरीत व अरिष्ट योग', 'Raja, Dhana, Mahapurusha & Classical Yogas')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('rashifal')}>
-                    <strong>{isHi ? 'दैनिक व साप्ताहिक राशिफल (वैदिक गोचर व लाइव फीड्स)' : 'Daily & Weekly Rashifal (Vedic Gochar & Live Feeds)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव गोचर वेब फीड्स' : '5 Life Domains, 12 Signs & Live Gochar Feeds'}</span>
+                    <strong>{trD('pred_rashifal', 'दैनिक व साप्ताहिक राशिफल (वैदिक गोचर व लाइव फीड्स)', 'Daily & Weekly Rashifal (Vedic Gochar & Live Feeds)')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_rashifal_sub', '५ प्रमुख जीवन क्षेत्र, १२ राशियां व लाइव गोचर वेब फीड्स', '5 Life Domains, 12 Signs & Live Gochar Feeds')}</span>
                   </button>
                 </div>
               )}
@@ -539,7 +547,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Heart size={13} />
-                <span>{isHi ? 'कुण्डली मिलान व विवाह' : 'Kundali Milan & Marriage'}</span>
+                <span>{trNav('matching', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
               {openDropdown === 'milan-menu' && (
@@ -551,32 +559,32 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'ashtakoota')}>
-                    <strong>{isHi ? 'अष्टकूट ३६ गुण मिलान' : 'Ashtakoota 36 Gunas'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'वर्ण, वश्य, तारा, योनि, ग्रहमैत्री, गण, भकूट, नाड़ी' : 'Complete 36-Point Vedic Guna Milan'}</span>
+                    <strong>{trD('match_ashtakoota', 'अष्टकूट ३६ गुण मिलान', 'Ashtakoota 36 Gunas')}</strong>
+                    <span className="oj-dd-sub">{trD('match_ashtakoota_sub', 'वर्ण, वश्य, तारा, योनि, ग्रहमैत्री, गण, भकूट, नाड़ी', 'Complete 36-Point Vedic Guna Milan')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'dashakoota')}>
-                    <strong>{isHi ? 'दक्षिण भारतीय दशकूट (१० कूट)' : 'Dashakoota (10 Poruthams)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'दीना, गणा, माहेन्द्रा, रज्जु व वेध सुरक्षा कूट' : 'Dina, Gana, Mahendra, Rajju & Vedha Shield'}</span>
+                    <strong>{trD('match_dashakoota', 'दक्षिण भारतीय दशकूट (१० कूट)', 'Dashakoota (10 Poruthams)')}</strong>
+                    <span className="oj-dd-sub">{trD('match_dashakoota_sub', 'दीना, गणा, माहेन्द्रा, रज्जु व वेध सुरक्षा कूट', 'Dina, Gana, Mahendra, Rajju & Vedha Shield')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'dosha-parihara')}>
-                    <strong>{isHi ? 'दोष विश्लेषण एवं १६ मांगलिक परिहार' : '16 Manglik Bhanga & Pariharas'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '१६ मांगलिक नियम, भकूट परिहार व नाड़ी दोष निवारण' : 'Classical Exceptions, Bhakoot & Nadi Pariharas'}</span>
+                    <strong>{trD('match_dosha', 'दोष विश्लेषण एवं १६ मांगलिक परिहार', '16 Manglik Bhanga & Pariharas')}</strong>
+                    <span className="oj-dd-sub">{trD('match_dosha_sub', '१६ मांगलिक नियम, भकूट परिहार व नाड़ी दोष निवारण', 'Classical Exceptions, Bhakoot & Nadi Pariharas')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'tribala-pooja')}>
-                    <strong>{isHi ? 'त्रिबल शुद्धि, लाल पूजा व पीली पूजा' : 'Tribala Shuddhi & Puja Protocols'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'वर सूर्य बल, कन्या गुरु बल, चंद्र बल व संपूर्ण पूजा विधान' : 'Groom Sun, Bride Jupiter, Moon & Remedial Pujas'}</span>
+                    <strong>{trD('match_tribala', 'त्रिबल शुद्धि, लाल पूजा व पीली पूजा', 'Tribala Shuddhi & Puja Protocols')}</strong>
+                    <span className="oj-dd-sub">{trD('match_tribala_sub', 'वर सूर्य बल, कन्या गुरु बल, चंद्र बल व संपूर्ण पूजा विधान', 'Groom Sun, Bride Jupiter, Moon & Remedial Pujas')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'muhurta')}>
-                    <strong>{isHi ? 'शास्त्रसम्मत विवाह, सगाई व तिलक मुहूर्त' : 'Authentic Vivah, Sagai & Tilak Muhurta'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'खरमास-चातुर्मास मुक्त, गोचर व दशा समर्थित शुद्ध मुहूर्त' : 'Pure ephemeris calendar free from prohibited windows'}</span>
+                    <strong>{trD('match_muhurta', 'शास्त्रसम्मत विवाह, सगाई व तिलक मुहूर्त', 'Authentic Vivah, Sagai & Tilak Muhurta')}</strong>
+                    <span className="oj-dd-sub">{trD('match_muhurta_sub', 'खरमास-चातुर्मास मुक्त, गोचर व दशा समर्थित शुद्ध मुहूर्त', 'Pure ephemeris calendar free from prohibited windows')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('marriage-matching', 'synastry-d9')}>
-                    <strong>{isHi ? 'द्वादश भाव, D9 नवांश व संतान स्फुट' : 'Synastry, D9 Navamsha & Progeny'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'बीज स्फुट, क्षेत्र स्फुट व पारस्परिक भाव सादृश्य' : 'Beeja & Kshetra Sphuta, Navamsha Overlay'}</span>
+                    <strong>{trD('match_synastry', 'द्वादश भाव, D9 नवांश व संतान स्फुट', 'Synastry, D9 Navamsha & Progeny')}</strong>
+                    <span className="oj-dd-sub">{trD('match_synastry_sub', 'बीज स्फुट, क्षेत्र स्फुट व पारस्परिक भाव सादृश्य', 'Beeja & Kshetra Sphuta, Navamsha Overlay')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('fortune-calculators')}>
-                    <strong>{isHi ? 'दांपत्य, अंकज्योतिष व आयुर्दाय कैलकुलेटर (15 Tools)' : 'Relationship, Numerology & Longevity Calculators (15 Tools)'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'प्रेम vs पारंपरिक, समय, नामाक्षर, अंक अनुकूलता, आयुर्दाय वर्ग' : 'Love vs Arranged, Timing, Partner Initial, Numerology & Ayurdaya'}</span>
+                    <strong>{trD('match_calculators', 'दांपत्य, अंकज्योतिष व आयुर्दाय कैलकुलेटर (15 Tools)', 'Relationship, Numerology & Longevity Calculators (15 Tools)')}</strong>
+                    <span className="oj-dd-sub">{trD('match_calculators_sub', 'प्रेम vs पारंपरिक, समय, नामाक्षर, अंक अनुकूलता, आयुर्दाय वर्ग', 'Love vs Arranged, Timing, Partner Initial, Numerology & Ayurdaya')}</span>
                   </button>
                 </div>
               )}
@@ -596,7 +604,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Clock size={13} />
-                <span>{isHi ? 'गोचर व साढ़े साती' : 'Gochar & Sade Sati'}</span>
+                <span>{trNav('transits', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
 
@@ -609,16 +617,16 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                   style={getDropdownMenuInlineStyle()}
                 >
                   <button type="button" onClick={() => handleLinkClick('dual-transit')}>
-                    <strong>{isHi ? 'द्वि-चक्र गोचर सिम्युलेटर (Double Wheel)' : 'Live Double Transit Wheel'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'जन्म कुंडली + लाइव गोचर दृष्टि किरणें' : 'Natal + Transit Aspect Rays'}</span>
+                    <strong>{trD('trans_dual', 'द्वि-चक्र गोचर सिम्युलेटर (Double Wheel)', 'Live Double Transit Wheel')}</strong>
+                    <span className="oj-dd-sub">{trD('trans_dual_sub', 'जन्म कुंडली + लाइव गोचर दृष्टि किरणें', 'Natal + Transit Aspect Rays')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('sade-sati')}>
-                    <strong>{isHi ? 'शनि साढ़े साती एवं ढैया टाइमलाइन' : 'Sade Sati & Dhaiya Timeline'}</strong>
-                    <span className="oj-dd-sub">{isHi ? '3 चरण, कंटक, अष्टम शनि व मूर्ति निर्णय' : '3 Charans & Moorti Nirnaya'}</span>
+                    <strong>{trD('trans_sade', 'शनि साढ़े साती एवं ढैया टाइमलाइन', 'Sade Sati & Dhaiya Timeline')}</strong>
+                    <span className="oj-dd-sub">{trD('trans_sade_sub', '3 चरण, कंटक, अष्टम शनि व मूर्ति निर्णय', '3 Charans & Moorti Nirnaya')}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('transit-calendar')}>
-                    <strong>{isHi ? '365-दिवसीय व्यक्तिगत गोचर कैलेंडर' : 'Personal 365-Day Transit Calendar'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'दैनिक शुभता स्कोर (0-100), तारा बल व हीटमैप' : 'Daily 0-100 Score & Monthly Heatmap'}</span>
+                    <strong>{trD('trans_cal', '365-दिवसीय व्यक्तिगत गोचर कैलेंडर', 'Personal 365-Day Transit Calendar')}</strong>
+                    <span className="oj-dd-sub">{trD('trans_cal_sub', 'दैनिक शुभता स्कोर (0-100), तारा बल व हीटमैप', 'Daily 0-100 Score & Monthly Heatmap')}</span>
                   </button>
                 </div>
               )}
@@ -638,7 +646,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Layers size={13} />
-                <span>{isHi ? 'विशिष्ट ज्योतिष' : 'Advanced Astrology'}</span>
+                <span>{trNav('advanced', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
 
@@ -744,7 +752,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Sparkles size={13} />
-                <span>{isHi ? 'टूल्स व मुहूर्त' : 'Tools & Muhurta'}</span>
+                <span>{trNav('tools', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
 
@@ -822,7 +830,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Heart size={13} />
-                <span>{isHi ? 'उपचार व रत्न' : 'Remedies & Gems'}</span>
+                <span>{trNav('remedies', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
 
@@ -860,7 +868,7 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                 aria-haspopup="true"
               >
                 <Calendar size={13} />
-                <span>{isHi ? 'पर्व एवं व्रत' : 'Puja & Festivals'}</span>
+                <span>{trNav('festivals', lang)}</span>
                 <ChevronDown size={13} className="oj-chevron" />
               </button>
 
@@ -899,10 +907,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               type="button"
               className="oj-nav-link-btn oj-nav-cta-pill"
               onClick={onOpenBooklet}
-              title={isHi ? 'जन्म पत्रिका PDF (100% निःशुल्क)' : 'Birth Report PDF (100% Free)'}
+              title={trNav('birthReport', lang)}
             >
               <FileText size={13} />
-              <span>{isHi ? 'जन्म पत्रिका (निःशुल्क)' : 'Birth Report (Free)'}</span>
+              <span>{trNav('birthReport', lang)}</span>
             </button>
           </div>
         </div>
