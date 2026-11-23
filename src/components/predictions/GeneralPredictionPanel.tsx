@@ -64,7 +64,13 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
               </span>
             </div>
 
-            <p style={{ margin: '12px 0', fontSize: '13px', lineHeight: 1.65 }}>
+            <p className="muted" style={{ margin: '12px 0 6px', fontSize: '12px', lineHeight: 1.6 }}>
+              {isHi ? domain.interpretationBasisHi : domain.interpretationBasisEn}
+            </p>
+            <p style={{ margin: '6px 0 12px', fontSize: '13px', lineHeight: 1.65 }}>
+              <strong>{isHi ? 'कुंडली का मुख्य आधार: ' : 'Primary chart anchor: '}</strong>
+              {isHi ? domain.primaryAnchorHi : domain.primaryAnchorEn}
+              <br />
               {isHi ? domain.synthesisHi : domain.synthesisEn}
             </p>
 
