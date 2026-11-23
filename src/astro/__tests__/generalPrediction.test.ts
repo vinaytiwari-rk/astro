@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateChart } from '../calculator';
 import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
-import { computeGeneralPrediction } from '../predictions/generalPrediction';
+import { computeGeneralPrediction, isClassicalYogaSourceUsable } from '../predictions/generalPrediction';
 import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from '../predictions/classicalYogasKb';
 
 describe('Natal-only General Prediction reconstruction', () => {
@@ -47,6 +47,13 @@ describe('Natal-only General Prediction reconstruction', () => {
         .map((item) => item.detailEn).join('|'),
     );
     expect(new Set(careerEvidence).size).toBeGreaterThan(1);
+  });
+
+
+  it('rejects yoga source labels without verifiable textual attribution', () => {
+    expect(isClassicalYogaSourceUsable('Traditional yoga compilation — primary-text citation not verified')).toBe(false);
+    expect(isClassicalYogaSourceUsable('Classical Vedic Shastra Ch. 75 / Saravali Ch. 37')).toBe(false);
+    expect(isClassicalYogaSourceUsable('Brihat Parashara Hora Shastra, Ch. 36, vv. 3–4')).toBe(true);
   });
 
   it('surfaces only sourced classical yoga rule matches in relevant domains', () => {
