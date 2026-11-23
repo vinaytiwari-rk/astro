@@ -12,96 +12,96 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
   const isHi = lang === 'hi';
   const report = useMemo(() => computeGeneralPrediction(chart), [chart]);
 
-  const label = (kind: 'supportive' | 'caution' | 'context') => {
-    if (isHi) {
-      return kind === 'supportive' ? 'सहायक संकेत' : kind === 'caution' ? 'सावधानी' : 'संदर्भ';
-    }
-    return kind === 'supportive' ? 'Supportive indication' : kind === 'caution' ? 'Caution' : 'Context';
-  };
-
   return (
     <div className="view-stack">
       <section className="card" style={{ borderLeft: '4px solid var(--accent)' }}>
-        <h2 style={{ margin: 0, fontSize: '18px' }}>{isHi ? report.titleHi : report.titleEn}</h2>
+        <h2 style={{ margin: 0, fontSize: '20px' }}>{isHi ? report.titleHi : report.titleEn}</h2>
         <p className="muted" style={{ margin: '8px 0 0', lineHeight: 1.6, fontSize: '13px' }}>
-          {isHi ? report.methodHi : report.methodEn}
-        </p>
-        <p style={{ margin: '10px 0 0', lineHeight: 1.65, fontSize: '13px' }}>
           {isHi ? report.summaryHi : report.summaryEn}
-        </p>
-      </section>
-
-      <section className="card" style={{ padding: '12px 14px' }}>
-        <strong style={{ fontSize: '13px' }}>{isHi ? 'फलादेश पढ़ने का तरीका' : 'How to read this analysis'}</strong>
-        <p className="muted" style={{ margin: '6px 0 0', fontSize: '12px', lineHeight: 1.6 }}>
-          {isHi
-            ? 'हर क्षेत्र में पहले कुंडली से प्राप्त तथ्य दिए गए हैं। सहायक और सावधानी वाले संकेत ग्रह की गरिमा या उपलब्ध बल-सूचक हैं, अंतिम शुभ-अशुभ निर्णय नहीं। विरोधी संकेतों को साथ देखकर ही पारंपरिक व्याख्या करें।'
-            : 'Each domain starts with observations from the chart. Supportive and caution labels describe dignity or available strength indicators, not a final verdict. Interpret conflicting indications together before drawing a traditional conclusion.'}
         </p>
       </section>
 
       <div className="view-stack">
         {report.domains.map((domain, index) => (
-          <article className="card" key={domain.id} style={{ padding: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-              <div>
-                <div className="muted" style={{ fontSize: '11px', fontWeight: 700 }}>
-                  {isHi ? `जीवन-क्षेत्र ${index + 1} / 12` : `LIFE DOMAIN ${index + 1} / 12`}
-                </div>
-                <h3 style={{ margin: '4px 0 0', fontSize: '16px' }}>
-                  {isHi ? domain.titleHi : domain.titleEn}
-                </h3>
-                <div className="muted" style={{ marginTop: '4px', fontSize: '11px' }}>
-                  {isHi ? 'संबंधित भाव' : 'Relevant houses'}: {domain.houses.join(', ')} · {domain.varga}
-                </div>
-              </div>
-              <span className="badge badge-subtle">
-                {domain.dataCompleteness === 'complete'
-                  ? (isHi ? 'डेटा उपलब्ध' : 'Core data available')
-                  : domain.dataCompleteness === 'partial'
-                    ? (isHi ? 'आंशिक डेटा' : 'Partial data')
-                    : (isHi ? 'सीमित डेटा' : 'Limited data')}
-              </span>
+          <article className="card" key={domain.id} style={{ padding: '16px' }}>
+            <div className="muted" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em' }}>
+              {isHi ? `जीवन का क्षेत्र ${index + 1} / 12` : `LIFE STORY ${index + 1} / 12`}
             </div>
-
-            <p className="muted" style={{ margin: '12px 0 6px', fontSize: '12px', lineHeight: 1.6 }}>
-              {isHi ? domain.interpretationBasisHi : domain.interpretationBasisEn}
-            </p>
-            <p style={{ margin: '6px 0 12px', fontSize: '13px', lineHeight: 1.65 }}>
-              <strong>{isHi ? 'कुंडली का मुख्य आधार: ' : 'Primary chart anchor: '}</strong>
-              {isHi ? domain.primaryAnchorHi : domain.primaryAnchorEn}
-              <br />
-              {isHi ? domain.synthesisHi : domain.synthesisEn}
+            <h3 style={{ margin: '5px 0 0', fontSize: '18px' }}>
+              {isHi ? domain.titleHi : domain.titleEn}
+            </h3>
+            <p style={{ margin: '12px 0 0', fontSize: '14px', lineHeight: 1.85, whiteSpace: 'pre-line' }}>
+              {isHi ? domain.predictionHi : domain.predictionEn}
             </p>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
-              {domain.karakas.map((karaka) => (
-                <span className="tag tag-varg" key={karaka}>{karaka}</span>
-              ))}
-            </div>
-
-            <details>
+            <details style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle, rgba(128,128,128,.25))', paddingTop: '12px' }}>
               <summary style={{ cursor: 'pointer', fontWeight: 650, fontSize: '13px' }}>
-                {isHi ? `कुंडली-प्रमाण देखें (${domain.evidence.length})` : `View chart evidence (${domain.evidence.length})`}
+                {isHi ? 'इस फलादेश का शास्त्रीय और तकनीकी आधार' : 'Classical and technical reasoning behind this reading'}
               </summary>
-              <ul style={{ margin: '10px 0 0', paddingLeft: '18px', display: 'grid', gap: '9px' }}>
-                {domain.evidence.map((item, evidenceIndex) => (
-                  <li key={`${item.source}-${evidenceIndex}`} style={{ fontSize: '12px', lineHeight: 1.6 }}>
-                    <strong>{label(item.kind)} · {item.source}</strong>
-                    <div>{isHi ? item.detailHi : item.detailEn}</div>
-                  </li>
-                ))}
-              </ul>
+              <div style={{ display: 'grid', gap: '10px', marginTop: '12px' }}>
+                <div>
+                  <strong style={{ fontSize: '12px' }}>{isHi ? 'व्याख्या का आधार' : 'Interpretation framework'}</strong>
+                  <p className="muted" style={{ margin: '4px 0 0', fontSize: '12px', lineHeight: 1.65 }}>
+                    {isHi ? domain.interpretationBasisHi : domain.interpretationBasisEn}
+                  </p>
+                </div>
+                <div>
+                  <strong style={{ fontSize: '12px' }}>{isHi ? 'मुख्य ग्रह-स्थिति' : 'Primary chart factor'}</strong>
+                  <p className="muted" style={{ margin: '4px 0 0', fontSize: '12px', lineHeight: 1.65 }}>
+                    {isHi ? domain.primaryAnchorHi : domain.primaryAnchorEn}
+                  </p>
+                </div>
+                <div>
+                  <strong style={{ fontSize: '12px' }}>{isHi ? 'सहायक समन्वय' : 'Combined interpretation'}</strong>
+                  <p className="muted" style={{ margin: '4px 0 0', fontSize: '12px', lineHeight: 1.65 }}>
+                    {isHi ? domain.synthesisHi : domain.synthesisEn}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {domain.karakas.map((karaka) => (
+                    <span className="tag tag-varg" key={karaka}>{karaka}</span>
+                  ))}
+                  <span className="badge badge-subtle">
+                    {domain.dataCompleteness === 'complete'
+                      ? (isHi ? 'मूल डेटा उपलब्ध' : 'Core data available')
+                      : domain.dataCompleteness === 'partial'
+                        ? (isHi ? 'आंशिक डेटा' : 'Partial data')
+                        : (isHi ? 'सीमित डेटा' : 'Limited data')}
+                  </span>
+                  <span className="tag tag-varg">{domain.houses.join(', ')}</span>
+                  <span className="tag tag-varg">{domain.varga}</span>
+                </div>
+                <details>
+                  <summary style={{ cursor: 'pointer', fontWeight: 650, fontSize: '12px' }}>
+                    {isHi ? `विस्तृत कुंडली-प्रमाण देखें (${domain.evidence.length})` : `Inspect chart evidence (${domain.evidence.length})`}
+                  </summary>
+                  <ul style={{ margin: '10px 0 0', paddingLeft: '18px', display: 'grid', gap: '9px' }}>
+                    {domain.evidence.map((item, evidenceIndex) => (
+                      <li key={`${item.source}-${evidenceIndex}`} style={{ fontSize: '12px', lineHeight: 1.6 }}>
+                        <strong>{item.source}</strong>
+                        <div>{isHi ? item.detailHi : item.detailEn}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </div>
             </details>
           </article>
         ))}
       </div>
 
-      <p className="muted" style={{ fontSize: '11px', lineHeight: 1.55 }}>
-        {isHi
-          ? 'यह पारंपरिक ज्योतिषीय व्याख्या के लिए साक्ष्य-संग्रह है, वैज्ञानिक रूप से प्रमाणित भविष्यवाणी नहीं। विवाह, संतान, स्वास्थ्य, धन या करियर के निश्चित परिणाम का दावा नहीं किया जाता।'
-          : 'This is an evidence-organized traditional astrology interpretation, not a scientifically validated forecast. It does not claim certain outcomes for marriage, children, health, wealth or career.'}
-      </p>
+      <section className="card" style={{ padding: '14px' }}>
+        <strong style={{ fontSize: '13px' }}>{isHi ? 'ग्रंथ-आधार और अध्ययन की सीमा' : 'Classical sources and research limits'}</strong>
+        <p className="muted" style={{ margin: '7px 0 0', fontSize: '12px', lineHeight: 1.7 }}>
+          {isHi
+            ? 'फलादेश की परंपरा में बृहत्पाराशर होराशास्त्र के भाव-विचार एवं भावेश-फल, फलदीपिका, सारावली और बृहत्जातक जैसे ग्रंथों का तुलनात्मक अध्ययन आवश्यक है। अलग-अलग संस्करणों में अध्याय और श्लोक-संख्या बदल सकती है। किसी नियम को तभी प्रमाणित बताया जाएगा जब उसका विशिष्ट ग्रंथ-संदर्भ और लागू होने की शर्त जाँची गई हो।'
+            : 'The reading tradition should be studied comparatively through Brihat Parashara Hora Shastra (house meanings and house-lord results), Phaladeepika, Saravali and Brihat Jataka. Chapter and verse numbering can differ between editions. A rule will be described as verified only when its specific textual reference and operating conditions have been checked.'}
+        </p>
+        <p className="muted" style={{ margin: '7px 0 0', fontSize: '11px', lineHeight: 1.6 }}>
+          {isHi
+            ? 'यह पारंपरिक ज्योतिषीय व्याख्या है, वैज्ञानिक रूप से प्रमाणित भविष्यवाणी नहीं। दशा और गोचर से समय-निर्धारण अलग से होगा। स्वास्थ्य संबंधी भाग चिकित्सकीय सलाह नहीं है।'
+            : 'This is a traditional astrological interpretation, not a scientifically validated forecast. Dasha and transit timing are separate. The health section is not medical advice.'}
+        </p>
+      </section>
     </div>
   );
-};
