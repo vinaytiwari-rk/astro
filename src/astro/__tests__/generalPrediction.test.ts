@@ -17,7 +17,7 @@ describe('Natal-only General Prediction reconstruction', () => {
     for (const domain of report.domains) {
       expect(domain.evidence.length).toBeGreaterThan(0);
       expect(domain.synthesisEn.length).toBeGreaterThan(40);
-      expect(domain.synthesisHi.length).toBeGreaterThan(40);
+      expect(domain.synthesisHi.length).toBeGreaterThan(40);\n      expect(domain.predictionEn.length).toBeGreaterThan(120);\n      expect(domain.predictionHi.length).toBeGreaterThan(120);\n      expect(domain.predictionEn).not.toMatch(/\\b(?:house|D1|D9|D10|Shadbala|Sarvashtakavarga)\\b/i);\n      expect(domain.predictionHi).not.toMatch(/भाव\\s*\\d|षड्बल|सर्वाष्टकवर्ग|दशमांश|नवांश/);
       expect(['complete', 'partial', 'limited']).toContain(domain.dataCompleteness);
     }
   });
@@ -46,7 +46,7 @@ describe('Natal-only General Prediction reconstruction', () => {
       report.domains.find((domain) => domain.id === 'career')!.evidence
         .map((item) => item.detailEn).join('|'),
     );
-    expect(new Set(careerEvidence).size).toBeGreaterThan(1);
+    expect(new Set(careerEvidence).size).toBeGreaterThan(1);\n    const careerStories = reports.map((report) => report.domains.find((domain) => domain.id === 'career')!.predictionEn);\n    expect(new Set(careerStories).size).toBeGreaterThan(1);
   });
 
 
