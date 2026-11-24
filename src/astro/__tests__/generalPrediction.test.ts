@@ -5,6 +5,21 @@ import { computeGeneralPrediction, isClassicalYogaSourceUsable } from '../predic
 import { CLASSICAL_YOGAS_KB, detectClassicalYogas } from '../predictions/classicalYogasKb';
 
 describe('Natal-only General Prediction reconstruction', () => {
+  it('opens each domain with readable, personalized prose while retaining detailed evidence separately', () => {
+    const report = computeGeneralPrediction(calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS));
+    const career = report.domains.find((domain) => domain.id === 'career')!;
+    const careerAnchor = career.evidence.find((item) => item.source.startsWith('House 10 lord:'))!;
+    const careerLord = careerAnchor.source.split(': ')[1];
+
+    expect(career.predictionEn).toMatch(/^Your work direction is shaped by/i);
+    expect(career.predictionEn).toContain(careerLord);
+    const careerLordHi = ({ Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध', Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि' } as Record<string, string>)[careerLord];
+    expect(career.predictionHi).toContain(careerLordHi);
+    expect(career.predictionEn).not.toMatch(/\b(?:house|D1|D9|D10|Shadbala|Sarvashtakavarga)\b/i);
+    expect(career.evidence.some((item) => item.source.startsWith('Shadbala detail:'))).toBe(true);
+    expect(new Set(report.domains.map((domain) => domain.predictionEn)).size).toBeGreaterThanOrEqual(18);
+  });
+
   it('returns the twenty approved life domains with explicit chart evidence', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeGeneralPrediction(chart);

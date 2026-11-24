@@ -164,53 +164,77 @@ const HOUSE_THEMES: Record<number, { en: string; hi: string }> = {
   12: { en: 'distant places, retreat, expenditure and work behind the scenes', hi: 'दूरस्थ स्थान, एकांत, व्यय और पर्दे के पीछे का काम' },
 };
 
+interface ReaderOpening {
+  en: string;
+  hi: string;
+}
+
+const READER_OPENINGS: Record<string, ReaderOpening> = {
+  personality: { en: 'Your confidence grows when you trust your judgment while staying connected to what gives you security.', hi: 'अपनी समझ पर भरोसा और जीवन में स्थिर आधार—दोनों आपके आत्मविश्वास को मजबूत करते हैं।' },
+  education: { en: 'You learn best when curiosity has structure and ideas are put into practice.', hi: 'जिज्ञासा को नियमित अध्ययन और व्यावहारिक प्रयोग से जोड़ना आपकी सीख को गहरा करता है।' },
+  career: { en: 'Your work direction is shaped by responsibility, skill, and the contribution others can see.', hi: 'आपके काम की दिशा जिम्मेदारी, कौशल और आपके योगदान की पहचान से बनती है।' },
+  wealth: { en: 'Financial steadiness depends on how you turn earnings into resources you can retain and use wisely.', hi: 'आर्थिक स्थिरता इस बात से बनती है कि आप आय को कितनी समझदारी से सँभालते और उपयोग करते हैं।' },
+  marriage: { en: 'A lasting partnership depends on warmth, honest expectations, and dependable agreements.', hi: 'टिकाऊ साझेदारी में अपनापन, स्पष्ट अपेक्षाएँ और भरोसेमंद संवाद साथ चलते हैं।' },
+  children: { en: 'Creativity, care, and the next generation are connected themes, but each deserves its own reading.', hi: 'सृजन, देखभाल और अगली पीढ़ी जुड़े हुए विषय हैं, फिर भी हर एक का अलग आकलन जरूरी है।' },
+  property: { en: 'A secure home base is more likely to come from patient planning than from a rushed decision.', hi: 'घर और संपत्ति के मामलों में जल्दबाजी से अधिक धैर्यपूर्ण योजना आपके काम आती है।' },
+  health: { en: 'This reading concerns traditional vitality and daily routine only; it cannot diagnose illness or estimate medical risk.', hi: 'यह संकेत केवल पारंपरिक जीवनशक्ति और दिनचर्या से जुड़े हैं; इनसे रोग या चिकित्सकीय जोखिम का निदान नहीं होता।' },
+  travels: { en: 'Travel or relocation is most meaningful when it serves a clear purpose such as learning, work, or renewal.', hi: 'यात्रा या स्थान-परिवर्तन तब अधिक सार्थक होता है जब उसका उद्देश्य सीखना, काम या नया अनुभव हो।' },
+  spirituality: { en: 'Inner growth deepens when belief is balanced with reflection, practice, and lived experience.', hi: 'आंतरिक विकास तब गहराता है जब विश्वास के साथ चिंतन, नियमित साधना और जीवन-अनुभव भी हों।' },
+  milestones: { en: 'Recognition is more likely to grow through steady contribution than through one dramatic turning point.', hi: 'पहचान और प्रगति अक्सर किसी एक बड़े मोड़ से नहीं, बल्कि लगातार सार्थक योगदान से बनती है।' },
+  remedies: { en: 'The most constructive traditional remedy is consistent conduct and practice; no ritual or object guarantees an outcome.', hi: 'सबसे उपयोगी पारंपरिक उपाय नियमित सदाचार और साधना है; कोई वस्तु या अनुष्ठान निश्चित फल की गारंटी नहीं देता।' },
+  family: { en: 'Family life is shaped by care, shared values, responsibilities, and the way resources are handled.', hi: 'पारिवारिक जीवन में अपनापन, साझा मूल्य, जिम्मेदारियाँ और संसाधनों का व्यवहार—सबकी भूमिका रहती है।' },
+  parents: { en: 'Parental bonds are best understood through guidance, care, responsibility, and the boundaries you develop.', hi: 'माता-पिता से संबंध में मार्गदर्शन, देखभाल, जिम्मेदारी और स्वस्थ सीमाएँ—सभी महत्वपूर्ण हैं।' },
+  siblings: { en: 'Close family bonds grow through communication and shared effort while leaving room for individual differences.', hi: 'निकट संबंध संवाद और साझा प्रयास से मजबूत होते हैं, साथ ही एक-दूसरे के मतभेदों का सम्मान भी जरूरी है।' },
+  romance: { en: 'Affection develops through emotional honesty, mutual trust, and expectations that are discussed openly.', hi: 'प्रेम और अनुराग भावनात्मक स्पष्टता, पारस्परिक भरोसे और खुलकर रखी गई अपेक्षाओं से विकसित होते हैं।' },
+  business: { en: 'Independent work benefits from initiative paired with reliable agreements and patient follow-through.', hi: 'स्वतंत्र कार्य में पहल के साथ स्पष्ट समझौते और लगातार काम पूरा करना लाभदायक रहता है।' },
+  debt_disputes: { en: 'Competition and obligations are easier to handle with preparation, clear boundaries, and measured responses.', hi: 'प्रतिस्पर्धा और दायित्वों को तैयारी, स्पष्ट सीमाओं और संतुलित प्रतिक्रिया से बेहतर सँभाला जा सकता है।' },
+  income_networks: { en: 'Useful connections and gains grow when ambition is matched by collaboration and consistent follow-through.', hi: 'लक्ष्य, सहयोग और निरंतर प्रयास साथ हों तो संपर्कों से उपयोगी अवसर और लाभ बनने की संभावना बढ़ती है।' },
+  foreign_residence: { en: 'Distant places may matter through work, learning, or retreat; a trip and permanent relocation are different outcomes.', hi: 'दूरस्थ स्थान काम, शिक्षा या एकांत से जुड़ सकते हैं; यात्रा और स्थायी स्थानांतरण अलग बातें हैं।' },
+};
+
+const PLANET_THEMES: Record<string, ReaderOpening> = {
+  Sun: { en: 'purpose, leadership, and visibility', hi: 'उद्देश्य, नेतृत्व और पहचान' },
+  Moon: { en: 'emotional awareness, care, and responsiveness', hi: 'भावनात्मक समझ, देखभाल और संवेदनशीलता' },
+  Mars: { en: 'initiative, courage, and decisive effort', hi: 'पहल, साहस और निर्णायक प्रयास' },
+  Mercury: { en: 'learning, communication, and flexible thinking', hi: 'सीखने, संवाद और परिस्थिति के अनुसार सोचने की क्षमता' },
+  Jupiter: { en: 'judgment, guidance, and gradual growth', hi: 'विवेक, मार्गदर्शन और क्रमिक विकास' },
+  Venus: { en: 'harmony, relationships, and shared values', hi: 'सामंजस्य, संबंध और साझा मूल्य' },
+  Saturn: { en: 'patience, responsibility, and long-term effort', hi: 'धैर्य, जिम्मेदारी और दीर्घकालीन प्रयास' },
+};
+
 function buildReaderPrediction(chart: ChartData, domain: DomainDefinition): { en: string; hi: string } {
-  const en: string[] = [];
-  const hi: string[] = [];
-  const dignityHi: Record<string, string> = {
-    Exalted: 'उच्च', Moolatrikona: 'मूलत्रिकोण', 'Own Sign': 'स्वराशि',
-    'Great Friend': 'अधिमित्र राशि', Friend: 'मित्र राशि',
-    Neutral: 'सम राशि', Enemy: 'शत्रु राशि', 'Great Enemy': 'अधिशत्रु राशि',
-    Debilitated: 'नीच',
-  };
-  for (const house of domain.houses) {
-    const sign = SIGNS[signForHouse(chart, house)];
-    const lord = chart.planets.find((planet) => planet.id === sign.lord);
-    if (!lord) continue;
-    const destination = HOUSE_THEMES[lord.rasiHouseNumber];
-    const strength = chart.shadbala?.find((row) => row.planet === lord.id);
-    const balaEn = strength ? ` Shadbala ${strength.totalRupas.toFixed(2)} rupas (required ${strength.requiredRupas.toFixed(2)}).` : '';
-    const balaHi = strength ? ` षड्बल ${strength.totalRupas.toFixed(2)} रूप (आवश्यक ${strength.requiredRupas.toFixed(2)} रूप)।` : '';
-    en.push(`House ${house} is in ${sign.name}; its lord ${lord.id} is in house ${lord.rasiHouseNumber}, linking this subject with ${destination.en}. Dignity: ${lord.dignity}; retrograde: ${lord.isRetrograde}; combust: ${lord.isCombust}.${balaEn}`);
-    hi.push(`भाव ${house} की राशि ${sign.name} है; भावेश ${HI_NAMES[lord.id] ?? lord.id} भाव ${lord.rasiHouseNumber} में हैं, जिससे इस विषय का संबंध ${destination.hi} से बनता है। गरिमा: ${dignityHi[lord.dignity] ?? lord.dignity}; वक्री: ${lord.isRetrograde ? 'हाँ' : 'नहीं'}; अस्त: ${lord.isCombust ? 'हाँ' : 'नहीं'}।${balaHi}`);
-  }
-  const karakas = domain.karakas.flatMap((id) => {
-    const p = chart.planets.find((item) => item.id === id);
-    return p ? [{ en: `${id} in house ${p.rasiHouseNumber} (${p.signName}), ${p.dignity}.`, hi: `${HI_NAMES[id] ?? id} भाव ${p.rasiHouseNumber} (${p.signName}), ${dignityHi[p.dignity] ?? p.dignity} गरिमा।` }] : [];
-  });
-  if (karakas.length) {
-    en.push('Natural significators: ' + karakas.map((x) => x.en).join(' '));
-    hi.push('नैसर्गिक कारक ग्रह: ' + karakas.map((x) => x.hi).join(' '));
-  }
+  const opening = READER_OPENINGS[domain.id];
   const primaryHouse = domain.houses[0];
-  const occupants = chart.planets.filter((p) => p.rasiHouseNumber === primaryHouse && CLASSICAL_GRAHAS.has(p.id));
-  if (occupants.length) {
-    en.push(`Primary house ${primaryHouse} occupants: ${occupants.map((p) => `${p.id} (${p.dignity})`).join(', ')}.`);
-    hi.push(`मुख्य भाव ${primaryHouse} में ग्रह: ${occupants.map((p) => `${HI_NAMES[p.id] ?? p.id} (${dignityHi[p.dignity] ?? p.dignity})`).join(', ')}।`);
+  const primarySign = SIGNS[signForHouse(chart, primaryHouse)];
+  const primaryLord = chart.planets.find((planet) => planet.id === primarySign.lord);
+  if (!primaryLord) {
+    return {
+      en: `${opening.en} The chart data needed to personalize this area is incomplete, so no stronger conclusion is offered.`,
+      hi: `${opening.hi} इस क्षेत्र को व्यक्तिगत रूप से समझने के लिए आवश्यक कुंडली-डेटा अधूरा है, इसलिए इससे आगे निष्कर्ष नहीं दिया जा रहा है।`,
+    };
+  }
+
+  const destination = HOUSE_THEMES[primaryLord.rasiHouseNumber];
+  const kind = dignityKind(primaryLord.dignity);
+  const planetEn = primaryLord.id;
+  const planetHi = HI_NAMES[primaryLord.id] ?? primaryLord.id;
+  let conditionEn: string;
+  let conditionHi: string;
+  if (kind === 'supportive') {
+    conditionEn = `This gives the theme a supportive starting point; steady effort around ${destination.en} can help it develop constructively.`;
+    conditionHi = `यह इस विषय को सहायक आधार देता है; ${destination.hi} से जुड़े निरंतर प्रयास इसे बेहतर दिशा दे सकते हैं।`;
+  } else if (kind === 'caution') {
+    conditionEn = `This makes the path more demanding, so patience and deliberate choices around ${destination.en} matter more than quick results.`;
+    conditionHi = `यह रास्ता कुछ चुनौतीपूर्ण बनाता है; इसलिए ${destination.hi} से जुड़े मामलों में धैर्य और सोच-समझकर लिए गए निर्णय अधिक उपयोगी रहेंगे।`;
   } else {
-    en.push(`No classical graha occupies primary house ${primaryHouse}; judge it through its lord, aspects and significators, not as an inactive house.`);
-    hi.push(`मुख्य भाव ${primaryHouse} में कोई शास्त्रीय ग्रह नहीं है; इसका विचार भावेश, दृष्टि और कारक से होगा।`);
+    conditionEn = `The signal is mixed rather than one-sided; choices around ${destination.en} are likely to shape how this area develops.`;
+    conditionHi = `संकेत एकतरफा नहीं हैं; ${destination.hi} से जुड़े निर्णय इस क्षेत्र की दिशा तय करने में अहम रहेंगे।`;
   }
-  const varga = chart.divisionalCharts?.[domain.varga];
-  const vargaSign = varga ? SIGNS[varga.lagnaSignIndex] : undefined;
-  const vargaLord = vargaSign ? varga.placements.find((p) => p.id === vargaSign.lord) : undefined;
-  if (vargaSign && vargaLord) {
-    en.push(`${domain.varga}: divisional ascendant lord ${vargaSign.lord} occupies Varga house ${vargaLord.houseFromVargaLagna} with ${vargaLord.dignity} dignity.`);
-    hi.push(`${domain.varga}: वर्ग लग्नेश ${HI_NAMES[vargaSign.lord] ?? vargaSign.lord} वर्ग के भाव ${vargaLord.houseFromVargaLagna} में ${dignityHi[vargaLord.dignity] ?? vargaLord.dignity} गरिमा में हैं।`);
-  }
-  const limitEn = 'A complete favourable/adverse phala is withheld: the engine must first validate the applicable classical combination, functional lordship, aspect/yuti strength, divisional confirmation and dasha. No event is inferred from one placement.';
-  const limitHi = 'पूर्ण शुभ-अशुभ फलादेश अभी रोककर रखा गया है: लागू शास्त्रीय योग, कार्यात्मक स्वामित्व, दृष्टि-युति बल, वर्ग-पुष्टि और दशा का नियम-आधारित परीक्षण आवश्यक है। एक ग्रह-स्थिति से घटना घोषित नहीं की जाती।';
-  return { en: en.join(' ') + ' ' + limitEn, hi: hi.join(' ') + ' ' + limitHi };
+
+  return {
+    en: `${opening.en} In your chart, ${planetEn} brings ${PLANET_THEMES[primaryLord.id].en} into this area, while its placement links it with ${destination.en}. ${conditionEn}`,
+    hi: `${opening.hi} आपकी कुंडली में ${planetHi} इस क्षेत्र में ${PLANET_THEMES[primaryLord.id].hi} को प्रमुख बनाते हैं और इसकी स्थिति इसे ${destination.hi} से जोड़ती है। ${conditionHi}`,
+  };
 }
 
 function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas: ReturnType<typeof detectClassicalYogas>): GeneralPredictionDomain {
