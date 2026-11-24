@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Globe, Loader2, MapPin, Save, Search, Sparkles, Trash2, X } from 'lucide-react';
 import { formatDateDmy, formatDateTimeDmyAmPm, formatOffsetString, getIanaOffsetMinutes, parseOffsetString } from '../astro/time';
+import { getBirthTimeConfirmation, validateBirthInput, type BirthInputIssue } from '../astro/birthValidation';
 import type { BirthInput } from '../astro/types';
 import {
   lookupTimezoneFromCoords,
@@ -35,7 +36,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
   const [form, setForm] = useState<BirthInput>(initial);
   const [cityModalOpen, setCityModalOpen] = useState(false);
   const [manualTz, setManualTz] = useState(initial.timezone === 'MANUAL');
-  const [offsetError, setOffsetError] = useState(false);
+  const [formIssue, setFormIssue] = useState<BirthInputIssue | null>(null);
   const [offsetText, setOffsetText] = useState(() =>
     initial.timezone === 'MANUAL'
       ? formatOffsetString(initial.utcOffsetMinutes ?? 330)
@@ -48,7 +49,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
       void preloadExpandedAtlas();
       const isManual = initial.timezone === 'MANUAL';
       setManualTz(isManual);
-      setOffsetError(false);
+      setFormIssue(null);
       setOffsetText(
         isManual
           ? formatOffsetString(initial.utcOffsetMinutes ?? 330)
@@ -59,6 +60,11 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
 
   if (!open) return null;
 
+  const updateForm = (next: BirthInput) => {
+    setForm(next);
+    setFormIssue(null);
+  };
+
   const handleCitySelect = (c: CityEntry) => {
     const updated = {
       ...form,
@@ -68,14 +74,14 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
       longitude: Math.round(c.lng * 10000) / 10000,
       timezone: c.timezone,
     };
-    setForm(updated);
+    updateForm(updated);
     setManualTz(false);
     setOffsetText(formatOffsetString(getIanaOffsetMinutes(updated.date, updated.time, c.timezone)));
   };
 
   const handleAutoDetectTz = () => {
     const detected = lookupTimezoneFromCoords(form.latitude, form.longitude);
-    setForm((prev) => ({ ...prev, timezone: detected }));
+    updateForm({ ...form, timezone: detected });
     setManualTz(false);
     setOffsetText(formatOffsetString(getIanaOffsetMinutes(form.date, form.time, detected)));
   };
@@ -85,15 +91,21 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
     if (manualTz) {
       const parsed = parseOffsetString(offsetText);
       if (parsed === null) {
-        setOffsetError(true);
+        setFormIssue('offset');
         return;
       }
-      setOffsetError(false);
+      setFormIssue(null);
       finalForm.timezone = 'MANUAL';
       finalForm.utcOffsetMinutes = parsed;
     } else {
       finalForm.utcOffsetMinutes = undefined;
     }
+    const issue = validateBirthInput(finalForm, finalForm.utcOffsetMinutes);
+    if (issue) {
+      setFormIssue(issue);
+      return;
+    }
+    setFormIssue(null);
     if (saveAsNew) {
       finalForm.id = `chart-${Date.now()}`;
     }
@@ -105,6 +117,19 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
     !manualTz && form.timezone !== 'MANUAL'
       ? formatOffsetString(getIanaOffsetMinutes(form.date, form.time, form.timezone))
       : offsetText;
+  const confirmationInput = manualTz ? { ...form, timezone: 'MANUAL' } : form;
+  const confirmation = getBirthTimeConfirmation(
+    confirmationInput,
+    manualTz ? parseOffsetString(offsetText) ?? undefined : undefined
+  );
+  const issueText: Record<BirthInputIssue, string> = {
+    date: lang === 'hi' ? 'कृपया मान्य जन्म तिथि दर्ज करें।' : 'Enter a valid birth date.',
+    time: lang === 'hi' ? 'कृपया मान्य जन्म समय दर्ज करें।' : 'Enter a valid birth time (HH:MM or HH:MM:SS).',
+    location: lang === 'hi' ? 'कृपया जन्म स्थान चुनें या दर्ज करें।' : 'Choose or enter a place of birth.',
+    coordinates: lang === 'hi' ? 'अक्षांश −90 से +90 और देशांतर −180 से +180 के बीच होना चाहिए।' : 'Latitude must be between −90 and +90, and longitude between −180 and +180.',
+    timezone: lang === 'hi' ? 'समय क्षेत्र अमान्य है या यह स्थानीय समय घड़ी परिवर्तन के कारण मौजूद नहीं है।' : 'The timezone is invalid, or this local time does not exist because of a clock change.',
+    offset: lang === 'hi' ? 'कृपया मान्य UTC अंतर दर्ज करें (−14:00 से +14:00)।' : 'Enter a valid UTC offset between −14:00 and +14:00.',
+  };
 
   return (
     <>
@@ -127,7 +152,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 type="text"
                 className="text-input"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => updateForm({ ...form, name: e.target.value })}
                 placeholder={lang === 'hi' ? 'जैसे: जातक का नाम या प्रश्न' : 'e.g. Native Name or Prashna Query'}
               />
             </label>
@@ -138,7 +163,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 className="text-input"
                 value={form.gender || 'other'}
                 onChange={(e) =>
-                  setForm({ ...form, gender: e.target.value as BirthInput['gender'] })
+                  updateForm({ ...form, gender: e.target.value as BirthInput['gender'] })
                 }
               >
                 <option value="male">{lang === 'hi' ? 'पुरुष' : 'Male'}</option>
@@ -152,7 +177,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
               <DateDmyInput
                 value={form.date}
                 ariaLabel={lang === 'hi' ? 'जन्म तिथि (DD-MM-YYYY)' : 'Birth Date (DD-MM-YYYY)'}
-                onChange={(iso) => setForm({ ...form, date: iso })}
+                onChange={(iso) => updateForm({ ...form, date: iso })}
               />
             </label>
 
@@ -164,7 +189,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 className="text-input mono"
                 value={form.time}
                 onChange={(e) =>
-                  setForm({
+                  updateForm({
                     ...form,
                     time: e.target.value.length === 5 ? `${e.target.value}:00` : e.target.value,
                   })
@@ -193,7 +218,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                       ? 'शहर का नाम लिखें (जैसे Delhi, Mumbai, Varanasi)...'
                       : 'Type city name (e.g. Delhi, Mumbai, Varanasi)...'
                   }
-                  onChangeText={(val) => setForm({ ...form, city: val })}
+                  onChangeText={(val) => updateForm({ ...form, city: val })}
                   onSelectCity={handleCitySelect}
                 />
                 <button
@@ -213,12 +238,12 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
               <input
                 type="number"
                 step="0.0001"
-                min="-89.9"
-                max="89.9"
+                min="-90"
+                max="90"
                 className="text-input mono"
-                value={form.latitude}
+                value={Number.isFinite(form.latitude) ? form.latitude : ''}
                 onChange={(e) =>
-                  setForm({ ...form, latitude: parseFloat(e.target.value) || 0 })
+                  updateForm({ ...form, latitude: e.target.value === '' ? Number.NaN : parseFloat(e.target.value) })
                 }
               />
             </label>
@@ -231,9 +256,9 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 min="-180"
                 max="180"
                 className="text-input mono"
-                value={form.longitude}
+                value={Number.isFinite(form.longitude) ? form.longitude : ''}
                 onChange={(e) =>
-                  setForm({ ...form, longitude: parseFloat(e.target.value) || 0 })
+                  updateForm({ ...form, longitude: e.target.value === '' ? Number.NaN : parseFloat(e.target.value) })
                 }
               />
             </label>
@@ -248,8 +273,13 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setManualTz(checked);
+                      setFormIssue(null);
                       if (checked) {
                         setOffsetText(previewAutoOffset);
+                      } else if (form.timezone === 'MANUAL') {
+                        const detected = lookupTimezoneFromCoords(form.latitude, form.longitude);
+                        updateForm({ ...form, timezone: detected, utcOffsetMinutes: undefined });
+                        setOffsetText(formatOffsetString(getIanaOffsetMinutes(form.date, form.time, detected)));
                       }
                     }}
                   />
@@ -264,7 +294,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                     value={offsetText}
                     onChange={(e) => {
                       setOffsetText(e.target.value);
-                      setOffsetError(false);
+                      setFormIssue(null);
                     }}
                     placeholder="+05:30 or -05:00"
                   />
@@ -292,11 +322,16 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                   </button>
                 </div>
               )}
-              {offsetError && manualTz && (
-                <div className="hint-text" role="alert" style={{ color: 'var(--bad)', marginTop: 6 }}>
+              {confirmation && (
+                <div className="hint-text" role="status" aria-live="polite" style={{ marginTop: 6 }}>
                   {lang === 'hi'
-                    ? 'कृपया मान्य UTC अंतर दर्ज करें (−14:00 से +14:00)।'
-                    : 'Enter a valid UTC offset between −14:00 and +14:00.'}
+                    ? `जन्म समय ${manualTz ? 'स्थिर UTC अंतर' : form.timezone} (${formatOffsetString(confirmation.offsetMinutes)}) में समझा जाएगा। समतुल्य UTC: ${confirmation.utcDateTime}`
+                    : `Birth time will use ${manualTz ? 'a fixed UTC offset' : form.timezone} (${formatOffsetString(confirmation.offsetMinutes)}). Equivalent UTC: ${confirmation.utcDateTime}`}
+                </div>
+              )}
+              {formIssue && (
+                <div className="hint-text" role="alert" style={{ color: 'var(--bad)', marginTop: 6 }}>
+                  {issueText[formIssue]}
                 </div>
               )}
             </div>
@@ -307,7 +342,7 @@ export const BirthEditorModal: React.FC<BirthEditorModalProps> = ({
                 type="text"
                 className="text-input"
                 value={form.notes || ''}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                onChange={(e) => updateForm({ ...form, notes: e.target.value })}
                 placeholder={lang === 'hi' ? 'वैकल्पिक कुंडली टिप्पणी...' : 'Optional birth chart notes...'}
               />
             </label>
