@@ -38,6 +38,8 @@ import {
   getComprehensiveMarriageAnalysis,
   getComprehensiveMedicalAstrology,
   getComprehensiveCareerAndWealthAnalysis,
+  getComprehensiveParentsAndFamilyAnalysis,
+  getComprehensiveSiblingsAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -800,6 +802,17 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const motherHouseLord = l4;
     const fProfLord = l6; // 10th from 9th
     const mProfLord = l1; // 10th from 4th
+    const parentsRes = getComprehensiveParentsAndFamilyAnalysis(
+      planets,
+      ascSignIdx,
+      h2Prof,
+      h4Prof,
+      h7Prof,
+      h9Prof,
+      h10Prof,
+      h12Prof,
+      d12
+    );
 
     let fProfEn = 'Public governance, administrative executive, landed real estate, or structured institutional management';
     let fProfHi = 'राजकीय उपक्रम, प्रशासनिक प्रबंधन, भू-संपत्ति या किसी प्रतिष्ठित संस्थागत संगठन में उच्च पद';
@@ -825,30 +838,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     }
 
     const isFatherAfflicted = fatherHouseLord?.placedHouse === 6 || fatherHouseLord?.placedHouse === 8 || fatherHouseLord?.placedHouse === 12 || fatherHouseLord?.dignity === 'Debilitated' || (sun && (sun.placedHouse === 6 || sun.placedHouse === 8 || sun.placedHouse === 12 || sun.dignity === 'Debilitated'));
-    let fatherLifeValEn = 'Respected, dignified life with good longevity; periodic health vigilance around mid-50s';
-    let fatherLifeValHi = 'सम्मानित, कुलीन व दीर्घायु जीवन; 50 के दशक के मध्य में स्वास्थ्य के प्रति सतर्कता अपेक्षित';
-    let fatherLifeExplEn = `The 9th house (${h9Sign.name}) and natural Pitrukaraka Sun anchor the father's fortunes. The father possesses high principles, strong willpower, and commands societal veneration.`;
-    let fatherLifeExplHi = `नवम भाव (${SIGN_HI[h9SignIdx]}) और सूर्य की स्थिति पिता को स्वाभिमानी, सामाजिक रूप से प्रतिष्ठित और अपने सिद्धांतों पर अडिग रहने वाला व्यक्तित्व प्रदान करती है।`;
-
-    if (isFatherAfflicted) {
-      fatherLifeValEn = 'Life characterized by heavy early struggle, high responsibilities, and modest beginnings; father faced career transitions and health sensitivities requiring family support';
-      fatherLifeValHi = 'पिता का जीवन प्रारंभिक कड़े संघर्ष, भारी जिम्मेदारियों व उतार-चढ़ाव से युक्त; आजीविका में परिश्रम व स्वास्थ्य के प्रति विशेष सतर्कता की आवश्यकता';
-      fatherLifeExplEn = `The 9th lord or Sun occupies challenge houses (Dusthana / Debilitated). The father endured significant hardships, shaping the native with strong self-reliance and grit.`;
-      fatherLifeExplHi = `नवमेश अथवा सूर्य की स्थिति दर्शाती है कि पिता ने परिवार के लिए कठोर त्याग व परिश्रम किया। उनके जीवन के संघर्ष जातक को आत्मनिर्भर और कर्तव्यनिष्ठ बनाते हैं।`;
-    }
-
     const isMotherAfflicted = motherHouseLord?.placedHouse === 6 || motherHouseLord?.placedHouse === 8 || motherHouseLord?.placedHouse === 12 || motherHouseLord?.dignity === 'Debilitated' || (moon && (moon.placedHouse === 6 || moon.placedHouse === 8 || moon.placedHouse === 12 || moon.dignity === 'Debilitated'));
-    let motherLifeValEn = 'Devout, deeply caring, morally upright and the foundational emotional anchor of the home';
-    let motherLifeValHi = 'परम धर्मपरायण, ममतामयी, संस्कारवान व परिवार की मुख्य भावनात्मक संबल';
-    let motherLifeExplEn = `The 4th house (${h4Sign.name}) and natural Matrukaraka Moon govern the mother. She infuses the domestic sphere with spiritual serenity, resilience, and unyielding maternal protection.`;
-    let motherLifeExplHi = `चतुर्थ भाव (${SIGN_HI[h4SignIdx]}) और चंद्र की स्थिति माता को अत्यंत करुणामयी, शांतचित्त और परिवार को संस्कारों में बांधकर रखने वाली ममता की प्रतिमूर्ति बनाती है।`;
-
-    if (isMotherAfflicted) {
-      motherLifeValEn = 'Devoted and sacrificing mother who endured domestic anxieties or health sensitivities; acts as a silent spiritual protector for the household';
-      motherLifeValHi = 'त्यागमयी व समर्पित माता, जिन्होंने घरेलू चिंताओं अथवा स्वास्थ्य चुनौतियों का सामना किया; परिवार की मूक आत्मिक रक्षक';
-      motherLifeExplEn = `The 4th house lord or Moon occupies vulnerable degrees. The mother is an embodiment of selfless endurance despite emotional or physical burdens.`;
-      motherLifeExplHi = `चतुर्थेश अथवा चंद्रमा की स्थिति माता के त्याग, भावनात्मक संवेदनशीलता और स्वास्थ्य सतर्कता को दर्शाती है। वे हर परिस्थिति में बच्चों की भलाई के लिए प्रयासरत रहती हैं।`;
-    }
 
     let parentsHardshipValEn = 'Early generational struggle to consolidate assets and settle family affairs; marked stabilization after age 30';
     let parentsHardshipValHi = 'प्रारंभिक 28-30 वर्षों में पारिवारिक व आर्थिक सुदृढ़ता हेतु कड़ा संघर्ष; बाद में स्थायी समृद्धि';
@@ -868,21 +858,21 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       titleEn: 'Parents: Stature, Profession, Struggles & Lineage',
       titleHi: 'माता-पिता, कुल, व्यवसाय व पारिवारिक संघर्ष',
       icon: 'Crown',
-      summaryEn: `Detailed parental lineage synthesized from the 9th house (${h9Sign.name} - Father), 4th house (${h4Sign.name} - Mother), natural karakas Sun and Moon, and D12 Dwadashamsha divisional chart.`,
-      summaryHi: `नवम भाव (${SIGN_HI[h9SignIdx]} - पिता), चतुर्थ भाव (${SIGN_HI[h4SignIdx]} - माता), सूर्य, चंद्र एवं द्वादशांश (D12) कुंडली द्वारा माता-पिता के स्वास्थ्य, कर्मक्षेत्र, संघर्ष व पैतृक संस्कारों का प्रामाणिक विवेचन।`,
+      summaryEn: `Detailed parental lineage synthesized from the 4th (Mother), 9th/10th (Father per BPHS 11.11), 2nd (Kutumba), Moon-context yogas, and D12 Dwadashamsha.`,
+      summaryHi: `चतुर्थ भाव (माता), नवम/दशम भाव (पिता - BPHS 11.11), द्वितीय (कुटुंब), चंद्र योग व द्वादशांश (D12) कुंडली द्वारा माता-पिता, पारिवारिक वातावरण व कुल संस्कारों का विवेचन।`,
       attributes: [
         {
           id: 'attr_father_life',
           category: 'parents',
-          titleEn: "Father's Longevity, Health & Life Path",
-          titleHi: 'पिता का जीवन, स्वास्थ्य व दीर्घायु विचार',
-          valueEn: fatherLifeValEn,
-          valueHi: fatherLifeValHi,
-          explanationEn: fatherLifeExplEn,
-          explanationHi: fatherLifeExplHi,
-          pacBasisEn: `House 9: ${h9Sign.name}; Lord: ${fatherHouseLord?.id} placed in H${fatherHouseLord?.placedHouse}; Sun in H${sun?.placedHouse} (${sun?.dignity || 'Neutral'}).`,
-          pacBasisHi: `नवम भाव: ${SIGN_HI[h9SignIdx]}; नवमेश: ${PLANET_HI[fatherHouseLord?.id || '']} भाव ${fatherHouseLord?.placedHouse} में; सूर्य भाव ${sun?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 45–52), Saravali (Ch. 34)',
+          titleEn: "Father's Stature, Relationship & Life Path",
+          titleHi: 'पिता का स्वरूप, आपसी संबंध व जीवन पथ',
+          valueEn: parentsRes.fatherBondAndPath.valEn,
+          valueHi: parentsRes.fatherBondAndPath.valHi,
+          explanationEn: parentsRes.fatherBondAndPath.explEn,
+          explanationHi: parentsRes.fatherBondAndPath.explHi,
+          pacBasisEn: parentsRes.fatherBondAndPath.pacEn,
+          pacBasisHi: parentsRes.fatherBondAndPath.pacHi,
+          shastricRef: 'BPHS (Ch. 11.11 & Ch. 12), Saravali (Ch. 34)',
           vargaRef: 'D1 Rashi & D12 Dwadashamsha',
         },
         {
@@ -902,16 +892,30 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
         {
           id: 'attr_mother_life',
           category: 'parents',
-          titleEn: "Mother's Demeanor, Health & Nurturing Aura",
-          titleHi: 'माता का जीवन, स्वास्थ्य व ममतामयी स्वरूप',
-          valueEn: motherLifeValEn,
-          valueHi: motherLifeValHi,
-          explanationEn: motherLifeExplEn,
-          explanationHi: motherLifeExplHi,
-          pacBasisEn: `House 4: ${h4Sign.name}; Lord: ${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}; Moon in House ${moon?.placedHouse} (${moon?.dignity || 'Neutral'}).`,
-          pacBasisHi: `चतुर्थ भाव: ${SIGN_HI[h4SignIdx]}; चतुर्थेश: ${PLANET_HI[motherHouseLord?.id || '']} भाव ${motherHouseLord?.placedHouse} में; चंद्र भाव ${moon?.placedHouse} में।`,
+          titleEn: "Mother's Demeanor, Bond & Nurturing Aura",
+          titleHi: 'माता का स्वभाव, स्नेह व ममतामयी स्वरूप',
+          valueEn: parentsRes.motherBondAndAura.valEn,
+          valueHi: parentsRes.motherBondAndAura.valHi,
+          explanationEn: parentsRes.motherBondAndAura.explEn,
+          explanationHi: parentsRes.motherBondAndAura.explHi,
+          pacBasisEn: parentsRes.motherBondAndAura.pacEn,
+          pacBasisHi: parentsRes.motherBondAndAura.pacHi,
           shastricRef: 'BPHS (Ch. 12, Sl. 25–34)',
           vargaRef: 'D1 Rashi & D12 Dwadashamsha',
+        },
+        {
+          id: 'attr_family_moon_yogas_climate',
+          category: 'parents',
+          titleEn: 'Family Climate, Moon-Context Yogas & Household Pull',
+          titleHi: 'पारिवारिक वातावरण, चंद्र योग (सुनफा/अनफा) व गृह व्यवस्था',
+          valueEn: parentsRes.familyYogasAndClimate.valEn,
+          valueHi: parentsRes.familyYogasAndClimate.valHi,
+          explanationEn: parentsRes.familyYogasAndClimate.explEn,
+          explanationHi: parentsRes.familyYogasAndClimate.explHi,
+          pacBasisEn: parentsRes.familyYogasAndClimate.pacEn,
+          pacBasisHi: parentsRes.familyYogasAndClimate.pacHi,
+          shastricRef: 'Brihat Jataka (Sunapha/Anapha/Durdhara/Kemadruma)',
+          vargaRef: 'D1 & D12',
         },
         {
           id: 'attr_mother_profession',
@@ -970,6 +974,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D12',
         },
         {
+          id: 'attr_parents_ancestral_upay',
+          category: 'parents',
+          titleEn: 'Parental Harmony, Pitru Care & Simple Upay',
+          titleHi: 'मातृ-पितृ सद्भाव व सरल वैदिक उपाय',
+          valueEn: parentsRes.ancestralAndUpay.valEn,
+          valueHi: parentsRes.ancestralAndUpay.valHi,
+          explanationEn: parentsRes.ancestralAndUpay.explEn,
+          explanationHi: parentsRes.ancestralAndUpay.explHi,
+          pacBasisEn: parentsRes.ancestralAndUpay.pacEn,
+          pacBasisHi: parentsRes.ancestralAndUpay.pacHi,
+          shastricRef: 'Vedic Grihastha & Pitru Dharma',
+          vargaRef: 'D1 & D12',
+        },
+        {
           id: 'attr_parents_relocation',
           category: 'parents',
           titleEn: 'Parents Relocation / Transfer Away from Native Seat',
@@ -995,42 +1013,33 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   // PILLAR 3: सहोदर, भाई-बहन व भ्रातृ सुख (Siblings & Bonding)
   // =========================================================================
   {
-    const d3LagnaSign = d3?.lagnaSignIndex ?? ascSignIdx;
     const youngerSiblingsLord = l3;
     const elderSiblingsLord = l11;
-
-    // Dynamic Sibling count and presence
-    const h3Occupants = h3Planets;
-    const h11Occupants = h11Planets;
-    const isSingleChild = (h3Occupants.some((p) => p.id === 'Ketu' || p.id === 'Saturn') && l3?.dignity === 'Debilitated' && h11Occupants.length === 0);
-    const hasSiblingDetachment = h3Occupants.some((p) => p.id === 'Ketu' || p.id === 'Saturn') || l3?.placedHouse === 6 || l3?.placedHouse === 8 || l3?.placedHouse === 12;
-
-    let sibCountEn = '1 to 2 siblings in the biological circle; close-knit bond with occasional independence of paths';
-    let sibCountHi = 'कुल १ से २ सहोदरों का स्वाभाविक योग; आत्मीय संबंध किंतु कार्यक्षेत्र व जीवनशैली में अपनी-अपनी स्वतंत्रता';
-    if (isSingleChild) {
-      sibCountEn = 'Single child or sole primary responsibility; commands exclusive family focus and lineage leadership';
-      sibCountHi = 'एकल संतान अथवा प्रमुख उत्तरदायित्व का योग; परिवार का अकेला अथवा मुख्य केंद्रबिंदु व कुलदीपक';
-    } else if (hasSiblingDetachment && h11Occupants.length === 0) {
-      sibCountEn = 'Compact sibling circle (1 sibling or limited co-born contact); native shoulders independent familial duties';
-      sibCountHi = 'सीमित सहोदर योग (१ भाई/बहन अथवा दूरी); जातक स्वतंत्र रूप से पारिवारिक जिम्मेदारियों का निर्वहन करता है';
-    } else if (h3Occupants.length >= 2 || h11Occupants.length >= 2) {
-      sibCountEn = 'Active sibling presence (2 or more co-borns) creating lively mutual camaraderie and support';
-      sibCountHi = 'सक्रिय सहोदर परिवार (२ या अधिक भाई-बहन); पारिवारिक आयोजनों में आपसी सहयोग व सौहार्द';
-    }
+    const sibRes = getComprehensiveSiblingsAnalysis(
+      planets,
+      ascSignIdx,
+      h1Prof,
+      h3Prof,
+      h5Prof,
+      h9Prof,
+      h11Prof,
+      d3,
+      d9
+    );
 
     const youngerMale = h3Sign.gender === 'Odd' || ['Sun', 'Mars', 'Jupiter'].includes(youngerSiblingsLord?.id || '');
-    let youngerEn = youngerMale
+    const youngerEn = youngerMale
       ? '1 younger brother (Anuja) with an energetic, ambitious, and bold disposition'
       : '1 younger sister (Anuja) with a cultured, affectionate, and artistic nature';
-    let youngerHi = youngerMale
+    const youngerHi = youngerMale
       ? '१ छोटा भाई (अनुज), जो उत्साही, महत्वाकांक्षी व साहसी स्वभाव का होगा'
       : '१ छोटी बहन (अनुजा), जो स्नेहमयी, कलाप्रिय व जातक का आदर करने वाली होगी';
 
     const elderMale = h11Sign.gender === 'Odd' || ['Sun', 'Mars', 'Jupiter'].includes(elderSiblingsLord?.id || '');
-    let elderEn = elderMale
+    const elderEn = elderMale
       ? '1 elder brother who acts as a guide, protector, and pillar of career mentorship'
       : '1 elder sister who provides deep emotional nurturing, advice, and familial stability';
-    let elderHi = elderMale
+    const elderHi = elderMale
       ? '१ बड़े भाई का योग, जो जातक के लिए संरक्षक, मार्गदर्शक व संबल की भूमिका निभाएंगे'
       : '१ बड़ी बहन का योग, जो ममतामयी मार्गदर्शन, संबल व पारिवारिक संतुलन प्रदान करेंगी';
 
@@ -1040,22 +1049,22 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       titleEn: 'Siblings: Numbers, Genders, Bonding & Careers',
       titleHi: 'सहोदर, भाई-बहन, संख्या, लिंग व आपसी संबंध',
       icon: 'Users',
-      summaryEn: `Comprehensive sibling analysis synthesizing the 3rd house (${h3Sign.name} - Younger), 11th house (${h11Sign.name} - Elder), natural karaka Mars (Bhratrikaraka), and D3 Drekkana chart.`,
-      summaryHi: `तृतीय भाव (${SIGN_HI[h3SignIdx]} - अनुज), एकादश भाव (${SIGN_HI[h11SignIdx]} - ज्येष्ठ), मंगल (भ्रातृकारक) एवं द्रेष्काण (D3) चक्र के आधार पर भाई-बहनों की संख्या, लिंग, पेशा व आपसी प्रेम का सटीक विश्लेषण।`,
+      summaryEn: `Comprehensive sibling analysis synthesizing the 3rd house (${h3Sign.name} - Younger), 11th house (${h11Sign.name} - Elder), Mars, Mercury/Venus, Jaimini Bhratrikaraka, and D3 Drekkana.`,
+      summaryHi: `तृतीय भाव (${SIGN_HI[h3SignIdx]} - अनुज), एकादश भाव (${SIGN_HI[h11SignIdx]} - ज्येष्ठ), मंगल, बुध/शुक्र, जैमिनी भ्रातृकारक एवं द्रेष्काण (D3) द्वारा भाई-बहनों व आपसी प्रेम का विश्लेषण।`,
       attributes: [
         {
           id: 'attr_sibling_count',
           category: 'siblings',
-          titleEn: 'Total Sibling Count & Family Structure',
-          titleHi: 'कुल सहोदर संख्या व पारिवारिक स्वरूप',
-          valueEn: sibCountEn,
-          valueHi: sibCountHi,
-          explanationEn: `Calculated from the 3rd house (${h3Sign.name}), Mars's vitality, and D3 Drekkana divisional ascendant (${SIGNS[d3LagnaSign].name}). Sibling karma is active and supportive.`,
-          explanationHi: `तृतीय भाव (${SIGN_HI[h3SignIdx]}), मंगल और द्रेष्काण (D3) लग्न द्वारा प्रमाणित सहोदर योग अत्यंत शुभ, परस्पर सहयोगी और सामंजस्यपूर्ण है।`,
-          pacBasisEn: `House 3: ${h3Sign.name}; Lord ${youngerSiblingsLord?.id} in H${youngerSiblingsLord?.placedHouse}; D3 Lagna: ${SIGNS[d3LagnaSign].name}.`,
-          pacBasisHi: `तृतीय भाव: ${SIGN_HI[h3SignIdx]}; तृतीयेश भाव ${youngerSiblingsLord?.placedHouse} में; D3 लग्न: ${SIGN_HI[d3LagnaSign]}।`,
+          titleEn: 'Total Sibling Count, Birth Order & Family Structure',
+          titleHi: 'कुल सहोदर संख्या, जन्म क्रम व पारिवारिक स्वरूप',
+          valueEn: sibRes.countAndBirthOrder.valEn,
+          valueHi: sibRes.countAndBirthOrder.valHi,
+          explanationEn: sibRes.countAndBirthOrder.explEn,
+          explanationHi: sibRes.countAndBirthOrder.explHi,
+          pacBasisEn: sibRes.countAndBirthOrder.pacEn,
+          pacBasisHi: sibRes.countAndBirthOrder.pacHi,
           shastricRef: 'BPHS (Ch. 12, Sl. 19–24), Saravali (Ch. 26)',
-          vargaRef: 'D1 Rashi & D3 Drekkana',
+          vargaRef: 'D1 Rashi, D3 Drekkana & D9',
         },
         {
           id: 'attr_younger_sibling',
@@ -1116,15 +1125,29 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
         {
           id: 'attr_sibling_bonding',
           category: 'siblings',
-          titleEn: 'Mutual Camaraderie, Harmony & Shared Assets',
-          titleHi: 'आपसी तालमेल, सौहार्द व पैतृक सामंजस्य',
-          valueEn: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).bonding.valEn,
-          valueHi: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).bonding.valHi,
-          explanationEn: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).bonding.explEn,
-          explanationHi: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).bonding.explHi,
-          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House} ↔ 3rd Lord in H${youngerSiblingsLord?.placedHouse} (harmonious angular alliance).`,
-          pacBasisHi: `लग्नेश ${PLANET_HI[lagnaLordId]} भाव ${l1House} व तृतीयेश भाव ${youngerSiblingsLord?.placedHouse} के मध्य शुभ संबंध।`,
-          shastricRef: 'Saravali (Ch. 26, Sl. 18–25)',
+          titleEn: 'Brother-Sister Dynamics, Communication & Warmth',
+          titleHi: 'भाई-बहन संबंध, संवाद शैली व आपसी सौहार्द',
+          valueEn: sibRes.brotherSisterDynamics.valEn,
+          valueHi: sibRes.brotherSisterDynamics.valHi,
+          explanationEn: sibRes.brotherSisterDynamics.explEn,
+          explanationHi: sibRes.brotherSisterDynamics.explHi,
+          pacBasisEn: sibRes.brotherSisterDynamics.pacEn,
+          pacBasisHi: sibRes.brotherSisterDynamics.pacHi,
+          shastricRef: 'BPHS (Ch. 12), Saravali (Ch. 26)',
+          vargaRef: 'D1 & D3',
+        },
+        {
+          id: 'attr_jaimini_bhratrikaraka_upay',
+          category: 'siblings',
+          titleEn: 'Jaimini Bhratrikaraka & Sibling Harmony Upay',
+          titleHi: 'जैमिनी भ्रातृकारक एवं सहोदर सौहार्द उपाय',
+          valueEn: sibRes.bhratrikarakaAndUpay.valEn,
+          valueHi: sibRes.bhratrikarakaAndUpay.valHi,
+          explanationEn: sibRes.bhratrikarakaAndUpay.explEn,
+          explanationHi: sibRes.bhratrikarakaAndUpay.explHi,
+          pacBasisEn: sibRes.bhratrikarakaAndUpay.pacEn,
+          pacBasisHi: sibRes.bhratrikarakaAndUpay.pacHi,
+          shastricRef: 'Jaimini Sutras (Bhratrikaraka) & Vedic Upay',
           vargaRef: 'D1 & D3',
         },
       ],

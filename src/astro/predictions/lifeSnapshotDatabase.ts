@@ -1905,6 +1905,443 @@ export function getComprehensiveCareerAndWealthAnalysis(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 2: COMPREHENSIVE PARENTS, ANCESTRY, MOON-CONTEXT YOGAS & FAMILY HUB
+// -----------------------------------------------------------------------------
+
+export interface ComprehensiveParentsFamilyResult {
+  fatherBondAndPath: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  motherBondAndAura: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  familyYogasAndClimate: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  ancestralAndUpay: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getComprehensiveParentsAndFamilyAnalysis(
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  h2: HousePacProfile,
+  h4: HousePacProfile,
+  h7: HousePacProfile,
+  h9: HousePacProfile,
+  h10: HousePacProfile,
+  h12: HousePacProfile,
+  d12?: DivisionalChart
+): ComprehensiveParentsFamilyResult {
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
+  const GRAHA_HI: Record<GrahaKey, string> = {
+    Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+    Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+  };
+  const TIER_HI: Record<HouseStrengthTier, string> = {
+    strong: 'सबल', moderate: 'मध्यम', afflicted: 'पीड़ित',
+  };
+
+  const getP = (id: GrahaKey) => planets.find((p) => p.id === id);
+  const sun = getP('Sun');
+  const moon = getP('Moon');
+  const mercury = getP('Mercury');
+  const jupiter = getP('Jupiter');
+  const venus = getP('Venus');
+  const saturn = getP('Saturn');
+  const rahu = getP('Rahu');
+  const ketu = getP('Ketu');
+
+  // 1. Father (9th + 10th per BPHS 11.11 + Sun + Jupiter Mentor + D12)
+  const sunD12 = d12?.placements.find((pl) => pl.id === 'Sun');
+  const moonD12 = d12?.placements.find((pl) => pl.id === 'Moon');
+  const fatherSaturnTouch = h9.occupants.some((p) => p.id === 'Saturn') || h9.aspectors.some((p) => p.id === 'Saturn');
+  const pitruDoshaActive =
+    (rahu && (rahu.placedHouse === 9 || (sun && rahu.placedHouse === sun.placedHouse))) ||
+    (ketu && (ketu.placedHouse === 9 || (sun && ketu.placedHouse === sun.placedHouse)));
+  const jupMentorFather =
+    jupiter && (h9.occupants.some((p) => p.id === 'Jupiter') || h9.aspectors.some((p) => p.id === 'Jupiter') || (sun && jupiter.placedHouse === sun.placedHouse));
+
+  let fatherValEn = '';
+  let fatherValHi = '';
+  let fatherExplEn = '';
+  let fatherExplHi = '';
+
+  if (h9.tier === 'strong' && sun && sun.dignity !== 'Debilitated' && !pitruDoshaActive) {
+    fatherValEn = jupMentorFather
+      ? 'Respected, Wise Mentor-Father: Strong paternal support, ethical guidance & ancestral goodwill'
+      : 'Dignified & Supportive Paternal Lineage: Strong leadership, principles & steady family backing';
+    fatherValHi = jupMentorFather
+      ? 'सम्मानित व ज्ञानी मार्गदर्शक पिता: प्रबल पैतृक सहयोग, नैतिक मार्गदर्शन व कुल की प्रतिष्ठा'
+      : 'प्रतिष्ठित व सहयोगी पितृ पक्ष: दृढ़ सिद्धांत, नेतृत्व क्षमता व परिवार को स्थायी संबल';
+    fatherExplEn = `9th house (${SIGNS[h9.signIdx].name}), 10th house (BPHS 11.11 father-status axis), and Pitrukaraka Sun in H${sun.placedHouse} align harmoniously.${sunD12 ? ` Confirmed in D12 (Sun in ${SIGNS[sunD12.signIndex].name}).` : ''}`;
+    fatherExplHi = `नवम भाव (${SIGN_HI_NAMES[h9.signIdx]}), दशम भाव (BPHS 11.11 के अनुसार पितृ-प्रतिष्ठा) व पितृकारक सूर्य भाव ${sun.placedHouse} में शुभ स्थिति में हैं।`;
+  } else if (fatherSaturnTouch || pitruDoshaActive || h9.tier === 'afflicted') {
+    fatherValEn = fatherSaturnTouch && !pitruDoshaActive
+      ? 'Duty-Driven & Reserved Paternal Bond: Father carried heavy responsibilities; relationship matures with patience and respect'
+      : 'Karmic Paternal Friction / Pitru Pattern: Early struggle, generational distance, or self-made path away from father';
+    fatherValHi = fatherSaturnTouch && !pitruDoshaActive
+      ? 'कर्तव्य-प्रधान व गंभीर पितृ संबंध: पिता पर भारी जिम्मेदारियाँ; धैर्य व संवाद से संबंधों में प्रगाढ़ता'
+      : 'पैतृक संघर्ष व आत्मनिर्भर मार्ग: प्रारंभिक वैचारिक दूरी या परिश्रम के बाद स्वयं के बल पर उत्थान';
+    fatherExplEn = `${pitruDoshaActive ? 'Nodal influence (Rahu/Ketu) on Sun or 9th house indicates an ancestral duty pattern (Pitru pattern) resolved through service and humility. ' : ''}${fatherSaturnTouch ? 'Saturn touching the 9th brings emotional reserve rather than lack of care. ' : ''}Mercury in H${mercury?.placedHouse ?? '-'} governs whether unspoken care translates into open conversation.`;
+    fatherExplHi = `${pitruDoshaActive ? 'सूर्य या नवम भाव पर राहु-केतु का प्रभाव पैतृक ऋण/कर्तव्य की ओर संकेत करता है, जो सेवा व विनम्रता से शांत होता है। ' : ''}${fatherSaturnTouch ? 'शनि का नवम संबंध भावनात्मक संकोच देता है, न कि स्नेह की कमी।' : ''}`;
+  } else {
+    fatherValEn = 'Balanced Paternal Bond: Hardworking father with steady principles; independent respect grows with age';
+    fatherValHi = 'संतुलित पितृ संबंध: परिश्रमी व सिद्धांतवादी पिता; आयु के साथ आपसी सम्मान व समझ में वृद्धि';
+    fatherExplEn = `9th house (${h9.tier}) and 10th house (${h10.tier}) show practical paternal support paired with self-earned growth.`;
+    fatherExplHi = `नवम (${TIER_HI[h9.tier]}) व दशम (${TIER_HI[h10.tier]}) भाव पिता से व्यावहारिक सहयोग व स्वावलंबन दर्शाते हैं।`;
+  }
+
+  const fatherBondAndPath = {
+    valEn: fatherValEn,
+    valHi: fatherValHi,
+    explEn: fatherExplEn,
+    explHi: fatherExplHi,
+    pacEn: `H9 (${h9.tier}, L9 in H${h9.lordHouse}), H10 (${h10.tier}), Sun H${sun?.placedHouse} (${sun?.dignity})${sunD12 ? `, D12 Sun ${SIGNS[sunD12.signIndex].name}` : ''}.`,
+    pacHi: `नवम (${TIER_HI[h9.tier]}), दशम (${TIER_HI[h10.tier]}), सूर्य भाव ${sun?.placedHouse}${sunD12 ? `, D12 सूर्य ${SIGN_HI_NAMES[sunD12.signIndex]}` : ''}।`,
+  };
+
+  // 2. Mother (4th + Moon + Venus + Matru Yoga + D12)
+  const matruYoga = h4.lordPlanet && moon && (
+    h4.lordPlanet.placedHouse === moon.placedHouse ||
+    ([1, 4, 7, 10].includes(h4.lordPlanet.placedHouse) && [1, 4, 7, 10].includes(moon.placedHouse))
+  );
+  const motherSaturnTouch = h4.occupants.some((p) => p.id === 'Saturn') || h4.aspectors.some((p) => p.id === 'Saturn');
+  const motherNodeTouch = h4.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu') || h4.aspectors.some((p) => p.id === 'Rahu' || p.id === 'Ketu');
+  const venusComfort4 = h4.occupants.some((p) => p.id === 'Venus') || h4.aspectors.some((p) => p.id === 'Venus');
+
+  let motherValEn = '';
+  let motherValHi = '';
+  let motherExplEn = '';
+  let motherExplHi = '';
+
+  if ((matruYoga || h4.tier === 'strong') && moon && moon.dignity !== 'Debilitated' && !motherSaturnTouch && !motherNodeTouch) {
+    motherValEn = matruYoga
+      ? 'Matru Yoga Active: Deeply nurturing, emotionally anchoring mother & peaceful domestic foundation'
+      : 'Warm & Supportive Maternal Bond: Caring mother who anchors family values and home harmony';
+    motherValHi = matruYoga
+      ? 'शुभ मातृ योग सक्रिय: अत्यंत स्नेहमयी, संस्कारवान माता व सुखद पारिवारिक आधार'
+      : 'स्नेहमयी व सहयोगी मातृ संबंध: माता परिवार की भावनात्मक धुरी व संस्कारों की रक्षक';
+    motherExplEn = `4th house (${SIGNS[h4.signIdx].name}) and Matrukaraka Moon in H${moon.placedHouse} (${moon.dignity}) reinforce emotional security.${venusComfort4 ? ' Venus adds domestic comfort and warmth.' : ''}${moonD12 ? ` D12 Moon in ${SIGNS[moonD12.signIndex].name}.` : ''}`;
+    motherExplHi = `चतुर्थ भाव (${SIGN_HI_NAMES[h4.signIdx]}) व मातृकारक चंद्र भाव ${moon.placedHouse} में भावनात्मक सुरक्षा व पारिवारिक सुख देते हैं।${venusComfort4 ? ' शुक्र गृह-सुख व सौंदर्य बढ़ाते हैं।' : ''}`;
+  } else if (motherSaturnTouch || motherNodeTouch || h4.tier === 'afflicted') {
+    motherValEn = motherNodeTouch
+      ? 'Independent / Relocated Domestic Pattern: Mother endured stress or frequent relocation; strong inner resilience'
+      : 'Reserved / Duty-Focused Maternal Bond: Care expressed through quiet sacrifice rather than overt words';
+    motherValHi = motherNodeTouch
+      ? 'परिवर्तनशील घरेलू परिवेश: माता का त्यागमयी जीवन या जन्मस्थान से दूरी; गहन आंतरिक संबल'
+      : 'कर्तव्य-निष्ठ व संकोची मातृ संबंध: माता का स्नेह शब्दों से अधिक मौन त्याग व सेवा में दिखता है';
+    motherExplEn = `${motherSaturnTouch ? 'Saturn touching the 4th house or Moon creates duty-over-warmth reserve that softens over time. ' : ''}${motherNodeTouch ? 'Rahu/Ketu on the 4th often correlates with living away from the birthplace or restless domestic transitions. ' : ''}Regular calm communication helps bridge unspoken gaps.`;
+    motherExplHi = `${motherSaturnTouch ? 'चतुर्थ भाव/चंद्र पर शनि का प्रभाव भावनात्मक संकोच व गंभीरता देता है। ' : ''}${motherNodeTouch ? 'चतुर्थ पर राहु/केतु जन्मस्थान से दूर निवास या घरेलू बदलाव का संकेत देते हैं। ' : ''}नियमित शांत संवाद से संबंध सहज होते हैं।`;
+  } else {
+    motherValEn = 'Balanced Maternal Anchor: Devoted, practical mother who sustains household stability through steady care';
+    motherValHi = 'संतुलित मातृ संबल: समर्पित व व्यावहारिक माता, जो परिवार को स्थिरता प्रदान करती हैं';
+    motherExplEn = `4th house (${h4.tier}) and Moon in H${moon?.placedHouse ?? '-'} show dependable maternal care alongside evolving domestic responsibilities.`;
+    motherExplHi = `चतुर्थ भाव (${TIER_HI[h4.tier]}) व चंद्र भाव ${moon?.placedHouse ?? '-'} माता के व्यावहारिक स्नेह व पारिवारिक संतुलन को दर्शाते हैं।`;
+  }
+
+  const motherBondAndAura = {
+    valEn: motherValEn,
+    valHi: motherValHi,
+    explEn: motherExplEn,
+    explHi: motherExplHi,
+    pacEn: `H4 (${h4.tier}, L4 in H${h4.lordHouse}), Moon H${moon?.placedHouse} (${moon?.dignity})${matruYoga ? ', Matru Yoga' : ''}${moonD12 ? `, D12 Moon ${SIGNS[moonD12.signIndex].name}` : ''}.`,
+    pacHi: `चतुर्थ (${TIER_HI[h4.tier]}), चंद्र भाव ${moon?.placedHouse}${matruYoga ? ', मातृ योग' : ''}${moonD12 ? `, D12 चंद्र ${SIGN_HI_NAMES[moonD12.signIndex]}` : ''}।`,
+  };
+
+  // 3. Moon-Context Yogas (Sunapha / Anapha / Durdhara / Kemadruma) + 2nd House + Joint vs Nuclear
+  const moonSignIdx = moon?.signIndex ?? ascSignIdx;
+  const nonSunPlanets = planets.filter((p) => p.id !== 'Sun' && p.id !== 'Moon' && p.id !== 'Rahu' && p.id !== 'Ketu');
+  const in2FromMoon = nonSunPlanets.filter((p) => ((p.signIndex - moonSignIdx + 12) % 12) === 1);
+  const in12FromMoon = nonSunPlanets.filter((p) => ((p.signIndex - moonSignIdx + 12) % 12) === 11);
+  const moonInKendra = moon ? [1, 4, 7, 10].includes(moon.placedHouse) : false;
+  const moonConjunctAny = moon ? nonSunPlanets.some((p) => p.signIndex === moon.signIndex) : false;
+
+  let moonYogaEn = 'Balanced Moon Support';
+  let moonYogaHi = 'संतुलित चंद्र स्थिति';
+  let moonYogaDescEn = 'Emotional support flows evenly between self-reliance and family ties.';
+  let moonYogaDescHi = 'पारिवारिक जीवन में आत्मनिर्भरता व भावनात्मक सहयोग का संतुलन रहता है।';
+
+  if (in2FromMoon.length > 0 && in12FromMoon.length > 0) {
+    moonYogaEn = 'Durdhara Yoga';
+    moonYogaHi = 'दुर्धरा योग';
+    moonYogaDescEn = `Planets flanking the Moon (${in2FromMoon.map((p) => p.id).join(',')} & ${in12FromMoon.map((p) => p.id).join(',')}) confer generosity, family gathering warmth, and steady material support.`;
+    moonYogaDescHi = `चंद्र के दोनों ओर ग्रह होने से दुर्धरा योग बनता है, जो उदारता, पारिवारिक उत्सवों का केंद्र बनने व संसाधनों का सुख देता है।`;
+  } else if (in2FromMoon.length > 0) {
+    moonYogaEn = 'Sunapha Yoga';
+    moonYogaHi = 'सुनफा योग';
+    moonYogaDescEn = `${in2FromMoon.map((p) => p.id).join(', ')} in 2nd from Moon gives self-earned family stability, articulate speech, and independent financial pillar status.`;
+    moonYogaDescHi = `चंद्र से द्वितीय भाव में ग्रह होने से सुनफा योग बनता है, जिससे जातक स्व-अर्जित धन व बुद्धि से परिवार का मुख्य स्तंभ बनता है।`;
+  } else if (in12FromMoon.length > 0) {
+    moonYogaEn = 'Anapha Yoga';
+    moonYogaHi = 'अनफा योग';
+    moonYogaDescEn = `${in12FromMoon.map((p) => p.id).join(', ')} in 12th from Moon gives inner steadiness, dignified conduct, and calm family presence.`;
+    moonYogaDescHi = `चंद्र से द्वादश में ग्रह होने से अनफा योग बनता है, जो शांत स्वभाव, उत्तम आचरण व पारिवारिक सम्मान देता है।`;
+  } else if (!moonInKendra && !moonConjunctAny) {
+    moonYogaEn = 'Kemadruma Tendency (Build Conscious Support)';
+    moonYogaHi = 'केमद्रुम प्रवृत्ति (सजग संवाद से लाभ)';
+    moonYogaDescEn = 'No classical planet flanks or joins the Moon outside Kendras, so inner peace thrives best with deliberate weekly family check-ins and steady routines.';
+    moonYogaDescHi = 'चंद्र के दोनों ओर ग्रह न होने से जातक कभी-कभी भीड़ में भी एकाकी अनुभव कर सकता है; नियमित पारिवारिक संवाद व दिनचर्या से मन शांत रहता है।';
+  }
+
+  const jointPull = h2.tier === 'strong' && [1, 2, 4, 7, 10].includes(h4.lordHouse);
+  const nuclearPull = h7.tier === 'strong' && (h4.lordHouse === 12 || h12.occupants.length >= 2);
+  const familyStyleEn = nuclearPull && !jointPull
+    ? 'Independent / Nuclear Household Pull (Relocation or self-set home)'
+    : 'Strong Roots / Joint-Family Connection & Kutumba Values';
+  const familyStyleHi = nuclearPull && !jointPull
+    ? 'स्वतंत्र/एकल गृहस्थी की प्रवृत्ति (नए शहर या स्वतंत्र निवास)'
+    : 'संयुक्त परिवार व पैतृक कुटुंब मूल्यों से गहरा जुड़ाव';
+
+  const familyYogasAndClimate = {
+    valEn: `${moonYogaEn} | ${familyStyleEn}`,
+    valHi: `${moonYogaHi} | ${familyStyleHi}`,
+    explEn: `${moonYogaDescEn} 2nd house (${SIGNS[h2.signIdx].name}, ${h2.tier}) governs Kutumba values and inherited resources.`,
+    explHi: `${moonYogaDescHi} द्वितीय भाव (${SIGN_HI_NAMES[h2.signIdx]}, ${TIER_HI[h2.tier]}) कुटुंब संस्कार व पैतृक संसाधनों का आधार है।`,
+    pacEn: `Moon in ${SIGNS[moonSignIdx].name} (H${moon?.placedHouse}); H2 (${h2.tier}); H4 Lord in H${h4.lordHouse}; H7 (${h7.tier}).`,
+    pacHi: `चंद्र ${SIGN_HI_NAMES[moonSignIdx]} (भाव ${moon?.placedHouse}); द्वितीय (${TIER_HI[h2.tier]}); चतुर्थेश भाव ${h4.lordHouse} में।`,
+  };
+
+  // 4. Ethical Remedies / Upay (5-line simple behavioral + Vedic)
+  const upayEnParts: string[] = [];
+  const upayHiParts: string[] = [];
+  if (pitruDoshaActive) {
+    upayEnParts.push('Pitru care: Offer water with black sesame on Amavasya mornings and serve elders respectfully.');
+    upayHiParts.push('पितृ सम्मान: अमावस्या प्रातः जल व काले तिल अर्पित करें तथा बड़ों की सेवा करें।');
+  }
+  if (motherSaturnTouch || motherNodeTouch || h4.tier === 'afflicted') {
+    upayEnParts.push('Mother/4th Upay: Sit calmly with mother every Monday evening without distractions; offer raw milk/water to Tulsi.');
+    upayHiParts.push('मातृ/चतुर्थ उपाय: प्रत्येक सोमवार शाम माता के साथ शांत समय बिताएं व तुलसी में कच्चा दूध मिश्रित जल दें।');
+  }
+  if (fatherSaturnTouch || h9.tier === 'afflicted') {
+    upayEnParts.push('Father/10th Upay: Offer water to the rising Sun on Sundays and speak respectfully with father/mentors.');
+    upayHiParts.push('पितृ/सूर्य उपाय: रविवार सूर्योदय के समय तांबे के लोटे से सूर्य को अर्घ्य दें व पिता का सम्मान करें।');
+  }
+  if (upayEnParts.length === 0) {
+    upayEnParts.push('Behavioral Dharma: Express gratitude to parents regularly and preserve ancestral family harmony.');
+    upayHiParts.push('पारिवारिक धर्म: माता-पिता के प्रति कृतज्ञता व नियमित संवाद से कुल की समृद्धि अक्षुण्ण रहती है।');
+  }
+
+  const ancestralAndUpay = {
+    valEn: upayEnParts[0],
+    valHi: upayHiParts[0],
+    explEn: upayEnParts.join(' '),
+    explHi: upayHiParts.join(' '),
+    pacEn: `Pitru signal: ${pitruDoshaActive ? 'Active (Sun/9th nodal)' : 'Clear'}; 4th Saturn/Node: ${motherSaturnTouch || motherNodeTouch ? 'Present' : 'Clear'}.`,
+    pacHi: `पितृ संकेत: ${pitruDoshaActive ? 'सक्रिय' : 'शुभ'}; चतुर्थ शनि/राहु: ${motherSaturnTouch || motherNodeTouch ? 'प्रभावित' : 'शुभ'}।`,
+  };
+
+  return {
+    fatherBondAndPath,
+    motherBondAndAura,
+    familyYogasAndClimate,
+    ancestralAndUpay,
+  };
+}
+
+// -----------------------------------------------------------------------------
+// PILLAR 3: COMPREHENSIVE SIBLINGS, BIRTH ORDER, BHRATRIKARAKA & BONDING
+// -----------------------------------------------------------------------------
+
+export interface ComprehensiveSiblingsResult {
+  countAndBirthOrder: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  brotherSisterDynamics: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  bhratrikarakaAndUpay: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getComprehensiveSiblingsAnalysis(
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  h1: HousePacProfile,
+  h3: HousePacProfile,
+  h5: HousePacProfile,
+  h9: HousePacProfile,
+  h11: HousePacProfile,
+  d3?: DivisionalChart,
+  d9?: DivisionalChart
+): ComprehensiveSiblingsResult {
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
+  const GRAHA_HI: Record<GrahaKey, string> = {
+    Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+    Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+  };
+  const TIER_HI: Record<HouseStrengthTier, string> = {
+    strong: 'सबल', moderate: 'मध्यम', afflicted: 'पीड़ित',
+  };
+
+  const getP = (id: GrahaKey) => planets.find((p) => p.id === id);
+  const sun = getP('Sun');
+  const moon = getP('Moon');
+  const mars = getP('Mars');
+  const mercury = getP('Mercury');
+  const jupiter = getP('Jupiter');
+  const venus = getP('Venus');
+  const saturn = getP('Saturn');
+  const rahu = getP('Rahu');
+  const ketu = getP('Ketu');
+
+  // Jaimini Chara Bhratrikaraka (3rd highest degree among 7 classical planets)
+  const classical7 = planets.filter((p) =>
+    ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(p.id)
+  );
+  const explicitBK = classical7.find((p) => p.charaKaraka === 'BK');
+  const sortedByDeg = [...classical7].sort((a, b) => (b.degreeInSign ?? 0) - (a.degreeInSign ?? 0));
+  const bkPlanet = explicitBK ?? sortedByDeg[2] ?? mars;
+  const bkId = toGrahaKey(bkPlanet?.id);
+
+  // Birth order & count indicators
+  const jupIn11 = h11.occupants.some((p) => p.id === 'Jupiter');
+  const l3In11 = h3.lordHouse === 11;
+  const l11In3 = h11.lordHouse === 3;
+  const isDual3rd = [2, 5, 8, 11].includes(h3.signIdx);
+  const empty3And11 = h3.occupants.length === 0 && h11.occupants.length === 0;
+  const weakLordsDusthana =
+    [6, 8, 12].includes(h3.lordHouse) &&
+    [6, 8, 12].includes(h11.lordHouse) &&
+    h3.aspectors.every((p) => !['Jupiter', 'Venus'].includes(p.id));
+
+  let birthOrderEn = 'Balanced sibling position (1–2 co-borns typical)';
+  let birthOrderHi = 'संतुलित सहोदर स्थिति (सामान्यतः १ से २ भाई-बहन)';
+
+  if (empty3And11 && weakLordsDusthana) {
+    birthOrderEn = 'Only-child or very compact sibling circle (siblings distant or close friendships fill sibling role)';
+    birthOrderHi = 'एकल संतान या अत्यंत सीमित सहोदर योग (मित्र सहोदर जैसी भूमिका निभाते हैं)';
+  } else if (jupIn11 || (h1.tier === 'strong' && sun && [1, 9, 10].includes(sun.placedHouse) && h11.occupants.length === 0)) {
+    birthOrderEn = 'Eldest-child leadership signature (younger siblings read sequentially via 3rd -> 5th -> 7th)';
+    birthOrderHi = 'ज्येष्ठ संतान व नेतृत्व योग (छोटे भाई-बहन क्रमशः ३, ५, ७ भावों से विचारणीय)';
+  } else if (h11.occupants.length >= 1 && h3.occupants.length === 0) {
+    birthOrderEn = 'Youngest-child signature with elder sibling guidance (elder siblings read anti-clockwise: 11th -> 9th -> 7th)';
+    birthOrderHi = 'कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (बड़े सहोदर ११, ९, ७ भाव से विचारणीय)';
+  } else if (h3.occupants.length >= 1 && h11.occupants.length >= 1) {
+    birthOrderEn = 'Middle-child / multi-sibling circle (both younger 3rd and elder 11th houses active)';
+    birthOrderHi = 'मध्यम संतान व सक्रिय सहोदर परिवार (अनुज ३ और ज्येष्ठ ११ दोनों भाव सक्रिय)';
+  } else if (l3In11 || l11In3) {
+    birthOrderEn = '3rd–11th lord exchange/link: Distinct eldest or youngest anchor in the family';
+    birthOrderHi = 'तृतीयेश-एकादशेश संबंध: परिवार में सबसे बड़े या सबसे छोटे सहोदर की विशिष्ट भूमिका';
+  }
+
+  const twinOrMultipleNoteEn = (isDual3rd && h3.occupants.length >= 2) || (isDual3rd && mercury && [1, 3, 11].includes(mercury.placedHouse))
+    ? ' Dual sign on 3rd cusp supports multiple/closely-spaced siblings.'
+    : '';
+  const twinOrMultipleNoteHi = (isDual3rd && h3.occupants.length >= 2) || (isDual3rd && mercury && [1, 3, 11].includes(mercury.placedHouse))
+    ? ' तृतीय भाव में द्विस्वभाव राशि अधिक या समवयस्क सहोदरों का संकेत देती है।'
+    : '';
+
+  const d3LagnaIdx = d3?.lagnaSignIndex ?? ascSignIdx;
+  const marsD9SignIdx = d9?.placements.find((pl) => pl.id === 'Mars')?.signIndex;
+
+  const countAndBirthOrder = {
+    valEn: birthOrderEn,
+    valHi: birthOrderHi,
+    explEn: `Assessed via 3rd house (${SIGNS[h3.signIdx].name}, younger), 11th house (${SIGNS[h11.signIdx].name}, elder), Mars dignity (${mars?.dignity ?? 'Neutral'}), and D3 Drekkana Lagna (${SIGNS[d3LagnaIdx].name}).${twinOrMultipleNoteEn}`,
+    explHi: `तृतीय भाव (${SIGN_HI_NAMES[h3.signIdx]} - अनुज), एकादश भाव (${SIGN_HI_NAMES[h11.signIdx]} - ज्येष्ठ), मंगल की स्थिति व D3 द्रेष्काण लग्न (${SIGN_HI_NAMES[d3LagnaIdx]}) से सहोदर क्रम का आकलन।${twinOrMultipleNoteHi}`,
+    pacEn: `H3 (${h3.tier}, ${h3.occupants.length} occ), H11 (${h11.tier}, ${h11.occupants.length} occ), Mars H${mars?.placedHouse}${marsD9SignIdx !== undefined ? `, D9 Mars ${SIGNS[marsD9SignIdx].name}` : ''}.`,
+    pacHi: `तृतीय (${TIER_HI[h3.tier]}), एकादश (${TIER_HI[h11.tier]}), मंगल भाव ${mars?.placedHouse}${marsD9SignIdx !== undefined ? `, D9 मंगल ${SIGN_HI_NAMES[marsD9SignIdx]}` : ''}।`,
+  };
+
+  // Brother-Sister & Communication Dynamics (Mars = brother/protection, Mercury = sister/communication, Venus = sister/warmth, Jupiter = harmony)
+  const saturnIn3Or11 =
+    h3.occupants.some((p) => p.id === 'Saturn') || h3.aspectors.some((p) => p.id === 'Saturn') ||
+    h11.occupants.some((p) => p.id === 'Saturn') || h11.aspectors.some((p) => p.id === 'Saturn');
+  const nodeIn3Or11 =
+    h3.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu') ||
+    h11.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu');
+  const beneficIn35911 =
+    [h3, h5, h9, h11].some((hp) => hp.occupants.some((p) => p.id === 'Jupiter' || p.id === 'Venus' || p.id === 'Mercury'));
+  const l1L3Link = h1.lordHouse === 3 || h3.lordHouse === 1 || h1.lordHouse === h3.lordHouse;
+  const gajakesariOn3Or11 =
+    jupiter && moon &&
+    [1, 4, 7, 10].includes(((jupiter.signIndex - moon.signIndex + 12) % 12) + 1) &&
+    (h3.occupants.some((p) => p.id === 'Jupiter') || h3.aspectors.some((p) => p.id === 'Jupiter') ||
+     h11.occupants.some((p) => p.id === 'Jupiter') || h11.aspectors.some((p) => p.id === 'Jupiter'));
+
+  const marsWellPlaced = mars && (mars.placedHouse === 3 || mars.dignity === 'Exalted' || mars.dignity === 'Own Sign') && !mars.isCombust;
+  const marsStrained = mars && (mars.dignity === 'Debilitated' || mars.isCombust || (saturn && mars.placedHouse === saturn.placedHouse) || (rahu && mars.placedHouse === rahu.placedHouse));
+  const mercStrong = mercury && mercury.dignity !== 'Debilitated' && ![6, 8, 12].includes(mercury.placedHouse);
+
+  let bondValEn = '';
+  let bondValHi = '';
+  const bondDetailsEn: string[] = [];
+  const bondDetailsHi: string[] = [];
+
+  if ((beneficIn35911 || l1L3Link || gajakesariOn3Or11) && !marsStrained && !nodeIn3Or11) {
+    bondValEn = 'Warm, Cooperative Brother-Sister Bond: Mutual loyalty, protective care & lifelong family harmony';
+    bondValHi = 'स्नेहपूर्ण व सहयोगी भाई-बहन संबंध: आपसी विश्वास, सुरक्षा भावना व आजीवन पारिवारिक सौहार्द';
+  } else if (marsStrained || nodeIn3Or11) {
+    bondValEn = 'Dynamic / Karmically Tested Sibling Bond: Occasional ego or authority friction; matures with clear boundaries and calm talk';
+    bondValHi = 'संवेदनशील व कर्म-परीक्षित सहोदर संबंध: अधिकार या विचारों के मतभेद संभव; स्पष्ट संवाद व धैर्य से संबंध सुधरते हैं';
+  } else if (saturnIn3Or11) {
+    bondValEn = 'Duty-Over-Warmth / Age-Gap Bond: Dependable during crises, though daily contact may feel reserved or distant';
+    bondValHi = 'कर्तव्य-प्रधान व गंभीर सहोदर संबंध: संकट में पूर्ण सहयोग, किंतु दैनिक संवाद में कुछ दूरी या संकोच';
+  } else {
+    bondValEn = 'Steady & Independent Sibling Bond: Caring relationship balanced with healthy personal independence';
+    bondValHi = 'संतुलित व स्वतंत्र सहोदर संबंध: आपसी स्नेह के साथ अपने-अपने जीवन पथ पर प्रगति';
+  }
+
+  if (marsWellPlaced) {
+    bondDetailsEn.push('Dignified Mars gives protective brotherly energy (healthy competition rather than hostility).');
+    bondDetailsHi.push('सबल मंगल भाइयों से रक्षक सहयोग व स्वस्थ प्रतिस्पर्धा देता है।');
+  } else if (marsStrained) {
+    bondDetailsEn.push('Strained Mars calls for patience to prevent sharp arguments.');
+    bondDetailsHi.push('पीड़ित मंगल के कारण तीखी बहस से बचने व धैर्य रखने की आवश्यकता है।');
+  }
+
+  if (mercStrong) {
+    bondDetailsEn.push('Well-placed Mercury supports easy communication and warm sisterly rapport.');
+    bondDetailsHi.push('सबल बुध बहनों से मधुर तालमेल व सहज संवाद बनाए रखता है।');
+  } else {
+    bondDetailsEn.push('Mercury placement suggests care is present even when frequent calls/messages lag.');
+    bondDetailsHi.push('बुध की स्थिति दर्शाती है कि मन में स्नेह होते हुए भी नियमित संवाद कम रह सकता है।');
+  }
+
+  if (venus && (h3.aspectors.some((p) => p.id === 'Venus') || h11.aspectors.some((p) => p.id === 'Venus'))) {
+    bondDetailsEn.push('Venus aspect adds affection, shared celebrations, and sisterly warmth.');
+    bondDetailsHi.push('शुक्र की दृष्टि उत्सवों, उपहारों व आत्मीय स्नेह को बढ़ाती है।');
+  }
+  if (nodeIn3Or11) {
+    bondDetailsEn.push('Rahu/Ketu in sibling houses can indicate geographical distance, unconventional ties, or power-sharing lessons.');
+    bondDetailsHi.push('३/११ में राहु-केतु भौगोलिक दूरी या अधिकार-संतुलन के सबक दर्शाते हैं।');
+  }
+
+  const brotherSisterDynamics = {
+    valEn: bondValEn,
+    valHi: bondValHi,
+    explEn: bondDetailsEn.join(' '),
+    explHi: bondDetailsHi.join(' '),
+    pacEn: `Mars H${mars?.placedHouse} (${mars?.dignity}), Mercury H${mercury?.placedHouse} (${mercury?.dignity}), Saturn3/11: ${saturnIn3Or11}, Nodes3/11: ${nodeIn3Or11}${gajakesariOn3Or11 ? ', Gajakesari' : ''}.`,
+    pacHi: `मंगल भाव ${mars?.placedHouse}, बुध भाव ${mercury?.placedHouse}, शनि प्रभाव: ${saturnIn3Or11 ? 'हाँ' : 'नहीं'}, राहु-केतु: ${nodeIn3Or11 ? 'हाँ' : 'नहीं'}।`,
+  };
+
+  // Jaimini Bhratrikaraka + Practical Remedies
+  const bkStrong = bkPlanet && ![6, 8, 12].includes(bkPlanet.placedHouse) && bkPlanet.dignity !== 'Debilitated';
+  const sibUpayEn = marsStrained
+    ? 'Mars Upay: Recite Hanuman Chalisa on Tuesday mornings (11 Tuesdays) to foster protective calm.'
+    : !mercStrong
+    ? 'Mercury Upay: Message/call a sibling with no agenda on Wednesdays and feed green fodder to a cow.'
+    : 'Nurture sibling ties through shared festivals (Raksha Bandhan / Bhai Dooj) and honest check-ins.';
+  const sibUpayHi = marsStrained
+    ? 'मंगल उपाय: क्रोध शांत रखने व सौहार्द हेतु ११ मंगलवार प्रातः हनुमान चालीसा का पाठ करें।'
+    : !mercStrong
+    ? 'बुध उपाय: बुधवार को बिना किसी अपेक्षा के भाई/बहन से स्नेहपूर्वक बात करें व गाय को हरा चारा खिलाएं।'
+    : 'रक्षाबंधन/भाई दूज जैसे पर्वों व नियमित संवाद से सहोदर प्रेम को सुदृढ़ रखें।';
+
+  const bhratrikarakaAndUpay = {
+    valEn: `Jaimini BK: ${bkId} in H${bkPlanet?.placedHouse ?? '-'} (${bkStrong ? 'Soul-Level Support' : 'Needs Conscious Nurture'})`,
+    valHi: `जैमिनी भ्रातृकारक: ${GRAHA_HI[bkId]} भाव ${bkPlanet?.placedHouse ?? '-'} में (${bkStrong ? 'आत्मीय संबल' : 'सजग प्रयास अपेक्षित'})`,
+    explEn: `In Jaimini Jyotish, Bhratrikaraka (${bkId}) reflects the deeper karmic bond with siblings beyond house counts. ${sibUpayEn}`,
+    explHi: `जैमिनी ज्योतिष में भ्रातृकारक (${GRAHA_HI[bkId]}) भाई-बहनों से आत्मिक जुड़ाव को दर्शाता है। ${sibUpayHi}`,
+    pacEn: `Chara BK: ${bkId} (${bkPlanet?.degreeInSign?.toFixed(2) ?? '-'}° in ${bkPlanet?.signName ?? '-'}, H${bkPlanet?.placedHouse}); Nakshatra Lord: ${bkPlanet?.nakshatraLord ?? '-'}.`,
+    pacHi: `चर भ्रातृकारक: ${GRAHA_HI[bkId]} (भाव ${bkPlanet?.placedHouse}); नक्षत्र स्वामी: ${GRAHA_HI[toGrahaKey(bkPlanet?.nakshatraLord)]}।`,
+  };
+
+  return {
+    countAndBirthOrder,
+    brotherSisterDynamics,
+    bhratrikarakaAndUpay,
+  };
+}
+
+
 
 
 
