@@ -97,18 +97,30 @@ describe('360° Life Matrix Snapshot Dossier Master Engine', () => {
     expect(col1).not.toEqual(col2);
   });
 
-  it('correctly calculates nuanced sexual orientation and attraction patterns based on Kama axis', () => {
+  it('correctly calculates dignified Shastric sensory temperament without crude western labels', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeLifeSnapshotDossierReport(chart);
 
     const orientationAttr = report.pillars[3].attributes.find((a) => a.id === 'attr_sexual_orientation');
     expect(orientationAttr).toBeDefined();
-    expect(orientationAttr?.titleEn).toContain('Sexual Orientation');
+    expect(orientationAttr?.titleEn).toContain('Sensory Temperament');
     expect(orientationAttr?.titleHi).toContain('कामुक आकर्षण');
     expect(orientationAttr?.valueEn.length).toBeGreaterThan(15);
     expect(orientationAttr?.valueHi.length).toBeGreaterThan(15);
     expect(orientationAttr?.explanationEn).toContain('Brihat Jataka');
     expect(orientationAttr?.explanationHi).toContain('बृहज्जातक');
+
+    // Strict check: ABSOLUTELY ZERO crude modern sexual labels as standalone words anywhere in output
+    const allText = JSON.stringify(report);
+    expect(allText).not.toMatch(/\bbisexual\b/i);
+    expect(allText).not.toMatch(/\blesbian\b/i);
+    expect(allText).not.toMatch(/\bgay\b/i);
+    expect(allText).not.toMatch(/\bqueer\b/i);
+    expect(allText).not.toMatch(/\btransgender\b/i);
+    expect(allText).not.toMatch(/\bheterosexual\b/i);
+    expect(allText).not.toContain('उभयलैंगिक');
+    expect(allText).not.toContain('समलैंगिक');
+    expect(allText).not.toContain('समान लिंग');
 
     // Synthetic test chart: Venus in Gemini (dual sign) with Mercury influence
     const syntheticChart = {
@@ -136,9 +148,46 @@ describe('360° Life Matrix Snapshot Dossier Master Engine', () => {
 
     const syntheticReport = computeLifeSnapshotDossierReport(syntheticChart as any);
     const synOrientation = syntheticReport.pillars[3].attributes.find((a) => a.id === 'attr_sexual_orientation');
-    expect(synOrientation?.valueEn).toContain('Bisexual / Fluid Attraction');
-    expect(synOrientation?.valueHi).toContain('उभयलैंगिक');
-    expect(synOrientation?.valueHi).toContain('समान लिंग');
-    expect(synOrientation?.explanationHi).toContain('समान लिंग (Same Gender)');
+    expect(synOrientation?.valueEn).toContain('Refined aesthetic sensitivity & intellectual rapport');
+    expect(synOrientation?.valueHi).toContain('सौंदर्य-बोध व कलात्मक संवेदनशीलता');
+    expect(synOrientation?.explanationHi).toContain('बौद्धिक गहराई');
+  });
+
+  it('calculates realistic and differentiated wealth, education, and marital tiers', () => {
+    const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
+
+    // Synthetic afflicted chart: Saturn in 7th, Rahu in 6th, Jupiter in 6th
+    const afflictedChart = {
+      ...chart,
+      planets: chart.planets.map((p) => {
+        if (p.id === 'Saturn') {
+          return { ...p, placedHouse: 7, rasiHouseNumber: 7 };
+        }
+        if (p.id === 'Rahu') {
+          return { ...p, placedHouse: 6, rasiHouseNumber: 6 };
+        }
+        if (p.id === 'Jupiter') {
+          return { ...p, placedHouse: 8, rasiHouseNumber: 8 };
+        }
+        return p;
+      }),
+    };
+
+    const afflictedReport = computeLifeSnapshotDossierReport(afflictedChart as any);
+
+    // 1. Marital status should reflect delay/adjustments rather than fantasy guarantees
+    const maritalStatus = afflictedReport.pillars[3].attributes.find((a) => a.id === 'attr_marital_status');
+    expect(maritalStatus?.valueEn).toContain('Delayed marriage');
+    expect(maritalStatus?.valueHi).toContain('विवाह में विलंब');
+
+    // 2. Child count should reflect delay yoga
+    const progenyNumber = afflictedReport.pillars[4].attributes.find((a) => a.id === 'attr_children_count_genders');
+    expect(progenyNumber?.valueEn).toContain('delayed timing');
+    expect(progenyNumber?.valueHi).toContain('संतान विलंब योग');
+
+    // 3. Enemies should note vigilance against disputes
+    const enemies = afflictedReport.pillars[7].attributes.find((a) => a.id === 'attr_enemies_litigation');
+    expect(enemies?.valueEn).toContain('Vigilance against workplace politics');
+    expect(enemies?.valueHi).toContain('कार्यक्षेत्र में ईर्ष्यालु लोगों');
   });
 });
