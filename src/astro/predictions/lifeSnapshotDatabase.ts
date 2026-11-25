@@ -956,3 +956,204 @@ export function getPastLifeAndSpiritualDetails(
 
   return { purpose, debt, kuladevata, mantra };
 }
+
+// ============================================================================
+// COMPREHENSIVE 4-LAYER SANTAN YOG, D7 SAPTAMSHA & BEEJA/KSHETRA SPHUTA ENGINE
+// ============================================================================
+export interface ComprehensiveSantanResult {
+  d7Confirmation: BilingualPrediction & { pacEn: string; pacHi: string };
+  beejaKshetraSphuta: BilingualPrediction & { pacEn: string; pacHi: string };
+  badhaAndRemedies: BilingualPrediction & { pacEn: string; pacHi: string };
+}
+
+export function getComprehensiveSantanAnalysis(
+  h5: HousePacProfile,
+  h9: HousePacProfile,
+  planets: PlanetPos[],
+  d7?: { lagnaSignIndex: number; placements: Array<{ id: string; signIndex: number; houseFromVargaLagna: number }> },
+  jupiterBav?: number[]
+): ComprehensiveSantanResult {
+  const sun = planets.find((p) => p.id === 'Sun');
+  const moon = planets.find((p) => p.id === 'Moon');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+  const ketu = planets.find((p) => p.id === 'Ketu');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+
+  // 1. D7 Saptamsha Confirmation & Jupiter BAV Bindus (5th from Jupiter)
+  const d7LagnaIdx = d7?.lagnaSignIndex ?? h5.signIdx;
+  const d7LagnaSign = SIGNS[d7LagnaIdx] || SIGNS[0];
+  const d7LagnaLordPlanet = planets.find((p) => p.id === d7LagnaSign.lord);
+  const d7LagnaLordStrong =
+    d7LagnaLordPlanet &&
+    ([1, 4, 5, 7, 9, 10, 11].includes(d7LagnaLordPlanet.placedHouse) ||
+      d7LagnaLordPlanet.dignity === 'Exalted' ||
+      d7LagnaLordPlanet.dignity === 'Own Sign');
+
+  const d7H5Planets = (d7?.placements || []).filter((p) => p.houseFromVargaLagna === 5);
+  const d7Jup = (d7?.placements || []).find((p) => p.id === 'Jupiter');
+  const d7HasBeneficIn5 = d7H5Planets.some((p) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
+  const d7HasMaleficIn5 = d7H5Planets.some((p) => ['Saturn', 'Rahu', 'Ketu', 'Mars'].includes(p.id));
+
+  // Jupiter BAV in 5th from Jupiter
+  const fifthFromJupSignIdx = jupiter ? (jupiter.signIndex + 4) % 12 : h5.signIdx;
+  const jupBavBindus = jupiterBav ? jupiterBav[fifthFromJupSignIdx] ?? 4 : 4;
+
+  // Karako Bhava Nashaya check (Jupiter sitting in 5th alone)
+  const karakoBhavaNashaya = jupiter?.placedHouse === 5 && h5.occupants.length === 1;
+
+  const d1Supportive = h5.tier === 'strong' || (h5.tier === 'moderate' && !karakoBhavaNashaya);
+  const d7Supportive = Boolean(d7LagnaLordStrong && !d7HasMaleficIn5) || d7HasBeneficIn5;
+
+  let d7ValEn: string;
+  let d7ValHi: string;
+  let d7ExplEn: string;
+  let d7ExplHi: string;
+
+  if (d1Supportive && d7Supportive) {
+    d7ValEn = `D1 & D7 Agree — Firm Santan Yog (${jupBavBindus} BAV bindus in 5th from Guru); D7 Lagna ${d7LagnaSign.name} confirms natural progeny promise`;
+    d7ValHi = `D1 व सप्तांश D7 में पूर्ण सहमति — सुदृढ़ संतान योग (गुरु से पंचम में ${jupBavBindus} अष्टकवर्ग बिंदु); D7 लग्न ${d7LagnaSign.name} संतति सुख की पुष्टि करता है`;
+    d7ExplEn = `All four classical layers align: D1 5th house (${h5.signName}), 5th lord in H${h5.lordHouse}, Putrakaraka Jupiter (${jupBavBindus} bindus in 5th from Guru), and Saptamsha D7 (${d7LagnaSign.name}, D7 Jupiter in H${d7Jup?.houseFromVargaLagna ?? 1}). Note: Both partners' charts should be read together.`;
+    d7ExplHi = `ज्योतिष के चारों स्तर — जन्म कुंडली पंचम भाव, पंचमेश, पुत्रकारक गुरु (गुरु से पंचम में ${jupBavBindus} बिंदु) एवं सप्तांश D7 — परस्पर सहमत हैं। विवाह उपरांत दोनों जीवनसाथियों की कुंडली मिलाकर अंतिम समय देखा जाता है।`;
+  } else if (d1Supportive !== d7Supportive) {
+    d7ValEn = `Mixed D1 vs D7 Signals (${jupBavBindus} BAV bindus in 5th from Guru) — Running Mahadasha/Antardasha & partner’s chart decide timing`;
+    d7ValHi = `D1 व सप्तांश D7 में मिश्रित संकेत (गुरु से पंचम में ${jupBavBindus} बिंदु) — चल रही दशा व जीवनसाथी की कुंडली निर्णायक रहेगी`;
+    d7ExplEn = `Birth chart D1 and Saptamsha D7 diverge slightly (D7 divides each sign into 7 parts and is highly sensitive to exact birth-minute accuracy). Because they are mixed, favorable Vimshottari Dasha periods and Guru Gochar hold the decisive key.`;
+    d7ExplHi = `जन्म लग्न और सप्तांश D7 में आंशिक अंतर होने पर फलित को एकतरफा नहीं कहा जा सकता। सप्तांश जन्म समय के प्रति अत्यंत संवेदनशील होता है; ऐसी स्थिति में शुभ दशा व गुरु गोचर संतान सुख प्रदान करते हैं।`;
+  } else {
+    d7ValEn = `Santan Badha Indicators in D1 & D7 (${jupBavBindus} BAV bindus in 5th from Guru) — Indicates delay or obstruction rather than absolute denial`;
+    d7ValHi = `D1 व D7 दोनों में संतान बाधा के संकेत (गुरु से पंचम में ${jupBavBindus} बिंदु) — यह विलंब या कठिनाई का सूचक है, पूर्ण निषेध नहीं`;
+    d7ExplEn = `Both D1 5th axis (${h5.dominantGraha}) and D7 (${d7LagnaSign.name}) ask for closer care. Classical Jyotish stresses that delay is not denial; targeted planetary remedies alongside timely medical fertility consultation bring positive outcomes.`;
+    d7ExplHi = `D1 व सप्तांश दोनों में बाधा कारक ग्रहों का प्रभाव होने पर इसे अवरोध या विलंब समझना चाहिए, निराशा नहीं। सही समय पर चिकित्सीय परामर्श और शास्त्रीय उपायों से बाधा दूर होती है।`;
+  }
+
+  // 2. Real Beeja Sphuta (Male: Sun + Venus + Jupiter) & Kshetra Sphuta (Female: Moon + Mars + Jupiter)
+  const beejaLon = (((sun?.longitude ?? 0) + (venus?.longitude ?? 0) + (jupiter?.longitude ?? 0)) % 360 + 360) % 360;
+  const beejaSignIdx = Math.floor(beejaLon / 30);
+  const beejaNavIdx = Math.floor((beejaLon % 30) / (30 / 9));
+  const beejaSignOdd = beejaSignIdx % 2 === 0; // 0=Aries(Odd), 1=Taurus(Even)
+  const beejaNavOdd = beejaNavIdx % 2 === 0;
+  const beejaStrength = beejaSignOdd && beejaNavOdd ? 'Strong (Odd-Odd)' : beejaSignOdd || beejaNavOdd ? 'Moderate (Mixed)' : 'Sensitive (Even-Even)';
+
+  const kshetraLon = (((moon?.longitude ?? 0) + (mars?.longitude ?? 0) + (jupiter?.longitude ?? 0)) % 360 + 360) % 360;
+  const kshetraSignIdx = Math.floor(kshetraLon / 30);
+  const kshetraNavIdx = Math.floor((kshetraLon % 30) / (30 / 9));
+  const kshetraSignEven = kshetraSignIdx % 2 === 1;
+  const kshetraNavEven = kshetraNavIdx % 2 === 1;
+  const kshetraStrength = kshetraSignEven && kshetraNavEven ? 'Strong (Even-Even)' : kshetraSignEven || kshetraNavEven ? 'Moderate (Mixed)' : 'Sensitive (Odd-Odd)';
+
+  const isAdoptionYoga = h5.lordHouse === 6 || (h5.occupants.length >= 4 && h5.lordHouse === 12);
+  let beejaValEn: string;
+  let beejaValHi: string;
+  if (isAdoptionYoga) {
+    beejaValEn = `Adoption (Dattaka) / Assisted Conception (IVF) yoga noted (5th lord in H${h5.lordHouse}); Beeja: ${beejaStrength} | Kshetra: ${kshetraStrength}`;
+    beejaValHi = `दत्तक संतान अथवा आधुनिक चिकित्सीय सहायता (IVF/ART) से संतान सुख का विशेष योग (पंचमेश भाव ${h5.lordHouse} में); बीज: ${beejaStrength} | क्षेत्र: ${kshetraStrength}`;
+  } else if (h5.occupants.some((p) => p.id === 'Rahu' || p.id === 'Mars')) {
+    beejaValEn = `Pitta/Rahu sensitivity in early conception (Beeja: ${beejaStrength} | Kshetra: ${kshetraStrength}); regular medical prenatal monitoring strongly advised`;
+    beejaValHi = `प्रारंभिक गर्भ में पित्त/राहु संवेदनशीलता (बीज: ${beejaStrength} | क्षेत्र: ${kshetraStrength}); नियमित चिकित्सकीय निगरानी व शीतल सात्विक आहार आवश्यक`;
+  } else if (beejaStrength.startsWith('Sensitive') || kshetraStrength.startsWith('Sensitive')) {
+    beejaValEn = `Mixed Beeja/Kshetra Sphuta (${beejaStrength} | Kshetra: ${kshetraStrength}); consult a fertility specialist alongside Vedic observances if trying 12+ months`;
+    beejaValHi = `मिश्रित बीज/क्षेत्र स्फुट (${beejaStrength} | क्षेत्र: ${kshetraStrength}); १ वर्ष से अधिक प्रयास पर योग्य चिकित्सक से परामर्श व शास्त्रीय उपाय साथ-साथ करें`;
+  } else {
+    beejaValEn = `Natural conception supported — Beeja Sphuta: ${beejaStrength} (${SIGNS[beejaSignIdx].name}); Kshetra Sphuta: ${kshetraStrength} (${SIGNS[kshetraSignIdx].name})`;
+    beejaValHi = `प्राकृतिक गर्भधारण अनुकूल — बीज स्फुट: ${beejaStrength} (${SIGNS[beejaSignIdx].name}); क्षेत्र स्फुट: ${kshetraStrength} (${SIGNS[kshetraSignIdx].name})`;
+  }
+
+  // 3. Exact Blocking Graha Diagnosis & Classical Remedies (from BPHS / Phaladeepika / Tradition)
+  let blockingGraha: GrahaKey = h5.dominantGraha;
+  if (rahu && (rahu.placedHouse === 5 || rahu.placedHouse === 9)) blockingGraha = 'Rahu';
+  else if (saturn && (saturn.placedHouse === 5 || h5.aspectors.some((p) => p.id === 'Saturn'))) blockingGraha = 'Saturn';
+  else if (ketu && ketu.placedHouse === 5) blockingGraha = 'Ketu';
+  else if (mars && mars.placedHouse === 5) blockingGraha = 'Mars';
+  else if (sun && sun.placedHouse === 5 && sun.dignity === 'Debilitated') blockingGraha = 'Sun';
+  else if (karakoBhavaNashaya) blockingGraha = 'Jupiter';
+
+  const remedyMap: Record<GrahaKey, { valEn: string; valHi: string; explEn: string; explHi: string }> = {
+    Sun: {
+      valEn: 'Pitru Pida indicator: Offer daily Surya Arghya in copper, listen to Harivamsha Purana, and perform ancestral Tarpan / Pind Daan',
+      valHi: 'पितृ पीड़ा संकेत: ताम्र पात्र से नित्य सूर्य अर्घ्य, हरिवंश पुराण श्रवण, गायत्री जप एवं गयाजी/पुष्कर में पितृ तर्पण व पिंड दान करें',
+      explEn: 'Sun obstructing the 5th/9th axis points to Pitru Rina. Ancestral Shraddh and Sunday wheat/jaggery charity pacify solar heat.',
+      explHi: 'सूर्य द्वारा पंचम/नवम में बाधा होने पर पितृ शांति, रविवार को गेहूं-गुड़ दान व सूर्य मंत्र लाभकारी होते हैं।',
+    },
+    Moon: {
+      valEn: 'Matru / Devi pacification: Recite Gayatri Mantra, observe salt-free Monday fasts, and donate rice, milk, or white cloth',
+      valHi: 'मातृ/देवी कृपा उपाय: सोमवार को नमक रहित व्रत, गायत्री जप, माँ दुर्गा आराधना एवं चावल, दूध व श्वेत वस्त्र का दान करें',
+      explEn: 'Moon sensitivity benefits from Monday fasting, emotional calm, and Devi worship alongside medical care.',
+      explHi: 'चंद्र जनित बाधा में सोमवार व्रत व चंद्र मंत्र से मानसिक शांति एवं संतति सुख में सहायता मिलती है।',
+    },
+    Mars: {
+      valEn: 'Bhratru / Kuja pacification: Recite Ramayana / Hanuman Chalisa, observe Pradosh Vrat, and donate red masoor dal or jaggery on Tuesdays',
+      valHi: 'भौम बाधा निवारण: प्रदोष व्रत, श्री रामायण/हनुमान चालीसा पाठ एवं मंगलवार को गुड़ व मसूर दाल का दान करें',
+      explEn: 'Martian heat in Putra Bhava is cooled by Ganapati/Hanuman devotion and Tuesday charity.',
+      explHi: 'मंगल के उग्र प्रभाव को शांत करने के लिए श्री गणेश व हनुमान उपासना अत्यंत फलदायी है।',
+    },
+    Mercury: {
+      valEn: 'Vishnu & Tulsi Upasana: Recite Vishnu Sahasranama, water and light a lamp near Tulsi daily, and donate green moong on Wednesdays',
+      valHi: 'विष्णु-तुलसी उपासना: विष्णु सहस्रनाम पाठ, नित्य तुलसी को जल व दीप दान तथा बुधवार को साबुत मूंग का दान करें',
+      explEn: 'Mercury influencing 5th responds gracefully to Lord Vishnu’s worship and Wednesday charity.',
+      explHi: 'बुध की शांति हेतु विष्णु पुराण श्रवण व तुलसी सेवा श्रेष्ठ शास्त्रीय उपाय है।',
+    },
+    Jupiter: {
+      valEn: 'Guru & Santan Gopal Upasana: Chant "Om Gram Greem Graum Sah Gurave Namah" on Thursdays, worship Bal Gopal, and keep Putrada Ekadashi',
+      valHi: 'गुरु व संतान गोपाल उपासना: गुरुवार को "ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः" जप, बाल गोपाल (तुलसी-मिश्री) पूजा व पुत्रदा एकादशी व्रत रखें',
+      explEn: 'Since Jupiter is Putrakaraka (and can delay when sitting alone in 5th), Thursday yellow donations (chana dal, turmeric) and Santan Gopal Stotra are supreme.',
+      explHi: 'पुत्रकारक गुरु के बल संवर्धन हेतु गुरुवार को चना दाल व हल्दी दान, फलदार वृक्ष लगाना तथा संतान गोपाल स्तोत्र का पाठ सर्वोत्तम है।',
+    },
+    Venus: {
+      valEn: 'Shukra & Gau-Seva: Serve cows (Gau Seva), offer white sweets/curd on Fridays, and honor married women (Suhagin) respectfully',
+      valHi: 'शुक्र व गौ-सेवा उपाय: शुक्रवार व्रत, गौ-सेवा (हरा चारा/गुड़), श्वेत वस्त्र-चावल दान व सुहागिन स्त्रियों का सम्मान करें',
+      explEn: 'Venusian challenges in the 5th are harmonized through Friday fasting, charity, and nurturing respect.',
+      explHi: 'शुक्र संबंधी बाधा में गौ-दान/गौ-सेवा तथा शुक्रवार के सात्विक दान से शुभ फल प्राप्त होते हैं।',
+    },
+    Saturn: {
+      valEn: 'Shani Delay Pacification: Plant Peepal trees, recite Dasharath Krit Shani Stotra & Hanuman Chalisa, and perform Rudrabhisheka on Saturdays',
+      valHi: 'शनि विलंब शमन: पीपल वृक्षारोपण, दशरथ कृत शनि स्तोत्र व हनुमान चालीसा पाठ, रुद्राभिषेक तथा शनिवार को काले तिल-तेल का दान करें',
+      explEn: 'Saturn delays more often than it denies. Patience, Peepal care, and Rudrabhisheka unlock mature-age progeny.',
+      explHi: 'शनि संतान को रोकता नहीं बल्कि विलंब करता है। पीपल सेवा व शिव आराधना से विलंब समाप्त होता है।',
+    },
+    Rahu: {
+      valEn: 'Sarpa / Pitru Pacification: Perform Nag Puja on Nag Panchami, feed fish, recite Santan Gopal Stotra, and donate saptadhanya on Saturdays',
+      valHi: 'सर्प/राहु शांति उपाय: नाग पंचमी पर नाग पूजन, मछलियों को आटा/चारा खिलाना, संतान गोपाल स्तोत्र व शनिवार को सतनाजा दान करें',
+      explEn: 'Rahu in the 5th/9th axis calls for ancestral/Sarpa pacification alongside modern prenatal medical care.',
+      explHi: 'राहु जनित संतान बाधा में पितृ/नाग शांति के साथ-साथ नियमित चिकित्सीय देखभाल रखना अनिवार्य है।',
+    },
+    Ketu: {
+      valEn: 'Ganapati & Brahmin Seva: Offer Durva grass to Lord Ganesha, recite Santan Ganapati Stotra (11x daily), and donate saptadhanya & coconut',
+      valHi: 'संतान गणपति प्रयोग: श्री गणेश जी को दूर्वा अर्पण, नित्य संतान गणपति स्तोत्र का पाठ एवं सतनाजा व नारियल का दान करें',
+      explEn: 'Ketu’s detachment in 5th softens with Ganesha worship, charity to scholars, and Putrada Ekadashi observance.',
+      explHi: 'केतु की बाधा में श्री गणेश जी की आराधना और सतनाजा दान से संतान सुख का मार्ग प्रशस्त होता है।',
+    },
+  };
+
+  const rem = remedyMap[blockingGraha];
+
+  return {
+    d7Confirmation: {
+      valEn: d7ValEn,
+      valHi: d7ValHi,
+      explEn: d7ExplEn,
+      explHi: d7ExplHi,
+      pacEn: `D1 H5: ${h5.signName} (Lord in H${h5.lordHouse}); D7 Lagna: ${d7LagnaSign.name}; 5th from Guru BAV: ${jupBavBindus} bindus.`,
+      pacHi: `D1 पंचम: ${h5.signName} (भावेश भाव ${h5.lordHouse}); D7 लग्न: ${d7LagnaSign.name}; गुरु से पंचम अष्टकवर्ग: ${jupBavBindus} बिंदु।`,
+    },
+    beejaKshetraSphuta: {
+      valEn: beejaValEn,
+      valHi: beejaValHi,
+      explEn: 'Calculated from exact sidereal longitudes of Sun+Venus+Jupiter (Beeja) and Moon+Mars+Jupiter (Kshetra) with Navamsha parity. Astrology shows tendency and timing — never replaces medical diagnosis.',
+      explHi: 'सूर्य+शुक्र+गुरु (बीज स्फुट) एवं चंद्र+मंगल+गुरु (क्षेत्र स्फुट) के वास्तविक अंश व नवांश से गणना। ज्योतिष केवल प्रवृत्ति व समय बताता है; आवश्यकता होने पर योग्य चिकित्सक से परामर्श अवश्य लें।',
+      pacEn: `Beeja Lon: ${beejaLon.toFixed(1)}° (${SIGNS[beejaSignIdx].name}); Kshetra Lon: ${kshetraLon.toFixed(1)}° (${SIGNS[kshetraSignIdx].name}).`,
+      pacHi: `बीज स्फुट: ${beejaLon.toFixed(1)}° (${SIGNS[beejaSignIdx].name}); क्षेत्र स्फुट: ${kshetraLon.toFixed(1)}° (${SIGNS[kshetraSignIdx].name})।`,
+    },
+    badhaAndRemedies: {
+      valEn: rem.valEn,
+      valHi: rem.valHi,
+      explEn: `${rem.explEn} Consult gemstones (such as Pukhraj) only after verifying Lagna suitability; keep medical care and spiritual observances side by side.`,
+      explHi: `${rem.explHi} पुखराज आदि रत्न बिना विशेषज्ञ परामर्श के धारण न करें। चिकित्सीय उपचार और शास्त्रीय उपाय साथ-साथ जारी रखें।`,
+      pacEn: `Primary Indicator: ${blockingGraha} on 5th/9th axis (${h5.signName}).`,
+      pacHi: `मुख्य विचारणीय ग्रह: ${blockingGraha} (पंचम/नवम अक्ष पर प्रभाव)।`,
+    },
+  };
+}
+

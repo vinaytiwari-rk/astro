@@ -34,6 +34,7 @@ import {
   getPillar8MicroDetails,
   getPillar9AssetDetails,
   getPastLifeAndSpiritualDetails,
+  getComprehensiveSantanAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -1465,6 +1466,13 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     }
 
     const p5Det = getProgenyPillarDetails(h5Prof, h9Prof, jupiter);
+    const santanDet = getComprehensiveSantanAnalysis(
+      h5Prof,
+      h9Prof,
+      planets,
+      d7,
+      chart.ashtakavarga?.bhinna?.Jupiter
+    );
 
     pillars.push({
       id: 'children_progeny',
@@ -1546,17 +1554,45 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D7',
         },
         {
+          id: 'attr_saptamsha_d7_confirmation',
+          category: 'children',
+          titleEn: '4-Layer D7 Saptamsha Confirmation & Ashtakavarga Verdict',
+          titleHi: 'चतुर्स्तरीय सप्तांश (D7) पुष्टि व गुरु अष्टकवर्ग निर्णय',
+          valueEn: santanDet.d7Confirmation.valEn,
+          valueHi: santanDet.d7Confirmation.valHi,
+          explanationEn: santanDet.d7Confirmation.explEn,
+          explanationHi: santanDet.d7Confirmation.explHi,
+          pacBasisEn: santanDet.d7Confirmation.pacEn,
+          pacBasisHi: santanDet.d7Confirmation.pacHi,
+          shastricRef: 'BPHS (Ch. 6 & Ch. 12), Phaladeepika (Ch. 12)',
+          vargaRef: 'D1, D7 Saptamsha & BAV',
+        },
+        {
           id: 'attr_miscarriage_adoption',
           category: 'children',
-          titleEn: 'Garbhadhana Risks, Alternative Methods & Adoption Yoga',
-          titleHi: 'गर्भ सुरक्षा, आईवीएफ (IVF) व दत्तक पुत्र विचार',
-          valueEn: conceiveRiskEn,
-          valueHi: conceiveRiskHi,
-          explanationEn: `The biological Beeja/Kshetra Sphuta is virile and fertile, ensuring natural lineage continuation with appropriate modern medical support.`,
-          explanationHi: `बीज स्फुट व क्षेत्र स्फुट बलवान होने के कारण कुल की वंश वृद्धि सुनिश्चित है। सात्विक जीवनशैली से गर्भ पूर्णतः सुरक्षित रहता है।`,
-          pacBasisEn: `Beeja/Kshetra Sphuta points in fertile signs; 5th house lord ${l5?.id} in House ${l5?.placedHouse}.`,
-          pacBasisHi: `बीज/क्षेत्र स्फुट ओजस्वी; पंचमेश भाव ${l5?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 43–48)',
+          titleEn: 'Beeja/Kshetra Sphuta, Medical Alignment & Adoption Yoga',
+          titleHi: 'बीज/क्षेत्र स्फुट, गर्भ सुरक्षा, आईवीएफ (IVF) व दत्तक विचार',
+          valueEn: santanDet.beejaKshetraSphuta.valEn,
+          valueHi: santanDet.beejaKshetraSphuta.valHi,
+          explanationEn: santanDet.beejaKshetraSphuta.explEn,
+          explanationHi: santanDet.beejaKshetraSphuta.explHi,
+          pacBasisEn: santanDet.beejaKshetraSphuta.pacEn,
+          pacBasisHi: santanDet.beejaKshetraSphuta.pacHi,
+          shastricRef: 'Jatakadesha Marga, Phaladeepika (Ch. 12), BPHS',
+          vargaRef: 'D1, D7 & D9',
+        },
+        {
+          id: 'attr_santan_badha_remedies',
+          category: 'children',
+          titleEn: 'Santan Badha Diagnosis & Graha-Matched Shastric Remedies',
+          titleHi: 'संतान बाधा निदान व ग्रह-आधारित शास्त्रीय उपाय',
+          valueEn: santanDet.badhaAndRemedies.valEn,
+          valueHi: santanDet.badhaAndRemedies.valHi,
+          explanationEn: santanDet.badhaAndRemedies.explEn,
+          explanationHi: santanDet.badhaAndRemedies.explHi,
+          pacBasisEn: santanDet.badhaAndRemedies.pacEn,
+          pacBasisHi: santanDet.badhaAndRemedies.pacHi,
+          shastricRef: 'Phaladeepika (Ch. 12), Harivamsha Purana, Santan Gopal Stotra',
           vargaRef: 'D1 & D7',
         },
       ],
