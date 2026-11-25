@@ -7,7 +7,7 @@
  */
 
 import { SIGNS } from '../constants';
-import type { BodyPosition } from '../types';
+import type { BodyPosition, DivisionalChart } from '../types';
 
 export type PlanetPos = BodyPosition & { placedHouse: number };
 export type GrahaKey = 'Sun' | 'Moon' | 'Mars' | 'Mercury' | 'Jupiter' | 'Venus' | 'Saturn' | 'Rahu' | 'Ketu';
@@ -1568,6 +1568,343 @@ export function getComprehensiveMedicalAstrology(
     ayurvedaDhatuAndHerbs,
   };
 }
+
+// -----------------------------------------------------------------------------
+// PILLAR 7: COMPREHENSIVE CAREER, JOB VS BUSINESS, INDU LAGNA & RAJA/DHANA YOGA
+// -----------------------------------------------------------------------------
+
+export interface ComprehensiveCareerResult {
+  suitableProfession: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  jobVsBusiness: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  karakaAnd10thLord: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  financialWealthTier: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  rajaDhanaInduYogas: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getComprehensiveCareerAndWealthAnalysis(
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  h2: HousePacProfile,
+  h6: HousePacProfile,
+  h7: HousePacProfile,
+  h8: HousePacProfile,
+  h9: HousePacProfile,
+  h10: HousePacProfile,
+  h11: HousePacProfile,
+  h12: HousePacProfile,
+  d9?: DivisionalChart,
+  d10?: DivisionalChart,
+  chartYogas?: Array<{ name: string; category?: string; isBenefic?: boolean }>
+): ComprehensiveCareerResult {
+  const SIGN_LORDS: GrahaKey[] = [
+    'Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury',
+    'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter',
+  ];
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
+  const GRAHA_HI: Record<GrahaKey, string> = {
+    Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+    Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+  };
+  const TIER_HI: Record<HouseStrengthTier, string> = {
+    strong: 'सबल', moderate: 'मध्यम', afflicted: 'पीड़ित',
+  };
+
+  const getP = (id: GrahaKey) => planets.find((p) => p.id === id);
+  const sun = getP('Sun');
+  const moon = getP('Moon');
+  const mars = getP('Mars');
+  const mercury = getP('Mercury');
+  const jupiter = getP('Jupiter');
+  const venus = getP('Venus');
+  const saturn = getP('Saturn');
+  const rahu = getP('Rahu');
+
+  const l10 = h10.lordPlanet;
+  const l9 = h9.lordPlanet;
+  const l7 = h7.lordPlanet;
+  const l2 = h2.lordPlanet;
+  const l11 = h11.lordPlanet;
+
+  const isStrongDignity = (p?: PlanetPos) =>
+    p?.dignity === 'Exalted' || p?.dignity === 'Own Sign' || p?.dignity === 'Moolatrikona';
+
+  // 1. Karaka-First: Saturn (Karma Karaka) + Jupiter (Jeeva Karaka)
+  const saturnCompanions = saturn
+    ? planets.filter((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse)
+    : [];
+  const saturnLink: GrahaKey = saturnCompanions[0]
+    ? toGrahaKey(saturnCompanions[0].id)
+    : saturn
+    ? SIGN_LORDS[saturn.signIndex]
+    : 'Saturn';
+
+  const planetProfessionDomain: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Government Administration, Executive Leadership & Authority Roles', hi: 'सरकारी प्रशासन, उच्च नेतृत्व व नीति-निर्माण' },
+    Moon: { en: 'Healthcare, Hospitality, Public Relations & Marine/Fluid Trades', hi: 'स्वास्थ्य सेवा, आतिथ्य सत्कार, जनसंपर्क व जलीय व्यापार' },
+    Mars: { en: 'Engineering, Industrial Operations, Defense, Real Estate & Surgery', hi: 'इंजीनियरिंग, औद्योगिक निर्माण, रक्षा, रियल एस्टेट व शल्य चिकित्सा' },
+    Mercury: { en: 'Finance, Accounting, Software/Data Analytics, Commerce & Communication', hi: 'वित्त, लेखा, सॉफ्टवेयर/डेटा एनालिटिक्स, वाणिज्य व संचार' },
+    Jupiter: { en: 'Advisory, Law, Higher Education, Banking & Institutional Management', hi: 'परामर्श, विधि (Law), उच्च शिक्षा, बैंकिंग व संस्थागत प्रबंधन' },
+    Venus: { en: 'Design, Media, Luxury Retail, Architecture, Hospitality & Arts', hi: 'डिजाइन, मीडिया, लक्जरी व्यवसाय, वास्तुकला व कला क्षेत्र' },
+    Saturn: { en: 'Infrastructure, Manufacturing, Compliance, Operations & Long-Term Systems', hi: 'बुनियादी ढांचा, विनिर्माण, कानून-अनुपालन व दीर्घकालिक संचालन' },
+    Rahu: { en: 'AI/Emerging Tech, Global Trade, Aviation, Digital Media & Research', hi: 'आधुनिक तकनीक (AI/IT), विदेशी व्यापार, डिजिटल मीडिया व शोध' },
+    Ketu: { en: 'Deep Research, Auditing, Cybersecurity, Pharmaceuticals & Spiritual Healing', hi: 'गहन शोध, ऑडिटिंग, साइबर सुरक्षा, औषधि व आध्यात्मिक परामर्श' },
+  };
+
+  // Determine primary profession from 10th lord + Saturn link + D10 confirmation
+  const d10LagnaIdx = d10?.lagnaSignIndex ?? ascSignIdx;
+  const d10House10SignIdx = (d10LagnaIdx + 9) % 12;
+  const d10Occupants = d10?.placements.filter((pl) => pl.houseFromVargaLagna === 10 && pl.id !== 'Asc') ?? [];
+  const l10D9SignIdx = d9?.placements.find((pl) => pl.id === h10.lordId)?.signIndex;
+
+  const primaryDomainKey: GrahaKey =
+    (h10.occupants.find((o) => o.id in planetProfessionDomain)?.id as GrahaKey) ||
+    h10.lordId ||
+    saturnLink;
+  const secondaryDomainKey: GrahaKey =
+    saturnLink !== primaryDomainKey ? saturnLink : h10.lordId;
+
+  const primaryDomain = planetProfessionDomain[primaryDomainKey] ?? planetProfessionDomain.Saturn;
+  const secondaryDomain = planetProfessionDomain[secondaryDomainKey] ?? planetProfessionDomain.Mercury;
+
+  // 2. 10th Lord in 12 Houses
+  const tenthLordHouseMap: Record<number, { en: string; hi: string }> = {
+    1: { en: 'Self-made independent career, personal brand & direct leadership', hi: 'स्वनिर्मित स्वतंत्र करियर, व्यक्तिगत पहचान व प्रत्यक्ष नेतृत्व' },
+    2: { en: 'Finance, banking, speech-driven advisory, or family enterprise', hi: 'वित्त, बैंकिंग, वाणी-प्रधान परामर्श अथवा पारिवारिक व्यवसाय' },
+    3: { en: 'Media, sales, communications, publishing, or frequent short-travel work', hi: 'मीडिया, विक्रय, संचार, प्रकाशन अथवा यात्रा-प्रधान कार्य' },
+    4: { en: 'Real estate, vehicles, agriculture, education, or homeland administration', hi: 'रियल एस्टेट, वाहन, कृषि, शिक्षा अथवा स्थानीय प्रशासन' },
+    5: { en: 'Creative strategy, teaching, investments, or intellectual consulting', hi: 'रचनात्मक रणनीति, शिक्षण, निवेश अथवा बौद्धिक परामर्श' },
+    6: { en: 'Structured service, healthcare, law, compliance, or competitive sectors', hi: 'संगठित सेवा (नौकरी), चिकित्सा, कानून अथवा प्रतियोगी क्षेत्र' },
+    7: { en: 'Independent business, client partnerships, trade, or foreign commerce', hi: 'स्वतंत्र व्यापार, साझेदारी, वाणिज्य अथवा विदेशी संपर्क' },
+    8: { en: 'Research, insurance, taxation, crisis management, or occult/deep analytics', hi: 'शोध, बीमा, कराधान, संकट प्रबंधन अथवा गूढ़ विश्लेषण' },
+    9: { en: 'Higher education, law, publishing, foreign assignments, or dharmic leadership', hi: 'उच्च शिक्षा, कानून, प्रकाशन, विदेश कार्य अथवा मार्गदर्शक पद' },
+    10: { en: 'High executive authority, institutional status & strong career recognition', hi: 'उच्च प्रशासनिक अधिकार, संस्थागत प्रतिष्ठा व सुदृढ़ कर्म-स्थान' },
+    11: { en: 'Entrepreneurship, large networks, tech platforms & scalable gains', hi: 'उद्यमिता, बड़े नेटवर्क, तकनीकी मंच व बहु-स्तरीय लाभ' },
+    12: { en: 'MNCs, foreign lands, hospitals, backend architecture, or charitable institutions', hi: 'बहुराष्ट्रीय कंपनी (MNC), विदेश सेवा, अस्पताल अथवा पर्दे के पीछे की भूमिका' },
+  };
+  const l10HouseInfo = tenthLordHouseMap[l10?.placedHouse ?? 10] ?? tenthLordHouseMap[10];
+
+  const suitableProfession = {
+    valEn: `${primaryDomain.en} alongside ${secondaryDomain.en}`,
+    valHi: `${primaryDomain.hi} तथा ${secondaryDomain.hi}`,
+    explEn: `6-Point Career Synthesis: 10th house (${SIGNS[h10.signIdx].name}) led by ${h10.lordId} in H${l10?.placedHouse ?? 10} (${l10HouseInfo.en}) combines with Karma Karaka Saturn in H${saturn?.placedHouse ?? 10} linked to ${saturnLink}. ${d10Occupants.length > 0 ? `D10 10th house holds ${d10Occupants.map((o) => o.id).join(', ')}, reinforcing professional specialization.` : `D10 Lagna in ${SIGNS[d10LagnaIdx].name} supports steady execution.`}`,
+    explHi: `षट्-बिंदु करियर विश्लेषण: दशम भाव (${SIGN_HI_NAMES[h10.signIdx]}) व दशमेश ${GRAHA_HI[h10.lordId]} भाव ${l10?.placedHouse ?? 10} में (${l10HouseInfo.hi}) तथा कर्मकारक शनि भाव ${saturn?.placedHouse ?? 10} (${GRAHA_HI[saturnLink]} प्रभाव) का समन्वय कार्यक्षेत्र तय करता है।`,
+    pacEn: `H10: ${SIGNS[h10.signIdx].name}; L10 ${h10.lordId} in H${l10?.placedHouse}; Saturn in ${saturn?.signName} (H${saturn?.placedHouse}); D10 Lagna: ${SIGNS[d10LagnaIdx].name}${l10D9SignIdx !== undefined ? `; L10 D9: ${SIGNS[l10D9SignIdx].name}` : ''}.`,
+    pacHi: `दशम भाव: ${SIGN_HI_NAMES[h10.signIdx]}; दशमेश भाव ${l10?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में; D10 लग्न: ${SIGN_HI_NAMES[d10LagnaIdx]}।`,
+  };
+
+  // 3. Job vs Business & Phased Trajectory
+  let jobScore = 0;
+  let bizScore = 0;
+
+  if (h6.tier === 'strong') jobScore += 2;
+  if (saturn && (saturn.placedHouse === 6 || saturn.placedHouse === 10 || saturn.placedHouse === 11)) jobScore += 2;
+  if (l10 && (l10.placedHouse === 6 || l10.placedHouse === 12)) jobScore += 2;
+  if (sun && sun.placedHouse === 10 && h6.tier !== 'afflicted') jobScore += 1;
+
+  if (h7.tier === 'strong') bizScore += 2;
+  if (l7 && (l7.placedHouse === 10 || l7.placedHouse === 11 || l7.placedHouse === 1)) bizScore += 2;
+  if (l10 && (l10.placedHouse === 7 || l10.placedHouse === 11 || l10.placedHouse === 1)) bizScore += 2;
+  if (mercury && (mercury.placedHouse === 1 || mercury.placedHouse === 7 || mercury.placedHouse === 10 || mercury.placedHouse === 11) && mercury.dignity !== 'Debilitated') bizScore += 1;
+  if (rahu && (rahu.placedHouse === 10 || rahu.placedHouse === 11) && bizScore >= 2) bizScore += 1;
+
+  const isHybridPhased = Math.abs(jobScore - bizScore) <= 1 || (jobScore >= 2 && bizScore >= 2);
+  let jobVsBizValEn = '';
+  let jobVsBizValHi = '';
+  let jobVsBizExplEn = '';
+  let jobVsBizExplHi = '';
+
+  if (isHybridPhased) {
+    jobVsBizValEn = 'Phased Hybrid Path: Build mastery in Structured Employment / Leadership first, then transition into Consulting or Independent Enterprise';
+    jobVsBizValHi = 'चरणबद्ध मिश्रित मार्ग: प्रारंभिक वर्षों में संगठित नौकरी/नेतृत्व में अनुभव, तत्पश्चात स्वतंत्र परामर्श या उद्यम में सफलता';
+    jobVsBizExplEn = `Both service discipline (6th/Saturn score ${jobScore}) and independent enterprise capacity (7th/Mercury/11th score ${bizScore}) are active. Starting in a structured role builds capital, networks, and process mastery before launching a solo venture or equity partnership.`;
+    jobVsBizExplHi = `कुंडली में सेवा-अनुशासन (षष्ठ/शनि बल ${jobScore}) और स्वतंत्र व्यापार क्षमता (सप्तम/बुध बल ${bizScore}) दोनों सक्रिय हैं। पहले नौकरी से अनुभव व पूंजी बनाकर फिर स्वतंत्र कार्य करना सर्वोत्तम रहेगा।`;
+  } else if (bizScore > jobScore) {
+    jobVsBizValEn = 'Strong Independent Business / Entrepreneurship Orientation: Thrives on autonomy, client ownership & calculated risk';
+    jobVsBizValHi = 'प्रबल स्वतंत्र व्यवसाय व उद्यमिता योग: स्वायत्तता, ग्राहक प्रबंधन व सोचे-समझे जोखिम में श्रेष्ठ सफलता';
+    jobVsBizExplEn = `Enterprise indicators (7th/10th/11th linkages and commercial Mercury/Mars/Rahu drive, score ${bizScore} vs ${jobScore}) outpace pure service markers. Fixed hierarchies may feel restrictive over time; consulting, agency ownership, or trading fits naturally.`;
+    jobVsBizExplHi = `व्यापारिक कारक (सप्तम, दशम, एकादश व बुध का बल: ${bizScore} बनाम ${jobScore}) नौकरी के बंधन की तुलना में स्वतंत्र निर्णय, स्वयं के उद्यम या कंसल्टिंग को अधिक अनुकूल बनाते हैं।`;
+  } else {
+    jobVsBizValEn = 'Structured Employment / Institutional Career Orientation: Thrives on stability, clear hierarchy & steady compounding';
+    jobVsBizValHi = 'संगठित नौकरी, प्रशासनिक सेवा व कॉर्पोरेट स्थिरता: नियमित उन्नति, स्पष्ट ढांचे व सुरक्षित आय में श्रेष्ठ प्रदर्शन';
+    jobVsBizExplEn = `Service and institutional indicators (6th house/Saturn structure, score ${jobScore} vs ${bizScore}) dominate. Long-term growth is strongest within established organizations, government/PSU roles, or senior specialist tracks without unnecessary capital risk.`;
+    jobVsBizExplHi = `सेवा व संरचना कारक (षष्ठ भाव व शनि बल: ${jobScore} बनाम ${bizScore}) प्रबल हैं। बिना अनावश्यक पूंजी जोखिम लिए प्रतिष्ठित संस्थान, कॉर्पोरेट या सरकारी सेवा में निरंतर पदोन्नति मिलती है।`;
+  }
+
+  const jobVsBusiness = {
+    valEn: jobVsBizValEn,
+    valHi: jobVsBizValHi,
+    explEn: jobVsBizExplEn,
+    explHi: jobVsBizExplHi,
+    pacEn: `6th (${h6.tier}) + Saturn H${saturn?.placedHouse} vs 7th (${h7.tier}) + Mercury H${mercury?.placedHouse} + 10th Lord H${l10?.placedHouse}.`,
+    pacHi: `षष्ठ (${TIER_HI[h6.tier]}) व शनि भाव ${saturn?.placedHouse} बनाम सप्तम (${TIER_HI[h7.tier]}), बुध भाव ${mercury?.placedHouse} व दशमेश भाव ${l10?.placedHouse}।`,
+  };
+
+  // 4. Karaka & 10th Lord Deep-Dive
+  const jupStatusEn = jupiter
+    ? `Jupiter (Jeeva Karaka) in H${jupiter.placedHouse} (${jupiter.dignity}) ${jupiter.dignity === 'Debilitated' ? 'requires ethical & financial discipline for sustained growth' : 'provides steady sustenance and dharma-aligned career longevity'}`
+    : 'Jupiter supports steady career sustenance';
+  const jupStatusHi = jupiter
+    ? `जीवकारक गुरु भाव ${jupiter.placedHouse} में ${jupiter.dignity === 'Debilitated' ? 'नैतिक व वित्तीय अनुशासन की अपेक्षा रखता है' : 'आजीविका को दीर्घकालिक स्थायित्व व सम्मान देता है'}`
+    : 'जीवकारक गुरु आजीविका को स्थायित्व देता है';
+
+  const satSignHi = saturn ? SIGN_HI_NAMES[saturn.signIndex] : '';
+  const karakaAnd10thLord = {
+    valEn: `Karma Karaka Saturn in H${saturn?.placedHouse ?? '-'} (${saturn?.dignity ?? 'Balanced'}) | 10th Lord ${h10.lordId} in H${l10?.placedHouse ?? '-'}`,
+    valHi: `कर्मकारक शनि भाव ${saturn?.placedHouse ?? '-'} में | दशमेश ${GRAHA_HI[h10.lordId]} भाव ${l10?.placedHouse ?? '-'} में`,
+    explEn: `Saturn acts as Karma Karaka in ${saturn?.signName ?? 'chart'} (linked with ${saturnLink}), shaping daily work ethic and endurance. ${h10.lordId} in House ${l10?.placedHouse ?? 10} channels career into: ${l10HouseInfo.en}. ${jupStatusEn}.`,
+    explHi: `कर्मकारक शनि ${satSignHi} (भाव ${saturn?.placedHouse ?? '-'}) में कार्यशैली व परिश्रम की दिशा तय करते हैं। दशमेश भाव ${l10?.placedHouse ?? 10} में होकर ${l10HouseInfo.hi} से आजीविका जोड़ते हैं। ${jupStatusHi}।`,
+    pacEn: `Saturn H${saturn?.placedHouse} (${saturn?.dignity}), Jupiter H${jupiter?.placedHouse} (${jupiter?.dignity}), L10 H${l10?.placedHouse} -> D10 H10 (${SIGNS[d10House10SignIdx].name}).`,
+    pacHi: `शनि भाव ${saturn?.placedHouse}, गुरु भाव ${jupiter?.placedHouse}, दशमेश भाव ${l10?.placedHouse} व D10 दशम भाव (${SIGN_HI_NAMES[d10House10SignIdx]})।`,
+  };
+
+  // 5. Indu Lagna Calculation (Uttara Kalamrita)
+  const INDU_KALAS: Record<GrahaKey, number> = {
+    Sun: 30, Moon: 16, Mars: 6, Mercury: 8, Jupiter: 10, Venus: 12, Saturn: 1, Rahu: 0, Ketu: 0,
+  };
+  const moonSignIdx = moon?.signIndex ?? ascSignIdx;
+  const lagna9Lord = SIGN_LORDS[(ascSignIdx + 8) % 12];
+  const moon9Lord = SIGN_LORDS[(moonSignIdx + 8) % 12];
+  const totalKalas = INDU_KALAS[lagna9Lord] + INDU_KALAS[moon9Lord];
+  const induRem = totalKalas % 12 === 0 ? 12 : totalKalas % 12;
+  const induSignIdx = (moonSignIdx + induRem - 1) % 12;
+  const induHouseFromLagna = ((induSignIdx - ascSignIdx + 12) % 12) + 1;
+  const induOccupants = planets.filter((p) => p.signIndex === induSignIdx);
+  const induBenefics = induOccupants.filter((p) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
+  const induMalefics = induOccupants.filter((p) => ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(p.id));
+
+  // 6. Raja Yogas, Dhana Yogas & Special Combinations
+  const detectedYogasEn: string[] = [];
+  const detectedYogasHi: string[] = [];
+
+  // Gajakesari: Jupiter in 1,4,7,10 from Moon
+  if (jupiter && moon) {
+    const distFromMoon = ((jupiter.signIndex - moon.signIndex + 12) % 12) + 1;
+    if ([1, 4, 7, 10].includes(distFromMoon) && jupiter.dignity !== 'Debilitated') {
+      detectedYogasEn.push('Gajakesari Yoga');
+      detectedYogasHi.push('गजकेसरी योग');
+    }
+  }
+
+  // Pancha Mahapurusha
+  const mahapurushaChecks: Array<{ p?: PlanetPos; en: string; hi: string }> = [
+    { p: mars, en: 'Ruchaka Mahapurusha', hi: 'रुचक महापुरुष' },
+    { p: mercury, en: 'Bhadra Mahapurusha', hi: 'भद्र महापुरुष' },
+    { p: jupiter, en: 'Hamsa Mahapurusha', hi: 'हंस महापुरुष' },
+    { p: venus, en: 'Malavya Mahapurusha', hi: 'मालव्य महापुरुष' },
+    { p: saturn, en: 'Shasha Mahapurusha', hi: 'शश महापुरुष' },
+  ];
+  for (const mc of mahapurushaChecks) {
+    if (mc.p && [1, 4, 7, 10].includes(mc.p.placedHouse) && isStrongDignity(mc.p)) {
+      detectedYogasEn.push(mc.en);
+      detectedYogasHi.push(mc.hi);
+    }
+  }
+
+  // Amala Yoga: Benefic in 10th from Lagna or Moon
+  const hasAmala = planets.some(
+    (p) => ['Jupiter', 'Venus', 'Mercury'].includes(p.id) &&
+      (p.placedHouse === 10 || (moon && ((p.signIndex - moon.signIndex + 12) % 12) + 1 === 10))
+  );
+  if (hasAmala) {
+    detectedYogasEn.push('Amala Yoga');
+    detectedYogasHi.push('अमला योग');
+  }
+
+  // Dharma-Karma-Adhipati (9th & 10th lords)
+  const isDharmaKarma = l9 && l10 && (
+    l9.placedHouse === l10.placedHouse ||
+    (l9.placedHouse === 10 && l10.placedHouse === 9) ||
+    Math.abs(l9.placedHouse - l10.placedHouse) === 6
+  );
+  if (isDharmaKarma) {
+    detectedYogasEn.push('Dharma-Karma-Adhipati Raja Yoga');
+    detectedYogasHi.push('धर्म-कर्माधिपति राजयोग');
+  }
+
+  // Dhana Yoga (2nd, 5th, 9th, 11th linkages)
+  const dhanaHouses = new Set([1, 2, 5, 9, 11]);
+  const isDhanaStrong =
+    l2 && l11 &&
+    dhanaHouses.has(l2.placedHouse) &&
+    dhanaHouses.has(l11.placedHouse) &&
+    l2.dignity !== 'Debilitated' &&
+    l11.dignity !== 'Debilitated';
+
+  if (isDhanaStrong) {
+    detectedYogasEn.push('Parashari Dhana Yoga');
+    detectedYogasHi.push('पाराशरी धन योग');
+  }
+
+  if (chartYogas) {
+    for (const cy of chartYogas) {
+      if ((cy.category === 'Raja' || cy.category === 'Dhana') && !detectedYogasEn.some((d) => d.includes(cy.name))) {
+        detectedYogasEn.push(cy.name);
+        detectedYogasHi.push(cy.name);
+      }
+    }
+  }
+
+  // Realistic Wealth Tier
+  const isL2Weak = h2.tier === 'afflicted';
+  const isL11Weak = h11.tier === 'afflicted';
+  let wealthValEn = '';
+  let wealthValHi = '';
+  let wealthExplEn = '';
+  let wealthExplHi = '';
+
+  if ((isL2Weak || isL11Weak) && induBenefics.length === 0 && !isDhanaStrong) {
+    wealthValEn = 'Disciplined Middle-Class Stability: Steady earned income; avoid speculative risks and prioritize systematic savings';
+    wealthValHi = 'संयमित मध्यम-वर्गीय स्थिरता: परिश्रम से नियमित आय; सट्टेबाजी से बचकर अनुशासित बचत पर ध्यान आवश्यक';
+    wealthExplEn = `With 2nd house (${h2.tier}) and 11th house (${h11.tier}) facing pressure, wealth accumulates gradually through steady service, budgeting, and low-risk instruments rather than windfalls.`;
+    wealthExplHi = `द्वितीय (${TIER_HI[h2.tier]}) और एकादश (${TIER_HI[h11.tier]}) भाव पर दबाव होने से धन का संचय आकस्मिक लाभ की अपेक्षा नियमित आय, मितव्ययिता और सुरक्षित निवेश से धीरे-धीरे होता है।`;
+  } else if (isDhanaStrong || induBenefics.length > 0 || detectedYogasEn.length >= 2) {
+    wealthValEn = 'Strong Prosperity & Asset-Building Potential: Multi-stream earnings, property accumulation & long-term financial independence';
+    wealthValHi = 'उत्तम समृद्धि व संपत्ति निर्माण योग: बहु-आयामी आय स्रोत, अचल संपत्ति व दीर्घकालिक आर्थिक सुदृढ़ता';
+    wealthExplEn = `Fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} support compounding wealth during favorable Mahadashas.`;
+    wealthExplHi = `सशक्त द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), शुभ राज/धन योग (${detectedYogasHi.slice(0, 3).join(', ') || 'धन संयोग'}) और ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न उत्तम आर्थिक उन्नति व संपत्ति निर्माण दर्शाते हैं।`;
+  } else {
+    wealthValEn = 'Comfortable Upper-Middle Financial Trajectory: Reliable cashflow, steady asset growth & balanced family prosperity';
+    wealthValHi = 'सुदृढ़ उच्च-मध्यम आर्थिक स्थिति: नियमित आय, क्रमिक संपत्ति वृद्धि व संतुलित पारिवारिक समृद्धि';
+    wealthExplEn = `Balanced 2nd (${h2.tier}) and 11th (${h11.tier}) houses provide reliable earning capacity, comfortable living standards, and steady asset creation over time.`;
+    wealthExplHi = `संतुलित द्वितीय (${TIER_HI[h2.tier]}) व एकादश (${TIER_HI[h11.tier]}) भाव जीवन में आर्थिक सुरक्षा, आवश्यक सुख-सुविधाएं और समय के साथ स्थायी पूंजी निर्माण प्रदान करते हैं।`;
+  }
+
+  const financialWealthTier = {
+    valEn: wealthValEn,
+    valHi: wealthValHi,
+    explEn: wealthExplEn,
+    explHi: wealthExplHi,
+    pacEn: `H2 (${h2.tier}, L2 in H${l2?.placedHouse}) & H11 (${h11.tier}, L11 in H${l11?.placedHouse}); H8 (${h8.tier}), H12 (${h12.tier}).`,
+    pacHi: `द्वितीय (${TIER_HI[h2.tier]}) व एकादश (${TIER_HI[h11.tier]}); अष्टम (${TIER_HI[h8.tier]}), द्वादश (${TIER_HI[h12.tier]})।`,
+  };
+
+  const induSummaryEn = `Indu Lagna falls in ${SIGNS[induSignIdx].name} (House ${induHouseFromLagna}, Kalas: ${INDU_KALAS[lagna9Lord]} + ${INDU_KALAS[moon9Lord]} = ${totalKalas})${induOccupants.length > 0 ? ` occupied by ${induOccupants.map((p) => p.id).join(', ')}` : ' (unoccupied; judged by its lord)'}`;
+  const induSummaryHi = `इंदु लग्न ${SIGN_HI_NAMES[induSignIdx]} (भाव ${induHouseFromLagna}, कला योग: ${INDU_KALAS[lagna9Lord]} + ${INDU_KALAS[moon9Lord]} = ${totalKalas}) में स्थित है${induOccupants.length > 0 ? `, जहाँ ${induOccupants.map((p) => GRAHA_HI[toGrahaKey(p.id)]).join(', ')} विराजमान हैं` : ''}`;
+
+  const yogaListEn = detectedYogasEn.length > 0 ? detectedYogasEn.join(', ') : 'Steady Karma-Artha alignment (earned rise)';
+  const yogaListHi = detectedYogasHi.length > 0 ? detectedYogasHi.join(', ') : 'परिश्रम-आधारित क्रमिक कर्म-अर्थ योग';
+
+  const rajaDhanaInduYogas = {
+    valEn: `${yogaListEn} | Indu Lagna: ${SIGNS[induSignIdx].name} (H${induHouseFromLagna})`,
+    valHi: `${yogaListHi} | इंदु लग्न: ${SIGN_HI_NAMES[induSignIdx]} (भाव ${induHouseFromLagna})`,
+    explEn: `${induSummaryEn}. ${induBenefics.length > 0 ? 'Natural benefics in Indu Lagna elevate financial flow and material comfort.' : induMalefics.length > 0 ? 'Malefics in Indu Lagna indicate wealth earned through persistent effort and strategic endurance rather than easy luck.' : 'Wealth timing activates when Indu Lagna lord or Raja/Dhana Yoga planets run their Dasha.'}`,
+    explHi: `${induSummaryHi}। ${induBenefics.length > 0 ? 'इंदु लग्न में शुभ ग्रह धन-प्रवाह व भौतिक समृद्धि को प्रबल बनाते हैं।' : induMalefics.length > 0 ? 'इंदु लग्न में क्रूर/कठोर ग्रह निरंतर परिश्रम व रणनीतिक धैर्य से धनार्जन का संकेत देते हैं।' : 'इंदु लग्नेश अथवा राज-धन योग कारक ग्रहों की दशा में विशेष आर्थिक उत्थान होता है।'}`,
+    pacEn: `Lagna 9th Lord ${lagna9Lord} (${INDU_KALAS[lagna9Lord]}) + Moon 9th Lord ${moon9Lord} (${INDU_KALAS[moon9Lord]}) -> Indu Sign ${SIGNS[induSignIdx].name}; Active Yogas: ${detectedYogasEn.length}.`,
+    pacHi: `लग्न नवमेश ${GRAHA_HI[lagna9Lord]} (${INDU_KALAS[lagna9Lord]}) + चंद्र नवमेश ${GRAHA_HI[moon9Lord]} (${INDU_KALAS[moon9Lord]}) -> इंदु राशि ${SIGN_HI_NAMES[induSignIdx]}।`,
+  };
+
+  return {
+    suitableProfession,
+    jobVsBusiness,
+    karakaAnd10thLord,
+    financialWealthTier,
+    rajaDhanaInduYogas,
+  };
+}
+
 
 
 

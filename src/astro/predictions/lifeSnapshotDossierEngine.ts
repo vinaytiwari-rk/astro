@@ -37,6 +37,7 @@ import {
   getComprehensiveSantanAnalysis,
   getComprehensiveMarriageAnalysis,
   getComprehensiveMedicalAstrology,
+  getComprehensiveCareerAndWealthAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -353,6 +354,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   const h7Prof = getHousePacProfile(7, planets, ascSignIdx, getAspectingPlanets);
   const h8Prof = getHousePacProfile(8, planets, ascSignIdx, getAspectingPlanets);
   const h9Prof = getHousePacProfile(9, planets, ascSignIdx, getAspectingPlanets);
+  const h10Prof = getHousePacProfile(10, planets, ascSignIdx, getAspectingPlanets);
   const h11Prof = getHousePacProfile(11, planets, ascSignIdx, getAspectingPlanets);
   const h12Prof = getHousePacProfile(12, planets, ascSignIdx, getAspectingPlanets);
 
@@ -1809,52 +1811,22 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   // PILLAR 7: आजीविका, व्यवसाय vs नौकरी, धन व संचित संपत्ति (Career & Wealth)
   // =========================================================================
   {
-    const d10LagnaSign = d10?.lagnaSignIndex ?? ascSignIdx;
-
-    let profEn = 'Technology Architecture, Enterprise Software Leadership, Strategic Financial Advisory, or Corporate Management';
-    let profHi = 'तकनीकी वास्तुकला (Tech Architecture), सॉफ्टवेयर लीडरशिप, रणनीतिक वित्तीय परामर्श अथवा कॉर्पोरेट प्रबंधन';
-
-    if (h10Sign.element === 'Fire' || l10?.id === 'Sun' || l10?.id === 'Mars') {
-      profEn = 'Government Administration, Defense/Security Leadership, Industrial Operations, or Political Policy Strategy';
-      profHi = 'सरकारी प्रशासन, रक्षा सेवा नेतृत्व, औद्योगिक उत्पादन अथवा राजनीतिक नीति प्रबंधन';
-    } else if (h10Sign.element === 'Earth' || l10?.id === 'Mercury') {
-      profEn = 'Wealth Management, Commercial Trading, Supply Chain Architecture, Real Estate Development, or Audit Leadership';
-      profHi = 'वित्तीय परिसंपत्ति प्रबंधन, वाणिज्यिक व्यापार, लॉजिस्टिक्स, रियल एस्टेट अथवा मुख्य ऑडिट नियंत्रण';
-    } else if (h10Sign.element === 'Water' || l10?.id === 'Moon' || l10?.id === 'Jupiter') {
-      profEn = 'Healthcare Systems, Pharmaceutical Innovation, Marine Trade, Higher Pedagogy, or Psychological Counseling';
-      profHi = 'स्वास्थ्य प्रणाली, फार्मास्युटिकल, समुद्री व्यापार, उच्च शिक्षा अथवा मनोवैज्ञानिक परामर्श';
-    }
-
-    const preferBusiness = (l7 && l7.dignity !== 'Debilitated' && (l7.placedHouse === 10 || l7.placedHouse === 11 || l7.placedHouse === 1)) || (mercury && mercury.placedHouse === 10);
-    let jobVsBizEn = preferBusiness
-      ? 'Strong entrepreneurial destiny: Natural business acumen, trading success, and independent enterprise ownership'
-      : 'High-earning structured corporate career up to age 34; seamless transition into independent advisory/equity enterprise at 35+';
-    let jobVsBizHi = preferBusiness
-      ? 'प्रबल व्यापारिक योग: स्वतंत्र उद्यम, वाणिज्यिक लेन-देन व व्यापार साम्राज्य स्थापित करने की स्वाभाविक क्षमता'
-      : 'आयु 34 वर्ष तक उच्च वेतनभोगी कॉर्पोरेट नौकरी; 35 वर्ष उपरांत स्वतंत्र उद्यम, परामर्श अथवा कंसल्टिंग में पदार्पण';
-
-    const isL2Afflicted = l2?.placedHouse === 6 || l2?.placedHouse === 8 || l2?.placedHouse === 12 || l2?.dignity === 'Debilitated';
-    const isL11Afflicted = l11?.placedHouse === 6 || l11?.placedHouse === 8 || l11?.placedHouse === 12 || l11?.dignity === 'Debilitated';
-    const isDhanaYogaActive = (l2?.placedHouse === 1 || l2?.placedHouse === 2 || l2?.placedHouse === 5 || l2?.placedHouse === 9 || l2?.placedHouse === 11) &&
-      (l11?.placedHouse === 1 || l11?.placedHouse === 2 || l11?.placedHouse === 5 || l11?.placedHouse === 9 || l11?.placedHouse === 11) &&
-      (l2?.dignity === 'Exalted' || l11?.dignity === 'Exalted' || jupiter?.placedHouse === 2 || jupiter?.placedHouse === 11 || venus?.placedHouse === 2 || venus?.placedHouse === 11);
-
-    let wealthTierEn = 'Comfortable Upper-Middle Class; stable income potential with gradual acquisition of own residential property, steady equity mutual funds, and healthy savings';
-    let wealthTierHi = 'सुदृढ़ उच्च-मध्यम वर्ग; स्थिर आजीविका, नियमित वेतन व सुरक्षित निवेश; अपना आवास, पारिवारिक समृद्धि व जीवन की सभी आवश्यक सुख-सुविधाएं';
-    let wealthTierExplEn = 'The 2nd house (Treasury) and 11th house (Gains) maintain balanced strength. Revenue reliably covers family commitments and allows steady asset creation without severe financial distress.';
-    let wealthTierExplHi = 'द्वितीय (कोष) और एकादश (लाभ) भाव का संतुलित बल आर्थिक सुरक्षा प्रदान करता है। जातक नियमित बचत, विवेकपूर्ण निवेश और परिश्रम द्वारा अपना घर और संचित पूंजी बनाने में सफल रहता है।';
-
-    if (isL2Afflicted || isL11Afflicted) {
-      wealthTierEn = 'Middle-Class Salaried Stability; steady monthly income requiring disciplined budgeting and prudent expense control; wealth accumulates gradually through long-term thrift';
-      wealthTierHi = 'मध्यम वर्गीय नियमित वेतनभोगी स्थिति; सीमित किंतु स्थिर मासिक आय; अनुशासनबद्ध बचत व संयमित व्यय द्वारा धीरे-धीरे पूंजी निर्माण';
-      wealthTierExplEn = 'The 2nd or 11th lord occupies challenge houses, showing that wealth requires sustained toil and conservative budgeting. Financial security is attained through regular employment, avoiding speculative risks, and consistent small savings.';
-      wealthTierExplHi = 'द्वितीय अथवा एकादश भाव पर संघर्षकारक स्थिति दर्शाती है कि धन सहज रूप से नहीं आता। जातक को सट्टेबाजी व अनावश्यक खर्चों से बचते हुए नियमित वेतन व बचत के बल पर ही आर्थिक संतुलन बनाए रखना होता है।';
-    } else if (isDhanaYogaActive) {
-      wealthTierEn = 'Affluent & Prosperous Class (Dhana Yoga active); multiple high-value revenue streams, commercial/real estate holdings, and prominent financial independence';
-      wealthTierHi = 'समृद्ध व धनाढ्य वर्ग (शुभ धन योग सक्रिय); बहु-आयामी आय स्रोत, अचल संपत्ति, व्यापारिक लाभ व सुदृढ़ संचित पूंजी';
-      wealthTierExplEn = 'Fortified sambandha between the wealth houses (2nd, 9th, 11th) and benefics generates an authentic Parashari Dhana Yoga. Capital compounds significantly through strategic investments, business ownership, or real estate appreciation.';
-      wealthTierExplHi = 'लग्न, द्वितीय, नवम और एकादश भावों के स्वामियों का परस्पर शुभ संबंध महाधनी योग का निर्माण करता है, जिससे प्रचुर धन संचय, संपत्ति निर्माण और स्वतंत्र आर्थिक प्रतिष्ठा प्राप्त होती है।';
-    }
+    const careerRes = getComprehensiveCareerAndWealthAnalysis(
+      planets,
+      ascSignIdx,
+      h2Prof,
+      h6Prof,
+      h7Prof,
+      h8Prof,
+      h9Prof,
+      h10Prof,
+      h11Prof,
+      h12Prof,
+      d9,
+      d10,
+      chart.yogas
+    );
+    const finDetails = getCareerFinancialDetails(h11Prof, h12Prof, h8Prof);
 
     pillars.push({
       id: 'career_wealth',
@@ -1862,34 +1834,48 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       titleEn: 'Career, Enterprise, Wealth Tier & Financial Prosperity',
       titleHi: 'आजीविका, व्यवसाय बनाम नौकरी, धन संचय व प्रतिष्ठा',
       icon: 'Briefcase',
-      summaryEn: `Executive vocational and treasury analysis synthesized from the 10th house (${h10Sign.name} - Karma), 2nd house (${h2Sign.name} - Dhana), 11th house (${h11Sign.name} - Labha), and D10 Dashamsha chart.`,
-      summaryHi: `दशम भाव (${SIGN_HI[h10SignIdx]} - कर्म), द्वितीय (${SIGN_HI[h2SignIdx]} - धन कोष), एकादश (${SIGN_HI[h11SignIdx]} - आय), षष्ठ/सप्तम (नौकरी vs व्यापार) एवं दशांश (D10) द्वारा आजीविका, धन वर्ग, पद-प्रतिष्ठा व आकस्मिक लाभ का संपूर्ण विश्लेषण।`,
+      summaryEn: `Karaka-first (Saturn/Jupiter) and 6-point vocational synthesis across 10th house (${h10Sign.name}), 6th/7th balance, Indu Lagna, Raja/Dhana Yogas, and D10 Dashamsha.`,
+      summaryHi: `कर्मकारक शनि/गुरु, षट्-बिंदु कर्म विश्लेषण (दशम भाव ${SIGN_HI[h10SignIdx]}), नौकरी बनाम व्यापार, इंदु लग्न, राज/धन योग एवं दशांश (D10) द्वारा आजीविका व समृद्धि का संपूर्ण विश्लेषण।`,
       attributes: [
         {
           id: 'attr_suitable_profession',
           category: 'career',
           titleEn: 'Prime Suitable Profession & Career Trajectory',
           titleHi: 'सर्वोत्तम आजीविका व कार्यक्षेत्र की दिशा',
-          valueEn: profEn,
-          valueHi: profHi,
-          explanationEn: `The 10th house (${h10Sign.name}) is energized by executive karakas. The native is destined for commanding roles requiring organizational oversight and vision.`,
-          explanationHi: `दशम भाव (${SIGN_HI[h10SignIdx]}) और दशमांश D10 का संबंध जातक को नीति-निर्माण, उच्च निर्णय-क्षमता और प्रशासनिक संचालन का स्वामी बनाता है।`,
-          pacBasisEn: `House 10: ${h10Sign.name}; Lord: ${l10?.id} in H${l10?.placedHouse}; D10 Lagna: ${SIGNS[d10LagnaSign].name}; Sun in H${sun?.placedHouse}.`,
-          pacBasisHi: `दशम भाव: ${SIGN_HI[h10SignIdx]}; दशमेश: ${PLANET_HI[l10?.id || '']} भाव ${l10?.placedHouse} में; D10 लग्न: ${SIGN_HI[d10LagnaSign]}।`,
+          valueEn: careerRes.suitableProfession.valEn,
+          valueHi: careerRes.suitableProfession.valHi,
+          explanationEn: careerRes.suitableProfession.explEn,
+          explanationHi: careerRes.suitableProfession.explHi,
+          pacBasisEn: careerRes.suitableProfession.pacEn,
+          pacBasisHi: careerRes.suitableProfession.pacHi,
           shastricRef: 'BPHS (Ch. 12, Sl. 55–64), Saravali (Ch. 33)',
-          vargaRef: 'D1 Rashi & D10 Dashamsha',
+          vargaRef: 'D1 Rashi, D9 & D10 Dashamsha',
+        },
+        {
+          id: 'attr_karaka_and_10th_lord_analysis',
+          category: 'career',
+          titleEn: 'Karaka-First (Saturn/Jupiter) & 10th Lord Trajectory',
+          titleHi: 'कर्मकारक शनि, जीवकारक गुरु व दशमेश का फलित',
+          valueEn: careerRes.karakaAnd10thLord.valEn,
+          valueHi: careerRes.karakaAnd10thLord.valHi,
+          explanationEn: careerRes.karakaAnd10thLord.explEn,
+          explanationHi: careerRes.karakaAnd10thLord.explHi,
+          pacBasisEn: careerRes.karakaAnd10thLord.pacEn,
+          pacBasisHi: careerRes.karakaAnd10thLord.pacHi,
+          shastricRef: 'BPHS (Ch. 24), Phaladeepika (Ch. 15)',
+          vargaRef: 'D1 & D10 Dashamsha',
         },
         {
           id: 'attr_job_vs_business',
           category: 'career',
           titleEn: 'Job (Service) vs Business (Enterprise) Destiny',
           titleHi: 'नौकरी (Service) बनाम व्यापार (Enterprise)',
-          valueEn: jobVsBizEn,
-          valueHi: jobVsBizHi,
-          explanationEn: `Career stability is structured through the relative strength of the 6th house (Service) versus 7th/10th houses (Enterprise).`,
-          explanationHi: `षष्ठ भाव (सेवा) और सप्तम/दशम भाव (व्यापार) के तुलनात्मक बल द्वारा जातक की आजीविका का मार्ग निर्धारित होता है।`,
-          pacBasisEn: `House 6 Lord ${l6?.id} vs House 7 Lord ${l7?.id}; 10th Lord ${l10?.id} connected with Kendra/Trikona.`,
-          pacBasisHi: `षष्ठेश व सप्तमेश का बल; दशमेश का केंद्र-त्रिकोण संबंध।`,
+          valueEn: careerRes.jobVsBusiness.valEn,
+          valueHi: careerRes.jobVsBusiness.valHi,
+          explanationEn: careerRes.jobVsBusiness.explEn,
+          explanationHi: careerRes.jobVsBusiness.explHi,
+          pacBasisEn: careerRes.jobVsBusiness.pacEn,
+          pacBasisHi: careerRes.jobVsBusiness.pacHi,
           shastricRef: 'Phaladeepika (Ch. 15, Sl. 1–12)',
           vargaRef: 'D1 & D10',
         },
@@ -1898,10 +1884,10 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'career',
           titleEn: 'Commercial Profit & Loss Waves (Vyapar Labha-Hani)',
           titleHi: 'व्यापारिक लाभ-हानि चक्र, मंदी व तेजी का समय',
-          valueEn: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).profitLoss.valEn,
-          valueHi: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).profitLoss.valHi,
-          explanationEn: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).profitLoss.explEn,
-          explanationHi: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).profitLoss.explHi,
+          valueEn: finDetails.profitLoss.valEn,
+          valueHi: finDetails.profitLoss.valHi,
+          explanationEn: finDetails.profitLoss.explEn,
+          explanationHi: finDetails.profitLoss.explHi,
           pacBasisEn: `House 11: ${h11Sign.name} (Lord in H${l11?.placedHouse}) vs House 12: ${h12Sign.name} (Lord in H${l12?.placedHouse}).`,
           pacBasisHi: `एकादश भाव: ${SIGN_HI[h11SignIdx]} बनाम द्वादश भाव: ${SIGN_HI[h12SignIdx]}।`,
           shastricRef: 'Saravali (Ch. 36, Sl. 15–22)',
@@ -1912,24 +1898,38 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'career',
           titleEn: 'Financial Net Worth Tier & Multi-Stream Earning',
           titleHi: 'धन श्रेणी, संचित कोष व बहु-स्रोत आय',
-          valueEn: wealthTierEn,
-          valueHi: wealthTierHi,
-          explanationEn: wealthTierExplEn,
-          explanationHi: wealthTierExplHi,
-          pacBasisEn: `House 2 Lord ${l2?.id} in H${l2?.placedHouse}; House 11 Lord ${l11?.id} in H${l11?.placedHouse}; Indu Lagna reflects abundant bindus.`,
-          pacBasisHi: `द्वितीयेश भाव ${l2?.placedHouse} में; एकादशेश भाव ${l11?.placedHouse} में; इंदु लग्न में शुभ ग्रहों का जमावड़ा।`,
+          valueEn: careerRes.financialWealthTier.valEn,
+          valueHi: careerRes.financialWealthTier.valHi,
+          explanationEn: careerRes.financialWealthTier.explEn,
+          explanationHi: careerRes.financialWealthTier.explHi,
+          pacBasisEn: careerRes.financialWealthTier.pacEn,
+          pacBasisHi: careerRes.financialWealthTier.pacHi,
           shastricRef: 'BPHS (Ch. 41 & 42 - Dhana Yogas), Saravali (Ch. 36)',
           vargaRef: 'D1 & D2 Hora',
+        },
+        {
+          id: 'attr_raja_dhana_indu_yogas',
+          category: 'career',
+          titleEn: 'Raja Yogas, Dhana Yogas & Indu Lagna Prosperity',
+          titleHi: 'राजयोग, धन योग एवं इंदु लग्न समृद्धि विश्लेषण',
+          valueEn: careerRes.rajaDhanaInduYogas.valEn,
+          valueHi: careerRes.rajaDhanaInduYogas.valHi,
+          explanationEn: careerRes.rajaDhanaInduYogas.explEn,
+          explanationHi: careerRes.rajaDhanaInduYogas.explHi,
+          pacBasisEn: careerRes.rajaDhanaInduYogas.pacEn,
+          pacBasisHi: careerRes.rajaDhanaInduYogas.pacHi,
+          shastricRef: 'Uttara Kalamrita (Indu Lagna), BPHS (Ch. 39–41)',
+          vargaRef: 'D1 & D9',
         },
         {
           id: 'attr_hidden_sudden_wealth',
           category: 'career',
           titleEn: 'Hidden Wealth, Inheritance & Sudden Windfalls',
           titleHi: 'गुप्त धन, वसीयत व आकस्मिक लाभ (Gupt Dhan)',
-          valueEn: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).hiddenWealth.valEn,
-          valueHi: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).hiddenWealth.valHi,
-          explanationEn: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).hiddenWealth.explEn,
-          explanationHi: getCareerFinancialDetails(h11Prof, h12Prof, h8Prof).hiddenWealth.explHi,
+          valueEn: finDetails.hiddenWealth.valEn,
+          valueHi: finDetails.hiddenWealth.valHi,
+          explanationEn: finDetails.hiddenWealth.explEn,
+          explanationHi: finDetails.hiddenWealth.explHi,
           pacBasisEn: `House 8: ${h8Sign.name}; Lord ${l8?.id} placed in House ${l8?.placedHouse}; Jupiter aspects 8th axis.`,
           pacBasisHi: `अष्टम भाव: ${SIGN_HI[h8SignIdx]}; अष्टमेश भाव ${l8?.placedHouse} में; गुरु का शुभ संबंध।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 43–48)',
