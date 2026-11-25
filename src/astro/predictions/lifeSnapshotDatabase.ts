@@ -1,0 +1,958 @@
+/**
+ * Comprehensive 9-Graha & 3-Tier (Strong / Moderate / Afflicted) Shastric Prediction Database
+ *
+ * Ensures that EVERY micro-attribute across all 14 Life Matrix Pillars dynamically adapts
+ * to the exact chart's Position, Aspect, Conjunction (PAC), House Lordship, and Dignity,
+ * eliminating repetitive/static predictions across different birth charts.
+ */
+
+import { SIGNS } from '../constants';
+import type { BodyPosition } from '../types';
+
+export type PlanetPos = BodyPosition & { placedHouse: number };
+export type GrahaKey = 'Sun' | 'Moon' | 'Mars' | 'Mercury' | 'Jupiter' | 'Venus' | 'Saturn' | 'Rahu' | 'Ketu';
+export type HouseStrengthTier = 'strong' | 'moderate' | 'afflicted';
+
+export interface BilingualPrediction {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+}
+
+export interface HousePacProfile {
+  houseNum: number;
+  signIdx: number;
+  signName: string;
+  element: string;
+  modality: string;
+  lordId: GrahaKey;
+  lordPlanet?: PlanetPos;
+  lordHouse: number;
+  occupants: PlanetPos[];
+  aspectors: PlanetPos[];
+  dominantGraha: GrahaKey;
+  tier: HouseStrengthTier;
+}
+
+const BENEFICS: Set<string> = new Set(['Jupiter', 'Venus', 'Moon', 'Mercury']);
+const MALEFICS: Set<string> = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
+
+function toGrahaKey(id?: string): GrahaKey {
+  const valid: GrahaKey[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+  return valid.includes(id as GrahaKey) ? (id as GrahaKey) : 'Jupiter';
+}
+
+export function getHousePacProfile(
+  houseNum: number,
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  getAspectingPlanets: (h: number) => PlanetPos[]
+): HousePacProfile {
+  const signIdx = (ascSignIdx + houseNum - 1) % 12;
+  const sign = SIGNS[signIdx] || SIGNS[0];
+  const lordId = toGrahaKey(sign.lord);
+  const lordPlanet = planets.find((p) => p.id === lordId);
+  const lordHouse = lordPlanet?.placedHouse ?? houseNum;
+  const occupants = planets.filter((p) => p.placedHouse === houseNum);
+  const aspectors = getAspectingPlanets(houseNum);
+
+  // Determine dominant graha driving this house's flavor
+  let dominantGraha: GrahaKey = lordId;
+  if (occupants.length > 0) {
+    // Prefer non-luminary or stronger occupant if multiple, else first occupant
+    const sorted = [...occupants].sort((a, b) => {
+      const aScore = a.dignity === 'Exalted' || a.dignity === 'Own Sign' ? 2 : 1;
+      const bScore = b.dignity === 'Exalted' || b.dignity === 'Own Sign' ? 2 : 1;
+      return bScore - aScore;
+    });
+    dominantGraha = toGrahaKey(sorted[0].id);
+  } else if (aspectors.length > 0 && (lordHouse === 6 || lordHouse === 8 || lordHouse === 12)) {
+    dominantGraha = toGrahaKey(aspectors[0].id);
+  }
+
+  // Calculate realistic strength tier
+  let score = 0;
+  if ([1, 4, 5, 7, 9, 10, 11].includes(lordHouse)) score += 2;
+  if ([6, 8, 12].includes(lordHouse)) score -= 2;
+  if (lordPlanet?.dignity === 'Exalted' || lordPlanet?.dignity === 'Own Sign') score += 2;
+  if (lordPlanet?.dignity === 'Debilitated') score -= 2;
+
+  for (const occ of occupants) {
+    if (BENEFICS.has(occ.id)) score += 1.5;
+    if (MALEFICS.has(occ.id)) score -= 1.5;
+    if (occ.dignity === 'Exalted' || occ.dignity === 'Own Sign') score += 1;
+    if (occ.dignity === 'Debilitated') score -= 1;
+  }
+  for (const asp of aspectors) {
+    if (asp.id === 'Jupiter' || asp.id === 'Venus') score += 1;
+    if (asp.id === 'Saturn' || asp.id === 'Rahu' || asp.id === 'Mars') score -= 1;
+  }
+
+  let tier: HouseStrengthTier = 'moderate';
+  if (score >= 2.5) tier = 'strong';
+  else if (score <= -1) tier = 'afflicted';
+
+  return {
+    houseNum,
+    signIdx,
+    signName: sign.name,
+    element: sign.element,
+    modality: sign.modality,
+    lordId,
+    lordPlanet,
+    lordHouse,
+    occupants,
+    aspectors,
+    dominantGraha,
+    tier,
+  };
+}
+
+// ============================================================================
+// PILLAR 2: PARENTS' SIBLINGS & ANCESTRAL INFLUENCE
+// ============================================================================
+const PARENTS_SIBLINGS_BY_GRAHA: Record<GrahaKey, { en: string; hi: string }> = {
+  Sun: { en: 'Authoritative paternal uncles/aunts in government or leadership; dignified yet formal relationship', hi: 'चाचा-ताऊ व मामा पक्ष प्रशासनिक या प्रतिष्ठित पदों पर; संबंधों में सम्मान व औपचारिकता' },
+  Moon: { en: 'Affectionate, emotionally supportive maternal uncles/aunts (Matul Bhava); frequent family gatherings', hi: 'मामा-मौसी पक्ष से गहरा स्नेह व भावनात्मक सहयोग; पारिवारिक मिलन-जुलन अधिक' },
+  Mars: { en: 'Energetic, assertive uncles in technical, land, or defense fields; occasional property debates', hi: 'चाचा या मामा भूमि, पुलिस या तकनीकी क्षेत्र में; कभी-कभी संपत्ति संबंधी वैचारिक मतभेद' },
+  Mercury: { en: 'Commercial, business-minded maternal/paternal uncles; helpful in education and trade advice', hi: 'व्यापार व लेखा-जोखा से जुड़े मामा-चाचा; शिक्षा व व्यवसाय में उपयोगी सलाह' },
+  Jupiter: { en: 'Wise, scholarly, or spiritually inclined elders in both lineages; acts as family advisors', hi: 'दोनों पक्षों में विद्वान, धार्मिक व सलाहकार बुजुर्ग; परिवार के मार्गदर्शक' },
+  Venus: { en: 'Cultured, artistic, and materially comfortable aunts/uncles; harmonious social functions', hi: 'बुआ, मौसी व मामा पक्ष कलाप्रिय व साधन-संपन्न; शुभ आयोजनों में मधुरता' },
+  Saturn: { en: 'Self-made, hardworking uncles/aunts with reserved nature; physical distance or rare meetings', hi: 'परिश्रमी व गंभीर स्वभाव के चाचा-मामा; कार्यवश दूरी अथवा सीमित संवाद' },
+  Rahu: { en: 'Unconventional or geographically distant uncles/aunts settled in metro cities or abroad', hi: 'महानगरों या विदेश में बसे बुआ-मामा पक्ष; संबंधों में आधुनिक व अनपेक्षित मोड़' },
+  Ketu: { en: 'Detached or spiritually inclined co-borns of parents; minimal interference in native’s affairs', hi: 'माता-पिता के भाई-बहन आध्यात्मिक या अपने में सीमित; जातक के जीवन में कम हस्तक्षेप' },
+};
+
+export function getParentsSiblingsPred(h11: HousePacProfile, h6: HousePacProfile): BilingualPrediction {
+  const g = h6.occupants.length > 0 ? h6.dominantGraha : h11.dominantGraha;
+  const base = PARENTS_SIBLINGS_BY_GRAHA[g];
+  const tierSuffixEn =
+    h6.tier === 'afflicted' || h11.tier === 'afflicted'
+      ? '; requires tact to avoid minor inheritance friction'
+      : h11.tier === 'strong'
+      ? '; brings timely social and moral support'
+      : '; cordial mutual respect maintained';
+  const tierSuffixHi =
+    h6.tier === 'afflicted' || h11.tier === 'afflicted'
+      ? '; पैतृक संपत्ति चर्चा में व्यवहारिक सावधानी अपेक्षित'
+      : h11.tier === 'strong'
+      ? '; समय-समय पर सामाजिक व नैतिक संबल प्राप्त होता है'
+      : '; सामान्य सौहार्द व सम्मान बना रहता है';
+
+  return {
+    valEn: `${base.en}${tierSuffixEn}`,
+    valHi: `${base.hi}${tierSuffixHi}`,
+    explEn: `Paternal co-borns (11th house: ${h11.signName}, driven by ${h11.dominantGraha}) and maternal co-borns (6th house: ${h6.signName}, driven by ${h6.dominantGraha}) define extended-family dynamics.`,
+    explHi: `एकादश भाव (पितृ-सहोदर) व षष्ठ भाव (मातुल भाव) पर ${h11.dominantGraha} व ${h6.dominantGraha} के प्रभाव से चाचा-ताऊ व मामा-मौसी का स्वभाव व संबंध तय होते हैं।`,
+  };
+}
+
+export function getParentsInfluencePred(h9: HousePacProfile, h4: HousePacProfile): BilingualPrediction {
+  if (h9.tier === 'strong' && h4.tier === 'strong') {
+    return {
+      valEn: 'Strong transmission of ethical values, social prestige, and foundational immovable assets from both parents',
+      valHi: 'माता-पिता से उत्तम संस्कार, सामाजिक प्रतिष्ठा व स्थायी पारिवारिक संपत्ति की सशक्त प्राप्ति',
+      explEn: `Both Pitru Sthana (H9: ${h9.signName}) and Matru Sthana (H4: ${h4.signName}) hold robust dignity, giving the native a secure moral and material launchpad.`,
+      explHi: `नवम (पिता) व चतुर्थ (माता) दोनों भाव बलवान होने से जातक को पारिवारिक संस्कार, शिक्षा और आर्थिक आधार सहज प्राप्त होता है।`,
+    };
+  }
+  if (h9.tier === 'afflicted' && h4.tier === 'afflicted') {
+    return {
+      valEn: 'Independent self-made upbringing; native inherits resilience and grit rather than effortless material wealth',
+      valHi: 'आत्मनिर्भर जीवन-यात्रा; पैतृक वैभव की अपेक्षा संघर्ष से लड़ने का साहस व व्यावहारिक विवेक विरासत में मिला',
+      explEn: `Challenges in both 9th (${h9.dominantGraha}) and 4th (${h4.dominantGraha}) axes indicate that parents did their best amidst constraints, forging an independent native.`,
+      explHi: `नवम व चतुर्थ भावों में संघर्ष के कारण जातक को भौतिक सुख स्वयं के परिश्रम से अर्जित करने पड़ते हैं, जिससे व्यक्तित्व अत्यंत सुदृढ़ बनता है।`,
+    };
+  }
+  const stronger = h9.tier === 'strong' ? 'Father’s disciplined guidance and social standing' : 'Mother’s emotional wisdom and domestic values';
+  const strongerHi = h9.tier === 'strong' ? 'पिता के अनुशासन, सिद्धांतों व सामाजिक प्रतिष्ठा' : 'माता के स्नेह, त्याग व सांस्कृतिक संस्कारों';
+  return {
+    valEn: `${stronger} shapes the native’s core worldview; balanced blend of ancestral values and personal effort`,
+    valHi: `${strongerHi} का जीवन पर गहरा प्रभाव; पारिवारिक मूल्यों और स्व-परिश्रम का संतुलित संगम`,
+    explEn: `Asymmetry between 9th (lord in H${h9.lordHouse}) and 4th (lord in H${h4.lordHouse}) shows one parent acts as the primary anchor while the native builds independent momentum.`,
+    explHi: `नवमेश (भाव ${h9.lordHouse}) और चतुर्थेश (भाव ${h4.lordHouse}) की स्थिति के अनुसार किसी एक अभिभावक का मार्गदर्शन जीवन की दिशा तय करता है।`,
+  };
+}
+
+// ============================================================================
+// PILLAR 3: SIBLING CAREERS, FAMILY & BONDING
+// ============================================================================
+const SIBLING_CAREER_BY_GRAHA: Record<GrahaKey, { en: string; hi: string }> = {
+  Sun: { en: 'Public administration, medical leadership, or corporate management roles', hi: 'प्रशासनिक सेवा, चिकित्सा प्रबंधन अथवा सरकारी/कॉर्पोरेट नेतृत्व' },
+  Moon: { en: 'Healthcare, hospitality, education, psychology, or public-facing services', hi: 'स्वास्थ्य सेवा, आतिथ्य, शिक्षण, परामर्श अथवा जनसंपर्क क्षेत्र' },
+  Mars: { en: 'Engineering, real estate, armed forces, sports, or technical operations', hi: 'इंजीनियरिंग, रियल एस्टेट, रक्षा/पुलिस, खेल अथवा तकनीकी संचालन' },
+  Mercury: { en: 'Banking, accounting, IT/software, commerce, media, or analytical consulting', hi: 'बैंकिंग, लेखा, आईटी/सॉफ्टवेयर, व्यापार, मीडिया अथवा कंसल्टिंग' },
+  Jupiter: { en: 'Law, academia, finance, advisory, or institutional leadership', hi: 'विधि (कानून), अध्यापन, वित्त, परामर्श अथवा शैक्षणिक संस्थान' },
+  Venus: { en: 'Design, fashion, media, luxury retail, finance, or creative entrepreneurship', hi: 'डिजाइन, कला, मीडिया, वस्त्र/आभूषण व्यापार अथवा रचनात्मक उद्यम' },
+  Saturn: { en: 'Manufacturing, civil infrastructure, logistics, or steady salaried service', hi: 'निर्माण, लॉजिस्टिक्स, तकनीकी श्रम अथवा दीर्घकालिक नियमित नौकरी' },
+  Rahu: { en: 'Digital tech, foreign trade, aviation, research, or non-traditional startups', hi: 'डिजिटल तकनीक, विदेश व्यापार, शोध अथवा आधुनिक स्टार्टअप क्षेत्र' },
+  Ketu: { en: 'Specialized research, spiritual/healing arts, coding, or quiet niche professions', hi: 'विशिष्ट शोध, चिकित्सा/आध्यात्मिक कार्य, कोडिंग अथवा एकांतिक तकनीकी पेशा' },
+};
+
+export function getSiblingCareersPred(h3: HousePacProfile, h11: HousePacProfile): BilingualPrediction {
+  const g = h3.occupants.length > 0 ? h3.dominantGraha : h11.dominantGraha;
+  const career = SIBLING_CAREER_BY_GRAHA[g];
+  const stabilityEn =
+    h3.tier === 'strong' || h11.tier === 'strong'
+      ? 'with steady upward growth and financial independence'
+      : h3.tier === 'afflicted'
+      ? 'requiring periodic career shifts and perseverance before stabilizing'
+      : 'with practical, self-reliant occupational progress';
+  const stabilityHi =
+    h3.tier === 'strong' || h11.tier === 'strong'
+      ? '; निरंतर प्रगति व आर्थिक आत्मनिर्भरता'
+      : h3.tier === 'afflicted'
+      ? '; प्रारंभिक उतार-चढ़ाव व परिश्रम के बाद स्थिरता'
+      : '; व्यावहारिक व आत्मनिर्भर कार्यप्रणाली';
+
+  return {
+    valEn: `${career.en} ${stabilityEn}`,
+    valHi: `${career.hi}${stabilityHi}`,
+    explEn: `Analyzed from 3rd house (${h3.signName}, ${h3.dominantGraha}) for younger co-borns and 11th house (${h11.signName}, ${h11.dominantGraha}) for elder co-borns.`,
+    explHi: `तृतीय भाव (${h3.dominantGraha}) व एकादश भाव (${h11.dominantGraha}) के आधार पर सहोदरों के कार्यक्षेत्र और आर्थिक स्थिरता का आकलन होता है।`,
+  };
+}
+
+export function getSiblingFamilyAndBondingPred(h3: HousePacProfile, h11: HousePacProfile): {
+  family: BilingualPrediction;
+  bonding: BilingualPrediction;
+} {
+  if (h3.tier === 'strong' && h11.tier !== 'afflicted') {
+    return {
+      family: {
+        valEn: 'Siblings maintain settled domestic households and offer reliable practical counsel during life milestones',
+        valHi: 'सहोदरों का सुव्यवस्थित पारिवारिक जीवन; महत्वपूर्ण निर्णयों में व्यावहारिक व विश्वसनीय सहयोग',
+        explEn: `Benefic strength on H3/H11 indicates stable sibling households and constructive mutual support.`,
+        explHi: `तृतीय व एकादश भावों की शुभ स्थिति भाई-बहनों के सुखी गृहस्थ जीवन को दर्शाती है।`,
+      },
+      bonding: {
+        valEn: 'Warm, loyal camaraderie; respectful dialogue prevails even on financial or ancestral matters',
+        valHi: 'आत्मीय व भरोसेमंद संबंध; संपत्ति या पारिवारिक विषयों में भी परिपक्व संवाद व प्रेम',
+        explEn: `3rd lord in H${h3.lordHouse} and 11th lord in H${h11.lordHouse} foster enduring sibling solidarity.`,
+        explHi: `तृतीयेश व एकादशेश की अनुकूल स्थिति भाई-बहनों में आजीवन स्नेह बनाए रखती है।`,
+      },
+    };
+  }
+  if (h3.tier === 'afflicted' || h11.tier === 'afflicted') {
+    return {
+      family: {
+        valEn: 'Siblings live busy, independent or geographically separated lives; occasional domestic hurdles require empathy',
+        valHi: 'सहोदर अपने-अपने जीवन व दूरी में व्यस्त; कभी-कभी पारिवारिक जिम्मेदारियों को लेकर तनाव संभव',
+        explEn: `Malefic or Dusthana placement on H3/H11 (${h3.dominantGraha}/${h11.dominantGraha}) creates differing lifestyles and physical distance among co-borns.`,
+        explHi: `तृतीय या एकादश भाव पर क्रूर ग्रह या त्रिक स्थान का प्रभाव सहोदरों की जीवनशैली व निवास में दूरी लाता है।`,
+      },
+      bonding: {
+        valEn: 'Reserved or formal bonding with periodic ego/opinion clashes; clarity in financial boundaries preserves peace',
+        valHi: 'औपचारिक व सीमित संवाद; वैचारिक मतभेद से बचने हेतु आर्थिक मामलों में स्पष्टता आवश्यक',
+        explEn: `Mars/Saturn/Rahu influence on the sibling axis advises clear communication and avoiding mixed finances with co-borns.`,
+        explHi: `भ्रातृ भाव पर संघर्षकारक प्रभाव होने से भाई-बहनों के साथ लेन-देन स्पष्ट रखना ही संबंधों को मधुर रखता है।`,
+      },
+    };
+  }
+  return {
+    family: {
+      valEn: 'Moderate, self-reliant family lives for siblings; cordial visits during festivals and family rites',
+      valHi: 'सहोदरों का सामान्य व आत्मनिर्भर गृहस्थ जीवन; पर्व-त्योहारों व पारिवारिक अवसरों पर सुखद मिलन',
+      explEn: `Balanced 3rd and 11th houses denote independent households with mutual goodwill.`,
+      explHi: `तृतीय व एकादश भावों का मध्यम बल स्वतंत्र किंतु सौहार्दपूर्ण पारिवारिक संबंध दर्शाता है।`,
+    },
+    bonding: {
+      valEn: 'Affectionate yet independent relationship; each sibling respects personal space while standing together in crises',
+      valHi: 'स्नेहपूर्ण किंतु स्वतंत्र संबंध; सामान्य दिनों में अपनी-अपनी व्यस्तता, किंतु संकट में परस्पर साथ',
+      explEn: `3rd lord in House ${h3.lordHouse} sustains baseline sibling loyalty despite differing priorities.`,
+      explHi: `तृतीयेश की भाव ${h3.lordHouse} में स्थिति आवश्यकता पड़ने पर आपसी सहयोग सुनिश्चित करती है।`,
+    },
+  };
+}
+
+// ============================================================================
+// PILLAR 4: IN-LAWS & INTIMACY BONDING
+// ============================================================================
+export function getInLawsPred(h8: HousePacProfile, h7: HousePacProfile): BilingualPrediction {
+  // 2nd from 7th is House 8 (In-laws' family & resources)
+  if (h8.tier === 'strong' && h7.tier !== 'afflicted') {
+    return {
+      valEn: 'Supportive, dignified in-laws with stable social standing; cordial post-marital family integration',
+      valHi: 'सुसंस्कृत, प्रतिष्ठित व सहयोगी ससुराल पक्ष; विवाह उपरांत दोनों परिवारों में मधुर सामंजस्य',
+      explEn: `The 8th house (2nd from 7th = Kutumba of spouse) is well-supported by ${h8.dominantGraha}, bringing respectful in-law relations.`,
+      explHi: `सप्तम से द्वितीय (अष्टम भाव) की शुभ स्थिति ससुराल पक्ष से सम्मान और सहयोग दिलाती है।`,
+    };
+  }
+  if (h8.tier === 'afflicted') {
+    return {
+      valEn: 'Traditional or opinionated in-laws; maintaining healthy independence and polite boundaries prevents domestic friction',
+      valHi: 'ससुराल पक्ष से वैचारिक भिन्नता या अपेक्षाओं का दबाव; मर्यादित दूरी व स्वतंत्र निवास से शांति बनी रहेगी',
+      explEn: `Affliction to the 8th house (${h8.dominantGraha}, lord in H${h8.lordHouse}) shows differing cultural expectations; independent household management helps.`,
+      explHi: `अष्टम भाव पर ${h8.dominantGraha} के प्रभाव से ससुराल पक्ष से तालमेल में धैर्य और स्वतंत्र निर्णय क्षमता आवश्यक होती है।`,
+    };
+  }
+  return {
+    valEn: 'Middle-to-upper-middle class, practical in-laws; respectful, formal harmony maintained across family occasions',
+    valHi: 'व्यावहारिक व मध्यम वर्गीय सुसंस्कृत ससुराल पक्ष; पारिवारिक अवसरों पर सम्मानजनक व औपचारिक संबंध',
+    explEn: `8th house (${h8.signName}, lord in H${h8.lordHouse}) indicates functional, polite relations with spouse’s family.`,
+    explHi: `अष्टम भाव (${h8.signName}) की संतुलित स्थिति ससुराल पक्ष के साथ सामान्य व शिष्ट संबंध दर्शाती है।`,
+  };
+}
+
+export function getIntimacyBondingPred(h12: HousePacProfile, venus?: PlanetPos, mars?: PlanetPos): BilingualPrediction {
+  if (h12.tier === 'strong' && venus?.dignity !== 'Debilitated') {
+    return {
+      valEn: 'Deep emotional warmth, fulfilling physical intimacy, and mutual tenderness in marital life',
+      valHi: 'प्रगाढ़ भावनात्मक उष्मा, संतुष्टिदायक शयन सुख व दांपत्य में परस्पर कोमलता',
+      explEn: `Strong 12th house (Shayana Sukha) and dignified Venus cultivate enduring romantic chemistry and marital contentment.`,
+      explHi: `द्वादश भाव (शयन सुख) और शुक्र का शुभ बल वैवाहिक जीवन में संतोष व आत्मीयता बनाए रखता है।`,
+    };
+  }
+  if (h12.tier === 'afflicted' || venus?.dignity === 'Debilitated' || (mars && mars.placedHouse === 12)) {
+    return {
+      valEn: 'Passionate yet temperamental intimacy; work stress or ego differences can cool warmth unless consciously nurtured',
+      valHi: 'तीव्र आकर्षण किंतु कार्य-तनाव या क्रोध के कारण शयन सुख में उतार-चढ़ाव; भावनात्मक संवाद आवश्यक',
+      explEn: `Malefic influence on the 12th house (${h12.dominantGraha}) or Venus indicates that external stress impacts bedroom harmony; patience restores balance.`,
+      explHi: `द्वादश भाव पर ${h12.dominantGraha} का प्रभाव दर्शाता है कि व्यस्तता और तनाव को दांपत्य कक्ष से दूर रखना सुख के लिए आवश्यक है।`,
+    };
+  }
+  return {
+    valEn: 'Balanced, affectionate companionship; intimacy deepens steadily over time through shared trust and quiet comfort',
+    valHi: 'संतुलित व स्नेहपूर्ण दांपत्य सुख; समय के साथ विश्वास व भावनात्मक निकटता में निरंतर वृद्धि',
+    explEn: `12th house (${h12.signName}, lord in H${h12.lordHouse}) indicates steady, respectful marital intimacy.`,
+    explHi: `द्वादश भाव की स्थिति जीवनसाथी के साथ मर्यादित, संतुष्टिदायक और स्थायी संबंध को दर्शाती है।`,
+  };
+}
+
+// ============================================================================
+// PILLAR 5: CHILDREN YOGA, INTELLECT, BONDING & TIMING
+// ============================================================================
+export function getProgenyPillarDetails(
+  h5: HousePacProfile,
+  h9: HousePacProfile,
+  jupiter?: PlanetPos
+): {
+  yoga: BilingualPrediction;
+  intellect: BilingualPrediction;
+  bonding: BilingualPrediction;
+  timing: BilingualPrediction;
+} {
+  const isBarren = ['Aries', 'Gemini', 'Leo', 'Virgo'].includes(h5.signName);
+  const jupWeak = jupiter && ([6, 8, 12].includes(jupiter.placedHouse) || jupiter.dignity === 'Debilitated');
+
+  // 1. Yoga
+  let yoga: BilingualPrediction;
+  if (h5.tier === 'strong' && !isBarren && !jupWeak) {
+    yoga = {
+      valEn: 'Strong, fertile Putrabhava yoga; smooth natural conception and joyful parental fulfillment',
+      valHi: 'प्रबल व उर्वर संतान योग; सहज गर्भधारण व संतान द्वारा जीवन में आनंद की प्राप्ति',
+      explEn: `5th house (${h5.signName}) and Putrakaraka Jupiter (H${jupiter?.placedHouse}) are well-fortified.`,
+      explHi: `पंचम भाव व गुरु की शुभ स्थिति निर्विघ्न संतान सुख का प्रमाण देती है।`,
+    };
+  } else if (h5.tier === 'afflicted' || (isBarren && jupWeak)) {
+    yoga = {
+      valEn: 'Delayed or tested progeny yoga (Santan Vilamba); requires medical care, patience, and Jupiter remedies',
+      valHi: 'संतान प्राप्ति में विलंब अथवा प्रारंभिक बाधा (संतान विलंब योग); चिकित्सीय परामर्श व गुरु-उपाय लाभकारी',
+      explEn: `Affliction on 5th house (${h5.dominantGraha}, lord in H${h5.lordHouse}) or weak Jupiter indicates delays that resolve with proper care.`,
+      explHi: `पंचम भाव पर ${h5.dominantGraha} के प्रभाव या गुरु की कमजोरी से संतान सुख में धैर्य और चिकित्सा की आवश्यकता पड़ती है।`,
+    };
+  } else {
+    yoga = {
+      valEn: 'Moderate, auspicious progeny promise; fulfilled naturally in due course with family planning balance',
+      valHi: 'मध्यम व शुभ संतति योग; समयानुसार स्वाभाविक संतान प्राप्ति व पारिवारिक सुख',
+      explEn: `5th house (${h5.signName}, lord in H${h5.lordHouse}) grants steady progeny outcomes during supportive Dasha.`,
+      explHi: `पंचमेश की भाव ${h5.lordHouse} में स्थिति अनुकूल दशा में संतान सुख प्रदान करती है।`,
+    };
+  }
+
+  // 2. Intellect (9th = 5th from 5th)
+  const intelMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Confident, leadership-oriented children inclined toward administration or medicine', hi: 'आत्मविश्वासी व नेतृत्व-कुशल संतान; प्रशासन या चिकित्सा में रुचि' },
+    Moon: { en: 'Imaginative, empathetic children excelling in arts, healthcare, or public communication', hi: 'संवेदनशील व कल्पनाशील संतान; कला, सेवा या जनसंपर्क में सफल' },
+    Mars: { en: 'Energetic, courageous children drawn to engineering, sports, or technical action', hi: 'ऊर्जावान व साहसी संतान; इंजीनियरिंग, खेल या तकनीकी क्षेत्र में रुचि' },
+    Mercury: { en: 'Sharp-witted, analytical children excelling in commerce, IT, coding, and communication', hi: 'तीव्र बुद्धि व तार्किक संतान; वाणिज्य, आईटी व संवाद कला में निपुण' },
+    Jupiter: { en: 'Wise, ethical, academically gifted children excelling in higher education or law', hi: 'विद्वान, संस्कारी व मेधावी संतान; उच्च शिक्षा, वित्त या विधि में श्रेष्ठ' },
+    Venus: { en: 'Graceful, creative children inclined toward design, media, management, or fine arts', hi: 'सुशील व रचनात्मक संतान; कला, प्रबंधन, मीडिया या डिजाइन में निपुण' },
+    Saturn: { en: 'Disciplined, serious, hardworking children who achieve steady, late-blooming mastery', hi: 'अनुशासित व परिश्रमी संतान; गंभीर अध्ययन व धीरे-धीरे स्थायी सफलता' },
+    Rahu: { en: 'Unconventional, tech-savvy children attracted to modern sciences or foreign education', hi: 'आधुनिक सोच व तकनीक-प्रेमी संतान; नवीन विज्ञान या विदेश में अध्ययन' },
+    Ketu: { en: 'Deeply intuitive, introspective children inclined toward research or spiritual inquiry', hi: 'गहन चिंतनशील व शोध-वृत्ति वाली संतान; विज्ञान या आध्यात्मिक रुचि' },
+  };
+  const intel = intelMap[h9.dominantGraha];
+  const intellect: BilingualPrediction = {
+    valEn: intel.en,
+    valHi: intel.hi,
+    explEn: `Evaluated from 9th house (5th from 5th: ${h9.signName}, driven by ${h9.dominantGraha}).`,
+    explHi: `पंचम से पंचम (नवम भाव) पर ${h9.dominantGraha} के प्रभाव से संतान की बुद्धि और रुचि का निर्धारण होता है।`,
+  };
+
+  // 3. Bonding
+  let bonding: BilingualPrediction;
+  if (h5.tier === 'afflicted') {
+    bonding = {
+      valEn: 'Deep parental love, though generation-gap or independent career choices create occasional ideological distance',
+      valHi: 'संतान के प्रति गहरा स्नेह, किंतु वैचारिक भिन्नता या दूरी के कारण संवाद में धैर्य आवश्यक',
+      explEn: `Malefic/Dusthana influence on 5th shows children grow very independent; respectful listening strengthens the bond.`,
+      explHi: `पंचम भाव पर दबाव के कारण संतान स्वतंत्र विचार रखती है; मित्रवत व्यवहार से संबंध मधुर रहते हैं।`,
+    };
+  } else {
+    bonding = {
+      valEn: 'Warm, respectful filial bond; children value parental guidance and support family elders',
+      valHi: 'स्नेहपूर्ण व आदरयुक्त संबंध; संतान माता-पिता के मार्गदर्शन का सम्मान व सेवा करती है',
+      explEn: `Harmonious 5th house (${h5.signName}) nurtures mutual respect across generations.`,
+      explHi: `पंचम भाव का शुभ बल माता-पिता और संतान के बीच आजीवन आत्मीयता बनाए रखता है।`,
+    };
+  }
+
+  // 4. Timing
+  let timing: BilingualPrediction;
+  if (h5.tier === 'afflicted' || h5.occupants.some((p) => p.id === 'Saturn' || p.id === 'Rahu')) {
+    timing = {
+      valEn: 'Mature conception window between ages 29 and 34 years; activates during Jupiter or 5th lord Antardasha',
+      valHi: 'आयु 29 से 34 वर्ष के मध्य संतति प्राप्ति का अनुकूल समय; गुरु अथवा पंचमेश की अंतर्दशा में योग सक्रिय',
+      explEn: `Saturn/Rahu or challenging 5th lord placement shifts progeny timing slightly later into mature adulthood.`,
+      explHi: `शनि/राहु या विलंबकारक स्थिति के कारण संतान योग परिपक्व आयु में फलीभूत होता है।`,
+    };
+  } else if (h5.tier === 'strong') {
+    timing = {
+      valEn: 'Timely auspicious window between ages 25 and 30 years under favorable Guru Gochar',
+      valHi: 'आयु 25 से 30 वर्ष के मध्य समयबद्ध व शुभ संतति योग; गुरु के अनुकूल गोचर में फल प्राप्ति',
+      explEn: `Fortified 5th house allows smooth, timely manifestation of progeny yoga.`,
+      explHi: `बलवान पंचम भाव समय पर सहज संतान सुख प्रदान करता है।`,
+    };
+  } else {
+    timing = {
+      valEn: 'Balanced conception window between ages 27 and 32 years aligned with benefic Dasha transits',
+      valHi: 'आयु 27 से 32 वर्ष के मध्य शुभ दशा व गोचर के समन्वय से संतान सुख की प्राप्ति',
+      explEn: `Transit Jupiter over 5th/9th activates natal progeny promise in late twenties to early thirties.`,
+      explHi: `गुरु गोचर व पंचमेश की दशा के संयोग से संतुलित आयु में संतान प्राप्ति होती है।`,
+    };
+  }
+
+  return { yoga, intellect, bonding, timing };
+}
+
+// ============================================================================
+// PILLAR 6: EDUCATION (TEACHERS, HOSTEL, HURDLES, EXAMS, FRIENDS)
+// ============================================================================
+export function getEducationSubDetails(
+  h4: HousePacProfile,
+  h5: HousePacProfile,
+  h6: HousePacProfile,
+  h9: HousePacProfile,
+  h11: HousePacProfile,
+  jupiter?: PlanetPos
+): {
+  teachers: BilingualPrediction;
+  hostel: BilingualPrediction;
+  hurdles: BilingualPrediction;
+  exams: BilingualPrediction;
+  friends: BilingualPrediction;
+} {
+  // 1. Teachers (H9 & Jupiter)
+  const teachers: BilingualPrediction =
+    h9.tier === 'strong' && jupiter?.dignity !== 'Debilitated'
+      ? {
+          valEn: 'Strong patronage from wise professors and senior mentors who open pivotal career doors',
+          valHi: 'योग्य गुरुजनों व वरिष्ठ प्राध्यापकों का विशेष स्नेह, मार्गदर्शन व करियर में सहयोग',
+          explEn: `Fortified 9th house (${h9.signName}) and Jupiter cultivate lifelong guru-shishya goodwill.`,
+          explHi: `नवम भाव व गुरु के बल से जातक को श्रेष्ठ मार्गदर्शकों का आशीर्वाद मिलता है।`,
+        }
+      : h9.tier === 'afflicted'
+      ? {
+          valEn: 'Self-directed learning; occasional friction with rigid instructors teaches independent critical thinking',
+          valHi: 'स्व-अध्ययन की प्रवृत्ति अधिक; कठोर शिक्षकों से मतभेद के कारण जातक स्वयं के बल पर सीखता है',
+          explEn: `Affliction in 9th house (${h9.dominantGraha}) fosters a questioning, self-taught mind rather than passive obedience.`,
+          explHi: `नवम भाव में संघर्ष जातक को स्वतंत्र चिंतक व स्व-शिक्षित बनाता है।`,
+        }
+      : {
+          valEn: 'Constructive, practical guidance from experienced teachers during crucial academic transitions',
+          valHi: 'अध्ययन के महत्वपूर्ण पड़ावों पर अनुभवी शिक्षकों का व्यावहारिक व उपयोगी मार्गदर्शन',
+          explEn: `Balanced 9th house provides steady educational mentorship when sought sincerely.`,
+          explHi: `नवम भाव की सामान्य स्थिति समय-समय पर उचित शैक्षणिक दिशा देती है।`,
+        };
+
+  // 2. Hostel / Travel for Education (H4, H9, H12)
+  const moveForEdu = h4.modality === 'Movable' || [3, 9, 12].includes(h4.lordHouse) || [9, 12].includes(h5.lordHouse);
+  const hostel: BilingualPrediction = moveForEdu
+    ? {
+        valEn: 'Relocation away from hometown for higher studies; hostel life or out-of-state university experience builds independence',
+        valHi: 'उच्च शिक्षा हेतु घर से दूर प्रवास; छात्रावास (Hostel) अथवा अन्य नगर में रहकर अध्ययन व आत्मनिर्भरता',
+        explEn: `4th house (${h4.signName}) connecting with movable/distant houses (lord in H${h4.lordHouse}) triggers academic relocation.`,
+        explHi: `चतुर्थ भाव का चर राशि या ३/९/१२वें भाव से संबंध शिक्षा के लिए घर से दूर जाने का योग बनाता है।`,
+      }
+    : {
+        valEn: 'Primary and higher education largely completed near native city/family base; stable home study environment',
+        valHi: 'अधिकांश शिक्षा पैतृक नगर अथवा परिवार के समीप रहकर पूर्ण; घर के शांत वातावरण में अध्ययन',
+        explEn: `Fixed/grounded 4th axis keeps academic base anchored close to home.`,
+        explHi: `चतुर्थ भाव की स्थिरता जातक को परिवार के पास रहकर पढ़ाई पूर्ण करने का अवसर देती है।`,
+      };
+
+  // 3. Education Hurdles
+  const hurdles: BilingualPrediction =
+    h5.tier === 'afflicted' || h4.tier === 'afflicted'
+      ? {
+          valEn: 'Noticeable academic hurdles: possible stream change, temporary breaks, or distraction requiring disciplined focus',
+          valHi: 'अध्ययन में उतार-चढ़ाव: विषय परिवर्तन, एकाग्रता में भटकाव अथवा अस्थायी व्यवधान; कठोर अनुशासन आवश्यक',
+          explEn: `Malefic influence on 4th/5th (${h4.dominantGraha}/${h5.dominantGraha}) creates early academic friction before maturity sets in.`,
+          explHi: `चतुर्थ/पंचम भाव पर दबाव के कारण प्रारंभिक शिक्षा में बाधा आती है, जिसे परिश्रम से पार किया जाता है।`,
+        }
+      : h5.tier === 'strong'
+      ? {
+          valEn: 'Smooth, unobstructed academic progression with strong focus and timely completion of degrees',
+          valHi: 'निर्विघ्न व समयबद्ध शैक्षणिक प्रगति; तीव्र एकाग्रता के साथ उपाधियों की सहज प्राप्ति',
+          explEn: `Benefic 4th/5th houses protect educational continuity from major breaks.`,
+          explHi: `चतुर्थ व पंचम भावों की शुभ स्थिति शिक्षा को सुचारू और बाधा-रहित रखती है।`,
+        }
+      : {
+          valEn: 'Minor exam stress or brief indecision around ages 18–21; overcomes obstacles through steady revision',
+          valHi: '18–21 वर्ष की आयु के आसपास विषय चयन की दुविधा या सामान्य परीक्षा दबाव; नियमित अभ्यास से सफलता',
+          explEn: `Moderate 5th axis shows manageable academic challenges overcome by persistence.`,
+          explHi: `मध्यम पंचम भाव सामान्य परिश्रम से सभी शैक्षणिक चुनौतियों पर विजय दिलाता है।`,
+        };
+
+  // 4. Competitive Exams (H6 & Mars/Mercury)
+  const exams: BilingualPrediction =
+    h6.tier === 'strong' || ['Mars', 'Sun', 'Mercury'].includes(h6.dominantGraha)
+      ? {
+          valEn: 'High competitive grit: Capable of clearing tough entrance/government exams through focused strategy',
+          valHi: 'प्रबल प्रतिस्पर्धात्मक क्षमता: कठिन प्रवेश परीक्षाओं व सरकारी/प्रतियोगी परीक्षाओं में चयन का उत्तम योग',
+          explEn: `6th house (Competition) driven by ${h6.dominantGraha} equips the native with analytical stamina under pressure.`,
+          explHi: `षष्ठ भाव पर ${h6.dominantGraha} का प्रभाव जातक को प्रतियोगी परीक्षाओं में विजय दिलाने वाला जुझारूपन देता है।`,
+        }
+      : h6.tier === 'afflicted'
+      ? {
+          valEn: 'Competitive exams require multiple persistent attempts; skill-based interviews suit better than rote-memory tests',
+          valHi: 'प्रतियोगी परीक्षाओं में एक से अधिक प्रयासों की आवश्यकता; रटने के बजाय व्यावहारिक कौशल-परीक्षण अधिक अनुकूल',
+          explEn: `Afflicted 6th axis suggests steady persistence or opting for practical skill-driven career paths.`,
+          explHi: `षष्ठ भाव की स्थिति दर्शाती है कि निरंतर अभ्यास या कौशल आधारित चयन से ही सफलता मिलेगी।`,
+        }
+      : {
+          valEn: 'Steady performance in merit tests and interviews when backed by structured 6–12 month preparation',
+          valHi: 'नियोजित तैयारी व निरंतर अभ्यास द्वारा प्रवेश परीक्षाओं व साक्षात्कार में संतोषजनक सफलता',
+          explEn: `6th lord in House ${h6.lordHouse} rewards systematic preparation in competitive arenas.`,
+          explHi: `षष्ठेश की भाव ${h6.lordHouse} में स्थिति अनुशासित तैयारी से सफलता सुनिश्चित करती है।`,
+        };
+
+  // 5. Friends & Networking (H11)
+  const friendMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Small circle of ambitious, influential friends in leadership or public roles', hi: 'प्रभावशाली व महत्वाकांक्षी मित्रों का सीमित किंतु प्रतिष्ठित दायरा' },
+    Moon: { en: 'Warm, emotionally supportive friends who feel like extended family', hi: 'भावुक, स्नेही व सुख-दुख में साथ देने वाले घनिष्ठ मित्र' },
+    Mars: { en: 'Energetic, action-oriented friends; dynamic camaraderie with occasional blunt debates', hi: 'उत्साही व साहसी मित्र; आपस में स्पष्टवादिता व सक्रिय सहयोग' },
+    Mercury: { en: 'Witty, intellectually diverse friend network across tech, media, and business', hi: 'बौद्धिक, चतुर व व्यापार-तकनीक से जुड़े विविध मित्रों का बड़ा समूह' },
+    Jupiter: { en: 'Sincere, wise, ethical companions who offer sound counsel and lifelong loyalty', hi: 'सज्जन, विद्वान व सदाचारी मित्र जो सही सलाह व आजीवन साथ देते हैं' },
+    Venus: { en: 'Artistic, cheerful, socially refined friends; joyful social gatherings', hi: 'कलाप्रिय, प्रसन्नचित्त व सुरुचिपूर्ण मित्र; सामाजिक मेलजोल में आनंद' },
+    Saturn: { en: 'Very few, deeply tested, mature or older friends; values quality over quantity', hi: 'बहुत कम किंतु परिपक्व व विश्वसनीय मित्र; भीड़ की अपेक्षा गहराई को महत्व' },
+    Rahu: { en: 'Diverse, unconventional, or cross-cultural friends; requires discernment in financial trust', hi: 'विविध व आधुनिक परिवेश के मित्र; मित्रता में आर्थिक लेन-देन से सतर्कता आवश्यक' },
+    Ketu: { en: 'Selective, private social life; prefers 1–2 genuine confidants over large groups', hi: 'अत्यंत सीमित व एकांतप्रिय मित्रता; बड़े समूह के बजाय 1-2 सच्चे मित्र पसंद' },
+  };
+  const fBase = friendMap[h11.dominantGraha];
+  const friends: BilingualPrediction = {
+    valEn: `${fBase.en}${h11.tier === 'afflicted' ? '; guard against fair-weather acquaintances' : ''}`,
+    valHi: `${fBase.hi}${h11.tier === 'afflicted' ? '; स्वार्थी मित्रों से सावधानी रखें' : ''}`,
+    explEn: `11th house (${h11.signName}, driven by ${h11.dominantGraha}, lord in H${h11.lordHouse}) governs friendships and social gains.`,
+    explHi: `एकादश भाव (मित्र व लाभ) पर ${h11.dominantGraha} का प्रभाव मित्र-मंडली का स्वरूप तय करता है।`,
+  };
+
+  return { teachers, hostel, hurdles, exams, friends };
+}
+
+// ============================================================================
+// PILLAR 7: PROFIT/LOSS CYCLES & HIDDEN WEALTH
+// ============================================================================
+export function getCareerFinancialDetails(h11: HousePacProfile, h12: HousePacProfile, h8: HousePacProfile): {
+  profitLoss: BilingualPrediction;
+  hiddenWealth: BilingualPrediction;
+} {
+  let profitLoss: BilingualPrediction;
+  if (h11.tier === 'strong' && h12.tier !== 'afflicted') {
+    profitLoss = {
+      valEn: 'Income consistently outpaces expenses; strong savings growth between ages 30 and 45 with disciplined reserves',
+      valHi: 'आय व्यय से निरंतर अधिक; 30 से 45 वर्ष की आयु के मध्य पूंजी व बचत में उल्लेखनीय वृद्धि',
+      explEn: `11th house (${h11.signName}) dominates 12th house (${h12.signName}), sustaining positive net cash flow.`,
+      explHi: `एकादश (लाभ) भाव द्वादश (व्यय) से अधिक बलवान होने से पूंजी संचय सुदृढ़ रहता है।`,
+    };
+  } else if (h11.tier === 'afflicted' || h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Mars')) {
+    profitLoss = {
+      valEn: 'Cyclical income-expense waves; unexpected family/medical expenses require strict emergency funds and avoiding risky speculation',
+      valHi: 'आय-व्यय में उतार-चढ़ाव; अनपेक्षित खर्चों से बचने हेतु आपातकालीन बचत व सट्टेबाजी से दूर रहना अनिवार्य',
+      explEn: `Active 12th expenses (${h12.dominantGraha}) vs 11th gains (${h11.dominantGraha}) demand conservative risk management.`,
+      explHi: `द्वादश भाव में व्यय की प्रवृत्ति होने से सुरक्षित निवेश और बजट अनुशासन ही समृद्धि की कुंजी है।`,
+    };
+  } else {
+    profitLoss = {
+      valEn: 'Balanced cash flow: Steady earnings cover living needs comfortably; wealth grows gradually after mid-30s',
+      valHi: 'संतुलित आय-व्यय चक्र: नियमित कमाई से सभी दायित्व पूर्ण; 35 वर्ष के बाद संचित कोष में धीरे-धीरे वृद्धि',
+      explEn: `11th lord in H${h11.lordHouse} and 12th lord in H${h12.lordHouse} indicate steady financial equilibrium.`,
+      explHi: `एकादश व द्वादश भावों का संतुलन जीवन में आर्थिक स्थिरता बनाए रखता है।`,
+    };
+  }
+
+  let hiddenWealth: BilingualPrediction;
+  if (h8.tier === 'strong' && !h8.occupants.some((p) => p.id === 'Rahu' || p.id === 'Saturn')) {
+    hiddenWealth = {
+      valEn: 'Favorable gains through long-term PF/insurance maturity, ancestral settlement, or quiet investments',
+      valHi: 'दीर्घकालिक निवेश, बीमा/पीएफ परिपक्वता अथवा पैतृक हिस्सेदारी से अप्रत्याशित लाभ का योग',
+      explEn: `Fortified 8th house (${h8.signName}) unlocks unearned reserves and structured settlements.`,
+      explHi: `अष्टम भाव के शुभ बल से रुका हुआ धन, बीमा अथवा पैतृक लाभ प्राप्त होता है।`,
+    };
+  } else if (h8.tier === 'afflicted') {
+    hiddenWealth = {
+      valEn: 'No reliance on windfalls or lottery; speculative trading can cause losses — wealth comes strictly through earned work',
+      valHi: 'लॉटरी या शॉर्टकट से धन की आशा न रखें; सट्टेबाजी में हानि संभव — केवल परिश्रम की कमाई ही फलदायी',
+      explEn: `Afflicted 8th house (${h8.dominantGraha}, lord in H${h8.lordHouse}) warns against get-rich-quick schemes or undocumented loans.`,
+      explHi: `अष्टम भाव पर ${h8.dominantGraha} के दबाव के कारण बिना सोचे-समझे जोखिम भरे निवेश से बचना चाहिए।`,
+    };
+  } else {
+    hiddenWealth = {
+      valEn: 'Modest long-term compounding through retirement funds, insurance, and gradual asset appreciation',
+      valHi: 'भविष्य निधि, बीमा व दीर्घकालिक सुरक्षित बचत के माध्यम से समय के साथ शांत पूंजी वृद्धि',
+      explEn: `8th lord in House ${h8.lordHouse} favors patient, low-risk compounding over sudden speculation.`,
+      explHi: `अष्टमेश की स्थिति धैर्यपूर्ण व सुरक्षित दीर्घकालिक निवेश को लाभकारी बनाती है।`,
+    };
+  }
+
+  return { profitLoss, hiddenWealth };
+}
+
+// ============================================================================
+// PILLAR 8: ACCIDENTS, CRISES, DREAMS, ROMANCE, OCCULT, SECRETS, PETS
+// ============================================================================
+export function getPillar8MicroDetails(
+  h6: HousePacProfile,
+  h8: HousePacProfile,
+  h12: HousePacProfile,
+  moon?: PlanetPos,
+  venus?: PlanetPos
+): {
+  accidents: BilingualPrediction;
+  crises: BilingualPrediction;
+  dreams: BilingualPrediction;
+  romance: BilingualPrediction;
+  occult: BilingualPrediction;
+  secrets: BilingualPrediction;
+  pets: BilingualPrediction;
+} {
+  // 1. Accidents
+  const marsRahu8 = h8.occupants.some((p) => p.id === 'Mars' || p.id === 'Rahu') || h8.aspectors.some((p) => p.id === 'Mars' || p.id === 'Rahu');
+  const accidents: BilingualPrediction = marsRahu8
+    ? {
+        valEn: 'Elevated caution required with fast driving, sharp tools, and fire/electricity; strictly wear safety gear',
+        valHi: 'तेज वाहन चालन, अग्नि, बिजली व धारदार उपकरणों से विशेष सावधानी अपेक्षित; सुरक्षा नियमों का पालन अनिवार्य',
+        explEn: `Mars/Rahu influence on 8th house (Randhra) warns against haste and impulsive physical risks.`,
+        explHi: `अष्टम भाव पर मंगल/राहु का प्रभाव आकस्मिक चोट से बचाव हेतु वाहन धीरे व सावधानी से चलाने की चेतावनी देता है।`,
+      }
+    : h8.tier === 'strong'
+    ? {
+        valEn: 'Low accident vulnerability; strong protective shield during travel with minor seasonal precautions',
+        valHi: 'गंभीर दुर्घटना की संभावना अत्यंत न्यून; यात्राओं में दैवीय सुरक्षा व सामान्य सतर्कता पर्याप्त',
+        explEn: `Benefic protection on 8th house mitigates sudden physical mishaps.`,
+        explHi: `अष्टम भाव की शुभ स्थिति आकस्मिक संकटों से जातक की रक्षा करती है।`,
+      }
+    : {
+        valEn: 'Moderate vigilance advised during Rahu/Mars sub-periods; avoid night highway driving when fatigued',
+        valHi: 'राहु/मंगल की अंतर्दशा में सामान्य सतर्कता अपेक्षित; थकान में रात्रि वाहन चालन से बचें',
+        explEn: `8th lord in H${h8.lordHouse} suggests routine caution keeps physical safety intact.`,
+        explHi: `अष्टमेश की स्थिति सामान्य सावधानी के साथ सुरक्षित जीवन दर्शाती है।`,
+      };
+
+  // 2. Crises
+  const crises: BilingualPrediction =
+    h8.tier === 'afflicted'
+      ? {
+          valEn: 'Significant transformative tests during Saturn/Rahu transits; builds deep psychological resilience and wisdom',
+          valHi: 'शनि/राहु गोचर में जीवन के बड़े परीक्षा-काल; कठिन अनुभवों से जातक अत्यंत परिपक्व व मजबूत बनता है',
+          explEn: `8th house (${h8.dominantGraha}) brings deep life resets that strip away illusions and forge inner strength.`,
+          explHi: `अष्टम भाव के प्रभाव से आने वाले उतार-चढ़ाव जातक को जीवन का गहरा अनुभव और अडिग धैर्य देते हैं।`,
+        }
+      : {
+          valEn: 'Manageable inflection phases around Saturn return (ages 29–30) and mid-life; navigated calmly with planning',
+          valHi: '29-30 व 45-47 वर्ष के आसपास सामान्य जीवन-परिवर्तन काल; धैर्य व सूझबूझ से सहज पार',
+          explEn: `Natural planetary cycles bring periodic course-corrections without catastrophic upheaval.`,
+          explHi: `ग्रहों के स्वाभाविक चक्र समय-समय पर जीवन को नई दिशा और स्थिरता देते हैं।`,
+        };
+
+  // 3. Dreams & Fears (Moon + H12)
+  const dreamMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Dreams of mountains, authority, sunlight, or responsibility; underlying fear of losing dignity', hi: 'ऊंचे पर्वत, सूर्य या प्रतिष्ठा से जुड़े स्वप्न; मान-सम्मान में कमी का अवचेतन भय' },
+    Moon: { en: 'Vivid dreams of rivers, oceans, family, or ancestral homes; emotional sensitivity to isolation', hi: 'नदी, जल, परिवार या पुराने घर के सजीव स्वप्न; अकेलेपन के प्रति भावनात्मक संवेदनशीलता' },
+    Mars: { en: 'Action-packed or intense dreams of travel, conflict, or fire; restless energy during stress', hi: 'यात्रा, संघर्ष या ऊर्जा से भरपूर स्वप्न; तनाव के समय मन में उग्रता' },
+    Mercury: { en: 'Fast-paced dreams involving conversations, exams, numbers, or unfinished tasks; mental overthinking', hi: 'संवाद, परीक्षा, यात्रा या अधूरे कार्यों के स्वप्न; विचारों की अधिकता से चिंता' },
+    Jupiter: { en: 'Symbolic, peaceful dreams of temples, mentors, or scriptures; fear of moral compromise', hi: 'मंदिर, गुरुजन व शुभ प्रतीकों के शांत स्वप्न; धर्म व मर्यादा भंग होने का संकोच' },
+    Venus: { en: 'Aesthetic dreams of beauty, music, gardens, or relationships; fear of disharmony', hi: 'सौंदर्य, संगीत, बाग-बगीचे व संबंधों के स्वप्न; पारिवारिक कलह से मन में असहजता' },
+    Saturn: { en: 'Serious, realistic dreams of responsibility, climbing, or old places; deep fear of failure or scarcity', hi: 'परिश्रम, ऊंचाई पर चढ़ने या पुराने स्थानों के गंभीर स्वप्न; असफलता या अभाव का भय' },
+    Rahu: { en: 'Unusual, futuristic, or vivid flying/foreign dreams; occasional anxiety over unknowns', hi: 'विचित्र, भविष्यवादी या अनजानी जगहों के गहरे स्वप्न; अज्ञात भविष्य को लेकर कभी-कभी चिंता' },
+    Ketu: { en: 'Prophetic, spiritual, or ancestral dreams; deep longing for peace over worldly noise', hi: 'पूर्वानुमानित, आध्यात्मिक या पूर्वजों से जुड़े स्वप्न; सांसारिक शोर से वैराग्य भाव' },
+  };
+  const dBase = dreamMap[toGrahaKey(moon?.id === 'Moon' && h12.occupants.length > 0 ? h12.dominantGraha : moon?.id)];
+  const dreams: BilingualPrediction = {
+    valEn: dBase.en,
+    valHi: dBase.hi,
+    explEn: `Synthesized from Moon in House ${moon?.placedHouse} (${moon?.signName}) and 12th house (${h12.signName}, ${h12.dominantGraha}).`,
+    explHi: `चंद्रमा (भाव ${moon?.placedHouse}) एवं द्वादश भाव (${h12.dominantGraha}) से अवचेतन मन, स्वप्न और आंतरिक भय का विश्लेषण होता है।`,
+  };
+
+  // 4. Romance & Discretion
+  const hasAffairRisk = h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Venus') || (venus && [6, 8, 12].includes(venus.placedHouse));
+  const romance: BilingualPrediction = hasAffairRisk
+    ? {
+        valEn: 'Strong romantic magnetism; conscious moral boundaries and transparency needed to avoid complicated attachments',
+        valHi: 'प्रबल भावनात्मक आकर्षण; जटिल या गोपनीय संबंधों से बचने हेतु मर्यादा व पारदर्शिता अत्यंत आवश्यक',
+        explEn: `Venus/12th axis activation increases romantic curiosity; fidelity and emotional honesty protect reputation.`,
+        explHi: `शुक्र व द्वादश भाव की सक्रियता आकर्षण बढ़ाती है; नैतिक संयम से जीवन निष्कलंक रहता है।`,
+      }
+    : {
+        valEn: 'Steady, dignified romantic temperament; values loyalty and avoids scandalous or impulsive entanglements',
+        valHi: 'संयमित व मर्यादित प्रेम दृष्टिकोण; निष्ठा को प्राथमिकता तथा लोक-निंदा से पूर्ण बचाव',
+        explEn: `Well-regulated Kama houses preserve personal dignity and faithful relationships.`,
+        explHi: `शुक्र व सप्तम-द्वादश भावों का संतुलन जातक को मर्यादित और विश्वसनीय बनाए रखता है।`,
+      };
+
+  // 5. Occult Interest
+  const occultPlanets = h8.occupants.some((p) => ['Ketu', 'Rahu', 'Saturn', 'Jupiter', 'Mercury'].includes(p.id)) || [8, 12].includes(h8.lordHouse);
+  const occult: BilingualPrediction = occultPlanets
+    ? {
+        valEn: 'Strong natural curiosity in Jyotish, metaphysics, deep psychology, and hidden root causes of life',
+        valHi: 'ज्योतिष, आध्यात्मिक रहस्य, गहन मनोविज्ञान व जीवन के गूढ़ सत्य जानने में स्वाभाविक रुचि',
+        explEn: `Active 8th house (${h8.signName}, ${h8.dominantGraha}) draws the intellect toward mysteries beyond surface appearances.`,
+        explHi: `अष्टम भाव की सक्रियता जातक को गूढ़ ज्ञान, ज्योतिष और मनोविज्ञान के प्रति आकर्षित करती है।`,
+      }
+    : {
+        valEn: 'Practical, grounded mindset; respects traditional spirituality while prioritizing tangible real-world logic',
+        valHi: 'व्यावहारिक व यथार्थवादी दृष्टिकोण; पारंपरिक आस्था का सम्मान किंतु तंत्र-मंत्र के बजाय कर्म को प्राथमिकता',
+        explEn: `8th house remains calm, keeping focus on practical visible duties rather than esoteric pursuits.`,
+        explHi: `अष्टम भाव के शांत रहने से जातक व्यावहारिक जीवन और प्रत्यक्ष प्रमाणों पर अधिक विश्वास करता है।`,
+      };
+
+  // 6. Secrets & Confidence
+  const secrets: BilingualPrediction =
+    h8.dominantGraha === 'Saturn' || h8.dominantGraha === 'Ketu' || h8.dominantGraha === 'Scorpio' as unknown as GrahaKey
+      ? {
+          valEn: 'Deeply private and guarded; keeps personal struggles and family confidences strictly confidential',
+          valHi: 'अत्यंत गोपनीय व अंतर्मुखी स्वभाव; अपने निजी संघर्ष और परिवार के रहस्य किसी के सामने प्रकट नहीं करता',
+          explEn: `8th house under ${h8.dominantGraha} creates a vault-like personality that rarely overshares.`,
+          explHi: `अष्टम भाव पर ${h8.dominantGraha} का प्रभाव जातक को गंभीर व रहस्य गोपनीय रखने वाला बनाता है।`,
+        }
+      : {
+          valEn: 'Trustworthy confidant for friends while maintaining selective discretion on personal finances and plans',
+          valHi: 'मित्रों के रहस्यों का विश्वसनीय रक्षक; अपनी आर्थिक व भविष्य की योजनाओं में विवेकपूर्ण गोपनीयता',
+          explEn: `Balanced 8th house (${h8.signName}) blends healthy openness with prudent privacy.`,
+          explHi: `अष्टम भाव की संतुलित स्थिति जातक को विश्वसनीय व विवेकशील बनाती है।`,
+        };
+
+  // 7. Pets & Animals (H6)
+  const petMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Respects noble animals (horses, cows); feeding birds at sunrise brings mental clarity', hi: 'गाय व अश्व जैसे सात्विक पशुओं के प्रति सम्मान; प्रातः पक्षियों को दाना डालना शुभ' },
+    Moon: { en: 'Gentle affinity for cats, rabbits, fish aquariums, or white cows; soothing emotional bond', hi: 'गाय, मछली, खरगोश या शांत पालतू जीवों से स्नेह; पशु सेवा से मानसिक शांति' },
+    Mars: { en: 'Strong bond with loyal guard dogs; energetic connection with protective animals', hi: 'स्वामीभक्त श्वान (कुत्तों) के प्रति विशेष लगाव; पशु रक्षा में सक्रिय रुचि' },
+    Mercury: { en: 'Fond of talking birds, parrots, or playful small pets; enjoys observing animal intelligence', hi: 'पक्षियों, तोते या चंचल छोटे पालतू जीवों से लगाव; प्रकृति से जुड़ाव' },
+    Jupiter: { en: 'Reverence for cows and temple elephants; serving cows (Gau Seva) strongly uplifts fortune', hi: 'गौ-सेवा के प्रति विशेष श्रद्धा; गाय को गुड़-रोटी खिलाना भाग्योदयकारी' },
+    Venus: { en: 'Loves graceful, well-groomed pets (cats, ornamental birds, dogs); aesthetic care for animals', hi: 'सुंदर व सजे-संवरे पालतू जीवों व पक्षियों से प्रेम; दयालु व्यवहार' },
+    Saturn: { en: 'Compassionate toward stray dogs, crows, and injured animals; feeding strays removes karmic blocks', hi: 'बेसहारा श्वान, कौओं व घायल पशुओं के प्रति करुणा; काले कुत्ते को भोजन देना श्रेष्ठ उपाय' },
+    Rahu: { en: 'Fascinated by exotic birds, fish, or unusual pets; feeding birds helps stabilize restlessness', hi: 'रंग-बिरंगी मछलियों या अनोखे पक्षियों में रुचि; पक्षियों को दाना डालना मानसिक शांति देता है' },
+    Ketu: { en: 'Quiet empathy for street dogs and stray creatures; silent feeding acts as a potent spiritual remedy', hi: 'श्वान व मूक प्राणियों के प्रति गहरी करुणा; निःस्वार्थ पशु सेवा अत्यंत फलदायी' },
+  };
+  const pBase = petMap[h6.dominantGraha];
+  const pets: BilingualPrediction = {
+    valEn: pBase.en,
+    valHi: pBase.hi,
+    explEn: `6th house (${h6.signName}, driven by ${h6.dominantGraha}) governs domestic animals, pets, and seva.`,
+    explHi: `षष्ठ भाव पर ${h6.dominantGraha} के प्रभाव से पालतू पशु-पक्षियों के प्रति लगाव व सेवा-भाव तय होता है।`,
+  };
+
+  return { accidents, crises, dreams, romance, occult, secrets, pets };
+}
+
+// ============================================================================
+// PILLAR 9: PROPERTY, VEHICLES, SLEEP & MOKSHA
+// ============================================================================
+export function getPillar9AssetDetails(
+  h4: HousePacProfile,
+  h12: HousePacProfile,
+  venus?: PlanetPos,
+  moon?: PlanetPos,
+  ketu?: PlanetPos
+): {
+  property: BilingualPrediction;
+  vehicles: BilingualPrediction;
+  sleep: BilingualPrediction;
+  moksha: BilingualPrediction;
+} {
+  // 1. Property (H4)
+  const property: BilingualPrediction =
+    h4.tier === 'strong'
+      ? {
+          valEn: 'Own residential home and potential secondary real estate/land acquired comfortably by early-to-mid 30s',
+          valHi: 'स्वयं का सुदृढ़ मकान व भू-संपत्ति का उत्तम योग; 30-35 वर्ष की आयु तक स्थायी गृह प्राप्ति',
+          explEn: `Fortified 4th house (${h4.signName}, lord in H${h4.lordHouse}) grants stable immovable property.`,
+          explHi: `चतुर्थ भाव की मजबूती जातक को जीवन में स्वयं का सुंदर आवास और भूमि सुख दिलाती है।`,
+        }
+      : h4.tier === 'afflicted'
+      ? {
+          valEn: 'Delayed property ownership or acquisition via long-term bank loans/EMIs; verify legal land deeds carefully',
+          valHi: 'स्वयं के मकान में विलंब अथवा बैंक ऋण (EMI) द्वारा गृह प्राप्ति; संपत्ति दस्तावेजों की गहन जांच अनिवार्य',
+          explEn: `Afflicted 4th house (${h4.dominantGraha}, lord in H${h4.lordHouse}) brings home ownership after sustained effort and careful paperwork.`,
+          explHi: `चतुर्थ भाव पर संघर्ष के कारण पैतृक संपत्ति विवाद या ऋण के माध्यम से मकान बनने की संभावना रहती है।`,
+        }
+      : {
+          valEn: 'Own residential flat or modest family home acquired steadily in mid-career through savings and structured EMI',
+          valHi: 'करियर के मध्य चरण में बचत व सुव्यवस्थित ऋण के माध्यम से स्वयं का आरामदायक आवास',
+          explEn: `Balanced 4th house supports practical, debt-manageable home ownership.`,
+          explHi: `चतुर्थ भाव का संतुलित बल समय पर व्यावहारिक गृह सुख प्रदान करता है।`,
+        };
+
+  // 2. Vehicles (H4 & Venus)
+  const vehicles: BilingualPrediction =
+    h4.tier === 'strong' && venus?.dignity !== 'Debilitated'
+      ? {
+          valEn: 'Comfortable four-wheeler/SUV ownership with smooth upgrades; white, silver, or metallic shades suit well',
+          valHi: 'उत्तम व आरामदायक चारपहिया वाहन का सुख; सफेद, सिल्वर या हल्के रंग के वाहन विशेष शुभ',
+          explEn: `Strong 4th house and Venus bless the native with reliable, comfortable conveyances.`,
+          explHi: `चतुर्थ भाव व शुक्र का शुभ योग वाहन सुख और सुरक्षित यात्रा प्रदान करता है।`,
+        }
+      : h4.tier === 'afflicted'
+      ? {
+          valEn: 'Practical, utility-focused vehicle ownership; regular maintenance and cautious driving prevent repair expenses',
+          valHi: 'व्यावहारिक व उपयोगी वाहन सुख; समय पर रखरखाव और संयमित ड्राइविंग से वाहन व्यय नियंत्रित रहेगा',
+          explEn: `Malefic aspect on 4th suggests choosing sturdy, reliable vehicles over flashy luxury models.`,
+          explHi: `चतुर्थ भाव पर दबाव होने से दिखावे के बजाय टिकाऊ व सुरक्षित वाहन चुनना लाभकारी रहता है।`,
+        }
+      : {
+          valEn: 'Steady personal vehicle progression (two-wheeler to reliable family car) matching career growth',
+          valHi: 'करियर की प्रगति के साथ क्रमशः दुपहिया से विश्वसनीय पारिवारिक कार तक का स्वाभाविक वाहन सुख',
+          explEn: `Moderate 4th/Venus axis grants dependable daily transportation without undue strain.`,
+          explHi: `सामान्य वाहन योग जीवन की आवश्यकताओं के अनुरूप सुविधाजनक यातायात प्रदान करता है।`,
+        };
+
+  // 3. Sleep (H12 & Moon)
+  const sleepAfflicted = h12.tier === 'afflicted' || moon?.placedHouse === 6 || moon?.placedHouse === 8 || moon?.placedHouse === 12;
+  const sleep: BilingualPrediction = sleepAfflicted
+    ? {
+        valEn: 'Light, mind-active sleep; overthinking or late screens disturb rest — evening meditation restores deep calm',
+        valHi: 'हल्की व विचारशील निद्रा; रात्रि में अधिक सोचने से नींद प्रभावित — संध्या ध्यान व शांत दिनचर्या लाभकारी',
+        explEn: `12th house (${h12.dominantGraha}) or Moon sensitivity stimulates nocturnal thought; regular sleep hygiene is essential.`,
+        explHi: `द्वादश भाव या चंद्रमा की संवेदनशीलता रात्रि में मन को सक्रिय रखती है; सोने से पूर्व स्क्रीन से दूरी लाभप्रद है।`,
+      }
+    : {
+        valEn: 'Peaceful, restorative sleep once daily duties conclude; quiet bedroom environment preserves vitality',
+        valHi: 'गहरी, शांत व स्फूर्तिदायक निद्रा; शांत शयन कक्ष व नियमित समय पर शयन स्वास्थ्यवर्धक',
+        explEn: `Harmonious 12th house (Shayana) and Moon support deep physical and mental recuperation.`,
+        explHi: `द्वादश भाव और चंद्रमा का संतुलन गहरी व विश्रामदायक नींद प्रदान करता है।`,
+      };
+
+  // 4. Moksha / Spiritual Path (H12 & Ketu)
+  const moksha: BilingualPrediction =
+    ketu?.placedHouse === 12 || ketu?.placedHouse === 9 || h12.dominantGraha === 'Jupiter' || h12.dominantGraha === 'Ketu'
+      ? {
+          valEn: 'Strong Moksha-orientation: Contemplative wisdom and natural spiritual detachment deepen in mature years',
+          valHi: 'प्रबल मोक्ष-प्रवृत्ति: उत्तरार्ध में आध्यात्मिक चिंतन, ध्यान व वैराग्य भाव में गहन परिपक्वता',
+          explEn: `Ketu/Jupiter influence on the 12th/9th axis turns the soul naturally toward self-realization.`,
+          explHi: `द्वादश/नवम भाव पर केतु या गुरु का प्रभाव आत्म-चिंतन और मोक्ष मार्ग की ओर अग्रसर करता है।`,
+        }
+      : {
+          valEn: 'Karma-Yoga path: Achieves spiritual fulfillment through honest family duty, charity, and selfless service',
+          valHi: 'कर्म-योग मार्ग: निष्ठापूर्वक गृहस्थ धर्म, दान व समाज सेवा के माध्यम से आध्यात्मिक उन्नति',
+          explEn: `12th house (${h12.signName}) channels spiritual growth through ethical worldly action rather than renunciation.`,
+          explHi: `द्वादश भाव की स्थिति दर्शाती है कि जातक अपने कर्तव्यों का ईमानदारी से पालन करते हुए सद्गति प्राप्त करता है।`,
+        };
+
+  return { property, vehicles, sleep, moksha };
+}
+
+// ============================================================================
+// PILLAR 10 & 11: PAST LIFE, KARMIC DEBT, KULADEVATA & MANTRA
+// ============================================================================
+export function getPastLifeAndSpiritualDetails(
+  akPlanet: string,
+  h2: HousePacProfile,
+  h9: HousePacProfile,
+  rahu?: PlanetPos,
+  ketu?: PlanetPos,
+  lagnaLordId?: string
+): {
+  purpose: BilingualPrediction;
+  debt: BilingualPrediction;
+  kuladevata: BilingualPrediction;
+  mantra: BilingualPrediction;
+} {
+  const purposeMap: Record<string, { en: string; hi: string }> = {
+    Sun: { en: 'Developing humble leadership, integrity, and serving society without ego-driven pride', hi: 'अहंकार त्यागकर विनम्र नेतृत्व, सत्यनिष्ठा व समाज सेवा का विकास करना' },
+    Moon: { en: 'Cultivating emotional resilience, nurturing others, and balancing deep sensitivity', hi: 'भावनात्मक संतुलन, करुणा और परिवार के प्रति निस्वार्थ सेवा भाव जगाना' },
+    Mars: { en: 'Channeling raw courage into protection, righteous discipline, and constructive action', hi: 'साहस व ऊर्जा को क्रोध के बजाय रक्षा, अनुशासन व रचनात्मक निर्माण में लगाना' },
+    Mercury: { en: 'Speaking truth with clarity, sharing analytical knowledge, and avoiding manipulative cleverness', hi: 'सत्य व स्पष्ट वाणी का प्रयोग, ज्ञान बांटना और छल-कपट से दूर रहना' },
+    Jupiter: { en: 'Upholding dharma, mentoring youth, and sharing wisdom with humility and compassion', hi: 'धर्म की रक्षा, योग्य मार्गदर्शन व विनम्रतापूर्वक ज्ञान का प्रसार करना' },
+    Venus: { en: 'Refining love from sensory attachment into unconditional devotion, grace, and harmony', hi: 'भौतिक आसक्ति से ऊपर उठकर शुद्ध प्रेम, कला व सौहार्द की स्थापना करना' },
+    Saturn: { en: 'Practicing patience, enduring duty without bitterness, and serving the underprivileged', hi: 'धैर्य, निरंतर कर्तव्यनिष्ठा और श्रमिक व असहाय वर्ग की निस्वार्थ सेवा' },
+    Rahu: { en: 'Navigating modern ambition ethically without falling prey to illusion or shortcuts', hi: 'आधुनिक महत्वाकांक्षाओं को नैतिकता के साथ पूर्ण करना व भ्रम से बचना' },
+    Ketu: { en: 'Synthesizing worldly responsibility with deep inner detachment and spiritual insight', hi: 'सांसारिक दायित्वों को निभाते हुए आंतरिक वैराग्य और आत्मज्ञान प्राप्त करना' },
+  };
+  const pEntry = purposeMap[akPlanet] || purposeMap.Jupiter;
+  const purpose: BilingualPrediction = {
+    valEn: pEntry.en,
+    valHi: pEntry.hi,
+    explEn: `Atmakaraka (${akPlanet}) reveals the soul’s primary evolutionary lesson in this incarnation (Jaimini Sutras).`,
+    explHi: `आत्मकारक ग्रह (${akPlanet}) इस जन्म में आत्मा के मुख्य कर्मिक उद्देश्य और सुधार के क्षेत्र को दर्शाता है।`,
+  };
+
+  // Karmic Debt (Rina) based on Rahu/Ketu axis & H9
+  const rahuHouse = rahu?.placedHouse ?? 1;
+  let debt: BilingualPrediction;
+  if ([1, 5, 9].includes(rahuHouse) || h9.tier === 'afflicted') {
+    debt = {
+      valEn: 'Pitru & Guru Rina prominent; harmonized through honoring elders, charity to teachers, and ancestral Shraddha',
+      valHi: 'पितृ एवं गुरु ऋण प्रमुख; बड़ों का सम्मान, गुरुजनों की सेवा व पितृ तर्पण से शीघ्र ऋण-मुक्ति',
+      explEn: `Rahu/Ketu along the Dharma/Trikona axis (Rahu in H${rahuHouse}) highlights ancestral and mentor obligations.`,
+      explHi: `धर्म त्रिकोण (भाव ${rahuHouse}) में राहु-केतु की स्थिति पितृ व गुरु ऋण के प्रति सचेत करती है।`,
+    };
+  } else if ([4, 7, 10].includes(rahuHouse)) {
+    debt = {
+      valEn: 'Matru & Kutumba Rina active; balanced by caring for mother, family harmony, and honest service',
+      valHi: 'मातृ व कुटुंब ऋण सक्रिय; माता की सेवा, गृह-शांति व ईमानदारी से आजीविका निभाने से मुक्ति',
+      explEn: `Nodal axis across Kendras (Rahu in H${rahuHouse}, Ketu in H${ketu?.placedHouse}) focuses karmic dues on domestic duty.`,
+      explHi: `केंद्र भावों में राहु-केतु का अक्ष पारिवारिक व मातृ दायित्वों के निष्ठापूर्ण निर्वहन की ओर संकेत करता है।`,
+    };
+  } else {
+    debt = {
+      valEn: 'Sadharan Karmic Rina; easily balanced through regular charity (Anna Daan), animal feeding, and truthfulness',
+      valHi: 'सामान्य कर्मिक ऋण; नियमित अन्नदान, मूक प्राणियों को भोजन व सत्य आचरण से सहज संतुलन',
+      explEn: `Nodal placement in Upachaya/Dusthana houses (H${rahuHouse}) clears past debts through steady daily service.`,
+      explHi: `राहु की भाव ${rahuHouse} में स्थिति नित्य सेवा और परोपकार द्वारा पूर्व संचित कर्मों को शुद्ध करती है।`,
+    };
+  }
+
+  // Kuladevata / Kuladevi from 2nd/4th/9th lord
+  const kulaMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Surya Narayana / Maa Gayatri / Ancestral Kuladevata Shiva', hi: 'भगवान सूर्य नारायण / माता गायत्री / कुलदेव महादेव' },
+    Moon: { en: 'Maa Parvati / Maa Annapurna / Lord Krishna (Kuladevi Grace)', hi: 'माता पार्वती / माँ अन्नपूर्णा / भगवान श्रीकृष्ण' },
+    Mars: { en: 'Maa Durga (Chamunda) / Lord Hanuman / Lord Kartikeya', hi: 'माँ दुर्गा (चामुंडा रूप) / श्री हनुमान जी / भगवान कार्तिकेय' },
+    Mercury: { en: 'Lord Vishnu / Maa Tripurasundari / Kuladevi Saraswati', hi: 'भगवान श्रीहरि विष्णु / माँ त्रिपुरसुंदरी / कुलदेवी सरस्वती' },
+    Jupiter: { en: 'Lord Dattatreya / Maa Mahalakshmi / Kulaguru Brihaspati', hi: 'भगवान दत्तात्रेय / माँ महालक्ष्मी / कुलगुरु बृहस्पति' },
+    Venus: { en: 'Maa Mahalakshmi / Maa Bhavani / Kuladevi Santoshi', hi: 'माँ महालक्ष्मी / माँ भवानी / कुलदेवी शक्ति स्वरूप' },
+    Saturn: { en: 'Lord Bhairava / Maa Kali / Lord Hanuman (Protective Shield)', hi: 'श्री काल भैरव / माँ काली / संकटमोचन हनुमान जी' },
+    Rahu: { en: 'Maa Durga / Maa Saraswati / Naga Devata (Ancestral Shield)', hi: 'माँ दुर्गा / माँ सरस्वती / कुल-रक्षक नाग देवता' },
+    Ketu: { en: 'Lord Ganesha / Lord Shiva / Maa Dhumavati (Moksha Shield)', hi: 'श्री गणेश जी / भगवान शिव / कुल-रक्षक सिद्ध शक्ति' },
+  };
+  const kulaPlanet = h2.occupants.length > 0 ? h2.dominantGraha : h2.lordId;
+  const kEntry = kulaMap[kulaPlanet];
+  const kuladevata: BilingualPrediction = {
+    valEn: kEntry.en,
+    valHi: kEntry.hi,
+    explEn: `2nd house (Kutumba / Lineage Tradition: ${h2.signName}, driven by ${kulaPlanet}) reveals the ancestral family deity form.`,
+    explHi: `द्वितीय भाव (कुल परंपरा) पर ${kulaPlanet} के प्रभाव से कुलदेवता/कुलदेवी के पूजन स्वरूप का संकेत मिलता है।`,
+  };
+
+  // Mantra & Kavacha from Lagna Lord
+  const mantraMap: Record<string, { en: string; hi: string }> = {
+    Sun: { en: 'Mantra: "Om Ghrini Suryaya Namah" or Aditya Hridayam; Shield: Gayatri Kavach', hi: 'मंत्र: "ॐ घृणि सूर्याय नमः" अथवा आदित्य हृदय स्तोत्र; रक्षा: गायत्री कवच' },
+    Moon: { en: 'Mantra: "Om Som Somaya Namah" or "Om Namah Shivaya"; Shield: Devi Kavach', hi: 'मंत्र: "ॐ सों सोमाय नमः" अथवा "ॐ नमः शिवाय"; रक्षा: देवी कवच' },
+    Mars: { en: 'Mantra: "Om Ang Angarakaya Namah" or Hanuman Chalisa; Shield: Ram Raksha Stotra', hi: 'मंत्र: "ॐ अं अंगारकाय नमः" अथवा हनुमान चालीसा; रक्षा: राम रक्षा स्तोत्र' },
+    Mercury: { en: 'Mantra: "Om Namo Bhagavate Vasudevaya"; Shield: Vishnu Sahasranama / Narayana Kavach', hi: 'मंत्र: "ॐ नमो भगवते वासुदेवाय"; रक्षा: विष्णु सहस्रनाम / नारायण कवच' },
+    Jupiter: { en: 'Mantra: "Om Brim Brihaspataye Namah" or "Om Namo Narayanaya"; Shield: Guru Kavach', hi: 'मंत्र: "ॐ बृं बृहस्पतये नमः" अथवा "ॐ नमो नारायणाय"; रक्षा: गुरु कवच' },
+    Venus: { en: 'Mantra: "Om Shum Shukraya Namah" or Sri Suktam; Shield: Durga Saptashati Argala', hi: 'मंत्र: "ॐ शुं शुक्राय नमः" अथवा श्री सूक्त; रक्षा: दुर्गा कवच' },
+    Saturn: { en: 'Mantra: "Om Sham Shanicharaya Namah" or Maha Mrityunjaya; Shield: Hanuman Bahuk', hi: 'मंत्र: "ॐ शं शनैश्चराय नमः" अथवा महामृत्युंजय मंत्र; रक्षा: बजरंग बाण / शिव कवच' },
+  };
+  const mEntry = mantraMap[lagnaLordId || 'Jupiter'] || mantraMap.Jupiter;
+  const mantra: BilingualPrediction = {
+    valEn: mEntry.en,
+    valHi: mEntry.hi,
+    explEn: `Personalized to your Lagna Lord (${lagnaLordId}) for mental clarity, protection, and spiritual resonance.`,
+    explHi: `आपके लग्नेश (${lagnaLordId}) के अनुसार यह मंत्र व कवच मानसिक शांति और जीवन रक्षा के लिए सर्वोत्तम है।`,
+  };
+
+  return { purpose, debt, kuladevata, mantra };
+}

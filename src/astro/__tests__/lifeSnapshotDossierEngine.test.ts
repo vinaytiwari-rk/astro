@@ -190,4 +190,29 @@ describe('360° Life Matrix Snapshot Dossier Master Engine', () => {
     expect(enemies?.valueEn).toContain('Vigilance against workplace politics');
     expect(enemies?.valueHi).toContain('कार्यक्षेत्र में ईर्ष्यालु लोगों');
   });
+
+  it('produces genuinely distinct bold valueEn & valueHi predictions across 4 different sample kundalis', () => {
+    const reports = SAMPLE_CHARTS.slice(0, 4).map((sample) =>
+      computeLifeSnapshotDossierReport(calculateChart(sample, DEFAULT_SETTINGS))
+    );
+
+    const attrIds = reports[0].pillars.flatMap((p) => p.attributes.map((a) => a.id));
+    let differingEnCount = 0;
+    let differingHiCount = 0;
+
+    for (const id of attrIds) {
+      const valsEn = new Set(
+        reports.map((r) => r.pillars.flatMap((p) => p.attributes).find((a) => a.id === id)?.valueEn)
+      );
+      const valsHi = new Set(
+        reports.map((r) => r.pillars.flatMap((p) => p.attributes).find((a) => a.id === id)?.valueHi)
+      );
+      if (valsEn.size > 1) differingEnCount++;
+      if (valsHi.size > 1) differingHiCount++;
+    }
+
+    // Out of ~70+ attributes, the overwhelming majority (>= 55) must dynamically differ across 4 charts
+    expect(differingEnCount).toBeGreaterThanOrEqual(55);
+    expect(differingHiCount).toBeGreaterThanOrEqual(55);
+  });
 });
