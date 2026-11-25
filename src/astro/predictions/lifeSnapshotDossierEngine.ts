@@ -35,6 +35,7 @@ import {
   getPillar9AssetDetails,
   getPastLifeAndSpiritualDetails,
   getComprehensiveSantanAnalysis,
+  getComprehensiveMarriageAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -342,6 +343,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   };
 
   // Divisional Charts
+  const h1Prof = getHousePacProfile(1, planets, ascSignIdx, getAspectingPlanets);
   const h2Prof = getHousePacProfile(2, planets, ascSignIdx, getAspectingPlanets);
   const h3Prof = getHousePacProfile(3, planets, ascSignIdx, getAspectingPlanets);
   const h4Prof = getHousePacProfile(4, planets, ascSignIdx, getAspectingPlanets);
@@ -1267,6 +1269,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       sexualOrientationPacHi = `केतु भाव ${ketu?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में; द्वादश भाव ${SIGN_HI[h12SignIdx]}; काम भावों पर सात्विक वैराग्य।`;
     }
 
+    const marDet = getComprehensiveMarriageAnalysis(h1Prof, h2Prof, h4Prof, h5Prof, h7Prof, h8Prof, planets, d9);
+
     pillars.push({
       id: 'spouse_marriage',
       pillarNumber: 4,
@@ -1285,10 +1289,24 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           valueHi: maritalStatusHi,
           explanationEn: maritalStatusExplEn,
           explanationHi: maritalStatusExplHi,
-          pacBasisEn: `House 7: ${h7Sign.name}; Lord: ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in House ${venus?.placedHouse} (${venus?.dignity || 'Dignified'}); D9 H7 in ${SIGNS[d9H7Sign].name}.`,
+          pacBasisEn: `House 7: ${h7Sign.name}; Lord: ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in House ${venus?.placedHouse} (${marDet.venusCombust ? 'Combust <8°' : venus?.dignity || 'Dignified'}); D9 H7 in ${SIGNS[d9H7Sign].name}.`,
           pacBasisHi: `सप्तम भाव: ${SIGN_HI[h7SignIdx]}; सप्तमेश: ${PLANET_HI[spouseLord?.id || '']} भाव ${spouseLord?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में; D9 सप्तम: ${SIGN_HI[d9H7Sign]}।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 1–15), Phaladeepika (Ch. 10)',
           vargaRef: 'D1 Rashi & D9 Navamsha',
+        },
+        {
+          id: 'attr_marriage_timing_triggers',
+          category: 'spouse',
+          titleEn: 'Marriage Timing Windows (D1, D9 & Dasha/Transit Triggers)',
+          titleHi: 'विवाह समय, दशा-अंतर्दशा व गुरु/शनि गोचर सूत्र',
+          valueEn: marDet.timingTriggers.valEn,
+          valueHi: marDet.timingTriggers.valHi,
+          explanationEn: marDet.timingTriggers.explEn,
+          explanationHi: marDet.timingTriggers.explHi,
+          pacBasisEn: marDet.timingTriggers.pacEn,
+          pacBasisHi: marDet.timingTriggers.pacHi,
+          shastricRef: 'Bhrigu Sutras, Phaladeepika (Ch. 10), D9 Timing',
+          vargaRef: 'D1 & D9 Navamsha',
         },
         {
           id: 'attr_spouse_location',
@@ -1307,14 +1325,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
         {
           id: 'attr_spouse_family',
           category: 'spouse',
-          titleEn: "Spouse's Family Background & In-Laws' Stature",
-          titleHi: 'ससुराल पक्ष की प्रतिष्ठा, कुल व पृष्ठभूमि',
-          valueEn: getInLawsPred(h8Prof, h7Prof).valEn,
-          valueHi: getInLawsPred(h8Prof, h7Prof).valHi,
+          titleEn: "Spouse's Family Background, In-Laws & Post-Marriage Gains",
+          titleHi: 'ससुराल पक्ष की प्रतिष्ठा, कुल व विवाह से धन-लाभ योग',
+          valueEn: `${getInLawsPred(h8Prof, h7Prof).valEn} | ${marDet.inLawsWealthBonus.en}`,
+          valueHi: `${getInLawsPred(h8Prof, h7Prof).valHi} | ${marDet.inLawsWealthBonus.hi}`,
           explanationEn: getInLawsPred(h8Prof, h7Prof).explEn,
           explanationHi: getInLawsPred(h8Prof, h7Prof).explHi,
-          pacBasisEn: `House 8 (${h8Sign.name}); Lord ${l8?.id} placed in House ${l8?.placedHouse}; Jupiter aspects maternal/marital axis.`,
-          pacBasisHi: `अष्टम भाव (${SIGN_HI[h8SignIdx]}); भावेश भाव ${l8?.placedHouse} में; गुरु की शुभ दृष्टि।`,
+          pacBasisEn: `House 8 (${h8Sign.name}); Lord ${l8?.id} placed in House ${l8?.placedHouse}; 2nd/7th/11th links checked.`,
+          pacBasisHi: `अष्टम भाव (${SIGN_HI[h8SignIdx]}); भावेश भाव ${l8?.placedHouse} में; द्वितीय-सप्तम-एकादश संबंध।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 28–34)',
           vargaRef: 'D1 & D9',
         },
@@ -1349,30 +1367,44 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
         {
           id: 'attr_spouse_looks',
           category: 'spouse',
-          titleEn: 'Spouse Physical Appearance & Disposition',
-          titleHi: 'जीवनसाथी का रूप-रंग, नैन-नक्श व स्वभाव',
-          valueEn: spouseLooksEn,
-          valueHi: spouseLooksHi,
-          explanationEn: `D9 Navamsha 7th house (${SIGNS[d9H7Sign].name}) and Venus bestow natural elegance, glowing fair complexion, expressive eyes, and graceful conversational manners.`,
-          explanationHi: `नवांश के सप्तम भाव (${SIGN_HI[d9H7Sign]}) और शुक्र के प्रभाव से जीवनसाथी नयनाभिराम, सुरुचिपूर्ण, सौम्य और पारिवारिक संतुलन साधने वाली होती है।`,
-          pacBasisEn: `D9 7th Sign: ${SIGNS[d9H7Sign].name}; D1 7th Lord in ${spouseLord?.signName}; Venus in ${venus?.signName}.`,
-          pacBasisHi: `D9 सप्तम राशि: ${SIGN_HI[d9H7Sign]}; D1 सप्तमेश ${spouseLord?.signName} में; शुक्र ${venus?.signName} में।`,
+          titleEn: 'Spouse Appearance, Temperament & Character Traits',
+          titleHi: 'जीवनसाथी का रूप-रंग, स्वभाव व चारित्रिक गुण',
+          valueEn: `${spouseLooksEn} | Temperament: ${marDet.spouseTemperament.en}`,
+          valueHi: `${spouseLooksHi} | स्वभाव: ${marDet.spouseTemperament.hi}`,
+          explanationEn: `D9 Navamsha 7th house (${SIGNS[d9H7Sign].name}), Venus, and 7th dominant graha (${h7Prof.dominantGraha}) shape both physical grace and core personality.`,
+          explanationHi: `नवांश सप्तम भाव (${SIGN_HI[d9H7Sign]}), शुक्र व सप्तम भाव के प्रमुख ग्रह (${h7Prof.dominantGraha}) द्वारा जीवनसाथी का रूप-रंग व स्वभाव निर्धारित होता है।`,
+          pacBasisEn: `D9 7th Sign: ${SIGNS[d9H7Sign].name}; D1 7th Dominant: ${h7Prof.dominantGraha}; Venus in ${venus?.signName}.`,
+          pacBasisHi: `D9 सप्तम राशि: ${SIGN_HI[d9H7Sign]}; सप्तम प्रमुख ग्रह: ${h7Prof.dominantGraha}; शुक्र ${venus?.signName} में।`,
           shastricRef: 'Phaladeepika (Ch. 10, Sl. 8–16)',
           vargaRef: 'D9 Navamsha',
         },
         {
           id: 'attr_marriage_nature',
           category: 'spouse',
-          titleEn: 'Marriage Nature: Love vs Arranged Alliance',
-          titleHi: 'विवाह का प्रकार: प्रेम vs पारंपरिक विवाह',
-          valueEn: marriageTypeEn,
-          valueHi: marriageTypeHi,
-          explanationEn: `The 5th house (Romance) and 7th house (Sanctified wedlock) exchange harmonious benefic aspects, allowing mutual romantic admiration to culminate in traditional family celebration.`,
-          explanationHi: `पंचम भाव (प्रेम) और सप्तम भाव (विवाह) के शुभ संबंधों के कारण विवाह में पारस्परिक स्नेह और पारिवारिक प्रतिष्ठा दोनों का पूर्ण सामंजस्य रहेगा।`,
-          pacBasisEn: `House 5 Lord ${l5?.id} in H${l5?.placedHouse} ↔ House 7 Lord ${spouseLord?.id} in H${spouseLord?.placedHouse}; Jupiter aspects wedding axis.`,
-          pacBasisHi: `पंचमेश भाव ${l5?.placedHouse} ↔ सप्तमेश भाव ${spouseLord?.placedHouse}; गुरु की शुभ दृष्टि।`,
+          titleEn: 'Marriage Nature: Love, Arranged & Inter-Cultural Yoga',
+          titleHi: 'विवाह का प्रकार: प्रेम, पारंपरिक व अंतरजातीय योग',
+          valueEn: marDet.unconventionalOrLoveNote.en,
+          valueHi: marDet.unconventionalOrLoveNote.hi,
+          explanationEn: `Evaluated from 5th-7th lord connections, Venus-Mars proximity, and Rahu/12th house influence on the marriage axis.`,
+          explanationHi: `पंचमेश-सप्तमेश संबंध, शुक्र-मंगल युति तथा सप्तम/द्वादश भाव पर राहु के प्रभाव से प्रेम, पारंपरिक अथवा आधुनिक विवाह का निर्धारण होता है।`,
+          pacBasisEn: `House 5 Lord ${l5?.id} in H${l5?.placedHouse} ↔ House 7 Lord ${spouseLord?.id} in H${spouseLord?.placedHouse}; Rahu in H${rahu?.placedHouse}.`,
+          pacBasisHi: `पंचमेश भाव ${l5?.placedHouse} ↔ सप्तमेश भाव ${spouseLord?.placedHouse}; राहु भाव ${rahu?.placedHouse} में।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 18–25)',
           vargaRef: 'D1 & D9',
+        },
+        {
+          id: 'attr_luck_after_marriage_devotion',
+          category: 'spouse',
+          titleEn: 'Luck After Marriage, Mutual Devotion & Harmony',
+          titleHi: 'विवाह उपरांत भाग्योदय, परस्पर समर्पण व अनुकूलता',
+          valueEn: marDet.luckAndDevotion.valEn,
+          valueHi: marDet.luckAndDevotion.valHi,
+          explanationEn: marDet.luckAndDevotion.explEn,
+          explanationHi: marDet.luckAndDevotion.explHi,
+          pacBasisEn: marDet.luckAndDevotion.pacEn,
+          pacBasisHi: marDet.luckAndDevotion.pacHi,
+          shastricRef: 'BPHS, Saravali (Ch. 27), Classical Marriage Yogas',
+          vargaRef: 'D1 & D9 Navamsha',
         },
         {
           id: 'attr_bed_pleasure',

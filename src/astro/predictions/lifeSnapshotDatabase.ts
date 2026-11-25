@@ -1157,3 +1157,217 @@ export function getComprehensiveSantanAnalysis(
   };
 }
 
+// ============================================================================
+// COMPREHENSIVE MARRIAGE ASTROLOGY ENGINE (Venus, Mercury, Jupiter, D9, Timing)
+// ============================================================================
+export interface ComprehensiveMarriageResult {
+  luckAndDevotion: BilingualPrediction & { pacEn: string; pacHi: string };
+  timingTriggers: BilingualPrediction & { pacEn: string; pacHi: string };
+  spouseTemperament: { en: string; hi: string };
+  inLawsWealthBonus: { en: string; hi: string };
+  unconventionalOrLoveNote: { isLove: boolean; isIntercaste: boolean; en: string; hi: string };
+  venusCombust: boolean;
+  malefics4812FromVenus: number;
+  delayFactors: string[];
+  separationRiskCount: number;
+}
+
+export function getComprehensiveMarriageAnalysis(
+  h1: HousePacProfile,
+  h2: HousePacProfile,
+  h4: HousePacProfile,
+  h5: HousePacProfile,
+  h7: HousePacProfile,
+  h8: HousePacProfile,
+  planets: PlanetPos[],
+  d9?: { lagnaSignIndex: number; placements: Array<{ id: string; signIndex: number; houseFromVargaLagna: number }> }
+): ComprehensiveMarriageResult {
+  const sun = planets.find((p) => p.id === 'Sun');
+  const moon = planets.find((p) => p.id === 'Moon');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const mercury = planets.find((p) => p.id === 'Mercury');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+  const ketu = planets.find((p) => p.id === 'Ketu');
+
+  // 1. Venus Combustion (< 8 deg from Sun) & 4/8/12 from Venus
+  let venusCombust = false;
+  if (sun && venus) {
+    const diff = Math.abs(sun.longitude - venus.longitude) % 360;
+    const angularDist = diff > 180 ? 360 - diff : diff;
+    if (angularDist < 8) venusCombust = true;
+  }
+
+  let malefics4812FromVenus = 0;
+  if (venus) {
+    for (const mp of [sun, mars, saturn, rahu]) {
+      if (!mp) continue;
+      const dist = ((mp.placedHouse - venus.placedHouse + 12) % 12) + 1;
+      if (dist === 4 || dist === 8 || dist === 12) malefics4812FromVenus++;
+    }
+  }
+
+  // 2. Delay Factors (Classical Rules)
+  const delayFactors: string[] = [];
+  if (saturn && (saturn.placedHouse === 7 || saturn.placedHouse === 1 || h7.aspectors.some((p) => p.id === 'Saturn'))) {
+    delayFactors.push('Saturn influencing 7th/1st axis');
+  }
+  if (rahu && (rahu.placedHouse === 7 || h7.aspectors.some((p) => p.id === 'Rahu'))) {
+    delayFactors.push('Rahu influencing 7th');
+  }
+  if ([6, 8, 12].includes(h7.lordHouse)) {
+    delayFactors.push(`7th lord in Dusthana H${h7.lordHouse}`);
+  }
+  if (venus && ([6, 8, 12].includes(venus.placedHouse) || venus.dignity === 'Debilitated' || venusCombust)) {
+    delayFactors.push(venusCombust ? 'Venus combust (<8°)' : `Venus in H${venus.placedHouse}/${venus.dignity}`);
+  }
+  if (h7.lordPlanet?.isRetrograde || venus?.isRetrograde) {
+    delayFactors.push('Retrograde 7th lord or Venus');
+  }
+
+  // 3. Separation / Bickering Risk Count (1/5/9/11 & 6/8 or 2/12 between Lagnesh and 7th Lord)
+  let separationRiskCount = 0;
+  const dist1to7 = ((h7.lordHouse - h1.lordHouse + 12) % 12) + 1;
+  if (dist1to7 === 6 || dist1to7 === 8 || dist1to7 === 2 || dist1to7 === 12) separationRiskCount++;
+  if (malefics4812FromVenus >= 2) separationRiskCount++;
+  if (h4.lordHouse === 6 || h7.lordHouse === 6 || h7.lordHouse === 12) separationRiskCount++;
+  if (saturn && sun && rahu) {
+    const sepOn7 = [saturn, sun, rahu].filter((p) => p.placedHouse === 7 || h7.aspectors.some((a) => a.id === p.id)).length;
+    if (sepOn7 >= 2) separationRiskCount++;
+  }
+
+  // 4. Luck After Marriage & Mutual Devotion (Upachaya Venus, 7th lord in 3/6/7/9/11, Jupiter in 7th, Yielding/Henpecked cues)
+  const luckAfterMarriage =
+    (venus && [2, 3, 6, 7, 10, 11].includes(venus.placedHouse)) ||
+    [3, 6, 7, 9, 11].includes(h7.lordHouse);
+
+  const d9Venus = d9?.placements?.find((p) => p.id === 'Venus');
+  const venusVargottama = d9Venus && venus && d9Venus.signIndex === venus.signIndex;
+  const jupIn7 = jupiter?.placedHouse === 7 || h7.aspectors.some((p) => p.id === 'Jupiter');
+  const lagneshIn7 = h1.lordHouse === 7;
+  const yieldingCues =
+    (mercury?.signName === 'Leo') ||
+    (jupiter?.placedHouse === 3) ||
+    (mars?.placedHouse === 4) ||
+    (h7.lordHouse === 2) ||
+    Boolean(venus && venus.placedHouse === 7 && moon && moon.placedHouse === 7);
+
+  let luckValEn: string;
+  let luckValHi: string;
+  if (luckAfterMarriage && (jupIn7 || lagneshIn7 || venusVargottama)) {
+    luckValEn = 'Strong Bhagyodaya (Fortune Rise) after marriage; deep mutual devotion, loyal partnership, and elevated social prosperity';
+    luckValHi = 'विवाह उपरांत प्रबल भाग्योदय योग; परस्पर अटूट समर्पण, निष्ठावान जीवनसाथी व मान-सम्मान में उल्लेखनीय वृद्धि';
+  } else if (yieldingCues) {
+    luckValEn = 'Affectionate, partner-respecting temperament; deeply values spouse’s counsel in household decisions (cooperative/yielding harmony)';
+    luckValHi = 'जीवनसाथी के प्रति अत्यंत स्नेही व सम्मानजनक स्वभाव; पारिवारिक निर्णयों में जीवनसाथी की सलाह को सर्वोपरि महत्व देता है';
+  } else if (separationRiskCount >= 2) {
+    luckValEn = 'Marriage tests patience and communication; careful Kundli matching and mutual empathy transform friction into steady growth';
+    luckValHi = 'दांपत्य में धैर्य व मधुर संवाद की परीक्षा; उचित कुंडली मिलान व परस्पर समझदारी से मतभेद दूर होकर स्थिरता आती है';
+  } else {
+    luckValEn = 'Steady post-marriage stability; shared family values and mutual respect gradually strengthen financial and domestic life';
+    luckValHi = 'विवाह उपरांत क्रमशः पारिवारिक व आर्थिक स्थिरता; परस्पर आदर व सहयोग से गृहस्थ जीवन सुखमय रहता है';
+  }
+
+  // 5. Wealth from In-Laws Bonus (8th house + 2nd/7th/11th links)
+  const inLawsWealth =
+    (h7.lordHouse === 11 && venus?.placedHouse === 11) ||
+    (h2.lordHouse === 8) ||
+    (h2.lordHouse === h7.lordHouse) ||
+    (h8.tier === 'strong');
+  const inLawsWealthBonus = inLawsWealth
+    ? {
+        en: 'Strong yoga for financial support, property, or goodwill gains through in-laws after marriage',
+        hi: 'विवाह उपरांत ससुराल पक्ष से आर्थिक सहयोग, संपत्ति अथवा व्यावसायिक उन्नति का उत्तम योग',
+      }
+    : {
+        en: 'Self-earned marital prosperity; polite, dignified in-law relationship without financial dependency',
+        hi: 'स्व-अर्जित समृद्धि; ससुराल पक्ष से आत्मसम्मान व मर्यादित सौहार्दपूर्ण संबंध',
+      };
+
+  // 6. Love / Unconventional / Inter-caste Marriage Analysis
+  const is5and7Linked = h5.lordHouse === 7 || h7.lordHouse === 5 || h5.lordHouse === h7.lordHouse;
+  const isRahu7OrVenus = rahu?.placedHouse === 7 || h7.aspectors.some((p) => p.id === 'Rahu') || (venus && rahu && Math.abs(venus.placedHouse - rahu.placedHouse) === 0);
+  const is7and12Linked = h7.lordHouse === 12 || h7.occupants.some((p) => p.id === h1.lordId && h1.lordHouse === 12);
+  const isLove = is5and7Linked || Boolean(venus && mars && (venus.placedHouse === mars.placedHouse || [1, 5, 7].includes(venus.placedHouse)));
+  const isIntercaste = Boolean(isRahu7OrVenus || is7and12Linked || (SIGNS[(h1.signIdx + 8) % 12]?.lord === 'Jupiter' && saturn && rahu && (saturn.placedHouse === jupiter?.placedHouse || rahu.placedHouse === jupiter?.placedHouse)));
+
+  let loveNoteEn = 'Traditional family-arranged alliance with mutual consent and parental blessings';
+  let loveNoteHi = 'पारिवारिक सहमति व बुजुर्गों के आशीर्वाद से संपन्न होने वाला सुसंस्कृत पारंपरिक विवाह';
+  if (isLove && isIntercaste) {
+    loveNoteEn = 'Love / Unconventional / Inter-cultural Alliance: Personal choice transcends traditional caste/regional boundaries (5th-7th & Rahu resonance)';
+    loveNoteHi = 'प्रेम / अंतरजातीय अथवा आधुनिक विवाह योग: व्यक्तिगत पसंद और भावनात्मक आकर्षण पारंपरिक सीमाओं से ऊपर उठकर विवाह का रूप लेता है';
+  } else if (isLove) {
+    loveNoteEn = 'Love or Love-cum-Arranged Marriage: Deep emotional affinity and personal choice (5th-7th / Venus-Mars resonance) guide the union';
+    loveNoteHi = 'प्रेम अथवा सह-सहमति विवाह: परस्पर भावनात्मक जुड़ाव और व्यक्तिगत पसंद से विवाह तय होने का प्रबल योग';
+  } else if (isIntercaste) {
+    loveNoteEn = 'Unconventional or Cross-Regional Alliance: Spouse from different cultural background, distant city, or distinct social customs';
+    loveNoteHi = 'भिन्न परिवेश या दूरस्थ क्षेत्र से संबंध: जीवनसाथी अलग संस्कृति, प्रांत अथवा आधुनिक विचारधारा वाले परिवार से हो सकता है';
+  }
+
+  // 7. Spouse Temperament by 7th Dominant Graha
+  const tempMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Ambitious, proud, dignified, and leadership-oriented spouse from a respected background', hi: 'स्वाभिमानी, महत्वाकांक्षी, प्रतिष्ठित व नेतृत्व-कुशल जीवनसाथी' },
+    Moon: { en: 'Gentle, nurturing, emotionally expressive, and domestic-minded spouse with pleasing round features', hi: 'सौम्य, ममतामयी, भावुक व परिवार के प्रति समर्पित जीवनसाथी' },
+    Mars: { en: 'Energetic, headstrong, industrious, and courageous spouse; benefits from calm mutual dialogue', hi: 'ऊर्जावान, कर्मठ, साहसी व स्पष्टवादी जीवनसाथी; शांत संवाद से मधुरता' },
+    Mercury: { en: 'Intelligent, articulate, youthful, and analytical spouse fond of learning and conversation', hi: 'तीव्र बुद्धि, वाक्पटु, युवा-प्रवृत्ति व अध्ययनशील जीवनसाथी' },
+    Jupiter: { en: 'Virtuous, wise, ethical, and generous spouse who brings Dharma and stability to the home', hi: 'सदाचारी, विद्वान, उदार व धर्मपरायण जीवनसाथी जो घर में सुख-शांति लाते हैं' },
+    Venus: { en: 'Refined, artistic, affectionate, and charming spouse with graceful aesthetic taste', hi: 'सुरुचिपूर्ण, कलाप्रिय, स्नेही व आकर्षक व्यक्तित्व वाले जीवनसाथी' },
+    Saturn: { en: 'Mature, hardworking, thrifty, and loyal spouse with a reserved, serious outlook', hi: 'परिपक्व, परिश्रमी, मितव्ययी व निष्ठावान जीवनसाथी; गंभीर स्वभाव' },
+    Rahu: { en: 'Independent, modern, unconventional spouse with original thinking and scientific/artistic flair', hi: 'स्वतंत्र विचारों वाले, आधुनिक व रूढ़ियों से हटकर सोचने वाले जीवनसाथी' },
+    Ketu: { en: 'Introspective, poetic, spiritual, and quietly devoted spouse with deep inner wisdom', hi: 'अंतर्मुखी, आध्यात्मिक, संवेदनशील व गहरी सूझबूझ रखने वाले जीवनसाथी' },
+  };
+  const spouseTemperament = tempMap[h7.dominantGraha];
+
+  // 8. Marriage Timing Triggers (D1 + D9 + Transit Formula)
+  const d9LagnaIdx = d9?.lagnaSignIndex ?? h1.signIdx;
+  const d9LagnaSign = SIGNS[d9LagnaIdx] || SIGNS[0];
+  const l1Lon = h1.lordPlanet?.longitude ?? 0;
+  const l7Lon = h7.lordPlanet?.longitude ?? 0;
+  const vivahaTransitSignIdx = Math.floor((((l1Lon + l7Lon) % 360) + 360) % 360 / 30);
+  const vivahaTransitSign = SIGNS[vivahaTransitSignIdx] || SIGNS[0];
+
+  const ageBandEn =
+    delayFactors.length >= 2
+      ? 'Delayed window (ages 28–33+)'
+      : delayFactors.length === 1
+      ? 'Balanced timely window (ages 25–29)'
+      : 'Early-to-timely window (ages 23–27)';
+  const ageBandHi =
+    delayFactors.length >= 2
+      ? 'विलंबित विवाह योग (आयु 28–33+ वर्ष)'
+      : delayFactors.length === 1
+      ? 'संतुलित समयबद्ध योग (आयु 25–29 वर्ष)'
+      : 'शीघ्र व समयबद्ध योग (आयु 23–27 वर्ष)';
+
+  const timingTriggers = {
+    valEn: `${ageBandEn}; triggers in Dasha/Bhukti of ${h7.lordId}, ${venus ? 'Venus' : h2.lordId}, or ${d9LagnaSign.lord} when Guru transits ${vivahaTransitSign.name} or trines`,
+    valHi: `${ageBandHi}; ${h7.lordId}, शुक्र अथवा नवांश लग्नेश (${d9LagnaSign.lord}) की दशा-अंतर्दशा एवं ${vivahaTransitSign.name} या त्रिकोण में गुरु गोचर से विवाह सिद्ध`,
+    explEn: `Classical Bhrigu/Parashari timing adds Lagna lord + 7th lord longitudes (${vivahaTransitSign.name}) and tests D9 Navamsha (${d9LagnaSign.name}) activation alongside Guru/Shani transit.`,
+    explHi: `लग्नेश व सप्तमेश के अंशों के योग (${vivahaTransitSign.name}) पर गुरु के गोचर तथा सप्तमेश/नवांश लग्नेश की दशा-अंतर्दशा में विवाह का प्रबल समय बनता है।`,
+    pacEn: `7th Lord: ${h7.lordId} (H${h7.lordHouse}); D9 Lagna: ${d9LagnaSign.name}; Transit Seed Sign: ${vivahaTransitSign.name}; Delay Factors: ${delayFactors.length}.`,
+    pacHi: `सप्तमेश: ${h7.lordId} (भाव ${h7.lordHouse}); D9 लग्न: ${d9LagnaSign.name}; गोचर बिंदु राशि: ${vivahaTransitSign.name}; विलंब कारक: ${delayFactors.length}।`,
+  };
+
+  return {
+    luckAndDevotion: {
+      valEn: luckValEn,
+      valHi: luckValHi,
+      explEn: `Evaluated from 1/5/9/11 harmony, Venus (${venusCombust ? 'Combust <8°' : `H${venus?.placedHouse}`}, ${venusVargottama ? 'Vargottama' : venus?.dignity || 'Normal'}), Jupiter, and D9 Navamsha.`,
+      explHi: `१/५/९/११ भावों, शुक्र (${venusCombust ? 'अस्त <8°' : `भाव ${venus?.placedHouse}`}), गुरु तथा नवांश बल से विवाह उपरांत भाग्योदय व समर्पण का आकलन किया गया है।`,
+      pacEn: `Venus in H${venus?.placedHouse} (${venusCombust ? 'Combust' : 'Clear'}); 7th Lord in H${h7.lordHouse}; Malefics 4/8/12 from Venus: ${malefics4812FromVenus}.`,
+      pacHi: `शुक्र भाव ${venus?.placedHouse} में; सप्तमेश भाव ${h7.lordHouse} में; शुक्र से ४/८/१२ में पाप ग्रह: ${malefics4812FromVenus}।`,
+    },
+    timingTriggers,
+    spouseTemperament,
+    inLawsWealthBonus,
+    unconventionalOrLoveNote: { isLove, isIntercaste, en: loveNoteEn, hi: loveNoteHi },
+    venusCombust,
+    malefics4812FromVenus,
+    delayFactors,
+    separationRiskCount,
+  };
+}
+
+
