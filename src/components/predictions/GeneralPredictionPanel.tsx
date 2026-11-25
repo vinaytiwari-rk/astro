@@ -68,6 +68,13 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
   const tithiInfo = deepReport.birthProfile.tithiDetails;
   const navLagna = deepReport.birthProfile.navamshaLagna;
 
+  const getDomainShortTitle = (d: { titleEn: string; titleHi: string }) => {
+    if (isHi) {
+      return d.titleHi.split(',')[0].split(' एवं ')[0].split(' व ')[0].trim();
+    }
+    return d.titleEn.split(',')[0].split(' & ')[0].trim();
+  };
+
   return (
     <div className="view-stack">
       {/* Dossier Executive Header */}
@@ -222,7 +229,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
               }}
             >
               {domainIcons[d.id]}
-              <span>{isHi ? d.titleHi.split(' ')[0] : d.titleEn.split(' ')[0]}</span>
+              <span>{getDomainShortTitle(d)}</span>
             </button>
           );
         })}
