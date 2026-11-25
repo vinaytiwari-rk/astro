@@ -12,6 +12,7 @@ import {
 import { evaluateDignity, getDivisionalSignIndex } from '../vargas';
 import { normalizeDeg } from '../time';
 import { trPlanet, trSign, trTerm, type AppLanguage } from '../../i18n/translations';
+import { getPropheticPlanetReading } from './propheticPlanetPredictor';
 
 const SIGN_NAMES_EN = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -54,6 +55,10 @@ export interface PlanetEventPrediction {
   // Placement Overview
   placementSummaryEn: string;
   placementSummaryHi: string;
+  propheticReadingEn?: string;
+  propheticReadingHi?: string;
+  lifeImpactHeadlineEn?: string;
+  lifeImpactHeadlineHi?: string;
 
   // Concrete Positive Events
   positiveEventsEn: string[];
@@ -1110,6 +1115,17 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     const placementSummaryEn = `${PLANET_NAMES_EN[p.id]} is placed in House ${hNum} (${signNameEn} at ${p.dms}), occupying ${p.nakshatraName} Nakshatra (Pada ${p.pada}, ruled by ${p.nakshatraLord}). Dignity: ${dignTxtEn}.${p.isRetrograde ? ' (Retrograde).' : ''}${p.isCombust ? ' (Combust).' : ''} Affects ${houseTheme.en}.${owned.length ? ` Rules House(s) ${owned.join(' & ')}.` : ''}${conjoined.length ? ` Conjoined with: ${conjoined.join(', ')}.` : ''}${aspecting.length ? ` Aspected by: ${aspecting.join(', ')}.` : ''}`;
     const placementSummaryHi = `${PLANET_NAMES_HI[p.id]} कुंडली के ${hNum}वें भाव (${signNameHi} राशि, ${p.dms}) में स्थित है, और ${p.nakshatraName} नक्षत्र के चरण ${p.pada} (स्वामी: ${p.nakshatraLord}) में स्थित है। ग्रह अवस्था: ${dignTxtHi}।${p.isRetrograde ? ' (वक्री)' : ''}${p.isCombust ? ' (अस्त)' : ''} मुख्य प्रभाव क्षेत्र: ${houseTheme.hi}।${owned.length ? ` स्वामित्व: भाव ${owned.join(' व ')}।` : ''}${conjoined.length ? ` युति: ${conjoined.map(x => trPlanet(x, 'hi')).join(', ')} के साथ।` : ''}${aspecting.length ? ` दृष्टि: ${aspecting.map(x => trPlanet(x, 'hi')).join(', ')} द्वारा।` : ''}`;
 
+    const prophetic = getPropheticPlanetReading({
+      planetId: p.id,
+      houseNumber: hNum,
+      signNameEn,
+      signNameHi,
+      dignity: p.dignity,
+      isRetrograde: !!p.isRetrograde,
+      isCombust: !!p.isCombust,
+      isOuterPlanet: isOuter,
+    });
+
     results.push({
       id: p.id,
       nameEn: PLANET_NAMES_EN[p.id],
@@ -1139,6 +1155,10 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       aspectingPlanets: aspecting,
       placementSummaryEn,
       placementSummaryHi,
+      propheticReadingEn: prophetic.propheticReadingEn,
+      propheticReadingHi: prophetic.propheticReadingHi,
+      lifeImpactHeadlineEn: prophetic.lifeImpactHeadlineEn,
+      lifeImpactHeadlineHi: prophetic.lifeImpactHeadlineHi,
       positiveEventsEn,
       positiveEventsHi,
       negativeEventsEn,

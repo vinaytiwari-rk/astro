@@ -329,6 +329,34 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
 
       {/* Card Content Body */}
       <div className="pred-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {/* Prophetic Reading Headline & Core Life Prophecy */}
+        {(planet.propheticReadingHi || planet.propheticReadingEn) && (
+          <div
+            style={{
+              padding: '12px 14px',
+              background: 'var(--accent-soft)',
+              borderRadius: '8px',
+              borderLeft: '4px solid var(--accent)',
+              fontSize: '13.5px',
+              lineHeight: 1.6,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+              <span className="badge badge-accent" style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', padding: '2px 8px', borderRadius: '4px' }}>
+                {isHi ? 'फलित ज्योतिष फलकथन' : 'Prophetic Life Reading'}
+              </span>
+            </div>
+            <strong style={{ color: 'var(--accent)', display: 'block', marginBottom: '6px', fontSize: '14.5px', lineHeight: '1.4' }}>
+              {isHi
+                ? (planet.lifeImpactHeadlineHi || 'ग्रह फलकथन')
+                : (planet.lifeImpactHeadlineEn || 'Life Impact Verdict')}
+            </strong>
+            <p style={{ margin: 0, color: 'var(--text)' }}>
+              {isHi ? planet.propheticReadingHi : planet.propheticReadingEn}
+            </p>
+          </div>
+        )}
+
         {/* Placement Summary */}
         <div
           style={{
@@ -339,7 +367,7 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
             lineHeight: 1.5,
           }}
         >
-          <strong>{isHi ? 'ग्रह स्थिति व संबंध: ' : 'Placement & Influences: '}</strong>
+          <strong>{isHi ? 'खगोलीय स्थिति व प्रभाव: ' : 'Placement & Influences: '}</strong>
           {isHi ? planet.placementSummaryHi : planet.placementSummaryEn}
         </div>
 

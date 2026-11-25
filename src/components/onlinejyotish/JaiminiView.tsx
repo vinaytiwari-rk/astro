@@ -298,7 +298,7 @@ function DashaTab({ dasha, nowMs, isHi, lang }: {
   return (
     <div className="jm-section">
       <h2 className="jm-section-title">
-        {isHi ? 'जैमिनी चर दशा — K.N. राव पद्धति' : 'Jaimini Chara Dasha — K.N. Rao Method'}
+        {isHi ? 'महर्षि जैमिनी चर दशा पद्धति' : 'Maharishi Jaimini Chara Dasha System'}
       </h2>
       <p className="jm-section-desc">
         {isHi

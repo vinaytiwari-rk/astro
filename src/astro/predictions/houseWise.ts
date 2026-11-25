@@ -6,6 +6,7 @@ import { getBhavaClassicalInfo } from './bhavaKarakatwaKb';
 import { buildHouseLordReading } from './bhavaKb';
 import { getFunctionalLordship } from './functionalLordship';
 import { evaluatePvrArgalaOnHouse, type PvrArgalaItem } from './pvrNarasimhaRaoKb';
+import { buildAuthenticHousePrediction } from './authenticHousePredictor';
 
 export interface HouseWisePrediction {
   houseNumber: number; // 1..12
@@ -38,6 +39,16 @@ export interface HouseWisePrediction {
   synthesisHi: string;
   predictionEn: string;
   predictionHi: string;
+  headlineEn?: string;
+  headlineHi?: string;
+  coreNarrativeEn?: string;
+  coreNarrativeHi?: string;
+  keyStrengthsEn?: string[];
+  keyStrengthsHi?: string[];
+  watchOutsEn?: string[];
+  watchOutsHi?: string[];
+  timingMilestonesEn?: string;
+  timingMilestonesHi?: string;
   source: string;
   // Extended Parashari Hierarchy details (Drishti, Sthan, Rashi, Nakshatra, Yuti, Degree, Avastha, Kartari)
   lordNakshatraName?: string;
@@ -348,16 +359,28 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
     else if (savBindus <= 22) score -= 5;
 
     const finalScore = Math.max(25, Math.min(96, Math.round(score)));
-    const predictionEn = finalScore >= 70
-      ? `The indications for ${meta.areaEn} are comparatively supportive. Constructive outcomes are possible when the house lord's strengths are used consistently; this is a tendency, not a guarantee.`
-      : finalScore >= 50
-        ? `The indications for ${meta.areaEn} are mixed. Some support is present, but results may depend on timing, circumstances and sustained effort.`
-        : `The indications for ${meta.areaEn} call for patience and careful effort. Avoid assuming quick results; weigh the house lord, occupants and aspects together.`;
-    const predictionHi = finalScore >= 70
-      ? `${meta.areaHi} के विषयों में अपेक्षाकृत अनुकूल संकेत हैं। भावेश की क्षमता का निरंतर उपयोग करने पर रचनात्मक परिणाम मिल सकते हैं; इसे निश्चित गारंटी न मानें।`
-      : finalScore >= 50
-        ? `${meta.areaHi} के विषयों में मिले-जुले संकेत हैं। कुछ सहायक योग हैं, पर परिणाम परिस्थितियों और निरंतर प्रयास पर निर्भर रहेंगे।`
-        : `${meta.areaHi} के विषयों में धैर्य और सावधानीपूर्वक प्रयास अपेक्षित हैं। शीघ्र परिणाम मानकर न चलें; भावेश, स्थित ग्रह और दृष्टियों को साथ तौलें।`;
+
+    // Generate authentic, human-centric, shastric predictive narrative
+    const authenticPred = buildAuthenticHousePrediction({
+      houseNumber: h,
+      signIndex,
+      signNameEn: signInfo.name,
+      signNameHi: SIGN_HI[signIndex],
+      lordPlanet,
+      lordPlacedHouse: lordPos.rasiHouseNumber,
+      lordDignity: lordPos.dignity,
+      isCombust: combustion.isCombust,
+      occupants,
+      aspectingPlanets,
+      beneficAspectsCount: beneficAspects.length,
+      maleficAspectsCount: maleficAspects.length,
+      savBindus,
+      kartariYoga,
+      finalScore,
+    });
+
+    const predictionEn = authenticPred.coreNarrativeEn;
+    const predictionHi = authenticPred.coreNarrativeHi;
     const verdictEn =
       finalScore >= 78 ? 'Highly Auspicious & Potent' : finalScore >= 62 ? 'Strong & Supportive' : finalScore >= 46 ? 'Mixed / Demands Effort' : 'Severely Afflicted / Requires Remediation';
     const verdictHi =
@@ -412,8 +435,11 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
       decisiveVerdictEn = `This house reflects a balanced interplay of supportive and testing influences. The native achieves progressive outcomes in ${meta.areaEn} proportional to dedicated effort and strategic choices. Key breakthroughs activate when transits of Jupiter and Saturn favor the house axis.`;
     }
 
-    // Deep Structured Synthesis
-    const synthesisHi = `${meta.titleHi}:
+    // Deep Structured Synthesis (Combining Authentic Prophecy with Parashari Mechanics)
+    const synthesisHi = `${authenticPred.headlineHi}
+
+${authenticPred.coreNarrativeHi}
+
 भावेश का कार्यात्मक स्वामित्व: ${PLANET_HI[lordPlanet]} भाव ${lordship.ownedHouses.join(', ')} का स्वामी है; भूमिका: ${lordship.rolesHi.join('; ')}। ${lordship.noteHi}
 
 प्राथमिक विश्लेषण (भावेश, राशि, नक्षत्र, युति व दृष्टि):
@@ -427,7 +453,10 @@ ${kartariYoga === 'Papakartari' ? `- ${kartariHi}\n` : kartariYoga === 'Subhakar
 वास्तविक फलादेश निष्कर्ष (${meta.areaHi}):
 ${decisiveVerdictHi}`;
 
-    const synthesisEn = `${meta.titleEn}:
+    const synthesisEn = `${authenticPred.headlineEn}
+
+${authenticPred.coreNarrativeEn}
+
 Functional lordship: ${lordPlanet} owns house(s) ${lordship.ownedHouses.join(', ')}; roles: ${lordship.rolesEn.join('; ')}. ${lordship.noteEn}
 
 Primary Parashari Analysis (Lord, Dignity, Star Lord, Aspects & Yuti):
@@ -482,6 +511,16 @@ ${decisiveVerdictEn}`;
       synthesisHi,
       predictionEn,
       predictionHi,
+      headlineEn: authenticPred.headlineEn,
+      headlineHi: authenticPred.headlineHi,
+      coreNarrativeEn: authenticPred.coreNarrativeEn,
+      coreNarrativeHi: authenticPred.coreNarrativeHi,
+      keyStrengthsEn: authenticPred.keyStrengthsEn,
+      keyStrengthsHi: authenticPred.keyStrengthsHi,
+      watchOutsEn: authenticPred.watchOutsEn,
+      watchOutsHi: authenticPred.watchOutsHi,
+      timingMilestonesEn: authenticPred.timingMilestonesEn,
+      timingMilestonesHi: authenticPred.timingMilestonesHi,
       source: 'Brihat Parashara Hora Shastra (Ch. 11–24) · Phaladeepika · Sarvashtakavarga',
       lordNakshatraName: lordNak.name,
       lordPada,

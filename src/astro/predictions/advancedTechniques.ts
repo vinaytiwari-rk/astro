@@ -1382,7 +1382,7 @@ function buildHolisticSynthesisAndRules(
     });
   }
 
-  // Inject Applied Empirical Rules (K.N. Rao)
+  // Inject Applied Classical Parashari Empirical Rules
   triggeredRules.push({
     code: 'EMP-CAR-MODE',
     tradition: 'Applied Empirical',

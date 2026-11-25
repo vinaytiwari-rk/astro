@@ -489,6 +489,10 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <strong>{trD('pred_house', 'भाववार फलादेश', 'House-wise Prediction')}</strong>
                     <span className="oj-dd-sub">{trD('pred_house_sub', '1 से 12 भावों के प्रश्न-उत्तर, घटना समय व भावेष फल', '1st to 12th House Specific Events & Timing')}</span>
                   </button>
+                  <button type="button" onClick={() => handleLinkClick('predictions', 'twelve_planets')}>
+                    <strong>{trD('pred_planets', '12 ग्रह फलादेश', '12 Planets in Houses')}</strong>
+                    <span className="oj-dd-sub">{trD('pred_planets_sub', 'सूर्य से केतु तक 12 ग्रहों का भाव फल, दृष्टि व प्रभाव', 'Planetary House Placements, Aspects & Prophecies')}</span>
+                  </button>
                   <button type="button" onClick={() => handleLinkClick('predictions', 'dashaWise')}>
                     <strong>{trD('pred_dasha', 'दशा फलादेश', 'Dasha Prediction')}</strong>
                     <span className="oj-dd-sub">{trD('pred_dasha_sub', 'सक्रिय विंशोत्तरी महादशा-अंतर्दशा व 3 ठोस जीवन घटनाएं', 'Running Mahadasha/Antardasha Manifestation')}</span>

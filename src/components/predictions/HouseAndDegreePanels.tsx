@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { BookOpen, Compass, Sliders } from 'lucide-react';
+import { AlertTriangle, BookOpen, CheckCircle2, Compass, Sliders } from 'lucide-react';
 import { NINE_GRAHAS, SIGNS } from '../../astro/constants';
 import {
   analyzeBodyDegree,
@@ -334,34 +334,84 @@ export const HouseWisePanel: React.FC<{
 
                 {/* 2. TOP: Rich Decisive Prediction Narrative */}
                 <div style={{
-                  padding: '12px 14px',
+                  padding: '14px 16px',
                   background: 'var(--accent-soft)',
                   borderRadius: 8,
                   borderLeft: '4px solid var(--accent)',
                   fontSize: '13.5px',
-                  lineHeight: 1.6,
-                  whiteSpace: 'pre-line',
+                  lineHeight: 1.65,
                 }}>
-                  <strong style={{ color: 'var(--accent)', display: 'block', marginBottom: '4px' }}>
-                    {isHi ? 'प्रामाणिक शास्त्रीय फलादेश (Classical Shastric Reading):' : 'Authoritative Shastric Reading:'}
+                  <strong style={{ color: 'var(--accent)', display: 'block', marginBottom: '6px', fontSize: '14.5px', fontWeight: 700 }}>
+                    {isHi ? (h.headlineHi || 'प्रामाणिक शास्त्रीय फलादेश:') : (h.headlineEn || 'Authoritative Shastric Prophecy:')}
                   </strong>
-                  {isHi ? h.synthesisHi : h.synthesisEn}
+                  <div style={{ whiteSpace: 'pre-line', color: 'var(--text)' }}>
+                    {isHi ? (h.coreNarrativeHi || h.predictionHi) : (h.coreNarrativeEn || h.predictionEn)}
+                  </div>
                 </div>
+
+                {/* 2b. Two-Column Grid: Key Strengths vs Cautions */}
+                {((h.keyStrengthsEn && h.keyStrengthsEn.length > 0) || (h.watchOutsEn && h.watchOutsEn.length > 0)) && (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                    gap: '10px',
+                    marginTop: '2px',
+                  }}>
+                    {h.keyStrengthsEn && h.keyStrengthsEn.length > 0 && (
+                      <div style={{
+                        padding: '10px 12px',
+                        background: 'rgba(34, 197, 94, 0.06)',
+                        border: '1px solid rgba(34, 197, 94, 0.2)',
+                        borderRadius: 6,
+                        fontSize: '12.5px',
+                        lineHeight: 1.45,
+                      }}>
+                        <strong style={{ color: '#16a34a', display: 'flex', alignItems: 'center', gap: 4, marginBottom: '4px' }}>
+                          <CheckCircle2 size={13} /> {isHi ? 'मुख्य सकारात्मक सामर्थ्य (Key Strengths):' : 'Key Natural Strengths:'}
+                        </strong>
+                        <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                          {(isHi ? (h.keyStrengthsHi || h.keyStrengthsEn) : h.keyStrengthsEn).map((str, idx) => (
+                            <li key={idx} style={{ marginBottom: '3px' }}>{str}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {h.watchOutsEn && h.watchOutsEn.length > 0 && (
+                      <div style={{
+                        padding: '10px 12px',
+                        background: 'rgba(239, 68, 68, 0.06)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        borderRadius: 6,
+                        fontSize: '12.5px',
+                        lineHeight: 1.45,
+                      }}>
+                        <strong style={{ color: '#dc2626', display: 'flex', alignItems: 'center', gap: 4, marginBottom: '4px' }}>
+                          <AlertTriangle size={13} /> {isHi ? 'सावधानियां एवं चुनौतियां (Watch-Outs):' : 'Cautions & Pitfalls to Avoid:'}
+                        </strong>
+                        <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                          {(isHi ? (h.watchOutsHi || h.watchOutsEn) : h.watchOutsEn).map((wo, idx) => (
+                            <li key={idx} style={{ marginBottom: '3px' }}>{wo}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* 3. Concrete Event Timing & Prediction Q&A Block */}
                 <div style={{
-                  padding: '12px 14px',
+                  padding: '10px 12px',
                   background: 'rgba(217, 119, 6, 0.08)',
                   borderLeft: '4px solid #d97706',
                   borderRadius: 8,
-                  fontSize: '13px',
-                  lineHeight: 1.55,
+                  fontSize: '12.5px',
+                  lineHeight: 1.5,
                 }}>
-                  <strong style={{ color: '#b45309', display: 'block', marginBottom: '4px', fontSize: '13.5px' }}>
-                    {isHi ? eventQa.qHi : eventQa.qEn}
+                  <strong style={{ color: '#b45309', display: 'block', marginBottom: '3px' }}>
+                    {isHi ? (h.timingMilestonesHi ? 'फलोदय कालखंड व महत्वपूर्ण जीवन पड़ाव:' : eventQa.qHi) : (h.timingMilestonesEn ? 'Milestone Timing & Life Fruition Window:' : eventQa.qEn)}
                   </strong>
                   <div style={{ color: 'var(--text)' }}>
-                    {isHi ? eventQa.aHi : eventQa.aEn}
+                    {isHi ? (h.timingMilestonesHi || eventQa.aHi) : (h.timingMilestonesEn || eventQa.aEn)}
                   </div>
                 </div>
 
@@ -463,6 +513,23 @@ export const HouseWisePanel: React.FC<{
                     )}
                   </div>
                 )}
+
+                {/* 8. Collapsible Classical Astrological Details */}
+                <details style={{
+                  marginTop: '4px',
+                  padding: '8px 10px',
+                  background: 'var(--bg-subtle)',
+                  borderRadius: 6,
+                  fontSize: '12px',
+                  border: '1px solid var(--border)',
+                }}>
+                  <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-muted)' }}>
+                    {isHi ? 'शास्त्रीय गणना सूत्र व तकनीकी विवरण देखें (Technical Astrological Details)' : 'View Classical Shastric Calculations & Details'}
+                  </summary>
+                  <div style={{ marginTop: '8px', whiteSpace: 'pre-line', lineHeight: 1.5, color: 'var(--text)' }}>
+                    {isHi ? h.synthesisHi : h.synthesisEn}
+                  </div>
+                </details>
               </article>
             );
           })}

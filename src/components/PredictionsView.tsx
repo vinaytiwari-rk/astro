@@ -132,7 +132,8 @@ function normalizeSubTab(id?: string): PredSubTab {
   if (id === 'gocharWise' || id === 'gochar' || id === 'gocharwise' || id === 'transits') return 'gocharWise';
   if (id === 'houseWise' || id === 'house' || id === 'housewise' || id === 'bhavas_12' || id === 'bhavas') return 'houseWise';
   if (id === 'educationWise' || id === 'education' || id === 'vidya' || id === 'studies') return 'educationWise';
-  if (id === 'ascendantWise' || id === 'ascendant' || id === 'lagnaWise' || id === 'lagna' || id === 'twelve_planets' || id === 'planet' || id === 'planets' || id === 'graha') return 'ascendantWise';
+  if (id === 'twelve_planets' || id === 'planets' || id === 'graha' || id === 'planetWise' || id === 'grahaPhala') return 'twelve_planets';
+  if (id === 'ascendantWise' || id === 'ascendant' || id === 'lagnaWise' || id === 'lagna') return 'ascendantWise';
   if (id === 'planetInNakshatra' || id === 'nakshatra' || id === 'nakshatras') return 'planetInNakshatra';
   if (id === 'planetInSign' || id === 'planetinsign' || id === 'rasi' || id === 'rashi' || id === 'sign') return 'planetInSign';
   if (id === 'yutiWise' || id === 'yuti' || id === 'conjunction') return 'yutiWise';
@@ -215,6 +216,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
     { id: 'deep_life', labelEn: 'General Prediction', labelHi: 'सामान्य फलादेश' },
     { id: 'karakatwa', labelEn: 'Karakatwa Prediction', labelHi: 'कारकत्व फलादेश' },
     { id: 'houseWise', labelEn: 'House-wise Prediction', labelHi: 'भाववार फलादेश' },
+    { id: 'twelve_planets', labelEn: '12 Planets in Houses', labelHi: '12 ग्रह फलादेश' },
     { id: 'dashaWise', labelEn: 'Dasha Prediction', labelHi: 'दशा फलादेश' },
     { id: 'gocharWise', labelEn: 'Transit Prediction', labelHi: 'गोचर फलादेश' },
     { id: 'educationWise', labelEn: 'Education & Higher Studies', labelHi: 'शिक्षा व उच्च विद्या' },
@@ -300,8 +302,12 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
         <ParamayusLockBanner status={report.paramayus} />
       ) : (
         <div className="view-stack">
-          {(currentTab === 'ascendantWise' || currentTab === 'twelve_planets') && (
+          {currentTab === 'ascendantWise' && (
             <AscendantWisePanel chart={chart} />
+          )}
+
+          {currentTab === 'twelve_planets' && (
+            <TwelvePlanetsPanel chart={chart} />
           )}
 
           {currentTab === 'educationWise' && (
