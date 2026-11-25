@@ -36,6 +36,7 @@ import {
   getPastLifeAndSpiritualDetails,
   getComprehensiveSantanAnalysis,
   getComprehensiveMarriageAnalysis,
+  getComprehensiveMedicalAstrology,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -1985,6 +1986,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     }
 
     const p8Det = getPillar8MicroDetails(h6Prof, h8Prof, h12Prof, moon, venus);
+    const medDet = getComprehensiveMedicalAstrology(
+      h1Prof,
+      h4Prof,
+      h5Prof,
+      h6Prof,
+      h8Prof,
+      h9Prof,
+      planets,
+      d30LagnaSign
+    );
 
     pillars.push({
       id: 'health_crises_mysteries',
@@ -1992,22 +2003,64 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       titleEn: 'Adversities, Health Vulnerabilities, Secrets & Occult',
       titleHi: 'संकट, रोग, शत्रु, कानूनी विवाद, गुप्त रहस्य व तंत्र',
       icon: 'Shield',
-      summaryEn: `Deep diagnostic of vulnerable organs, litigation, hidden adversaries, occult inclinations, and longevity derived from the 6th, 8th, and 12th houses (Trik Bhavas) and D30 Trimsamsha chart.`,
-      summaryHi: `षष्ठ भाव (रोग/शत्रु), अष्टम (आयु/संकट), द्वादश (हानि), त्रिंशांश (D30) एवं त्रिदोष विचार द्वारा संवेदनशील अंग, कोर्ट केस, शत्रुहंता योग व गुप्त विद्याओं का प्रामाणिक विवेचन।`,
+      summaryEn: `Deep diagnostic of vulnerable organs, Ayurveda Dhatus, immunity, mental calm, litigation, hidden adversaries, occult inclinations, and longevity derived from the 1st, 6th, 8th, and 12th houses and D30 Trimsamsha chart.`,
+      summaryHi: `लग्न, षष्ठ (रोग/शत्रु), अष्टम (आयु/संकट), द्वादश (अस्पताल/हानि), त्रिंशांश (D30) एवं आयुर्वेदिक त्रिदोष-धातु विचार द्वारा संवेदनशील अंग, प्रतिरोधक क्षमता, मानसिक स्वास्थ्य, कोर्ट केस व गुप्त विद्याओं का प्रामाणिक विवेचन।`,
       attributes: [
         {
           id: 'attr_vulnerable_organs',
           category: 'health_crises',
-          titleEn: 'Vulnerable Organs & Tridosha Health Profile',
-          titleHi: 'संवेदनशील शारीरिक अंग व त्रिदोष प्रकृति',
-          valueEn: doshaEn,
-          valueHi: doshaHi,
-          explanationEn: `The 6th house (${h6Sign.name}) and D30 Trimsamsha reveal constitutional predispositions. Balanced nutrition and circadian sleep preserve long-term vitality.`,
-          explanationHi: `षष्ठ भाव और त्रिंशांश D30 के अनुसार शरीर की त्रिदोष प्रकृति निर्धारित होती है। उचित खान-पान और समय पर निद्रा से आजीवन निरोगी काया बनी रहेगी।`,
-          pacBasisEn: `House 6: ${h6Sign.name}; Lord: ${l6?.id} in H${l6?.placedHouse}; D30 Lagna: ${SIGNS[d30LagnaSign].name}.`,
-          pacBasisHi: `षष्ठ भाव: ${SIGN_HI[h6SignIdx]}; षष्ठेश भाव ${l6?.placedHouse} में; D30 लग्न: ${SIGN_HI[d30LagnaSign]}।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 20–25), Phaladeepika (Ch. 14)',
+          titleEn: 'Vulnerable Organs, Kalapurusha Meridians & Tridosha Profile',
+          titleHi: 'संवेदनशील शारीरिक अंग, कालपुरुष व त्रिदोष प्रकृति',
+          valueEn: medDet.organsAndDosha.valEn,
+          valueHi: medDet.organsAndDosha.valHi,
+          explanationEn: medDet.organsAndDosha.explEn,
+          explanationHi: medDet.organsAndDosha.explHi,
+          pacBasisEn: medDet.organsAndDosha.pacEn,
+          pacBasisHi: medDet.organsAndDosha.pacHi,
+          shastricRef: 'BPHS (Ch. 12, Sl. 20–25), Charaka Samhita, Kalapurusha',
           vargaRef: 'D1 Rashi & D30 Trimsamsha',
+        },
+        {
+          id: 'attr_constitutional_immunity',
+          category: 'health_crises',
+          titleEn: 'Constitution, Vital Immunity & Recovery Strength',
+          titleHi: 'शारीरिक गठन, रोग-प्रतिरोधक क्षमता व स्वास्थ्य लाभ',
+          valueEn: medDet.constitutionAndImmunity.valEn,
+          valueHi: medDet.constitutionAndImmunity.valHi,
+          explanationEn: medDet.constitutionAndImmunity.explEn,
+          explanationHi: medDet.constitutionAndImmunity.explHi,
+          pacBasisEn: medDet.constitutionAndImmunity.pacEn,
+          pacBasisHi: medDet.constitutionAndImmunity.pacHi,
+          shastricRef: 'Vedic Iatromathematics, Sage Satyacharya',
+          vargaRef: 'D1 & D30',
+        },
+        {
+          id: 'attr_mental_nervous_health',
+          category: 'health_crises',
+          titleEn: 'Mental Calm, Nervous System & Emotional Health',
+          titleHi: 'मानसिक शांति, स्नायु तंत्र व भावनात्मक संतुलन',
+          valueEn: medDet.mentalAndNervousHealth.valEn,
+          valueHi: medDet.mentalAndNervousHealth.valHi,
+          explanationEn: medDet.mentalAndNervousHealth.explEn,
+          explanationHi: medDet.mentalAndNervousHealth.explHi,
+          pacBasisEn: medDet.mentalAndNervousHealth.pacEn,
+          pacBasisHi: medDet.mentalAndNervousHealth.pacHi,
+          shastricRef: 'Phaladeepika (Ch. 14), Saravali',
+          vargaRef: 'D1 & D9',
+        },
+        {
+          id: 'attr_ayurveda_dhatu_herbs',
+          category: 'health_crises',
+          titleEn: 'Ayurvedic Prakriti, Sapta Dhatu & Classical Herb Alignment',
+          titleHi: 'आयुर्वेदिक प्रकृति, सप्त धातु व शास्त्रीय औषधि मार्गदर्शन',
+          valueEn: medDet.ayurvedaDhatuAndHerbs.valEn,
+          valueHi: medDet.ayurvedaDhatuAndHerbs.valHi,
+          explanationEn: medDet.ayurvedaDhatuAndHerbs.explEn,
+          explanationHi: medDet.ayurvedaDhatuAndHerbs.explHi,
+          pacBasisEn: medDet.ayurvedaDhatuAndHerbs.pacEn,
+          pacBasisHi: medDet.ayurvedaDhatuAndHerbs.pacHi,
+          shastricRef: 'AtharvaVeda, Charaka Samhita, Sushruta Samhita',
+          vargaRef: 'D1 & Panchamahabhoota',
         },
         {
           id: 'attr_accident_injury',

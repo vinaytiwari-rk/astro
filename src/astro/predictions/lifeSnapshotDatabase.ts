@@ -1370,4 +1370,204 @@ export function getComprehensiveMarriageAnalysis(
   };
 }
 
+// ============================================================================
+// VEDIC MEDICAL ASTROLOGY (IATROMATHEMATICS) ENGINE
+// ============================================================================
+export interface ComprehensiveMedicalResult {
+  organsAndDosha: BilingualPrediction & { pacEn: string; pacHi: string };
+  constitutionAndImmunity: BilingualPrediction & { pacEn: string; pacHi: string };
+  mentalAndNervousHealth: BilingualPrediction & { pacEn: string; pacHi: string };
+  ayurvedaDhatuAndHerbs: BilingualPrediction & { pacEn: string; pacHi: string };
+}
+
+const KALAPURUSHA_ORGAN_MAP: Record<number, { en: string; hi: string }> = {
+  0: { en: 'Head & Brain (Aries)', hi: 'सिर व मस्तिष्क (मेष)' },
+  1: { en: 'Face, Throat & Neck (Taurus)', hi: 'मुख, गला व गर्दन (वृष)' },
+  2: { en: 'Lungs, Arms & Collarbones (Gemini)', hi: 'फेफड़े, भुजाएं व श्वास नली (मिथुन)' },
+  3: { en: 'Chest, Heart & Stomach (Cancer)', hi: 'छाती, हृदय व आमाशय (कर्क)' },
+  4: { en: 'Upper Abdomen & Spine (Leo)', hi: 'ऊपरी पेट व रीढ़ की हड्डी (सिंह)' },
+  5: { en: 'Digestive System & Lower Abdomen (Virgo)', hi: 'पाचन तंत्र व निचला पेट (कन्या)' },
+  6: { en: 'Kidneys, Lower Back & Groins (Libra)', hi: 'किडनी, कमर व पेडू (तुला)' },
+  7: { en: 'Reproductive & Excretory Organs (Scorpio)', hi: 'प्रजनन अंग व मूत्र तंत्र (वृश्चिक)' },
+  8: { en: 'Thighs, Hips & Liver Axis (Sagittarius)', hi: 'जंघा, कूल्हे व यकृत (धनु)' },
+  9: { en: 'Knees, Bones & Joints (Capricorn)', hi: 'घुटने, हड्डियां व जोड़ (मकर)' },
+  10: { en: 'Shanks & Blood Circulation (Aquarius)', hi: 'पिंडलियां व रक्त संचार (कुंभ)' },
+  11: { en: 'Feet & Lymphatic Immunity (Pisces)', hi: 'पैर व प्रतिरक्षा तंत्र (मीन)' },
+};
+
+const PLANET_MEDICAL_MAP: Record<GrahaKey, { en: string; hi: string }> = {
+  Sun: { en: 'Heart, bones, right eye, fever & vitality regulation', hi: 'हृदय, हड्डियां, दाहिनी आंख, ज्वर व रोग प्रतिरोधक ऊर्जा' },
+  Moon: { en: 'Mind, blood fluids, lungs, left eye & sleep rhythm', hi: 'मन, रक्त/द्रव्य संतुलन, फेफड़े, बाईं आंख व निद्रा' },
+  Mars: { en: 'Muscles, bone marrow, blood pressure, inflammation & cuts', hi: 'मांसपेशियां, रक्तचाप, अस्थि मज्जा, पित्त सूजन व चोट' },
+  Mercury: { en: 'Skin, nervous system, speech & digestive coordination', hi: 'त्वचा, तंत्रिका तंत्र, वाणी व पाचन समन्वय' },
+  Jupiter: { en: 'Liver, pancreas, fat metabolism & glycemic balance', hi: 'यकृत (लिवर), अग्न्याशय (मधुमेह संतुलन) व वसा चयापचय' },
+  Venus: { en: 'Reproductive health, kidneys, urinary tract & hormonal glow', hi: 'प्रजनन स्वास्थ्य, किडनी, मूत्र तंत्र व हार्मोनल संतुलन' },
+  Saturn: { en: 'Joints, arthritis, teeth, legs & chronic Vata stiffness', hi: 'जोड़ों का दर्द (गठिया), दांत, पैर व दीर्घकालिक वात कठोरता' },
+  Rahu: { en: 'Allergies, toxins, diagnostic ambiguity & nervous stress', hi: 'एलर्जी, विषाक्तता, अनिर्णित लक्षण व मानसिक तनाव' },
+  Ketu: { en: 'Intestines, feet, sudden infections & psychosomatic sensitivity', hi: 'आंतें, पैर, आकस्मिक संक्रमण व सूक्ष्म शारीरिक संवेदनशीलता' },
+};
+
+export function getComprehensiveMedicalAstrology(
+  h1: HousePacProfile,
+  h4: HousePacProfile,
+  h5: HousePacProfile,
+  h6: HousePacProfile,
+  h8: HousePacProfile,
+  h9: HousePacProfile,
+  planets: PlanetPos[],
+  d30LagnaSignIdx: number
+): ComprehensiveMedicalResult {
+  const sun = planets.find((p) => p.id === 'Sun');
+  const moon = planets.find((p) => p.id === 'Moon');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const mercury = planets.find((p) => p.id === 'Mercury');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+  const ketu = planets.find((p) => p.id === 'Ketu');
+  const venus = planets.find((p) => p.id === 'Venus');
+
+  // 1. Tridosha + Kalapurusha Organ + Laterality (2-6 Right Side, 8-12 Left Side)
+  const h6Organ = KALAPURUSHA_ORGAN_MAP[h6.signIdx] || KALAPURUSHA_ORGAN_MAP[5];
+  const p6Medical = PLANET_MEDICAL_MAP[h6.dominantGraha];
+  let tridoshaEn = 'Pitta-dominant (Fire/Vitality)';
+  let tridoshaHi = 'पित्त-प्रधान (अग्नि/तेज)';
+  if (h6.element === 'Air' || h6.dominantGraha === 'Saturn' || h6.dominantGraha === 'Mercury') {
+    tridoshaEn = 'Vata-dominant (Air/Breathing & Nerves)';
+    tridoshaHi = 'वात-प्रधान (वायु/श्वास व तंत्रिका)';
+  } else if (h6.element === 'Water' || h6.dominantGraha === 'Moon' || h6.dominantGraha === 'Venus') {
+    tridoshaEn = 'Kapha-dominant (Water/Blood & Fluids)';
+    tridoshaHi = 'कफ-प्रधान (जल/रक्त व कफ)';
+  } else if (h6.element === 'Earth') {
+    tridoshaEn = 'Mixed Vata-Kapha (Earth/Bone & Flesh)';
+    tridoshaHi = 'मिश्रित वात-कफ (पृथ्वी/अस्थि व मांस)';
+  }
+
+  const sideFocusEn = [2, 3, 4, 5, 6].includes(h6.lordHouse)
+    ? 'Right-side body meridian active (H2–H6)'
+    : [8, 9, 10, 11, 12].includes(h6.lordHouse)
+    ? 'Left-side body meridian active (H8–H12)'
+    : 'Central axis meridian';
+  const sideFocusHi = [2, 3, 4, 5, 6].includes(h6.lordHouse)
+    ? 'शरीर के दाहिने भाग (भाव २–६) पर विशेष ध्यान'
+    : [8, 9, 10, 11, 12].includes(h6.lordHouse)
+    ? 'शरीर के बाएं भाग (भाव ८–१२) पर विशेष ध्यान'
+    : 'केंद्रीय शारीरिक अक्ष';
+
+  const virgo6NoteEn = h6.signIdx === 5 ? '; Virgo in 6th highlights gastric/digestive care' : '';
+  const virgo6NoteHi = h6.signIdx === 5 ? '; षष्ठ में कन्या राशि पाचन-अग्नि की देखभाल मांगती है' : '';
+  const venus6NoteEn = venus?.placedHouse === 6 && h6.signIdx !== 6 ? '; Venus in 6th asks for hormonal/urinary hygiene' : '';
+  const venus6NoteHi = venus?.placedHouse === 6 && h6.signIdx !== 6 ? '; षष्ठ में शुक्र हार्मोनल व मूत्र स्वास्थ्य की सतर्कता दर्शाता है' : '';
+
+  const organsAndDosha = {
+    valEn: `${tridoshaEn} | Watch: ${h6Organ.en} & ${p6Medical.en}${virgo6NoteEn}${venus6NoteEn}`,
+    valHi: `${tridoshaHi} | संवेदनशील क्षेत्र: ${h6Organ.hi} एवं ${p6Medical.hi}${virgo6NoteHi}${venus6NoteHi}`,
+    explEn: `Derived from 6th house (${h6.signName}), ${h6.dominantGraha} influence, D30 Trimsamsha (${SIGNS[d30LagnaSignIdx]?.name}), and Kalapurusha laterality (${sideFocusEn}). Medical astrology provides preventive awareness alongside modern medical care.`,
+    explHi: `षष्ठ भाव (${h6.signName}), ${h6.dominantGraha} के प्रभाव, त्रिंशांश D30 व कालपुरुष अंग विचार (${sideFocusHi}) से संवेदनशील अंगों का निर्धारण होता है। यह निवारक स्वास्थ्य मार्गदर्शन है, चिकित्सा का विकल्प नहीं।`,
+    pacEn: `H6: ${h6.signName} (Lord in H${h6.lordHouse}); Dominant: ${h6.dominantGraha}; ${sideFocusEn}.`,
+    pacHi: `षष्ठ भाव: ${h6.signName} (भावेश भाव ${h6.lordHouse}); प्रमुख ग्रह: ${h6.dominantGraha}; ${sideFocusHi}।`,
+  };
+
+  // 2. Constitution & Immunity (Strong Lagna/Lagnesh + Weak 6th Lord + Satyacharya 9th Lord Rule + Sun Vitality)
+  const lagneshStrong = h1.tier === 'strong' || [1, 4, 5, 7, 9, 10, 11].includes(h1.lordHouse);
+  const lagneshInTrik = [6, 8, 12].includes(h1.lordHouse);
+  const satyacharyaProtection = h9.lordHouse === 6 || h9.lordHouse === 8 || h9.lordHouse === 12 ? false : h6.aspectors.some((p) => p.id === h9.lordId || p.id === 'Jupiter');
+  const sunAfflicted = sun && ([6, 8, 12].includes(sun.placedHouse) || sun.dignity === 'Debilitated' || (saturn && saturn.placedHouse === sun.placedHouse) || (rahu && rahu.placedHouse === sun.placedHouse));
+
+  let constValEn: string;
+  let constValHi: string;
+  if (lagneshStrong && !lagneshInTrik && !sunAfflicted) {
+    constValEn = 'Strong fundamental constitution & vital immunity; rapid recovery during seasonal ailments (Lagnesh fortified)';
+    constValHi = 'सुदृढ़ शारीरिक गठन व उत्तम रोग-प्रतिरोधक क्षमता; मौसमी व्याधियों से शीघ्र स्वास्थ्य लाभ (लग्नेश बलवान)';
+  } else if (lagneshInTrik || (h6.tier === 'strong' && h1.tier === 'afflicted')) {
+    constValEn = 'Sensitive immunity & endurance; prone to fatigue or recurring ailments during 6th/8th/12th Dasha-Gochar windows — preventive routine essential';
+    constValHi = 'संवेदनशील प्रतिरोधक क्षमता; ६/८/१२वें भाव की दशा-गोचर में थकान या बार-बार स्वास्थ्य अवरोध — नियमित दिनचर्या व जांच आवश्यक';
+  } else if (satyacharyaProtection) {
+    constValEn = 'Protected recovery constitution (Sage Satyacharya’s Guru/9th-lord shield on 6th); hurdles heal steadily with timely care';
+    constValHi = 'रक्षित स्वास्थ्य योग (सत्याचार्य सूत्रानुसार नवमेश/गुरु की षष्ठ पर रक्षा दृष्टि); समय पर उपचार से पूर्ण स्वास्थ्य लाभ';
+  } else {
+    constValEn = 'Moderate baseline vitality; balanced diet, regular exercise, and Sun/Lagnesh strengthening preserve steady energy';
+    constValHi = 'मध्यम व संतुलित जीवनी शक्ति; नियमित व्यायाम, सात्विक आहार व प्रातः सूर्य सेवन से ऊर्जा बनी रहती है';
+  }
+
+  const constitutionAndImmunity = {
+    valEn: constValEn,
+    valHi: constValHi,
+    explEn: `Classical Iatromathematics weighs Lagna Lord (${h1.lordId} in H${h1.lordHouse}) against 6th Lord (${h6.lordId} in H${h6.lordHouse}) and Sun’s vitality (${sun?.dignity || 'Neutral'} in H${sun?.placedHouse}). Challenges surface primarily when afflicted planets align in both Dasha and Gochar.`,
+    explHi: `आयुर्वेदिक व वैदिक चिकित्सा ज्योतिष में लग्नेश (${h1.lordId} भाव ${h1.lordHouse}), षष्ठेश (${h6.lordId} भाव ${h6.lordHouse}) व सूर्य की जीवनी शक्ति का तुलनात्मक आकलन किया जाता है। रोग मुख्यतः प्रतिकूल दशा व गोचर के संयोग में उभरते हैं।`,
+    pacEn: `Lagnesh: ${h1.lordId} (H${h1.lordHouse}, ${h1.tier}); 6th Lord: ${h6.lordId} (H${h6.lordHouse}); Sun: H${sun?.placedHouse}.`,
+    pacHi: `लग्नेश: ${h1.lordId} (भाव ${h1.lordHouse}); षष्ठेश: ${h6.lordId} (भाव ${h6.lordHouse}); सूर्य: भाव ${sun?.placedHouse}।`,
+  };
+
+  // 3. Mental Calm, Nervous System & Emotional Health (Moon, 4th/5th Houses, Mercury-Mars, Jupiter Shield)
+  const moonWithSaturn = moon && saturn && moon.placedHouse === saturn.placedHouse;
+  const moonWithNode = moon && ((rahu && moon.placedHouse === rahu.placedHouse) || (ketu && moon.placedHouse === ketu.placedHouse));
+  const moonWithMars = moon && mars && moon.placedHouse === mars.placedHouse;
+  const jupWithMoonOr5 = jupiter && (jupiter.placedHouse === moon?.placedHouse || jupiter.placedHouse === 5 || h5.aspectors.some((p) => p.id === 'Jupiter'));
+  const mercAfflictedMars = mercury && mars && (mercury.placedHouse === mars.placedHouse || h4.tier === 'afflicted');
+
+  let mentalValEn: string;
+  let mentalValHi: string;
+  if (jupWithMoonOr5 && !moonWithNode && !moonWithSaturn) {
+    mentalValEn = 'Resilient, calm & clear-thinking mind; Jupiter’s grace shields emotional equilibrium and nervous poise';
+    mentalValHi = 'शांत, संतुलित व स्पष्ट चिंतनशील मन; देवगुरु बृहस्पति की कृपा से मानसिक स्थिरता व भावनात्मक दृढ़ता बनी रहती है';
+  } else if (moonWithSaturn || moonWithNode) {
+    mentalValEn = 'Heightened emotional sensitivity, overthinking, or periodic anxiety/sleep disruption; meditation, Pranayama & Moon/Shiva care strongly advised';
+    mentalValHi = 'अत्यधिक भावुकता, अति-चिंतन या कभी-कभी मानसिक तनाव/अनिद्रा की प्रवृत्ति; ध्यान, प्राणायाम व शिव आराधना अत्यंत लाभकारी';
+  } else if (moonWithMars || mercAfflictedMars) {
+    mentalValEn = 'High mental velocity & nervous agitation under stress; fiery reactions or sharp speech need mindful cooling and rest';
+    mentalValHi = 'तनाव के समय तीव्र मानसिक उत्तेजना व क्रोध की प्रवृत्ति; शांत संवाद, पर्याप्त विश्राम व शीतल दिनचर्या आवश्यक';
+  } else {
+    mentalValEn = 'Steady practical mindset; manages everyday pressures well with periodic creative breaks and structured sleep';
+    mentalValHi = 'संतुलित व व्यावहारिक मानसिक स्थिति; नियमित विश्राम व सकारात्मक दिनचर्या से तनाव सहज नियंत्रित रहता है';
+  }
+
+  const mentalAndNervousHealth = {
+    valEn: mentalValEn,
+    valHi: mentalValHi,
+    explEn: `Assessed via Moon (H${moon?.placedHouse}, ${moon?.signName}), Mercury (nervous system, H${mercury?.placedHouse}), 4th/5th houses (emotional/mental peace), and Jupiter’s protective aspect.`,
+    explHi: `चंद्रमा (भाव ${moon?.placedHouse}), बुध (तंत्रिका तंत्र, भाव ${mercury?.placedHouse}), चतुर्थ/पंचम भाव व गुरु की रक्षात्मक दृष्टि से मानसिक व स्नायु स्वास्थ्य का आकलन होता है।`,
+    pacEn: `Moon: H${moon?.placedHouse} (${moon?.signName}); Mercury: H${mercury?.placedHouse}; 4th: ${h4.tier}; Jupiter: H${jupiter?.placedHouse}.`,
+    pacHi: `चंद्र: भाव ${moon?.placedHouse}; बुध: भाव ${mercury?.placedHouse}; चतुर्थ भाव: ${h4.tier}; गुरु: भाव ${jupiter?.placedHouse}।`,
+  };
+
+  // 4. Ayurveda Dosha-Rashi (Vata: Gemini, Virgo, Libra, Capricorn, Aquarius | Pitta: Aries, Leo, Scorpio, Sagittarius | Kapha: Taurus, Cancer, Pisces)
+  const getAyurvedicDoshaBySign = (sIdx: number): { en: string; hi: string } => {
+    if ([2, 5, 6, 9, 10].includes(sIdx)) return { en: 'Vata (Ether & Air)', hi: 'वात प्रकृति (आकाश व वायु)' };
+    if ([0, 4, 7, 8].includes(sIdx)) return { en: 'Pitta (Fire & Bile)', hi: 'पित्त प्रकृति (अग्नि व तेज)' };
+    return { en: 'Kapha (Water & Earth)', hi: 'कफ प्रकृति (जल व पृथ्वी)' };
+  };
+
+  const lagnaAyurDosha = getAyurvedicDoshaBySign(h1.signIdx);
+  const dhatuHerbMap: Record<GrahaKey, { dhatuEn: string; dhatuHi: string; herbEn: string; herbHi: string; tasteEn: string; tasteHi: string }> = {
+    Sun: { dhatuEn: 'Asthi (Bones) / Fire (Tej)', dhatuHi: 'अस्थि धातु / अग्नि तत्व', herbEn: 'Bilwamoola (Bael Root)', herbHi: 'बेल वृक्ष की जड़ (बिल्वमूल)', tasteEn: 'Warm & balancing light meals', tasteHi: 'संतुलित उष्ण व सात्विक आहार' },
+    Moon: { dhatuEn: 'Rakta (Blood) / Water (Jala)', dhatuHi: 'रक्त धातु / जल तत्व', herbEn: 'Kharika (Cooling Hydration)', herbHi: 'खारिका व शीतल जलीय आहार', tasteEn: 'Cooling sweet & hydrating tastes', tasteHi: 'शीतल, मधुर व जल-प्रधान आहार' },
+    Mars: { dhatuEn: 'Majja (Bone Marrow) / Fire', dhatuHi: 'मज्जा धातु / अग्नि तत्व', herbEn: 'Bridhadwarakamoola', herbHi: 'वृद्धदारुक मूल', tasteEn: 'Cooling bitter/sweet; reduce excess spice', tasteHi: 'शीतल व मधुर रस; अत्यधिक मिर्च-मसाले से बचाव' },
+    Mercury: { dhatuEn: 'Twacha (Skin) / Earth', dhatuHi: 'त्वचा (रस-त्वक) / पृथ्वी तत्व', herbEn: 'Anantmool (Indian Sarsaparilla)', herbHi: 'अनंतमूल (सारिवा)', tasteEn: 'Warm, grounded & easy-to-digest food', tasteHi: 'सुपाच्य, ताजा व नियमित समय पर भोजन' },
+    Jupiter: { dhatuEn: 'Vasa (Adipose) / Space (Akasha)', dhatuHi: 'वसा (मेदा) धातु / आकाश तत्व', herbEn: 'Brahmajatimool', herbHi: 'ब्रह्मजटीमूल व हल्दी', tasteEn: 'Light, bitter/astringent; avoid excess sweets', tasteHi: 'हल्का, तिक्त व कसैला आहार; अधिक मीठे से परहेज' },
+    Venus: { dhatuEn: 'Shukra (Reproductive) / Water', dhatuHi: 'शुक्र धातु / जल तत्व', herbEn: 'Shwetaberela Moola', herbHi: 'श्वेतबरेला मूल', tasteEn: 'Nourishing milk, ghee & balanced hydration', tasteHi: 'पौष्टिक दुग्ध, घी व संतुलित जलीय आहार' },
+    Saturn: { dhatuEn: 'Snayu (Muscles) / Air (Vayu)', dhatuHi: 'स्नायु धातु / वायु तत्व', herbEn: 'Shwetachandanmoola', herbHi: 'श्वेत चंदन मूल व तिल तैल', tasteEn: 'Warm, mildly oiled food; avoid cold/raw excess', tasteHi: 'गर्म व स्निग्ध (घी/तेल युक्त) ताजा भोजन; बासी/ठंडे से बचाव' },
+    Rahu: { dhatuEn: 'Subtle Nervous & Toxic Filter', dhatuHi: 'सूक्ष्म स्नायु व विषाक्तता शोधन', herbEn: 'Shwetachandanmoola', herbHi: 'श्वेत चंदन मूल व शुद्ध जल', tasteEn: 'Pure sattvic food; avoid stale/processed toxins', tasteHi: 'शुद्ध सात्विक आहार; तामसिक व जंक फूड से पूर्ण बचाव' },
+    Ketu: { dhatuEn: 'Subtle Immunity & Intestines', dhatuHi: 'सूक्ष्म प्रतिरक्षा व आंत तंत्र', herbEn: 'Ashwagandha (Winter Cherry)', herbHi: 'अश्वगंधा', tasteEn: 'Warm, grounding herbal teas & Ashwagandha', tasteHi: 'गर्म हर्बल काढ़ा व अश्वगंधा सेवन (चिकित्सक सलाह से)' },
+  };
+  const ayurInfo = dhatuHerbMap[h6.dominantGraha];
+
+  const ayurvedaDhatuAndHerbs = {
+    valEn: `Prakriti: ${lagnaAyurDosha.en} | Primary Dhatu: ${ayurInfo.dhatuEn} | Classical Herb: ${ayurInfo.herbEn}`,
+    valHi: `आयुर्वेदिक प्रकृति: ${lagnaAyurDosha.hi} | प्रमुख धातु: ${ayurInfo.dhatuHi} | शास्त्रीय औषधि: ${ayurInfo.herbHi}`,
+    explEn: `Rooted in AtharvaVeda & Charaka Samhita: Lagna (${h1.signName}) sets baseline Prakriti while 6th dominant ${h6.dominantGraha} governs Dhatu balance. Diet: ${ayurInfo.tasteEn}. Consult a qualified Vaidya/physician before taking any herb.`,
+    explHi: `अथर्ववेद व चरक संहिता के अनुसार लग्न (${h1.signName}) से मूल प्रकृति तथा षष्ठ भाव (${h6.dominantGraha}) से धातु संतुलन देखा जाता है। आहार: ${ayurInfo.tasteHi}। किसी भी औषधि का सेवन योग्य वैद्य/चिकित्सक के परामर्श से ही करें।`,
+    pacEn: `Lagna Prakriti: ${lagnaAyurDosha.en}; 6th Dominant: ${h6.dominantGraha} (${ayurInfo.dhatuEn}).`,
+    pacHi: `लग्न प्रकृति: ${lagnaAyurDosha.hi}; षष्ठ प्रमुख: ${h6.dominantGraha} (${ayurInfo.dhatuHi})।`,
+  };
+
+  return {
+    organsAndDosha,
+    constitutionAndImmunity,
+    mentalAndNervousHealth,
+    ayurvedaDhatuAndHerbs,
+  };
+}
+
+
 
