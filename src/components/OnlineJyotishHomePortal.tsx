@@ -283,15 +283,6 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
               <Sparkles size={17} />
               <span>{trP('generalPrediction', 'सामान्य फलादेश', 'General Prediction')}</span>
             </button>
-
-            <button
-              type="button"
-              className="oj-btn-hero-secondary"
-              onClick={() => onNavigate('general-prediction')}
-            >
-              <Star size={17} />
-              <span>{trP('generalPrediction', 'सामान्य फलादेश', 'General Prediction')}</span>
-            </button>
           </div>
 
           {/* Quick Feature Pills Bar */}
@@ -317,8 +308,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('marriage-matching')}>
               {isHi ? 'दश कूट मिलान' : 'Dasha Koota matching'}
             </button>
-            <button type="button" className="oj-link-pill" onClick={() => onNavigate('general-prediction')}>
-              {isHi ? 'सामान्य फलादेश' : 'General Prediction'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('dasha-predictions')}>
+              {isHi ? 'दशा फलादेश (Dasha)' : 'Dasha Prediction'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}

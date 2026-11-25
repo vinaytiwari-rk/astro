@@ -1,16 +1,12 @@
-export type AppLanguage = 'en' | 'hi' | 'ta' | 'te' | 'kn' | 'gu' | 'bn';
+export type AppLanguage = 'en' | 'hi';
+export type SupportedLanguage = AppLanguage | 'ta' | 'te' | 'kn' | 'gu' | 'bn';
 
 export const LANGUAGE_LABELS: Record<AppLanguage, string> = {
   en: 'English',
   hi: 'हिन्दी (Hindi)',
-  ta: 'தமிழ் (Tamil)',
-  te: 'తెలుగు (Telugu)',
-  kn: 'ಕನ್ನಡ (Kannada)',
-  gu: 'ગુજરાતી (Gujarati)',
-  bn: 'বাংলা (Bengali)',
 };
 
-export const SIGN_NAMES_I18N: Record<AppLanguage, string[]> = {
+export const SIGN_NAMES_I18N: Record<SupportedLanguage, string[]> = {
   en: [
     'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
     'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
@@ -41,7 +37,7 @@ export const SIGN_NAMES_I18N: Record<AppLanguage, string[]> = {
   ],
 };
 
-export const SIGN_SHORT_I18N: Record<AppLanguage, string[]> = {
+export const SIGN_SHORT_I18N: Record<SupportedLanguage, string[]> = {
   en: ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi'],
   hi: ['मेष', 'वृष', 'मिथु', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चि', 'धनु', 'मकर', 'कुंभ', 'मीन'],
   ta: ['மே', 'ரி', 'மி', 'கட', 'சிம்', 'கன்', 'து', 'விரு', 'தனு', 'மக', 'கும்', 'மீ'],
@@ -51,7 +47,7 @@ export const SIGN_SHORT_I18N: Record<AppLanguage, string[]> = {
   bn: ['মেষ', 'বৃষ', 'মিথু', 'কর্ক', 'সিংহ', 'কন্যা', 'তুলা', 'বৃশ্চি', 'ধনু', 'মকর', 'কুম্ভ', 'মীন'],
 };
 
-export const PLANET_NAMES_I18N: Record<AppLanguage, Record<string, string>> = {
+export const PLANET_NAMES_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Asc: 'Lagna', Sun: 'Sun', Moon: 'Moon', Mars: 'Mars', Mercury: 'Mercury',
     Jupiter: 'Jupiter', Venus: 'Venus', Saturn: 'Saturn', Rahu: 'Rahu', Ketu: 'Ketu',
@@ -89,7 +85,7 @@ export const PLANET_NAMES_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const PLANET_SHORT_I18N: Record<AppLanguage, Record<string, string>> = {
+export const PLANET_SHORT_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Asc: 'As', Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me',
     Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
@@ -266,32 +262,34 @@ export const MISC_TERMS_HI: Record<string, string> = {
   Testing: 'परीक्षात्मक',
 };
 
-export function trSign(idx: number, lang: AppLanguage): string {
-  return SIGN_NAMES_I18N[lang][((idx % 12) + 12) % 12] ?? SIGN_NAMES_I18N.en[0];
+export function trSign(idx: number, lang: SupportedLanguage | string): string {
+  const dict = SIGN_NAMES_I18N[lang as SupportedLanguage] || SIGN_NAMES_I18N.en;
+  return dict[((idx % 12) + 12) % 12] ?? SIGN_NAMES_I18N.en[0];
 }
 
-export function trSignShort(idx: number, lang: AppLanguage): string {
-  return SIGN_SHORT_I18N[lang][((idx % 12) + 12) % 12] ?? SIGN_SHORT_I18N.en[0];
+export function trSignShort(idx: number, lang: SupportedLanguage | string): string {
+  const dict = SIGN_SHORT_I18N[lang as SupportedLanguage] || SIGN_SHORT_I18N.en;
+  return dict[((idx % 12) + 12) % 12] ?? SIGN_SHORT_I18N.en[0];
 }
 
-export function trPlanet(id: string, lang: AppLanguage): string {
-  return PLANET_NAMES_I18N[lang][id] ?? id;
+export function trPlanet(id: string, lang: SupportedLanguage | string): string {
+  return PLANET_NAMES_I18N[lang as SupportedLanguage]?.[id] ?? id;
 }
 
-export function trPlanetShort(id: string, lang: AppLanguage): string {
-  return PLANET_SHORT_I18N[lang][id] ?? id;
+export function trPlanetShort(id: string, lang: SupportedLanguage | string): string {
+  return PLANET_SHORT_I18N[lang as SupportedLanguage]?.[id] ?? id;
 }
 
-export function trTerm(val: string, lang: AppLanguage): string {
+export function trTerm(val: string, lang: SupportedLanguage | string): string {
   if (!val || lang === 'en') return val;
   // Check active language first
   const langMatch =
-    NAKSHATRA_I18N[lang]?.[val] ??
-    TITHI_I18N[lang]?.[val] ??
-    VARA_I18N[lang]?.[val] ??
-    DIGNITY_I18N[lang]?.[val] ??
-    MISC_TERMS_I18N[lang]?.[val] ??
-    PLANET_NAMES_I18N[lang]?.[val];
+    NAKSHATRA_I18N[lang as SupportedLanguage]?.[val] ??
+    TITHI_I18N[lang as SupportedLanguage]?.[val] ??
+    VARA_I18N[lang as SupportedLanguage]?.[val] ??
+    DIGNITY_I18N[lang as SupportedLanguage]?.[val] ??
+    MISC_TERMS_I18N[lang as SupportedLanguage]?.[val] ??
+    PLANET_NAMES_I18N[lang as SupportedLanguage]?.[val];
   if (langMatch) return langMatch;
 
   // Fallback to Hindi if available before raw English
@@ -648,7 +646,7 @@ export const UI_TEXT_HI: UiTextBundle = {
     },
 };
 
-export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
+export const UI_TEXT: Record<SupportedLanguage, UiTextBundle> = {
   en: UI_TEXT_EN,
   hi: UI_TEXT_HI,
   ta: {
@@ -778,7 +776,7 @@ export const UI_TEXT: Record<AppLanguage, UiTextBundle> = {
 // Pure Classical Terminology | Zero Emojis | Zero Modern Astrologer Names
 // ============================================================================
 
-export const NAKSHATRA_I18N: Record<AppLanguage, Record<string, string>> = {
+export const NAKSHATRA_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Ashwini: 'Ashwini', Bharani: 'Bharani', Krittika: 'Krittika', Rohini: 'Rohini',
     Mrigashira: 'Mrigashira', Ardra: 'Ardra', Punarvasu: 'Punarvasu', Pushya: 'Pushya',
@@ -851,7 +849,7 @@ export const NAKSHATRA_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const TITHI_I18N: Record<AppLanguage, Record<string, string>> = {
+export const TITHI_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Pratipada: 'Pratipada', Dwitiya: 'Dwitiya', Tritiya: 'Tritiya', Chaturthi: 'Chaturthi',
     Panchami: 'Panchami', Shashthi: 'Shashthi', Saptami: 'Saptami', Ashtami: 'Ashtami',
@@ -896,7 +894,7 @@ export const TITHI_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const VARA_I18N: Record<AppLanguage, Record<string, string>> = {
+export const VARA_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Sunday: 'Sunday', Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
     Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday',
@@ -941,7 +939,7 @@ export const VARA_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const DIGNITY_I18N: Record<AppLanguage, Record<string, string>> = {
+export const DIGNITY_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Exalted: 'Exalted', Moolatrikona: 'Moolatrikona', 'Own Sign': 'Own Sign',
     'Great Friend': 'Great Friend', Friend: 'Friend', Neutral: 'Neutral',
@@ -986,7 +984,7 @@ export const DIGNITY_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const MISC_TERMS_I18N: Record<AppLanguage, Record<string, string>> = {
+export const MISC_TERMS_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     Shukla: 'Shukla (Waxing)', Krishna: 'Krishna (Waning)',
     Movable: 'Movable', Fixed: 'Fixed', Dual: 'Dual',
@@ -1059,7 +1057,7 @@ export const MISC_TERMS_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const NAV_ITEMS_I18N: Record<AppLanguage, Record<string, string>> = {
+export const NAV_ITEMS_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     brandTag: 'Vedic Astrology, Panchang & Free Predictions',
     home: 'Home',
@@ -1524,7 +1522,7 @@ export const NAV_ITEMS_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const PORTAL_I18N: Record<AppLanguage, Record<string, string>> = {
+export const PORTAL_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     heroHeading: 'Vedic astrology for your everyday questions',
     heroSub: 'Create a Janam Kundli, check your local Panchang, compare horoscopes, read Rashifal and use specialist astrology calculators. 100% free calculators and complete Birth Report PDF documents, with no registration required.',
@@ -1919,7 +1917,7 @@ export const PORTAL_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export const CALCULATORS_I18N: Record<AppLanguage, Record<string, string>> = {
+export const CALCULATORS_I18N: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     heading: 'Vedic Fortune, Relationship & Ayurdaya Calculators',
     subheading: '15 Authentic mathematical tools based on Brihat Parashara Hora Shastra, Jaimini Upadesha Sutras, and classical Sankhya Shastra.',
@@ -2188,14 +2186,14 @@ export const CALCULATORS_I18N: Record<AppLanguage, Record<string, string>> = {
   },
 };
 
-export function trNav(key: string, lang: AppLanguage, fallback?: string): string {
-  return NAV_ITEMS_I18N[lang]?.[key] ?? NAV_ITEMS_I18N.en?.[key] ?? fallback ?? key;
+export function trNav(key: string, lang: SupportedLanguage | string, fallback?: string): string {
+  return NAV_ITEMS_I18N[lang as SupportedLanguage]?.[key] ?? NAV_ITEMS_I18N.en?.[key] ?? fallback ?? key;
 }
 
-export function trPortal(key: string, lang: AppLanguage, fallback?: string): string {
-  return PORTAL_I18N[lang]?.[key] ?? PORTAL_I18N.en?.[key] ?? fallback ?? key;
+export function trPortal(key: string, lang: SupportedLanguage | string, fallback?: string): string {
+  return PORTAL_I18N[lang as SupportedLanguage]?.[key] ?? PORTAL_I18N.en?.[key] ?? fallback ?? key;
 }
 
-export function trCalc(key: string, lang: AppLanguage, fallback?: string): string {
-  return CALCULATORS_I18N[lang]?.[key] ?? CALCULATORS_I18N.en?.[key] ?? fallback ?? key;
+export function trCalc(key: string, lang: SupportedLanguage | string, fallback?: string): string {
+  return CALCULATORS_I18N[lang as SupportedLanguage]?.[key] ?? CALCULATORS_I18N.en?.[key] ?? fallback ?? key;
 }

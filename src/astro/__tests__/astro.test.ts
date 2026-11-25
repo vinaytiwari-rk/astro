@@ -710,7 +710,7 @@ describe('Jyotish Hora Astronomical & Vedic Engine', () => {
     expect(findAuspiciousMuhurtas(chart, 'marriage', '2026-11-10', 14).length).toBe(0);
     expect(computeMultiYearCalendar(chart, '2026-11-10', 10).ingresses.length).toBe(0);
 
-    expect(Object.keys(LANGUAGE_LABELS)).toEqual(['en', 'hi', 'ta', 'te', 'kn', 'gu', 'bn']);
+    expect(Object.keys(LANGUAGE_LABELS)).toEqual(['en', 'hi']);
     expect(trSign(0, 'hi')).toBe('मेष');
     expect(trSign(0, 'ta')).toBe('மேஷம்');
     expect(trSign(0, 'te')).toBe('మేషం');
