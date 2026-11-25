@@ -462,6 +462,84 @@ export interface AscendantPredictionResult {
   occupantsSummaryEn: string;
 }
 
+export const LAGNESHA_HOUSE_PROPHECY: Record<
+  number,
+  { en: string; hi: string; headlineEn: string; headlineHi: string }
+> = {
+  1: {
+    headlineEn: 'Self-Made Sovereign, Resilient Constitution & Magnetic Individuality',
+    headlineHi: 'तनु भाव स्थित लग्नेश: आत्म-निर्मित व्यक्तित्व, अदम्य ऊर्जा व चुंबकीय प्रभाव',
+    en: 'With your Lagna lord occupying the 1st house in full self-expression, you are blessed with an exceptionally resilient physical constitution, formidable willpower, and natural independence. You are destined to carve your own path through self-effort rather than inherited privileges.',
+    hi: 'लग्नेश का प्रथम (तनु) भाव में स्थित होना जातक को दीर्घायु, सुदृढ़ स्वास्थ्य एवं अदम्य आत्मबल प्रदान करता है। आप अपने पुरुषार्थ और स्वाभिमान से जीवन में सर्वोच्च प्रतिष्ठा प्राप्त करेंगे।',
+  },
+  2: {
+    headlineEn: 'Treasury Anchoring, Eloquent Truthful Speech & Generational Lineage',
+    headlineHi: 'द्वितीय भाव स्थित लग्नेश: धन वृद्धि, वाकपटुता व कुटुंब संवर्धन',
+    en: 'Your Lagna lord placed in the 2nd house of wealth (Dhana Bhava) creates an auspicious classical Dhana Yoga. Your primary life agency is directed toward accumulating tangible reserves, preserving familial heritage, and exercising eloquent speech in commerce or leadership.',
+    hi: 'लग्नेश का द्वितीय भाव में विराजमान होना एक उत्तम धन योग बनाता है। आपका जीवन संचित धन के विस्तार, कुटुंब के मान-सम्मान एवं अपनी प्रभावशाली वाणी द्वारा आजीविका में शीर्ष सफलता अर्जित करने पर केंद्रित रहेगा।',
+  },
+  3: {
+    headlineEn: 'Unyielding Valour, Entrepreneurial Daring & Strategic Communication',
+    headlineHi: 'तृतीय भाव स्थित लग्नेश: पराक्रम, स्वतंत्र उद्यमिता व अचूक संवाद',
+    en: 'Positioned in the 3rd house of prowess (Sahaja Bhava), your Lagna lord endows you with adventurous courage, sibling bonds, and sharp communicative or technical acumen. You thrive in pioneering independent ventures, media, commerce, and sports.',
+    hi: 'लग्नेश का तृतीय भाव में होना जातक को अदम्य पराक्रमी, साहसी और स्वतंत्र उद्यमी बनाता है। आप अपने बाहुबल, कला-कौशल व संचार माध्यमों द्वारा विपरीत परिस्थितियों पर विजय प्राप्त करेंगे।',
+  },
+  4: {
+    headlineEn: 'Domestic Sovereignty, Real Estate Mastery & Academic Depth',
+    headlineHi: 'चतुर्थ भाव स्थित लग्नेश: गृह-भूमि सुख, उच्च विद्या व आंतरिक शांति',
+    en: 'Your Lagna lord in the 4th house of domestic happiness (Sukha Bhava) anchors your destiny in real estate sovereignty, ancestral property, higher learning, and maternal blessings. You possess a deeply grounded emotional core and high vehicular comforts.',
+    hi: 'चतुर्थ भाव में लग्नेश की स्थिति जातक को भूमि, भवन, वाहन एवं माता का पूर्ण सुख प्रदान करती है। आप उच्च विद्या, विद्या-दान और अचल संपत्ति के क्षेत्र में असाधारण समृद्धि प्राप्त करेंगे।',
+  },
+  5: {
+    headlineEn: 'Creative Genius, Purva Punya Alignment & Sovereign Counsel',
+    headlineHi: 'पंचम भाव स्थित लग्नेश: पूर्व पुण्य जागृति, तीक्ष्ण बुद्धि व नीतिज्ञ सलाहकार',
+    en: 'With the Lagna lord radiating from the 5th house of intellect (Suta Bhava), a grand Trikona Raja Yoga is formed. Your past-life merits (Purva Punya) bless you with intuitive foresight, creative brilliance, scholarly distinction, and noble progeny.',
+    hi: 'पंचम भाव में लग्नेश की स्थिति पूर्वजन्म के संचित पुण्यों को जाग्रत करती है। आप तीक्ष्ण मेधा, मंत्र-सिद्धि, उच्च प्रशासनिक बुद्धि और उत्तम संतान सुख से युक्त नीतिज्ञ व्यक्ति होंगे।',
+  },
+  6: {
+    headlineEn: 'Shatruhanta Conqueror, Clinical Precision & Invincible Resilience',
+    headlineHi: 'षष्ठ भाव स्थित लग्नेश: शत्रुहंता योग, रोग-ऋण मुक्ति व प्रतियोगी विजय',
+    en: 'Placed in the 6th house (Ripu Bhava), your Lagna lord forms the formidable Shatruhanta Yoga. You possess extraordinary immunity under stress, cutting through competitive examinations, legal disputes, and institutional challenges with razor-sharp clinical precision.',
+    hi: 'षष्ठ भाव में लग्नेश का जाना शक्तिशाली शत्रुहंता योग निर्मित करता है। आप प्रतिस्पर्धी परीक्षाओं, मुकदमों और विरोधियों पर सहज विजय प्राप्त करेंगे तथा सेवा, चिकित्सा अथवा विधि क्षेत्र में शीर्ष पद पाएंगे।',
+  },
+  7: {
+    headlineEn: 'Global Diplomacy, Public Magnetism & Elevating Matrimonial Bond',
+    headlineHi: 'सप्तम भाव स्थित लग्नेश: जनप्रियता, वैश्विक व्यापार व दांपत्य समृद्धि',
+    en: 'Your Lagna lord stationed in the 7th house creates a powerful public presence and commercial acumen. Marriage and business partnerships serve as your primary springboards for social elevation, foreign travel, and widespread public acclaim.',
+    hi: 'सप्तम भाव में लग्नेश की स्थिति जातक को जनमानस में अत्यंत लोकप्रिय और व्यापार में कुशल बनाती है। विवाह के पश्चात आपका भाग्योदय होगा और जीवनसाथी के सहयोग से समाज में प्रतिष्ठा बढ़ेगी।',
+  },
+  8: {
+    headlineEn: 'Occult Intuition, Transformative Rebirth & Profound Longevity',
+    headlineHi: 'अष्टम भाव स्थित लग्नेश: गूढ़ विद्या, दीर्घायु व संकटों से पुनरुत्थान',
+    en: 'Stationed in the 8th house (Ayur Bhava), your Lagna lord confers profound longevity, deep psychic intuition, and an innate mastery over hidden assets, insurance, taxation, and esoteric sciences. You undergo periodic metamorphic rebirths, rising stronger from every trial.',
+    hi: 'अष्टम भाव में लग्नेश की स्थिति जातक को गूढ़ शोधकर्ता, आध्यात्मिक जिज्ञासु और संकटों से पार पाने वाला बनाती है। आप पैतृक विरासत, बीमा, कर अथवा गोपनीय विद्याओं से विशेष लाभ अर्जित करेंगे।',
+  },
+  9: {
+    headlineEn: 'Supreme Bhagya Sovereign, Dharmic Nobility & Worldwide Acclaim',
+    headlineHi: 'नवम भाव स्थित लग्नेश: सर्वोच्च भाग्य योग, धर्मनिष्ठा व वैश्विक ख्याति',
+    en: 'When the Lagna lord graces the 9th house of fortune (Bhagya Bhava), an unbroken Maha Bhagya Yoga is consecrated. Divine grace shields you in every crisis; mentors, pilgrimage travels, righteous conduct, and institutional honors crown your life path.',
+    hi: 'नवम भाव में लग्नेश का विराजना महाभाग्य योग का निर्माण करता है। ईश्वरीय कृपा सदैव आपके साथ रहेगी। पिता, गुरुजनों के आशीर्वाद एवं धर्मपरायण आचरण से आप समाज में उच्च सम्मान प्राप्त करेंगे।',
+  },
+  10: {
+    headlineEn: 'Executive Command, Vocational Zenith & Unshakeable Stature',
+    headlineHi: 'दशम भाव स्थित लग्नेश: सर्वोच्च कर्म योग, प्रशासनिक अधिकार व अखंड प्रतिष्ठा',
+    en: 'Occupying the 10th house of career (Karma Bhava), your Lagna lord creates a premier Raja Yoga. You are born for executive command, institutional leadership, and prominent vocational stature. Your deeds leave an enduring societal footprint.',
+    hi: 'दशम भाव में लग्नेश का स्थित होना जातक को कार्यक्षेत्र में सर्वोच्च शिखर पर पहुंचाता है। आप प्रशासनिक अधिकार, उच्च प्रबंधकीय दायित्व और सार्वजनिक जीवन में अखंड ख्याति के स्वामी होंगे।',
+  },
+  11: {
+    headlineEn: 'Compounding Inflows, Prestigious Circles & Realized Ambitions',
+    headlineHi: 'एकादश भाव स्थित लग्नेश: अखंड लाभ योग, प्रतिष्ठित मित्र व मनोरथ सिद्धि',
+    en: 'Stationed in the 11th house of gains (Labha Bhava), your Lagna lord assures that your ambitions systematically translate into material abundance. You enjoy compounding cash inflows, patronage from elite social networks, and lifelong financial security.',
+    hi: 'एकादश भाव में लग्नेश की स्थिति अखंड लाभ योग बनाती है। आपके सभी उचित मनोरथ सिद्ध होंगे। व्यापार, निवेश एवं उच्चवर्गीय मित्रों के सहयोग से निरंतर धन का आगमन होता रहेगा।',
+  },
+  12: {
+    headlineEn: 'Global Horizons, Spiritual Nobility & Transcendent Vision',
+    headlineHi: 'द्वादश भाव स्थित लग्नेश: विदेश में भाग्योदय, आध्यात्मिक चेतना व मोक्ष मार्ग',
+    en: 'Placed in the 12th house (Moksha Bhava), your Lagna lord directs your vital energy toward foreign lands, distant institutions, research sanctuaries, or philanthropic enterprises. You possess a naturally detached wisdom that looks beyond worldly illusion.',
+    hi: 'द्वादश भाव में लग्नेश का होना विदेश यात्राओं, दूरस्थ देशों में सफलता एवं आध्यात्मिक ज्ञान का मार्ग प्रशस्त करता है। आप दान-पुण्य में अग्रणी रहेंगे और एकांत में गहन अध्ययन/साधना द्वारा सिद्धि पाएंगे।',
+  },
+};
+
 export function generateAscendantPrediction(
   chart: ChartData,
   selectedSignIndex?: number
@@ -481,24 +559,26 @@ export function generateAscendantPrediction(
   const lagnaOccupants = chart.planets.filter((p) => p.rasiHouseNumber === 1);
   const occNamesHi = lagnaOccupants.length
     ? lagnaOccupants.map((p) => p.id).join(', ')
-    : 'कोई ग्रह स्थित नहीं है (निर्दोष)';
+    : 'कोई ग्रह स्थित नहीं है (निर्दोष व शांत)';
   const occNamesEn = lagnaOccupants.length
     ? lagnaOccupants.map((p) => p.id).join(', ')
-    : 'None (Lagna is unoccupied)';
+    : 'None (Lagna is tranquil and unblemished)';
+
+  const lordProphecy = LAGNESHA_HOUSE_PROPHECY[lordHouse] || LAGNESHA_HOUSE_PROPHECY[1];
 
   const lagnaLordPlacementSummaryHi = lordPos
-    ? `लग्नेश ${lordId} कुंडली के भाव ${lordHouse} में ${lordDignity} स्थिति में विराजमान हैं। यह स्थिति जातक के आत्मबल, जीवन ऊर्जा एवं समग्र भाग्योदय की मुख्य आधारशिला है।`
-    : `लग्नेश ${lordId} की स्थिति अनुकूल है।`;
+    ? `लग्नेश ${lordId} कुंडली के भाव ${lordHouse} में ${lordDignity} अवस्था में विराजमान होकर ${lordProphecy.headlineHi} का निर्माण कर रहे हैं। ${lordProphecy.hi}`
+    : `लग्नेश ${lordId} की स्थिति आपके व्यक्तित्व को सुदृढ़ आधार प्रदान करती है।`;
 
   const lagnaLordPlacementSummaryEn = lordPos
-    ? `Lagna lord ${lordId} is positioned in House ${lordHouse} with ${lordDignity} dignity, forming the vital pillar of personal agency, vitality, and lifelong stature.`
-    : `Lagna lord ${lordId} is harmoniously placed.`;
+    ? `Your Lagna lord ${lordId} resides in your ${lordHouse} House with ${lordDignity} dignity, creating the ${lordProphecy.headlineEn}. ${lordProphecy.en}`
+    : `Lagna lord ${lordId} provides a solid, supportive foundation for your personal agency.`;
 
   const occupantsSummaryHi = `लग्न भाव में स्थित ग्रह: ${occNamesHi}।`;
   const occupantsSummaryEn = `Lagna occupants: ${occNamesEn}.`;
 
-  const natalSynthesisHi = `जातक का जन्म ${profile.nameHi} में हुआ है। लग्न अंश ${ascPos.dms} पर ${ascNak.name} नक्षत्र (पाद ${ascPos.pada}) के अंतर्गत उदित है। ${lagnaLordPlacementSummaryHi} ${occupantsSummaryHi}`;
-  const natalSynthesisEn = `The native was born with ${profile.nameEn}. The Ascendant is rising at ${ascPos.dms} in ${ascNak.name} Nakshatra (Pada ${ascPos.pada}). ${lagnaLordPlacementSummaryEn} ${occupantsSummaryEn}`;
+  const natalSynthesisHi = `आप ${profile.nameHi} के अंतर्गत जन्म ले चुके हैं। आपका लग्न ${ascPos.dms} पर ${ascNak.name} नक्षत्र (पाद ${ascPos.pada}) में उदित हुआ है। ${lagnaLordPlacementSummaryHi} ${occupantsSummaryHi}`;
+  const natalSynthesisEn = `You are born with ${profile.nameEn}. Your Ascendant is rising at ${ascPos.dms} in ${ascNak.name} Nakshatra (Pada ${ascPos.pada}). ${lagnaLordPlacementSummaryEn} ${occupantsSummaryEn}`;
 
   return {
     nativeLagnaIndex,

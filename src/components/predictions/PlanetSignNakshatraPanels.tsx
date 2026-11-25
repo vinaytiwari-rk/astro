@@ -189,11 +189,23 @@ export const PlanetInNakshatraPanel: React.FC<{ items: PlanetInNakshatraPredicti
             <article key={item.planet} className="placement-card">
               <div className="placement-card-top">
                 <div>
-                  <strong>
-                    {trPlanet(item.planet, lang)} —{' '}
-                    {isHi ? item.nakshatraNameHi : item.nakshatraNameEn} ({isHi ? 'चरण' : 'Pada'}{' '}
-                    {item.pada})
-                  </strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                    {item.planet === 'Moon' && (
+                      <span className="badge badge-accent" style={{ fontWeight: 700, fontSize: '11px' }}>
+                        {isHi ? '★ जन्म नक्षत्र (Janma Nakshatra)' : '★ Birth Star (Janma Nakshatra)'}
+                      </span>
+                    )}
+                    {item.planet === 'Asc' && (
+                      <span className="badge badge-subtle" style={{ fontWeight: 700, fontSize: '11px' }}>
+                        {isHi ? '★ लग्न नक्षत्र (Rising Star)' : '★ Ascendant Star'}
+                      </span>
+                    )}
+                    <strong>
+                      {trPlanet(item.planet, lang)} —{' '}
+                      {isHi ? item.nakshatraNameHi : item.nakshatraNameEn} ({isHi ? 'चरण' : 'Pada'}{' '}
+                      {item.pada})
+                    </strong>
+                  </div>
                   <div className="muted small-text">
                     {isHi ? 'नक्षत्रेश:' : 'Lord:'} {trPlanet(item.nakshatraLord, lang)} ·{' '}
                     {isHi ? 'देवता:' : 'Deity:'} {isHi ? item.deityHi : item.deityEn}

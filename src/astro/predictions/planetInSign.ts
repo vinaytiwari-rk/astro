@@ -240,6 +240,12 @@ function getRemedyDirective(planet: PredictionBodyId): { en: string; hi: string 
   return REMEDIES[planet] || REMEDIES.Sun;
 }
 
+function getOrdinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetInSignPrediction {
   const pId = body.id as PredictionBodyId;
   const sInfo = SIGNS[body.signIndex];
@@ -250,21 +256,22 @@ function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetI
   const fruition = computeFruitionMilestone(pId, sInfo.index);
   const saravali = getSaravaliSutra(pId, sInfo.index);
   const remedy = getRemedyDirective(pId);
+  const ordHouse = getOrdinal(body.rasiHouseNumber);
 
   const headlineEn = special
     ? special.headlineEn
-    : `${pId === 'Asc' ? 'Ascendant' : pId} in ${sInfo.name} (${sInfo.element}) — H${body.rasiHouseNumber}`;
+    : `${pId === 'Asc' ? 'Ascendant' : pId} in ${sInfo.name} (${sInfo.element}) — ${ordHouse} House`;
   const headlineHi = special
     ? special.headlineHi
     : `${sHi} राशि में ${pId === 'Asc' ? 'लग्न' : pId === 'Sun' ? 'सूर्य' : pId === 'Moon' ? 'चंद्र' : pId === 'Mars' ? 'मंगल' : pId === 'Mercury' ? 'बुध' : pId === 'Jupiter' ? 'गुरु' : pId === 'Venus' ? 'शुक्र' : pId === 'Saturn' ? 'शनि' : pId === 'Rahu' ? 'राहु' : 'केतु'} (${body.rasiHouseNumber}वां भाव)`;
 
   const readingEn = special
-    ? `${special.noteEn} Positioned in House ${body.rasiHouseNumber}, this shapes ${arch.domainEn} with ${flav.qualityEn} energy and ${flav.toneEn}. Primary activation around age ${fruition.age} years.`
-    : `In ${sInfo.name} (${sInfo.element} element) and the ${body.rasiHouseNumber}th house, ${arch.en.toLowerCase()} operates with ${flav.qualityEn} dynamics — excelling through ${flav.toneEn}. Notable fruitional peak at age ${fruition.age} (${fruition.decade}).`;
+    ? `${special.noteEn} Positioned in your ${ordHouse} House, this governs your ${arch.domainEn} through ${flav.qualityEn} agency and ${flav.toneEn}. Prime life fruition milestone activates around age ${fruition.age} years.`
+    : `In your chart, ${pId === 'Asc' ? 'Ascendant' : pId} occupies ${sInfo.name} (${sInfo.element} element) in your ${ordHouse} House. Under classical Parashari and Saravali dictums, this shapes your ${arch.domainEn} through ${flav.qualityEn} energy, conferring success through ${flav.toneEn}. Major life fruition peaks around age ${fruition.age} (${fruition.decade}).`;
 
   const readingHi = special
-    ? `${special.noteHi} ${body.rasiHouseNumber}वें भाव में स्थित होकर यह ${arch.domainHi} को ${flav.qualityHi} ऊर्जा व ${flav.toneHi} से सशक्त करता है। मुख्य फलोदय आयु: ${fruition.age} वर्ष।`
-    : `${sHi} राशि (${ELEMENT_HI[sInfo.element]}) एवं ${body.rasiHouseNumber}वें भाव में स्थिति दर्शाती है कि आपका ${arch.domainHi} ${flav.qualityHi} शैली से कार्य करता है — विशेष लाभ ${flav.toneHi} से मिलता है। फल वृद्धि आयु: ${fruition.age} वर्ष (${fruition.decade})।`;
+    ? `${special.noteHi} आपके ${body.rasiHouseNumber}वें भाव में स्थित होकर यह ग्रह आपके ${arch.domainHi} को ${flav.qualityHi} ऊर्जा व ${flav.toneHi} से सुदृढ़ करता है। मुख्य फलोदय आयु: ${fruition.age} वर्ष।`
+    : `आपकी कुंडली में ${pId === 'Asc' ? 'लग्न' : pId === 'Sun' ? 'सूर्य' : pId === 'Moon' ? 'चंद्र' : pId === 'Mars' ? 'मंगल' : pId === 'Mercury' ? 'बुध' : pId === 'Jupiter' ? 'गुरु' : pId === 'Venus' ? 'शुक्र' : pId === 'Saturn' ? 'शनि' : pId === 'Rahu' ? 'राहु' : 'केतु'} ${sHi} राशि (${ELEMENT_HI[sInfo.element]}) एवं आपके ${body.rasiHouseNumber}वें भाव में विराजमान हैं। शास्त्रीय परंपरा अनुसार यह स्थिति आपके ${arch.domainHi} को ${flav.qualityHi} प्रभाव देती है और ${flav.toneHi} द्वारा यश दिलाती है। प्रमुख फलोदय आयु: ${fruition.age} वर्ष (${fruition.decade})।`;
 
   const positiveEn = `${flav.toneEn.charAt(0).toUpperCase() + flav.toneEn.slice(1)}${body.isVargottama ? '; Vargottama alignment multiplies stability' : ''}.`;
   const positiveHi = `${flav.toneHi}${body.isVargottama ? ' (वर्गोत्तम होने से फल अत्यंत सुदृढ़)' : ''}।`;

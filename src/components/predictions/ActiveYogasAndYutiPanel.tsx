@@ -507,6 +507,28 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
                       <strong>{isHi ? 'फलादेश व घटना: ' : 'Phala & Outcome: '}</strong>
                       {isHi ? y.resultHi || y.resultEn : y.resultEn}
                     </p>
+
+                    {/* Dasha Activation & Operational Timing */}
+                    {isFormed && involvedPlanets.length > 0 && (
+                      <div
+                        style={{
+                          margin: '4px 0 6px',
+                          padding: '6px 10px',
+                          background: 'rgba(217, 119, 6, 0.07)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid var(--accent)',
+                          fontSize: '12px',
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        <strong>{isHi ? 'दशा फलोदय काल: ' : 'Dasha Activation Timing: '}</strong>
+                        <span>
+                          {isHi
+                            ? `यह योग मुख्य रूप से ${involvedPlanets.map((p) => trPlanet(p as any, 'hi')).join(' व ')} की महादशा/अंतर्दशा में पूर्ण फल प्रदान करता है।`
+                            : `Fructifies predominantly during Mahadasha or Antardasha of participating planets: ${involvedPlanets.join(', ')}.`}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Metadata Footer */}

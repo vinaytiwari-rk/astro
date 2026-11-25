@@ -238,6 +238,23 @@ function buildOne(
   const role = BODY_ROLE[body.id as PredictionBodyId] ?? BODY_ROLE.Sun;
   const actAges = NAK_ACTIVATION_AGES[nIdx] || [28, 36, 48];
 
+  const isMoonStar = body.id === 'Moon';
+  const isAscStar = body.id === 'Asc';
+
+  let readingEn = '';
+  let readingHi = '';
+
+  if (isMoonStar) {
+    readingEn = `As your sacred Janma Nakshatra (Birth Star), ${nakInfo.name} (Pada ${pada}) forms the bedrock of your psychological wiring, emotional instincts, and karmic destiny. Guarded by divine Deity ${nakInfo.deity} and ruled by ${nakInfo.lord}, your mind naturally channels ${ext.natureEn}. You possess distinct innate abilities in ${ext.vocEn}. In the Navatara scheme, this is your Janma Tara (${tara.en}), activating transformative personal breakthroughs around ages ${actAges.join(', ')}. ${pNu.en}`;
+    readingHi = `आपके जन्म नक्षत्र (चंद्र नक्षत्र) के रूप में ${NAK_HI[nIdx]} (चरण ${pada}) आपकी मानसिक संरचना, अंतर्ज्ञान व स्वभाव की मूल आधारशिला है। देव ${ext.deityHi} एवं नक्षत्र स्वामी ${nakInfo.lord === 'Sun' ? 'सूर्य' : nakInfo.lord === 'Moon' ? 'चंद्र' : nakInfo.lord === 'Mars' ? 'मंगल' : nakInfo.lord === 'Mercury' ? 'बुध' : nakInfo.lord === 'Jupiter' ? 'गुरु' : nakInfo.lord === 'Venus' ? 'शुक्र' : nakInfo.lord === 'Saturn' ? 'शनि' : nakInfo.lord === 'Rahu' ? 'राहु' : 'केतु'} के प्रभाव से आपका स्वभाव ${ext.natureHi} से युक्त रहेगा। यह आपको ${ext.vocHi} में विशेष सफलता दिलाएगा। नवतारा चक्र में यह आपकी जन्म तारा है, जिसका सर्वाधिक भाग्योदय ${actAges.join(', ')} वर्ष की आयु में सक्रिय होता है। ${pNu.hi}`;
+  } else if (isAscStar) {
+    readingEn = `Your Ascendant rises in the powerful asterism ${nakInfo.name} (Pada ${pada}), ruled by ${nakInfo.lord} under the guardianship of Deity ${nakInfo.deity}. This star infuses your physical vitality, personality aura, and life purpose with ${ext.natureEn}. It strongly favors vocations in ${ext.vocEn}, with key milestone years activating at ages ${actAges.join(', ')}. ${pNu.en}`;
+    readingHi = `आपका जन्म लग्न ${NAK_HI[nIdx]} नक्षत्र (चरण ${pada}) में उदित हुआ है, जिसके अधिपति ${ext.deityHi} हैं। यह नक्षत्र आपके व्यक्तित्व, शारीरिक तेज और जीवन-दिशा को ${ext.natureHi} की दिव्य शक्ति प्रदान करता है। कार्यक्षेत्र में यह ${ext.vocHi} के लिए अत्यधिक अनुकूल है। मुख्य भाग्योदय आयु: ${actAges.join(', ')} वर्ष। ${pNu.hi}`;
+  } else {
+    readingEn = `${body.id} in ${nakInfo.name} Pada ${pada} (ruled by ${nakInfo.lord}, Deity: ${nakInfo.deity}) channels its planetary significations through ${ext.natureEn}. It aligns your ${role.en.toLowerCase()} with success in ${ext.vocEn}. In relationship to your Moon, it functions as ${tara.en}, bringing key fruition milestones at ages ${actAges.join(', ')}. ${pNu.en}`;
+    readingHi = `${body.id === 'Sun' ? 'सूर्य' : body.id === 'Mars' ? 'मंगल' : body.id === 'Mercury' ? 'बुध' : body.id === 'Jupiter' ? 'गुरु' : body.id === 'Venus' ? 'शुक्र' : body.id === 'Saturn' ? 'शनि' : body.id === 'Rahu' ? 'राहु' : 'केतु'} का ${NAK_HI[nIdx]} नक्षत्र (चरण ${pada}, देवता: ${ext.deityHi}) में स्थित होना आपके ${role.hi} को ${ext.natureHi} से जोड़ता है। यह ${ext.vocHi} में विशेष योग्यता प्रदान करता है। चंद्र से तारा संबंध: ${tara.hi}। सक्रियता आयु: ${actAges.join(', ')} वर्ष। ${pNu.hi}`;
+  }
+
   return {
     planet: body.id as PredictionBodyId,
     nakshatraIndex: nIdx,
@@ -260,8 +277,8 @@ function buildOne(
     taraTimingHi: tara.timingHi,
     padaNuanceEn: pNu.en,
     padaNuanceHi: pNu.hi,
-    readingEn: `${body.id === 'Asc' ? 'Ascendant' : body.id} in ${nakInfo.name} Pada ${pada} (ruled by ${nakInfo.lord}, Deity: ${nakInfo.deity}) infuses your ${role.en.toLowerCase()} with ${ext.natureEn}. Key activation ages: ${actAges.join(', ')} years. Relation to Moon Nakshatra: ${tara.en}.`,
-    readingHi: `${NAK_HI[nIdx]} नक्षत्र के चरण ${pada} (स्वामी: ${nakInfo.lord === 'Sun' ? 'सूर्य' : nakInfo.lord === 'Moon' ? 'चंद्र' : nakInfo.lord === 'Mars' ? 'मंगल' : nakInfo.lord === 'Mercury' ? 'बुध' : nakInfo.lord === 'Jupiter' ? 'गुरु' : nakInfo.lord === 'Venus' ? 'शुक्र' : nakInfo.lord === 'Saturn' ? 'शनि' : nakInfo.lord === 'Rahu' ? 'राहु' : 'केतु'}, देवता: ${ext.deityHi}) में स्थित होकर यह ग्रह ${role.hi} को ${ext.natureHi} से जोड़ता है। सक्रियता आयु: ${actAges.join(', ')} वर्ष। जन्म चंद्र से तारा: ${tara.hi}।`,
+    readingEn,
+    readingHi,
     vocationEn: ext.vocEn,
     vocationHi: ext.vocHi,
     classicalSutraEn: sutra.en,

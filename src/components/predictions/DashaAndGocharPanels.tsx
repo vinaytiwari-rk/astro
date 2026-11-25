@@ -18,6 +18,10 @@ import {
   getAifasYoginiSub,
 } from '../../astro/predictions/aifasYoginiDashaKb';
 import { predictDashaDetail } from '../../astro/predictions/dashaPrashna';
+import {
+  computePropheticDashaEvents,
+  computePropheticTransitRoadmap,
+} from '../../astro/predictions/propheticDashaGochar';
 import type { PredictionReport } from '../../astro/predictions/types';
 import { formatDateDmy, formatLocalDateTimeFromUtc } from '../../astro/time';
 import type { ChartData, ChartStyle } from '../../astro/types';
@@ -35,6 +39,12 @@ export const DashaWisePanel: React.FC<{
 
   const [dashaTab, setDashaTab] = useState<'vimshottari' | 'yogini' | 'other'>('vimshottari');
   const [selectedYoginiFilter, setSelectedYoginiFilter] = useState<string>('Mangala');
+
+  // --- Dynamic Prophetic Vimshottari Event Synthesis ---
+  const propheticDasha = useMemo(
+    () => computePropheticDashaEvents(chart, report.dashaForecast),
+    [chart, report.dashaForecast]
+  );
 
   // --- Vimshottari Mahadasha Lifeline ---
   const allMahadashaCards = useMemo(() => {
@@ -236,38 +246,41 @@ export const DashaWisePanel: React.FC<{
                 </div>
               )}
 
-              {/* Concrete Events in Current Running Dasha */}
-              <div style={{ margin: '12px 0', padding: '12px 14px', background: 'var(--bg-subtle)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13px', color: 'var(--accent)', marginBottom: '8px' }}>
-                  <Sparkles size={14} />
-                  <span>{isHi ? 'वर्तमान दशा काल में संभावित निश्चित घटनाएं:' : 'Concrete Event Manifestations in Current Period:'}</span>
+              {/* Concrete Events in Current Running Dasha — Dynamic Prophetic Forecast */}
+              <div style={{ margin: '12px 0', padding: '14px 16px', background: 'var(--bg-subtle)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
+                    <Sparkles size={15} />
+                    <span>{isHi ? 'वर्तमान दशा काल में संभावित निश्चित घटनाएं:' : 'Concrete Event Manifestations in Current Period:'}</span>
+                  </div>
+                  <span className="badge badge-accent mono" style={{ fontSize: '11px', padding: '3px 8px' }}>
+                    {isHi ? `दशा सामर्थ्य: ${propheticDasha.auspiciousScore}%` : `Dasha Index: ${propheticDasha.auspiciousScore}%`}
+                  </span>
                 </div>
-                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', lineHeight: 1.55 }}>
+                
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--text)', marginBottom: '10px', lineHeight: 1.45 }}>
+                  {isHi ? propheticDasha.headlineHi : propheticDasha.headlineEn}
+                </div>
+
+                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', lineHeight: 1.6, display: 'grid', gap: '8px' }}>
                   <li>
-                    <strong>{isHi ? 'करियर व आजीविका: ' : 'Career & Authority: '}</strong>
-                    <span>
-                      {isHi
-                        ? `${trPlanet(report.dashaForecast.mahadashaLord, lang)} महादशा में ${trPlanet(report.dashaForecast.antardashaLord, lang)} की अंतर्दशा कार्यक्षेत्र में पदोन्नति, दायित्व वृद्धि अथवा नए व्यावसायिक अनुबंधों का मार्ग प्रशस्त करेगी।`
-                        : `Promotion, heightened executive responsibilities, and strategic business contracts under ${report.dashaForecast.mahadashaLord}-${report.dashaForecast.antardashaLord}.`}
-                    </span>
+                    <strong>{isHi ? 'करियर, प्रतिष्ठा व आजीविका: ' : 'Career & Authority: '}</strong>
+                    <span>{isHi ? propheticDasha.careerEventHi : propheticDasha.careerEventEn}</span>
                   </li>
                   <li>
-                    <strong>{isHi ? 'आर्थिक लाभ व संपत्ति: ' : 'Wealth & Assets: '}</strong>
-                    <span>
-                      {isHi
-                        ? 'संचित धन में वृद्धि, नवीन अचल संपत्ति अथवा वाहन क्रय के अनुकूल अवसर निर्मित होंगे; अनावश्यक जोखिम से बचें।'
-                        : 'Capital accumulation, opportunities for real estate/vehicle purchase, and expansion of liquidity.'}
-                    </span>
+                    <strong>{isHi ? 'आर्थिक लाभ, कोष व संपत्ति: ' : 'Wealth & Assets: '}</strong>
+                    <span>{isHi ? propheticDasha.wealthEventHi : propheticDasha.wealthEventEn}</span>
                   </li>
                   <li>
-                    <strong>{isHi ? 'पारिवारिक व स्वास्थ्य सतर्कता: ' : 'Family & Health Care: '}</strong>
-                    <span>
-                      {isHi
-                        ? 'पारिवारिक मांगलिक कार्य संपन्न होंगे; खान-पान व नियमित दिनचर्या पर ध्यान देकर मौसमी व पित्त विकारों से बचाव रखें।'
-                        : 'Auspicious domestic celebrations; preventive lifestyle discipline required to manage metabolic stress.'}
-                    </span>
+                    <strong>{isHi ? 'स्वास्थ्य, परिवार व मानसिक शांति: ' : 'Family, Health & Mind: '}</strong>
+                    <span>{isHi ? propheticDasha.healthFamilyEventHi : propheticDasha.healthFamilyEventEn}</span>
                   </li>
                 </ul>
+
+                <div style={{ marginTop: '12px', padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.5, borderLeft: '3px solid var(--accent)' }}>
+                  <strong>{isHi ? 'दशा शमन व सिद्धि उपाय: ' : 'Dasha Harmonization Directive: '}</strong>
+                  <span>{isHi ? propheticDasha.dashaActionPlanHi : propheticDasha.dashaActionPlanEn}</span>
+                </div>
               </div>
 
               <div className="pred-bullets">
@@ -665,6 +678,11 @@ export const GocharWisePanel: React.FC<{
   const natalMoonSign = chart.planets.find((p) => p.id === 'Moon')!.signIndex;
   const refSign = gocharRef === 'moon' ? natalMoonSign : chart.ascendant.signIndex;
 
+  const propheticTransit = useMemo(
+    () => computePropheticTransitRoadmap(chart, report.deepGochar, report.transitForecast),
+    [chart, report.deepGochar, report.transitForecast]
+  );
+
   return (
     <div className="view-stack">
       <div className="varga-focus-grid">
@@ -726,29 +744,38 @@ export const GocharWisePanel: React.FC<{
           </div>
 
           <div className="gochar-highlights">
-            {/* 12-24 Month Transit Roadmap */}
-            <div style={{ padding: '12px 14px', background: 'var(--bg-elevated)', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)', marginBottom: '6px' }}>
-                <Sparkles size={15} />
-                <span>{isHi ? 'आगामी 12 से 24 माह का गोचर रोडमैप (2026-2027 Transit Predictions):' : 'Next 12–24 Months Transit Roadmap (2026–2027):'}</span>
+            {/* 12-24 Month Transit Roadmap — Dynamic Prophetic Forecast */}
+            <div style={{ padding: '14px 16px', background: 'var(--bg-elevated)', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
+                  <Sparkles size={15} />
+                  <span>{isHi ? 'आगामी 12 से 24 माह का गोचर रोडमैप (2026-2027 Transit Predictions):' : 'Next 12–24 Months Transit Roadmap (2026–2027):'}</span>
+                </div>
+                <span className="badge badge-accent mono" style={{ fontSize: '11px', padding: '3px 8px' }}>
+                  {isHi ? 'प्रामाणिक फलदीपिका गोचर' : 'Phaladeepika Gochar'}
+                </span>
               </div>
-              <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: 1.5 }}>
-                {isHi
-                  ? 'वर्तमान कालखंड में देवगुरु बृहस्पति का गोचर ज्ञान, संतान व आर्थिक विस्तार के नए द्वार खोलेगा, जबकि शनि का गोचर कर्मक्षेत्र में अनुशासन व ठोस परिश्रम की मांग करेगा। राहु-केतु अक्ष अप्रत्याशित यात्राओं व नवाचार को प्रेरित करेगा।'
-                  : 'Jupiter transit expands intellectual pursuits and wealth creation, while Saturn demands disciplined perseverance. Rahu-Ketu triggers unconventional ventures and long-distance travel.'}
+
+              <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--text)', marginBottom: '8px' }}>
+                {isHi ? propheticTransit.headlineHi : propheticTransit.headlineEn}
+              </div>
+
+              <p style={{ margin: '0 0 10px', fontSize: '13px', lineHeight: 1.6, color: 'var(--text)' }}>
+                {isHi ? propheticTransit.overallNarrativeHi : propheticTransit.overallNarrativeEn}
               </p>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', fontSize: '12.5px' }}>
-                <div style={{ padding: '6px 10px', background: 'rgba(5, 150, 105, 0.08)', borderRadius: '6px', borderLeft: '3px solid #059669' }}>
-                  <strong>{isHi ? 'गुरु कृपा: ' : 'Jupiter: '}</strong>
-                  <span>{isHi ? 'आर्थिक लाभ व पदोन्नति अवसर' : 'Financial gains & promotion'}</span>
+                <div style={{ padding: '8px 10px', background: 'rgba(5, 150, 105, 0.08)', borderRadius: '6px', borderLeft: '3px solid #059669' }}>
+                  <strong>{isHi ? 'बृहस्पति प्रभाव: ' : 'Jupiter Transit: '}</strong>
+                  <span>{isHi ? propheticTransit.jupiterProphecyHi : propheticTransit.jupiterProphecyEn}</span>
                 </div>
-                <div style={{ padding: '6px 10px', background: 'rgba(217, 119, 6, 0.08)', borderRadius: '6px', borderLeft: '3px solid var(--accent)' }}>
-                  <strong>{isHi ? 'शनि प्रभाव: ' : 'Saturn: '}</strong>
-                  <span>{isHi ? 'स्थिर निर्माण व धैर्य की परीक्षा' : 'Structure & patience test'}</span>
+                <div style={{ padding: '8px 10px', background: 'rgba(217, 119, 6, 0.08)', borderRadius: '6px', borderLeft: '3px solid var(--accent)' }}>
+                  <strong>{isHi ? 'शनिदेव प्रभाव: ' : 'Saturn Transit: '}</strong>
+                  <span>{isHi ? propheticTransit.saturnProphecyHi : propheticTransit.saturnProphecyEn}</span>
                 </div>
-                <div style={{ padding: '6px 10px', background: 'rgba(37, 99, 235, 0.08)', borderRadius: '6px', borderLeft: '3px solid #2563eb' }}>
-                  <strong>{isHi ? 'राहु-केतु: ' : 'Rahu-Ketu: '}</strong>
-                  <span>{isHi ? 'आकस्मिक यात्रा व स्थान परिवर्तन' : 'Travel & unexpected shifts'}</span>
+                <div style={{ padding: '8px 10px', background: 'rgba(37, 99, 235, 0.08)', borderRadius: '6px', borderLeft: '3px solid #2563eb' }}>
+                  <strong>{isHi ? 'राहु-केतु अक्ष: ' : 'Rahu-Ketu Axis: '}</strong>
+                  <span>{isHi ? propheticTransit.rahuKetuProphecyHi : propheticTransit.rahuKetuProphecyEn}</span>
                 </div>
               </div>
             </div>
