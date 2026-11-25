@@ -287,8 +287,8 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 
           {/* Quick Feature Pills Bar */}
           <div className="oj-quick-pills-row">
-            <button type="button" className="oj-link-pill" onClick={() => onNavigate('general-prediction')}>
-              {isHi ? 'सामान्य फलादेश' : 'General Prediction'}
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('daily-rashifal')}>
+              {isHi ? 'दैनिक राशिफल (Rashifal)' : 'Daily Rashifal'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('vedic-horoscope')}>
               {isHi ? 'जन्म कुंडली (Kundli)' : 'Birth chart (Kundli)'}
