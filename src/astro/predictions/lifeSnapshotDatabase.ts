@@ -2739,6 +2739,78 @@ export function getIntimacyAndYoniHarmonyAnalysis(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 5 ADDON: PARENT-CHILD DYNAMICS, 5TH FLAVOR & CHOSEN PARENTHOOD
+// -----------------------------------------------------------------------------
+
+export interface ParentChildDynamicsResult {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+  pacEn: string;
+  pacHi: string;
+}
+
+export function getParentChildDynamicsAndAdoption(
+  planets: PlanetPos[],
+  h5: HousePacProfile,
+  h9: HousePacProfile,
+  d7?: DivisionalChart
+): ParentChildDynamicsResult {
+  const sun = planets.find((p) => p.id === 'Sun');
+  const moon = planets.find((p) => p.id === 'Moon');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const mercury = planets.find((p) => p.id === 'Mercury');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+
+  const childTraitMap: Record<GrahaKey, { en: string; hi: string }> = {
+    Sun: { en: 'Confident, principled & leadership-oriented children', hi: 'आत्मविश्वासी, सिद्धांतवादी व नेतृत्व-क्षमता युक्त संतान' },
+    Moon: { en: 'Emotionally sensitive, caring & imaginative children', hi: 'संवेदनशील, स्नेहमयी व कल्पनाशील संतान' },
+    Mars: { en: 'Active, energetic, athletic & assertive children', hi: 'ऊर्जावान, सक्रिय, साहसी व खेल/कर्म-प्रधान संतान' },
+    Mercury: { en: 'Bright, articulate, curious & analytically gifted children', hi: 'मेधावी, वाक्पटु, जिज्ञासु व बौद्धिक प्रतिभा से युक्त संतान' },
+    Jupiter: { en: 'Wise, ethical, scholarly & dharmic children', hi: 'ज्ञानी, नैतिक, विद्याप्रेमी व संस्कारवान संतान' },
+    Venus: { en: 'Artistic, graceful, warm & comfort-loving children', hi: 'कलाप्रिय, सौम्य, स्नेही व सृजनशील संतान' },
+    Saturn: { en: 'Mature, disciplined, responsible & steady-achieving children', hi: 'परिपक्व, अनुशासित, कर्तव्यनिष्ठ व धैर्यशील संतान' },
+    Rahu: { en: 'Unconventional, tech-savvy & independent-minded children', hi: 'आधुनिक विचारों वाली, तकनीक-कुशल व स्वतंत्र चेता संतान' },
+    Ketu: { en: 'Reflective, spiritually perceptive & research-minded children', hi: 'गंभीर, आध्यात्मिक अंतर्दृष्टि व शोध-प्रवृत्ति वाली संतान' },
+  };
+  const primaryChildTrait = childTraitMap[h5.dominantGraha] ?? childTraitMap.Jupiter;
+
+  const d7Occ5 = d7?.placements.filter((p) => p.houseFromVargaLagna === 5 && p.id !== 'Asc') ?? [];
+  const d7Occ9 = d7?.placements.filter((p) => p.houseFromVargaLagna === 9 && p.id !== 'Asc') ?? [];
+
+  const chosenAdoptionSignal =
+    (rahu && rahu.placedHouse === 5) ||
+    (saturn && mercury && (saturn.placedHouse === 5 || mercury.placedHouse === 5) && h5.tier === 'afflicted');
+  const paternalNoteEn = sun && ![6, 8, 12].includes(sun.placedHouse)
+    ? 'Sun supports steady paternal guidance and moral mentorship.'
+    : 'Sun advises patient, non-authoritarian communication from the paternal side.';
+  const paternalNoteHi = sun && ![6, 8, 12].includes(sun.placedHouse)
+    ? 'सूर्य पिता की ओर से सशक्त मार्गदर्शन व नैतिक संबल दर्शाते हैं।'
+    : 'सूर्य की स्थिति पिता-संतान संवाद में धैर्य व कोमलता रखने की सलाह देती है।';
+
+  const maternalNoteEn = moon && moon.dignity !== 'Debilitated'
+    ? 'Moon nurtures strong emotional warmth and maternal bonding.'
+    : 'Moon advises calm emotional reassurance in parenting.';
+  const maternalNoteHi = moon && moon.dignity !== 'Debilitated'
+    ? 'चंद्र माता की ओर से गहन ममता व भावनात्मक जुड़ाव देता है।'
+    : 'चंद्र की स्थिति पालन-पोषण में मानसिक शांति व धैर्य बनाए रखने का संकेत देती है।';
+
+  return {
+    valEn: `${primaryChildTrait.en}${chosenAdoptionSignal ? ' | Open to Chosen Parenthood / Adoption' : ''}`,
+    valHi: `${primaryChildTrait.hi}${chosenAdoptionSignal ? ' | दत्तक/विस्तारित मातृत्व-पितृत्व की भी शुभ संभावना' : ''}`,
+    explEn: `5th house (${h5.signName}, dominant ${h5.dominantGraha}) and 9th house (${h9.signName}) shape parent-child rapport. ${paternalNoteEn} ${maternalNoteEn} ${d7Occ5.length > 0 || d7Occ9.length > 0 ? `D7 5th/9th houses hold ${[...d7Occ5, ...d7Occ9].map((p) => p.id).join(', ')}, refining child personality.` : ''} ${chosenAdoptionSignal ? 'Rahu/Saturn-Mercury patterns in the 5th also harmonize well with adoption or mentoring children.' : ''}`,
+    explHi: `पंचम भाव (${h5.signName}) व नवम भाव (${h9.signName}) माता-पिता और संतान के आपसी संबंध तय करते हैं। ${paternalNoteHi} ${maternalNoteHi} ${chosenAdoptionSignal ? 'पंचम में राहु/शनि-बुध संयोग दत्तक संतान या संरक्षण-भाव से भी उत्तम सुख देता है।' : ''}`,
+    pacEn: `H5 Dominant: ${h5.dominantGraha}; Sun H${sun?.placedHouse}, Moon H${moon?.placedHouse}, Mars H${mars?.placedHouse}, Jupiter H${jupiter?.placedHouse}, Venus H${venus?.placedHouse}.`,
+    pacHi: `पंचम प्रमुख: ${h5.dominantGraha}; सूर्य भाव ${sun?.placedHouse}, चंद्र भाव ${moon?.placedHouse}, गुरु भाव ${jupiter?.placedHouse}।`,
+  };
+}
+
+
 
 
 

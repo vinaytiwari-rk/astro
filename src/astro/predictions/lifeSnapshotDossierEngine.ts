@@ -43,6 +43,7 @@ import {
   getFirstImpressionAndConjunctionInsights,
   getUpapadaAndMarriageDeepDive,
   getIntimacyAndYoniHarmonyAnalysis,
+  getParentChildDynamicsAndAdoption,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -1727,6 +1728,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: santanDet.badhaAndRemedies.pacHi,
           shastricRef: 'Phaladeepika (Ch. 12), Harivamsha Purana, Santan Gopal Stotra',
           vargaRef: 'D1 & D7',
+        },
+        {
+          id: 'attr_parent_child_dynamics_adoption',
+          category: 'children',
+          titleEn: 'Parent-Child Dynamics, 5th Planetary Flavor & Adoption',
+          titleHi: 'माता-पिता व संतान संबंध, स्वभाव एवं दत्तक विचार',
+          valueEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).valEn,
+          valueHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).valHi,
+          explanationEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).explEn,
+          explanationHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).explHi,
+          pacBasisEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).pacEn,
+          pacBasisHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).pacHi,
+          shastricRef: 'BPHS (5th/9th), Sun/Moon Parental Karakas & D7 Saptamsha',
+          vargaRef: 'D1 & D7 Saptamsha',
         },
       ],
     });
