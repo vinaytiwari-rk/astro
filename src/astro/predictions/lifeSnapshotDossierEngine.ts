@@ -47,6 +47,7 @@ import {
   getJanmaNakshatraClassification,
   getFinancialInvestmentTemperament,
   getVastuPanchaMahabhutaAndRemedies,
+  getMarriageLongevityAndMultiUnionAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -1198,6 +1199,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const d9H7Sign = (d9LagnaSign + 6) % 12;
     const ulMarriageRes = getUpapadaAndMarriageDeepDive(planets, ascSignIdx, h7Prof, h12Prof, d9);
     const yoniIntimacyRes = getIntimacyAndYoniHarmonyAnalysis(planets, h5Prof, h7Prof, h8Prof, h12Prof);
+    const multiDivorceRes = getMarriageLongevityAndMultiUnionAnalysis(planets, h2Prof, h7Prof, h9Prof, h11Prof, d9);
 
     // Direction & Distance
     let directionEn = 'South-East or Southern direction from native birthplace';
@@ -1551,6 +1553,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisEn: ulMarriageRes.d9ResilienceAndUpay.pacEn,
           pacBasisHi: ulMarriageRes.d9ResilienceAndUpay.pacHi,
           shastricRef: 'BPHS, D9 Navamsha Cross-Check & Vedic Upay',
+          vargaRef: 'D1 & D9 Navamsha',
+        },
+        {
+          id: 'attr_multiple_marriage_yog',
+          category: 'spouse',
+          titleEn: 'Multiple Marriage Yog (Dwi/Tri-Vivaha Signals & D9 Check)',
+          titleHi: 'बहु-विवाह / द्वितीय विवाह योग एवं D9 परीक्षण',
+          valueEn: multiDivorceRes.multipleMarriageYog.valEn,
+          valueHi: multiDivorceRes.multipleMarriageYog.valHi,
+          explanationEn: multiDivorceRes.multipleMarriageYog.explEn,
+          explanationHi: multiDivorceRes.multipleMarriageYog.explHi,
+          pacBasisEn: multiDivorceRes.multipleMarriageYog.pacEn,
+          pacBasisHi: multiDivorceRes.multipleMarriageYog.pacHi,
+          shastricRef: 'Phaladeepika, BPHS (Dual Signs & 2nd/7th/9th Axis)',
+          vargaRef: 'D1 & D9 Navamsha',
+        },
+        {
+          id: 'attr_divorce_separation_yog',
+          category: 'spouse',
+          titleEn: 'Divorce / Separation Resilience & Conflict Triggers',
+          titleHi: 'अलगाव / वैचारिक तनाव निदान एवं दांपत्य सुरक्षा',
+          valueEn: multiDivorceRes.divorceSeparationYog.valEn,
+          valueHi: multiDivorceRes.divorceSeparationYog.valHi,
+          explanationEn: multiDivorceRes.divorceSeparationYog.explEn,
+          explanationHi: multiDivorceRes.divorceSeparationYog.explHi,
+          pacBasisEn: multiDivorceRes.divorceSeparationYog.pacEn,
+          pacBasisHi: multiDivorceRes.divorceSeparationYog.pacHi,
+          shastricRef: 'BPHS (6/8/12 Lords, Combustion & Benefic Shield)',
           vargaRef: 'D1 & D9 Navamsha',
         },
       ],

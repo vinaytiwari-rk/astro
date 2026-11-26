@@ -3039,6 +3039,140 @@ export function getVastuPanchaMahabhutaAndRemedies(
   return { panchaMahabhuta, colourAndYogicUpay };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 4 ADDON: MULTIPLE MARRIAGE YOG & DIVORCE / SEPARATION RESILIENCE
+// -----------------------------------------------------------------------------
+
+export interface MultiUnionAndDiscordResult {
+  multipleMarriageYog: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  divorceSeparationYog: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getMarriageLongevityAndMultiUnionAnalysis(
+  planets: PlanetPos[],
+  h2: HousePacProfile,
+  h7: HousePacProfile,
+  h9: HousePacProfile,
+  h11: HousePacProfile,
+  d9?: DivisionalChart
+): MultiUnionAndDiscordResult {
+  const venus = planets.find((p) => p.id === 'Venus');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+  const ketu = planets.find((p) => p.id === 'Ketu');
+  const sun = planets.find((p) => p.id === 'Sun');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+
+  const isDualSign = (sIdx?: number) => sIdx !== undefined && [2, 5, 8, 11].includes(sIdx);
+  const d9Lagna = d9?.lagnaSignIndex ?? 0;
+  const d9H7SignIdx = (d9Lagna + 6) % 12;
+  const l7D9 = d9?.placements.find((pl) => pl.id === h7.lordId);
+
+  // 1. Multiple Marriage Yog checks (requires stacking, never single-factor alarm)
+  let multiScore = 0;
+  const multiSignalsEn: string[] = [];
+  const multiSignalsHi: string[] = [];
+
+  if (isDualSign(h7.signIdx) || isDualSign(h7.lordPlanet?.signIndex)) {
+    multiScore += 1;
+    multiSignalsEn.push('Dual sign on 7th house/lord');
+    multiSignalsHi.push('सप्तम भाव/सप्तमेश में द्विस्वभाव राशि');
+  }
+  if (venus && isDualSign(venus.signIndex) && (venus.isCombust || [6, 8, 12].includes(venus.placedHouse))) {
+    multiScore += 1;
+    multiSignalsEn.push('Strained Venus in dual sign');
+    multiSignalsHi.push('द्विस्वभाव राशि में प्रभावित शुक्र');
+  }
+  if ([6, 8, 12].includes(h7.lordHouse) && (h9.tier === 'strong' || h11.occupants.length >= 2)) {
+    multiScore += 1;
+    multiSignalsEn.push('7th lord in 6/8/12 with strong 9th/11th');
+    multiSignalsHi.push('६/८/१२ में सप्तमेश व बलवान नवम/एकादश');
+  }
+  if (h7.occupants.length >= 2 && h7.occupants.some((p) => ['Rahu', 'Ketu', 'Saturn', 'Mars'].includes(p.id))) {
+    multiScore += 1;
+    multiSignalsEn.push('Multi-planet / nodal cluster in 7th');
+    multiSignalsHi.push('सप्तम में बहु-ग्रह/राहु-केतु प्रभाव');
+  }
+  if (isDualSign(d9H7SignIdx) || (l7D9 && isDualSign(l7D9.signIndex))) {
+    multiScore += 1;
+    multiSignalsEn.push('D9 Navamsha dual-sign echo');
+    multiSignalsHi.push('नवांश D9 में द्विस्वभाव संकेत');
+  }
+
+  const jupShield = jupiter && (h7.aspectors.some((p) => p.id === 'Jupiter') || h7.occupants.some((p) => p.id === 'Jupiter') || (l7D9 && d9?.placements.some((p) => p.id === 'Jupiter' && p.houseFromVargaLagna === 7)));
+
+  let multiValEn = 'Single-Marriage Stability Yoga (Ek-Vivaha): Steady single-partner commitment favored';
+  let multiValHi = 'एक-विवाह स्थायित्व योग: एकनिष्ठ व दीर्घकालिक दांपत्य की प्रबल अनुकूलता';
+  if (multiScore >= 3 && !jupShield) {
+    multiValEn = 'Multiple-Union / Second-Chapter Potential (Dwi-Vivaha Signals): Careful D9 matching & maturity advised';
+    multiValHi = 'द्वि-विवाह / द्वितीय अवसर के शास्त्रीय संकेत: गहन कुंडली मिलान व परिपक्व निर्णय आवश्यक';
+  } else if (multiScore >= 2) {
+    multiValEn = 'Moderate Multiplicity / Relationship Reset Tendency (Mitigated by awareness & matching)';
+    multiValHi = 'मध्यम संबंध-पुनर्विचार संकेत (उचित मिलान व संवाद से एक-विवाह में पूर्ण स्थायित्व)';
+  }
+
+  const multipleMarriageYog = {
+    valEn: multiValEn,
+    valHi: multiValHi,
+    explEn: `${multiSignalsEn.length > 0 ? `Observed factors: ${multiSignalsEn.join('; ')}. ` : 'No heavy multiplicity stack in D1/D9. '}${jupShield ? 'Jupiter’s protective aspect stabilizes single-union longevity.' : 'Free will, honest communication, and proper D9 matching remain decisive.'}`,
+    explHi: `${multiSignalsHi.length > 0 ? `देखे गए कारक: ${multiSignalsHi.join('; ')}। ` : 'D1 व D9 में बहु-विवाह का कोई प्रबल संयोग नहीं है। '}${jupShield ? 'गुरु की शुभ दृष्टि एक-विवाह की रक्षा करती है।' : 'सचेत संवाद व सही कुंडली मिलान से दांपत्य सुदृढ़ रहता है।'}`,
+    pacEn: `H7(${h7.signName}), L7 in H${h7.lordHouse}, D9 H7(${SIGNS[d9H7SignIdx].name}); Score ${multiScore}/5; Jupiter shield: ${Boolean(jupShield)}.`,
+    pacHi: `सप्तम(${h7.signName}), सप्तमेश भाव ${h7.lordHouse}, D9 सप्तम(${SIGNS[d9H7SignIdx].name}); सूचकांक ${multiScore}/5।`,
+  };
+
+  // 2. Divorce / Separation Resilience Yog
+  const discordFlagsEn: string[] = [];
+  const discordFlagsHi: string[] = [];
+
+  if ([6, 8, 12].includes(h7.lordHouse)) {
+    discordFlagsEn.push('7th lord in 6/8/12 (distance or conflict test)');
+    discordFlagsHi.push('६/८/१२ में सप्तमेश (दूरी या वैचारिक परीक्षण)');
+  }
+  if (mars && saturn && (h7.occupants.some((p) => p.id === 'Mars') || h7.aspectors.some((p) => p.id === 'Mars')) && (h7.occupants.some((p) => p.id === 'Saturn') || h7.aspectors.some((p) => p.id === 'Saturn'))) {
+    discordFlagsEn.push('Mars + Saturn dual pressure on 7th axis');
+    discordFlagsHi.push('सप्तम अक्ष पर मंगल-शनि का संयुक्त दबाव');
+  }
+  if (rahu && venus && (rahu.placedHouse === venus.placedHouse || rahu.placedHouse === 7)) {
+    discordFlagsEn.push('Rahu on 7th/Venus (illusion or trust test)');
+    discordFlagsHi.push('सप्तम/शुक्र पर राहु प्रभाव (अपेक्षा व विश्वास परीक्षा)');
+  }
+  if (sun && venus && sun.placedHouse === venus.placedHouse && Math.abs((sun.degreeInSign ?? 0) - (venus.degreeInSign ?? 0)) <= 7.5) {
+    discordFlagsEn.push('Close Sun-Venus combustion (<7.5° ego test)');
+    discordFlagsHi.push('सूर्य-शुक्र निकट अस्त (<7.5° अहं संतुलन परीक्षा)');
+  }
+  if (ketu && (ketu.placedHouse === 7 || (venus && ketu.placedHouse === venus.placedHouse))) {
+    discordFlagsEn.push('Ketu detachment signal on 7th/Venus');
+    discordFlagsHi.push('सप्तम/शुक्र पर केतु का विरक्ति संकेत');
+  }
+  if (h2.tier === 'afflicted' && h7.tier === 'afflicted') {
+    discordFlagsEn.push('2nd & 7th family-speech strain');
+    discordFlagsHi.push('द्वितीय व सप्तम भाव में वाणी/कुटुंब तनाव');
+  }
+
+  let divValEn = 'Low Separation Risk: Harmonious 2nd/7th foundation with strong marital continuity';
+  let divValHi = 'न्यून अलगाव जोखिम: सुदृढ़ द्वितीय/सप्तम भाव व संतुलित दांपत्य निरंतरता';
+  if (discordFlagsEn.length >= 3 && !jupShield) {
+    divValEn = 'High Discord / Separation Vigilance: Requires active counseling, patience & D9 compatibility';
+    divValHi = 'उच्च वैचारिक तनाव/अलगाव सतर्कता: धैर्य, परामर्श व सटीक D9 मिलान अत्यंत आवश्यक';
+  } else if (discordFlagsEn.length >= 1) {
+    divValEn = 'Moderate Adjustment / Friction Signals: Resolvable via open dialogue & benefic remedies';
+    divValHi = 'मध्यम तालमेल परीक्षण: शांत संवाद व ग्रह-शांति उपायों से पूर्णतः समाधान योग्य';
+  }
+
+  const divorceSeparationYog = {
+    valEn: divValEn,
+    valHi: divValHi,
+    explEn: `${discordFlagsEn.length > 0 ? `Triggers flagged: ${discordFlagsEn.join('; ')}. ` : 'No major separation combinations active in D1. '}${jupShield ? 'Strong Jupiter protection significantly softens friction.' : 'Stars show tendencies, never irreversible fate — mutual effort and timely remedies protect the bond.'}`,
+    explHi: `${discordFlagsHi.length > 0 ? `प्रमुख संकेत: ${discordFlagsHi.join('; ')}। ` : 'कुंडली में कोई प्रबल विच्छेद योग सक्रिय नहीं है। '}${jupShield ? 'गुरु की रक्षात्मक दृष्टि तनाव को काफी कम करती है।' : 'ज्योतिष प्रवृत्ति दर्शाता है, अंतिम निर्णय सदैव आपसी प्रयास व धैर्य से तय होता है।'}`,
+    pacEn: `Discord flags: ${discordFlagsEn.length}/6; H2(${h2.tier}), H7(${h7.tier}); Jupiter shield: ${Boolean(jupShield)}.`,
+    pacHi: `तनाव संकेत: ${discordFlagsHi.length}/6; द्वितीय(${h2.tier}), सप्तम(${h7.tier})।`,
+  };
+
+  return { multipleMarriageYog, divorceSeparationYog };
+}
+
+
 
 
 
