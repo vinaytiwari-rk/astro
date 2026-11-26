@@ -132,11 +132,11 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
         {/* Drawer Header */}
         <div className="pro-drawer-header">
           <div className="pro-drawer-brand">
-            <span className="pro-om-symbol">ॐ</span>
+            <img src="/logo.png" alt="AV Astro Vibe" className="app-brand-logo" />
             <div>
               <div className="pro-drawer-title">AV Astro Vibe</div>
               <div className="pro-drawer-sub">
-                {trNav('brandTag', lang)}
+                {isHi ? 'वर्तमान में जिएं · LIVE IN PRESENT' : 'LIVE IN PRESENT'}
               </div>
             </div>
           </div>

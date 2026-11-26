@@ -265,13 +265,11 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
           title={trNav('home', lang)}
           style={{ cursor: 'pointer' }}
         >
-          <span className="dropdown-brand-om" aria-hidden="true">
-            ॐ
-          </span>
+          <img src="/logo.png" alt="AV Astro Vibe" className="app-brand-logo" />
           <div className="dropdown-brand-text">
             <span className="dropdown-brand-name">AV Astro Vibe</span>
             <span className="dropdown-brand-tag">
-              {trNav('brandTag', lang)}
+              {isHi ? 'वर्तमान में जिएं · LIVE IN PRESENT' : 'LIVE IN PRESENT'}
             </span>
           </div>
         </div>

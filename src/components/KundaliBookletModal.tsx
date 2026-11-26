@@ -168,9 +168,10 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
         <div className="booklet-body">
           {/* PAGE 1: Cover, Birth Particulars, Panchang, Avakahada & Ghatak */}
           <div className="booklet-cover">
+            <img src="/logo.png" alt="AV Astro Vibe" className="booklet-logo" />
             <div className="booklet-letterhead">
               <strong>AV Astro Vibe</strong>
-              <span> · Vedic Astrological Systems</span>
+              <span> · LIVE IN PRESENT</span>
               <div className="muted small-text">Prepared with Traditional Vedic, KP, Nadi &amp; Lal Kitab Siddhanta</div>
             </div>
             <div className="booklet-om">ॐ श्री गणेशाय नमः</div>

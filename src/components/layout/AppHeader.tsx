@@ -159,15 +159,13 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             onClick={() => onNavigate('home')}
             title={isHi ? 'मुख्य डैशबोर्ड' : 'Worksheet Dashboard'}
           >
-            <span className="pro-om-symbol" aria-hidden="true">
-              ॐ
-            </span>
+            <img src="/logo.png" alt="AV Astro Vibe" className="app-brand-logo" />
             <div className="pro-brand-text">
               <span className="pro-brand-title">
-                {isHi ? 'ज्योतिष होरा' : 'Jyotish Hora'}
+                AV Astro Vibe
               </span>
               <span className="pro-brand-tagline">
-                {isHi ? 'वैदिक ज्योतिष एवं पंचांग संस्थान' : 'Vedic Astrology Studio'}
+                {isHi ? 'वर्तमान में जिएं · LIVE IN PRESENT' : 'LIVE IN PRESENT'}
               </span>
             </div>
           </button>
