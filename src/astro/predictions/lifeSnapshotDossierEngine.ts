@@ -1304,7 +1304,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let maritalStatusExplEn = `The 7th house (${h7Sign.name}) is protected by benefic planetary rays. Marriage is sanctified by high moral commitment, mutual trust, and domestic prosperity.`;
     let maritalStatusExplHi = `सप्तम भाव (${SIGN_HI[h7SignIdx]}) पर शुभ ग्रहों की दृष्टि दांपत्य में एकनिष्ठता, परस्पर आदर और दीर्घायु प्रदान करती है। वैवाहिक जीवन स्थिर, सम्मानित और अटूट रहेगा।`;
 
-    if (pravrajyaCount >= 3 && !hasJupiterAspectOn7th) {
+    const venusNotFortified = !venus || !['Exalted', 'Own Sign', 'Moolatrikona'].includes(venus.dignity);
+    if ((pravrajyaCount >= 3 || (pravrajyaCount >= 2 && ketuOn17 && venusNotFortified)) && !hasJupiterAspectOn7th) {
       maritalStatusEn = 'Delayed marriage (favored after age 32+) or High Independence / Non-Traditional Path (Pravrajya / Solo-Focus Signals): May remain unmarried or live independently despite formal union';
       maritalStatusHi = 'विवाह में विलंब (32+ वर्ष) अथवा उच्च वैराग्य / स्वतंत्र जीवन पथ (प्रव्रज्या व अविवाहित संकेत): आजीवन अविवाहित रहने अथवा विवाह के बाद भी स्वतंत्र/पृथक जीवन जीने की प्रबल प्रवृत्ति';
       maritalStatusExplEn = 'Multiple detachment and delay markers (Ketu/Saturn/Rahu on 1-7 axis, 12th/afflicted Venus, or 7th lord in Dusthana) channel life energy toward mission, public duty, or spiritual independence rather than conventional domesticity.';

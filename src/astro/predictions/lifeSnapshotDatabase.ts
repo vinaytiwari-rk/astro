@@ -2297,35 +2297,61 @@ export function getComprehensiveSiblingsAnalysis(
   const bkPlanet = explicitBK ?? sortedByDeg[2] ?? mars;
   const bkId = toGrahaKey(bkPlanet?.id);
 
-  // Birth order & count indicators
+  // Birth order & realistic co-born count estimation
   const jupIn11 = h11.occupants.some((p) => p.id === 'Jupiter');
   const l3In11 = h3.lordHouse === 11;
   const l11In3 = h11.lordHouse === 3;
   const isDual3rd = [2, 5, 8, 11].includes(h3.signIdx);
+  const isDual11th = [2, 5, 8, 11].includes(h11.signIdx);
   const empty3And11 = h3.occupants.length === 0 && h11.occupants.length === 0;
   const weakLordsDusthana =
     [6, 8, 12].includes(h3.lordHouse) &&
     [6, 8, 12].includes(h11.lordHouse) &&
     h3.aspectors.every((p) => !['Jupiter', 'Venus'].includes(p.id));
+  const onlyChildPressure =
+    (empty3And11 && weakLordsDusthana) ||
+    (h3.occupants.some((p) => p.id === 'Sun') &&
+      h3.occupants.some((p) => p.id === 'Mercury' && p.isCombust) &&
+      mars &&
+      ketu &&
+      mars.placedHouse === ketu.placedHouse &&
+      h11.occupants.length === 0);
 
-  let birthOrderEn = 'Balanced sibling position (1–2 co-borns typical)';
-  let birthOrderHi = 'संतुलित सहोदर स्थिति (सामान्यतः १ से २ भाई-बहन)';
+  // Estimate sibling count from 3rd/11th occupants, dual signs, Jupiter/Mars/Mercury support
+  let estCount = 2;
+  if (onlyChildPressure) {
+    estCount = 0;
+  } else {
+    estCount = 1;
+    if (h3.occupants.length >= 1) estCount += h3.occupants.length;
+    if (h11.occupants.length >= 1) estCount += h11.occupants.length;
+    if (isDual3rd || isDual11th) estCount += 1;
+    if (l3In11 || l11In3) estCount += 2;
+    if (h3.tier === 'strong' || h11.tier === 'strong') estCount += 1;
+    if (h3.tier === 'afflicted' && h11.tier === 'afflicted') estCount = Math.max(1, estCount - 1);
+    estCount = Math.min(6, estCount);
+  }
+  const countLabelEn = estCount === 0 ? '0 (Only child)' : estCount >= 4 ? `${estCount - 1}–${estCount}+ siblings` : `${estCount}–${estCount + 1} siblings`;
+  const countLabelHi = estCount === 0 ? '0 (इकलौती संतान)' : estCount >= 4 ? `${estCount - 1} से ${estCount}+ भाई-बहन` : `${estCount} से ${estCount + 1} भाई-बहन`;
 
-  if (empty3And11 && weakLordsDusthana) {
-    birthOrderEn = 'Only-child or very compact sibling circle (siblings distant or close friendships fill sibling role)';
-    birthOrderHi = 'एकल संतान या अत्यंत सीमित सहोदर योग (मित्र सहोदर जैसी भूमिका निभाते हैं)';
-  } else if (jupIn11 || (h1.tier === 'strong' && sun && [1, 9, 10].includes(sun.placedHouse) && h11.occupants.length === 0)) {
-    birthOrderEn = 'Eldest-child leadership signature (younger siblings read sequentially via 3rd -> 5th -> 7th)';
-    birthOrderHi = 'ज्येष्ठ संतान व नेतृत्व योग (छोटे भाई-बहन क्रमशः ३, ५, ७ भावों से विचारणीय)';
-  } else if (h11.occupants.length >= 1 && h3.occupants.length === 0) {
-    birthOrderEn = 'Youngest-child signature with elder sibling guidance (elder siblings read anti-clockwise: 11th -> 9th -> 7th)';
-    birthOrderHi = 'कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (बड़े सहोदर ११, ९, ७ भाव से विचारणीय)';
-  } else if (h3.occupants.length >= 1 && h11.occupants.length >= 1) {
-    birthOrderEn = 'Middle-child / multi-sibling circle (both younger 3rd and elder 11th houses active)';
-    birthOrderHi = 'मध्यम संतान व सक्रिय सहोदर परिवार (अनुज ३ और ज्येष्ठ ११ दोनों भाव सक्रिय)';
+  let birthOrderEn = `Balanced sibling position (${countLabelEn})`;
+  let birthOrderHi = `संतुलित सहोदर स्थिति (${countLabelHi})`;
+
+  if (onlyChildPressure) {
+    birthOrderEn = 'Only-child or single-sibling signature (0–1 co-born; friends or cousins fill sibling role)';
+    birthOrderHi = 'इकलौती संतान या अत्यंत सीमित सहोदर योग (०–१ भाई-बहन; मित्र सहोदर जैसी भूमिका निभाते हैं)';
   } else if (l3In11 || l11In3) {
-    birthOrderEn = '3rd–11th lord exchange/link: Distinct eldest or youngest anchor in the family';
-    birthOrderHi = 'तृतीयेश-एकादशेश संबंध: परिवार में सबसे बड़े या सबसे छोटे सहोदर की विशिष्ट भूमिका';
+    birthOrderEn = `3rd–11th lord link (${countLabelEn}): Distinct eldest or youngest anchor in a larger/close-knit family`;
+    birthOrderHi = `तृतीयेश-एकादशेश संबंध (${countLabelHi}): परिवार में सबसे बड़े या सबसे छोटे सहोदर की विशिष्ट भूमिका`;
+  } else if (jupIn11 || (h1.tier === 'strong' && sun && [1, 9, 10].includes(sun.placedHouse) && h3.occupants.length >= 1)) {
+    birthOrderEn = `Eldest-child leadership signature (${countLabelEn}; younger siblings read via 3rd -> 5th -> 7th)`;
+    birthOrderHi = `ज्येष्ठ संतान व नेतृत्व योग (${countLabelHi}; छोटे भाई-बहन ३, ५, ७ भावों से विचारणीय)`;
+  } else if (h11.occupants.length >= 1 && h3.occupants.length === 0) {
+    birthOrderEn = `Youngest-child signature with elder sibling guidance (${countLabelEn}; elder read via 11th -> 9th -> 7th)`;
+    birthOrderHi = `कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (${countLabelHi}; बड़े सहोदर ११, ९, ७ भाव से विचारणीय)`;
+  } else if (h3.occupants.length >= 1 && h11.occupants.length >= 1) {
+    birthOrderEn = `Middle-child / multi-sibling circle (${countLabelEn}; both 3rd and 11th houses active)`;
+    birthOrderHi = `मध्यम संतान व सक्रिय सहोदर परिवार (${countLabelHi}; अनुज ३ और ज्येष्ठ ११ दोनों भाव सक्रिय)`;
   }
 
   const twinOrMultipleNoteEn = (isDual3rd && h3.occupants.length >= 2) || (isDual3rd && mercury && [1, 3, 11].includes(mercury.placedHouse))
@@ -3143,12 +3169,13 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
 
   let multiValEn = 'Single-Marriage Stability Yoga (Ek-Vivaha): Steady single-partner commitment favored';
   let multiValHi = 'एक-विवाह स्थायित्व योग: एकनिष्ठ व दीर्घकालिक दांपत्य की प्रबल अनुकूलता';
-  if (multiScore >= 3 && !jupShield) {
-    multiValEn = 'Multiple-Union / Second-Chapter Potential (Dwi-Vivaha Signals): Careful D9 matching & maturity advised';
-    multiValHi = 'द्वि-विवाह / द्वितीय अवसर के शास्त्रीय संकेत: गहन कुंडली मिलान व परिपक्व निर्णय आवश्यक';
-  } else if (multiScore >= 2 && !jupShield) {
-    multiValEn = 'Moderate Multiplicity / Relationship Reset Tendency (Mitigated by awareness & matching)';
-    multiValHi = 'मध्यम संबंध-पुनर्विचार संकेत (उचित मिलान व संवाद से एक-विवाह में पूर्ण स्थायित्व)';
+  if (multiScore >= 3 || (multiScore >= 2 && !jupShield)) {
+    multiValEn = multiScore >= 3
+      ? 'Multiple-Union / Second-Chapter Potential (Dwi-Vivaha Signals): Careful D9 matching & maturity advised'
+      : 'Moderate Multiplicity / Relationship Reset Tendency (Mitigated by awareness & matching)';
+    multiValHi = multiScore >= 3
+      ? 'द्वि-विवाह / द्वितीय अवसर के शास्त्रीय संकेत: गहन कुंडली मिलान व परिपक्व निर्णय आवश्यक'
+      : 'मध्यम संबंध-पुनर्विचार संकेत (उचित मिलान व संवाद से एक-विवाह में पूर्ण स्थायित्व)';
   }
 
   const multipleMarriageYog = {
@@ -3163,6 +3190,11 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
   // 2. Divorce / Separation Resilience Yog
   const discordFlagsEn: string[] = [];
   const discordFlagsHi: string[] = [];
+
+  if (h7.lordPlanet && [mars?.placedHouse, rahu?.placedHouse].includes(h7.lordHouse) && venus && ['Leo', 'Scorpio', 'Virgo', 'Aquarius'].includes(venus.signName)) {
+    discordFlagsEn.push('7th lord with Mars/Rahu and strained Venus');
+    discordFlagsHi.push('सप्तमेश पर मंगल/राहु प्रभाव व शुक्र दबाव');
+  }
 
   if ([6, 8, 12].includes(h7.lordHouse)) {
     discordFlagsEn.push('7th lord in 6/8/12 (distance or conflict test)');
