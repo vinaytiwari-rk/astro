@@ -242,6 +242,7 @@ export const PredictionsView: React.FC<PredictionsViewProps> = ({
         {/* Horizontal Navigation Pills */}
         <div
           role="tablist"
+          className="prediction-subnav-pills"
           aria-label={isHi ? 'फलादेश अनुभाग' : 'Prediction Sections'}
           style={{
             display: 'flex',

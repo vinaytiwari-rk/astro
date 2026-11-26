@@ -404,6 +404,9 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
             </div>
           </div>
 
+          {/* Calendar Scroll Container (keeps Weekday Headers & Day Cells 100% aligned on mobile) */}
+          <div className="oj-calendar-scroll">
+          <div className="oj-calendar-inner">
           {/* Calendar Day Headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', marginBottom: '8px' }}>
             {['रवि (Sun)', 'सोम (Mon)', 'मंगल (Tue)', 'बुध (Wed)', 'गुरु (Thu)', 'शुक्र (Fri)', 'शनि (Sat)'].map((dName, idx) => (
@@ -497,6 +500,8 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
                 </div>
               );
             })}
+          </div>
+          </div>
           </div>
         </div>
       )}
