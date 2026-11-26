@@ -77,6 +77,8 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sameLagnaOnly, setSameLagnaOnly] = useState<boolean>(false);
   const [sameMoonOnly, setSameMoonOnly] = useState<boolean>(false);
+  const [lagnaFilter, setLagnaFilter] = useState<'all' | number>('all');
+  const [moonFilter, setMoonFilter] = useState<'all' | number>('all');
   const [highMatchOnly, setHighMatchOnly] = useState<boolean>(false);
   const [comparingMatch, setComparingMatch] = useState<CelebrityTwinMatch | null>(null);
   const [expandedMilestones, setExpandedMilestones] = useState<Record<string, boolean>>({});
@@ -117,8 +119,14 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
       if (sameLagnaOnly && m.celebrity.ascSignIndex !== nativeAscSign) {
         return false;
       }
+      if (lagnaFilter !== 'all' && m.celebrity.ascSignIndex !== lagnaFilter) {
+        return false;
+      }
       // Same Moon filter
       if (sameMoonOnly && m.celebrity.moonSignIndex !== nativeMoonSign) {
+        return false;
+      }
+      if (moonFilter !== 'all' && m.celebrity.moonSignIndex !== moonFilter) {
         return false;
       }
       // High Match filter
@@ -127,7 +135,7 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
       }
       return true;
     });
-  }, [matches, selectedCategory, selectedLetter, searchQuery, sameLagnaOnly, sameMoonOnly, highMatchOnly, nativeAscSign, nativeMoonSign]);
+  }, [matches, selectedCategory, selectedLetter, searchQuery, sameLagnaOnly, sameMoonOnly, lagnaFilter, moonFilter, highMatchOnly, nativeAscSign, nativeMoonSign]);
 
   const topMatch = matches[0];
   const visibleMatches = useMemo(() => filteredMatches.slice(0, displayLimit), [filteredMatches, displayLimit]);
@@ -409,6 +417,34 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
               />
               <span>{isHi ? 'उच्च सादृश्य (>70%)' : 'High Match (>70%)'}</span>
             </label>
+
+            <select
+              value={lagnaFilter === 'all' ? 'all' : String(lagnaFilter)}
+              onChange={(e) => setLagnaFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              aria-label={isHi ? 'लग्न राशि चुनें' : 'Filter by Lagna Sign'}
+              style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)' }}
+            >
+              <option value="all">{isHi ? 'सभी लग्न (12)' : 'All Lagnas (12)'}</option>
+              {SIGNS.map((s, idx) => (
+                <option key={s.name} value={idx}>
+                  {isHi ? `लग्न: ${SIGNS_HI[idx]}` : `Lagna: ${s.name}`}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={moonFilter === 'all' ? 'all' : String(moonFilter)}
+              onChange={(e) => setMoonFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              aria-label={isHi ? 'चंद्र राशि चुनें' : 'Filter by Moon Sign'}
+              style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: 'var(--text)' }}
+            >
+              <option value="all">{isHi ? 'सभी चंद्र राशि (12)' : 'All Moon Signs (12)'}</option>
+              {SIGNS.map((s, idx) => (
+                <option key={s.name} value={idx}>
+                  {isHi ? `चंद्र: ${SIGNS_HI[idx]}` : `Moon: ${s.name}`}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

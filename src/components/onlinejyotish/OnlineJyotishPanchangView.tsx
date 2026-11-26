@@ -215,6 +215,27 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
   const sunriseStr = p.sunriseLocal || '06:15:00';
   const sunsetStr = p.sunsetLocal || '18:25:00';
 
+  const isToday = selectedDate === todayIso;
+  const nowMinutes = useMemo(() => {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  }, []);
+
+  const isIntervalActiveNow = (interval: string): boolean => {
+    if (!isToday) return false;
+    const m = interval.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
+    if (!m) return false;
+    const sMin = Number(m[1]) * 60 + Number(m[2]);
+    const eMin = Number(m[3]) * 60 + Number(m[4]);
+    if (eMin >= sMin) return nowMinutes >= sMin && nowMinutes < eMin;
+    return nowMinutes >= sMin || nowMinutes < eMin;
+  };
+
+  const renderLiveBadge = (interval: string) =>
+    isIntervalActiveNow(interval) ? (
+      <span className="oj-live-badge">{isHi ? 'अभी सक्रिय' : 'LIVE NOW'}</span>
+    ) : null;
+
   return (
     <div className="oj-page-container">
       {/* Breadcrumbs */}
@@ -547,27 +568,27 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
             <tbody>
               <tr className="oj-row-bad">
                 <th>{isHi ? 'राहु काल (अशुभ)' : 'Rahu Kalam (Inauspicious)'}</th>
-                <td><strong>{p.rahuKalam || '14:46 – 16:08'}</strong></td>
+                <td><strong>{p.rahuKalam || '--'}</strong>{renderLiveBadge(p.rahuKalam || '')}</td>
               </tr>
               <tr className="oj-row-bad">
                 <th>{isHi ? 'यमगंड काल' : 'Yamaganda'}</th>
-                <td>{p.yamaganda || '09:15 – 10:45'}</td>
+                <td>{p.yamaganda || '--'}{renderLiveBadge(p.yamaganda || '')}</td>
               </tr>
               <tr className="oj-row-bad">
                 <th>{isHi ? 'गुलिक काल' : 'Gulika Kalam'}</th>
-                <td>{p.gulikaKalam || '12:15 – 13:45'}</td>
+                <td>{p.gulikaKalam || '--'}{renderLiveBadge(p.gulikaKalam || '')}</td>
               </tr>
               <tr className="oj-row-good">
                 <th>{isHi ? 'अभिजीत मुहूर्त (अति शुभ)' : 'Abhijit Muhurta (Most Auspicious)'}</th>
-                <td><strong>{p.abhijitMuhurta || '11:45 – 12:35'}</strong></td>
+                <td><strong>{p.abhijitMuhurta || '--'}</strong>{renderLiveBadge(p.abhijitMuhurta || '')}</td>
               </tr>
               <tr className="oj-row-good">
                 <th>{isHi ? 'अमृत काल' : 'Amrita Kalam'}</th>
-                <td>{panchangExtras.amritaKalam}</td>
+                <td>{panchangExtras.amritaKalam}{renderLiveBadge(panchangExtras.amritaKalam)}</td>
               </tr>
               <tr className="oj-row-good">
                 <th>{isHi ? 'ब्रह्म मुहूर्त' : 'Brahma Muhurta'}</th>
-                <td>{panchangExtras.brahmaMuhurta}</td>
+                <td>{panchangExtras.brahmaMuhurta}{renderLiveBadge(panchangExtras.brahmaMuhurta)}</td>
               </tr>
             </tbody>
           </table>
@@ -591,13 +612,16 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
                 </tr>
               </thead>
               <tbody>
-                {choghadiya.dayChoghadiya.map((s: ChoghadiyaSlot, i: number) => (
+                {choghadiya.dayChoghadiya.map((s: ChoghadiyaSlot, i: number) => {
+                  const slotRange = `${s.startTime} – ${s.endTime}`;
+                  return (
                   <tr key={i} className={s.quality === 'best' || s.quality === 'good' ? 'oj-row-good' : s.quality === 'avoid' ? 'oj-row-bad' : ''}>
-                    <td><strong>{isHi ? s.nameHi : s.nameEn}</strong></td>
+                    <td><strong>{isHi ? s.nameHi : s.nameEn}</strong>{renderLiveBadge(slotRange)}</td>
                     <td>{s.startTime} &ndash; {s.endTime}</td>
                     <td><span className={`oj-chog-badge ${s.quality}`}>{s.quality.toUpperCase()}</span></td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -613,13 +637,16 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
                 </tr>
               </thead>
               <tbody>
-                {choghadiya.nightChoghadiya.map((s: ChoghadiyaSlot, i: number) => (
+                {choghadiya.nightChoghadiya.map((s: ChoghadiyaSlot, i: number) => {
+                  const slotRange = `${s.startTime} – ${s.endTime}`;
+                  return (
                   <tr key={i} className={s.quality === 'best' || s.quality === 'good' ? 'oj-row-good' : s.quality === 'avoid' ? 'oj-row-bad' : ''}>
-                    <td><strong>{isHi ? s.nameHi : s.nameEn}</strong></td>
+                    <td><strong>{isHi ? s.nameHi : s.nameEn}</strong>{renderLiveBadge(slotRange)}</td>
                     <td>{s.startTime} &ndash; {s.endTime}</td>
                     <td><span className={`oj-chog-badge ${s.quality}`}>{s.quality.toUpperCase()}</span></td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -5,6 +5,8 @@ import {
   BookOpen,
   Briefcase,
   Calendar,
+  ChevronDown,
+  ChevronUp,
   Clock,
   Coins,
   Compass,
@@ -43,6 +45,18 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
   const [selectedPillarId, setSelectedPillarId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDomainId, setSelectedDomainId] = useState<string>('all');
+  const [collapsedPillars, setCollapsedPillars] = useState<Record<string, boolean>>({});
+
+  const getAttrSignalTone = (valueEn: string): { tone: 'favorable' | 'caution' | 'balanced'; labelEn: string; labelHi: string } => {
+    const v = valueEn.toLowerCase();
+    if (/(high discord|vigilance|delayed|afflicted|friction|karmic paternal friction|shukra-kshaya|preventive vitality|heavy family obligations|caution|barren|pravrajya|multiple-union)/.test(v)) {
+      return { tone: 'caution', labelEn: 'Watch / Remedy', labelHi: 'सजगता / उपाय' };
+    }
+    if (/(auspicious|strong|shatruhanta|bhagyodaya|single-marriage|ek-vivaha|purna ayus|deergha ayus|apex|matru yoga|respected|wise mentor|favorable|warm, cooperative)/.test(v)) {
+      return { tone: 'favorable', labelEn: 'Favorable', labelHi: 'शुभ / सबल' };
+    }
+    return { tone: 'balanced', labelEn: 'Balanced', labelHi: 'संतुलित' };
+  };
 
   // Compute reports
   const snapshotReport = useMemo(() => computeLifeSnapshotDossierReport(chart), [chart]);
@@ -264,6 +278,43 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
             </strong>
           </div>
         </div>
+
+        {/* 6-Tile Executive At-a-Glance Life Summary */}
+        <div className="dossier-exec-grid">
+          {[
+            { pid: 'physical_persona', attrId: 'attr_temperament', labelEn: 'Persona & Mind', labelHi: 'व्यक्तित्व व मन' },
+            { pid: 'parents_ancestry', attrId: 'attr_father_life', labelEn: 'Parents & Roots', labelHi: 'माता-पिता व कुल' },
+            { pid: 'siblings_bhratri', attrId: 'attr_sibling_count', labelEn: 'Siblings', labelHi: 'भाई-बहन' },
+            { pid: 'spouse_marriage', attrId: 'attr_marital_status', labelEn: 'Marriage', labelHi: 'विवाह व दांपत्य' },
+            { pid: 'career_wealth', attrId: 'attr_financial_wealth_tier', labelEn: 'Career & Wealth', labelHi: 'करियर व धन' },
+            { pid: 'health_crises_mysteries', attrId: 'attr_longevity_tier', labelEn: 'Health & Ayus', labelHi: 'स्वास्थ्य व आयु' },
+          ].map((tile) => {
+            const pObj = pillars.find((p) => p.id === tile.pid);
+            const aObj = pObj?.attributes.find((a) => a.id === tile.attrId) || pObj?.attributes[0];
+            if (!aObj) return null;
+            const rawVal = isHi ? aObj.valueHi : aObj.valueEn;
+            const shortVal = rawVal.split(';')[0].split('|')[0].trim();
+            const sig = getAttrSignalTone(aObj.valueEn);
+            return (
+              <button
+                key={tile.pid}
+                type="button"
+                className="dossier-exec-card"
+                onClick={() => {
+                  setActiveTab('snapshot');
+                  setSelectedPillarId(tile.pid);
+                  setCollapsedPillars((prev) => ({ ...prev, [tile.pid]: false }));
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                  <span className="dossier-exec-label">{isHi ? tile.labelHi : tile.labelEn}</span>
+                  <span className={`signal-pill ${sig.tone}`}>{isHi ? sig.labelHi : sig.labelEn}</span>
+                </div>
+                <div className="dossier-exec-value">{shortVal}</div>
+              </button>
+            );
+          })}
+        </div>
       </section>
 
       {/* Main View Mode Selector Tabs */}
@@ -296,7 +347,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
         <div className="view-stack" style={{ gap: '16px' }}>
           {/* Quick Pillar Filter Pills & Search */}
           <div
-            className="card"
+            className="card dossier-sticky-toolbar"
             style={{
               padding: '12px 16px',
               display: 'flex',
@@ -305,9 +356,9 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
               background: 'var(--bg-elevated)',
             }}
           >
-            {/* Search Input */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ position: 'relative', flex: 1 }}>
+            {/* Search Input & Expand/Collapse Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '1 1 260px' }}>
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type="text"
@@ -339,6 +390,28 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                   {isHi ? 'हटाएं' : 'Clear'}
                 </button>
               )}
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                onClick={() => {
+                  const allCollapsed = filteredPillars.every((p) => collapsedPillars[p.id]);
+                  if (allCollapsed) {
+                    setCollapsedPillars({});
+                  } else {
+                    const next: Record<string, boolean> = {};
+                    for (const p of filteredPillars) next[p.id] = true;
+                    setCollapsedPillars(next);
+                  }
+                }}
+                style={{ fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                {filteredPillars.every((p) => collapsedPillars[p.id]) ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                <span>
+                  {filteredPillars.every((p) => collapsedPillars[p.id])
+                    ? isHi ? 'सभी खोलें' : 'Expand All'
+                    : isHi ? 'सभी समेटें' : 'Collapse All'}
+                </span>
+              </button>
             </div>
 
             {/* Pillar Filter Pills */}
@@ -449,11 +522,24 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                       </div>
                     </div>
 
-                    <span className="badge badge-accent mono" style={{ fontSize: '11px', padding: '4px 10px' }}>
-                      {pillar.attributes.length} {isHi ? 'सूक्ष्म लक्षण' : 'Attributes'}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="badge badge-accent mono" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                        {pillar.attributes.length} {isHi ? 'सूक्ष्म लक्षण' : 'Attributes'}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => setCollapsedPillars((prev) => ({ ...prev, [pillar.id]: !prev[pillar.id] }))}
+                        aria-label={collapsedPillars[pillar.id] ? 'Expand pillar' : 'Collapse pillar'}
+                        style={{ padding: '4px 8px' }}
+                      >
+                        {collapsedPillars[pillar.id] ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                      </button>
+                    </div>
                   </div>
 
+                  {!collapsedPillars[pillar.id] && (
+                  <>
                   {/* Shastric Pillar Foundation Summary */}
                   <div
                     style={{
@@ -481,7 +567,9 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                       gap: '14px',
                     }}
                   >
-                    {pillar.attributes.map((attr) => (
+                    {pillar.attributes.map((attr) => {
+                      const sig = getAttrSignalTone(attr.valueEn);
+                      return (
                       <div
                         key={attr.id}
                         style={{
@@ -499,16 +587,21 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                           <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>
                             {isHi ? attr.titleHi : attr.titleEn}
                           </h4>
-                          <span
-                            className="tag tag-varg"
-                            style={{
-                              fontSize: '10.5px',
-                              whiteSpace: 'nowrap',
-                              padding: '2px 6px',
-                            }}
-                          >
-                            {attr.vargaRef}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                            <span className={`signal-pill ${sig.tone}`}>
+                              {isHi ? sig.labelHi : sig.labelEn}
+                            </span>
+                            <span
+                              className="tag tag-varg"
+                              style={{
+                                fontSize: '10.5px',
+                                whiteSpace: 'nowrap',
+                                padding: '2px 6px',
+                              }}
+                            >
+                              {attr.vargaRef}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Bold Direct Prophetic Verdict */}
@@ -587,8 +680,11 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                           </div>
                         </details>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
+                  </>
+                  )}
                 </article>
               );
             })

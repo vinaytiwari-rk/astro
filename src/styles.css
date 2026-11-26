@@ -9556,3 +9556,104 @@ h1, h2, h3, h4, .serif-heading {
   transition: width 0.3s ease;
 }
 
+
+/* === UI Polish: 360° Dossier Executive Summary, Signal Badges & Live Panchang === */
+.dossier-exec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.dossier-exec-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.dossier-exec-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.dossier-exec-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.dossier-exec-value {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dossier-sticky-toolbar {
+  position: sticky;
+  top: 8px;
+  z-index: 12;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.signal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.signal-pill.favorable {
+  background: rgba(22, 163, 74, 0.14);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.3);
+}
+
+.signal-pill.caution {
+  background: rgba(225, 29, 72, 0.12);
+  color: #be123c;
+  border: 1px solid rgba(225, 29, 72, 0.28);
+}
+
+.signal-pill.balanced {
+  background: rgba(37, 99, 235, 0.11);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+}
+
+.oj-live-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: #16a34a;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.oj-table td,
+.oj-sun-item strong {
+  font-variant-numeric: tabular-nums;
+}
