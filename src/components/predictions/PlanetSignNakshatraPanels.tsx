@@ -72,9 +72,29 @@ export const PlanetInSignPanel: React.FC<{ items: PlanetInSignPrediction[] }> = 
                     </span>
                   )}
                   <span className="tag">{t.common.house}{item.houseNumber}</span>
+                  {item.hasDigbala && <span className="tag tag-varg">{isHi ? 'दिग्बल' : 'Digbala'}</span>}
+                  {item.isPushkaraNavamsha && <span className="tag tag-varg">{isHi ? 'पुष्कर नवांश' : 'Pushkara D9'}</span>}
+                  {item.isVargottama && <span className="tag tag-varg">{isHi ? 'वर्गोत्तम' : 'Vargottama'}</span>}
                 </div>
               </div>
               <p className="yoga-desc">{isHi ? item.readingHi : item.readingEn}</p>
+              {(item.d9SignNameEn || item.functionalRoleEn || item.dispositorNoteEn) && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  {item.d9SignNameEn && (
+                    <span>
+                      <strong>D9:</strong> {isHi ? item.d9SignNameHi : item.d9SignNameEn} ·{' '}
+                    </span>
+                  )}
+                  {(isHi ? item.functionalRoleHi : item.functionalRoleEn) && (
+                    <span>
+                      <strong>{isHi ? 'कारकत्व:' : 'Role:'}</strong> {isHi ? item.functionalRoleHi : item.functionalRoleEn} ·{' '}
+                    </span>
+                  )}
+                  {(isHi ? item.dispositorNoteHi : item.dispositorNoteEn) && (
+                    <span>{isHi ? item.dispositorNoteHi : item.dispositorNoteEn}</span>
+                  )}
+                </div>
+              )}
               
               {/* Saravali Classical Shastric Sutra */}
               <div className="gochar-banner is-clear" style={{ marginTop: '8px', fontSize: '12.5px' }}>
@@ -236,13 +256,25 @@ export const PlanetInNakshatraPanel: React.FC<{ items: PlanetInNakshatraPredicti
 
               <div className="pred-bullets" style={{ marginTop: '8px' }}>
                 <div>
-                  <strong>{isHi ? 'प्रतीक व गण/नाड़ी:' : 'Symbol & Attributes:'}</strong>{' '}
-                  {isHi ? item.symbolHi : item.symbolEn} · {trTerm(item.gana, lang)} / {trTerm(item.nadi, lang)}
+                  <strong>{isHi ? 'प्रतीक व गण/नाड़ी/योनि:' : 'Symbol & Attributes:'}</strong>{' '}
+                  {isHi ? item.symbolHi : item.symbolEn} · {trTerm(item.gana, lang)} / {trTerm(item.nadi, lang)} · {item.yoni}
+                  {(isHi ? item.nakshatraDoshaHi : item.nakshatraDoshaEn) && (
+                    <span className="tag tag-combust" style={{ marginLeft: '6px' }}>
+                      {isHi ? item.nakshatraDoshaHi : item.nakshatraDoshaEn}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <strong>{isHi ? 'चरण (नवांश) प्रभाव:' : 'Pada Nuance:'}</strong>{' '}
+                  {item.padaNavamshaSignEn ? `[D9: ${isHi ? item.padaNavamshaSignHi : item.padaNavamshaSignEn}] ` : ''}
                   {isHi ? item.padaNuanceHi : item.padaNuanceEn}
                 </div>
+                {(isHi ? item.dashaWindowHi : item.dashaWindowEn) && (
+                  <div>
+                    <strong>{isHi ? 'विंशोत्तरी दशा काल:' : 'Vimshottari Activation:'}</strong>{' '}
+                    <span className="mono">{isHi ? item.dashaWindowHi : item.dashaWindowEn}</span>
+                  </div>
+                )}
                 <div>
                   <strong>{isHi ? 'कार्यक्षेत्र उपयुक्तता:' : 'Vocations:'}</strong>{' '}
                   {isHi ? item.vocationHi : item.vocationEn}

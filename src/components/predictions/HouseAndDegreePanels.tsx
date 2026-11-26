@@ -332,6 +332,48 @@ export const HouseWisePanel: React.FC<{
                   </span>
                 </div>
 
+                {/* Classical Modifiers Strip: Bhava Bala, Kartari, Combustion, Neechabhanga, Argala */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', fontSize: '11px' }}>
+                  <span className="tag mono">SAV: {h.savBindus}</span>
+                  {h.bhavaBalaRupas !== undefined && (
+                    <span className={`tag mono ${h.bhavaBalaRupas >= 8 ? 'tag-varg' : 'tag-karaka'}`}>
+                      {isHi ? `भावबल: ${h.bhavaBalaRupas.toFixed(1)} (#${h.bhavaBalaRank})` : `BhavaBala: ${h.bhavaBalaRupas.toFixed(1)} (#${h.bhavaBalaRank})`}
+                    </span>
+                  )}
+                  {h.kartariYoga && h.kartariYoga !== 'None' && (
+                    <span className={`tag ${h.kartariYoga === 'Subhakartari' ? 'tag-varg' : 'tag-combust'}`}>
+                      {h.kartariYoga}
+                    </span>
+                  )}
+                  {h.lordCombust && (
+                    <span className="tag tag-combust">{isHi ? 'भावेश अस्त' : 'Lord Combust'}</span>
+                  )}
+                  {h.lordBaladiAvasthaEn && (
+                    <span className="tag">{isHi ? h.lordBaladiAvasthaHi : h.lordBaladiAvasthaEn}</span>
+                  )}
+                  {h.pvrArgalaItems && h.pvrArgalaItems.length > 0 && (
+                    <span className="tag tag-karaka">
+                      {isHi ? `अर्गला: ${h.pvrArgalaItems.length}` : `Argala: ${h.pvrArgalaItems.length}`}
+                    </span>
+                  )}
+                </div>
+
+                {(h.neechabhangaNoteEn || h.chalitShiftNoteEn) && (
+                  <div style={{ fontSize: '12px', padding: '8px 10px', borderRadius: 6, background: 'var(--bg-subtle)', border: '1px solid var(--border)', display: 'grid', gap: '4px' }}>
+                    {h.neechabhangaNoteEn && (
+                      <div style={{ color: '#15803d', fontWeight: 600 }}>
+                        {isHi ? h.neechabhangaNoteHi : h.neechabhangaNoteEn}
+                      </div>
+                    )}
+                    {h.chalitShiftNoteEn && (
+                      <div className="muted">
+                        <strong>{isHi ? 'भाव चलित:' : 'Bhava Chalit:'}</strong>{' '}
+                        {isHi ? h.chalitShiftNoteHi : h.chalitShiftNoteEn}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* 2. TOP: Rich Decisive Prediction Narrative */}
                 <div style={{
                   padding: '14px 16px',

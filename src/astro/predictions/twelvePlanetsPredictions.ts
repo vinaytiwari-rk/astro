@@ -51,6 +51,9 @@ export interface PlanetEventPrediction {
   transitEvidenceHi: string | null;
   conjoinedPlanets: PlanetId[];
   aspectingPlanets: PlanetId[];
+  shadbalaRupas?: number;
+  shadbalaRatio?: number;
+  bavBindus?: number;
 
   // Placement Overview
   placementSummaryEn: string;
@@ -1153,6 +1156,9 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
       transitEvidenceHi,
       conjoinedPlanets: conjoined,
       aspectingPlanets: aspecting,
+      shadbalaRupas: chart.shadbala?.find((s) => s.planet === p.id)?.totalRupas,
+      shadbalaRatio: chart.shadbala?.find((s) => s.planet === p.id)?.ratio,
+      bavBindus: chart.ashtakavarga?.bhinna?.[p.id as SevenPlanetId]?.[signIdx],
       placementSummaryEn,
       placementSummaryHi,
       propheticReadingEn: prophetic.propheticReadingEn,
@@ -1187,8 +1193,7 @@ export function computeTwelvePlanetsPredictions(chart: ChartData, atMs = Date.no
     ? `कुंडली में ${conjunctionHouses.length} भावों में ग्रह युति (Conjunctions) सक्रिय हैं: ${conjunctionHouses.map((c) => `भाव ${c.house} (${c.planets.map((p) => trPlanet(p, 'hi')).join(' + ')})`).join('; ')}।`
     : 'कुंडली में किसी भाव में बहु-ग्रह युति नहीं है।';
 
-  // Suppress legacy alert templates containing unverified medical/crisis claims.
-  // Per-planet evidence-based cautions are retained in negativeEvents.
+  // Suppress legacy alert templates; per-planet evidence-based cautions are retained in negativeEvents.
   criticalAlertsEn.length = 0;
   criticalAlertsHi.length = 0;
 

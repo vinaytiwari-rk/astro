@@ -530,14 +530,19 @@ function buildMultiPlanetAnalysis(
 
   if (count === 2 && pairInsights[0]) {
     const pi = pairInsights[0];
+    const orbTagEn = degreeSpanDeg <= 3 ? 'Tight conjunction (<=3°): high-intensity fusion.' : degreeSpanDeg <= 10 ? 'Moderate orb (3°–10°): balanced interplay.' : 'Wide sign conjunction (>10°): gradual house-level blend.';
+    const orbTagHi = degreeSpanDeg <= 3 ? 'सघन युति (<=3°): अत्यंत तीव्र प्रभाव।' : degreeSpanDeg <= 10 ? 'मध्यम अंश दूरी (3°–10°): संतुलित प्रभाव।' : 'विस्तृत राशि युति (>10°): क्रमिक प्रभाव।';
+    const hasCombustSun = planets.includes('Sun') && degreeSpanDeg <= 10;
+    const combNoteEn = hasCombustSun ? ' Sun proximity causes combustion pressure on the companion planet.' : '';
+    const combNoteHi = hasCombustSun ? ' सूर्य की निकटता से सह-ग्रह पर अस्त-प्रभाव संभव है।' : '';
     return {
       count,
       headlineEn: `${pi.yogaNameEn} in H${houseNumber} (${signEn})`,
       headlineHi: `${houseNumber}वें भाव (${signHi}) में ${pi.yogaNameHi}`,
-      positiveEn: `${pi.positiveEn} Focuses blessing/energy onto ${houseEn}.`,
-      positiveHi: `${pi.positiveHi} इसका मुख्य प्रभाव ${houseHi} पर पड़ता है।`,
-      negativeEn: `${pi.negativeEn}${warPairs.length ? ` [Graha Yuddha alert: ${warPairs.join(', ')}]` : ''}`,
-      negativeHi: `${pi.negativeHi}${warPairs.length ? ` [ग्रह युद्ध प्रभाव: ${warPairs.join(', ')}]` : ''}`,
+      positiveEn: `${pi.positiveEn} Focuses blessing/energy onto ${houseEn}. (${orbTagEn})`,
+      positiveHi: `${pi.positiveHi} इसका मुख्य प्रभाव ${houseHi} पर पड़ता है। (${orbTagHi})`,
+      negativeEn: `${pi.negativeEn}${combNoteEn}${warPairs.length ? ` [Graha Yuddha alert: ${warPairs.join(', ')}]` : ''}`,
+      negativeHi: `${pi.negativeHi}${combNoteHi}${warPairs.length ? ` [ग्रह युद्ध प्रभाव: ${warPairs.join(', ')}]` : ''}`,
       incidentRiskEn: pi.incidentEn,
       incidentRiskHi: pi.incidentHi,
       remedyEn: `Keep conduct ethical for both lords; strengthen the weaker planet via its weekday charity and peaceful mantra.`,

@@ -200,9 +200,17 @@ const PLANET_THEMES: Record<string, ReaderOpening> = {
   Jupiter: { en: 'judgment, guidance, and gradual growth', hi: 'विवेक, मार्गदर्शन और क्रमिक विकास' },
   Venus: { en: 'harmony, relationships, and shared values', hi: 'सामंजस्य, संबंध और साझा मूल्य' },
   Saturn: { en: 'patience, responsibility, and long-term effort', hi: 'धैर्य, जिम्मेदारी और दीर्घकालीन प्रयास' },
+  Rahu: { en: 'ambition, unconventional breakthroughs, and intense focus', hi: 'महत्वाकांक्षा, नवीन प्रयोग और तीव्र एकाग्रता' },
+  Ketu: { en: 'detachment, intuitive insight, and spiritual depth', hi: 'वैराग्य, अंतर्ज्ञान और आध्यात्मिक गहराई' },
 };
 
-function buildReaderPrediction(chart: ChartData, domain: DomainDefinition): { en: string; hi: string } {
+function buildReaderPrediction(
+  chart: ChartData,
+  domain: DomainDefinition,
+  occupantIds: string[],
+  savBindus: number | undefined,
+  yogaNames: string[],
+): { en: string; hi: string } {
   const opening = READER_OPENINGS[domain.id];
   const primaryHouse = domain.houses[0];
   const primarySign = SIGNS[signForHouse(chart, primaryHouse)];
@@ -231,9 +239,34 @@ function buildReaderPrediction(chart: ChartData, domain: DomainDefinition): { en
     conditionHi = `संकेत एकतरफा नहीं हैं; ${destination.hi} से जुड़े निर्णय इस क्षेत्र की दिशा तय करने में अहम रहेंगे।`;
   }
 
+  const extraEn: string[] = [];
+  const extraHi: string[] = [];
+  if (occupantIds.length > 0) {
+    const occEn = occupantIds.join(', ');
+    const occHi = occupantIds.map((id) => HI_NAMES[id] ?? id).join(', ');
+    extraEn.push(`The direct presence of ${occEn} actively shapes this area of life.`);
+    extraHi.push(`इस क्षेत्र में ${occHi} की प्रत्यक्ष उपस्थिति इसे सक्रिय बनाती है।`);
+  }
+  if (savBindus !== undefined) {
+    if (savBindus >= 30) {
+      extraEn.push(`Underlying chart support is strong (${savBindus} points), reinforcing resilience.`);
+      extraHi.push(`कुंडली का समग्र बल उच्च (${savBindus} बिंदु) है, जो स्थिरता प्रदान करता है।`);
+    } else if (savBindus <= 24) {
+      extraEn.push(`Underlying chart support is modest (${savBindus} points), favoring measured pacing.`);
+      extraHi.push(`कुंडली का समग्र बल मध्यम-न्यून (${savBindus} बिंदु) है, अतः संतुलित गति लाभकारी रहेगी।`);
+    }
+  }
+  if (yogaNames.length > 0) {
+    extraEn.push(`Key classical combination: ${yogaNames.slice(0, 2).join(', ')}.`);
+    extraHi.push(`प्रमुख शास्त्रीय योग: ${yogaNames.slice(0, 2).join(', ')}।`);
+  }
+
+  const themeEn = PLANET_THEMES[primaryLord.id]?.en ?? 'focused planetary karma';
+  const themeHi = PLANET_THEMES[primaryLord.id]?.hi ?? 'विशेष ग्रह-कर्म';
+
   return {
-    en: `${opening.en} In your chart, ${planetEn} brings ${PLANET_THEMES[primaryLord.id].en} into this area, while its placement links it with ${destination.en}. ${conditionEn}`,
-    hi: `${opening.hi} आपकी कुंडली में ${planetHi} इस क्षेत्र में ${PLANET_THEMES[primaryLord.id].hi} को प्रमुख बनाते हैं और इसकी स्थिति इसे ${destination.hi} से जोड़ती है। ${conditionHi}`,
+    en: `${opening.en} In your chart, ${planetEn} brings ${themeEn} into this area, while its placement links it with ${destination.en}. ${conditionEn}${extraEn.length ? ' ' + extraEn.join(' ') : ''}`,
+    hi: `${opening.hi} आपकी कुंडली में ${planetHi} इस क्षेत्र में ${themeHi} को प्रमुख बनाते हैं और इसकी स्थिति इसे ${destination.hi} से जोड़ती है। ${conditionHi}${extraHi.length ? ' ' + extraHi.join(' ') : ''}`,
   };
 }
 
@@ -442,6 +475,13 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
   const primaryHouse = domain.houses[0];
   const primarySign = SIGNS[signForHouse(chart, primaryHouse)];
   const primaryLord = chart.planets.find((planet) => planet.id === primarySign.lord);
+  const primaryOccupants = chart.planets
+    .filter((planet) => planet.rasiHouseNumber === primaryHouse)
+    .map((planet) => planet.id);
+  const primarySavBindus = chart.ashtakavarga?.sarva[signForHouse(chart, primaryHouse)];
+  const matchingYogaNames = detectedYogas
+    .filter((y) => isClassicalYogaSourceUsable(y.source) && y.planets.some((p) => relatedPlanets.has(p)))
+    .map((y) => y.name);
   const primaryAnchorEn = primaryLord
     ? `House ${primaryHouse} lord ${primaryLord.id} is placed in house ${primaryLord.rasiHouseNumber} (${primaryLord.signName}) with ${primaryLord.dignity} dignity.`
     : `The calculated position of the lord of house ${primaryHouse} is unavailable.`;
@@ -449,7 +489,7 @@ function analyzeDomain(chart: ChartData, domain: DomainDefinition, detectedYogas
     ? `भाव ${primaryHouse} के स्वामी ${HI_NAMES[primaryLord.id] ?? primaryLord.id} भाव ${primaryLord.rasiHouseNumber} में ${primaryLord.signName} राशि में ${primaryLord.dignity} गरिमा के साथ स्थित हैं।`
     : `भाव ${primaryHouse} के स्वामी की गणित स्थिति उपलब्ध नहीं है।`;
 
-  const prediction = buildReaderPrediction(chart, domain);
+  const prediction = buildReaderPrediction(chart, domain, primaryOccupants, primarySavBindus, matchingYogaNames);
   const supportive = evidence.filter((item) => item.kind === 'supportive').length;
   const caution = evidence.filter((item) => item.kind === 'caution').length;
   const predictionHi = prediction.hi;
@@ -481,8 +521,8 @@ export function computeGeneralPrediction(chart: ChartData): GeneralPredictionRep
   const domains = DOMAINS.map((domain) => analyzeDomain(chart, domain, detectedYogas));
   const evidenceCount = domains.reduce((sum, domain) => sum + domain.evidence.length, 0);
   const partialDomains = domains.filter((domain) => domain.dataCompleteness !== 'complete').length;
-  const summaryEn = `A natal-chart-based personal reading across ${domains.length} areas of life. Each section begins with the interpretation; the chart calculations and classical reasoning are available separately below it. ${partialDomains} sections have incomplete supporting data, which is disclosed rather than filled with assumptions.`;
-  const summaryHi = `जन्मकुंडली के आधार पर जीवन के ${domains.length} क्षेत्रों का व्यक्तिगत फलादेश। प्रत्येक अनुभाग में पहले सरल भाषा में व्याख्या दी गई है; उसके बाद अलग से कुंडली-गणना और शास्त्रीय आधार देखे जा सकते हैं। ${partialDomains} क्षेत्रों में सहायक डेटा अधूरा है, जिसे अनुमान से भरने के बजाय स्पष्ट बताया गया है।`;
+  const summaryEn = `A natal-chart-based personal reading across ${domains.length} areas of life (${evidenceCount} classical observations evaluated). Each section begins with the interpretation; the chart calculations and classical reasoning are available separately below it. ${partialDomains} sections have incomplete supporting data, which is disclosed rather than filled with assumptions.`;
+  const summaryHi = `जन्मकुंडली के आधार पर जीवन के ${domains.length} क्षेत्रों का व्यक्तिगत फलादेश (${evidenceCount} शास्त्रीय संकेतों का मूल्यांकन)। प्रत्येक अनुभाग में पहले सरल भाषा में व्याख्या दी गई है; उसके बाद अलग से कुंडली-गणना और शास्त्रीय आधार देखे जा सकते हैं। ${partialDomains} क्षेत्रों में सहायक डेटा अधूरा है, जिसे अनुमान से भरने के बजाय स्पष्ट बताया गया है।`;
 
   return {
     titleEn: 'General Prediction — Natal Chart Synthesis',

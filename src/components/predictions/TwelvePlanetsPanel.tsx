@@ -317,6 +317,16 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
           {planet.isVargottama && (
             <span className="tag tag-varg">{isHi ? 'वर्गोत्तम' : 'Vargottama'}</span>
           )}
+          {planet.shadbalaRatio !== undefined && (
+            <span className={`tag ${planet.shadbalaRatio >= 1 ? 'tag-varg' : 'tag-retro'}`}>
+              {isHi ? `षड्बल: ${planet.shadbalaRatio.toFixed(2)}x` : `Shadbala: ${planet.shadbalaRatio.toFixed(2)}x`}
+            </span>
+          )}
+          {planet.bavBindus !== undefined && (
+            <span className={`tag ${planet.bavBindus >= 5 ? 'tag-varg' : planet.bavBindus <= 2 ? 'tag-combust' : ''}`}>
+              BAV: {planet.bavBindus}/8
+            </span>
+          )}
           {planet.ownedHouses.length > 0 && (
             <span className="tag">
               {isHi
@@ -483,6 +493,40 @@ const PlanetPredictionCard: React.FC<PlanetCardProps> = ({ planet, isHi }) => {
             ))}
           </ul>
         </div>
+
+        {/* Timing Triggers, Key Ages & Transit Evidence */}
+        {(planet.timingTriggersEn.length > 0 || planet.keyAgeWindows.length > 0 || planet.transitEvidenceEn) && (
+          <div
+            style={{
+              padding: '10px 14px',
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              fontSize: '12px',
+              display: 'grid',
+              gap: '6px',
+            }}
+          >
+            {planet.keyAgeWindows && (
+              <div>
+                <strong>{isHi ? 'प्रमुख सक्रिय आयु वर्ष:' : 'Key Activation Ages:'}</strong>{' '}
+                <span className="mono">{planet.keyAgeWindows}</span>
+              </div>
+            )}
+            {(isHi ? planet.timingTriggersHi : planet.timingTriggersEn) && (
+              <div>
+                <strong>{isHi ? 'फलित काल सूत्र:' : 'Timing Triggers:'}</strong>{' '}
+                {isHi ? planet.timingTriggersHi : planet.timingTriggersEn}
+              </div>
+            )}
+            {(isHi ? planet.transitEvidenceHi : planet.transitEvidenceEn) && (
+              <div className="muted">
+                <strong>{isHi ? 'गोचर साक्ष्य:' : 'Transit Evidence:'}</strong>{' '}
+                {isHi ? planet.transitEvidenceHi : planet.transitEvidenceEn}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

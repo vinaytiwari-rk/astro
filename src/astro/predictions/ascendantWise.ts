@@ -540,6 +540,12 @@ export const LAGNESHA_HOUSE_PROPHECY: Record<
   },
 };
 
+const SIGN_HI_ASC = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'];
+const PLANET_HI_ASC: Record<string, string> = {
+  Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+  Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+
 export function generateAscendantPrediction(
   chart: ChartData,
   selectedSignIndex?: number
@@ -552,37 +558,63 @@ export function generateAscendantPrediction(
   const ascPos = chart.ascendant;
   const ascNak = NAKSHATRAS[ascPos.nakshatraIndex];
   const lordId = SIGNS[nativeLagnaIndex].lord;
+  const lordHi = PLANET_HI_ASC[lordId] || lordId;
   const lordPos = chart.planets.find((p) => p.id === lordId);
   const lordHouse = lordPos ? lordPos.rasiHouseNumber : 1;
   const lordDignity = lordPos ? lordPos.dignity : 'Neutral';
+  const lordShadbala = chart.shadbala?.find((s) => s.planet === lordId);
+  const d9LagnaIdx = chart.divisionalCharts?.D9?.lagnaSignIndex;
 
   const lagnaOccupants = chart.planets.filter((p) => p.rasiHouseNumber === 1);
   const occNamesHi = lagnaOccupants.length
-    ? lagnaOccupants.map((p) => p.id).join(', ')
+    ? lagnaOccupants.map((p) => PLANET_HI_ASC[p.id] || p.id).join(', ')
     : 'कोई ग्रह स्थित नहीं है (निर्दोष व शांत)';
   const occNamesEn = lagnaOccupants.length
     ? lagnaOccupants.map((p) => p.id).join(', ')
     : 'None (Lagna is tranquil and unblemished)';
 
   const lordProphecy = LAGNESHA_HOUSE_PROPHECY[lordHouse] || LAGNESHA_HOUSE_PROPHECY[1];
+  const lordModifiersEn: string[] = [];
+  const lordModifiersHi: string[] = [];
+  if (lordPos?.isVargottama) {
+    lordModifiersEn.push('Vargottama');
+    lordModifiersHi.push('वर्गोत्तम');
+  }
+  if (lordPos?.isRetrograde) {
+    lordModifiersEn.push('Retrograde');
+    lordModifiersHi.push('वक्री');
+  }
+  if (lordPos?.isCombust) {
+    lordModifiersEn.push('Combust');
+    lordModifiersHi.push('अस्त');
+  }
+  if (lordShadbala) {
+    lordModifiersEn.push(`Shadbala ${lordShadbala.ratio.toFixed(2)}x`);
+    lordModifiersHi.push(`षड्बल ${lordShadbala.ratio.toFixed(2)}x`);
+  }
+  const modStrEn = lordModifiersEn.length ? ` [${lordModifiersEn.join(', ')}]` : '';
+  const modStrHi = lordModifiersHi.length ? ` [${lordModifiersHi.join(', ')}]` : '';
+
+  const d9NoteEn = d9LagnaIdx !== undefined ? ` Navamsha (D9) Lagna falls in ${SIGNS[d9LagnaIdx].name}.` : '';
+  const d9NoteHi = d9LagnaIdx !== undefined ? ` नवांश (D9) लग्न ${SIGN_HI_ASC[d9LagnaIdx]} राशि में है।` : '';
 
   const lagnaLordPlacementSummaryHi = lordPos
-    ? `लग्नेश ${lordId} कुंडली के भाव ${lordHouse} में ${lordDignity} अवस्था में विराजमान होकर ${lordProphecy.headlineHi} का निर्माण कर रहे हैं। ${lordProphecy.hi}`
-    : `लग्नेश ${lordId} की स्थिति आपके व्यक्तित्व को सुदृढ़ आधार प्रदान करती है।`;
+    ? `लग्नेश ${lordHi} कुंडली के भाव ${lordHouse} में ${lordDignity} अवस्था${modStrHi} में विराजमान होकर ${lordProphecy.headlineHi} का निर्माण कर रहे हैं। ${lordProphecy.hi}`
+    : `लग्नेश ${lordHi} की स्थिति आपके व्यक्तित्व को सुदृढ़ आधार प्रदान करती है।`;
 
   const lagnaLordPlacementSummaryEn = lordPos
-    ? `Your Lagna lord ${lordId} resides in your ${lordHouse} House with ${lordDignity} dignity, creating the ${lordProphecy.headlineEn}. ${lordProphecy.en}`
+    ? `Your Lagna lord ${lordId} resides in your ${lordHouse} House with ${lordDignity} dignity${modStrEn}, creating the ${lordProphecy.headlineEn}. ${lordProphecy.en}`
     : `Lagna lord ${lordId} provides a solid, supportive foundation for your personal agency.`;
 
-  const occupantsSummaryHi = `लग्न भाव में स्थित ग्रह: ${occNamesHi}।`;
-  const occupantsSummaryEn = `Lagna occupants: ${occNamesEn}.`;
+  const occupantsSummaryHi = `लग्न भाव में स्थित ग्रह: ${occNamesHi}।${d9NoteHi}`;
+  const occupantsSummaryEn = `Lagna occupants: ${occNamesEn}.${d9NoteEn}`;
 
   const natalSynthesisHi = `आप ${profile.nameHi} के अंतर्गत जन्म ले चुके हैं। आपका लग्न ${ascPos.dms} पर ${ascNak.name} नक्षत्र (पाद ${ascPos.pada}) में उदित हुआ है। ${lagnaLordPlacementSummaryHi} ${occupantsSummaryHi}`;
   const natalSynthesisEn = `You are born with ${profile.nameEn}. Your Ascendant is rising at ${ascPos.dms} in ${ascNak.name} Nakshatra (Pada ${ascPos.pada}). ${lagnaLordPlacementSummaryEn} ${occupantsSummaryEn}`;
 
   return {
     nativeLagnaIndex,
-    nativeLagnaNameHi: SIGNS[nativeLagnaIndex].name,
+    nativeLagnaNameHi: SIGN_HI_ASC[nativeLagnaIndex] || SIGNS[nativeLagnaIndex].name,
     nativeLagnaNameEn: SIGNS[nativeLagnaIndex].name,
     selectedLagnaIndex: targetSignIndex,
     profile,

@@ -8,6 +8,7 @@ import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 export interface DeepTransitItem {
   planet: NineGrahaId;
   transitSign: string;
+  transitSignHi: string;
   degreeInSign: number;
   speedDegPerDay: number;
   isRetrograde: boolean;
@@ -19,14 +20,22 @@ export interface DeepTransitItem {
   d9HouseFromNatalD9Lagna: number;
   d10TransitSign: string;
   savBindus: number;
+  bavBindus: number;
   kakshyaLord: SevenPlanetId | 'Asc';
   kakshyaHasBindu: boolean;
   taraName: string;
+  taraNameHi: string;
   taraGood: boolean;
   hasVedha: boolean;
+  vipareetaVedha: boolean;
   vedhaPlanet?: string;
+  murti: 'Gold' | 'Silver' | 'Copper' | 'Iron';
+  murtiHi: string;
+  natalContactEn?: string;
+  natalContactHi?: string;
   verdict: 'Strong & Auspicious' | 'Auspicious' | 'Obstructed (Vedha)' | 'Mixed / Kakshya Supported' | 'Testing';
   reading: string;
+  readingHi: string;
 }
 
 export interface DoubleTransitActivation {
@@ -36,6 +45,7 @@ export interface DoubleTransitActivation {
   saturnLink: string;
   savBindus: number;
   meaning: string;
+  meaningHi: string;
 }
 
 export interface DeepGocharReport {
@@ -44,6 +54,7 @@ export interface DeepGocharReport {
   doubleTransitHouses: DoubleTransitActivation[];
   items: DeepTransitItem[];
   overallSummary: string;
+  overallSummaryHi: string;
 }
 
 // Classical 8 Kakshya rulers per 30° sign (3°45' each): Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon, Lagna
@@ -73,6 +84,27 @@ const HOUSE_TOPICS = [
   'Foreign residence, spiritual retreat & major expenses',
 ];
 
+const HOUSE_TOPICS_HI = [
+  'स्वयं, स्वास्थ्य और नई शुरुआत',
+  'धन, परिवार और वाणी',
+  'साहस, कौशल, भाई-बहन और छोटी यात्रा',
+  'घर, संपत्ति, माता और मानसिक शांति',
+  'सृजन, बुद्धि, प्रेम और संतान',
+  'कार्य-दिनचर्या, सेवा, रोग-मुक्ति और शत्रु-विजय',
+  'विवाह, साझेदारी और व्यावसायिक अनुबंध',
+  'परिवर्तन, शोध, संयुक्त वित्त और दीर्घायु',
+  'भाग्य, धर्म, गुरु, उच्च शिक्षा और लंबी यात्रा',
+  'करियर उन्नति, प्रतिष्ठा और अधिकार',
+  'आय वृद्धि, पदोन्नति, नेटवर्क और इच्छा-पूर्ति',
+  'विदेश निवास, आध्यात्मिक एकांत और बड़े व्यय',
+];
+
+const SIGN_HI = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'];
+const PLANET_HI: Record<NineGrahaId, string> = {
+  Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध', Jupiter: 'गुरु',
+  Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+
 const TARA_LABELS = [
   'Janma',
   'Sampat',
@@ -84,6 +116,25 @@ const TARA_LABELS = [
   'Mitra',
   'Parama Mitra',
 ];
+
+const TARA_LABELS_HI = [
+  'जन्म',
+  'संपत',
+  'विपत',
+  'क्षेम',
+  'प्रत्यक',
+  'साधन',
+  'नैधन',
+  'मित्र',
+  'परम मित्र',
+];
+
+function computeMurti(houseFromMoon: number): { murti: DeepTransitItem['murti']; murtiHi: string } {
+  if ([1, 6, 11].includes(houseFromMoon)) return { murti: 'Gold', murtiHi: 'स्वर्ण मूर्ति (श्रेष्ठ)' };
+  if ([2, 5, 9].includes(houseFromMoon)) return { murti: 'Silver', murtiHi: 'रजत मूर्ति (शुभ)' };
+  if ([3, 7, 10].includes(houseFromMoon)) return { murti: 'Copper', murtiHi: 'ताम्र मूर्ति (मध्यम)' };
+  return { murti: 'Iron', murtiHi: 'लौह मूर्ति (परिश्रम)' };
+}
 
 function getTransitAspectLink(planet: 'Jupiter' | 'Saturn', transitSign: number, targetSign: number): string | null {
   const diff = ((targetSign - transitSign + 12) % 12) + 1;
@@ -103,6 +154,7 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
       doubleTransitHouses: [],
       items: [],
       overallSummary: paramayus.messageEn,
+      overallSummaryHi: paramayus.messageHi,
     };
   }
 
@@ -145,6 +197,7 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
         saturnLink: sLink,
         savBindus: natalChart.ashtakavarga.sarva[sIdx],
         meaning: HOUSE_TOPICS[h - 1],
+        meaningHi: HOUSE_TOPICS_HI[h - 1],
       });
     }
   }
@@ -178,46 +231,78 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
     // Tara Bala
     const taraIdx = ((tp.nakshatraIndex - natalMoon.nakshatraIndex + 27) % 27) % 9;
     const taraName = TARA_LABELS[taraIdx];
+    const taraNameHi = TARA_LABELS_HI[taraIdx];
     const taraGood = [1, 3, 5, 7, 8].includes(taraIdx);
 
-    // Gochar & Vedha
+    // Gochar, Vedha & Vipareeta Vedha
     const isGood = GOCHAR_GOOD_HOUSES[g].includes(houseFromMoon);
     const vedhaH = GOCHAR_VEDHA_MAP[g][houseFromMoon];
     let hasVedha = false;
+    let vipareetaVedha = false;
     let vedhaPlanet: string | undefined;
     if (isGood && vedhaH) {
       const blockers = (occupantsFromMoon.get(vedhaH) ?? []).filter(
         (other) => other !== g && !isVedhaExemptPair(g, other)
       );
       if (blockers.length > 0) {
-        hasVedha = true;
-        vedhaPlanet = blockers.join(', ');
+        // Check Vipareeta Vedha: if any blocker's own Vedha house is occupied by another planet
+        const blockerHasVedha = blockers.some((b) => {
+          const bH = ((transitChart.planets.find((p) => p.id === b)!.signIndex - moonSign + 12) % 12) + 1;
+          const bVedhaH = GOCHAR_VEDHA_MAP[b]?.[bH];
+          if (!bVedhaH) return false;
+          const counterBlockers = (occupantsFromMoon.get(bVedhaH) ?? []).filter(
+            (cb) => cb !== b && !isVedhaExemptPair(b, cb)
+          );
+          return counterBlockers.length > 0;
+        });
+        if (blockerHasVedha) {
+          vipareetaVedha = true;
+          vedhaPlanet = blockers.join(', ');
+        } else {
+          hasVedha = true;
+          vedhaPlanet = blockers.join(', ');
+        }
       }
     }
 
     const savBindus = natalChart.ashtakavarga.sarva[tp.signIndex];
+    const bavBindus = SEVEN_PLANETS.includes(g as SevenPlanetId)
+      ? (natalChart.ashtakavarga.bhinna[g as SevenPlanetId]?.[tp.signIndex] ?? 4)
+      : Math.round(savBindus / 7);
+    const { murti, murtiHi } = computeMurti(houseFromMoon);
+    const natalConjunct = natalChart.planets
+      .filter((np) => np.signIndex === tp.signIndex)
+      .map((np) => np.id);
+    const natalContactEn = natalConjunct.length > 0 ? `Over natal ${natalConjunct.join(', ')}` : undefined;
+    const natalContactHi = natalConjunct.length > 0
+      ? `जन्म के ${natalConjunct.map((id) => PLANET_HI[id as NineGrahaId] || id).join(', ')} पर गोचर`
+      : undefined;
+
     const motionLabel: DeepTransitItem['motionLabel'] = Math.abs(tp.speedDegPerDay) < 0.0001
       ? 'Stationary'
       : tp.isRetrograde ? 'Retrograde' : 'Direct';
 
     let verdict: DeepTransitItem['verdict'];
-    if (isGood && !hasVedha && (savBindus >= 28 || kakshyaHasBindu)) {
+    if (isGood && !hasVedha && (savBindus >= 28 || kakshyaHasBindu || bavBindus >= 5)) {
       verdict = 'Strong & Auspicious';
     } else if (isGood && !hasVedha) {
       verdict = 'Auspicious';
     } else if (isGood && hasVedha) {
       verdict = 'Obstructed (Vedha)';
-    } else if (savBindus >= 29 || kakshyaHasBindu) {
+    } else if (savBindus >= 29 || kakshyaHasBindu || bavBindus >= 5) {
       verdict = 'Mixed / Kakshya Supported';
     } else {
       verdict = 'Testing';
     }
 
-    const reading = `${g} transits ${tp.signName} (H${houseFromMoon} from Moon, H${houseFromLagna} from Lagna), moving ${motionLabel.toLowerCase()} at ${tp.speedDegPerDay.toFixed(4)}°/day, and activates D9 ${d9Placement.signName} (H${d9HouseFromNatalD9Lagna} from D9 Lagna) & D10 ${d10Placement.signName}. Currently in ${kakshyaLord} Kakshya (${kakshyaHasBindu ? 'bindu-supported' : 'no Kakshya boost'}), ${taraName} Tara, ${savBindus} SAV bindus${hasVedha ? `, Vedha by ${vedhaPlanet}` : ''}.`;
+    const transitSignHi = SIGN_HI[tp.signIndex] ?? tp.signName;
+    const reading = `${g} transits ${tp.signName} (H${houseFromMoon} from Moon, H${houseFromLagna} from Lagna, ${murti} Murti), moving ${motionLabel.toLowerCase()} at ${tp.speedDegPerDay.toFixed(4)}°/day, activating D9 ${d9Placement.signName} & D10 ${d10Placement.signName}. ${kakshyaLord} Kakshya (${kakshyaHasBindu ? 'bindu-supported' : 'no Kakshya boost'}), ${taraName} Tara, BAV ${bavBindus}/8, SAV ${savBindus}${hasVedha ? `, Vedha by ${vedhaPlanet}` : vipareetaVedha ? `, Vipareeta Vedha cancels ${vedhaPlanet}'s obstruction` : ''}${natalContactEn ? `, ${natalContactEn}` : ''}.`;
+    const readingHi = `${PLANET_HI[g]} ${transitSignHi} राशि में गोचर कर रहे हैं (चंद्र से ${houseFromMoon}वां, लग्न से ${houseFromLagna}वां भाव, ${murtiHi})। गति: ${motionLabel === 'Retrograde' ? 'वक्री' : motionLabel === 'Stationary' ? 'स्तंभित' : 'मार्गी'}। ${kakshyaLord} कक्ष्या (${kakshyaHasBindu ? 'बिंदु-समर्थित' : 'सामान्य'}), ${taraNameHi} तारा, BAV ${bavBindus}/8, SAV ${savBindus}${hasVedha ? `, ${vedhaPlanet} से वेध` : vipareetaVedha ? `, विपरीत वेध से अवरोध भंग` : ''}${natalContactHi ? `, ${natalContactHi}` : ''}।`;
 
     return {
       planet: g,
       transitSign: tp.signName,
+      transitSignHi,
       degreeInSign: tp.degreeInSign,
       speedDegPerDay: tp.speedDegPerDay,
       isRetrograde: tp.isRetrograde,
@@ -229,21 +314,33 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
       d9HouseFromNatalD9Lagna,
       d10TransitSign: d10Placement.signName,
       savBindus,
+      bavBindus,
       kakshyaLord,
       kakshyaHasBindu,
       taraName,
+      taraNameHi,
       taraGood,
       hasVedha,
+      vipareetaVedha,
       vedhaPlanet,
+      murti,
+      murtiHi,
+      natalContactEn,
+      natalContactHi,
       verdict,
       reading,
+      readingHi,
     };
   });
 
   const overallSummary =
     doubleTransitHouses.length > 0
-      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) simultaneously aspect or occupy natal House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')} under the implemented Parashari aspect rules. Treat this only as a shared timing corroborator when the natal promise and relevant Dasha also support the topic; it does not guarantee an event.`
-      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) do not simultaneously activate a natal house under the implemented Parashari aspect rules on this date; no Double Transit conclusion is drawn by this method.`;
+      ? `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) simultaneously aspect or occupy natal House${doubleTransitHouses.length > 1 ? 's' : ''} ${doubleTransitHouses.map((d) => `${d.house} (${d.signName})`).join(', ')} under Parashari aspect rules. Treat this as a shared timing corroborator when natal promise and Dasha also align; it does not guarantee an event.`
+      : `Jupiter (${tJup.signName}) and Saturn (${tSat.signName}) do not simultaneously activate a natal house on this date; no Double Transit conclusion is drawn by this method.`;
+  const overallSummaryHi =
+    doubleTransitHouses.length > 0
+      ? `गुरु (${SIGN_HI[tJup.signIndex]}) और शनि (${SIGN_HI[tSat.signIndex]}) एक साथ जन्मकुंडली के भाव ${doubleTransitHouses.map((d) => `${d.house} (${SIGN_HI[SIGNS.findIndex((s) => s.name === d.signName)] ?? d.signName})`).join(', ')} को सक्रिय कर रहे हैं। यह दोहरा गोचर दशा और जन्म-योग के साथ मिलकर परिणाम देता है।`
+      : `गुरु (${SIGN_HI[tJup.signIndex]}) और शनि (${SIGN_HI[tSat.signIndex]}) इस तिथि को एक ही भाव पर दोहरा गोचर नहीं बना रहे हैं; फल व्यक्तिगत ग्रह BAV/कक्ष्या और दशा पर आधारित रहेगा।`;
 
   return {
     targetDate,
@@ -251,5 +348,6 @@ export function computeDeepGochar(natalChart: ChartData, targetDate: string): De
     doubleTransitHouses,
     items,
     overallSummary,
+    overallSummaryHi,
   };
 }

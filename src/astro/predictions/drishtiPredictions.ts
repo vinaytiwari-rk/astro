@@ -1,6 +1,7 @@
-import { NINE_GRAHAS, SIGNS } from '../constants';
+import { NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import { parasharaAspectVirupas } from '../strength';
-import type { AspectInfo, BodyPosition, ChartData, NineGrahaId, PlanetId } from '../types';
+import type { AspectInfo, BodyPosition, ChartData, NineGrahaId, PlanetId, SevenPlanetId } from '../types';
+import { getFunctionalLordship } from './functionalLordship';
 
 export interface DrishtiLinkPrediction {
   from: PlanetId;
@@ -26,6 +27,9 @@ export interface DrishtiLinkPrediction {
   classicalShastraHi: string;
   remedyEn: string;
   remedyHi: string;
+  fromDignity?: string;
+  functionalRoleEn?: string;
+  functionalRoleHi?: string;
 }
 
 export interface HouseDrishtiSummary {
@@ -271,6 +275,14 @@ export function computeDrishtiPredictions(chart: ChartData): DrishtiReport {
   ]);
 
   // Fast mutual check among computed aspects
+  const ascSign = chart.ascendant.signIndex;
+  const sunLon = byId.get('Sun')?.longitude ?? 0;
+  const moonLon = byId.get('Moon')?.longitude ?? 0;
+  const moonPhaseDeg = ((moonLon - sunLon) % 360 + 360) % 360;
+  const isWaxingBrightMoon = moonPhaseDeg >= 72 && moonPhaseDeg <= 288;
+  const isDynBenefic = (g: string) =>
+    g === 'Jupiter' || g === 'Venus' || g === 'Mercury' || (g === 'Moon' && isWaxingBrightMoon);
+
   const pairSet = new Set(chart.aspects.map((a) => `${a.from}->${a.to}`));
   const planetaryDrishtis: DrishtiLinkPrediction[] = chart.aspects
     .filter((a: AspectInfo) => NINE_GRAHAS.includes(a.from as NineGrahaId))
@@ -280,7 +292,7 @@ export function computeDrishtiPredictions(chart: ChartData): DrishtiReport {
       const ang = ((pTo.longitude - pFrom.longitude) % 360 + 360) % 360;
       const virupas = parasharaAspectVirupas(a.from, ang);
       const isMutual = pairSet.has(`${a.to}->${a.from}`);
-      return buildPairDrishti(
+      const link = buildPairDrishti(
         a.from,
         a.to,
         a.type,
@@ -289,6 +301,13 @@ export function computeDrishtiPredictions(chart: ChartData): DrishtiReport {
         a.strengthPercent,
         isMutual
       );
+      if (SEVEN_PLANETS.includes(a.from as SevenPlanetId)) {
+        const fl = getFunctionalLordship(a.from as SevenPlanetId, ascSign);
+        link.functionalRoleEn = fl.rolesEn[0];
+        link.functionalRoleHi = fl.rolesHi[0];
+      }
+      link.fromDignity = pFrom.dignity;
+      return link;
     })
     .sort((a, b) => Number(b.isMutual) - Number(a.isMutual) || b.strengthPercent - a.strengthPercent);
 
@@ -305,7 +324,6 @@ export function computeDrishtiPredictions(chart: ChartData): DrishtiReport {
   }
 
   // House-wise Drishti Matrix across all 12 Houses
-  const ascSign = chart.ascendant.signIndex;
   const houseDrishtis: HouseDrishtiSummary[] = Array.from({ length: 12 }, (_, idx) => {
     const h = idx + 1;
     const signIndex = (ascSign + idx) % 12;
@@ -326,7 +344,7 @@ export function computeDrishtiPredictions(chart: ChartData): DrishtiReport {
           planet: g,
           typeEn: tEn,
           typeHi: trAspectTypeHi(tEn),
-          isBenefic: NAT_BENEFIC.has(g),
+          isBenefic: isDynBenefic(g),
         });
       }
     }

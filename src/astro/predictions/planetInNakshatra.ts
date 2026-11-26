@@ -1,4 +1,5 @@
-import { NAKSHATRAS, NINE_GRAHAS } from '../constants';
+import { NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
+import { formatDateDmy, formatLocalDateTimeFromUtc } from '../time';
 import type { BodyPosition, ChartData } from '../types';
 import type { PredictionBodyId } from './planetInSign';
 
@@ -31,6 +32,12 @@ export interface PlanetInNakshatraPrediction {
   classicalSutraEn: string;
   classicalSutraHi: string;
   source: string;
+  padaNavamshaSignEn?: string;
+  padaNavamshaSignHi?: string;
+  nakshatraDoshaEn?: string;
+  nakshatraDoshaHi?: string;
+  dashaWindowEn?: string;
+  dashaWindowHi?: string;
 }
 
 const NAK_HI = [
@@ -223,9 +230,14 @@ const BODY_ROLE: Record<PredictionBodyId, { en: string; hi: string }> = {
   Ketu: { en: 'Innate past-life expertise, research & detachment', hi: 'पूर्व-संस्कार, शोध व अध्यात्म' },
 };
 
+const SIGN_HI_NAK = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'];
+const GANDAMOOLA_INDICES = new Set([0, 8, 9, 17, 18, 26]); // Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati
+const PANCHAKA_INDICES = new Set([22, 23, 24, 25, 26]); // Dhanishta..Revati
+
 function buildOne(
   body: BodyPosition,
-  moonNakIdx: number
+  moonNakIdx: number,
+  chart?: ChartData
 ): PlanetInNakshatraPrediction {
   const nIdx = ((body.nakshatraIndex % 27) + 27) % 27;
   const pada = Math.max(1, Math.min(4, body.pada));
@@ -253,6 +265,35 @@ function buildOne(
   } else {
     readingEn = `${body.id} in ${nakInfo.name} Pada ${pada} (ruled by ${nakInfo.lord}, Deity: ${nakInfo.deity}) channels its planetary significations through ${ext.natureEn}. It aligns your ${role.en.toLowerCase()} with success in ${ext.vocEn}. In relationship to your Moon, it functions as ${tara.en}, bringing key fruition milestones at ages ${actAges.join(', ')}. ${pNu.en}`;
     readingHi = `${body.id === 'Sun' ? 'सूर्य' : body.id === 'Mars' ? 'मंगल' : body.id === 'Mercury' ? 'बुध' : body.id === 'Jupiter' ? 'गुरु' : body.id === 'Venus' ? 'शुक्र' : body.id === 'Saturn' ? 'शनि' : body.id === 'Rahu' ? 'राहु' : 'केतु'} का ${NAK_HI[nIdx]} नक्षत्र (चरण ${pada}, देवता: ${ext.deityHi}) में स्थित होना आपके ${role.hi} को ${ext.natureHi} से जोड़ता है। यह ${ext.vocHi} में विशेष योग्यता प्रदान करता है। चंद्र से तारा संबंध: ${tara.hi}। सक्रियता आयु: ${actAges.join(', ')} वर्ष। ${pNu.hi}`;
+  }
+
+  const navSignIdx = (nIdx * 4 + (pada - 1)) % 12;
+  const padaNavamshaSignEn = SIGNS[navSignIdx]?.name;
+  const padaNavamshaSignHi = SIGN_HI_NAK[navSignIdx];
+
+  const isGandamoola = GANDAMOOLA_INDICES.has(nIdx);
+  const isPanchaka = PANCHAKA_INDICES.has(nIdx);
+  let nakshatraDoshaEn: string | undefined;
+  let nakshatraDoshaHi: string | undefined;
+  if (isGandamoola && isPanchaka) {
+    nakshatraDoshaEn = 'Gandamoola & Panchaka Star';
+    nakshatraDoshaHi = 'गण्डमूल एवं पंचक नक्षत्र';
+  } else if (isGandamoola) {
+    nakshatraDoshaEn = 'Gandamoola Nakshatra (Abhukta Moola)';
+    nakshatraDoshaHi = 'गण्डमूल नक्षत्र';
+  } else if (isPanchaka) {
+    nakshatraDoshaEn = 'Panchaka Nakshatra';
+    nakshatraDoshaHi = 'पंचक नक्षत्र';
+  }
+
+  let dashaWindowEn: string | undefined;
+  let dashaWindowHi: string | undefined;
+  const md = chart?.vimshottari?.find((m) => m.lord === nakInfo.lord);
+  if (md) {
+    const startStr = formatDateDmy(formatLocalDateTimeFromUtc(md.startMs, chart!.offsetMinutesUsed).slice(0, 10));
+    const endStr = formatDateDmy(formatLocalDateTimeFromUtc(md.endMs, chart!.offsetMinutesUsed).slice(0, 10));
+    dashaWindowEn = `${nakInfo.lord} MD: ${startStr} → ${endStr}`;
+    dashaWindowHi = `${nakInfo.lord} महादशा: ${startStr} → ${endStr}`;
   }
 
   return {
@@ -284,6 +325,12 @@ function buildOne(
     classicalSutraEn: sutra.en,
     classicalSutraHi: sutra.hi,
     source: 'Phaladeepika Ch. 11 · Brihat Samhita · Taittiriya Brahmana · KP Nakshatra Nadi',
+    padaNavamshaSignEn,
+    padaNavamshaSignHi,
+    nakshatraDoshaEn,
+    nakshatraDoshaHi,
+    dashaWindowEn,
+    dashaWindowHi,
   };
 }
 
@@ -293,7 +340,7 @@ export function computePlanetInNakshatraPredictions(
   const moonNakIdx = chart.panchang.nakshatra.index;
   const planetMap = new Map(chart.planets.map((p) => [p.id, p]));
   const items = [chart.ascendant, ...NINE_GRAHAS.map((g) => planetMap.get(g)!)];
-  return items.map((b) => buildOne(b, moonNakIdx));
+  return items.map((b) => buildOne(b, moonNakIdx, chart));
 }
 
 export function inspectHypotheticalNakshatra(

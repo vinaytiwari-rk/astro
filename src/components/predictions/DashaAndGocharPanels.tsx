@@ -18,13 +18,14 @@ import {
   getAifasYoginiSub,
 } from '../../astro/predictions/aifasYoginiDashaKb';
 import { predictDashaDetail } from '../../astro/predictions/dashaPrashna';
+import { getDashaCombinationInsight } from '../../astro/predictions/dashaCombinations81';
 import {
   computePropheticDashaEvents,
   computePropheticTransitRoadmap,
 } from '../../astro/predictions/propheticDashaGochar';
 import type { PredictionReport } from '../../astro/predictions/types';
 import { formatDateDmy, formatLocalDateTimeFromUtc } from '../../astro/time';
-import type { ChartData, ChartStyle } from '../../astro/types';
+import type { ChartData, ChartStyle, NineGrahaId } from '../../astro/types';
 import { localizeDashaDetailHi, trBadge } from '../../i18n/hindiPredictions';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { trPlanet, trPlanetShort, trSign } from '../../i18n/translations';
@@ -39,11 +40,17 @@ export const DashaWisePanel: React.FC<{
 
   const [dashaTab, setDashaTab] = useState<'vimshottari' | 'yogini' | 'other'>('vimshottari');
   const [selectedYoginiFilter, setSelectedYoginiFilter] = useState<string>('Mangala');
+  const [expandedMdIndex, setExpandedMdIndex] = useState<number | null>(null);
 
   // --- Dynamic Prophetic Vimshottari Event Synthesis ---
   const propheticDasha = useMemo(
     () => computePropheticDashaEvents(chart, report.dashaForecast),
     [chart, report.dashaForecast]
+  );
+
+  const dashaComboInsight = useMemo(
+    () => getDashaCombinationInsight(chart, report.dashaForecast.mahadashaLord as NineGrahaId, report.dashaForecast.antardashaLord as NineGrahaId),
+    [chart, report.dashaForecast.mahadashaLord, report.dashaForecast.antardashaLord]
   );
 
   // --- Vimshottari Mahadasha Lifeline ---
@@ -281,6 +288,12 @@ export const DashaWisePanel: React.FC<{
                   <strong>{isHi ? 'दशा शमन व सिद्धि उपाय: ' : 'Dasha Harmonization Directive: '}</strong>
                   <span>{isHi ? propheticDasha.dashaActionPlanHi : propheticDasha.dashaActionPlanEn}</span>
                 </div>
+                {dashaComboInsight && (
+                  <div style={{ marginTop: '8px', padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: '6px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, borderLeft: '3px solid #d97706' }}>
+                    <strong>{isHi ? '81 दशा-युति वास्तविकता: ' : '81-Pair Combination Reality: '}</strong>
+                    <span>{isHi ? dashaComboInsight.unvarnishedRealityHi : dashaComboInsight.unvarnishedRealityEn}</span>
+                  </div>
+                )}
               </div>
 
               <div className="pred-bullets">
@@ -343,6 +356,40 @@ export const DashaWisePanel: React.FC<{
                   </div>
                   <p className="domain-summary">{detail.mdSummary}</p>
                   <p className="yoga-desc muted">{detail.guidance}</p>
+                  {md.children && md.children.length > 0 && (
+                    <div style={{ marginTop: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedMdIndex(expandedMdIndex === i ? null : i)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--accent)',
+                          fontSize: '11.5px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                      >
+                        {expandedMdIndex === i
+                          ? (isHi ? 'अंतर्दशा समयरेखा छिपाएं ▲' : 'Hide Antardasha Timeline ▲')
+                          : (isHi ? `९ अंतर्दशाएँ देखें (${md.children.length}) ▼` : `View ${md.children.length} Antardashas ▼`)}
+                      </button>
+                      {expandedMdIndex === i && (
+                        <div style={{ marginTop: '6px', display: 'grid', gap: '4px', fontSize: '11.5px', background: 'var(--bg-subtle)', padding: '8px', borderRadius: '6px' }}>
+                          {md.children.map((ad, adIdx) => (
+                            <div key={`${ad.lord}-${adIdx}`} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
+                              <strong>{trPlanet(ad.lord, lang)}</strong>
+                              <span className="mono muted">
+                                {formatDateDmy(formatLocalDateTimeFromUtc(ad.startMs, chart.offsetMinutesUsed).slice(0, 10))} →{' '}
+                                {formatDateDmy(formatLocalDateTimeFromUtc(ad.endMs, chart.offsetMinutesUsed).slice(0, 10))}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -749,7 +796,11 @@ export const GocharWisePanel: React.FC<{
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13.5px', color: 'var(--accent)' }}>
                   <Sparkles size={15} />
-                  <span>{isHi ? 'आगामी 12 से 24 माह का गोचर रोडमैप (2026-2027 Transit Predictions):' : 'Next 12–24 Months Transit Roadmap (2026–2027):'}</span>
+                  <span>
+                    {isHi
+                      ? `आगामी 12 से 24 माह का गोचर रोडमैप (${report.deepGochar.targetDate.slice(0, 4)}–${Number(report.deepGochar.targetDate.slice(0, 4)) + 1}):`
+                      : `Next 12–24 Months Transit Roadmap (${report.deepGochar.targetDate.slice(0, 4)}–${Number(report.deepGochar.targetDate.slice(0, 4)) + 1}):`}
+                  </span>
                 </div>
                 <span className="badge badge-accent mono" style={{ fontSize: '11px', padding: '3px 8px' }}>
                   {isHi ? 'प्रामाणिक फलदीपिका गोचर' : 'Phaladeepika Gochar'}
@@ -782,7 +833,7 @@ export const GocharWisePanel: React.FC<{
 
             <div className="gochar-banner is-info">
               <strong>{isHi ? 'दोहरा गोचर प्रभाव:' : 'Double Transit Activation:'}</strong>{' '}
-              {report.deepGochar.overallSummary}
+              {isHi ? report.deepGochar.overallSummaryHi : report.deepGochar.overallSummary}
             </div>
             <div
               className={`gochar-banner ${
@@ -811,7 +862,7 @@ export const GocharWisePanel: React.FC<{
                     <strong>
                       {isHi ? `भाव ${dt.house}` : `House ${dt.house}`} ({dt.signName}) — {dt.savBindus} SAV:
                     </strong>{' '}
-                    {dt.meaning}{' '}
+                    {isHi ? dt.meaningHi : dt.meaning}{' '}
                     <em>
                       ({trPlanet('Jupiter', lang)}: {dt.jupiterLink}; {trPlanet('Saturn', lang)}:{' '}
                       {dt.saturnLink})
@@ -851,14 +902,18 @@ export const GocharWisePanel: React.FC<{
             <tbody>
               {report.deepGochar.items.map((item) => (
                 <tr key={item.planet}>
-                  <td><strong>{trPlanet(item.planet, lang)}</strong></td>
-                  <td>{item.transitSign}</td>
+                  <td>
+                    <strong>{trPlanet(item.planet, lang)}</strong>
+                    <div className="muted small-text">{isHi ? item.murtiHi : `${item.murti} Murti`}</div>
+                  </td>
+                  <td>{isHi ? item.transitSignHi : item.transitSign}</td>
                   <td className="mono">
                     {t.common.house}{item.houseFromMoon} / {t.common.house}{item.houseFromLagna}
                   </td>
                   <td className="small-cell">
                     D9: {item.d9TransitSign} ({t.common.house}{item.d9HouseFromNatalD9Lagna}) · D10:{' '}
                     {item.d10TransitSign}
+                    <div className="muted">BAV: {item.bavBindus}/8 · SAV: {item.savBindus}</div>
                   </td>
                   <td>
                     <span className={`tag ${item.kakshyaHasBindu ? 'tag-varg' : 'tag-retro'}`}>
@@ -867,8 +922,11 @@ export const GocharWisePanel: React.FC<{
                     </span>
                   </td>
                   <td className="small-cell">
-                    <span className={item.taraGood ? 'cell-strong' : 'cell-weak'}>{item.taraName}</span>
+                    <span className={item.taraGood ? 'cell-strong' : 'cell-weak'}>
+                      {isHi ? item.taraNameHi : item.taraName}
+                    </span>
                     {item.hasVedha ? ` · ${isHi ? 'वेध:' : 'Vedha:'} ${item.vedhaPlanet}` : ''}
+                    {item.vipareetaVedha ? ` · ${isHi ? 'विपरीत वेध ✓' : 'Vipareeta Vedha ✓'}` : ''}
                   </td>
                   <td>
                     <span
@@ -883,7 +941,7 @@ export const GocharWisePanel: React.FC<{
                       {trBadge(item.verdict, lang)}
                     </span>
                   </td>
-                  <td className="wrap-cell">{item.reading}</td>
+                  <td className="wrap-cell">{isHi ? item.readingHi : item.reading}</td>
                 </tr>
               ))}
             </tbody>

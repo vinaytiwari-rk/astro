@@ -292,7 +292,15 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
             <tbody>
               {report.planetaryDrishtis.map((d, idx) => (
                 <tr key={idx}>
-                  <td><strong>{trPlanet(d.from, lang)}</strong></td>
+                  <td>
+                    <strong>{trPlanet(d.from, lang)}</strong>
+                    {d.fromDignity && d.fromDignity !== '-' && (
+                      <div className="muted small-text">{d.fromDignity}</div>
+                    )}
+                    {(isHi ? d.functionalRoleHi : d.functionalRoleEn) && (
+                      <div className="muted small-text">{isHi ? d.functionalRoleHi : d.functionalRoleEn}</div>
+                    )}
+                  </td>
                   <td>
                     <span
                       className={`tag ${
@@ -307,7 +315,10 @@ export const DrishtiWisePanel: React.FC<{ report: DrishtiReport }> = ({ report }
                     </span>
                   </td>
                   <td><strong>{trPlanet(d.to, lang)}</strong></td>
-                  <td className="mono">{d.virupas}V · {d.strengthPercent}%</td>
+                  <td className="mono">
+                    {d.virupas}V · {d.strengthPercent}%
+                    <div className="muted small-text">Orb: {d.orbDeg.toFixed(1)}°</div>
+                  </td>
                   <td className="wrap-cell">
                     <div><strong>+</strong> {isHi ? d.positiveHi : d.positiveEn}</div>
                     <div className="muted"><strong>−</strong> {isHi ? d.negativeHi : d.negativeEn}</div>

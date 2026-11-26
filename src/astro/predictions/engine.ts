@@ -838,6 +838,7 @@ function buildParamayusLockedReport(
       doubleTransitHouses: [],
       items: [],
       overallSummary: paramayus.messageEn,
+      overallSummaryHi: paramayus.messageHi,
     },
     divisionalPredictions: [],
     kpReport: {

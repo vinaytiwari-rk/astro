@@ -16,6 +16,8 @@ import {
   type DetectedClassicalYoga,
 } from '../../astro/predictions/classicalYogasKb';
 import { computeDivisionalYogas, type DivisionalYogaItem } from '../../astro/divisionalYogas';
+import { computeTwelveBhavaAndParivartanaYogas } from '../../astro/predictions/twelveBhavaYogas';
+import { formatDateDmy, formatLocalDateTimeFromUtc } from '../../astro/time';
 import {
   inspectCustomYuti,
   type ChartYutiGroup,
@@ -76,8 +78,13 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
 
   const customResult = useMemo(() => {
     if (selectedPlanets.length < 2) return null;
-    return inspectCustomYuti(selectedPlanets, customSign);
+    return inspectCustomYuti(selectedPlanets, 1, customSign);
   }, [selectedPlanets, customSign]);
+
+  const twelveBhavaYogas = useMemo(
+    () => computeTwelveBhavaAndParivartanaYogas(chart),
+    [chart]
+  );
 
   const categories: Array<{ id: string; labelEn: string; labelHi: string }> = [
     { id: 'all', labelEn: 'All Categories', labelHi: 'सभी श्रेणियां' },
@@ -509,26 +516,43 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
                     </p>
 
                     {/* Dasha Activation & Operational Timing */}
-                    {isFormed && involvedPlanets.length > 0 && (
-                      <div
-                        style={{
-                          margin: '4px 0 6px',
-                          padding: '6px 10px',
-                          background: 'rgba(217, 119, 6, 0.07)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid var(--accent)',
-                          fontSize: '12px',
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        <strong>{isHi ? 'दशा फलोदय काल: ' : 'Dasha Activation Timing: '}</strong>
-                        <span>
-                          {isHi
-                            ? `यह योग मुख्य रूप से ${involvedPlanets.map((p) => trPlanet(p as any, 'hi')).join(' व ')} की महादशा/अंतर्दशा में पूर्ण फल प्रदान करता है।`
-                            : `Fructifies predominantly during Mahadasha or Antardasha of participating planets: ${involvedPlanets.join(', ')}.`}
-                        </span>
-                      </div>
-                    )}
+                    {isFormed && involvedPlanets.length > 0 && (() => {
+                      const mdMatches = chart.vimshottari
+                        .filter((m) => involvedPlanets.includes(m.lord))
+                        .slice(0, 2)
+                        .map((m) => {
+                          const s = formatDateDmy(formatLocalDateTimeFromUtc(m.startMs, chart.offsetMinutesUsed).slice(0, 10));
+                          const e = formatDateDmy(formatLocalDateTimeFromUtc(m.endMs, chart.offsetMinutesUsed).slice(0, 10));
+                          return `${trPlanet(m.lord, lang)} (${s} → ${e})`;
+                        });
+                      return (
+                        <div
+                          style={{
+                            margin: '4px 0 6px',
+                            padding: '6px 10px',
+                            background: 'rgba(217, 119, 6, 0.07)',
+                            borderRadius: '6px',
+                            borderLeft: '3px solid var(--accent)',
+                            fontSize: '12px',
+                            lineHeight: 1.45,
+                          }}
+                        >
+                          <strong>{isHi ? 'दशा फलोदय काल: ' : 'Dasha Activation Timing: '}</strong>
+                          <span>
+                            {mdMatches.length > 0
+                              ? mdMatches.join(' · ')
+                              : (isHi
+                                  ? `यह योग मुख्य रूप से ${involvedPlanets.map((p) => trPlanet(p as any, 'hi')).join(' व ')} की महादशा/अंतर्दशा में फल देता है।`
+                                  : `Fructifies during Mahadasha/Antardasha of ${involvedPlanets.join(', ')}.`)}
+                          </span>
+                          {y.bhangaStatus && y.bhangaStatus !== 'Full' && (
+                            <div style={{ marginTop: '4px', color: y.bhangaStatus === 'Bhanga' ? '#15803d' : '#b45309', fontWeight: 600 }}>
+                              {y.bhangaStatus}: {isHi ? y.bhangaReasonHi : y.bhangaReasonEn}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Metadata Footer */}
@@ -558,6 +582,29 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
               );
             }))}
           </div>
+
+          {(twelveBhavaYogas.bhavaYogas.length > 0 || twelveBhavaYogas.parivartanaYogas.length > 0) && (
+            <div className="panel" style={{ padding: '14px 16px' }}>
+              <h4 style={{ margin: '0 0 10px', fontSize: '14px', color: 'var(--accent)' }}>
+                {isHi ? 'द्वादश भाव एवं परिवर्तन योग (Bhava & Parivartana Yogas)' : '12-Bhava & Parivartana Yogas'}
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '10px' }}>
+                {twelveBhavaYogas.bhavaYogas.map((by, idx) => (
+                  <div key={`bh-${by.houseNumber}-${idx}`} style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', fontSize: '12.5px' }}>
+                    <div style={{ fontWeight: 700, marginBottom: '4px' }}>{isHi ? by.yogaNameHi : by.yogaNameEn}</div>
+                    <div className="muted" style={{ fontSize: '11.5px', marginBottom: '4px' }}>{isHi ? by.conditionMetHi : by.conditionMetEn}</div>
+                    <div>{isHi ? by.effectHi : by.effectEn}</div>
+                  </div>
+                ))}
+                {twelveBhavaYogas.parivartanaYogas.map((py, idx) => (
+                  <div key={`pv-${py.planet1}-${py.planet2}-${idx}`} style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', fontSize: '12.5px' }}>
+                    <div style={{ fontWeight: 700, marginBottom: '4px' }}>{isHi ? py.nameHi : py.nameEn}</div>
+                    <div>{isHi ? py.effectHi : py.effectEn}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -600,7 +647,7 @@ export const ActiveYogasAndYutiPanel: React.FC<ActiveYogasAndYutiPanelProps> = (
                 <option value="D16">D16 — षोडशांश (Vehicles & Happiness)</option>
                 <option value="D20">D20 — विंशांश (Spiritual Practice)</option>
                 <option value="D24">D24 — चतुर्विंशांश (Higher Education)</option>
-                <option value="D27">D27 — भ Ret (Strengths & Physical Prowess)</option>
+                <option value="D27">D27 — भांश (Bhamsha / Strengths & Prowess)</option>
                 <option value="D30">D30 — त्रिंशांश (Trimshamsha / Misfortunes)</option>
                 <option value="D40">D40 — खवेदांश (Khavedamsha / Auspiciousness)</option>
                 <option value="D45">D45 — अक्षवेदांश (General Well-being)</option>

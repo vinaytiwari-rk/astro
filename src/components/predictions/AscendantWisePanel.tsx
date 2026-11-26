@@ -25,6 +25,7 @@ import {
 } from '../../astro/predictions/ascendantWise';
 import type { ChartData } from '../../astro/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { trSign } from '../../i18n/translations';
 
 interface AscendantWisePanelProps {
   chart: ChartData;
@@ -96,7 +97,7 @@ export const AscendantWisePanel: React.FC<AscendantWisePanelProps> = ({ chart })
                 }}
                 onClick={() => setSelectedLagna(i)}
               >
-                <span>{isHi ? SIGNS[i].name : SIGNS[i].name}</span>
+                <span>{isHi ? trSign(i, 'hi') : SIGNS[i].name}</span>
                 {isUserLagna && (
                   <span style={{ marginLeft: '4px', fontSize: '0.75rem', opacity: 0.9 }}>
                     ({isHi ? 'जन्म' : 'Natal'})

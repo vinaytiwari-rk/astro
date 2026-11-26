@@ -1,5 +1,6 @@
-import { NINE_GRAHAS, SIGNS } from '../constants';
-import type { BodyPosition, ChartData, NineGrahaId } from '../types';
+import { NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../constants';
+import type { BodyPosition, ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import { getFunctionalLordship } from './functionalLordship';
 
 export type PredictionBodyId = NineGrahaId | 'Asc';
 
@@ -31,6 +32,15 @@ export interface PlanetInSignPrediction {
   remedyDirectiveEn: string;
   remedyDirectiveHi: string;
   source: string;
+  d9SignNameEn?: string;
+  d9SignNameHi?: string;
+  isVargottama?: boolean;
+  hasDigbala?: boolean;
+  isPushkaraNavamsha?: boolean;
+  functionalRoleEn?: string;
+  functionalRoleHi?: string;
+  dispositorNoteEn?: string;
+  dispositorNoteHi?: string;
 }
 
 const SIGN_HI = [
@@ -246,7 +256,28 @@ function getOrdinal(n: number): string {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetInSignPrediction {
+function checkDigbala(pId: PredictionBodyId, houseNum: number): boolean {
+  if ((pId === 'Jupiter' || pId === 'Mercury') && houseNum === 1) return true;
+  if ((pId === 'Sun' || pId === 'Mars') && houseNum === 10) return true;
+  if (pId === 'Saturn' && houseNum === 7) return true;
+  if ((pId === 'Moon' || pId === 'Venus') && houseNum === 4) return true;
+  return false;
+}
+
+function checkPushkaraNavamsha(signIndex: number, degreeInSign: number): boolean {
+  const elem = signIndex % 4; // 0=Fire, 1=Earth, 2=Air, 3=Water
+  const navIdx = Math.min(8, Math.floor(degreeInSign / (30 / 9)));
+  if (elem === 0) return navIdx === 6 || navIdx === 8;
+  if (elem === 1) return navIdx === 2 || navIdx === 4;
+  if (elem === 2) return navIdx === 5 || navIdx === 7;
+  return navIdx === 0 || navIdx === 2;
+}
+
+function getPlanetInSignEntry(
+  body: BodyPosition,
+  ascSignIndex: number,
+  chart?: ChartData
+): PlanetInSignPrediction {
   const pId = body.id as PredictionBodyId;
   const sInfo = SIGNS[body.signIndex];
   const sHi = SIGN_HI[sInfo.index];
@@ -288,7 +319,28 @@ function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetI
       : '';
   const combWarnHi = body.isCombust ? ' (अस्त — शुभत्व हेतु सावधानी)' : '';
 
-  void ascSignIndex;
+  const hasDigbala = checkDigbala(pId, body.rasiHouseNumber);
+  const isPushkaraNavamsha = checkPushkaraNavamsha(body.signIndex, body.degreeInSign);
+  const d9Placement = chart?.divisionalCharts?.D9?.placements?.find((p) => p.id === pId);
+  const d9SignIdx = d9Placement?.signIndex;
+  const d9SignNameEn = d9SignIdx !== undefined ? SIGNS[d9SignIdx]?.name : undefined;
+  const d9SignNameHi = d9SignIdx !== undefined ? SIGN_HI[d9SignIdx] : undefined;
+
+  let functionalRoleEn: string | undefined;
+  let functionalRoleHi: string | undefined;
+  if (SEVEN_PLANETS.includes(pId as SevenPlanetId)) {
+    const fl = getFunctionalLordship(pId as SevenPlanetId, ascSignIndex);
+    functionalRoleEn = fl.rolesEn.join(' · ');
+    functionalRoleHi = fl.rolesHi.join(' · ');
+  }
+
+  let dispositorNoteEn: string | undefined;
+  let dispositorNoteHi: string | undefined;
+  const dispBody = chart?.planets?.find((p) => p.id === sInfo.lord);
+  if (dispBody && pId !== 'Asc') {
+    dispositorNoteEn = `Dispositor ${sInfo.lord} is in House ${dispBody.rasiHouseNumber} (${dispBody.signName}, ${dispBody.dignity})`;
+    dispositorNoteHi = `राशि-स्वामी ${sInfo.lord} भाव ${dispBody.rasiHouseNumber} (${SIGN_HI[dispBody.signIndex]}, ${dispBody.dignity}) में स्थित`;
+  }
 
   return {
     planet: pId,
@@ -318,13 +370,22 @@ function getPlanetInSignEntry(body: BodyPosition, ascSignIndex: number): PlanetI
     remedyDirectiveEn: remedy.en,
     remedyDirectiveHi: remedy.hi,
     source: 'Saravali (Kalyana Varma) · Brihat Jataka (Varahamihira) · Phaladeepika',
+    d9SignNameEn,
+    d9SignNameHi,
+    isVargottama: body.isVargottama,
+    hasDigbala,
+    isPushkaraNavamsha,
+    functionalRoleEn,
+    functionalRoleHi,
+    dispositorNoteEn,
+    dispositorNoteHi,
   };
 }
 
 export function computePlanetInSignPredictions(chart: ChartData): PlanetInSignPrediction[] {
-  const ascItem = getPlanetInSignEntry(chart.ascendant, chart.ascendant.signIndex);
+  const ascItem = getPlanetInSignEntry(chart.ascendant, chart.ascendant.signIndex, chart);
   const planetMap = new Map(chart.planets.map((p) => [p.id, p]));
-  const rest = NINE_GRAHAS.map((g) => getPlanetInSignEntry(planetMap.get(g)!, chart.ascendant.signIndex));
+  const rest = NINE_GRAHAS.map((g) => getPlanetInSignEntry(planetMap.get(g)!, chart.ascendant.signIndex, chart));
   return [ascItem, ...rest];
 }
 

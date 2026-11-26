@@ -4631,5 +4631,31 @@ export function detectClassicalYogas(chart: ChartData): DetectedClassicalYoga[] 
   }
 
 
+  // Evaluate Yoga-Bhanga / Affliction / Kemadruma Cancellation
+  for (const y of detected) {
+    if (/kemadruma/i.test(y.name)) {
+      const moonInKendra = moon && isKendra(houseBetween(ascSign, moon.signIndex));
+      const jupAspectsMoon = jupiter && moon && [5, 7, 9].includes(((moon.signIndex - jupiter.signIndex + 12) % 12) + 1);
+      if (moonInKendra || jupAspectsMoon) {
+        y.bhangaStatus = 'Bhanga';
+        y.bhangaReasonEn = 'Kemadruma Bhanga: Moon in Kendra from Lagna or aspected by Jupiter cancels the isolation.';
+        y.bhangaReasonHi = 'केमद्रुम भंग: लग्न से केंद्र में चंद्र या गुरु की दृष्टि से यह दोष भंग होकर राजयोग समान फल देता है।';
+        continue;
+      }
+    }
+    if (y.category !== 'Arishta') {
+      const combustPlanet = y.planets.find((pid) => {
+        if (pid === 'Sun' || pid === 'Rahu' || pid === 'Ketu') return false;
+        return byId.get(pid as PlanetId)?.isCombust;
+      });
+      if (combustPlanet) {
+        y.bhangaStatus = 'Partial';
+        y.bhangaReasonEn = `${combustPlanet} is combust near Sun — yoga requires sustained effort to manifest fully.`;
+        y.bhangaReasonHi = `${combustPlanet} सूर्य से अस्त हैं — योग का पूर्ण फल निरंतर परिश्रम व धैर्य से प्राप्त होता है।`;
+        continue;
+      }
+    }
+  }
+
   return detected;
 }

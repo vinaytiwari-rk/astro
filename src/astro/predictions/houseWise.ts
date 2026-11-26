@@ -1,4 +1,5 @@
 import { computeBhavaChalitPlacements } from '../avakahadaChalit';
+import { computeBhavabalaReport } from '../bhavabalaEngine';
 import { COMBUSTION_ORB, NAKSHATRAS, NINE_GRAHAS, SIGNS } from '../constants';
 import { angularDiffDeg } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
@@ -91,6 +92,10 @@ export interface HouseWisePrediction {
   remedyRitualEn?: string;
   remedyRitualHi?: string;
   pvrArgalaItems?: PvrArgalaItem[];
+  bhavaBalaRupas?: number;
+  bhavaBalaRank?: number;
+  neechabhangaNoteEn?: string;
+  neechabhangaNoteHi?: string;
 }
 
 const SIGN_HI = [
@@ -200,6 +205,8 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
   const sunPos = byId.get('Sun')!;
   const ascSign = chart.ascendant.signIndex;
   const chalit = computeBhavaChalitPlacements(chart);
+  const bhavaBalaReport = typeof computeBhavabalaReport === 'function' ? computeBhavabalaReport(chart) : null;
+  const moonSignIndex = byId.get('Moon')?.signIndex ?? ascSign;
 
   // Precompute Parashari aspects per house with aspect details
   const aspectMap = new Map<number, Array<{ planet: NineGrahaId; type: string }>>();
@@ -308,8 +315,22 @@ export function computeHouseWisePredictions(chart: ChartData): HouseWisePredicti
     if ([3, 11].includes(lordH)) score += 6; // Upachaya
     if ([6, 8, 12].includes(lordH) && ![6, 8, 12].includes(h)) score -= 12; // Dusthana affliction
 
-    // Lord Rashi Dignity
+    // Lord Rashi Dignity & Neechabhanga Check
+    let neechabhangaNoteEn: string | undefined;
+    let neechabhangaNoteHi: string | undefined;
+    if (lordPos.dignity === 'Debilitated') {
+      const debSignLord = SIGNS[lordPos.signIndex]?.lord;
+      const debSignLordPos = chart.planets.find((p) => p.id === debSignLord);
+      const isKendraFromLagna = (pHouse: number) => [1, 4, 7, 10].includes(pHouse);
+      const isKendraFromMoon = (sIdx: number) => [1, 4, 7, 10].includes(((sIdx - moonSignIndex + 12) % 12) + 1);
+      if (debSignLordPos && (isKendraFromLagna(debSignLordPos.rasiHouseNumber) || isKendraFromMoon(debSignLordPos.signIndex))) {
+        score += 6;
+        neechabhangaNoteEn = `Neechabhanga (cancellation of debilitation): ${lordPos.id}'s dispositor ${debSignLordPos.id} is in Kendra, converting initial struggle into late-blooming strength.`;
+        neechabhangaNoteHi = `नीचभंग राजयोग: ${PLANET_HI[lordPos.id]} के राशि-स्वामी ${PLANET_HI[debSignLordPos.id]} केंद्र में स्थित होने से नीचत्व भंग होकर प्रारंभिक संघर्ष के बाद उच्च सफलता मिलती है।`;
+      }
+    }
     score += scoreDignity(lordPos.dignity) * 0.8;
+    const bhavaBalaRow = bhavaBalaReport?.houses?.find((r) => r.house === h);
 
     // Corroborative strength from Shadbala, D9 and the nakshatra dispositor.
     // These remain secondary modifiers and cannot overpower core house evidence.
@@ -554,6 +575,10 @@ ${decisiveVerdictEn}`;
       remedyRitualEn: classicalInfo.remedies.ritualAdviceEn,
       remedyRitualHi: classicalInfo.remedies.ritualAdviceHi,
       pvrArgalaItems,
+      bhavaBalaRupas: bhavaBalaRow?.totalRupas,
+      bhavaBalaRank: bhavaBalaRow?.rank,
+      neechabhangaNoteEn,
+      neechabhangaNoteHi,
     };
   });
 }
