@@ -132,13 +132,15 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
 
     for (const ad of md.children) {
       const adLord = ad.lord as NineGrahaId;
-      const startAge = (ad.startMs - birthMs) / (365.25 * 86_400_000);
+      if (ad.endMs <= birthMs) continue;
+      const effStartMs = Math.max(birthMs, ad.startMs);
+      const startAge = (effStartMs - birthMs) / (365.25 * 86_400_000);
       const endAge = (ad.endMs - birthMs) / (365.25 * 86_400_000);
 
       // Consider ages up to full 120-year Parashara Vimshottari cycle
       if (startAge > 120) continue;
 
-      const startDateStr = msToDmy(ad.startMs);
+      const startDateStr = msToDmy(effStartMs);
       const endDateStr = msToDmy(ad.endMs);
       const dashaLabel = `${PLANET_NAMES_HI[mdLord]} महादशा / ${PLANET_NAMES_HI[adLord]} अंतर्दशा (${mdLord}/${adLord})`;
 
@@ -177,8 +179,8 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
       }
 
       // 2. Career Promotion & Rise (कॅरियर पदोन्नति व राज्य सम्मान काल)
-      // Prime window: Lord 10, Lord 1, Sun, Mars, Saturn, or Amatyakaraka
-      {
+      // Prime window: Age >= 18, Lord 10, Lord 1, Sun, Mars, Saturn, or Amatyakaraka
+      if (endAge >= 18 && startAge <= 78) {
         const isL10 = mdLord === lord10 || adLord === lord10;
         const isL1 = mdLord === lord1 || adLord === lord1;
         const isAmK = mdLord === amatyaKaraka || adLord === amatyaKaraka;
@@ -244,7 +246,7 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
 
       // 4. Foreign Travel & Relocation (विदेश यात्रा व निवास)
       // Lord 9, Lord 12, Lord 3, or Rahu
-      {
+      if (endAge >= 14) {
         const isL12 = mdLord === lord12 || adLord === lord12;
         const isRahu = mdLord === 'Rahu' || adLord === 'Rahu';
         const isL9 = mdLord === lord9 || adLord === lord9;
@@ -277,7 +279,7 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
 
       // 5. Property & Vehicle Acquisition (भूमि, भवन व वाहन लाभ)
       // Lord 4, Mars, Venus
-      {
+      if (endAge >= 20) {
         const isL4 = mdLord === lord4 || adLord === lord4;
         const isMars = mdLord === 'Mars' || adLord === 'Mars';
         const isVenus = mdLord === 'Venus' || adLord === 'Venus';
@@ -309,7 +311,7 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
 
       // 6. Sudden Wealth Windfall (आकस्मिक धन लाभ व स्वर्ण काल)
       // Lord 11, Lord 2, Jupiter, Mercury
-      {
+      if (endAge >= 18) {
         const isL11 = mdLord === lord11 || adLord === lord11;
         const isL2 = mdLord === lord2 || adLord === lord2;
         const isL9 = mdLord === lord9 || adLord === lord9;
@@ -341,7 +343,7 @@ export function computeLifeEventTiming(chart: ChartData): LifeEventTimingReport 
 
       // 7. Health & Surgical Vulnerability (स्वास्थ्य संकट, रोग व शल्यक्रिया काल)
       // Lord 6, Lord 8, Rahu, Ketu, Saturn
-      {
+      if (endAge >= 1) {
         const isL6 = mdLord === lord6 || adLord === lord6;
         const isL8 = mdLord === lord8 || adLord === lord8;
         const isMalefic = ['Saturn', 'Rahu', 'Ketu', 'Mars'].includes(adLord);

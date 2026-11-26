@@ -1063,21 +1063,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       d9
     );
 
+    const sibValLower = sibRes.countAndBirthOrder.valEn.toLowerCase();
+    const isYoungestBirthOrder = sibValLower.includes('youngest');
+    const isEldestBirthOrder = sibValLower.includes('eldest');
+    const isOnlyChild = sibValLower.includes('only child') || sibValLower.includes('single child');
+
     const youngerMale = h3Sign.gender === 'Odd' || ['Sun', 'Mars', 'Jupiter'].includes(youngerSiblingsLord?.id || '');
-    const youngerEn = youngerMale
-      ? '1 younger brother (Anuja) with an energetic, ambitious, and bold disposition'
-      : '1 younger sister (Anuja) with a cultured, affectionate, and artistic nature';
-    const youngerHi = youngerMale
-      ? '१ छोटा भाई (अनुज), जो उत्साही, महत्वाकांक्षी व साहसी स्वभाव का होगा'
-      : '१ छोटी बहन (अनुजा), जो स्नेहमयी, कलाप्रिय व जातक का आदर करने वाली होगी';
+    const youngerEn = isOnlyChild || isYoungestBirthOrder
+      ? 'No younger siblings indicated (native holds the youngest or only-child anchor position)'
+      : youngerMale
+        ? '1 to 2 younger siblings (brother tendency) with an energetic, ambitious disposition'
+        : '1 to 2 younger siblings (sister tendency) with a cultured, affectionate nature';
+    const youngerHi = isOnlyChild || isYoungestBirthOrder
+      ? 'छोटे भाई-बहन का संकेत नहीं (जातक स्वयं सबसे छोटे या इकलौते स्थान पर हैं)'
+      : youngerMale
+        ? '१ से २ छोटे भाई-बहन (भाई की प्रमुखता), जो उत्साही व साहसी स्वभाव के होंगे'
+        : '१ से २ छोटे भाई-बहन (बहन की प्रमुखता), जो स्नेहमयी व कलाप्रिय होंगी';
 
     const elderMale = h11Sign.gender === 'Odd' || ['Sun', 'Mars', 'Jupiter'].includes(elderSiblingsLord?.id || '');
-    const elderEn = elderMale
-      ? '1 elder brother who acts as a guide, protector, and pillar of career mentorship'
-      : '1 elder sister who provides deep emotional nurturing, advice, and familial stability';
-    const elderHi = elderMale
-      ? '१ बड़े भाई का योग, जो जातक के लिए संरक्षक, मार्गदर्शक व संबल की भूमिका निभाएंगे'
-      : '१ बड़ी बहन का योग, जो ममतामयी मार्गदर्शन, संबल व पारिवारिक संतुलन प्रदान करेंगी';
+    const elderEn = isOnlyChild || isEldestBirthOrder
+      ? 'No elder siblings indicated (native carries eldest or independent family responsibility)'
+      : elderMale
+        ? '1 or more elder siblings (brother guide) who act as a protector and career anchor'
+        : '1 or more elder siblings (sister guide) who provide emotional nurturing and stability';
+    const elderHi = isOnlyChild || isEldestBirthOrder
+      ? 'बड़े भाई-बहन का संकेत नहीं (जातक पर ज्येष्ठ या स्वतंत्र पारिवारिक दायित्व रहेगा)'
+      : elderMale
+        ? '१ या अधिक बड़े भाई-बहन (भाई का मार्गदर्शन), जो संरक्षक व संबल की भूमिका निभाएंगे'
+        : '१ या अधिक बड़े भाई-बहन (बहन का सहयोग), जो ममतामयी मार्गदर्शन व पारिवारिक संतुलन देंगी';
 
     pillars.push({
       id: 'siblings_bhratri',
@@ -1269,18 +1282,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       marriageTypeHi = 'प्रेम विवाह (Love Marriage): व्यक्तिगत पसंद, गहरा भावनात्मक लगाव व परस्पर आदर्शों की एकता';
     }
 
-    // Marital Status, Delays, Manglik, and Compatibility
+    // Marital Status, Delays, Manglik, Pravrajya / Non-Marriage, and Compatibility
     const isManglik = (mars?.placedHouse === 1 || mars?.placedHouse === 4 || mars?.placedHouse === 7 || mars?.placedHouse === 8 || mars?.placedHouse === 12);
     const hasSaturnOrRahuIn7th = h7Planets.some((p) => p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu');
     const is7thLordAfflicted = spouseLord?.placedHouse === 6 || spouseLord?.placedHouse === 8 || spouseLord?.placedHouse === 12 || spouseLord?.dignity === 'Debilitated';
     const hasJupiterAspectOn7th = jupiter && (jupiter.placedHouse === 1 || jupiter.placedHouse === 3 || jupiter.placedHouse === 11 || jupiter.placedHouse === 7);
+
+    // Pravrajya / Ascetic / Non-Marriage / Separated-Domestic Detector
+    const ketuOn17 = ketu?.placedHouse === 1 || ketu?.placedHouse === 7;
+    const venusIn12OrDebOrCombust = venus && (venus.placedHouse === 12 || venus.dignity === 'Debilitated' || venus.isCombust);
+    const saturnAfflictsMoonOr7th = saturn && (saturn.placedHouse === 7 || saturn.placedHouse === 5 || saturn.placedHouse === moon?.placedHouse || [1, 3, 7, 10].includes(((7 - saturn.placedHouse + 12) % 12) + 1));
+    const pravrajyaCount =
+      (ketuOn17 ? 1 : 0) +
+      (venusIn12OrDebOrCombust ? 1 : 0) +
+      (is7thLordAfflicted ? 1 : 0) +
+      (saturnAfflictsMoonOr7th ? 1 : 0) +
+      (hasSaturnOrRahuIn7th ? 1 : 0);
 
     let maritalStatusEn = 'Auspicious, harmonious and enduring wedlock (marriage favored between ages 25 and 28); strong fidelity, mutual honor, and domestic prosperity';
     let maritalStatusHi = 'शुभ, सौहार्दपूर्ण व स्थायी दांपत्य (आयु 25 से 28 वर्ष के मध्य विवाह योग); जीवनसाथी के प्रति अगाध निष्ठा, परस्पर सम्मान व कुल की प्रतिष्ठा में वृद्धि';
     let maritalStatusExplEn = `The 7th house (${h7Sign.name}) is protected by benefic planetary rays. Marriage is sanctified by high moral commitment, mutual trust, and domestic prosperity.`;
     let maritalStatusExplHi = `सप्तम भाव (${SIGN_HI[h7SignIdx]}) पर शुभ ग्रहों की दृष्टि दांपत्य में एकनिष्ठता, परस्पर आदर और दीर्घायु प्रदान करती है। वैवाहिक जीवन स्थिर, सम्मानित और अटूट रहेगा।`;
 
-    if ((hasSaturnOrRahuIn7th || is7thLordAfflicted) && !hasJupiterAspectOn7th) {
+    if (pravrajyaCount >= 3 && !hasJupiterAspectOn7th) {
+      maritalStatusEn = 'Delayed marriage (favored after age 32+) or High Independence / Non-Traditional Path (Pravrajya / Solo-Focus Signals): May remain unmarried or live independently despite formal union';
+      maritalStatusHi = 'विवाह में विलंब (32+ वर्ष) अथवा उच्च वैराग्य / स्वतंत्र जीवन पथ (प्रव्रज्या व अविवाहित संकेत): आजीवन अविवाहित रहने अथवा विवाह के बाद भी स्वतंत्र/पृथक जीवन जीने की प्रबल प्रवृत्ति';
+      maritalStatusExplEn = 'Multiple detachment and delay markers (Ketu/Saturn/Rahu on 1-7 axis, 12th/afflicted Venus, or 7th lord in Dusthana) channel life energy toward mission, public duty, or spiritual independence rather than conventional domesticity.';
+      maritalStatusExplHi = 'लग्न-सप्तम अक्ष पर केतु/शनि/राहु, व्यय/पीड़ित शुक्र अथवा त्रिक भाव में सप्तमेश होने से जातक की ऊर्जा पारंपरिक गृहस्थ के बजाय स्वतंत्र उद्देश्य, कर्म या आत्मिक मार्ग की ओर अधिक मुड़ती है।';
+    } else if ((hasSaturnOrRahuIn7th || is7thLordAfflicted) && !hasJupiterAspectOn7th) {
       maritalStatusEn = 'Delayed marriage (favored after age 28-32); demands emotional maturity, patience, and meticulous horoscope compatibility; period of adjustment requires mutual understanding to prevent friction';
       maritalStatusHi = 'विवाह में विलंब (आयु २८ से ३२ वर्ष उपरांत अनुकूल); दांपत्य में धैर्य, परिपक्वता व सूक्ष्म कुंडली मिलान अनिवार्य; वैचारिक मतभेद अथवा स्वभावगत अंतर को सुलझाने के लिए परस्पर सामंजस्य आवश्यक';
       maritalStatusExplEn = 'The 7th house receives influence from delay-causing or disciplining planets (Saturn/Rahu/Ketu). Classical Parashara principles advise mature-age matrimony, patience during early wedlock adjustments, and seeking partner compatibility to ensure lifelong marital stability.';
@@ -1301,6 +1330,19 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const isMarsRahuPassionate = (mars?.placedHouse === 7 || mars?.placedHouse === 12 || rahu?.placedHouse === 7 || (venus && mars && Math.abs(mars.placedHouse - venus.placedHouse) <= 1));
     const isSaturnKetuDetached = (saturn?.placedHouse === 7 || saturn?.placedHouse === 12 || ketu?.placedHouse === 7 || ketu?.placedHouse === 12);
 
+    // Reproductive Vitality (Shukra-Kshaya) & Non-Binary / Fluid Attraction Spectrum
+    const hasShukraKshaya = Boolean(
+      venus &&
+      ((ketu && venus.placedHouse === ketu.placedHouse && mars && venus.placedHouse === mars.placedHouse) ||
+       (venus.dignity === 'Debilitated' && saturn && [6, 8, 12].includes(saturn.placedHouse))) &&
+      saturn && [4, 7, 8, 12].includes(saturn.placedHouse)
+    );
+    const d9H7HasMercOrSat = d9?.placements.some((p) => p.houseFromVargaLagna === 7 && (p.id === 'Mercury' || p.id === 'Saturn' || p.id === 'Ketu'));
+    const hasFluidAttractionSpectrum = Boolean(
+      (venus && (venus.dignity === 'Debilitated' || venus.placedHouse === 12) && d9H7HasMercOrSat) ||
+      (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12)
+    );
+
     let sexualOrientationValueEn = 'Traditional marital devotion; seeks emotionally anchored, harmonious physical and spiritual bond with spouse';
     let sexualOrientationValueHi = 'पारंपरिक दांपत्य निष्ठा व भावनात्मक समर्पण; जीवनसाथी के साथ एकनिष्ठ, मर्यादित व आत्मिक संबंध';
     let sexualOrientationExplEn = "Under Maharishi Varahamihira's Brihat Jataka (Ch. 24, Sl. 10–15), the Kama axis is well-ordered and serene. The native possesses healthy, noble relational instincts aligned with enduring matrimonial harmony and family welfare.";
@@ -1308,7 +1350,21 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let sexualOrientationPacEn = `Lagna Lord ${lagnaLordId}; 7th Lord ${spouseLord?.id}; Venus in ${venus?.signName || 'Dignified'}; Mars in House ${mars?.placedHouse}.`;
     let sexualOrientationPacHi = `लग्नेश ${PLANET_HI[lagnaLordId]}; सप्तमेश ${PLANET_HI[spouseLord?.id || '']}; शुक्र ${venus?.signName} में; मंगल भाव ${mars?.placedHouse} में।`;
 
-    if (isVenusInDualOrWater && isMercuryInfluencingKama) {
+    if (hasShukraKshaya) {
+      sexualOrientationValueEn = 'Reproductive Vitality Watch (Shukra-Kshaya Signals): Deep emotional love for partner, but physical stamina / fertility requires medical & Ayurvedic care';
+      sexualOrientationValueHi = 'शुक्र-क्षय / प्रजनन ऊर्जा सावधानी: साथी के प्रति गहरा भावनात्मक प्रेम, किंतु शारीरिक वीर्य/प्रजनन शक्ति हेतु चिकित्सकीय व आयुर्वेदिक उपचार आवश्यक';
+      sexualOrientationExplEn = 'Venus (Shukra) conjoined with Mars and Ketu under Saturnine 8th-house influence indicates potential reproductive fatigue or hormonal/vitality blocks despite sincere emotional devotion to the partner.';
+      sexualOrientationExplHi = 'शुक्र का मंगल-केतु से पीड़ित होना व अष्टमस्थ शनि का प्रभाव बताता है कि मन से साथी के प्रति गहरा प्रेम होने पर भी शारीरिक प्रजनन क्षमता व वीर्य-शक्ति में दुर्बलता संभव है।';
+      sexualOrientationPacEn = `Venus with Ketu/Mars in H${venus?.placedHouse}; Saturn in H${saturn?.placedHouse}.`;
+      sexualOrientationPacHi = `शुक्र-केतु-मंगल भाव ${venus?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में।`;
+    } else if (hasFluidAttractionSpectrum) {
+      sexualOrientationValueEn = 'Fluid / Unconventional Romantic Polarity (Tritiya-Prakriti / Mercury-Venus Spectrum): Attraction may extend beyond rigid binary or conventional norms';
+      sexualOrientationValueHi = 'विविध / अपरंपरागत आकर्षण प्रवृत्ति (बुध-शुक्र-शनि प्रभाव): पारंपरिक ढांचे से हटकर समलैंगिक या उभयलिंगी (Fluid/Bisexual) आकर्षण संभव';
+      sexualOrientationExplEn = 'Classical texts (Brihat Jataka Ch. 24) note that when Mercury/Saturn/Nodal axes strongly tint Venus in dual or 12th-house signs alongside D9 7th house, attraction patterns can be fluid, unconventional, or non-binary.';
+      sexualOrientationExplHi = 'बृहज्जातक (अध्याय २४) के अनुसार जब बुध, शनि या राहु-केतु का प्रबल प्रभाव शुक्र और D9 सप्तम भाव पर हो, तो व्यक्ति की आकर्षण प्रवृत्ति पारंपरिक द्वि-ध्रुवीय मानकों से भिन्न या उभयलिंगी हो सकती है।';
+      sexualOrientationPacEn = `Venus in ${venus?.signName} (H${venus?.placedHouse}); D9 H7 Mercury/Saturn/Ketu echo.`;
+      sexualOrientationPacHi = `शुक्र ${venus?.signName} (भाव ${venus?.placedHouse}); D9 सप्तम पर बुध/शनि/केतु प्रभाव।`;
+    } else if (isVenusInDualOrWater && isMercuryInfluencingKama) {
       // Aesthetic & Intellectual Sensory Polarity
       sexualOrientationValueEn = 'Refined aesthetic sensitivity & intellectual rapport; values subtle emotional nuances, artistic elegance, and deep soul communication in personal companionship';
       sexualOrientationValueHi = 'सौंदर्य-बोध व कलात्मक संवेदनशीलता; दांपत्य व व्यक्तिगत संबंधों में बौद्धिक संवाद, कोमलता, आत्मीयता व सूक्ष्म भावनात्मक निकटता को सर्वोच्च प्राथमिकता';
@@ -1606,7 +1662,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let childCountExplEn = 'The 5th house (Suta Bhava) and natural Putrakaraka Jupiter support lineage continuation. The children inherit noble ethical values, achieve academic success, and maintain deep filial devotion towards parents.';
     let childCountExplHi = 'पंचम भाव (सुत भाव) और संतानकारक देवगुरु बृहस्पति की शुभ स्थिति कुल की वंश वृद्धि को दर्शाती है। संतान संस्कारी, मेधावी और माता-पिता का आदर करने वाली होगी।';
 
-    if ((isBarren5th || hasDelayPlanetsIn5th || is5thLordAfflicted) && !hasJupiterAspectOn5th) {
+    if ((hasDelayPlanetsIn5th || is5thLordAfflicted || (isBarren5th && jupiter && [6, 8, 12].includes(jupiter.placedHouse))) && !hasJupiterAspectOn5th) {
       childCountEn = '1 to 2 children indicated with delayed timing (Santan Vilamba Yoga); conception favored between ages 29 and 34; modern medical support and spiritual remedies (Santana Gopala) recommended';
       childCountHi = '१ से २ संतानों का योग, किंतु समय में विलंब (संतान विलंब योग); आयु २९ से ३४ वर्ष के मध्य संतति सुख; समय पर चिकित्सीय परामर्श व संतान गोपाल जप से शुभ फल की प्राप्ति';
       childCountExplEn = 'The 5th house connects with barren signs or delay-inducing influences (Saturn/Rahu). Classical texts emphasize that initial delays resolve through patience, timely medical guidance, and Brihaspati propitiation, ensuring blessed progeny.';
@@ -2269,8 +2325,18 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'health_crises',
           titleEn: 'Crucible Testing Eras & Phoenix-Like Resurrection',
           titleHi: 'जीवन की अग्नि-परीक्षाएं, आघात व पुनर्विजय',
-          valueEn: p8Det.crises.valEn,
-          valueHi: p8Det.crises.valHi,
+          valueEn: p8Det.crises.valEn + (
+            (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
+            (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse))
+              ? ' | Legal / Bandhana Vigilance: Risk of prolonged litigation, confinement, or regulatory pressure during Saturn/Rahu periods'
+              : ''
+          ),
+          valueHi: p8Det.crises.valHi + (
+            (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
+            (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse))
+              ? ' | बंधन / कानूनी सतर्कता: शनि/राहु दशा में मुकदमा, कानूनी विवाद या बंधन-तुल्य बाधा की संभावना'
+              : ''
+          ),
           explanationEn: p8Det.crises.explEn,
           explanationHi: p8Det.crises.explHi,
           pacBasisEn: `8th House ${h8Sign.name}; Saturn in House ${saturn?.placedHouse}; Lagna Lord in H${l1House}.`,

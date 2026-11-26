@@ -339,14 +339,14 @@ export function getProgenyPillarDetails(
 
   // 1. Yoga
   let yoga: BilingualPrediction;
-  if (h5.tier === 'strong' && !isBarren && !jupWeak) {
+  if (h5.tier === 'strong' && !jupWeak) {
     yoga = {
       valEn: 'Strong, fertile Putrabhava yoga; smooth natural conception and joyful parental fulfillment',
       valHi: 'प्रबल व उर्वर संतान योग; सहज गर्भधारण व संतान द्वारा जीवन में आनंद की प्राप्ति',
       explEn: `5th house (${h5.signName}) and Putrakaraka Jupiter (H${jupiter?.placedHouse}) are well-fortified.`,
       explHi: `पंचम भाव व गुरु की शुभ स्थिति निर्विघ्न संतान सुख का प्रमाण देती है।`,
     };
-  } else if (h5.tier === 'afflicted' || (isBarren && jupWeak)) {
+  } else if (h5.tier === 'afflicted' && (jupWeak || isBarren)) {
     yoga = {
       valEn: 'Delayed or tested progeny yoga (Santan Vilamba); requires medical care, patience, and Jupiter remedies',
       valHi: 'संतान प्राप्ति में विलंब अथवा प्रारंभिक बाधा (संतान विलंब योग); चिकित्सीय परामर्श व गुरु-उपाय लाभकारी',
@@ -1726,15 +1726,15 @@ export function getComprehensiveCareerAndWealthAnalysis(
     : 'Saturn';
 
   const planetProfessionDomain: Record<GrahaKey, { en: string; hi: string }> = {
-    Sun: { en: 'Government Administration, Executive Leadership & Authority Roles', hi: 'सरकारी प्रशासन, उच्च नेतृत्व व नीति-निर्माण' },
-    Moon: { en: 'Healthcare, Hospitality, Public Relations & Marine/Fluid Trades', hi: 'स्वास्थ्य सेवा, आतिथ्य सत्कार, जनसंपर्क व जलीय व्यापार' },
-    Mars: { en: 'Engineering, Industrial Operations, Defense, Real Estate & Surgery', hi: 'इंजीनियरिंग, औद्योगिक निर्माण, रक्षा, रियल एस्टेट व शल्य चिकित्सा' },
-    Mercury: { en: 'Finance, Accounting, Software/Data Analytics, Commerce & Communication', hi: 'वित्त, लेखा, सॉफ्टवेयर/डेटा एनालिटिक्स, वाणिज्य व संचार' },
-    Jupiter: { en: 'Advisory, Law, Higher Education, Banking & Institutional Management', hi: 'परामर्श, विधि (Law), उच्च शिक्षा, बैंकिंग व संस्थागत प्रबंधन' },
-    Venus: { en: 'Design, Media, Luxury Retail, Architecture, Hospitality & Arts', hi: 'डिजाइन, मीडिया, लक्जरी व्यवसाय, वास्तुकला व कला क्षेत्र' },
-    Saturn: { en: 'Infrastructure, Manufacturing, Compliance, Operations & Long-Term Systems', hi: 'बुनियादी ढांचा, विनिर्माण, कानून-अनुपालन व दीर्घकालिक संचालन' },
-    Rahu: { en: 'AI/Emerging Tech, Global Trade, Aviation, Digital Media & Research', hi: 'आधुनिक तकनीक (AI/IT), विदेशी व्यापार, डिजिटल मीडिया व शोध' },
-    Ketu: { en: 'Deep Research, Auditing, Cybersecurity, Pharmaceuticals & Spiritual Healing', hi: 'गहन शोध, ऑडिटिंग, साइबर सुरक्षा, औषधि व आध्यात्मिक परामर्श' },
+    Sun: { en: 'Government Administration, Executive Leadership, Medicine & Authority Roles', hi: 'सरकारी प्रशासन, उच्च नेतृत्व, चिकित्सा व नीति-निर्माण' },
+    Moon: { en: 'Cinema, Performing Arts, Public Relations, Healthcare & Marine/Fluid Trades', hi: 'सिनेमा, कला, जनसंपर्क, स्वास्थ्य सेवा व जलीय व्यापार' },
+    Mars: { en: 'Engineering, Surgery/Ayurveda, Industrial Operations, Defense & Real Estate', hi: 'इंजीनियरिंग, शल्य/आयुर्वेद चिकित्सा, रक्षा, निर्माण व रियल एस्टेट' },
+    Mercury: { en: 'Finance, Software/Data Analytics, Commerce, Logistics/Supply Chain & Clerical Administration', hi: 'वित्त, सॉफ्टवेयर/डेटा, वाणिज्य, लॉजिस्टिक्स, क्लर्क/प्रशासन व संचार' },
+    Jupiter: { en: 'Law, Public Governance, Higher Education, Medical/Ayurvedic Healing & Institutional Management', hi: 'विधि (Law), प्रशासन, उच्च शिक्षा, आयुर्वेद/चिकित्सा व संस्थागत प्रबंधन' },
+    Venus: { en: 'Cinema, Acting, Music, Design, Media, Luxury Retail & Arts', hi: 'सिनेमा, अभिनय, संगीत, डिजाइन, मीडिया व कला क्षेत्र' },
+    Saturn: { en: 'Infrastructure, Manufacturing, Law/Compliance, Operations & Long-Term Systems', hi: 'बुनियादी ढांचा, विनिर्माण, कानून-अनुपालन व दीर्घकालिक संचालन' },
+    Rahu: { en: 'AI/Emerging Tech, Global Trade, Aviation, Digital Media & Scientific Research', hi: 'आधुनिक तकनीक (AI/IT), विदेशी व्यापार, डिजिटल मीडिया व वैज्ञानिक शोध' },
+    Ketu: { en: 'Theoretical Physics/PhD Research, Auditing, Cybersecurity, Pharmaceuticals & Spiritual Healing', hi: 'गहन शोध (PhD/भौतिकी), ऑडिटिंग, साइबर सुरक्षा, औषधि व आध्यात्मिक परामर्श' },
   };
 
   // Determine primary profession from 10th lord + Saturn link + D10 confirmation
@@ -3099,6 +3099,21 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
     multiSignalsEn.push('D9 Navamsha dual-sign echo');
     multiSignalsHi.push('नवांश D9 में द्विस्वभाव संकेत');
   }
+  if (h7.occupants.some((p) => p.id === 'Moon' || p.id === 'Mars') && (venus?.placedHouse === 12 || [6, 8, 12].includes(h7.lordHouse) || h7.occupants.some((p) => p.id === 'Saturn'))) {
+    multiScore += 2;
+    multiSignalsEn.push('Changeable Moon/Malefic cluster in 7th with 12th/strained Venus');
+    multiSignalsHi.push('सप्तम में चंद्र/क्रूर ग्रह व द्वादश/पीड़ित शुक्र');
+  }
+  if (venus?.placedHouse === 12 && [4, 6, 8, 12].includes(h7.lordHouse)) {
+    multiScore += 2;
+    multiSignalsEn.push('Venus in 12th with 7th lord in Dusthana/4th');
+    multiSignalsHi.push('द्वादश में शुक्र व सप्तमेश का चतुर्थ/त्रिक स्थान में होना');
+  }
+  if (h7.lordPlanet && [mars?.placedHouse, rahu?.placedHouse].includes(h7.lordHouse) && venus && ['Leo', 'Scorpio', 'Virgo', 'Aquarius'].includes(venus.signName)) {
+    multiScore += 2;
+    multiSignalsEn.push('7th lord afflicted by Mars/Rahu with strained Venus');
+    multiSignalsHi.push('सप्तमेश पर मंगल/राहु प्रभाव व पीड़ित शुक्र');
+  }
 
   const jupShield = jupiter && (h7.aspectors.some((p) => p.id === 'Jupiter') || h7.occupants.some((p) => p.id === 'Jupiter') || (l7D9 && d9?.placements.some((p) => p.id === 'Jupiter' && p.houseFromVargaLagna === 7)));
 
@@ -3107,7 +3122,7 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
   if (multiScore >= 3 && !jupShield) {
     multiValEn = 'Multiple-Union / Second-Chapter Potential (Dwi-Vivaha Signals): Careful D9 matching & maturity advised';
     multiValHi = 'द्वि-विवाह / द्वितीय अवसर के शास्त्रीय संकेत: गहन कुंडली मिलान व परिपक्व निर्णय आवश्यक';
-  } else if (multiScore >= 2) {
+  } else if (multiScore >= 2 && !jupShield) {
     multiValEn = 'Moderate Multiplicity / Relationship Reset Tendency (Mitigated by awareness & matching)';
     multiValHi = 'मध्यम संबंध-पुनर्विचार संकेत (उचित मिलान व संवाद से एक-विवाह में पूर्ण स्थायित्व)';
   }
@@ -3150,12 +3165,13 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
     discordFlagsHi.push('द्वितीय व सप्तम भाव में वाणी/कुटुंब तनाव');
   }
 
+  const strongHomeAnchor = h2.tier === 'strong' && h9.tier === 'strong';
   let divValEn = 'Low Separation Risk: Harmonious 2nd/7th foundation with strong marital continuity';
   let divValHi = 'न्यून अलगाव जोखिम: सुदृढ़ द्वितीय/सप्तम भाव व संतुलित दांपत्य निरंतरता';
-  if (discordFlagsEn.length >= 3 && !jupShield) {
+  if (discordFlagsEn.length >= 3 && !jupShield && !strongHomeAnchor) {
     divValEn = 'High Discord / Separation Vigilance: Requires active counseling, patience & D9 compatibility';
     divValHi = 'उच्च वैचारिक तनाव/अलगाव सतर्कता: धैर्य, परामर्श व सटीक D9 मिलान अत्यंत आवश्यक';
-  } else if (discordFlagsEn.length >= 1) {
+  } else if (discordFlagsEn.length >= 2 || (discordFlagsEn.length === 1 && !jupShield)) {
     divValEn = 'Moderate Adjustment / Friction Signals: Resolvable via open dialogue & benefic remedies';
     divValHi = 'मध्यम तालमेल परीक्षण: शांत संवाद व ग्रह-शांति उपायों से पूर्णतः समाधान योग्य';
   }
