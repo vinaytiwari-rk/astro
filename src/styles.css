@@ -9759,7 +9759,7 @@ h1, h2, h3, h4, .serif-heading {
 
 @media (max-width: 768px) {
   .oj-calendar-inner {
-    min-width: 580px;
+    min-width: 630px;
   }
 
   .prediction-subnav-pills {
@@ -9821,13 +9821,15 @@ h1, h2, h3, h4, .serif-heading {
   }
 
   .booklet-body .panel {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden !important;
     padding: 10px !important;
   }
 
   .booklet-body table {
+    display: block !important;
     width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
     font-size: 11px !important;
     table-layout: auto !important;
   }

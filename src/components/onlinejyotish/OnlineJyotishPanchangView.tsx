@@ -408,16 +408,16 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
           <div className="oj-calendar-scroll">
           <div className="oj-calendar-inner">
           {/* Calendar Day Headers */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', marginBottom: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', marginBottom: '8px' }}>
             {['रवि (Sun)', 'सोम (Mon)', 'मंगल (Tue)', 'बुध (Wed)', 'गुरु (Thu)', 'शुक्र (Fri)', 'शनि (Sat)'].map((dName, idx) => (
-              <div key={idx} style={{ padding: '6px', background: 'var(--bg-subtle)', borderRadius: '6px', color: idx === 0 ? '#dc2626' : 'var(--text)' }}>
+              <div key={idx} style={{ padding: '6px', background: 'var(--bg-subtle)', borderRadius: '6px', color: idx === 0 ? '#dc2626' : 'var(--text)', minWidth: 0 }}>
                 {isHi ? dName.split(' ')[0] : dName.split(' ')[1].replace(/[()]/g, '')}
               </div>
             ))}
           </div>
 
           {/* Calendar Days Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '6px' }}>
             {/* Blank cells for starting day offset */}
             {Array.from({ length: monthGridData.startingDayOfWeek }).map((_, idx) => (
               <div key={`blank-${idx}`} style={{ minHeight: '88px', background: 'transparent' }} />
