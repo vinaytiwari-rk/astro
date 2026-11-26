@@ -2089,7 +2089,7 @@ export function getComprehensiveParentsAndFamilyAnalysis(
       ? 'कर्तव्य-प्रधान व गंभीर पितृ संबंध: पिता पर भारी जिम्मेदारियाँ; धैर्य व संवाद से संबंधों में प्रगाढ़ता'
       : 'पैतृक संघर्ष व आत्मनिर्भर मार्ग: प्रारंभिक वैचारिक दूरी या परिश्रम के बाद स्वयं के बल पर उत्थान';
     fatherExplEn = `${pitruDoshaActive ? 'Nodal influence (Rahu/Ketu) on Sun or 9th house indicates an ancestral duty pattern (Pitru pattern) resolved through service and humility. ' : ''}${fatherSaturnTouch ? 'Saturn touching the 9th brings emotional reserve rather than lack of care. ' : ''}Mercury in H${mercury?.placedHouse ?? '-'} governs whether unspoken care translates into open conversation.`;
-    fatherExplHi = `${pitruDoshaActive ? 'सूर्य या नवम भाव पर राहु-केतु का प्रभाव पैतृक ऋण/कर्तव्य की ओर संकेत करता है, जो सेवा व विनम्रता से शांत होता है। ' : ''}${fatherSaturnTouch ? 'शनि का नवम संबंध भावनात्मक संकोच देता है, न कि स्नेह की कमी।' : ''}`;
+    fatherExplHi = `${pitruDoshaActive ? 'सूर्य या नवम भाव पर राहु-केतु का प्रभाव पैतृक ऋण/कर्तव्य की ओर संकेत करता है, जो सेवा व विनम्रता से शांत होता है। ' : ''}${fatherSaturnTouch ? 'शनि का नवम संबंध भावनात्मक संकोच देता है, न कि स्नेह की कमी। ' : ''}बुध (भाव ${mercury?.placedHouse ?? '-'}) संवाद और आपसी समझ को संतुलित रखते हैं।`;
   } else {
     fatherValEn = 'Balanced Paternal Bond: Hardworking father with steady principles; independent respect grows with age';
     fatherValHi = 'संतुलित पितृ संबंध: परिश्रमी व सिद्धांतवादी पिता; आयु के साथ आपसी सम्मान व समझ में वृद्धि';
