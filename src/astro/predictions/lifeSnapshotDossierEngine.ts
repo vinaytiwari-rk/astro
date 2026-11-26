@@ -44,6 +44,7 @@ import {
   getUpapadaAndMarriageDeepDive,
   getIntimacyAndYoniHarmonyAnalysis,
   getParentChildDynamicsAndAdoption,
+  getJanmaNakshatraClassification,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -793,6 +794,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).pacHi,
           shastricRef: 'Lagna Bhava & Classical Yuti Yoga Analysis',
           vargaRef: 'D1 Rashi',
+        },
+        {
+          id: 'attr_janma_nakshatra_matrix',
+          category: 'physical',
+          titleEn: 'Janma Nakshatra Matrix (Lord, Gana, Element & Nature)',
+          titleHi: 'जन्म नक्षत्र वर्गीकरण (स्वामी, गण, तत्व व स्वभाव)',
+          valueEn: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).valEn,
+          valueHi: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).valHi,
+          explanationEn: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).explEn,
+          explanationHi: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).explHi,
+          pacBasisEn: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).pacEn,
+          pacBasisHi: getJanmaNakshatraClassification(planets, chart.ascendant?.nakshatraName).pacHi,
+          shastricRef: '27 Nakshatra Samhita (Gana, Yoni, Varna & Muhurta)',
+          vargaRef: 'D1 Nakshatra & Pada',
         },
         {
           id: 'attr_nadi_amsha_kp_sub',

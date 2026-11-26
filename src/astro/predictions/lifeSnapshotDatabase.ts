@@ -2810,6 +2810,72 @@ export function getParentChildDynamicsAndAdoption(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 1 ADDON: 27 JANMA NAKSHATRA CLASSIFICATION MATRIX
+// -----------------------------------------------------------------------------
+
+export interface JanmaNakshatraMatrixResult {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+  pacEn: string;
+  pacHi: string;
+}
+
+export function getJanmaNakshatraClassification(
+  planets: PlanetPos[],
+  ascNakshatraName?: string
+): JanmaNakshatraMatrixResult {
+  const NAK_DATA: Array<{
+    name: string; lord: GrahaKey; ganaEn: string; ganaHi: string;
+    elem: string; animal: string; natureEn: string; natureHi: string;
+    varna: string; traitEn: string; traitHi: string;
+  }> = [
+    { name: 'Ashwini', lord: 'Ketu', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Fire', animal: 'Horse', natureEn: 'Kshipra (Fast)', natureHi: 'क्षिप्र (तीव्र)', varna: 'Kshatriya', traitEn: 'Quick, energetic & pioneering healer', traitHi: 'त्वरित, ऊर्जावान व नवीन पहल करने वाला' },
+    { name: 'Bharani', lord: 'Venus', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Earth', animal: 'Elephant', natureEn: 'Ugra (Fierce)', natureHi: 'उग्र (दृढ़)', varna: 'Shudra', traitEn: 'Enduring, creative & transformative willpower', traitHi: 'सहनशील, सृजनशील व दृढ़ इच्छाशक्ति' },
+    { name: 'Krittika', lord: 'Sun', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Fire', animal: 'Sheep', natureEn: 'Tikshna (Sharp)', natureHi: 'तीक्ष्ण', varna: 'Brahmin', traitEn: 'Sharp intellect, radiant & truth-seeking', traitHi: 'तीक्ष्ण बुद्धि, तेजस्वी व सत्यनिष्ठ' },
+    { name: 'Rohini', lord: 'Moon', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Earth', animal: 'Serpent', natureEn: 'Mridu (Soft)', natureHi: 'मृदु (कोमल)', varna: 'Vaishya', traitEn: 'Attractive, creative, nurturing & prosperous', traitHi: 'आकर्षक, कलात्मक, पोषक व समृद्धिशाली' },
+    { name: 'Mrigashira', lord: 'Mars', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Earth', animal: 'Serpent', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Vaishya', traitEn: 'Curious, gentle seeker & perceptive thinker', traitHi: 'जिज्ञासु, सौम्य खोजी व सूक्ष्मदर्शी' },
+    { name: 'Ardra', lord: 'Rahu', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Water', animal: 'Dog', natureEn: 'Tikshna (Sharp)', natureHi: 'तीक्ष्ण', varna: 'Shudra', traitEn: 'Deeply emotional, analytical & resilient', traitHi: 'गहन संवेदनशील, विश्लेषणात्मक व जुझारू' },
+    { name: 'Punarvasu', lord: 'Jupiter', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Air', animal: 'Cat', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Kshatriya', traitEn: 'Optimistic, adaptable & renewing wisdom', traitHi: 'आशावादी, अनुकूलनशील व ज्ञानी' },
+    { name: 'Pushya', lord: 'Saturn', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Water', animal: 'Sheep', natureEn: 'Kshipra (Fast)', natureHi: 'क्षिप्र', varna: 'Kshatriya', traitEn: 'Nurturing, auspicious, disciplined & spiritual', traitHi: 'पोषक, शुभ, अनुशासित व आध्यात्मिक' },
+    { name: 'Ashlesha', lord: 'Mercury', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Water', animal: 'Cat', natureEn: 'Tikshna (Sharp)', natureHi: 'तीक्ष्ण', varna: 'Brahmin', traitEn: 'Intuitive, strategic & psychologically astute', traitHi: 'अंतर्ज्ञानी, रणनीतिक व मनोविज्ञान-कुशल' },
+    { name: 'Magha', lord: 'Ketu', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Fire', animal: 'Rat', natureEn: 'Ugra (Fierce)', natureHi: 'उग्र', varna: 'Kshatriya', traitEn: 'Royal, authoritative & tradition-honoring', traitHi: 'राजसी, प्रभावशाली व कुल-परंपरा का रक्षक' },
+    { name: 'Purva Phalguni', lord: 'Venus', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Fire', animal: 'Rat', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Brahmin', traitEn: 'Charming, artistic, generous & sociable', traitHi: 'मनमोहक, कलाप्रेमी, उदार व मिलनसार' },
+    { name: 'Uttara Phalguni', lord: 'Sun', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Earth', animal: 'Cow', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Kshatriya', traitEn: 'Helpful, loyal, dignified & leadership-minded', traitHi: 'सहयोगी, निष्ठावान, प्रतिष्ठित व नेतृत्वकारी' },
+    { name: 'Hasta', lord: 'Moon', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Earth', animal: 'Buffalo', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Vaishya', traitEn: 'Skillful hands, witty, healing & resourceful', traitHi: 'हस्त-कौशल युक्त, वाक्पटु व साधन-संपन्न' },
+    { name: 'Chitra', lord: 'Mars', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Fire', animal: 'Tiger', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Shudra', traitEn: 'Brilliant, design-minded & charismatic builder', traitHi: 'प्रखर, शिल्प-दक्ष व आकर्षक व्यक्तित्व' },
+    { name: 'Swati', lord: 'Rahu', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Air', animal: 'Buffalo', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Vaishya', traitEn: 'Independent, flexible & freedom-loving', traitHi: 'स्वतंत्र, लचीला व न्यायप्रिय स्वभाव' },
+    { name: 'Vishakha', lord: 'Jupiter', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Fire', animal: 'Tiger', natureEn: 'Ugra (Fierce)', natureHi: 'उग्र', varna: 'Shudra', traitEn: 'Goal-driven, determined & persuasive', traitHi: 'लक्ष्य-केंद्रित, दृढ़निश्चयी व प्रभावशाली' },
+    { name: 'Anuradha', lord: 'Saturn', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Water', animal: 'Deer', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Shudra', traitEn: 'Devoted, friendly, balanced & organizational', traitHi: 'भक्तिपूर्ण, मैत्रीपूर्ण, संतुलित व संगठक' },
+    { name: 'Jyeshtha', lord: 'Mercury', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Air', animal: 'Deer', natureEn: 'Tikshna (Sharp)', natureHi: 'तीक्ष्ण', varna: 'Brahmin', traitEn: 'Protective, perceptive & senior-minded', traitHi: 'संरक्षक, सूक्ष्मदर्शी व उत्तरदायित्वपूर्ण' },
+    { name: 'Mula', lord: 'Ketu', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Air', animal: 'Dog', natureEn: 'Tikshna (Sharp)', natureHi: 'तीक्ष्ण', varna: 'Shudra', traitEn: 'Root-seeker, philosophical & transformative', traitHi: 'मूल-तत्व अन्वेषी, दार्शनिक व परिवर्तनकारी' },
+    { name: 'Purva Ashadha', lord: 'Venus', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Water', animal: 'Monkey', natureEn: 'Ugra (Fierce)', natureHi: 'उग्र', varna: 'Brahmin', traitEn: 'Invincible spirit, inspiring & eloquent', traitHi: 'अजेय उत्साह, प्रेरक व प्रभावशाली वक्ता' },
+    { name: 'Uttara Ashadha', lord: 'Sun', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Earth', animal: 'Mongoose', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Kshatriya', traitEn: 'Righteous, enduring & unshakeable integrity', traitHi: 'सत्यनिष्ठ, धैर्यवान व अडिग चरित्र' },
+    { name: 'Shravana', lord: 'Moon', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Air', animal: 'Monkey', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Vaishya', traitEn: 'Attentive listener, learned & scholarly', traitHi: 'उत्तम श्रोता, विद्वान व ज्ञान-पिपासु' },
+    { name: 'Dhanishta', lord: 'Mars', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Fire', animal: 'Lion', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Vaishya', traitEn: 'Rhythmic, resourceful, wealthy & bold', traitHi: 'संगीत-प्रेमी, साधन-संपन्न व साहसी' },
+    { name: 'Shatabhisha', lord: 'Rahu', ganaEn: 'Rakshasa', ganaHi: 'राक्षस', elem: 'Air', animal: 'Horse', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Shudra', traitEn: 'Independent healer, researcher & visionary', traitHi: 'स्वतंत्र चिकित्सक, शोधकर्ता व दूरदर्शी' },
+    { name: 'Purva Bhadrapada', lord: 'Jupiter', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Fire', animal: 'Lion', natureEn: 'Ugra (Fierce)', natureHi: 'उग्र', varna: 'Brahmin', traitEn: 'Idealistic, intense & spiritually transformative', traitHi: 'आदर्शवादी, तीव्र व आध्यात्मिक उत्थानकारी' },
+    { name: 'Uttara Bhadrapada', lord: 'Saturn', ganaEn: 'Manushya', ganaHi: 'मनुष्य', elem: 'Water', animal: 'Cow', natureEn: 'Chara (Movable)', natureHi: 'चर', varna: 'Kshatriya', traitEn: 'Deep wisdom, compassionate & self-controlled', traitHi: 'गहन प्रज्ञा, करुणामय व आत्म-संयमी' },
+    { name: 'Revati', lord: 'Mercury', ganaEn: 'Deva', ganaHi: 'देव', elem: 'Water', animal: 'Elephant', natureEn: 'Mridu (Soft)', natureHi: 'मृदु', varna: 'Brahmin', traitEn: 'Compassionate, spiritual & kind-hearted guide', traitHi: 'दयालु, आध्यात्मिक व उदार मार्गदर्शक' },
+  ];
+
+  const moon = planets.find((p) => p.id === 'Moon');
+  const idx = (moon?.nakshatraIndex ?? 0) % 27;
+  const nk = NAK_DATA[idx] ?? NAK_DATA[0];
+
+  return {
+    valEn: `${nk.name} (${nk.lord}) — ${nk.ganaEn} Gana | ${nk.natureEn} | ${nk.traitEn}`,
+    valHi: `${nk.name} (${nk.lord}) — ${nk.ganaHi} गण | ${nk.natureHi} | ${nk.traitHi}`,
+    explEn: `Janma Nakshatra (${nk.name}, Element: ${nk.elem}, Yoni: ${nk.animal}, Varna: ${nk.varna}) shapes subconscious emotions, Muhurta alignment, and compatibility.${ascNakshatraName ? ` Lagna Nakshatra: ${ascNakshatraName}.` : ''}`,
+    explHi: `जन्म नक्षत्र (${nk.name}, तत्व: ${nk.elem}, योनि: ${nk.animal}, वर्ण: ${nk.varna}) अवचेतन मन, गुण मिलान व शुभ मुहूर्त की आधारशिला है।${ascNakshatraName ? ` लग्न नक्षत्र: ${ascNakshatraName}।` : ''}`,
+    pacEn: `Moon Nakshatra #${idx + 1}: ${nk.name} (Pada ${moon?.pada ?? 1}), Lord: ${nk.lord}, Gana: ${nk.ganaEn}, Nature: ${nk.natureEn}.`,
+    pacHi: `चंद्र नक्षत्र #${idx + 1}: ${nk.name} (पद ${moon?.pada ?? 1}), स्वामी: ${nk.lord}, गण: ${nk.ganaHi}।`,
+  };
+}
+
+
 
 
 
