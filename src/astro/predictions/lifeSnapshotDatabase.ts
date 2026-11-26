@@ -2955,6 +2955,80 @@ export function getFinancialInvestmentTemperament(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 12 ADDON: VASTU SHASTRA (PANCHA MAHABHUTA, DIKPALA & COLOUR/YOGIC UPAY)
+// -----------------------------------------------------------------------------
+
+export interface VastuPanchaResult {
+  panchaMahabhuta: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  colourAndYogicUpay: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getVastuPanchaMahabhutaAndRemedies(
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  h4: HousePacProfile
+): VastuPanchaResult {
+  const ascElem = SIGNS[ascSignIdx]?.element ?? 'Fire';
+  const h4Elem = h4.element;
+  const TIER_HI: Record<HouseStrengthTier, string> = {
+    strong: 'सबल', moderate: 'मध्यम', afflicted: 'पीड़ित',
+  };
+
+  const elementZoneMap: Record<string, { zoneEn: string; zoneHi: string; colorEn: string; colorHi: string }> = {
+    Fire: {
+      zoneEn: 'East (Indra / Solar) & South-East (Agni)',
+      zoneHi: 'पूर्व (इंद्र/सूर्य) एवं आग्नेय कोण (अग्नि)',
+      colorEn: 'Warm Cream, Soft Coral & Sunrise Gold',
+      colorHi: 'हल्का क्रीम, केसरिया व सौम्य सुनहरा रंग',
+    },
+    Earth: {
+      zoneEn: 'South-West (Nairutya / Stability) & Central Brahmasthana',
+      zoneHi: 'नैऋत्य कोण (पृथ्वी/स्थायित्व) व केंद्रीय ब्रह्मस्थान',
+      colorEn: 'Earthy Beige, Ochre & Warm Sand tones',
+      colorHi: 'मिट्टी-सा क्रीम, पीताभ व सौम्य भूरा रंग',
+    },
+    Air: {
+      zoneEn: 'North-West (Vayu / Movement) & West',
+      zoneHi: 'वायव्य कोण (वायु/संचार) एवं पश्चिम दिशा',
+      colorEn: 'Crisp White, Pastel Blue & Soft Mint',
+      colorHi: 'उज्ज्वल श्वेत, हल्का नीला व पुदीना हरा रंग',
+    },
+    Water: {
+      zoneEn: 'North-East (Ishanya / Sacred Water) & North (Kubera)',
+      zoneHi: 'ईशान कोण (जल/पवित्रता) एवं उत्तर दिशा (कुबेर)',
+      colorEn: 'Aqua Pastel, Ivory & Serene Sky Blue',
+      colorHi: 'हल्का आसमानी, आइवरी व शांत जलीय रंग',
+    },
+  };
+
+  const zoneInfo = elementZoneMap[h4Elem] ?? elementZoneMap[ascElem] ?? elementZoneMap.Water;
+  const h4HasMalefic = h4.occupants.some((p) => ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(p.id));
+  const sun = planets.find((p) => p.id === 'Sun');
+  const moon = planets.find((p) => p.id === 'Moon');
+
+  const panchaMahabhuta = {
+    valEn: `Primary Resonance: ${zoneInfo.zoneEn} | Harmonize Earth, Water, Fire, Air & Space`,
+    valHi: `प्रमुख वास्तु क्षेत्र: ${zoneInfo.zoneHi} | पंचमहाभूत (पृथ्वी, जल, अग्नि, वायु, आकाश) संतुलन`,
+    explEn: `Rooted in Sthapatya Veda (Atharva Veda): Keep the North-East (Ishanya) clutter-free for morning solar & magnetic flow, South-East for kitchen fire, and South-West grounded for stability.${h4HasMalefic ? ' Since 4th house hosts intense planets, keeping the central Brahmasthana open and bright prevents restlessness.' : ''}`,
+    explHi: `स्थापत्य वेद के अनुसार उत्तर-पूर्व (ईशान) को स्वच्छ व हल्का रखें ताकि प्रातःकालीन सौर व चुंबकीय ऊर्जा का प्रवाह बना रहे, आग्नेय में रसोई और नैऋत्य में भारी/स्थायी वस्तुएं रखें।${h4HasMalefic ? ' चतुर्थ भाव में तीव्र ग्रह होने से घर के मध्य ब्रह्मस्थान को खुला व प्रकाशमान रखना अत्यंत लाभकारी है।' : ''}`,
+    pacEn: `Lagna Element: ${ascElem}; H4 (${h4.signName}, ${h4Elem}, ${h4.tier}); Sun H${sun?.placedHouse}, Moon H${moon?.placedHouse}.`,
+    pacHi: `लग्न तत्व: ${ascElem}; चतुर्थ (${h4.signName}, ${TIER_HI[h4.tier]}); सूर्य भाव ${sun?.placedHouse}, चंद्र भाव ${moon?.placedHouse}।`,
+  };
+
+  const colourAndYogicUpay = {
+    valEn: `Vastu Colours: ${zoneInfo.colorEn} | Morning Surya Arghya, Pranayama & Camphor/Havan Purity`,
+    valHi: `अनुकूल वास्तु रंग: ${zoneInfo.colorHi} | प्रातः सूर्य अर्घ्य, प्राणायाम व सात्विक हवन/कपूर शुद्धि`,
+    explEn: `Vastu Colour Therapy pairs ${zoneInfo.colorEn} in living/work zones with daily Pranayama, morning ventilation, and evening diya/camphor purification to balance subtle cosmic and thermal energies without structural demolition.`,
+    explHi: `बिना किसी तोड़फोड़ के वास्तु संतुलन हेतु घर/कार्यस्थल में ${zoneInfo.colorHi} का प्रयोग, प्रातः ताजी हवा व सूर्य-प्रकाश, नियमित प्राणायाम तथा सायंकाल सात्विक दीप/कपूर प्रज्वलन अत्यंत शुभ फल देता है।`,
+    pacEn: `H4 Dominant: ${h4.dominantGraha}; Non-structural colour & yogic alignment for ${zoneInfo.zoneEn}.`,
+    pacHi: `चतुर्थ प्रमुख: ${h4.dominantGraha}; ${zoneInfo.zoneHi} हेतु रंग व योगिक शुद्धि उपाय।`,
+  };
+
+  return { panchaMahabhuta, colourAndYogicUpay };
+}
+
+
 
 
 

@@ -46,6 +46,7 @@ import {
   getParentChildDynamicsAndAdoption,
   getJanmaNakshatraClassification,
   getFinancialInvestmentTemperament,
+  getVastuPanchaMahabhutaAndRemedies,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -2727,6 +2728,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: `सूर्य भाव ${sun?.placedHouse} में; चंद्र भाव ${moon?.placedHouse} में।`,
           shastricRef: 'Saravali (Ch. 22, Sl. 50–55)',
           vargaRef: 'D1 Rashi',
+        },
+        {
+          id: 'attr_vastu_pancha_mahabhuta',
+          category: 'vastu_lifestyle',
+          titleEn: 'Sthapatya Veda: Pancha Mahabhuta & Directional Zone Balance',
+          titleHi: 'स्थापत्य वेद: पंचमहाभूत व वास्तु दिशा संतुलन',
+          valueEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.valEn,
+          valueHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.valHi,
+          explanationEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.explEn,
+          explanationHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.explHi,
+          pacBasisEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.pacEn,
+          pacBasisHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.pacHi,
+          shastricRef: 'Sthapatya Veda (Atharva Veda) & Garuda Purana',
+          vargaRef: 'D1 & D4 Chaturthamsha',
+        },
+        {
+          id: 'attr_vastu_colour_yogic_remedies',
+          category: 'vastu_lifestyle',
+          titleEn: 'Vastu Colour Therapy, Havan & Yogic Remedies',
+          titleHi: 'वास्तु रंग चिकित्सा, हवन एवं योगिक शुद्धि उपाय',
+          valueEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.valEn,
+          valueHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.valHi,
+          explanationEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.explEn,
+          explanationHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.explHi,
+          pacBasisEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.pacEn,
+          pacBasisHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.pacHi,
+          shastricRef: 'Brihat Samhita (Vastu) & Vedic Colour/Prana Remedies',
+          vargaRef: 'D1 & D4',
         },
       ],
     });
