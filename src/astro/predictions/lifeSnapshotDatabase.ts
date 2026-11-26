@@ -2875,6 +2875,87 @@ export function getJanmaNakshatraClassification(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 7 ADDON: FINANCIAL ASTROLOGY, INVESTMENT TEMPERAMENT & SECTORS
+// -----------------------------------------------------------------------------
+
+export interface FinancialInvestmentResult {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+  pacEn: string;
+  pacHi: string;
+}
+
+export function getFinancialInvestmentTemperament(
+  planets: PlanetPos[],
+  h2: HousePacProfile,
+  h5: HousePacProfile,
+  h8: HousePacProfile,
+  h9: HousePacProfile,
+  h11: HousePacProfile
+): FinancialInvestmentResult {
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const mercury = planets.find((p) => p.id === 'Mercury');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+
+  const h5Strong = h5.tier === 'strong';
+  const rahuSpeculative = rahu && [2, 5, 8, 11].includes(rahu.placedHouse);
+  const saturnLongTerm = saturn && ([1, 2, 5, 9, 10, 11].includes(saturn.placedHouse) || saturn.dignity === 'Exalted' || saturn.dignity === 'Own Sign');
+  const mercTrading = mercury && mercury.dignity !== 'Debilitated' && [1, 2, 5, 10, 11].includes(mercury.placedHouse);
+
+  let styleEn = 'Balanced SIP & Long-Term Asset Allocation';
+  let styleHi = 'संतुलित दीर्घकालिक निवेश व सुरक्षित परिसंपत्ति निर्माण';
+
+  if (h5Strong && mercTrading && !rahuSpeculative) {
+    styleEn = 'Calculated Equity, Analytical Trading & Diversified Growth';
+    styleHi = 'विश्लेषणात्मक इक्विटी निवेश, सोचा-समझा व्यापार व विविध पोर्टफोलियो';
+  } else if (rahuSpeculative && (h5.tier === 'afflicted' || h8.tier === 'afflicted')) {
+    styleEn = 'High Volatility Alert on Speculation: Favor Conservative Long-Term Compounding';
+    styleHi = 'सट्टा/अल्पकालिक ट्रेडिंग में अस्थिरता का संकेत: केवल दीर्घकालिक व सुरक्षित निवेश श्रेयस्कर';
+  } else if (saturnLongTerm) {
+    styleEn = 'Disciplined Value Investing, Real Assets & Long-Horizon Compounding (Saturn)';
+    styleHi = 'अनुशासित वैल्यू इन्वेस्टिंग, अचल संपत्ति व दीर्घकालिक संचय (शनि बल)';
+  }
+
+  // Sector alignment from strongest financial planets
+  const sectorsEn: string[] = [];
+  const sectorsHi: string[] = [];
+  if (jupiter && jupiter.dignity !== 'Debilitated') {
+    sectorsEn.push('Banking & Finance');
+    sectorsHi.push('बैंकिंग व वित्त');
+  }
+  if (mercTrading || (rahu && rahu.placedHouse === 10)) {
+    sectorsEn.push('IT, Technology & Commerce');
+    sectorsHi.push('आईटी, तकनीक व वाणिज्य');
+  }
+  if (venus && venus.dignity !== 'Debilitated') {
+    sectorsEn.push('Consumer Lifestyle & Real Estate');
+    sectorsHi.push('रियल एस्टेट व उपभोक्ता क्षेत्र');
+  }
+  if (mars && mars.dignity !== 'Debilitated') {
+    sectorsEn.push('Infrastructure, Energy & Pharma');
+    sectorsHi.push('बुनियादी ढांचा, ऊर्जा व फार्मा');
+  }
+
+  const sectorTextEn = sectorsEn.slice(0, 3).join(', ') || 'Diversified Core Assets';
+  const sectorTextHi = sectorsHi.slice(0, 3).join(', ') || 'विविध सुरक्षित क्षेत्र';
+
+  return {
+    valEn: `${styleEn} | Aligned Sectors: ${sectorTextEn}`,
+    valHi: `${styleHi} | अनुकूल क्षेत्र: ${sectorTextHi}`,
+    explEn: `Evaluated across the 2nd (savings: ${h2.tier}), 5th (speculation: ${h5.tier}), 8th (sudden shifts: ${h8.tier}), 9th (fortune: ${h9.tier}), and 11th (gains: ${h11.tier}) houses. Astrology guides personal risk temperament and never replaces fundamental valuation or diversification. Traditional stability practices: Mahalakshmi mantra on Fridays and disciplined budgeting.`,
+    explHi: `द्वितीय (बचत: ${h2.tier}), पंचम (निवेश/शेयर: ${h5.tier}), अष्टम (उतार-चढ़ाव: ${h8.tier}), नवम (भाग्य: ${h9.tier}) व एकादश (लाभ: ${h11.tier}) भावों से निवेश स्वभाव आंका गया है। यह केवल जोखिम-प्रवृत्ति का संकेत है; निवेश निर्णय सदैव मौलिक विश्लेषण व विविधीकरण के साथ लें।`,
+    pacEn: `H5(${h5.tier}), H11(${h11.tier}); Jupiter H${jupiter?.placedHouse}, Mercury H${mercury?.placedHouse}, Saturn H${saturn?.placedHouse}, Rahu H${rahu?.placedHouse}.`,
+    pacHi: `पंचम(${h5.tier}), एकादश(${h11.tier}); गुरु भाव ${jupiter?.placedHouse}, बुध भाव ${mercury?.placedHouse}, शनि भाव ${saturn?.placedHouse}।`,
+  };
+}
+
+
 
 
 

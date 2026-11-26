@@ -45,6 +45,7 @@ import {
   getIntimacyAndYoniHarmonyAnalysis,
   getParentChildDynamicsAndAdoption,
   getJanmaNakshatraClassification,
+  getFinancialInvestmentTemperament,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -2062,6 +2063,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: `अष्टम भाव: ${SIGN_HI[h8SignIdx]}; अष्टमेश भाव ${l8?.placedHouse} में; गुरु का शुभ संबंध।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 43–48)',
           vargaRef: 'D1 & D8',
+        },
+        {
+          id: 'attr_investment_market_temperament',
+          category: 'career',
+          titleEn: 'Financial Astrology: Investment Temperament & Sector Alignment',
+          titleHi: 'वित्तीय ज्योतिष: निवेश जोखिम-प्रवृत्ति व अनुकूल क्षेत्र',
+          valueEn: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).valEn,
+          valueHi: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).valHi,
+          explanationEn: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).explEn,
+          explanationHi: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).explHi,
+          pacBasisEn: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).pacEn,
+          pacBasisHi: getFinancialInvestmentTemperament(planets, h2Prof, h5Prof, h8Prof, h9Prof, h11Prof).pacHi,
+          shastricRef: 'Artha Trikona (2/5/9/11) & Planetary Financial Temperament',
+          vargaRef: 'D1 & D2 Hora',
         },
       ],
     });
