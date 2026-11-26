@@ -836,14 +836,28 @@ export function getPillar9AssetDetails(
         explHi: `द्वादश भाव और चंद्रमा का संतुलन गहरी व विश्रामदायक नींद प्रदान करता है।`,
       };
 
-  // 4. Moksha / Spiritual Path (H12 & Ketu)
+  // 4. Moksha / Spiritual Path (H12 & Ketu — 4 paths)
   const moksha: BilingualPrediction =
-    ketu?.placedHouse === 12 || ketu?.placedHouse === 9 || h12.dominantGraha === 'Jupiter' || h12.dominantGraha === 'Ketu'
+    ketu?.placedHouse === 12 || ketu?.placedHouse === 9
       ? {
           valEn: 'Strong Moksha-orientation: Contemplative wisdom and natural spiritual detachment deepen in mature years',
           valHi: 'प्रबल मोक्ष-प्रवृत्ति: उत्तरार्ध में आध्यात्मिक चिंतन, ध्यान व वैराग्य भाव में गहन परिपक्वता',
-          explEn: `Ketu/Jupiter influence on the 12th/9th axis turns the soul naturally toward self-realization.`,
-          explHi: `द्वादश/नवम भाव पर केतु या गुरु का प्रभाव आत्म-चिंतन और मोक्ष मार्ग की ओर अग्रसर करता है।`,
+          explEn: `Ketu in the 12th/9th axis turns the soul naturally toward self-realization and inner liberation.`,
+          explHi: `द्वादश/नवम भाव में केतु की स्थिति आत्म-चिंतन और मोक्ष मार्ग की ओर स्वाभाविक रूप से अग्रसर करती है।`,
+        }
+      : h12.dominantGraha === 'Jupiter' || h12.dominantGraha === 'Mercury'
+      ? {
+          valEn: 'Jnana-Yoga & Wisdom Path: Liberation through scriptural study, teaching, and philosophical clarity',
+          valHi: 'ज्ञान-योग मार्ग: शास्त्र अध्ययन, स्वाध्याय, शिक्षण और तात्विक विवेक के माध्यम से आत्मोन्नति',
+          explEn: `Jupiter/Mercury resonance on the 12th house channels spiritual growth through knowledge and mentorship.`,
+          explHi: `द्वादश भाव पर गुरु/बुध का प्रभाव ज्ञान, स्वाध्याय और विवेक द्वारा आध्यात्मिक प्रगति दर्शाता है।`,
+        }
+      : h12.dominantGraha === 'Moon' || h12.dominantGraha === 'Venus'
+      ? {
+          valEn: 'Bhakti-Yoga & Heart-Centered Devotion: Spiritual peace through music, prayer, empathy, and sacred beauty',
+          valHi: 'भक्ति-योग व हृदय-केंद्रित साधना: भक्ति, संगीत, करुणा और निष्काम प्रेम से आंतरिक शांति',
+          explEn: `Moon/Venus influence on the 12th house nurtures devotional surrender and compassionate service.`,
+          explHi: `द्वादश भाव पर चंद्र/शुक्र का प्रभाव भक्ति, करुणा और आध्यात्मिक शांति को पुष्ट करता है।`,
         }
       : {
           valEn: 'Karma-Yoga path: Achieves spiritual fulfillment through honest family duty, charity, and selfless service',
@@ -1955,29 +1969,46 @@ export function getComprehensiveCareerAndWealthAnalysis(
     }
   }
 
-  // Realistic Wealth Tier
+  // Realistic 4-Tier Wealth Stratification
   const isL2Weak = h2.tier === 'afflicted';
   const isL11Weak = h11.tier === 'afflicted';
+  let wealthPts = 0;
+  if (h2.tier === 'strong') wealthPts += 2;
+  else if (h2.tier === 'moderate') wealthPts += 1;
+  if (h11.tier === 'strong') wealthPts += 2;
+  else if (h11.tier === 'moderate') wealthPts += 1;
+  if (isDhanaStrong) wealthPts += 2;
+  if (induBenefics.length > 0) wealthPts += 2;
+  if (detectedYogasEn.length >= 2) wealthPts += 1;
+  if (isL2Weak) wealthPts -= 1;
+  if (isL11Weak) wealthPts -= 1;
+  if (h12.tier === 'afflicted') wealthPts -= 1;
+
   let wealthValEn = '';
   let wealthValHi = '';
   let wealthExplEn = '';
   let wealthExplHi = '';
 
-  if ((isL2Weak || isL11Weak) && induBenefics.length === 0 && !isDhanaStrong && detectedYogasEn.length === 0) {
-    wealthValEn = 'Disciplined Middle-Class Stability: Steady earned income; avoid speculative risks and prioritize systematic savings';
-    wealthValHi = 'संयमित मध्यम-वर्गीय स्थिरता: परिश्रम से नियमित आय; सट्टेबाजी से बचकर अनुशासित बचत पर ध्यान आवश्यक';
-    wealthExplEn = `With 2nd house (${h2.tier}) and 11th house (${h11.tier}) facing pressure, wealth accumulates gradually through steady service, budgeting, and low-risk instruments rather than windfalls.`;
-    wealthExplHi = `द्वितीय (${TIER_HI[h2.tier]}) और एकादश (${TIER_HI[h11.tier]}) भाव पर दबाव होने से धन का संचय आकस्मिक लाभ की अपेक्षा नियमित आय, मितव्ययिता और सुरक्षित निवेश से धीरे-धीरे होता है।`;
-  } else if (isDhanaStrong || induBenefics.length > 0 || detectedYogasEn.length >= 2) {
+  if (wealthPts >= 6) {
+    wealthValEn = 'Apex Rajayoga & Legacy Wealth Potential: High compounding capacity, multi-asset portfolio & enduring abundance';
+    wealthValHi = 'उच्च राजयोग व स्थायी वैभव श्रेणी: प्रबल धन-संचय क्षमता, बहु-संपत्ति व दीर्घकालिक समृद्धि';
+    wealthExplEn = `Exceptionally fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active Dhana/Raja yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} elevate wealth far above average.`;
+    wealthExplHi = `अत्यंत सबल द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), सक्रिय राज-धन योग तथा ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न असाधारण आर्थिक उत्थान दर्शाते हैं।`;
+  } else if (wealthPts >= 4) {
     wealthValEn = 'Strong Prosperity & Asset-Building Potential: Multi-stream earnings, property accumulation & long-term financial independence';
     wealthValHi = 'उत्तम समृद्धि व संपत्ति निर्माण योग: बहु-आयामी आय स्रोत, अचल संपत्ति व दीर्घकालिक आर्थिक सुदृढ़ता';
     wealthExplEn = `Fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} support compounding wealth during favorable Mahadashas.`;
     wealthExplHi = `सशक्त द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), शुभ राज/धन योग (${detectedYogasHi.slice(0, 3).join(', ') || 'धन संयोग'}) और ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न उत्तम आर्थिक उन्नति व संपत्ति निर्माण दर्शाते हैं।`;
-  } else {
+  } else if (wealthPts >= 2) {
     wealthValEn = 'Comfortable Upper-Middle Financial Trajectory: Reliable cashflow, steady asset growth & balanced family prosperity';
     wealthValHi = 'सुदृढ़ उच्च-मध्यम आर्थिक स्थिति: नियमित आय, क्रमिक संपत्ति वृद्धि व संतुलित पारिवारिक समृद्धि';
     wealthExplEn = `Balanced 2nd (${h2.tier}) and 11th (${h11.tier}) houses provide reliable earning capacity, comfortable living standards, and steady asset creation over time.`;
     wealthExplHi = `संतुलित द्वितीय (${TIER_HI[h2.tier]}) व एकादश (${TIER_HI[h11.tier]}) भाव जीवन में आर्थिक सुरक्षा, आवश्यक सुख-सुविधाएं और समय के साथ स्थायी पूंजी निर्माण प्रदान करते हैं।`;
+  } else {
+    wealthValEn = 'Disciplined Self-Made Stability: Steady earned income; avoid speculative risks and prioritize systematic savings';
+    wealthValHi = 'संयमित आत्मनिर्भर आर्थिक स्थिरता: परिश्रम से नियमित आय; सट्टेबाजी से बचकर अनुशासित बचत पर ध्यान आवश्यक';
+    wealthExplEn = `With 2nd house (${h2.tier}) and 11th house (${h11.tier}) requiring disciplined stewardship, wealth accumulates gradually through steady service, budgeting, and low-risk instruments.`;
+    wealthExplHi = `द्वितीय (${TIER_HI[h2.tier]}) और एकादश (${TIER_HI[h11.tier]}) भाव की स्थिति के अनुसार धन का संचय आकस्मिक लाभ की अपेक्षा नियमित आय, मितव्ययिता और सुरक्षित निवेश से धीरे-धीरे होता है।`;
   }
 
   const financialWealthTier = {

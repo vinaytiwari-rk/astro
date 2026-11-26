@@ -1409,8 +1409,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'spouse',
           titleEn: 'Marital Destiny, Lifespan Parity & Permanence',
           titleHi: 'वैवाहिक स्थिति, स्थायित्व, अखंड सौभाग्य व आयु सामंजस्य',
-          valueEn: maritalStatusEn,
-          valueHi: maritalStatusHi,
+          valueEn:
+            maritalStatusEn.startsWith('Auspicious, harmonious') &&
+            multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+              ? 'Tested wedlock requiring conscious harmony, open dialogue & meticulous D9 compatibility'
+              : maritalStatusEn,
+          valueHi:
+            maritalStatusEn.startsWith('Auspicious, harmonious') &&
+            multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+              ? 'परीक्षापूर्ण दांपत्य योग: धैर्य, खुला संवाद एवं सूक्ष्म D9 कुंडली मिलान आवश्यक'
+              : maritalStatusHi,
           explanationEn: maritalStatusExplEn,
           explanationHi: maritalStatusExplHi,
           pacBasisEn: `House 7: ${h7Sign.name}; Lord: ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in House ${venus?.placedHouse} (${marDet.venusCombust ? 'Combust <8°' : venus?.dignity || 'Dignified'}); D9 H7 in ${SIGNS[d9H7Sign].name}.`,
@@ -2201,20 +2209,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const isL1AfflictedHealth = l1?.placedHouse === 6 || l1?.placedHouse === 8 || l1?.placedHouse === 12 || l1?.dignity === 'Debilitated';
     const isL8Afflicted = l8?.placedHouse === 6 || l8?.placedHouse === 12 || l8?.dignity === 'Debilitated';
     const isSaturnFortified = saturn && (saturn.placedHouse === 1 || saturn.placedHouse === 7 || saturn.placedHouse === 8 || saturn.placedHouse === 10 || saturn.placedHouse === 11 || saturn.dignity === 'Exalted' || saturn.dignity === 'Own Sign');
+    const isJupKendraTrikona = jupiter && [1, 4, 5, 7, 9, 10].includes(jupiter.placedHouse);
 
-    let longevityEn = 'Purna Ayus (Long Lifespan: 76 to 85+ years); robust vital Prana anchored by strong Lagnesha and Saturn';
-    let longevityHi = 'पूर्णायु योग (दीर्घायु: ७६ से ८५+ वर्ष); लग्नेश, अष्टमेश व आयुकारक शनि के शुभ प्रभाव से सुदृढ़ जीवनी शक्ति';
+    let longevityEn = 'Purna Ayus (Long Lifespan: 75 to 82 years); robust vital Prana anchored by strong Lagnesha and Saturn';
+    let longevityHi = 'पूर्णायु योग (दीर्घायु: ७५ से ८२ वर्ष); लग्नेश, अष्टमेश व आयुकारक शनि के शुभ प्रभाव से सुदृढ़ जीवनी शक्ति';
     let longevityExplEn = 'Classical longevity methods (Lagna lord + 8th lord, Saturn + Moon) converge upon the Purna Ayus category. Strong life vitality provides natural resistance and longevity.';
     let longevityExplHi = 'पाराशरी आयु निर्धारण पद्धति (लग्नेश+अष्टमेश, शनि+चंद्र) के अनुसार जातक पूर्णायु वर्ग में आता है। जीवन शक्ति उत्तम रहने से जातक दीर्घायु प्राप्त करता है।';
 
-    if ((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) {
-      longevityEn = 'Madhyama Ayus (Medium Lifespan: 66 to 75 years); sustained health requires regular cardiac/lifestyle vigilance, balanced diet, and avoiding extreme stress';
-      longevityHi = 'मध्यायु योग (६६ से ७५ वर्ष); नियमित स्वास्थ्य परीक्षण, संयमित दिनचर्या व तनावमुक्ति से पूर्ण स्वस्थ जीवन संभव';
+    if (!isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona) {
+      longevityEn = 'Deergha Ayus (Extended Lifespan: 82 to 90+ years); exceptional constitutional vitality & Jupiterian longevity shield';
+      longevityHi = 'दीर्घायु विशेष योग (८२ से ९०+ वर्ष); शनि-गुरु के शुभ संयोग से असाधारण जीवनी शक्ति व दीर्घ जीवन';
+      longevityExplEn = 'Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.';
+      longevityExplHi = 'लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।';
+    } else if (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) {
+      longevityEn = 'Preventive Vitality Care (64 to 74 years); disciplined medical screening, restorative sleep & stress hygiene essential';
+      longevityHi = 'सजग स्वास्थ्य संरक्षण योग (६४ से ७४ वर्ष); नियमित चिकित्सा जांच, पर्याप्त निद्रा व तनाव नियंत्रण से दीर्घ व स्वस्थ जीवन';
+      longevityExplEn = 'Both Lagna and 8th lords occupy challenging houses without Saturnine stabilization, making preventive healthcare and steady routines vital.';
+      longevityExplHi = 'लग्नेश व अष्टमेश दोनों पर दबाव होने से नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु व स्वास्थ्य की रक्षा करती है।';
+    } else if ((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) {
+      longevityEn = 'Madhyama Ayus (Medium Lifespan: 68 to 76 years); sustained health requires regular cardiac/lifestyle vigilance and balanced diet';
+      longevityHi = 'मध्यायु योग (६८ से ७६ वर्ष); नियमित स्वास्थ्य परीक्षण, संयमित दिनचर्या व तनावमुक्ति से पूर्ण स्वस्थ जीवन संभव';
       longevityExplEn = 'Lagna or 8th lord receives moderate stress in Trik houses, indicating that longevity is safeguarded by conscious lifestyle choices, timely medical checkups, and spiritual discipline.';
       longevityExplHi = 'लग्नेश अथवा अष्टमेश की स्थिति मध्यम आयु खंड की ओर संकेत करती है। जातक यदि खानपान में संयम और नियमित व्यायाम रखे, तो स्वास्थ्य संबंधी व्याधियों से सुरक्षित रहता है।';
     }
 
     const hasEnemiesChallenge = h6Planets.some((p) => p.id === 'Rahu' || p.id === 'Saturn') || l6?.placedHouse === 10 || l6?.placedHouse === 7;
+    const is6thDiplomatic = !hasEnemiesChallenge && (l6?.placedHouse === 1 || l6?.placedHouse === 5 || l6?.placedHouse === 9 || h6Planets.some((p) => p.id === 'Jupiter' || p.id === 'Venus'));
+    const is6thVipareeta = [6, 8, 12].includes(l6?.placedHouse || 0) && !hasEnemiesChallenge;
+
     let enemiesEn = 'Shatruhanta Yoga active: Competitors and rivals will be neutralized; disputes resolved through diplomacy or favorable settlement';
     let enemiesHi = 'शत्रुहंता योग सक्रिय: विरोधी व प्रतिद्वंद्वी परास्त होंगे; विवादों का शांतिपूर्ण व विवेकपूर्ण समाधान';
     let enemiesExplEn = 'The 6th house is protected by strong planetary influences. Detractors and professional competitors fail to cause lasting damage, and legal conflicts resolve without severe loss.';
@@ -2225,6 +2247,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       enemiesHi = 'कार्यक्षेत्र में ईर्ष्यालु लोगों व अदालती विवादों से सतर्कता अपेक्षित; लिखित दस्तावेजीकरण व आपसी मध्यस्थता द्वारा विवाद सुलझाना लाभकारी';
       enemiesExplEn = 'Rahu or Saturn influencing the 6th/8th axis indicates potential professional jealousy or friction. Classical texts advise keeping meticulous records, avoiding informal financial partnerships, and resolving disputes out of court.';
       enemiesExplHi = 'षष्ठ भाव पर राहु अथवा शनि का प्रभाव गुप्त विरोधियों और कानूनी विवादों की संभावना को बढ़ाता है। जातक को वित्तीय लेन-देन में लिखित प्रमाण रखना चाहिए तथा विवादों को कोर्ट-कचहरी के बाहर सुलझाना श्रेयस्कर है।';
+    } else if (is6thVipareeta) {
+      enemiesEn = 'Harsha / Vipareeta Resilience: Early competition or opposition turns into unexpected advantage and personal growth';
+      enemiesHi = 'हर्ष / विपरीत राजयोग संरक्षण: प्रारंभिक प्रतिस्पर्धा व विरोध अंततः जातक के पक्ष में अवसर व सफलता लाते हैं';
+      enemiesExplEn = '6th lord placed in a Trik house creates classical Vipareeta dynamics where adversity catalyzes breakthrough victory.';
+      enemiesExplHi = 'षष्ठेश की त्रिक भाव स्थिति से प्रारंभिक चुनौतियों के बाद प्रतिद्वंद्वियों पर स्पष्ट विजय प्राप्त होती है।';
+    } else if (is6thDiplomatic) {
+      enemiesEn = 'Diplomatic Harmony & Low Litigation: Prefers constructive negotiation and ethical consensus over open rivalry';
+      enemiesHi = 'सौहार्दपूर्ण संवाद व न्यूनतम विवाद योग: खुले टकराव के बजाय समझदारी व नैतिक संवाद से विवाद निवारण';
+      enemiesExplEn = 'Benefic 6th-house connection keeps litigation minimal and resolves workplace disagreements smoothly.';
+      enemiesExplHi = 'षष्ठ भाव पर शुभ ग्रह प्रभाव से कानूनी झंझट न्यूनतम रहते हैं और मतभेद शांति से सुलझते हैं।';
     }
 
     const p8Det = getPillar8MicroDetails(h6Prof, h8Prof, h12Prof, moon, venus);
@@ -2478,16 +2510,29 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     }
 
     const isSelfReliantFortified = (l2?.placedHouse === 1 || l2?.placedHouse === 2 || l2?.placedHouse === 10 || l2?.placedHouse === 11) && (l10?.placedHouse === 1 || l10?.placedHouse === 10 || l10?.placedHouse === 11);
-    let selfRelianceEn = 'Absolute lifelong financial self-reliance; acts as the primary benevolent breadwinner and protector for extended family members';
-    let selfRelianceHi = 'आजीवन पूर्ण आर्थिक आत्मनिर्भरता; परिवार के सदस्यों व आश्रितों का उदारतापूर्वक भरण-पोषण करने वाला कुलदीपक';
-    let selfRelianceExplEn = 'Fortified 2nd (Kutumba Sthana) and 10th houses establish the native as an apex family patron upon whom others depend with confidence.';
-    let selfRelianceExplHi = 'द्वितीय (कुटुंब) व दशम भाव की मजबूती जातक को परिवार का मुख्य आश्रयदाता बनाती है। जातक कभी किसी पर आर्थिक रूप से आश्रित नहीं रहता।';
+    const isSharedResp = !isSelfReliantFortified && ([1, 2, 4, 5, 9, 10, 11].includes(l2?.placedHouse || 0) || [4, 5, 7, 9].includes(l10?.placedHouse || 0));
+    const isHeavyObligation = [6, 8, 12].includes(l2?.placedHouse || 0) || h2Prof.tier === 'afflicted';
 
-    if (!isSelfReliantFortified) {
-      selfRelianceEn = 'Earned personal self-reliance; manages household liabilities and family obligations through diligent budgeting and continuous career effort';
-      selfRelianceHi = 'परिश्रम आधारित आत्मनिर्भरता; अपनी जिम्मेदारियों व पारिवारिक दायित्वों का निष्ठापूर्वक निर्वहन';
-      selfRelianceExplEn = 'The native builds self-reliance through steady personal exertion rather than ancestral inheritance. Responsible budgeting ensures family stability.';
-      selfRelianceExplHi = 'जातक पैतृक संपदा के बजाय अपने परिश्रम और समझदारी से आत्मनिर्भरता प्राप्त करता है और परिवार का संतुलित पालन-पोषण करता है।';
+    let selfRelianceEn = 'Earned personal self-reliance; manages household liabilities and family obligations through diligent budgeting and continuous career effort';
+    let selfRelianceHi = 'परिश्रम आधारित आत्मनिर्भरता; अपनी जिम्मेदारियों व पारिवारिक दायित्वों का निष्ठापूर्वक निर्वहन';
+    let selfRelianceExplEn = 'The native builds self-reliance through steady personal exertion rather than ancestral inheritance. Responsible budgeting ensures family stability.';
+    let selfRelianceExplHi = 'जातक पैतृक संपदा के बजाय अपने परिश्रम और समझदारी से आत्मनिर्भरता प्राप्त करता है और परिवार का संतुलित पालन-पोषण करता है।';
+
+    if (isSelfReliantFortified) {
+      selfRelianceEn = 'Absolute lifelong financial self-reliance; acts as the primary benevolent breadwinner and protector for extended family members';
+      selfRelianceHi = 'आजीवन पूर्ण आर्थिक आत्मनिर्भरता; परिवार के सदस्यों व आश्रितों का उदारतापूर्वक भरण-पोषण करने वाला कुलदीपक';
+      selfRelianceExplEn = 'Fortified 2nd (Kutumba Sthana) and 10th houses establish the native as an apex family patron upon whom others depend with confidence.';
+      selfRelianceExplHi = 'द्वितीय (कुटुंब) व दशम भाव की मजबूती जातक को परिवार का मुख्य आश्रयदाता बनाती है। जातक कभी किसी पर आर्थिक रूप से आश्रित नहीं रहता।';
+    } else if (isHeavyObligation) {
+      selfRelianceEn = 'Significant family duties & early responsibilities; clear financial boundaries and emergency reserves keep liabilities manageable';
+      selfRelianceHi = 'परिवार व आश्रितों के प्रति भारी उत्तरदायित्व; स्पष्ट बजट और आपातकालीन कोष से दायित्वों का सफल संतुलन';
+      selfRelianceExplEn = '2nd house or lord in challenging houses signals early responsibility for family obligations; structured planning prevents strain.';
+      selfRelianceExplHi = 'द्वितीय भाव/द्वितीयेश पर दबाव के कारण प्रारंभिक जीवन से पारिवारिक जिम्मेदारियां निभानी पड़ती हैं; अनुशासित बचत से स्थिरता आती है।';
+    } else if (isSharedResp) {
+      selfRelianceEn = 'Balanced mutual support; combines independent career income with cooperative family resource sharing';
+      selfRelianceHi = 'संतुलित पारिवारिक सहयोग व स्वावलंबन; स्वतंत्र आय के साथ परिवार में परस्पर आर्थिक सहभागिता';
+      selfRelianceExplEn = 'Balanced 2nd and 10th placements allow harmonious sharing of household duties without heavy debt burdens.';
+      selfRelianceExplHi = 'द्वितीय व दशम भाव के संतुलित योग से पारिवारिक जिम्मेदारियां सहजता व सहयोग से पूर्ण होती हैं।';
     }
 
     const p9Det = getPillar9AssetDetails(h4Prof, h12Prof, venus, moon, ketu);
@@ -2536,10 +2581,18 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           titleHi: 'विदेश यात्राएं, देशाटन व अंतरराष्ट्रीय संपर्क',
           valueEn: (l9?.placedHouse === 12 || l12?.placedHouse === 9 || rahu?.placedHouse === 12 || rahu?.placedHouse === 9)
             ? 'Long-term international settlement / foreign residence and extensive overseas executive travels'
-            : 'Periodic international or long-distance journeys for work, pilgrimage, or family milestones',
+            : (h9Sign.modality === 'Movable' || h12Sign.modality === 'Movable' || moon?.placedHouse === 12 || mercury?.placedHouse === 12)
+            ? 'Frequent international work travel, global trade/academic exchanges & multi-city mobility'
+            : (l4?.placedHouse === 3 || l4?.placedHouse === 9 || l4?.placedHouse === 12 || h4Sign.modality === 'Movable')
+            ? 'Inter-state relocation and periodic long-distance or pilgrimage journeys'
+            : 'Homeland-rooted stability with selective milestone travels and family pilgrimages',
           valueHi: (l9?.placedHouse === 12 || l12?.placedHouse === 9 || rahu?.placedHouse === 12 || rahu?.placedHouse === 9)
             ? 'दीर्घकालिक विदेश वास / स्थायी निवास (PR) एवं अंतरराष्ट्रीय स्तर पर कार्यक्षेत्र का विस्तार'
-            : 'कार्यक्षेत्र, तीर्थयात्रा अथवा पारिवारिक अवसरों पर समय-समय पर सुदूर या विदेश यात्राओं का योग',
+            : (h9Sign.modality === 'Movable' || h12Sign.modality === 'Movable' || moon?.placedHouse === 12 || mercury?.placedHouse === 12)
+            ? 'कार्यक्षेत्र, व्यापार या शिक्षा हेतु बार-बार विदेश यात्रा व वैश्विक संपर्कों का विस्तार'
+            : (l4?.placedHouse === 3 || l4?.placedHouse === 9 || l4?.placedHouse === 12 || h4Sign.modality === 'Movable')
+            ? 'अन्य राज्य/शहर में प्रवास तथा समय-समय पर तीर्थयात्रा व दूरस्थ देशाटन'
+            : 'मातृभूमि में स्थायी निवास के साथ विशेष अवसरों पर चुनिंदा यात्राओं व तीर्थयात्रा का योग',
           explanationEn: `The 9th (Tirtha/Long journeys) and 12th (Foreign lands) houses form active connections with Rahu and Moon, opening global frontiers effortlessly.`,
           explanationHi: `नवम व द्वादश भावों का चर राशियों अथवा राहु/चंद्र से संबंध जातक को जीवन में कई बार विदेश जाने और अंतरराष्ट्रीय स्तर पर ख्याति पाने का मार्ग खोलता है।`,
           pacBasisEn: `House 9 Lord ${l9?.id} in H${l9?.placedHouse}; House 12 Lord ${l12?.id} in H${l12?.placedHouse}; Rahu in House ${rahu?.placedHouse}.`,
@@ -2774,12 +2827,18 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
 
     let dietEn = 'Predominantly sweet, warm sattvic grains, fresh milk/dairy and mild cooling spices; naturally vegetarian bio-chemistry';
     let dietHi = 'मधुर, सात्विक व ताजा गर्म भोजन प्रिय; दूध-घृत व फल रुचिकर; स्वाभाविक रूप से शाकाहारी प्रकृति';
-    if (h2Planets.some((p) => p.id === 'Mars' || p.id === 'Sun' || p.id === 'Rahu')) {
+    if (h2Planets.some((p) => p.id === 'Mars' || p.id === 'Sun' || p.id === 'Rahu') || h2Sign.element === 'Fire') {
       dietEn = 'Pungent, spicy, hot foods, robust protein-rich nutrition; strong digestive appetite with high metabolism';
       dietHi = 'तीखा, मसालेदार, गर्म व प्रोटीन-युक्त भोजन प्रिय; तीव्र पाचक अग्नि व उच्च चयापचय';
-    } else if (h2Planets.some((p) => p.id === 'Saturn')) {
+    } else if (h2Planets.some((p) => p.id === 'Saturn' || p.id === 'Ketu')) {
       dietEn = 'Astringent, bitter, simple disciplined diet; thrives on aged grains, legumes, and minimal processed sugar';
       dietHi = 'कषाय व तिक्त रस, सादा व संयमित आहार; दालें, मोटे अनाज व कम मीठा भोजन अनुकूल';
+    } else if (h2Sign.element === 'Air') {
+      dietEn = 'Light, crisp, varied cuisine (salads, herbal teas, sour/tangy accents); benefits from warm soups to ground Vata';
+      dietHi = 'हल्का, ताजा व विविधतापूर्ण आहार (सूप, हर्बल चाय, खट्टा-चटपटा स्वाद); वात संतुलन हेतु गुनगुना भोजन श्रेष्ठ';
+    } else if (h2Sign.element === 'Water') {
+      dietEn = 'Cooling, hydrating, juicy foods (fruits, coconut water, mild dairy, sweet/salty balance); avoid late-night cold drinks';
+      dietHi = 'शीतल, रसीला व जल-तत्व प्रधान आहार (फल, नारियल पानी, हल्का दुग्ध); रात्रि में ठंडे पेय से बचें';
     }
 
     pillars.push({
