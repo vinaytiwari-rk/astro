@@ -8,6 +8,7 @@
 
 import { SIGNS } from '../constants';
 import type { BodyPosition, DivisionalChart } from '../types';
+import { evaluateExtendedMedicalConditions } from './extendedMedicalDatabase';
 
 export type PlanetPos = BodyPosition & { placedHouse: number };
 export type GrahaKey = 'Sun' | 'Moon' | 'Mars' | 'Mercury' | 'Jupiter' | 'Venus' | 'Saturn' | 'Rahu' | 'Ketu';
@@ -1616,6 +1617,16 @@ export function getComprehensiveMedicalAstrology(
     flagsHi.push('त्वचा, एलर्जी व स्नायु स्वच्छता (बुध/राहु)');
   }
 
+  const extMatches = evaluateExtendedMedicalConditions(planets);
+  for (const em of extMatches) {
+    if (!flagsEn.some((f) => f.toLowerCase().includes(em.conditionEn.split(' ')[0].toLowerCase()))) {
+      flagsEn.push(em.conditionEn);
+      flagsHi.push(em.conditionHi);
+    }
+  }
+  const extTipsEn = extMatches.slice(0, 2).map((m) => m.preventiveTipEn).join(' ');
+  const extTipsHi = extMatches.slice(0, 2).map((m) => m.preventiveTipHi).join(' ');
+
   const systemSpecificScreening = {
     valEn: flagsEn.length > 0
       ? `Preventive Vigilance Areas: ${flagsEn.slice(0, 4).join(' | ')}`
@@ -1624,13 +1635,13 @@ export function getComprehensiveMedicalAstrology(
       ? `निवारक स्वास्थ्य सतर्कता क्षेत्र: ${flagsHi.slice(0, 4).join(' | ')}`
       : 'उत्तम अंग-तंत्र संतुलन: हृदय, चयापचय व श्वास तंत्र में स्वाभाविक सुदृढ़ता',
     explEn: flagsEn.length > 0
-      ? `Classical Medical Astrology screens ${flagsEn.join(', ')} based on planet-house combinations. These are preventive lifestyle & checkup indicators, never medical diagnoses.`
+      ? `Extended Medical Screening (${extMatches.length + 8} axes) highlights ${flagsEn.join(', ')}. ${extTipsEn} Preventive lifestyle guidance only, never medical diagnosis.`
       : 'No heavy multi-malefic clusters afflict the primary organ axes (2nd, 4th, 5th, 6th, 8th, 12th). Maintain regular preventive checkups and balanced diet.',
     explHi: flagsHi.length > 0
-      ? `शास्त्रीय चिकित्सा ज्योतिष के अनुसार ${flagsHi.join(', ')} पर नियमित जांच व संतुलित जीवनशैली से पूर्ण बचाव संभव है। यह केवल निवारक संकेत है, चिकित्सकीय निदान नहीं।`
+      ? `विस्तृत चिकित्सा परीक्षण (${extMatches.length + 8} क्षेत्र) के अनुसार ${flagsHi.join(', ')} पर ध्यान दें। ${extTipsHi} यह केवल निवारक संकेत है, चिकित्सकीय निदान नहीं।`
       : 'प्रमुख शारीरिक तंत्रों पर कोई गंभीर बहु-पाप प्रभाव नहीं है। नियमित व्यायाम व सात्विक दिनचर्या से स्वास्थ्य उत्तम रहता है।',
-    pacEn: `Screened 8 axes: ${flagsEn.length} preventive flags active (${flagsEn.map((f) => f.split(' (')[0]).join(', ') || 'All clear'}).`,
-    pacHi: `८ शारीरिक तंत्र परीक्षण: ${flagsHi.length} निवारक संकेत सक्रिय (${flagsHi.map((f) => f.split(' (')[0]).join(', ') || 'सभी संतुलित'})।`,
+    pacEn: `Screened 16 extended clinical-system rules: ${flagsEn.length} preventive flags active (${flagsEn.map((f) => f.split(' (')[0]).join(', ') || 'All clear'}).`,
+    pacHi: `१६ विस्तृत चिकित्सा नियम परीक्षण: ${flagsHi.length} निवारक संकेत सक्रिय (${flagsHi.map((f) => f.split(' (')[0]).join(', ') || 'सभी संतुलित'})।`,
   };
 
   return {

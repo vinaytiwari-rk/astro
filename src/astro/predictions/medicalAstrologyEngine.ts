@@ -1,5 +1,9 @@
 import { NAKSHATRAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import {
+  evaluateExtendedMedicalConditions,
+  type ExtendedMedicalConditionMatch,
+} from './extendedMedicalDatabase';
 
 export interface SpecificDiseaseAlert {
   category: 'Heart' | 'Diabetes' | 'Liver' | 'Eyes' | 'Mental' | 'JointsVata';
@@ -58,6 +62,7 @@ export interface ComprehensiveChikitsaReport {
   constitutionalAdviceHi: string;
   vulnerableOrganSystems: VulnerableOrganSystem[];
   diseaseAlerts: SpecificDiseaseAlert[];
+  extendedConditions?: ExtendedMedicalConditionMatch[];
   progenyDiagnostic: ProgenyDiagnosticReport;
   criticalHealthPhasesEn: string[];
   criticalHealthPhasesHi: string[];
@@ -505,6 +510,13 @@ export function computeComprehensiveChikitsaReport(chart: ChartData): Comprehens
     'सोमवार को शिवलिंग पर कच्चा दूध या जल अर्पित करें (मानसिक शांति व चंद्र शांति हेतु)।',
   ];
 
+  const extendedConditions = evaluateExtendedMedicalConditions(
+    chart.planets.map((p) => ({
+      ...p,
+      placedHouse: ((p.signIndex - chart.ascendant.signIndex + 12) % 12) + 1,
+    }))
+  );
+
   return {
     dominantDosha,
     dominantDoshaHi,
@@ -517,6 +529,7 @@ export function computeComprehensiveChikitsaReport(chart: ChartData): Comprehens
     constitutionalAdviceHi,
     vulnerableOrganSystems,
     diseaseAlerts,
+    extendedConditions,
     progenyDiagnostic,
     criticalHealthPhasesEn,
     criticalHealthPhasesHi,

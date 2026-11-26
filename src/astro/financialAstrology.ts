@@ -42,6 +42,14 @@ export interface FinancialAstrologyReport {
   speculationAdviceHi: string;
   speculationAdviceEn: string;
   topSectors: SectorAffinity[];
+  marketTimingProfile?: {
+    mercuryRetrogradeCautionEn: string;
+    mercuryRetrogradeCautionHi: string;
+    volatilitySensitivityEn: string;
+    volatilitySensitivityHi: string;
+    nakshatraTimingNoteEn: string;
+    nakshatraTimingNoteHi: string;
+  };
   financialRemediesHi: string[];
   financialRemediesEn: string[];
 }
@@ -211,7 +219,34 @@ export function computeFinancialAstrology(chart: ChartData): FinancialAstrologyR
       verdictHi: 'शुक्र व चंद्र की सौम्यता से खुदरा ब्रांड्स, रेस्टोरेंट, होटल, परिधान व लाइफस्टाइल में उत्तम आकर्षण।',
       verdictEn: 'Venusian aesthetic appeal guarantees steady consumer patronage in lifestyle and luxury goods.',
     },
+    {
+      sectorNameEn: 'Pharmaceuticals, Healthcare & Biotechnology',
+      sectorNameHi: 'फार्मास्युटिकल्स, स्वास्थ्य सेवा व बायोटेक्नोलॉजी',
+      governingPlanets: ['Moon', 'Jupiter', 'Ketu'],
+      suitabilityScore: Math.min(93, 48 + (getP('Moon').houseNumber === 6 || getP('Jupiter').houseNumber === 6 || getP('Ketu').houseNumber === 10 ? 26 : 10)),
+      verdictHi: 'चंद्र, गुरु व केतु के संयोग से औषधि, स्वास्थ्य संस्थान व शोध-आधारित चिकित्सा क्षेत्रों में स्थायी वृद्धि।',
+      verdictEn: 'Moon-Jupiter-Ketu resonance aligns well with healthcare, pharmaceuticals, and medical research.',
+    },
   ];
+
+  const mercRetro = mercury.isRetrograde;
+  const rahu5or8 = Boolean(rahu && (rahu.houseNumber === 5 || rahu.houseNumber === 8 || rahu.houseNumber === 11));
+  const marketTimingProfile = {
+    mercuryRetrogradeCautionEn: mercRetro
+      ? 'Natal Mercury is retrograde: double-check trade execution, contracts, and valuation assumptions during Mercury retrograde transits.'
+      : 'Review brokerage records and avoid impulsive short-term reversals during Mercury retrograde windows.',
+    mercuryRetrogradeCautionHi: mercRetro
+      ? 'जन्म कुंडली में बुध वक्री है: गोचर में बुध वक्री होने पर अनुबंध, ट्रेड व गणनाओं की दोहरी जांच करें।'
+      : 'बुध वक्री अवधि में जल्दबाजी के अल्पकालिक सौदों से बचें और पोर्टफोलियो की समीक्षा करें।',
+    volatilitySensitivityEn: rahu5or8
+      ? 'Rahu in 5th/8th/11th amplifies speculative swings: enforce strict stop-losses and avoid leveraged F&O overexposure.'
+      : 'Steady Saturn-Jupiter pacing favors staggered accumulation over timing sudden market tops or bottoms.',
+    volatilitySensitivityHi: rahu5or8
+      ? '५/८/११ में राहु सट्टा उतार-चढ़ाव बढ़ाता है: सख्त स्टॉप-लॉस रखें और अत्यधिक लीवरेज से बचें।'
+      : 'शनि-गुरु की संतुलित गति एकमुश्त जोखिम के बजाय क्रमिक निवेश (SIP/Value) को अनुकूल बनाती है।',
+    nakshatraTimingNoteEn: `Moon in ${moon.nakshatraName} (${moon.nakshatraLord}) favors disciplined Muhurta entry aligned with fundamental research.`,
+    nakshatraTimingNoteHi: `चंद्र नक्षत्र ${moon.nakshatraName} (${HINDI_PLANETS[moon.nakshatraLord] || moon.nakshatraLord}) के अनुसार मौलिक शोध के साथ शुभ मुहूर्त में निवेश श्रेष्ठ रहता है।`,
+  };
 
   return {
     wealthIndex: Math.round((dhanaYogas.filter((y) => y.isTriggered).length * 20 + (hasBeneficInIndu ? 25 : 10) + 40)),
@@ -223,6 +258,7 @@ export function computeFinancialAstrology(chart: ChartData): FinancialAstrologyR
     speculationAdviceHi: specAdviceHi,
     speculationAdviceEn: specAdviceEn,
     topSectors: sectors.sort((a, b) => b.suitabilityScore - a.suitabilityScore),
+    marketTimingProfile,
     financialRemediesHi: [
       'प्रतिदिन कनकधारा स्तोत्र अथवा श्रीसूक्त का पाठ करें।',
       'अपनी तिजोरी या कार्यस्थल पर श्रीयंत्र की स्थापना कर शुक्रवार को सुगंधित इत्र अर्पित करें।',
