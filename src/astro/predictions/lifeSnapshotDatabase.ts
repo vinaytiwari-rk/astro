@@ -1378,6 +1378,7 @@ export interface ComprehensiveMedicalResult {
   constitutionAndImmunity: BilingualPrediction & { pacEn: string; pacHi: string };
   mentalAndNervousHealth: BilingualPrediction & { pacEn: string; pacHi: string };
   ayurvedaDhatuAndHerbs: BilingualPrediction & { pacEn: string; pacHi: string };
+  systemSpecificScreening: BilingualPrediction & { pacEn: string; pacHi: string };
 }
 
 const KALAPURUSHA_ORGAN_MAP: Record<number, { en: string; hi: string }> = {
@@ -1561,11 +1562,83 @@ export function getComprehensiveMedicalAstrology(
     pacHi: `लग्न प्रकृति: ${lagnaAyurDosha.hi}; षष्ठ प्रमुख: ${h6.dominantGraha} (${ayurInfo.dhatuHi})।`,
   };
 
+  // 5. Classical Organ-System Preventive Screening (Cardiac/BP, Metabolic/Diabetes, Respiratory, Digestive/Liver, Renal/Stones, Eyes/ENT, Joints/Accident, Skin)
+  const flagsEn: string[] = [];
+  const flagsHi: string[] = [];
+
+  const isMalefic = (id: string) => ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(id);
+  const h4Malefics = h4.occupants.filter((p) => isMalefic(p.id)).length + h4.aspectors.filter((p) => isMalefic(p.id)).length;
+  const sunStrained = sun && ([6, 8, 12].includes(sun.placedHouse) || sun.dignity === 'Debilitated' || (saturn && sun.placedHouse === saturn.placedHouse) || (rahu && sun.placedHouse === rahu.placedHouse));
+  if ((h4Malefics >= 2 || sunStrained) && !(jupiter && h4.aspectors.some((p) => p.id === 'Jupiter'))) {
+    flagsEn.push('Cardiac & Blood Pressure (4th/Sun axis)');
+    flagsHi.push('हृदय व रक्तचाप संतुलन (चतुर्थ/सूर्य अक्ष)');
+  }
+
+  const venusMetabolic = venus && ([6, 8, 12].includes(venus.placedHouse) || (jupiter && [6, 8, 12].includes(jupiter.placedHouse) && [3, 7, 11].includes(jupiter.signIndex)));
+  if (venusMetabolic) {
+    flagsEn.push('Glycemic / Pancreatic & Urinary Balance (Venus/Jupiter)');
+    flagsHi.push('मधुमेह/पाचन व मूत्र-तंत्र संतुलन (शुक्र/गुरु)');
+  }
+
+  const respWatch = (moon && [6, 8, 12].includes(moon.placedHouse)) || (h4.signIdx === 2 || h4.signIdx === 3) && h4.tier === 'afflicted';
+  if (respWatch) {
+    flagsEn.push('Respiratory / Bronchial Care (Moon/4th)');
+    flagsHi.push('श्वास नली व फेफड़ों की देखभाल (चंद्र/चतुर्थ)');
+  }
+
+  const digWatch = h5.tier === 'afflicted' || h6.signIdx === 5 || (jupiter && [6, 8, 12].includes(jupiter.placedHouse));
+  if (digWatch) {
+    flagsEn.push('Digestive, Gastric & Liver Hygiene (5th/6th/Virgo)');
+    flagsHi.push('पाचन, यकृत (लिवर) व उदर स्वास्थ्य (पंचम/षष्ठ)');
+  }
+
+  const renalWatch = venus && mars && (venus.placedHouse === mars.placedHouse || [6, 8].includes(venus.placedHouse));
+  if (renalWatch) {
+    flagsEn.push('Kidney & Hydration / Stone Prevention (Venus-Mars)');
+    flagsHi.push('किडनी व पथरी बचाव हेतु पर्याप्त जल सेवन (शुक्र-मंगल)');
+  }
+
+  const eyeEntWatch = (sun && [2, 12].includes(sun.placedHouse)) || (moon && [2, 12].includes(moon.placedHouse));
+  if (eyeEntWatch) {
+    flagsEn.push('Eyesight, ENT & Dental Care (2nd/12th Luminaries)');
+    flagsHi.push('नेत्र, दंत व गले/कान की नियमित देखभाल (२/१२ सूर्य-चंद्र)');
+  }
+
+  const orthoWatch = mars && saturn && (mars.placedHouse === saturn.placedHouse || [1, 6, 8].includes(mars.placedHouse));
+  if (orthoWatch) {
+    flagsEn.push('Joints, Bones & Road-Safety Vigilance (Mars-Saturn)');
+    flagsHi.push('जोड़ों, अस्थि व यात्रा/वाहन सुरक्षा सतर्कता (मंगल-शनि)');
+  }
+
+  const skinWatch = mercury && ([6, 8, 12].includes(mercury.placedHouse) || (rahu && mercury.placedHouse === rahu.placedHouse));
+  if (skinWatch) {
+    flagsEn.push('Skin, Nerve & Allergy Hygiene (Mercury/Rahu)');
+    flagsHi.push('त्वचा, एलर्जी व स्नायु स्वच्छता (बुध/राहु)');
+  }
+
+  const systemSpecificScreening = {
+    valEn: flagsEn.length > 0
+      ? `Preventive Vigilance Areas: ${flagsEn.slice(0, 4).join(' | ')}`
+      : 'Low System-Specific Vulnerability: Strong baseline resilience across cardiac, metabolic & respiratory axes',
+    valHi: flagsHi.length > 0
+      ? `निवारक स्वास्थ्य सतर्कता क्षेत्र: ${flagsHi.slice(0, 4).join(' | ')}`
+      : 'उत्तम अंग-तंत्र संतुलन: हृदय, चयापचय व श्वास तंत्र में स्वाभाविक सुदृढ़ता',
+    explEn: flagsEn.length > 0
+      ? `Classical Medical Astrology screens ${flagsEn.join(', ')} based on planet-house combinations. These are preventive lifestyle & checkup indicators, never medical diagnoses.`
+      : 'No heavy multi-malefic clusters afflict the primary organ axes (2nd, 4th, 5th, 6th, 8th, 12th). Maintain regular preventive checkups and balanced diet.',
+    explHi: flagsHi.length > 0
+      ? `शास्त्रीय चिकित्सा ज्योतिष के अनुसार ${flagsHi.join(', ')} पर नियमित जांच व संतुलित जीवनशैली से पूर्ण बचाव संभव है। यह केवल निवारक संकेत है, चिकित्सकीय निदान नहीं।`
+      : 'प्रमुख शारीरिक तंत्रों पर कोई गंभीर बहु-पाप प्रभाव नहीं है। नियमित व्यायाम व सात्विक दिनचर्या से स्वास्थ्य उत्तम रहता है।',
+    pacEn: `Screened 8 axes: ${flagsEn.length} preventive flags active (${flagsEn.map((f) => f.split(' (')[0]).join(', ') || 'All clear'}).`,
+    pacHi: `८ शारीरिक तंत्र परीक्षण: ${flagsHi.length} निवारक संकेत सक्रिय (${flagsHi.map((f) => f.split(' (')[0]).join(', ') || 'सभी संतुलित'})।`,
+  };
+
   return {
     organsAndDosha,
     constitutionAndImmunity,
     mentalAndNervousHealth,
     ayurvedaDhatuAndHerbs,
+    systemSpecificScreening,
   };
 }
 
