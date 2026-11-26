@@ -1768,6 +1768,257 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'Be water, my friend. Empty your mind, be formless, shapeless, like water.',
     quoteHi: 'मित्र, पानी की तरह बनो। अपने मन को रिक्त करो, पानी की तरह आकारहीन और लचीले बनो।',
   },
+  // ==========================================
+  // ASTROSAGE CELEBRITY INDIAN & GLOBAL ICONS
+  // ==========================================
+  {
+    id: 'amitabh-bachchan',
+    nameEn: 'Amitabh Bachchan',
+    nameHi: 'अमिताभ बच्चन',
+    initials: 'AB',
+    badgeBg: '#92400e',
+    category: 'art_culture',
+    categoryTitleEn: 'Indian Cinema Legend & Cultural Icon',
+    categoryTitleHi: 'भारतीय सिनेमा के महानायक व सांस्कृतिक स्तंभ',
+    birthDate: '11-10-1942',
+    birthPlace: 'Prayagraj (Allahabad), India',
+    roddenRating: 'AA',
+    ascSignIndex: 10, // Aquarius
+    moonSignIndex: 6, // Libra
+    sunSignIndex: 5, // Virgo
+    prominentYogas: ['Gajakesari Yoga', 'Viparita Raja Yoga', 'Budhaditya Yoga'],
+    prominentYogasHi: ['गजकेसरी योग', 'विपरीत राजयोग', 'बुधादित्य योग'],
+    keyLifeMilestones: [
+      { age: 30, eventHi: 'ज़ंजीर फिल्म से भारतीय सिनेमा में एंग्री यंग मैन युग का आरंभ', eventEn: 'Breakthrough stardom with Zanjeer redefining Indian cinema' },
+      { age: 57, eventHi: 'कौन बनेगा करोड़पति के साथ ऐतिहासिक पुनरुत्थान व वैश्विक पहचान', eventEn: 'Historic career renaissance hosting Kaun Banega Crorepati' },
+      { age: 72, eventHi: 'पद्म विभूषण एवं दादा साहब फाल्के पुरस्कार से सम्मानित', eventEn: 'Honored with Padma Vibhushan and Dadasaheb Phalke Award' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 6, noteHi: 'उच्च गुरु विपरीत राजयोग व दीर्घकालिक प्रतिष्ठा', noteEn: 'Exalted Jupiter in 6th conferring resilience and iconic comeback power' },
+      { planet: 'Moon', house: 9, noteHi: 'नवम में चंद्र जन-लोकप्रियता व भावुक वाणी', noteEn: 'Moon in 9th giving enduring mass appeal and resonant voice' },
+    ],
+    bioEn: 'Legendary Indian actor whose deep baritone and five-decade career made him one of the most influential figures in world cinema.',
+    bioHi: 'भारतीय सिनेमा के महानायक जिनकी गंभीर वाणी और पाँच दशकों का अभिनय इतिहास में स्वर्णाक्षरों में अंकित है।',
+    quoteEn: 'Change is the essence of life; keep reinventing yourself.',
+    quoteHi: 'परिवर्तन ही जीवन का सार है; स्वयं को निरंतर निखारते रहिए।',
+  },
+  {
+    id: 'virat-kohli',
+    nameEn: 'Virat Kohli',
+    nameHi: 'विराट कोहली',
+    initials: 'VK',
+    badgeBg: '#1d4ed8',
+    category: 'sports_legend',
+    categoryTitleEn: 'Modern Cricket Batting Maestro & Captain',
+    categoryTitleHi: 'आधुनिक क्रिकेट के सर्वश्रेष्ठ बल्लेबाज व कप्तान',
+    birthDate: '05-11-1988',
+    birthPlace: 'New Delhi, India',
+    roddenRating: 'A',
+    ascSignIndex: 8, // Sagittarius
+    moonSignIndex: 5, // Virgo
+    sunSignIndex: 6, // Libra
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Dharma-Karma Yoga'],
+    prominentYogasHi: ['रुचक योग', 'गजकेसरी योग', 'धर्म-कर्माधिपति योग'],
+    keyLifeMilestones: [
+      { age: 19, eventHi: 'अंडर-19 विश्व कप विजेता भारतीय टीम का नेतृत्व', eventEn: 'Captained India to U-19 Cricket World Cup victory' },
+      { age: 29, eventHi: 'टेस्ट व वनडे दोनों में विश्व नंबर-1 बल्लेबाज व रिकॉर्ड शतक', eventEn: 'Ranked World No. 1 across Test and ODI cricket with record centuries' },
+      { age: 35, eventHi: 'वनडे क्रिकेट में 50 शतक बनाने वाले इतिहास के प्रथम बल्लेबाज व 2024 टी-20 विश्व कप विजेता', eventEn: 'First batter in history to reach 50 ODI centuries and 2024 T20 World Cup winner' },
+    ],
+    keyPlacements: [
+      { planet: 'Saturn', house: 1, noteHi: 'लग्न में शनि अद्वितीय फिटनेस, अनुशासन व लक्ष्य-निष्ठा', noteEn: 'Saturn in 1st driving unmatched discipline, fitness, and chase mastery' },
+      { planet: 'Mars', house: 4, noteHi: 'मंगल का ऊर्जावान प्रभाव मैदान पर आक्रामक नेतृत्व', noteEn: 'Strong Mars fueling fierce competitive intensity and captaincy' },
+    ],
+    bioEn: 'Indian international cricketer celebrated globally for his chasing mastery, fitness discipline, and record-breaking century tally.',
+    bioHi: 'विश्व क्रिकेट के महानतम बल्लेबाजों में से एक, जो अपनी फिटनेस, अनुशासन और लक्ष्य-भेदी पारियों के लिए विख्यात हैं।',
+    quoteEn: 'Self-belief and hard work will always earn you success.',
+    quoteHi: 'आत्मविश्वास और कठोर परिश्रम सदैव सफलता दिलाते हैं।',
+  },
+  {
+    id: 'ratan-tata',
+    nameEn: 'Ratan Tata',
+    nameHi: 'रतन टाटा',
+    initials: 'RT',
+    badgeBg: '#0f766e',
+    category: 'business_wealth',
+    categoryTitleEn: 'Visionary Industrialist & Philanthropist',
+    categoryTitleHi: 'दूरदर्शी उद्योगपति व राष्ट्र-निर्माता परोपकारी',
+    birthDate: '28-12-1937',
+    birthPlace: 'Mumbai, India',
+    roddenRating: 'AA',
+    ascSignIndex: 8, // Sagittarius
+    moonSignIndex: 6, // Libra
+    sunSignIndex: 8, // Sagittarius
+    prominentYogas: ['Budhaditya Yoga', 'Dhana Yoga', 'Amala Yoga'],
+    prominentYogasHi: ['बुधादित्य योग', 'धन योग', 'अमला योग'],
+    keyLifeMilestones: [
+      { age: 53, eventHi: 'टाटा समूह के अध्यक्ष बने व वैश्विक विस्तार की नींव रखी', eventEn: 'Appointed Chairman of Tata Sons, leading global acquisitions' },
+      { age: 70, eventHi: 'पद्म विभूषण से सम्मानित व जनकल्याणकारी नवाचारों का नेतृत्व', eventEn: 'Awarded Padma Vibhushan for industrial and philanthropic leadership' },
+      { age: 75, eventHi: 'टाटा ट्रस्ट्स के माध्यम से शिक्षा, स्वास्थ्य व कैंसर देखभाल का विस्तार', eventEn: 'Expanded Tata Trusts philanthropy across healthcare, education, and cancer care' },
+    ],
+    keyPlacements: [
+      { planet: 'Sun', house: 1, noteHi: 'धनु लग्न में सूर्य उच्च नैतिक नेतृत्व व राष्ट्र-निष्ठा', noteEn: 'Sun in Sagittarius 1st conferring ethical leadership and institutional trust' },
+      { planet: 'Jupiter', house: 2, noteHi: 'द्वितीय में गुरु परोपकार, कोष व सात्विक समृद्धि', noteEn: 'Jupiter in 2nd supporting philanthropic wealth and trusted stewardship' },
+    ],
+    bioEn: 'Indian industrialist and philanthropist who transformed Tata Group into a global enterprise while upholding ethical governance.',
+    bioHi: 'भारत के अत्यंत सम्मानित उद्योगपति जिन्होंने टाटा समूह को वैश्विक ऊंचाइयों तक पहुंचाया और परोपकार को सर्वोपरि रखा।',
+    quoteEn: 'If you want to walk fast, walk alone. If you want to walk far, walk together.',
+    quoteHi: 'तेज चलना है तो अकेले चलें, लेकिन दूर तक जाना है तो सबको साथ लेकर चलें।',
+  },
+  {
+    id: 'mukesh-ambani',
+    nameEn: 'Mukesh Ambani',
+    nameHi: 'मुकेश अंबानी',
+    initials: 'MA',
+    badgeBg: '#1e3a8a',
+    category: 'business_wealth',
+    categoryTitleEn: 'Global Energy, Telecom & Retail Titan',
+    categoryTitleHi: 'वैश्विक ऊर्जा, टेलीकॉम व रिटेल उद्योग सम्राट',
+    birthDate: '19-04-1957',
+    birthPlace: 'Aden, Yemen',
+    roddenRating: 'A',
+    ascSignIndex: 11, // Pisces
+    moonSignIndex: 8, // Sagittarius
+    sunSignIndex: 0, // Aries
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Dhana Yoga'],
+    prominentYogasHi: ['रुचक योग', 'गजकेसरी योग', 'महाधन योग'],
+    keyLifeMilestones: [
+      { age: 45, eventHi: 'रिलायंस इंडस्ट्रीज का नेतृत्व व जामनगर रिफाइनरी विस्तार', eventEn: 'Led Reliance Industries expansion into world-scale refining and petrochemicals' },
+      { age: 59, eventHi: 'जियो (Jio) के माध्यम से भारत में डिजिटल व टेलीकॉम क्रांति', eventEn: 'Launched Jio, catalyzing India’s digital and telecom revolution' },
+      { age: 65, eventHi: 'हरित ऊर्जा (Green Energy) व वैश्विक रिटेल साझेदारी का विस्तार', eventEn: 'Spearheaded green energy and global retail-digital partnerships' },
+    ],
+    keyPlacements: [
+      { planet: 'Sun', house: 2, noteHi: 'द्वितीय में उच्च सूर्य विशाल आर्थिक साम्राज्य', noteEn: 'Exalted Sun in 2nd house driving monumental treasury accumulation' },
+      { planet: 'Moon', house: 10, noteHi: 'दशम में चंद्र जन-उपयोगी विशाल उद्यम (Jio/Retail)', noteEn: 'Moon in 10th anchoring mass-scale consumer and telecom enterprises' },
+    ],
+    bioEn: 'Chairman of Reliance Industries who built world-scale refining, retail, and digital telecom infrastructure across India.',
+    bioHi: 'रिलायंस इंडस्ट्रीज के प्रमुख जिन्होंने ऊर्जा, रिटेल और जियो के माध्यम से भारत में डिजिटल क्रांति का नेतृत्व किया।',
+    quoteEn: 'Think big, think fast, think ahead. Ideas are no one’s monopoly.',
+    quoteHi: 'बड़ा सोचो, तेज सोचो, आगे की सोचो; विचारों पर किसी का एकाधिकार नहीं।',
+  },
+  {
+    id: 'narendra-modi',
+    nameEn: 'Narendra Modi',
+    nameHi: 'नरेंद्र मोदी',
+    initials: 'NM',
+    badgeBg: '#c2410c',
+    category: 'leadership',
+    categoryTitleEn: 'Prime Minister of India & Mass Statesman',
+    categoryTitleHi: 'भारत के प्रधानमंत्री व जन-नेतृत्वकर्ता',
+    birthDate: '17-09-1950',
+    birthPlace: 'Vadnagar, Gujarat, India',
+    roddenRating: 'AA',
+    ascSignIndex: 7, // Scorpio
+    moonSignIndex: 7, // Scorpio
+    sunSignIndex: 4, // Leo
+    prominentYogas: ['Ruchaka Yoga', 'Gajakesari Yoga', 'Budhaditya Yoga'],
+    prominentYogasHi: ['रुचक महापुरुष योग', 'गजकेसरी योग', 'बुधादित्य योग'],
+    keyLifeMilestones: [
+      { age: 51, eventHi: 'गुजरात के मुख्यमंत्री के रूप में प्रशासनिक कार्यकाल प्रारंभ', eventEn: 'Became Chief Minister of Gujarat' },
+      { age: 63, eventHi: 'भारत के प्रधानमंत्री पद पर ऐतिहासिक जनादेश के साथ चयन', eventEn: 'Elected Prime Minister of India with decisive national mandate' },
+      { age: 73, eventHi: 'लगातार तीसरे कार्यकाल के साथ अंतर्राष्ट्रीय कूटनीति व अवसंरचना विस्तार', eventEn: 'Entered historic third term advancing infrastructure and global diplomacy' },
+    ],
+    keyPlacements: [
+      { planet: 'Mars', house: 1, noteHi: 'लग्न में स्वराशि मंगल व चंद्र रुचक व नीचभंग राजयोग', noteEn: 'Own-sign Mars in Scorpio 1st with Moon creating Ruchaka & Neechabhanga' },
+      { planet: 'Sun', house: 11, noteHi: 'एकादश में सूर्य-बुध बुधादित्य व उच्च प्रशासनिक संवाद', noteEn: 'Sun-Mercury in 11th giving decisive oratorical reach and mass mobilization' },
+    ],
+    bioEn: 'Indian statesman serving as Prime Minister of India, known for organizational discipline and transformative public policy.',
+    bioHi: 'भारत के प्रधानमंत्री, जो अपनी संगठनात्मक कार्यशैली, जन-संवाद और दीर्घकालिक नीतिगत निर्णयों के लिए जाने जाते हैं।',
+    quoteEn: 'Hard work never brings fatigue; it brings satisfaction.',
+    quoteHi: 'कठोर परिश्रम कभी थकान नहीं लाता, वह संतोष देता है।',
+  },
+  {
+    id: 'lata-mangeshkar',
+    nameEn: 'Lata Mangeshkar',
+    nameHi: 'लता मंगेशकर',
+    initials: 'LM',
+    badgeBg: '#be185d',
+    category: 'art_culture',
+    categoryTitleEn: 'Nightingale of India & Bharat Ratna',
+    categoryTitleHi: 'स्वर कोकिला व भारत रत्न गायिका',
+    birthDate: '28-09-1929',
+    birthPlace: 'Indore, India',
+    roddenRating: 'AA',
+    ascSignIndex: 2, // Gemini
+    moonSignIndex: 3, // Cancer
+    sunSignIndex: 5, // Virgo
+    prominentYogas: ['Saraswati Yoga', 'Bhadra Yoga', 'Budhaditya Yoga'],
+    prominentYogasHi: ['सरस्वती योग', 'भद्र महापुरुष योग', 'बुधादित्य योग'],
+    keyLifeMilestones: [
+      { age: 19, eventHi: 'महल फिल्म के गीत से भारतीय संगीत में स्वर्णिम युग की शुरुआत', eventEn: 'Breakthrough playback milestone with Mahal' },
+      { age: 44, eventHi: 'गिनीज़ वर्ल्ड रिकॉर्ड्स व तीन राष्ट्रीय फिल्म पुरस्कारों से सम्मान', eventEn: 'Honored with multiple National Film Awards and global recognition' },
+      { age: 71, eventHi: 'भारत के सर्वोच्च नागरिक सम्मान भारत रत्न से विभूषित', eventEn: 'Conferred the Bharat Ratna, India’s highest civilian honor' },
+    ],
+    keyPlacements: [
+      { planet: 'Moon', house: 2, noteHi: 'द्वितीय (वाणी) में स्वराशि चंद्र दिव्य व मधुर स्वर', noteEn: 'Own-sign Moon in 2nd house (speech/voice) blessing an immortal melody' },
+      { planet: 'Mercury', house: 4, noteHi: 'उच्च बुध भद्र योग व संगीत-स्वर की अद्वितीय शुद्धता', noteEn: 'Exalted Mercury forming Bhadra Yoga for tonal precision' },
+    ],
+    bioEn: 'Legendary Indian playback singer whose voice spanned over seven decades and thousands of timeless songs.',
+    bioHi: 'भारत की अमर स्वर कोकिला जिन्होंने सात दशकों तक हजारों कालजयी गीतों से विश्व को मंत्रमुग्ध किया।',
+    quoteEn: 'Music is the language of the soul that unites humanity.',
+    quoteHi: 'संगीत आत्मा की वह भाषा है जो संपूर्ण मानवता को जोड़ती है।',
+  },
+  {
+    id: 'ms-dhoni',
+    nameEn: 'M. S. Dhoni',
+    nameHi: 'महेंद्र सिंह धोनी',
+    initials: 'MD',
+    badgeBg: '#0369a1',
+    category: 'sports_legend',
+    categoryTitleEn: 'World-Cup Winning Captain Cool',
+    categoryTitleHi: 'विश्व कप विजेता कैप्टन कूल',
+    birthDate: '07-07-1981',
+    birthPlace: 'Ranchi, India',
+    roddenRating: 'A',
+    ascSignIndex: 5, // Virgo
+    moonSignIndex: 5, // Virgo
+    sunSignIndex: 2, // Gemini
+    prominentYogas: ['Gajakesari Yoga', 'Bhadra Yoga', 'Amala Yoga'],
+    prominentYogasHi: ['गजकेसरी योग', 'भद्र योग', 'अमला योग'],
+    keyLifeMilestones: [
+      { age: 26, eventHi: 'प्रथम टी-20 विश्व कप विजेता भारतीय टीम की कप्तानी', eventEn: 'Captained India to inaugural ICC T20 World Cup triumph' },
+      { age: 29, eventHi: '2011 क्रिकेट विश्व कप फाइनल में विजयी छक्के के साथ ऐतिहासिक जीत', eventEn: 'Led India to 2011 Cricket World Cup victory with iconic final six' },
+      { age: 31, eventHi: '2013 आईसीसी चैंपियंस ट्रॉफी जीतकर तीनों प्रमुख ट्रॉफी जीतने वाले प्रथम कप्तान', eventEn: 'Won 2013 ICC Champions Trophy to complete all three major ICC white-ball titles' },
+    ],
+    keyPlacements: [
+      { planet: 'Jupiter', house: 1, noteHi: 'लग्न में गुरु-शनि व चंद्र गजकेसरी व शांत निर्णय क्षमता', noteEn: 'Jupiter-Moon-Saturn in Virgo 1st giving legendary calm under pressure' },
+      { planet: 'Sun', house: 10, noteHi: 'दशम में सूर्य-बुध तेज रणनीतिक नेतृत्व', noteEn: 'Sun-Mercury in 10th fueling sharp tactical leadership' },
+    ],
+    bioEn: 'Former Indian cricket captain famous for his unshakeable composure and winning all three major ICC white-ball trophies.',
+    bioHi: 'भारतीय क्रिकेट के महानतम कप्तानों में से एक, जो अपने अद्भुत धैर्य और तीनों ICC ट्रॉफी जीतने के लिए प्रसिद्ध हैं।',
+    quoteEn: 'Focus on the process, and the results will take care of themselves.',
+    quoteHi: 'परिणाम से अधिक प्रक्रिया पर ध्यान केंद्रित करें, सफलता स्वयं आएगी।',
+  },
+  {
+    id: 'kalpana-chawla',
+    nameEn: 'Kalpana Chawla',
+    nameHi: 'कल्पना चावला',
+    initials: 'KC',
+    badgeBg: '#4338ca',
+    category: 'science_tech',
+    categoryTitleEn: 'First Indian-Origin Woman Astronaut',
+    categoryTitleHi: 'अंतरिक्ष में जाने वाली प्रथम भारतीय मूल की महिला',
+    birthDate: '17-03-1961',
+    birthPlace: 'Karnal, Haryana, India',
+    roddenRating: 'AA',
+    ascSignIndex: 1, // Taurus
+    moonSignIndex: 11, // Pisces
+    sunSignIndex: 11, // Pisces
+    prominentYogas: ['Sasa Yoga', 'Dharma-Karma Yoga', 'Sunafa Yoga'],
+    prominentYogasHi: ['शश योग', 'धर्म-कर्म योग', 'सुनफा योग'],
+    keyLifeMilestones: [
+      { age: 27, eventHi: 'अमेरिका से एयरोस्पेस इंजीनियरिंग में पीएचडी (PhD) पूर्ण की', eventEn: 'Earned PhD in Aerospace Engineering from University of Colorado' },
+      { age: 33, eventHi: 'नासा (NASA) अंतरिक्ष यात्री कोर में चयन', eventEn: 'Selected into NASA Astronaut Corps' },
+      { age: 36, eventHi: 'स्पेस शटल कोलंबिया (STS-87) से प्रथम अंतरिक्ष उड़ान', eventEn: 'Flew first space mission aboard Space Shuttle Columbia (STS-87)' },
+    ],
+    keyPlacements: [
+      { planet: 'Saturn', house: 9, noteHi: 'नवम में स्वराशि शनि-गुरु उच्च विज्ञान व दूरस्थ अंतरिक्ष यात्रा', noteEn: 'Own-sign Saturn with Jupiter in 9th propelling aerospace breakthroughs' },
+      { planet: 'Moon', house: 11, noteHi: 'एकादश में चंद्र-सूर्य असीम आकाश की आकांक्षा', noteEn: 'Moon-Sun in Pisces 11th inspiring boundless cosmic exploration' },
+    ],
+    bioEn: 'Aerospace engineer and NASA astronaut who became the first woman of Indian origin to fly into space.',
+    bioHi: 'एयरोस्पेस वैज्ञानिक और नासा अंतरिक्ष यात्री जिन्होंने अंतरिक्ष की ऊंचाइयों को छूकर विश्व भर में प्रेरणा जगाई।',
+    quoteEn: 'The path from dreams to success does exist. May you have the vision to find it.',
+    quoteHi: 'सपनों से सफलता तक जाने का मार्ग वास्तव में मौजूद है; बस उसे खोजने की दृष्टि चाहिए।',
+  },
 ];
 
 export function findCelebrityTwins(chart: ChartData): CelebrityTwinMatch[] {

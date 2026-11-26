@@ -73,6 +73,7 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
   const isHi = lang === 'hi';
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | CelebrityCategory>('all');
+  const [selectedLetter, setSelectedLetter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sameLagnaOnly, setSameLagnaOnly] = useState<boolean>(false);
   const [sameMoonOnly, setSameMoonOnly] = useState<boolean>(false);
@@ -94,6 +95,10 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
     return matches.filter((m) => {
       // Category filter
       if (selectedCategory !== 'all' && m.celebrity.category !== selectedCategory) {
+        return false;
+      }
+      // Alphabetical A-Z filter
+      if (selectedLetter !== 'ALL' && !m.celebrity.nameEn.toUpperCase().startsWith(selectedLetter)) {
         return false;
       }
       // Search query
@@ -121,7 +126,7 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
       }
       return true;
     });
-  }, [matches, selectedCategory, searchQuery, sameLagnaOnly, sameMoonOnly, highMatchOnly, nativeAscSign, nativeMoonSign]);
+  }, [matches, selectedCategory, selectedLetter, searchQuery, sameLagnaOnly, sameMoonOnly, highMatchOnly, nativeAscSign, nativeMoonSign]);
 
   const topMatch = matches[0];
 
@@ -440,14 +445,14 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
             className={`oj-tab-pill ${selectedCategory === 'business_wealth' ? 'is-active' : ''}`}
             style={{ fontSize: '12px', padding: '5px 12px' }}
           >
-            {isHi ? 'उद्योग व समृद्धि' : 'Enterprise & Wealth'}
+            {isHi ? 'व्यापार व धन' : 'Business & Wealth'}
           </button>
           <button
             onClick={() => setSelectedCategory('art_culture')}
             className={`oj-tab-pill ${selectedCategory === 'art_culture' ? 'is-active' : ''}`}
             style={{ fontSize: '12px', padding: '5px 12px' }}
           >
-            {isHi ? 'कला व सिनेमा' : 'Art & Literature'}
+            {isHi ? 'कला व सिनेमा' : 'Arts & Cinema'}
           </button>
           <button
             onClick={() => setSelectedCategory('sports_legend')}
@@ -456,6 +461,28 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
           >
             {isHi ? 'खेल दिग्गज' : 'Sports Legends'}
           </button>
+        </div>
+
+        {/* A-Z Alphabetical Filter Bar */}
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #e2e8f0' }}>
+          {['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')].map((ltr) => (
+            <button
+              key={ltr}
+              onClick={() => setSelectedLetter(ltr)}
+              style={{
+                padding: '3px 7px',
+                fontSize: '11px',
+                fontWeight: selectedLetter === ltr ? 700 : 500,
+                borderRadius: '4px',
+                border: selectedLetter === ltr ? '1px solid #b45309' : '1px solid #e2e8f0',
+                background: selectedLetter === ltr ? '#fef3c7' : '#ffffff',
+                color: selectedLetter === ltr ? '#92400e' : '#475569',
+                cursor: 'pointer',
+              }}
+            >
+              {ltr === 'ALL' ? (isHi ? 'सभी (A–Z)' : 'All') : ltr}
+            </button>
+          ))}
         </div>
       </div>
 
