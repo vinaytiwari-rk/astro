@@ -9,6 +9,7 @@
 
 import type { ChartData, NineGrahaId } from './types';
 import { SIGNS } from './constants';
+import { EXTENDED_CELEBRITY_DATABASE } from './celebrityDatabase1000';
 
 export type CelebrityCategory =
   | 'spiritual'
@@ -2019,6 +2020,7 @@ export const CELEBRITY_DATABASE: CelebrityProfile[] = [
     quoteEn: 'The path from dreams to success does exist. May you have the vision to find it.',
     quoteHi: 'सपनों से सफलता तक जाने का मार्ग वास्तव में मौजूद है; बस उसे खोजने की दृष्टि चाहिए।',
   },
+  ...EXTENDED_CELEBRITY_DATABASE,
 ];
 
 export function findCelebrityTwins(chart: ChartData): CelebrityTwinMatch[] {

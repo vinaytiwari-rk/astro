@@ -80,6 +80,7 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
   const [highMatchOnly, setHighMatchOnly] = useState<boolean>(false);
   const [comparingMatch, setComparingMatch] = useState<CelebrityTwinMatch | null>(null);
   const [expandedMilestones, setExpandedMilestones] = useState<Record<string, boolean>>({});
+  const [displayLimit, setDisplayLimit] = useState<number>(60);
 
   const matches: CelebrityTwinMatch[] = useMemo(() => {
     return findCelebrityTwins(chart);
@@ -129,6 +130,7 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
   }, [matches, selectedCategory, selectedLetter, searchQuery, sameLagnaOnly, sameMoonOnly, highMatchOnly, nativeAscSign, nativeMoonSign]);
 
   const topMatch = matches[0];
+  const visibleMatches = useMemo(() => filteredMatches.slice(0, displayLimit), [filteredMatches, displayLimit]);
 
   const toggleMilestones = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -489,13 +491,13 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
       {/* Results Count Banner */}
       <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '14px', fontWeight: 500 }}>
         {isHi
-          ? `कुल ${filteredMatches.length} प्रामाणिक व्यक्तित्व आपकी खोज से मेल खाते हैं`
-          : `Showing ${filteredMatches.length} verified benchmark charts`}
+          ? `कुल ${filteredMatches.length} प्रामाणिक व्यक्तित्व मेल खाते हैं (${visibleMatches.length} प्रदर्शित • डेटाबैंक: ${CELEBRITY_DATABASE.length})`
+          : `Showing ${visibleMatches.length} of ${filteredMatches.length} verified benchmark charts (Databank: ${CELEBRITY_DATABASE.length})`}
       </div>
 
       {/* Grid of Matches */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
-        {filteredMatches.map((m) => {
+        {visibleMatches.map((m) => {
           const isLagnaMatch = m.celebrity.ascSignIndex === nativeAscSign;
           const isMoonMatch = m.celebrity.moonSignIndex === nativeMoonSign;
           const isMilestonesOpen = !!expandedMilestones[m.celebrity.id];
@@ -747,6 +749,54 @@ export const CelebrityTwinView: React.FC<CelebrityTwinViewProps> = ({ chart, onN
           );
         })}
       </div>
+
+      {filteredMatches.length > displayLimit && (
+        <div
+          className="no-print"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px',
+            marginTop: '20px',
+            marginBottom: '10px',
+          }}
+        >
+          <button
+            onClick={() => setDisplayLimit((prev) => prev + 60)}
+            className="oj-action-btn"
+            style={{
+              padding: '8px 18px',
+              fontSize: '13px',
+              fontWeight: 600,
+              background: '#fffbeb',
+              color: '#92400e',
+              border: '1px solid #f59e0b',
+              borderRadius: '8px',
+              cursor: 'pointer',
+            }}
+          >
+            {isHi
+              ? `और 60 चार्ट लोड करें (${filteredMatches.length - displayLimit} शेष)`
+              : `Load 60 More (${filteredMatches.length - displayLimit} remaining)`}
+          </button>
+          <button
+            onClick={() => setDisplayLimit(filteredMatches.length)}
+            className="oj-action-btn"
+            style={{
+              padding: '8px 16px',
+              fontSize: '13px',
+              fontWeight: 500,
+              background: '#f8fafc',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              borderRadius: '8px',
+              cursor: 'pointer',
+            }}
+          >
+            {isHi ? `सभी ${filteredMatches.length} दिखाएं` : `Show All (${filteredMatches.length})`}
+          </button>
+        </div>
+      )}
 
       {/* Dual Kundli Comparison Modal */}
       {comparingMatch && (
