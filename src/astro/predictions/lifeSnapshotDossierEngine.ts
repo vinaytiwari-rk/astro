@@ -1333,13 +1333,15 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     // Reproductive Vitality (Shukra-Kshaya) & Non-Binary / Fluid Attraction Spectrum
     const hasShukraKshaya = Boolean(
       venus &&
-      ((ketu && venus.placedHouse === ketu.placedHouse && mars && venus.placedHouse === mars.placedHouse) ||
-       (venus.dignity === 'Debilitated' && saturn && [6, 8, 12].includes(saturn.placedHouse))) &&
+      ketu && venus.placedHouse === ketu.placedHouse &&
+      mars && venus.placedHouse === mars.placedHouse &&
       saturn && [4, 7, 8, 12].includes(saturn.placedHouse)
     );
-    const d9H7HasMercOrSat = d9?.placements.some((p) => p.houseFromVargaLagna === 7 && (p.id === 'Mercury' || p.id === 'Saturn' || p.id === 'Ketu'));
+    const d9H7HasMercAndNodeOrSat = d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury') &&
+      d9?.placements.some((p) => p.houseFromVargaLagna === 7 && (p.id === 'Saturn' || p.id === 'Ketu' || p.id === 'Mars'));
     const hasFluidAttractionSpectrum = Boolean(
-      (venus && (venus.dignity === 'Debilitated' || venus.placedHouse === 12) && d9H7HasMercOrSat) ||
+      (venus && venus.dignity === 'Debilitated' && d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury')) ||
+      (venus && venus.placedHouse === 12 && d9H7HasMercAndNodeOrSat) ||
       (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12)
     );
 
@@ -1858,7 +1860,10 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
 
     const is5thLordAfflictedEdu = l5?.placedHouse === 6 || l5?.placedHouse === 8 || l5?.placedHouse === 12 || l5?.dignity === 'Debilitated';
     const isMercuryAfflicted = mercury && (mercury.placedHouse === 6 || mercury.placedHouse === 8 || mercury.placedHouse === 12 || mercury.dignity === 'Debilitated');
-    const isEduHighlyFortified = (l5?.dignity === 'Exalted' || l5?.placedHouse === 1 || l5?.placedHouse === 5 || l5?.placedHouse === 9) && (jupiter?.placedHouse === 1 || jupiter?.placedHouse === 5 || jupiter?.placedHouse === 9);
+    const isEduHighlyFortified =
+      ((l5?.dignity === 'Exalted' || l5?.placedHouse === 1 || l5?.placedHouse === 5 || l5?.placedHouse === 9) &&
+       (jupiter?.placedHouse === 1 || jupiter?.placedHouse === 5 || jupiter?.placedHouse === 9)) ||
+      (mercury && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(mercury.dignity) && [1, 4, 5, 9, 10].includes(mercury.placedHouse));
 
     let degreeEn = 'Professional Bachelor’s or Applied Master’s Degree (B.Tech, MBA, MCA, LL.B, B.Ed, M.Sc); solid analytical and corporate competence';
     let degreeHi = 'व्यावसायिक स्नातक अथवा स्नातकोत्तर उपाधि (B.Tech, MBA, MCA, LL.B, M.Sc); सुदृढ़ व्यावहारिक विश्लेषण व संगठनात्मक क्षमता';
@@ -1868,7 +1873,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let scholarshipEn = 'Merit-based admission in reputed institutions; steady academic progress supported by family savings and competitive exam performance';
     let scholarshipHi = 'प्रतिष्ठित संस्थानों में योग्यता आधारित प्रवेश; पारिवारिक सहयोग व निरंतर अध्ययनशीलता द्वारा शैक्षणिक प्रगति';
 
-    if (is5thLordAfflictedEdu || isMercuryAfflicted) {
+    if (is5thLordAfflictedEdu && isMercuryAfflicted && !isEduHighlyFortified) {
       degreeEn = 'Undergraduate Degree / Applied Vocational Certification (B.A., B.Com, B.Sc, or Industry Diploma); excels through hands-on practical skills rather than pure rote theory';
       degreeHi = 'सामान्य स्नातक / व्यावहारिक तकनीकी डिप्लोमा (B.A., B.Com, B.Sc अथवा प्रायोगिक दक्षता); किताबी सिद्धांतों से अधिक व्यावहारिक कार्य-अनुभव व हुनर द्वारा सफलता';
       degreeExplEn = 'The 5th lord or Mercury faces challenge placements, indicating that academic milestones are achieved through real-world work experience, vocational training, or overcoming subject changes rather than a smooth academic path.';
@@ -2615,8 +2620,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'past_life',
           titleEn: 'Past Life Realm & Biological Vessel (Poorva Yoni)',
           titleHi: 'पूर्व जन्म की योनि, लोक व निवास क्षेत्र',
-          valueEn: `Elevated Human / Deva-loka lineage governed by ${d60LagnaDeity.nameEn} deity (${d60LagnaDeity.nature}) in a sacred river-basin settlement`,
-          valueHi: `पवित्र तीर्थ अथवा समृद्ध नदी तट के समीप उच्च कुलीन मानव/देवलोक शरीर (${d60LagnaDeity.nameHi} - ${d60LagnaDeity.meaningHi})`,
+          valueEn: `${/krura|ghora|fierce|tamas/i.test(d60LagnaDeity.nature) ? 'Karmic Warrior / Discipline-Forged Lineage' : /rajas|active|mixed/i.test(d60LagnaDeity.nature) ? 'Householder / Enterprise & Craft Lineage' : 'Elevated Sattvic / Scholarly & Seeker Lineage'} governed by ${d60LagnaDeity.nameEn} (${d60LagnaDeity.nature})`,
+          valueHi: `${/krura|ghora|fierce|tamas/i.test(d60LagnaDeity.nature) ? 'कर्म-संघर्ष व अनुशासन प्रधान पूर्व संस्कार' : /rajas|active|mixed/i.test(d60LagnaDeity.nature) ? 'गृहस्थ, उद्यम व कला-कौशल प्रधान पूर्व कुल' : 'सात्विक, ज्ञान व साधना प्रधान उच्च पूर्व कुल'} (${d60LagnaDeity.nameHi} - ${d60LagnaDeity.meaningHi})`,
           explanationEn: `Maharishi Parashara states in BPHS that D60 is supreme for past-life root causes. The soul reincarnated with accumulated sattvic merits to complete executive responsibilities.`,
           explanationHi: `महर्षि पाराशर अनुसार षष्ट्यंश D60 पूर्व जन्म का सच्चा आईना है। जातक की आत्मा पिछले जन्म के सात्विक पुण्यों को लेकर इस जन्म में श्रेष्ठ कार्यों हेतु अवतरित हुई है।`,
           pacBasisEn: `D60 Shashtiamsa Deity: ${d60LagnaDeity.nameEn} (${d60LagnaDeity.nature}); Ascendant longitude ${birthSummary.lagnaDegStr}.`,

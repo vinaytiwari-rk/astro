@@ -1705,6 +1705,7 @@ export function getComprehensiveCareerAndWealthAnalysis(
   const venus = getP('Venus');
   const saturn = getP('Saturn');
   const rahu = getP('Rahu');
+  const ketu = getP('Ketu');
 
   const l10 = h10.lordPlanet;
   const l9 = h9.lordPlanet;
@@ -1770,9 +1771,32 @@ export function getComprehensiveCareerAndWealthAnalysis(
   };
   const l10HouseInfo = tenthLordHouseMap[l10?.placedHouse ?? 10] ?? tenthLordHouseMap[10];
 
+  const bonusEn: string[] = [];
+  const bonusHi: string[] = [];
+  const baseStr = `${primaryDomain.en} ${secondaryDomain.en}`.toLowerCase();
+
+  if (venus && (isStrongDignity(venus) || [1, 3, 5, 7, 10, 11].includes(venus.placedHouse)) && !baseStr.includes('cinema')) {
+    bonusEn.push('Cinema, Performing Arts & Media');
+    bonusHi.push('सिनेमा, कला व मीडिया');
+  }
+  if ((jupiter && [1, 5, 8, 9, 10, 12].includes(jupiter.placedHouse)) || (ketu && [1, 8, 9, 12].includes(ketu.placedHouse))) {
+    if (!baseStr.includes('spiritual') && !baseStr.includes('advisory')) {
+      bonusEn.push('Spiritual, Astrological & Research Advisory');
+      bonusHi.push('ज्योतिष, आध्यात्म व शोध परामर्श');
+    }
+  }
+  if (mars && (isStrongDignity(mars) || [1, 3, 6, 10, 11].includes(mars.placedHouse)) && !baseStr.includes('sports')) {
+    bonusEn.push('Sports, Athletics & Executive Action');
+    bonusHi.push('खेल, शारीरिक दक्षता व नेतृत्व');
+  }
+  if (mercury && (isStrongDignity(mercury) || [1, 2, 5, 10, 11].includes(mercury.placedHouse)) && !baseStr.includes('analytics')) {
+    bonusEn.push('Mathematics, Data Science & Commerce');
+    bonusHi.push('गणित, डेटा विज्ञान व वाणिज्य');
+  }
+
   const suitableProfession = {
-    valEn: `${primaryDomain.en} alongside ${secondaryDomain.en}`,
-    valHi: `${primaryDomain.hi} तथा ${secondaryDomain.hi}`,
+    valEn: `${primaryDomain.en} alongside ${secondaryDomain.en}${bonusEn.length ? ` | ${bonusEn.slice(0, 2).join(' · ')}` : ''}`,
+    valHi: `${primaryDomain.hi} तथा ${secondaryDomain.hi}${bonusHi.length ? ` | ${bonusHi.slice(0, 2).join(' · ')}` : ''}`,
     explEn: `6-Point Career Synthesis: 10th house (${SIGNS[h10.signIdx].name}) led by ${h10.lordId} in H${l10?.placedHouse ?? 10} (${l10HouseInfo.en}) combines with Karma Karaka Saturn in H${saturn?.placedHouse ?? 10} linked to ${saturnLink}. ${d10Occupants.length > 0 ? `D10 10th house holds ${d10Occupants.map((o) => o.id).join(', ')}, reinforcing professional specialization.` : `D10 Lagna in ${SIGNS[d10LagnaIdx].name} supports steady execution.`}`,
     explHi: `षट्-बिंदु करियर विश्लेषण: दशम भाव (${SIGN_HI_NAMES[h10.signIdx]}) व दशमेश ${GRAHA_HI[h10.lordId]} भाव ${l10?.placedHouse ?? 10} में (${l10HouseInfo.hi}) तथा कर्मकारक शनि भाव ${saturn?.placedHouse ?? 10} (${GRAHA_HI[saturnLink]} प्रभाव) का समन्वय कार्यक्षेत्र तय करता है।`,
     pacEn: `H10: ${SIGNS[h10.signIdx].name}; L10 ${h10.lordId} in H${l10?.placedHouse}; Saturn in ${saturn?.signName} (H${saturn?.placedHouse}); D10 Lagna: ${SIGNS[d10LagnaIdx].name}${l10D9SignIdx !== undefined ? `; L10 D9: ${SIGNS[l10D9SignIdx].name}` : ''}.`,
@@ -1939,7 +1963,7 @@ export function getComprehensiveCareerAndWealthAnalysis(
   let wealthExplEn = '';
   let wealthExplHi = '';
 
-  if ((isL2Weak || isL11Weak) && induBenefics.length === 0 && !isDhanaStrong) {
+  if ((isL2Weak || isL11Weak) && induBenefics.length === 0 && !isDhanaStrong && detectedYogasEn.length === 0) {
     wealthValEn = 'Disciplined Middle-Class Stability: Steady earned income; avoid speculative risks and prioritize systematic savings';
     wealthValHi = 'संयमित मध्यम-वर्गीय स्थिरता: परिश्रम से नियमित आय; सट्टेबाजी से बचकर अनुशासित बचत पर ध्यान आवश्यक';
     wealthExplEn = `With 2nd house (${h2.tier}) and 11th house (${h11.tier}) facing pressure, wealth accumulates gradually through steady service, budgeting, and low-risk instruments rather than windfalls.`;

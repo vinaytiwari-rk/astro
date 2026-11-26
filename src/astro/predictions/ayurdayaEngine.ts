@@ -178,23 +178,23 @@ export function computeAyurdaya(chart: ChartData): LongevityReport {
     category = 'Poornayu (Full Paramayus: 108 - 120 Years)';
     categoryHi = 'पूर्णायु (पूर्ण परमायु काल: १०८ से १२० वर्ष)';
     estimatedRange = '96 से 120 वर्ष (शास्त्रीय पूर्ण परमायु)';
-  } else if (scores.Deerghayu >= 2 || (scores.Madhyayu >= 2 && longevitySupport >= 3)) {
+  } else if (scores.Deerghayu >= 2 || (scores.Madhyayu >= 2 && longevitySupport === 4)) {
     category = 'Deerghayu (Long Span: 72 - 108 Years)';
     categoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
     estimatedRange = '74 से 94 वर्ष';
   } else if (scores.Madhyayu >= 2) {
     category = 'Madhyayu (Medium Span: 36 - 72 Years)';
     categoryHi = 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)';
-    estimatedRange = '60 से 72 वर्ष';
+    estimatedRange = '58 से 72 वर्ष';
   } else if (scores.Alpayu >= 2) {
-    if (longevitySupport >= 3) {
+    if (longevitySupport === 4) {
       category = 'Deerghayu (Long Span: 72 - 108 Years)';
       categoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
       estimatedRange = '72 से 86 वर्ष (लग्नेश व शुभ ग्रहों द्वारा पूर्ण आयु-रक्षा)';
     } else if (longevitySupport >= 2 || hasBeneficsInKendraOrTrikona) {
       category = 'Madhyayu (Medium Span: 36 - 72 Years)';
       categoryHi = 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)';
-      estimatedRange = '58 से 68 वर्ष (शुभ ग्रहों द्वारा अल्पायु भंग)';
+      estimatedRange = '50 से 68 वर्ष (शुभ ग्रहों द्वारा अल्पायु भंग)';
     } else {
       category = 'Alpayu (Short Span: < 36 Years)';
       categoryHi = 'अल्पायु (अल्प जीवन काल: ३६ वर्ष से कम)';
