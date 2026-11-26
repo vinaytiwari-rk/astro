@@ -40,6 +40,8 @@ import {
   getComprehensiveCareerAndWealthAnalysis,
   getComprehensiveParentsAndFamilyAnalysis,
   getComprehensiveSiblingsAnalysis,
+  getFirstImpressionAndConjunctionInsights,
+  getUpapadaAndMarriageDeepDive,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -777,6 +779,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1, D9 & D60',
         },
         {
+          id: 'attr_first_impression_conjunctions',
+          category: 'physical',
+          titleEn: 'First Impression Archetype & Active Conjunction Signatures',
+          titleHi: 'प्रथम सामाजिक प्रभाव एवं सक्रिय ग्रह युति लक्षण',
+          valueEn: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).valEn,
+          valueHi: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).valHi,
+          explanationEn: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).explEn,
+          explanationHi: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).explHi,
+          pacBasisEn: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).pacEn,
+          pacBasisHi: getFirstImpressionAndConjunctionInsights(planets, ascSignIdx).pacHi,
+          shastricRef: 'Lagna Bhava & Classical Yuti Yoga Analysis',
+          vargaRef: 'D1 Rashi',
+        },
+        {
           id: 'attr_nadi_amsha_kp_sub',
           category: 'physical',
           titleEn: 'D150 Nadi Amsha & KP Sub-Sub-Lord (Micro-Time Calibration)',
@@ -1161,6 +1177,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const spouseLord = l7;
     const d9LagnaSign = d9?.lagnaSignIndex ?? ascSignIdx;
     const d9H7Sign = (d9LagnaSign + 6) % 12;
+    const ulMarriageRes = getUpapadaAndMarriageDeepDive(planets, ascSignIdx, h7Prof, h12Prof, d9);
 
     // Direction & Distance
     let directionEn = 'South-East or Southern direction from native birthplace';
@@ -1459,6 +1476,48 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: sexualOrientationPacHi,
           shastricRef: 'Brihat Jataka (Ch. 24, Sl. 10–15), Saravali (Ch. 37 & 38), Phaladeepika (Ch. 10)',
           vargaRef: 'D1 Rashi & D9 Navamsha',
+        },
+        {
+          id: 'attr_upapada_marriage_sustenance',
+          category: 'spouse',
+          titleEn: 'Jaimini Upapada Lagna (UL) & Bond Sustenance',
+          titleHi: 'जैमिनी उपपद लग्न (UL) एवं दांपत्य स्थायित्व',
+          valueEn: ulMarriageRes.upapadaAndSustenance.valEn,
+          valueHi: ulMarriageRes.upapadaAndSustenance.valHi,
+          explanationEn: ulMarriageRes.upapadaAndSustenance.explEn,
+          explanationHi: ulMarriageRes.upapadaAndSustenance.explHi,
+          pacBasisEn: ulMarriageRes.upapadaAndSustenance.pacEn,
+          pacBasisHi: ulMarriageRes.upapadaAndSustenance.pacHi,
+          shastricRef: 'Jaimini Sutras (Upapada Lagna & 2nd/8th from UL)',
+          vargaRef: 'D1 & D9',
+        },
+        {
+          id: 'attr_marriage_mediator_mode',
+          category: 'spouse',
+          titleEn: 'Marriage Mediator, Meeting Context & Proximity',
+          titleHi: 'विवाह मध्यस्थ, परिचय स्रोत व भौगोलिक दूरी',
+          valueEn: ulMarriageRes.mediatorAndMeetingMode.valEn,
+          valueHi: ulMarriageRes.mediatorAndMeetingMode.valHi,
+          explanationEn: ulMarriageRes.mediatorAndMeetingMode.explEn,
+          explanationHi: ulMarriageRes.mediatorAndMeetingMode.explHi,
+          pacBasisEn: ulMarriageRes.mediatorAndMeetingMode.pacEn,
+          pacBasisHi: ulMarriageRes.mediatorAndMeetingMode.pacHi,
+          shastricRef: 'Classical 7th Lord House & Sign Modality Rules',
+          vargaRef: 'D1 & D9',
+        },
+        {
+          id: 'attr_d9_marriage_resilience_upay',
+          category: 'spouse',
+          titleEn: 'D1–D9 Resilience, Delay Filter & Practical Remedies',
+          titleHi: 'D1–D9 दांपत्य सुरक्षा, विलंब संतुलन व सरल उपाय',
+          valueEn: ulMarriageRes.d9ResilienceAndUpay.valEn,
+          valueHi: ulMarriageRes.d9ResilienceAndUpay.valHi,
+          explanationEn: ulMarriageRes.d9ResilienceAndUpay.explEn,
+          explanationHi: ulMarriageRes.d9ResilienceAndUpay.explHi,
+          pacBasisEn: ulMarriageRes.d9ResilienceAndUpay.pacEn,
+          pacBasisHi: ulMarriageRes.d9ResilienceAndUpay.pacHi,
+          shastricRef: 'BPHS, D9 Navamsha Cross-Check & Vedic Upay',
+          vargaRef: 'D1 & D9 Navamsha',
         },
       ],
     });

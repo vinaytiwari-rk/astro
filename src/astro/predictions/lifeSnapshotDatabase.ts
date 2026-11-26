@@ -2341,6 +2341,225 @@ export function getComprehensiveSiblingsAnalysis(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 1 ADDON: FIRST IMPRESSION ARCHETYPE & CONJUNCTION SIGNATURES
+// -----------------------------------------------------------------------------
+
+export interface FirstImpressionConjunctionResult {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+  pacEn: string;
+  pacHi: string;
+}
+
+export function getFirstImpressionAndConjunctionInsights(
+  planets: PlanetPos[],
+  ascSignIdx: number
+): FirstImpressionConjunctionResult {
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
+
+  const lagnaImpressionMap: Record<number, { en: string; hi: string }> = {
+    0: { en: 'Ambitious, fast-paced & decisive first impression (hates waiting)', hi: 'महत्वाकांक्षी, त्वरित निर्णय लेने वाला व ऊर्जावान प्रथम प्रभाव' },
+    1: { en: 'Polished, well-groomed & steadfastly determined aura', hi: 'सुसज्जित, आकर्षक व अपने निश्चय पर अडिग रहने वाला व्यक्तित्व' },
+    2: { en: 'Articulate, lively & brimming with engaging ideas', hi: 'वाक्पटु, रोचक विचारों से परिपूर्ण व सहज संवादशील छवि' },
+    3: { en: 'Warm, emotionally receptive & approachable presence', hi: 'संवेदनशील, स्नेहपूर्ण व अपनत्व जगाने वाला सौम्य व्यक्तित्व' },
+    4: { en: 'Magnetic, radiant & naturally stands out in any crowd', hi: 'तेजस्वी, प्रभावशाली व भीड़ में भी सहज ध्यान आकर्षित करने वाला' },
+    5: { en: 'Analytical, observant & quietly solving problems in mind', hi: 'विश्लेषणात्मक, सूक्ष्मदर्शी व हर स्थिति की योजना बनाने वाला मन' },
+    6: { en: 'Graceful, poised & blessed with a calm, pleasant charm', hi: 'सौम्य, संतुलित, शालीन व मनमोहक मुस्कान युक्त व्यक्तित्व' },
+    7: { en: 'Private, deeply perceptive & quick to spot insincerity', hi: 'गंभीर, रहस्यमयी व लोगों की नीयत को तुरंत भांप लेने की क्षमता' },
+    8: { en: 'Adventurous, enthusiastic & first to say yes to bold plans', hi: 'साहसी, उत्साहपूर्ण व नई यात्राओं/अभियानों के लिए सदैव तत्पर' },
+    9: { en: 'Disciplined, punctual & structured without unnecessary fuss', hi: 'अनुशासित, समयनिष्ठ व व्यवस्थित कार्यशैली की स्पष्ट छाप' },
+    10: { en: 'Unconventional, independent & intriguingly detached aura', hi: 'विशिष्ट, स्वतंत्र विचारों वाला व दुनिया से थोड़ा अलग दिखने वाला' },
+    11: { en: 'Reflective, spiritual & drawn to deeper meaning over possessions', hi: 'दार्शनिक, आध्यात्मिक व भौतिक दिखावे से ऊपर सत्य के खोजी' },
+  };
+
+  const conjPairs: Array<{ a: GrahaKey; b: GrahaKey; en: string; hi: string }> = [
+    { a: 'Mars', b: 'Venus', en: 'Mars-Venus: Ageless youthful charm & passionate vitality', hi: 'मंगल-शुक्र: चिर-युवा आकर्षण व प्रबल जीवन ऊर्जा' },
+    { a: 'Venus', b: 'Saturn', en: 'Venus-Saturn: Mature, loyal & patient attraction', hi: 'शुक्र-शनि: परिपक्व, निष्ठावान व धैर्यपूर्ण संबंध दृष्टि' },
+    { a: 'Sun', b: 'Mercury', en: 'Sun-Mercury (Budhaditya): Sharp analytical precision', hi: 'सूर्य-बुध (बुधादित्य): सूक्ष्म विश्लेषण व तीक्ष्ण बुद्धि' },
+    { a: 'Venus', b: 'Rahu', en: 'Venus-Rahu: Cross-cultural appeal & travel-linked romance', hi: 'शुक्र-राहु: दूरस्थ संस्कृतियों के प्रति आकर्षण व नवीन अनुभव' },
+    { a: 'Sun', b: 'Mars', en: 'Sun-Mars: Fiercely independent self-starter energy', hi: 'सूर्य-मंगल: अत्यंत स्वतंत्र, निर्भीक व स्व-प्रेरित ऊर्जा' },
+    { a: 'Mars', b: 'Rahu', en: 'Mars-Rahu: Bold risk-taking & high-adrenaline drive', hi: 'मंगल-राहु: निर्भीक साहस व असाधारण चुनौतियाँ स्वीकारने की प्रवृत्ति' },
+    { a: 'Mars', b: 'Saturn', en: 'Mars-Saturn: Disciplined grit suited to sports/strategy', hi: 'मंगल-शनि: कठोर अनुशासन, सहनशीलता व रणनीतिक साहस' },
+    { a: 'Moon', b: 'Venus', en: 'Moon-Venus: Natural artistic charm & creative sensitivity', hi: 'चंद्र-शुक्र: स्वाभाविक कलात्मक सौंदर्य व कोमल संवेदनशीलता' },
+    { a: 'Moon', b: 'Mars', en: 'Moon-Mars (Chandra-Mangal): Quick passion; practice calm release', hi: 'चंद्र-मंगल: तीव्र भावनात्मक ऊर्जा; क्रोध पर संयम लाभदायक' },
+    { a: 'Moon', b: 'Jupiter', en: 'Moon-Jupiter: Wise intuition & sound life judgment', hi: 'चंद्र-गुरु: विवेकपूर्ण अंतर्ज्ञान व सही समय पर उचित निर्णय' },
+    { a: 'Moon', b: 'Rahu', en: 'Moon-Rahu: Intense inner drive beneath a composed exterior', hi: 'चंद्र-राहु: शांत आवरण के भीतर गहन महत्वाकांक्षा व तीव्र मन' },
+  ];
+
+  const activeConjs = conjPairs.filter((pair) => {
+    const pa = planets.find((p) => p.id === pair.a);
+    const pb = planets.find((p) => p.id === pair.b);
+    return pa && pb && pa.placedHouse === pb.placedHouse;
+  });
+
+  const lagnaImp = lagnaImpressionMap[ascSignIdx] ?? lagnaImpressionMap[0];
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const saturnReturnNoteEn = saturn && [1, 7, 10].includes(saturn.placedHouse)
+    ? ' Saturn Return (ages 27.5–30) marks a decisive turning point in maturity and stability.'
+    : '';
+  const saturnReturnNoteHi = saturn && [1, 7, 10].includes(saturn.placedHouse)
+    ? ' शनि की पहली वापसी (आयु 27.5–30 वर्ष) जीवन व करियर में निर्णायक परिपक्वता लाती है।'
+    : '';
+
+  return {
+    valEn: `${lagnaImp.en}${activeConjs.length > 0 ? ` | ${activeConjs[0].en}` : ''}`,
+    valHi: `${lagnaImp.hi}${activeConjs.length > 0 ? ` | ${activeConjs[0].hi}` : ''}`,
+    explEn: `${activeConjs.length > 0 ? `Active Planetary Conjunctions: ${activeConjs.map((c) => c.en).join('; ')}.` : `Lagna (${SIGNS[ascSignIdx].name}) sets your unmistakable social signature.`}${saturnReturnNoteEn}`,
+    explHi: `${activeConjs.length > 0 ? `सक्रिय ग्रह युतियाँ: ${activeConjs.map((c) => c.hi).join('; ')}।` : `लग्न (${SIGN_HI_NAMES[ascSignIdx]}) आपकी स्वाभाविक सामाजिक छवि तय करता है।`}${saturnReturnNoteHi}`,
+    pacEn: `Ascendant #${ascSignIdx + 1} (${SIGNS[ascSignIdx].name}); Same-house conjunctions: ${activeConjs.length > 0 ? activeConjs.map((c) => `${c.a}+${c.b}`).join(', ') : 'None (planets well-distributed)'}.`,
+    pacHi: `लग्न #${ascSignIdx + 1} (${SIGN_HI_NAMES[ascSignIdx]}); सक्रिय युतियाँ: ${activeConjs.length > 0 ? activeConjs.map((c) => `${c.a}+${c.b}`).join(', ') : 'स्वतंत्र ग्रह स्थिति'}।`,
+  };
+}
+
+// -----------------------------------------------------------------------------
+// PILLAR 4 ADDON: UPAPADA LAGNA, MEDIATOR, D9 DELAY CHECK & REMEDIES
+// -----------------------------------------------------------------------------
+
+export interface UpapadaMarriageDeepResult {
+  upapadaAndSustenance: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  mediatorAndMeetingMode: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+  d9ResilienceAndUpay: { valEn: string; valHi: string; explEn: string; explHi: string; pacEn: string; pacHi: string };
+}
+
+export function getUpapadaAndMarriageDeepDive(
+  planets: PlanetPos[],
+  ascSignIdx: number,
+  h7: HousePacProfile,
+  h12: HousePacProfile,
+  d9?: DivisionalChart
+): UpapadaMarriageDeepResult {
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
+  const TIER_HI: Record<HouseStrengthTier, string> = {
+    strong: 'सबल', moderate: 'मध्यम', afflicted: 'पीड़ित',
+  };
+
+  // 1. Upapada Lagna (Arudha of 12th house)
+  const h12SignIdx = (ascSignIdx + 11) % 12;
+  const l12SignIdx = h12.lordPlanet?.signIndex ?? h12SignIdx;
+  const dist12 = ((l12SignIdx - h12SignIdx + 12) % 12) + 1;
+  let ulSignIdx = (l12SignIdx + dist12 - 1) % 12;
+  if (ulSignIdx === h12SignIdx || ulSignIdx === (h12SignIdx + 6) % 12) {
+    ulSignIdx = (ulSignIdx + 9) % 12;
+  }
+  const ul2SignIdx = (ulSignIdx + 1) % 12;
+  const ul8SignIdx = (ulSignIdx + 7) % 12;
+
+  const ul2Planets = planets.filter((p) => p.signIndex === ul2SignIdx);
+  const ul8Planets = planets.filter((p) => p.signIndex === ul8SignIdx);
+  const ul2Benefics = ul2Planets.filter((p) => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p.id));
+  const ul2Malefics = ul2Planets.filter((p) => ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(p.id));
+  const ul8Benefics = ul8Planets.filter((p) => ['Jupiter', 'Venus', 'Mercury'].includes(p.id));
+
+  const ulSustainsWell = ul2Malefics.length === 0 || ul2Benefics.length > 0;
+  const upapadaAndSustenance = {
+    valEn: `Upapada Lagna (UL): ${SIGNS[ulSignIdx].name} | ${ulSustainsWell ? 'Steady Bond Sustenance (2nd from UL supported)' : 'Requires Conscious Patience (2nd from UL tested)'}`,
+    valHi: `उपपद लग्न (UL): ${SIGN_HI_NAMES[ulSignIdx]} | ${ulSustainsWell ? 'विवाह स्थायित्व प्रबल (UL से द्वितीय सुरक्षित)' : 'संयम व धैर्य अपेक्षित (UL से द्वितीय पर परीक्षण)'}`,
+    explEn: `In Jaimini Jyotish, Upapada Lagna (${SIGNS[ulSignIdx].name}) shows the marriage's social reality and 2nd from UL (${SIGNS[ul2SignIdx].name}) governs longevity. ${ul2Benefics.length > 0 ? 'Benefics in 2nd from UL protect domestic continuity.' : ul2Malefics.length > 0 ? 'Malefics in 2nd from UL advise careful matching and patience during early years.' : '2nd from UL is clear of heavy malefics.'}${ul8Benefics.length > 0 ? ` Benefics in 8th from UL (${SIGNS[ul8SignIdx].name}) support renewal and second-chapter resilience if ever needed.` : ''}`,
+    explHi: `जैमिनी ज्योतिष में उपपद लग्न (${SIGN_HI_NAMES[ulSignIdx]}) विवाह का वास्तविक स्वरूप और उससे द्वितीय भाव (${SIGN_HI_NAMES[ul2SignIdx]}) विवाह की स्थिरता दर्शाता है। ${ul2Benefics.length > 0 ? 'द्वितीय में शुभ ग्रह वैवाहिक निरंतरता की रक्षा करते हैं।' : ul2Malefics.length > 0 ? 'द्वितीय में क्रूर ग्रह प्रारंभिक वर्षों में धैर्य व कुंडली मिलान की सलाह देते हैं।' : 'द्वितीय भाव अनावश्यक बाधाओं से मुक्त है।'}`,
+    pacEn: `H12 ${SIGNS[h12SignIdx].name}, L12 ${h12.lordId} in ${SIGNS[l12SignIdx].name} -> UL ${SIGNS[ulSignIdx].name}; 2nd from UL (${SIGNS[ul2SignIdx].name}): ${ul2Planets.map((p) => p.id).join(', ') || 'Empty'}.`,
+    pacHi: `द्वादश ${SIGN_HI_NAMES[h12SignIdx]}, द्वादशेश ${SIGN_HI_NAMES[l12SignIdx]} में -> UL ${SIGN_HI_NAMES[ulSignIdx]}; UL से द्वितीय: ${ul2Planets.map((p) => p.id).join(', ') || 'रिक्त'}।`,
+  };
+
+  // 2. Mediator & Meeting Mode (7th Lord House H1..H12)
+  const mediatorByHouse: Record<number, { en: string; hi: string }> = {
+    1: { en: 'Personal choice, close family circle or neighborhood acquaintance', hi: 'स्वयं की पसंद, निकट पारिवारिक दायरा या पड़ोसी परिचय' },
+    2: { en: 'Close relatives, extended family or long-time family friends', hi: 'निकट संबंधी, कुटुंब या पुराने पारिवारिक मित्र' },
+    3: { en: 'Siblings, neighbors, or digital/matrimonial communication channels', hi: 'भाई-बहन, पड़ोसी अथवा आधुनिक वैवाहिक/संवाद माध्यम' },
+    4: { en: 'Mother’s side relatives, homeland network or academic setting', hi: 'मातृ पक्ष, मामा/मौसी अथवा शैक्षणिक/स्थानीय परिवेश' },
+    5: { en: 'Self-initiated romance, educational campus or social/cultural event', hi: 'स्व-प्रेरित प्रेम संबंध, महाविद्यालय या सांस्कृतिक उत्सव' },
+    6: { en: 'Workplace, college peers or maternal uncle’s initiative', hi: 'कार्यस्थल, सहपाठी अथवा मामा पक्ष के माध्यम से प्रस्ताव' },
+    7: { en: 'Paternal aunt’s family, business associates or smooth direct proposal', hi: 'बुआ/पितृ पक्ष, व्यापारिक सहयोगी अथवा सहज प्रत्यक्ष प्रस्ताव' },
+    8: { en: 'Unexpected meeting (such as a wedding, medical/insurance circle)', hi: 'आकस्मिक परिचय (किसी विवाह समारोह या विशिष्ट पेशेवर क्षेत्र में)' },
+    9: { en: 'Father’s network, university, pilgrimage or long-distance travel', hi: 'पिता का संपर्क, उच्च शिक्षा संस्थान, तीर्थ या लंबी यात्रा' },
+    10: { en: 'Professional vicinity, workplace colleagues or mother’s guidance', hi: 'कार्यक्षेत्र के सहकर्मी, व्यावसायिक संपर्क या माता का मार्गदर्शन' },
+    11: { en: 'Common friends, elder sibling or social/professional groups', hi: 'साझा मित्र मंडल, बड़े भाई-बहन या सामाजिक समूह' },
+    12: { en: 'Foreign travel, cross-cultural circles or online/distant introduction', hi: 'विदेश यात्रा, भिन्न संस्कृति या दूरस्थ/ऑनलाइन परिचय' },
+  };
+  const l7House = h7.lordHouse;
+  const medInfo = mediatorByHouse[l7House] ?? mediatorByHouse[7];
+  const l7Modality = SIGNS[h7.signIdx].modality;
+  const distNoteEn = l7Modality === 'Movable' ? 'Longer geographic distance' : l7Modality === 'Fixed' ? 'Nearby city/region' : 'Same town or twin-city circle';
+  const distNoteHi = l7Modality === 'Movable' ? 'अधिक भौगोलिक दूरी' : l7Modality === 'Fixed' ? 'समीपवर्ती नगर/क्षेत्र' : 'उसी नगर या निकटवर्ती क्षेत्र';
+
+  const mediatorAndMeetingMode = {
+    valEn: `${medInfo.en} (${distNoteEn})`,
+    valHi: `${medInfo.hi} (${distNoteHi})`,
+    explEn: `7th lord ${h7.lordId} placed in House ${l7House} points to how the match or relationship initiates, while ${SIGNS[h7.signIdx].name} (${l7Modality}) indicates geographic proximity.`,
+    explHi: `सप्तमेश भाव ${l7House} में होने से परिचय/मध्यस्थ का स्रोत तथा सप्तम राशि ${SIGN_HI_NAMES[h7.signIdx]} से दूरी का अनुमान मिलता है।`,
+    pacEn: `7th Sign: ${SIGNS[h7.signIdx].name} (${l7Modality}); 7th Lord ${h7.lordId} in H${l7House}.`,
+    pacHi: `सप्तम राशि: ${SIGN_HI_NAMES[h7.signIdx]}; सप्तमेश भाव ${l7House} में।`,
+  };
+
+  // 3. D1 vs D9 Check, Benefic Protection & Targeted Remedies
+  const saturn = planets.find((p) => p.id === 'Saturn');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const jupiter = planets.find((p) => p.id === 'Jupiter');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+
+  const d9SatIn1Or7 = d9?.placements.some((pl) => pl.id === 'Saturn' && (pl.houseFromVargaLagna === 1 || pl.houseFromVargaLagna === 7)) ?? false;
+  const d1Delay = h7.occupants.some((p) => p.id === 'Saturn' || p.id === 'Rahu' || p.id === 'Ketu') || [6, 8, 12].includes(h7.lordHouse);
+  const jupProtects = jupiter && (h7.aspectors.some((p) => p.id === 'Jupiter') || h7.occupants.some((p) => p.id === 'Jupiter'));
+
+  let resValEn = 'D1 & D9 Aligned: Strong marital resilience protected by balanced benefic support';
+  let resValHi = 'D1 व D9 संतुलित: शुभ ग्रहों के संरक्षण से दांपत्य में उत्तम स्थायित्व';
+  if (d1Delay && d9SatIn1Or7) {
+    resValEn = 'Both D1 & D9 Advise Patience: Mature-age union (post-Saturn Return 28–32+) builds lasting stability';
+    resValHi = 'D1 व D9 दोनों में धैर्य संकेत: परिपक्व आयु (२८-३२+ वर्ष) में विवाह अधिक स्थायी व सुखद';
+  } else if (d1Delay || d9SatIn1Or7) {
+    resValEn = 'Single-Chart Friction Only: Manageable early adjustments; mutual dialogue and D9 matching bring harmony';
+    resValHi = 'केवल एक वर्ग में हल्का परीक्षण: प्रारंभिक तालमेल के बाद संवाद व मिलान से पूर्ण सुख';
+  }
+
+  const remedyPartsEn: string[] = [];
+  const remedyPartsHi: string[] = [];
+  if (saturn && (d1Delay || d9SatIn1Or7)) {
+    remedyPartsEn.push('Saturn: Light a sesame/mustard oil lamp on Saturdays and respect service staff.');
+    remedyPartsHi.push('शनि: शनिवार को तिल/सरसों के तेल का दीपक जलाएं व सहयोगियों का सम्मान करें।');
+  }
+  if (venus && (venus.dignity === 'Debilitated' || venus.isCombust)) {
+    remedyPartsEn.push('Venus: Wear clean pastel/white on Fridays and practice gentle daily appreciation.');
+    remedyPartsHi.push('शुक्र: शुक्रवार को स्वच्छ श्वेत/हल्के वस्त्र धारण करें व संबंधों में मधुरता रखें।');
+  }
+  if (mars && [1, 4, 7, 8, 12].includes(mars.placedHouse)) {
+    remedyPartsEn.push('Mars: Recite Hanuman Chalisa on Tuesdays and channel passion into constructive teamwork.');
+    remedyPartsHi.push('मंगल: मंगलवार को हनुमान चालीसा का पाठ करें व आवेश के स्थान पर शांत संवाद अपनाएं।');
+  }
+  if (rahu && rahu.placedHouse === 7) {
+    remedyPartsEn.push('Rahu: Practice radical honesty and avoid unrealistic illusions in partnership.');
+    remedyPartsHi.push('राहु: दांपत्य में पारदर्शिता रखें व अवास्तविक अपेक्षाओं से बचें।');
+  }
+  if (remedyPartsEn.length === 0) {
+    remedyPartsEn.push(`${jupProtects ? 'Jupiter protects the 7th axis. ' : ''}Spend one device-free hour together daily to keep emotional chemistry alive.`);
+    remedyPartsHi.push(`${jupProtects ? 'सप्तम भाव पर गुरु की शुभ रक्षा है। ' : ''}प्रतिदिन जीवनसाथी के साथ बिना मोबाइल शांत संवाद का समय अवश्य निकालें।`);
+  }
+
+  const d9ResilienceAndUpay = {
+    valEn: resValEn,
+    valHi: resValHi,
+    explEn: `${jupProtects ? 'Jupiter aspect/presence neutralizes half of marital friction. ' : ''}${remedyPartsEn.join(' ')}`,
+    explHi: `${jupProtects ? 'सप्तम पर गुरु का शुभ प्रभाव अनेक दोषों को शांत करता है। ' : ''}${remedyPartsHi.join(' ')}`,
+    pacEn: `D1 H7 (${h7.tier}), D9 Saturn 1/7: ${d9SatIn1Or7}, Jupiter protection: ${Boolean(jupProtects)}.`,
+    pacHi: `D1 सप्तम (${TIER_HI[h7.tier]}), D9 शनि १/७: ${d9SatIn1Or7 ? 'हाँ' : 'नहीं'}, गुरु रक्षा: ${jupProtects ? 'हाँ' : 'सामान्य'}।`,
+  };
+
+  return {
+    upapadaAndSustenance,
+    mediatorAndMeetingMode,
+    d9ResilienceAndUpay,
+  };
+}
+
+
 
 
 
