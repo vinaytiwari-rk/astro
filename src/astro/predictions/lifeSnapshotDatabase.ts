@@ -1289,10 +1289,10 @@ export function getComprehensiveMarriageAnalysis(
 
   // 6. Love / Unconventional / Inter-caste Marriage Analysis
   const is5and7Linked = h5.lordHouse === 7 || h7.lordHouse === 5 || h5.lordHouse === h7.lordHouse;
-  const isRahu7OrVenus = rahu?.placedHouse === 7 || h7.aspectors.some((p) => p.id === 'Rahu') || (venus && rahu && Math.abs(venus.placedHouse - rahu.placedHouse) === 0);
+  const isRahu7OrVenus = rahu?.placedHouse === 7 || (venus && rahu && venus.placedHouse === rahu.placedHouse) || (rahu && rahu.placedHouse === h7.lordHouse);
   const is7and12Linked = h7.lordHouse === 12 || h7.occupants.some((p) => p.id === h1.lordId && h1.lordHouse === 12);
-  const isLove = is5and7Linked || Boolean(venus && mars && (venus.placedHouse === mars.placedHouse || [1, 5, 7].includes(venus.placedHouse)));
-  const isIntercaste = Boolean(isRahu7OrVenus || is7and12Linked || (SIGNS[(h1.signIdx + 8) % 12]?.lord === 'Jupiter' && saturn && rahu && (saturn.placedHouse === jupiter?.placedHouse || rahu.placedHouse === jupiter?.placedHouse)));
+  const isLove = is5and7Linked || Boolean(venus && mars && (venus.placedHouse === mars.placedHouse || venus.placedHouse === 7));
+  const isIntercaste = Boolean(isRahu7OrVenus || is7and12Linked);
 
   let loveNoteEn = 'Traditional family-arranged alliance with mutual consent and parental blessings';
   let loveNoteHi = 'पारिवारिक सहमति व बुजुर्गों के आशीर्वाद से संपन्न होने वाला सुसंस्कृत पारंपरिक विवाह';
@@ -2060,12 +2060,12 @@ export function getComprehensiveParentsAndFamilyAnalysis(
   // 1. Father (9th + 10th per BPHS 11.11 + Sun + Jupiter Mentor + D12)
   const sunD12 = d12?.placements.find((pl) => pl.id === 'Sun');
   const moonD12 = d12?.placements.find((pl) => pl.id === 'Moon');
-  const fatherSaturnTouch = h9.occupants.some((p) => p.id === 'Saturn') || h9.aspectors.some((p) => p.id === 'Saturn');
-  const pitruDoshaActive =
-    (rahu && (rahu.placedHouse === 9 || (sun && rahu.placedHouse === sun.placedHouse))) ||
-    (ketu && (ketu.placedHouse === 9 || (sun && ketu.placedHouse === sun.placedHouse)));
   const jupMentorFather =
     jupiter && (h9.occupants.some((p) => p.id === 'Jupiter') || h9.aspectors.some((p) => p.id === 'Jupiter') || (sun && jupiter.placedHouse === sun.placedHouse));
+  const fatherSaturnTouch = h9.occupants.some((p) => p.id === 'Saturn') || (!jupMentorFather && h9.tier !== 'strong' && h9.aspectors.some((p) => p.id === 'Saturn'));
+  const pitruDoshaActive =
+    (rahu && (rahu.placedHouse === 9 || (sun && rahu.placedHouse === sun.placedHouse && !jupMentorFather))) ||
+    (ketu && (ketu.placedHouse === 9 || (sun && ketu.placedHouse === sun.placedHouse && !jupMentorFather)));
 
   let fatherValEn = '';
   let fatherValHi = '';
@@ -2111,8 +2111,8 @@ export function getComprehensiveParentsAndFamilyAnalysis(
     h4.lordPlanet.placedHouse === moon.placedHouse ||
     ([1, 4, 7, 10].includes(h4.lordPlanet.placedHouse) && [1, 4, 7, 10].includes(moon.placedHouse))
   );
-  const motherSaturnTouch = h4.occupants.some((p) => p.id === 'Saturn') || h4.aspectors.some((p) => p.id === 'Saturn');
-  const motherNodeTouch = h4.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu') || h4.aspectors.some((p) => p.id === 'Rahu' || p.id === 'Ketu');
+  const motherSaturnTouch = h4.occupants.some((p) => p.id === 'Saturn') || (!matruYoga && h4.tier !== 'strong' && h4.aspectors.some((p) => p.id === 'Saturn'));
+  const motherNodeTouch = h4.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu');
   const venusComfort4 = h4.occupants.some((p) => p.id === 'Venus') || h4.aspectors.some((p) => p.id === 'Venus');
 
   let motherValEn = '';
@@ -2309,7 +2309,8 @@ export function getComprehensiveSiblingsAnalysis(
     [6, 8, 12].includes(h11.lordHouse) &&
     h3.aspectors.every((p) => !['Jupiter', 'Venus'].includes(p.id));
   const onlyChildPressure =
-    (empty3And11 && weakLordsDusthana) ||
+    (empty3And11 && (weakLordsDusthana || (h3.tier === 'afflicted' && h11.tier === 'afflicted'))) ||
+    (empty3And11 && h3.aspectors.some((p) => p.id === 'Saturn' || p.id === 'Ketu') && h3.tier !== 'strong') ||
     (h3.occupants.some((p) => p.id === 'Sun') &&
       h3.occupants.some((p) => p.id === 'Mercury' && p.isCombust) &&
       mars &&
@@ -2318,16 +2319,17 @@ export function getComprehensiveSiblingsAnalysis(
       h11.occupants.length === 0);
 
   // Estimate sibling count from 3rd/11th occupants, dual signs, Jupiter/Mars/Mercury support
-  let estCount = 2;
+  let estCount = 1;
   if (onlyChildPressure) {
     estCount = 0;
   } else {
     estCount = 1;
-    if (h3.occupants.length >= 1) estCount += h3.occupants.length;
-    if (h11.occupants.length >= 1) estCount += h11.occupants.length;
-    if (isDual3rd || isDual11th) estCount += 1;
-    if (l3In11 || l11In3) estCount += 2;
-    if (h3.tier === 'strong' || h11.tier === 'strong') estCount += 1;
+    if (h3.occupants.length >= 2) estCount += 1;
+    if (h11.occupants.length >= 2) estCount += 1;
+    if (h3.occupants.length >= 1 && h11.occupants.length >= 1) estCount += 1;
+    if (isDual3rd && isDual11th) estCount += 1;
+    if (l3In11 || l11In3) estCount += 1;
+    if (h3.tier === 'strong' && h11.tier === 'strong') estCount += 1;
     if (h3.tier === 'afflicted' && h11.tier === 'afflicted') estCount = Math.max(1, estCount - 1);
     estCount = Math.min(6, estCount);
   }
@@ -3169,11 +3171,11 @@ export function getMarriageLongevityAndMultiUnionAnalysis(
 
   let multiValEn = 'Single-Marriage Stability Yoga (Ek-Vivaha): Steady single-partner commitment favored';
   let multiValHi = 'एक-विवाह स्थायित्व योग: एकनिष्ठ व दीर्घकालिक दांपत्य की प्रबल अनुकूलता';
-  if (multiScore >= 3 || (multiScore >= 2 && !jupShield)) {
-    multiValEn = multiScore >= 3
+  if (multiScore >= 4 || (multiScore >= 3 && !jupShield)) {
+    multiValEn = multiScore >= 4
       ? 'Multiple-Union / Second-Chapter Potential (Dwi-Vivaha Signals): Careful D9 matching & maturity advised'
       : 'Moderate Multiplicity / Relationship Reset Tendency (Mitigated by awareness & matching)';
-    multiValHi = multiScore >= 3
+    multiValHi = multiScore >= 4
       ? 'द्वि-विवाह / द्वितीय अवसर के शास्त्रीय संकेत: गहन कुंडली मिलान व परिपक्व निर्णय आवश्यक'
       : 'मध्यम संबंध-पुनर्विचार संकेत (उचित मिलान व संवाद से एक-विवाह में पूर्ण स्थायित्व)';
   }

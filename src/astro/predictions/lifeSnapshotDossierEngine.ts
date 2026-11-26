@@ -1890,10 +1890,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       scholarshipHi = 'योग्यता आधारित छात्रवृत्तियां, शोध अनुदान व प्रतिष्ठित शैक्षणिक सम्मान प्राप्त करने का योग';
     }
 
-    let subjectsEn = 'Computer Science, Information Technology, Applied Financial Architecture, Data Science, or Corporate Law';
-    let subjectsHi = 'कंप्यूटर साइंस, सूचना प्रौद्योगिकी, वित्तीय इंजीनियरिंग, डेटा एनालिटिक्स अथवा कॉर्पोरेट विधि';
+    const hasArts5 = venus?.placedHouse === 5 || moon?.placedHouse === 5;
+    const hasHeavyTech5 = mars?.placedHouse === 5 || saturn?.placedHouse === 5 || rahu?.placedHouse === 5;
 
-    if (h5Sign.element === 'Fire' || l5?.id === 'Mars' || l5?.id === 'Sun') {
+    let subjectsEn = 'Philosophy, Humanities, Literature, Psychology, Medical/Ayurvedic Sciences, or Education';
+    let subjectsHi = 'दर्शनशास्त्र, मानविकी, साहित्य, मनोविज्ञान, चिकित्सा/आयुर्वेद अथवा शिक्षण';
+
+    if ((l5?.id === 'Venus' || l5?.id === 'Moon' || hasArts5) && !hasHeavyTech5) {
+      subjectsEn = 'Fine Arts, Performing Arts, Literature, Media & Communications, Design, or Psychology';
+      subjectsHi = 'ललित कला, अभिनय/संगीत, साहित्य, मीडिया व जनसंचार, डिज़ाइन अथवा मनोविज्ञान';
+    } else if (h5Sign.element === 'Fire' || l5?.id === 'Mars' || l5?.id === 'Sun') {
       subjectsEn = 'Mechanical/Civil/Electrical Engineering, Applied Physics, Surgical Medicine, or Strategic Defense Studies';
       subjectsHi = 'मैकेनिकल/इलेक्ट्रिकल इंजीनियरिंग, व्यावहारिक भौतिकी, सर्जरी अथवा रक्षा रणनीति';
     } else if (h5Sign.element === 'Earth' || l5?.id === 'Mercury' || l5?.id === 'Saturn') {
