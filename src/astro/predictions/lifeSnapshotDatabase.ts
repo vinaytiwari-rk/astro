@@ -2632,6 +2632,114 @@ export function getUpapadaAndMarriageDeepDive(
   };
 }
 
+// -----------------------------------------------------------------------------
+// PILLAR 4 ADDON: NAKSHATRA YONI, ELEMENTAL INTIMACY & HARMONY REMEDIES
+// -----------------------------------------------------------------------------
+
+export interface IntimacyYoniResult {
+  valEn: string;
+  valHi: string;
+  explEn: string;
+  explHi: string;
+  pacEn: string;
+  pacHi: string;
+}
+
+export function getIntimacyAndYoniHarmonyAnalysis(
+  planets: PlanetPos[],
+  h5: HousePacProfile,
+  h7: HousePacProfile,
+  h8: HousePacProfile,
+  h12: HousePacProfile
+): IntimacyYoniResult {
+  const NAK_YONI: Array<{ en: string; hi: string; tier: 'high' | 'moderate' | 'reserved' }> = [
+    { en: 'Horse (Ashwini)', hi: 'अश्व (अश्विनी)', tier: 'high' },
+    { en: 'Elephant (Bharani)', hi: 'गज (भरणी)', tier: 'moderate' },
+    { en: 'Sheep (Krittika)', hi: 'मेष (कृत्तिका)', tier: 'reserved' },
+    { en: 'Serpent (Rohini)', hi: 'सर्प (रोहिणी)', tier: 'reserved' },
+    { en: 'Serpent (Mrigashira)', hi: 'सर्प (मृगशिरा)', tier: 'high' },
+    { en: 'Dog (Ardra)', hi: 'श्वान (आर्द्रा)', tier: 'moderate' },
+    { en: 'Cat (Punarvasu)', hi: 'मार्जार (पुनर्वसु)', tier: 'reserved' },
+    { en: 'Sheep (Pushya)', hi: 'मेष (पुष्य)', tier: 'moderate' },
+    { en: 'Cat (Ashlesha)', hi: 'मार्जार (आश्लेषा)', tier: 'reserved' },
+    { en: 'Rat (Magha)', hi: 'मूषक (मघा)', tier: 'high' },
+    { en: 'Rat (Purva Phalguni)', hi: 'मूषक (पूर्वा फाल्गुनी)', tier: 'moderate' },
+    { en: 'Cow (Uttara Phalguni)', hi: 'गौ (उत्तरा फाल्गुनी)', tier: 'high' },
+    { en: 'Buffalo (Hasta)', hi: 'महिष (हस्त)', tier: 'moderate' },
+    { en: 'Tiger (Chitra)', hi: 'व्याघ्र (चित्रा)', tier: 'reserved' },
+    { en: 'Buffalo (Swati)', hi: 'महिष (स्वाति)', tier: 'moderate' },
+    { en: 'Tiger (Vishakha)', hi: 'व्याघ्र (विशाखा)', tier: 'reserved' },
+    { en: 'Deer (Anuradha)', hi: 'मृग (अनुराधा)', tier: 'high' },
+    { en: 'Deer (Jyeshtha)', hi: 'मृग (ज्येष्ठा)', tier: 'reserved' },
+    { en: 'Dog (Mula)', hi: 'श्वान (मूल)', tier: 'high' },
+    { en: 'Monkey (Purva Ashadha)', hi: 'वानर (पूर्वाषाढ़ा)', tier: 'moderate' },
+    { en: 'Mongoose (Uttara Ashadha)', hi: 'नकुल (उत्तराषाढ़ा)', tier: 'reserved' },
+    { en: 'Monkey (Shravana)', hi: 'वानर (श्रवण)', tier: 'moderate' },
+    { en: 'Lion (Dhanishta)', hi: 'सिंह (धनिष्ठा)', tier: 'high' },
+    { en: 'Horse (Shatabhisha)', hi: 'अश्व (शतभिषा)', tier: 'reserved' },
+    { en: 'Lion (Purva Bhadrapada)', hi: 'सिंह (पूर्वा भाद्रपद)', tier: 'reserved' },
+    { en: 'Cow (Uttara Bhadrapada)', hi: 'गौ (उत्तरा भाद्रपद)', tier: 'reserved' },
+    { en: 'Elephant (Revati)', hi: 'गज (रेवती)', tier: 'moderate' },
+  ];
+
+  const moon = planets.find((p) => p.id === 'Moon');
+  const venus = planets.find((p) => p.id === 'Venus');
+  const mars = planets.find((p) => p.id === 'Mars');
+  const rahu = planets.find((p) => p.id === 'Rahu');
+  const ketu = planets.find((p) => p.id === 'Ketu');
+  const saturn = planets.find((p) => p.id === 'Saturn');
+
+  const yoniInfo = NAK_YONI[(moon?.nakshatraIndex ?? 0) % 27] ?? NAK_YONI[0];
+  const venusSignIdx = venus?.signIndex ?? h7.signIdx;
+  const venusElem = SIGNS[venusSignIdx]?.element ?? 'Earth';
+
+  const elemStyleMap: Record<string, { en: string; hi: string }> = {
+    Fire: { en: 'Spontaneous, warm & passionate expression', hi: 'उत्साहपूर्ण, प्रगाढ़ व प्रत्यक्ष स्नेह अभिव्यक्ति' },
+    Earth: { en: 'Sensual, grounded & loyalty-centered affection', hi: 'स्थिर, विश्वसनीय व इंद्रिय-सौम्य आत्मीयता' },
+    Air: { en: 'Communicative, playful & intellectually curious bond', hi: 'संवाद-प्रधान, कलात्मक व मानसिक जुड़ाव' },
+    Water: { en: 'Deeply emotional, nurturing & intuitive intimacy', hi: 'गहन भावनात्मक, संवेदनशील व आत्मिक समर्पण' },
+  };
+  const elemStyle = elemStyleMap[venusElem] ?? elemStyleMap.Earth;
+
+  const tierLabel = yoniInfo.tier === 'high'
+    ? { en: 'Vibrant vitality', hi: 'उच्च जीवन-ऊर्जा' }
+    : yoniInfo.tier === 'moderate'
+    ? { en: 'Balanced & steady rhythm', hi: 'संतुलित व सौम्य लय' }
+    : { en: 'Deeply selective & private warmth', hi: 'गंभीर, संवेदनशील व मर्यादित आत्मीयता' };
+
+  const imbalancesEn: string[] = [];
+  const imbalancesHi: string[] = [];
+  if (venus && (venus.dignity === 'Debilitated' || venus.isCombust)) {
+    imbalancesEn.push('Weak/combust Venus advises nurturing romance and gentle appreciation');
+    imbalancesHi.push('शुक्र के निर्बल/अस्त होने से संबंधों में कोमलता व सराहना बढ़ाना लाभकारी');
+  }
+  if (mars && ([7, 8, 12].includes(mars.placedHouse) || mars.dignity === 'Debilitated')) {
+    imbalancesEn.push('Mars on 7th/8th/12th favors channeling passion calmly without haste');
+    imbalancesHi.push('मंगल के ७/८/१२ भाव में होने से आवेश की जगह धैर्य व संतुलन श्रेयस्कर');
+  }
+  if ((rahu && [5, 7, 8, 12].includes(rahu.placedHouse)) || (ketu && [7, 8, 12].includes(ketu.placedHouse))) {
+    imbalancesEn.push('Nodal influence in intimacy houses benefits from mindful transparency and grounding');
+    imbalancesHi.push('राहु/केतु के काम-भावों में होने से पारदर्शिता व संयमित दिनचर्या अत्यंत सहायक');
+  }
+  if (saturn && [7, 8, 12].includes(saturn.placedHouse)) {
+    imbalancesEn.push('Saturn in 7/8/12 rewards patient emotional closeness over routine');
+    imbalancesHi.push('शनि ७/८/१२ में होने से व्यस्तता के बीच भी आत्मीय संवाद बनाए रखना आवश्यक');
+  }
+
+  const lalKitabRemEn = 'Lal Kitab & Shastric Harmony: Respect partnership vows, avoid intoxicants, and practice mutual kindness and self-discipline.';
+  const lalKitabRemHi = 'लाल किताब व शास्त्रीय संतुलन: जीवनसाथी के प्रति सम्मान, व्यसन-त्याग, मधुर वाणी व आत्म-संयम दांपत्य सुख को प्रबल बनाते हैं।';
+
+  return {
+    valEn: `Yoni: ${yoniInfo.en} (${tierLabel.en}) | ${elemStyle.en}`,
+    valHi: `योनि वर्ग: ${yoniInfo.hi} (${tierLabel.hi}) | ${elemStyle.hi}`,
+    explEn: `Moon Nakshatra Yoni (${yoniInfo.en}) and ${venusElem} Venus (${venus?.signName ?? '-'}) shape your natural intimacy rhythm across the 5th, 7th, 8th, and 12th houses. ${imbalancesEn.length > 0 ? `${imbalancesEn.join('. ')}. ` : ''}${lalKitabRemEn}`,
+    explHi: `चंद्र नक्षत्र योनि (${yoniInfo.hi}) व ${venusElem} तत्व में शुक्र (भाव ${venus?.placedHouse ?? '-'}) ५, ७, ८ और १२वें भावों के साथ आपकी स्वाभाविक आत्मीयता तय करते हैं। ${imbalancesHi.length > 0 ? `${imbalancesHi.join('। ')}। ` : ''}${lalKitabRemHi}`,
+    pacEn: `Moon Nakshatra: ${moon?.nakshatraName ?? '-'} (${yoniInfo.en}); Venus in ${venus?.signName} (H${venus?.placedHouse}); H5(${h5.tier})/H7(${h7.tier})/H8(${h8.tier})/H12(${h12.tier}).`,
+    pacHi: `चंद्र नक्षत्र: ${moon?.nakshatraName ?? '-'} (${yoniInfo.hi}); शुक्र भाव ${venus?.placedHouse} में; भाव ५/७/८/१२ संतुलन।`,
+  };
+}
+
+
 
 
 

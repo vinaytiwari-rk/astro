@@ -42,6 +42,7 @@ import {
   getComprehensiveSiblingsAnalysis,
   getFirstImpressionAndConjunctionInsights,
   getUpapadaAndMarriageDeepDive,
+  getIntimacyAndYoniHarmonyAnalysis,
 } from './lifeSnapshotDatabase';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
@@ -1178,6 +1179,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const d9LagnaSign = d9?.lagnaSignIndex ?? ascSignIdx;
     const d9H7Sign = (d9LagnaSign + 6) % 12;
     const ulMarriageRes = getUpapadaAndMarriageDeepDive(planets, ascSignIdx, h7Prof, h12Prof, d9);
+    const yoniIntimacyRes = getIntimacyAndYoniHarmonyAnalysis(planets, h5Prof, h7Prof, h8Prof, h12Prof);
 
     // Direction & Distance
     let directionEn = 'South-East or Southern direction from native birthplace';
@@ -1461,6 +1463,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisEn: `House 12: ${h12Sign.name}; Lord ${l12?.id} in H${l12?.placedHouse}; Venus placed in House ${venus?.placedHouse}.`,
           pacBasisHi: `द्वादश भाव: ${SIGN_HI[h12SignIdx]}; द्वादशेश भाव ${l12?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 36–42), Saravali (Ch. 27)',
+          vargaRef: 'D1 & D9',
+        },
+        {
+          id: 'attr_yoni_intimacy_harmony',
+          category: 'spouse',
+          titleEn: 'Nakshatra Yoni Rhythm, Elemental Style & Lal Kitab Harmony',
+          titleHi: 'नक्षत्र योनि प्रकृति, आत्मीय शैली व लाल किताब सामंजस्य',
+          valueEn: yoniIntimacyRes.valEn,
+          valueHi: yoniIntimacyRes.valHi,
+          explanationEn: yoniIntimacyRes.explEn,
+          explanationHi: yoniIntimacyRes.explHi,
+          pacBasisEn: yoniIntimacyRes.pacEn,
+          pacBasisHi: yoniIntimacyRes.pacHi,
+          shastricRef: 'Ashtakoot Yoni Koota, 5th/7th/8th/12th Axis & Lal Kitab',
           vargaRef: 'D1 & D9',
         },
         {
