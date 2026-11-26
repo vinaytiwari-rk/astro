@@ -16,8 +16,15 @@ import {
 } from 'lucide-react';
 import { calculateChart } from '../../astro/calculator';
 import { SEVEN_PLANETS, SIGNS } from '../../astro/constants';
-import { getChoghadiyaForChart, computeAnnualHinduCalendar, type ChoghadiyaSlot, type HinduCalendarEvent } from '../../astro/panchangExtra';
-import { formatDateDmy } from '../../astro/time';
+import { computeSunriseSunsetForLocalDay } from '../../astro/ephemeris';
+import {
+  getChoghadiyaForChart,
+  computeAnnualHinduCalendar,
+  computeDailyPanchangExtras,
+  type ChoghadiyaSlot,
+  type HinduCalendarEvent,
+} from '../../astro/panchangExtra';
+import { formatDateDmy, formatLocalTimeFromUtc } from '../../astro/time';
 import type { BirthInput, CalcSettings } from '../../astro/types';
 import type { CityEntry } from '../../data/cities';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -76,20 +83,53 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
     return DEFAULT_PANCHANG_CITY;
   });
 
+  // Probe at local noon first so we get true timezone offset and exact local Sunrise
+  const noonProbeChart = useMemo(
+    () =>
+      calculateChart(
+        {
+          id: 'panchang-probe',
+          name: 'Panchang Native',
+          gender: 'other',
+          date: selectedDate,
+          time: '12:00',
+          city: selectedCity.city,
+          country: selectedCity.country,
+          latitude: selectedCity.lat,
+          longitude: selectedCity.lng,
+          timezone: selectedCity.timezone,
+        },
+        settings
+      ),
+    [selectedDate, selectedCity, settings]
+  );
+
+  const panchangExtras = useMemo(
+    () =>
+      computeDailyPanchangExtras(
+        selectedDate,
+        selectedCity.lat,
+        selectedCity.lng,
+        noonProbeChart.offsetMinutesUsed,
+        settings.ayanamsa || 'lahiri'
+      ),
+    [selectedDate, selectedCity, noonProbeChart.offsetMinutesUsed, settings.ayanamsa]
+  );
+
   const panchangInput: BirthInput = useMemo(
     () => ({
       id: 'panchang-day',
       name: 'Panchang Native',
       gender: 'other',
       date: selectedDate,
-      time: '06:00',
+      time: panchangExtras.sunriseTimeHms || '12:00:00',
       city: selectedCity.city,
       country: selectedCity.country,
       latitude: selectedCity.lat,
       longitude: selectedCity.lng,
       timezone: selectedCity.timezone,
     }),
-    [selectedDate, selectedCity]
+    [selectedDate, selectedCity, panchangExtras.sunriseTimeHms]
   );
 
   const chart = useMemo(() => calculateChart(panchangInput, settings), [panchangInput, settings]);
@@ -106,11 +146,11 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
     return computeAnnualHinduCalendar(
       curYear,
       settings.ayanamsa || 'lahiri',
-      330,
+      noonProbeChart.offsetMinutesUsed,
       selectedCity.lat,
       selectedCity.lng
     );
-  }, [curYear, settings.ayanamsa, selectedCity]);
+  }, [curYear, settings.ayanamsa, noonProbeChart.offsetMinutesUsed, selectedCity]);
 
   const monthGridData = useMemo(() => {
     const firstDay = new Date(curYear, curMonth - 1, 1);
@@ -118,16 +158,22 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday
     const pad = (n: number) => String(n).padStart(2, '0');
+    const offsetMin = noonProbeChart.offsetMinutesUsed;
 
     const days = [];
     for (let d = 1; d <= daysInMonth; d++) {
       const dStr = `${curYear}-${pad(curMonth)}-${pad(d)}`;
+      const noonUtc = Date.UTC(curYear, curMonth - 1, d, 12, 0, 0) - offsetMin * 60_000;
+      const sunTimes = computeSunriseSunsetForLocalDay(noonUtc, offsetMin, selectedCity.lat, selectedCity.lng);
+      const srTimeStr = sunTimes.sunriseMs
+        ? formatLocalTimeFromUtc(sunTimes.sunriseMs + 1000, offsetMin, true)
+        : '12:00:00';
       const dayInput: BirthInput = {
         id: `cal-day-${d}`,
         name: 'Calendar Day',
         gender: 'other',
         date: dStr,
-        time: '06:00',
+        time: srTimeStr,
         city: selectedCity.city,
         country: selectedCity.country,
         latitude: selectedCity.lat,
@@ -149,7 +195,7 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
       startingDayOfWeek,
       days,
     };
-  }, [curYear, curMonth, selectedCity, settings, annualEvents]);
+  }, [curYear, curMonth, selectedCity, settings, annualEvents, noonProbeChart.offsetMinutesUsed]);
 
   const stepMonthNav = (offset: number) => {
     const d = new Date(selectedDate);
@@ -447,7 +493,9 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
               <tr>
                 <th>{isHi ? 'तिथि' : 'Tithi'}</th>
                 <td>
-                  <strong>{p.tithi.name}</strong> ({p.tithi.paksha} पक्ष)
+                  <strong>{p.tithi.name}</strong> ({p.tithi.paksha} {isHi ? 'पक्ष' : 'Paksha'})
+                  <br />
+                  <span className="muted">{isHi ? 'समाप्ति:' : 'Upto:'} {panchangExtras.tithiEnd}</span>
                 </td>
               </tr>
               <tr>
@@ -461,19 +509,25 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
                 <td>
                   <strong>{moon.nakshatraName}</strong> ({isHi ? 'पाद' : 'Pada'} {moon.pada})
                   <br />
-                  <span className="muted">{isHi ? 'स्वामी:' : 'Lord:'} {trPlanet(moon.nakshatraLord, lang)}</span>
+                  <span className="muted">
+                    {isHi ? 'स्वामी:' : 'Lord:'} {trPlanet(moon.nakshatraLord, lang)} · {isHi ? 'समाप्ति:' : 'Upto:'} {panchangExtras.nakshatraEnd}
+                  </span>
                 </td>
               </tr>
               <tr>
                 <th>{isHi ? 'योग' : 'Yoga'}</th>
                 <td>
                   <strong>{p.yoga.name}</strong>
+                  <br />
+                  <span className="muted">{isHi ? 'समाप्ति:' : 'Upto:'} {panchangExtras.yogaEnd}</span>
                 </td>
               </tr>
               <tr>
                 <th>{isHi ? 'करण' : 'Karana'}</th>
                 <td>
                   <strong>{p.karana.name}</strong> ({p.karana.type})
+                  <br />
+                  <span className="muted">{isHi ? 'समाप्ति:' : 'Upto:'} {panchangExtras.karanaEnd}</span>
                 </td>
               </tr>
               <tr>
@@ -509,11 +563,11 @@ export const OnlineJyotishPanchangView: React.FC<OnlineJyotishPanchangViewProps>
               </tr>
               <tr className="oj-row-good">
                 <th>{isHi ? 'अमृत काल' : 'Amrita Kalam'}</th>
-                <td>07:15 &ndash; 08:45</td>
+                <td>{panchangExtras.amritaKalam}</td>
               </tr>
               <tr className="oj-row-good">
                 <th>{isHi ? 'ब्रह्म मुहूर्त' : 'Brahma Muhurta'}</th>
-                <td>04:45 &ndash; 05:35</td>
+                <td>{panchangExtras.brahmaMuhurta}</td>
               </tr>
             </tbody>
           </table>

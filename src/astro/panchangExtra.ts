@@ -693,3 +693,111 @@ export function getChoghadiyaForChart(chart: ChartData): DailyMuhurtaSuite {
     chart.offsetMinutesUsed
   );
 }
+
+// Classical 27-Nakshatra Amrita Kalam start in Ghatis (out of 60 ghatis; duration = 4 ghatis)
+const AMRITA_GHATI_START = [
+  42, 48, 54, 40, 38, 35, 54, 44, 56,
+  54, 44, 42, 45, 44, 38, 38, 34, 38,
+  44, 48, 44, 34, 34, 42, 40, 48, 54,
+];
+
+function siderealMoonDeg(ms: number, ayanamsa: AyanamsaId): number {
+  const t = new Astronomy.AstroTime(new Date(ms));
+  return normalizeDeg(Astronomy.EclipticGeoMoon(t).lon - computeAyanamsaDeg(t, ayanamsa));
+}
+
+function sunPlusMoonDeg(ms: number, ayanamsa: AyanamsaId): number {
+  const t = new Astronomy.AstroTime(new Date(ms));
+  const ay = computeAyanamsaDeg(t, ayanamsa);
+  return normalizeDeg(
+    normalizeDeg(Astronomy.SunPosition(t).elon - ay) + normalizeDeg(Astronomy.EclipticGeoMoon(t).lon - ay)
+  );
+}
+
+function formatEndTimeLabel(endMs: number, baseYmd: string, offsetMinutes: number): string {
+  const endYmd = formatLocalYmd(endMs, offsetMinutes);
+  const tStr = formatLocalTimeFromUtc(endMs, offsetMinutes, false);
+  return endYmd === baseYmd ? tStr : `${tStr} (+1d)`;
+}
+
+export interface DailyPanchangExtras {
+  sunriseTimeHms: string;
+  brahmaMuhurta: string;
+  amritaKalam: string;
+  tithiEnd: string;
+  nakshatraEnd: string;
+  yogaEnd: string;
+  karanaEnd: string;
+}
+
+/**
+ * Computes exact sunrise-anchored Panchang limb end times, Brahma Muhurta, and Amrita Kalam.
+ */
+export function computeDailyPanchangExtras(
+  dateStr: string,
+  latitude: number,
+  longitude: number,
+  offsetMinutes: number,
+  ayanamsa: AyanamsaId = 'lahiri'
+): DailyPanchangExtras {
+  const [yr, mo, dy] = dateStr.split('-').map((x) => parseInt(x, 10));
+  const noonUtcMs = Date.UTC(yr, mo - 1, dy, 12, 0, 0) - offsetMinutes * 60_000;
+  const localMidMs = Date.UTC(yr, mo - 1, dy, 0, 0, 0) - offsetMinutes * 60_000;
+  const sunTimes = computeSunriseSunsetForLocalDay(noonUtcMs, offsetMinutes, latitude, longitude);
+  const srMs = sunTimes.sunriseMs ?? localMidMs + 6 * 3600_000;
+
+  const sunriseTimeHms = formatLocalTimeFromUtc(srMs + 1000, offsetMinutes, true);
+  const brahmaMuhurta = `${formatLocalTimeFromUtc(srMs - 96 * 60_000, offsetMinutes, false)} – ${formatLocalTimeFromUtc(srMs - 48 * 60_000, offsetMinutes, false)}`;
+
+  const findNextTransition = (startMs: number, idxFn: (ms: number) => number, maxHours = 36): number => {
+    const startIdx = idxFn(startMs);
+    const step = 3600_000;
+    for (let h = 1; h <= maxHours; h++) {
+      const t = startMs + h * step;
+      if (idxFn(t) !== startIdx) {
+        return bisectCrossing(t - step, t, idxFn, (x) => idxFn(x) !== startIdx);
+      }
+    }
+    return startMs + maxHours * step;
+  };
+
+  const findPrevTransition = (startMs: number, idxFn: (ms: number) => number, maxHours = 36): number => {
+    const startIdx = idxFn(startMs);
+    const step = 3600_000;
+    for (let h = 1; h <= maxHours; h++) {
+      const t = startMs - h * step;
+      if (idxFn(t) !== startIdx) {
+        return bisectCrossing(t, t + step, idxFn, (x) => idxFn(x) === startIdx);
+      }
+    }
+    return startMs - maxHours * step;
+  };
+
+  const tithiIdxAt = (ms: number) => Math.floor(elongDegAt(ms, ayanamsa) / 12) % 30;
+  const karanaIdxAt = (ms: number) => Math.floor(elongDegAt(ms, ayanamsa) / 6) % 60;
+  const nakIdxAt = (ms: number) => Math.floor(siderealMoonDeg(ms, ayanamsa) / (360 / 27)) % 27;
+  const yogaIdxAt = (ms: number) => Math.floor(sunPlusMoonDeg(ms, ayanamsa) / (360 / 27)) % 27;
+
+  const tithiEndMs = findNextTransition(srMs, tithiIdxAt, 36);
+  const karanaEndMs = findNextTransition(srMs, karanaIdxAt, 24);
+  const nakIdx = nakIdxAt(srMs);
+  const nakStartMs = findPrevTransition(srMs, nakIdxAt, 36);
+  const nakEndMs = findNextTransition(srMs, nakIdxAt, 36);
+  const yogaEndMs = findNextTransition(srMs, yogaIdxAt, 36);
+
+  const nakDur = Math.max(3600_000, nakEndMs - nakStartMs);
+  const amritaStartGhati = AMRITA_GHATI_START[nakIdx] ?? 42;
+  const amritaStartMs = nakStartMs + (amritaStartGhati / 60) * nakDur;
+  const amritaEndMs = nakStartMs + ((amritaStartGhati + 4) / 60) * nakDur;
+  const amritaKalam = `${formatLocalTimeFromUtc(amritaStartMs, offsetMinutes, false)} – ${formatLocalTimeFromUtc(amritaEndMs, offsetMinutes, false)}`;
+
+  return {
+    sunriseTimeHms,
+    brahmaMuhurta,
+    amritaKalam,
+    tithiEnd: formatEndTimeLabel(tithiEndMs, dateStr, offsetMinutes),
+    nakshatraEnd: formatEndTimeLabel(nakEndMs, dateStr, offsetMinutes),
+    yogaEnd: formatEndTimeLabel(yogaEndMs, dateStr, offsetMinutes),
+    karanaEnd: formatEndTimeLabel(karanaEndMs, dateStr, offsetMinutes),
+  };
+}
