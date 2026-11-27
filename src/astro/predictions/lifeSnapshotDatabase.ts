@@ -484,9 +484,26 @@ export function getEducationSubDetails(
         explHi: `चतुर्थ भाव की स्थिरता जातक को परिवार के पास रहकर पढ़ाई पूर्ण करने का अवसर देती है।`,
       };
 
-  // 3. Education Hurdles
+  // 3. Education Hurdles (including 5th Lord in 8th Break + Jupiter Resumption Rule)
+  const has5thLordIn8thBreak = h5.lordHouse === 8;
+  const hasLaterEduResumption = has5thLordIn8thBreak && Boolean(jupiter && [1, 4, 5, 7, 9, 10, 12].includes(jupiter.placedHouse) && jupiter.dignity !== 'Debilitated');
   const hurdles: BilingualPrediction =
-    h5.tier === 'afflicted' || h4.tier === 'afflicted'
+    has5thLordIn8thBreak
+      ? {
+          valEn: hasLaterEduResumption
+            ? 'Education Break & Later-Life Resumption Yoga: Early interruption (5th lord in 8th) followed by successful degree completion via a different stream or institution'
+            : 'Significant Academic Interruption (5th lord in 8th): Requires persistent self-effort to overcome breaks and complete formal credentials',
+          valHi: hasLaterEduResumption
+            ? 'शिक्षा में अंतराल व पुनः पूर्णता योग: प्रारंभिक व्यवधान (पंचमेश अष्टम में) के बाद गुरु कृपा से किसी अन्य संस्थान या माध्यम से उपाधि पूर्ण होती है'
+            : 'शिक्षा में अंतराल योग (पंचमेश अष्टम में): अध्ययन में व्यवधान के बाद निरंतर परिश्रम से डिग्री पूर्ण करने का संकेत',
+          explEn: hasLaterEduResumption
+            ? `5th lord in 8th house indicates an early break or sudden shift in academic plans, while Jupiter's protective strength promises completion later in life (often via distance learning or a new university).`
+            : `5th lord in 8th house creates unexpected pauses in formal study; steady revision and mentorship restore momentum.`,
+          explHi: hasLaterEduResumption
+            ? `पंचमेश के अष्टम भाव में होने से पढ़ाई में अंतराल आता है, परंतु गुरु के शुभ बल से जातक वर्षों बाद भी अपनी उच्च शिक्षा सफलतापूर्वक पूर्ण कर लेता है।`
+            : `पंचमेश अष्टम में होने से अध्ययन में विराम या परिवर्तन आता है; धैर्य और अनुशासन से सफलता मिलती है।`,
+        }
+      : h5.tier === 'afflicted' || h4.tier === 'afflicted'
       ? {
           valEn: 'Noticeable academic hurdles: possible stream change, temporary breaks, or distraction requiring disciplined focus',
           valHi: 'अध्ययन में उतार-चढ़ाव: विषय परिवर्तन, एकाग्रता में भटकाव अथवा अस्थायी व्यवधान; कठोर अनुशासन आवश्यक',
@@ -1842,6 +1859,10 @@ export function getComprehensiveCareerAndWealthAnalysis(
       bonusHi.push('ज्योतिष, आध्यात्म व शोध परामर्श');
     }
   }
+  if (jupiter && [3, 9].includes(jupiter.placedHouse)) {
+    bonusEn.push('Vedic Priesthood, Karmakanda & Religious Leadership');
+    bonusHi.push('पुरोहित, कर्मकांड व धार्मिक नेतृत्व');
+  }
   if (mars && (isStrongDignity(mars) || [1, 3, 6, 10, 11].includes(mars.placedHouse)) && !baseStr.includes('sports')) {
     bonusEn.push('Sports, Athletics & Executive Action');
     bonusHi.push('खेल, शारीरिक दक्षता व नेतृत्व');
@@ -1916,11 +1937,16 @@ export function getComprehensiveCareerAndWealthAnalysis(
     : 'जीवकारक गुरु आजीविका को स्थायित्व देता है';
 
   const satSignHi = saturn ? SIGN_HI_NAMES[saturn.signIndex] : '';
+  const d10L10Check = d10?.placements.find((pl) => pl.id === h10.lordId);
+  const careerPivotWatch = Boolean(
+    l10?.placedHouse === 5 ||
+    (h10.tier === 'afflicted' && d10L10Check && [6, 8, 12].includes(d10L10Check.houseFromVargaLagna))
+  );
   const karakaAnd10thLord = {
     valEn: `Karma Karaka Saturn in H${saturn?.placedHouse ?? '-'} (${saturn?.dignity ?? 'Balanced'}) | 10th Lord ${h10.lordId} in H${l10?.placedHouse ?? '-'}`,
     valHi: `कर्मकारक शनि भाव ${saturn?.placedHouse ?? '-'} में | दशमेश ${GRAHA_HI[h10.lordId]} भाव ${l10?.placedHouse ?? '-'} में`,
-    explEn: `Saturn acts as Karma Karaka in ${saturn?.signName ?? 'chart'} (linked with ${saturnLink}), shaping daily work ethic and endurance. ${h10.lordId} in House ${l10?.placedHouse ?? 10} channels career into: ${l10HouseInfo.en}. ${jupStatusEn}.`,
-    explHi: `कर्मकारक शनि ${satSignHi} (भाव ${saturn?.placedHouse ?? '-'}) में कार्यशैली व परिश्रम की दिशा तय करते हैं। दशमेश भाव ${l10?.placedHouse ?? 10} में होकर ${l10HouseInfo.hi} से आजीविका जोड़ते हैं। ${jupStatusHi}।`,
+    explEn: `Saturn acts as Karma Karaka in ${saturn?.signName ?? 'chart'} (linked with ${saturnLink}), shaping daily work ethic and endurance. ${h10.lordId} in House ${l10?.placedHouse ?? 10} channels career into: ${l10HouseInfo.en}. ${jupStatusEn}.${careerPivotWatch ? ' Career Pivot Watch: 10th lord in 8th-from-10th (H5) or D10 Trik placement indicates a sudden mid-career transition or foreign/institutional role change during 6/8/12 Dashas.' : ''}`,
+    explHi: `कर्मकारक शनि ${satSignHi} (भाव ${saturn?.placedHouse ?? '-'}) में कार्यशैली व परिश्रम की दिशा तय करते हैं। दशमेश भाव ${l10?.placedHouse ?? 10} में होकर ${l10HouseInfo.hi} से आजीविका जोड़ते हैं। ${jupStatusHi}।${careerPivotWatch ? ' करियर मोड़ सतर्कता: दशमेश का दशम से अष्टम (पंचम) या D10 त्रिक भाव में होना आकस्मिक नौकरी परिवर्तन या विदेश अवसर का संकेत देता है।' : ''}`,
     pacEn: `Saturn H${saturn?.placedHouse} (${saturn?.dignity}), Jupiter H${jupiter?.placedHouse} (${jupiter?.dignity}), L10 H${l10?.placedHouse} -> D10 H10 (${SIGNS[d10House10SignIdx].name}).`,
     pacHi: `शनि भाव ${saturn?.placedHouse}, गुरु भाव ${jupiter?.placedHouse}, दशमेश भाव ${l10?.placedHouse} व D10 दशम भाव (${SIGN_HI_NAMES[d10House10SignIdx]})।`,
   };
