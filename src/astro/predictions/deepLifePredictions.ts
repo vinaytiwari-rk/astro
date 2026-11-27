@@ -563,7 +563,7 @@ function synthesizeDeepClassicalDomainPrediction(
       : 'लग्नेश की यह स्थिति आपको स्वावलंबी बनाती है, जहाँ आप सतत पुरुषार्थ से अपनी स्वतंत्र पहचान स्थापित करते हैं।';
 
     return {
-      predictionEn: `You are born with ${ascSign.name} ascendant, ruled by ${h1.en}. ${coreNoteEn}\n\n5th lord (${h5.en}) and 9th lord (${h9.en}) shape your intellect and worldview, while Sun (${sunDesc.en}) and Moon (${moonDesc.en}) govern vitality and emotional temperament.\n\nKey Identity Windows: ${mdWin.en} activate major personal turning points.`,
+      predictionEn: `You are born with ${ascSign.name} ascendant, ruled by ${h1.en}. ${coreNoteEn}\n\n and  shape your intellect and worldview, while Sun (${sunDesc.en}) and Moon (${moonDesc.en}) govern vitality and emotional temperament.\n\nKey Identity Windows: ${mdWin.en} activate major personal turning points.`,
       predictionHi: `आपका जन्म ${ascSign.name} लग्न में हुआ है, जिसके स्वामी ${h1.hi} हैं। ${coreNoteHi}\n\nपंचमेश (${h5.hi}) एवं नवमेश (${h9.hi}) आपकी बौद्धिक दिशा तय करते हैं, जबकि सूर्य (${sunDesc.hi}) एवं चंद्र (${moonDesc.hi}) आत्मबल व मनःस्थिति का संचालन करते हैं।\n\nप्रमुख फलोदय काल: ${mdWin.hi} व्यक्तित्व व पहचान में निर्णायक मोड़ लाती हैं।`,
       summaryEn: `${config.titleEn}: ${toneEn} Shastric indications (score ${score}/100) across houses ${config.houses.join(', ')}.${sig.coreCompromised ? ` Caution: ${sig.coreCompromiseReasonEn}.` : ''}`,
       summaryHi: `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं (अंक ${score}/100)।`,
@@ -594,7 +594,7 @@ function synthesizeDeepClassicalDomainPrediction(
     const sav12 = chart.ashtakavarga?.sarva?.[(chart.ascendant.signIndex + 11) % 12] ?? 28;
     const wWin = sig.findDashaAges([h2.lord, h11.lord, h9.lord, 'Jupiter'], '2nd/11th Lord Dashas', 'धनेश/लाभेश महादशा');
 
-    let wealthOutcomeEn = `Financial architecture links 2nd lord (${h2.en}) and 11th lord (${h11.en}) with ${sav2}/${sav11} SAV bindus (vs 12th house ${sav12}).`;
+    let wealthOutcomeEn = `Financial architecture links  and  with ${sav2}/${sav11} SAV bindus (vs 12th house ${sav12}).`;
     let wealthOutcomeHi = `धन भाव के स्वामी ${h2.hi} व लाभेश ${h11.hi} का समन्वय (SAV ${sav2}/${sav11} बिंदु बनाम व्यय ${sav12} बिंदु) आर्थिक स्थिति तय करता है।`;
     let eventsEn: string[];
     let eventsHi: string[];
@@ -665,7 +665,7 @@ function synthesizeDeepClassicalDomainPrediction(
     const cWin = sig.findDashaAges([h10.lord, 'Saturn', 'Sun'], '10th Lord / Saturn Dashas', 'दशमेश / शनि महादशा');
     const isPivot10 = h10.rasiHouse === 5 || [6, 8, 12].includes(h10.rasiHouse);
 
-    let careerBodyEn = `Your career is governed by 10th lord ${h10.en}, Karma Karaka Saturn (${satDesc.en}), Sun (${sunDesc.en}), and 6th lord (${h6.en}).`;
+    let careerBodyEn = `Your career is governed by , Karma Karaka Saturn (${satDesc.en}), Sun (${sunDesc.en}), and .`;
     let careerBodyHi = `करियर का संचालन दशमेश ${h10.hi}, कर्मकारक शनि (${satDesc.hi}), सूर्य (${sunDesc.hi}) एवं षष्ठेश (${h6.hi}) द्वारा होता है।`;
     let eventsEn: string[];
     let eventsHi: string[];
@@ -735,7 +735,7 @@ function synthesizeDeepClassicalDomainPrediction(
     const jupDesc = getPlanetDesc(chart, 'Jupiter');
     const mWin = sig.findDashaAges([h7.lord, 'Venus', h2.lord], '7th Lord / Venus Dashas', 'सप्तमेश / शुक्र महादशा');
 
-    let marEn = `Matrimony is governed by 7th lord ${h7.en}, 2nd lord (${h2.en}), Venus (${venDesc.en}), and Jupiter (${jupDesc.en}).`;
+    let marEn = `Matrimony is governed by , , Venus (${venDesc.en}), and Jupiter (${jupDesc.en}).`;
     let marHi = `वैवाहिक जीवन का संचालन सप्तमेश ${h7.hi}, द्वितीयेश (${h2.hi}), शुक्र (${venDesc.hi}) एवं गुरु (${jupDesc.hi}) से होता है।`;
     let eventsEn: string[];
     let eventsHi: string[];
@@ -818,7 +818,7 @@ function synthesizeDeepClassicalDomainPrediction(
       : '⚠️ सजग स्वास्थ्य संरक्षण: लग्नेश व अष्टमेश दोनों पर दबाव होने से नियमित चिकित्सा जांच, पर्याप्त निद्रा व तनाव नियंत्रण अनिवार्य है।';
 
     return {
-      predictionEn: `${longEn}\n\nConstitutional markers: Lagna lord ${h1.en}, 8th lord ${h8.en}, 6th lord ${h6.en}, Saturn (${satDesc.en}), and Sun (${sunDesc.en}).${sig.hasBandhana ? ' Bandhana/Stress Watch: Guard against prolonged litigation, overwork, or nervous strain during Saturn/Rahu periods.' : ''}`,
+      predictionEn: `${longEn}\n\nConstitutional markers: , , , Saturn (${satDesc.en}), and Sun (${sunDesc.en}).${sig.hasBandhana ? ' Bandhana/Stress Watch: Guard against prolonged litigation, overwork, or nervous strain during Saturn/Rahu periods.' : ''}`,
       predictionHi: `${longHi}\n\nलग्नेश ${h1.hi}, अष्टमेश ${h8.hi}, षष्ठेश ${h6.hi}, शनि (${satDesc.hi}) एवं सूर्य (${sunDesc.hi}) शारीरिक प्रतिरोधक क्षमता तय करते हैं।${sig.hasBandhana ? ' बंधन/तनाव सतर्कता: शनि/राहु काल में कानूनी विवाद व अत्यधिक मानसिक तनाव से बचें।' : ''}`,
       summaryEn: `${config.titleEn}: ${toneEn} indications (score ${score}/100) across houses ${config.houses.join(', ')}.`,
       summaryHi: `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं (अंक ${score}/100)।`,
@@ -846,7 +846,7 @@ function synthesizeDeepClassicalDomainPrediction(
       ? (sig.eduResumption
         ? '⚠️ Education Break & Later-Life Resumption Yoga (5th Lord in 8th + Protective Jupiter): Early academic interruption or stream change is followed by successful degree completion later in life.'
         : '⚠️ Academic Interruption Watch (5th Lord in 8th): Expect stream shifts or pauses requiring persistent self-study to complete formal credentials.')
-      : `Synergy of 4th lord (${h4.en}), 5th lord (${h5.en}), Mercury (${mercDesc.en}), and Jupiter (${jupDesc.en}) supports structured analytical learning.`;
+      : `Synergy of , , Mercury (${mercDesc.en}), and Jupiter (${jupDesc.en}) supports structured analytical learning.`;
     const eduNoteHi = sig.eduBreak5in8
       ? (sig.eduResumption
         ? '⚠️ शिक्षा अंतराल व पुनः पूर्णता योग (पंचमेश अष्टम में + शुभ गुरु): प्रारंभिक अध्ययन में विराम के बाद भी गुरु कृपा से बाद में डिग्री पूर्ण होती है।'
@@ -883,7 +883,7 @@ function synthesizeDeepClassicalDomainPrediction(
       ? `⚠️ Progeny Testing / Badha Watch: 5th lord in Dusthana with afflicted Jupiter/Rahu indicates delayed conception, medical support needs, or generational communication friction.`
       : sig.progenyDelayed
       ? `Delayed Progeny Timing: Saturn/Rahu/Dusthana influence on 5th delays childbirth until mature years, after which parental-child bond stabilizes.`
-      : `Harmonious 5th lord (${h5.en}), 9th lord (${h9.en}), and Putrakaraka Jupiter (${jupDesc.en}) support virtuous progeny and emotional fulfillment.`;
+      : `Harmonious , , and Putrakaraka Jupiter (${jupDesc.en}) support virtuous progeny and emotional fulfillment.`;
     const childNoteHi = sig.hasPravrajya
       ? 'प्रव्रज्या / आध्यात्मिक परंपरा: सृजनात्मक ऊर्जा संतान के बजाय शिष्यों, ज्ञान-परंपरा या लोक-कल्याण में केंद्रित रहती है।'
       : sig.progenyTested
@@ -918,8 +918,8 @@ function synthesizeDeepClassicalDomainPrediction(
     const prWin = sig.findDashaAges([h4.lord, 'Mars', 'Venus'], '4th Lord / Mars / Venus Dashas', 'चतुर्थेश / मंगल / शुक्र महादशा');
 
     const propEn = sig.propertyTested
-      ? `Property & Domestic Vigilance: 4th lord (${h4.en}) or malefics in 4th advise verifying land titles carefully, avoiding hasty mortgages, and expecting residential changes before permanent property settles.`
-      : `4th lord (${h4.en}), 11th lord (${h11.en}), Mars (${marsDesc.en}), and Venus (${venDesc.en}) support residential stability, conveyance comfort, and immovable assets.`;
+      ? `Property & Domestic Vigilance:  or malefics in 4th advise verifying land titles carefully, avoiding hasty mortgages, and expecting residential changes before permanent property settles.`
+      : `, , Mars (${marsDesc.en}), and Venus (${venDesc.en}) support residential stability, conveyance comfort, and immovable assets.`;
     const propHi = sig.propertyTested
       ? `संपत्ति व आवास सतर्कता: चतुर्थेश (${h4.hi}) या चतुर्थ में क्रूर प्रभाव के कारण भूमि/मकान के कागजात की गहन जांच व स्थान परिवर्तन के बाद ही स्थायी संपत्ति बनती है।`
       : `चतुर्थेश (${h4.hi}), एकादशेश (${h11.hi}), मंगल (${marsDesc.hi}) व शुक्र (${venDesc.hi}) अचल संपत्ति, गृह व वाहन सुख प्रदान करते हैं।`;
@@ -950,7 +950,7 @@ function synthesizeDeepClassicalDomainPrediction(
     const tWin = sig.findDashaAges([h9.lord, h12.lord, 'Rahu', 'Moon'], '9th/12th Lord / Rahu Dashas', 'नवमेश/द्वादशेश/राहु महादशा');
 
     return {
-      predictionEn: `Long-distance travel and relocation are shaped by 9th lord (${h9.en}), 12th lord (${h12.en}), Moon (${moonDesc.en}), and Rahu (${rahuDesc.en}). ${[9, 12].includes(h9.rasiHouse) || [9, 12].includes(h12.rasiHouse) || rahuDesc.en.includes('House 12') || rahuDesc.en.includes('House 9') ? 'Strong foreign/distant-place activation favors cross-border work or relocation.' : 'Journeys serve specific career, educational, or pilgrimage objectives.'}`,
+      predictionEn: `Long-distance travel and relocation are shaped by , , Moon (${moonDesc.en}), and Rahu (${rahuDesc.en}). ${[9, 12].includes(h9.rasiHouse) || [9, 12].includes(h12.rasiHouse) || rahuDesc.en.includes('House 12') || rahuDesc.en.includes('House 9') ? 'Strong foreign/distant-place activation favors cross-border work or relocation.' : 'Journeys serve specific career, educational, or pilgrimage objectives.'}`,
       predictionHi: `यात्रा व प्रवास का संचालन नवमेश (${h9.hi}), द्वादशेश (${h12.hi}), चंद्र (${moonDesc.hi}) व राहु (${rahuDesc.hi}) से होता है। ${tWin.hi} में दूरस्थ यात्रा या स्थान परिवर्तन के प्रमुख योग बनते हैं।`,
       summaryEn: `${config.titleEn}: ${toneEn} indications (score ${score}/100) across houses ${config.houses.join(', ')}.`,
       summaryHi: `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं (अंक ${score}/100)।`,
@@ -981,8 +981,8 @@ function synthesizeDeepClassicalDomainPrediction(
       predictionHi: `जीवन के प्रमुख मोड़ किसी निश्चित सामान्य आयु के बजाय आपकी वास्तविक विंशोत्तरी महादशा (${h1.hi}, ${h9.hi}, ${h10.hi}, ${h11.hi}) के अनुसार सक्रिय होते हैं।${sig.coreCompromised ? ` ⚠️ (${sig.coreCompromiseReasonHi}): सफलता निरंतर परिश्रम से ही मिलती है।` : ''}`,
       summaryEn: `${config.titleEn}: ${toneEn} indications (score ${score}/100) anchored to real Vimshottari Mahadashas.`,
       summaryHi: `${config.titleHi}: वास्तविक विंशोत्तरी महादशाओं पर आधारित जीवन-मोड़ विश्लेषण (अंक ${score}/100)।`,
-      timingWindowEn: `${m1.en} · ${m2.en}`,
-      timingWindowHi: `${m1.hi} · ${m2.hi}`,
+      timingWindowEn: m1.en === m2.en ? m1.en : `${m1.en} · ${m2.en}`,
+      timingWindowHi: m1.hi === m2.hi ? m1.hi : `${m1.hi} · ${m2.hi}`,
       concreteEventsEn: [
         `${m1.en}: Identity, fortune & foundational direction milestones.`,
         `${m2.en}: Career authority, income, or institutional recognition milestones.`,
@@ -1039,7 +1039,7 @@ function synthesizeDeepClassicalDomainPrediction(
   const sWin = sig.findDashaAges([h9.lord, h12.lord, 'Jupiter', 'Ketu'], '9th/12th/Jupiter/Ketu Dashas', 'नवमेश/द्वादशेश/गुरु/केतु महादशा');
 
   return {
-    predictionEn: `Spiritual evolution is governed by 9th lord (${h9.en}), 12th lord (${h12.en}), Jupiter (${jupDesc.en}), and Ketu (${ketuDesc.en}).${sig.hasPravrajya ? ' Strong Pravrajya / Moksha alignment fosters deep detachment, philosophical insight, and selfless service.' : ' Grounded ethical conduct and contemplative practice deepen inner serenity.'}`,
+    predictionEn: `Spiritual evolution is governed by , , Jupiter (${jupDesc.en}), and Ketu (${ketuDesc.en}).${sig.hasPravrajya ? ' Strong Pravrajya / Moksha alignment fosters deep detachment, philosophical insight, and selfless service.' : ' Grounded ethical conduct and contemplative practice deepen inner serenity.'}`,
     predictionHi: `आध्यात्मिक चेतना का संचालन नवमेश (${h9.hi}), द्वादशेश (${h12.hi}), गुरु (${jupDesc.hi}) एवं केतु (${ketuDesc.hi}) द्वारा होता है।${sig.hasPravrajya ? ' प्रबल प्रव्रज्या/मोक्ष योग गहन वैराग्य व आत्मिक ज्ञान प्रदान करता है।' : ' सदाचार व नियमित साधना से आंतरिक शांति बढ़ती है।'}`,
     summaryEn: `${config.titleEn}: ${toneEn} indications (score ${score}/100) across houses ${config.houses.join(', ')}.`,
     summaryHi: `${config.titleHi}: भाव ${config.houses.join(', ')} के संकेत ${toneHi} हैं (अंक ${score}/100)।`,
@@ -1180,7 +1180,10 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
       watchoutsHi.push(y.nameHi + ' के फल में ' + (y.bhangaStatus === 'Bhanga' ? 'भंग' : 'आंशिक कमी') + ' का संकेत है: ' + (y.bhangaReasonHi ?? 'योग के ग्रहों और शर्तों की पुनः जांच करें।'));
     }
   }
+  const classicalNorm = new Set(relatedClassicalYogas.map((cy) => cy.name.toLowerCase().replace(/[^a-z0-9]/g, '')));
   for (const y of relatedYogas) {
+    const yNorm = y.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (classicalNorm.has(yNorm)) continue;
     yogaEvidence.push(y.name + ' (' + y.strength + ')');
     if (y.strength === 'Strong') {
       strengthsEn.unshift('Related yoga: ' + y.name + ' (strong).');
@@ -2039,53 +2042,121 @@ export function computeDeepLifePredictions(chart: ChartData): DeepLifePrediction
   const executiveSummaryHi = 'उपलब्ध कुंडली-प्रमाणों का व्यक्तिगत समन्वित विश्लेषण: ' + birthProfile.summaryHi + ' ' + domains.length + ' में से ' + supportive + ' क्षेत्रों में अनुकूल और ' + challenging + ' क्षेत्रों में सावधानी के संकेत मिले हैं। प्रत्येक क्षेत्र में भावेश, ग्रह और वर्ग-कुंडली के प्रमाण साथ पढ़ें; दशा और गोचर का फल अलग अनुभागों में दिया गया है।';
   const overallLifeScore = Math.round(domains.reduce((sum, d) => sum + d.score, 0) / domains.length);
 
-  // Life Stature & Nobility Classification
+  const purusharthas = computePurusharthaBalance(chart);
+  const karmicMissionEn = purusharthas.soulMissionEn;
+  const karmicMissionHi = purusharthas.soulMissionHi;
+
+  // Life Stature & Nobility Classification (7 chart-specific archetypes)
   const lagnaLord = chart.planets.find((p) => p.id === SIGNS[chart.ascendant.signIndex]?.lord);
   const tenthLord = chart.planets.find((p) => p.id === SIGNS[(chart.ascendant.signIndex + 9) % 12]?.lord);
   const hasStrongLords =
     (lagnaLord && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(lagnaLord.dignity)) ||
     (tenthLord && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(tenthLord.dignity));
+  const domType = purusharthas.dominant;
+  const hasPravrajyaCluster = (() => {
+    const hc = new Map<number, number>();
+    for (const p of chart.planets) hc.set(p.rasiHouseNumber, (hc.get(p.rasiHouseNumber) ?? 0) + 1);
+    return Array.from(hc.values()).some((c) => c >= 4);
+  })();
 
-  let lifeStatureClassEn = 'Affluent, Dignified & Elite Class (समृद्ध व कुलीन वर्ग)';
-  let lifeStatureClassHi = 'समृद्ध, कुलीन एवं सम्मानित वर्ग';
-  let lifeStatureMeaningEn = 'Destined for sustained prosperity, high social esteem, institutional respect and comfortable assets.';
-  let lifeStatureMeaningHi = 'समाज में स्थायी मान-सम्मान, सुदृढ़ आर्थिक संपन्नता, श्रेष्ठ पारिवारिक प्रतिष्ठा एवं आरामदायक जीवन।';
+  let lifeStatureClassEn = 'Balanced Self-Made & Progressive Class (संतुलित व प्रगतिशील वर्ग)';
+  let lifeStatureClassHi = 'संतुलित, कर्मठ एवं प्रगतिशील वर्ग';
+  let lifeStatureMeaningEn = 'Builds steady stability through practical skill, disciplined relationships, and consistent effort.';
+  let lifeStatureMeaningHi = 'व्यावहारिक कौशल, अनुशासित संबंधों व निरंतर परिश्रम से जीवन में स्थायी उन्नति।';
 
-  if (hasStrongLords || overallLifeScore >= 68) {
+  if (overallLifeScore <= 44) {
+    lifeStatureClassEn = 'Resilient Karmic Climber Class (संघर्षशील व आत्मनिर्मित वर्ग)';
+    lifeStatureClassHi = 'संघर्षशील, कर्मठ एवं आत्मनिर्मित वर्ग';
+    lifeStatureMeaningEn = 'Navigates early karmic testing and structural hurdles through perseverance, forging hard-earned resilience.';
+    lifeStatureMeaningHi = 'प्रारंभिक कर्म-परीक्षाओं व संघर्षों को पार कर अटूट धैर्य व पुरुषार्थ से जीवन का निर्माण।';
+  } else if (hasPravrajyaCluster || domType === 'Moksha') {
+    lifeStatureClassEn = 'Contemplative, Research & Spiritual Seeker Class (आध्यात्मिक व शोधपरक वर्ग)';
+    lifeStatureClassHi = 'आध्यात्मिक, शोधपरक एवं दार्शनिक वर्ग';
+    lifeStatureMeaningEn = 'Drawn to deeper meaning, esoteric/scientific inquiry, healing, or service beyond conventional materialism.';
+    lifeStatureMeaningHi = 'भौतिक आडंबर से परे गूढ़ ज्ञान, शोध, सेवा अथवा आत्मिक साधना में सर्वोच्च संतोष व प्रतिष्ठा।';
+  } else if (hasStrongLords && overallLifeScore >= 66) {
     lifeStatureClassEn = 'Royal & Executive Administrative Class (राजसी व उच्च प्रशासनिक वर्ग)';
     lifeStatureClassHi = 'राजसी व उच्च प्रशासनिक वर्ग';
-    lifeStatureMeaningEn = 'Destined for commanding executive authority, governance leadership, massive public respect and legacy building.';
+    lifeStatureMeaningEn = 'Commanding executive authority, governance leadership, institutional respect and enduring public legacy.';
     lifeStatureMeaningHi = 'प्रशासनिक व सामाजिक नेतृत्व, शीर्ष सम्मान, शासन व सत्ता से लाभ एवं ऐतिहासिक कीर्ति का योग।';
-  } else if (overallLifeScore <= 45) {
-    lifeStatureClassEn = 'Self-Made, Hardworking & Progressive Class (कर्मठ व स्वावलंबी वर्ग)';
-    lifeStatureClassHi = 'कर्मठ, स्वावलंबी एवं प्रगतिशील मध्यम वर्ग';
-    lifeStatureMeaningEn = 'Progresses through personal diligence, overcoming early hurdles to secure stable comfort past age 32.';
-    lifeStatureMeaningHi = 'कठोर पुरुषार्थ से भाग्योदय; प्रारंभिक संघर्षों को पार कर आयु 32 के बाद स्थायी सुख व स्वावलंबन।';
+  } else if (domType === 'Dharma' && overallLifeScore >= 56) {
+    lifeStatureClassEn = 'Scholarly, Advisory & Dharmic Leadership Class (विद्वान व मार्गदर्शक वर्ग)';
+    lifeStatureClassHi = 'विद्वान, नीति-निर्देशक एवं मार्गदर्शक वर्ग';
+    lifeStatureMeaningEn = 'Earns respect through wisdom, teaching, jurisprudence, ethical counsel, and principled stewardship.';
+    lifeStatureMeaningHi = 'ज्ञान, अध्यापन, न्याय, परामर्श व नैतिक सिद्धांतों के बल पर समाज में उच्च सम्मान।';
+  } else if (domType === 'Kama' && overallLifeScore >= 56) {
+    lifeStatureClassEn = 'Creative, Expressive & Network-Driven Class (रचनात्मक व जनसंपर्क वर्ग)';
+    lifeStatureClassHi = 'रचनात्मक, कलात्मक एवं जनसंपर्क वर्ग';
+    lifeStatureMeaningEn = 'Thrives through artistic/media expression, public rapport, strategic alliances, and dynamic enterprise.';
+    lifeStatureMeaningHi = 'कला, मीडिया, जनसंपर्क, साझेदारी व सक्रिय उद्यम के माध्यम से विशेष पहचान व सफलता।';
+  } else if (overallLifeScore >= 58) {
+    lifeStatureClassEn = 'Affluent, Strategic & Entrepreneurial Class (समृद्ध व उद्यमी वर्ग)';
+    lifeStatureClassHi = 'समृद्ध, रणनीतिक एवं उद्यमी वर्ग';
+    lifeStatureMeaningEn = 'Destined for sustained prosperity, structured asset creation, institutional respect and steady growth.';
+    lifeStatureMeaningHi = 'सुदृढ़ आर्थिक संपन्नता, संपत्ति निर्माण, व्यावसायिक दक्षता व सम्मानित पारिवारिक जीवन।';
   }
 
-  // Golden Peak Rise Age Window
+  // Golden Peak Rise Age Window — derived from actual chart.vimshottari Mahadashas of 9th/10th/11th/1st/5th lords
   const birthYear = Number((chart.input.date || '2000-01-01').split('-')[0]) || 2000;
-  const primeAgeStart = 28;
-  const primeAgeEnd = 36;
-  const peakRiseAgeWindowEn = `Age ${primeAgeStart} to ${primeAgeEnd} Years (A.D. ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
-  const peakRiseAgeWindowHi = `आयु ${primeAgeStart} से ${primeAgeEnd} वर्ष (ई. सन् ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
+  const birthMs = chart.utcMs || Date.parse(chart.input.date || '2000-01-01') || 0;
+  const msPerYear = 365.2425 * 86400000;
+  const dashas = chart.vimshottari || [];
+  const riseLords = new Set<string>([
+    SIGNS[chart.ascendant.signIndex]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 4) % 12]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 8) % 12]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 9) % 12]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 10) % 12]?.lord,
+  ]);
+  const trikLords = new Set<string>([
+    SIGNS[(chart.ascendant.signIndex + 5) % 12]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 7) % 12]?.lord,
+    SIGNS[(chart.ascendant.signIndex + 11) % 12]?.lord,
+    'Saturn', 'Rahu', 'Ketu',
+  ]);
+  const adultDashas = dashas
+    .map((d) => ({
+      lord: String(d.lord),
+      sAge: Math.max(0, Math.round((d.startMs - birthMs) / msPerYear)),
+      eAge: Math.min(85, Math.round((d.endMs - birthMs) / msPerYear)),
+    }))
+    .filter((d) => d.eAge >= 18 && d.sAge <= 68);
 
-  // 3 Critical Life Testing / Crisis Eras
-  const crisisErasEn = [
-    `Age 22 to 24 (A.D. ${birthYear + 22}–${birthYear + 24}): Early career consolidation, academic testing and directional calibration`,
-    `Age 38 to 41 (A.D. ${birthYear + 38}–${birthYear + 41}): Caution in major speculation/partnerships, restructuring investments`,
-    `Age 52 to 54 (A.D. ${birthYear + 52}–${birthYear + 54}): Domestic responsibilities peak, joint and bone care, steady patience`,
-  ];
+  const riseMatch = adultDashas.find((d) => riseLords.has(d.lord) && d.eAge >= 22) || adultDashas[1] || adultDashas[0];
+  const primeAgeStart = riseMatch ? Math.max(18, riseMatch.sAge) : 28;
+  const primeAgeEnd = riseMatch ? Math.min(72, riseMatch.eAge) : 36;
+  const riseLordHi = riseMatch ? (GRAHA_NAMES_HI[riseMatch.lord] ?? riseMatch.lord) : 'राजयोग';
+  const peakRiseAgeWindowEn = riseMatch
+    ? `Age ${primeAgeStart} to ${primeAgeEnd} Years (${riseMatch.lord} Mahadasha · A.D. ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`
+    : `Age ${primeAgeStart} to ${primeAgeEnd} Years (A.D. ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
+  const peakRiseAgeWindowHi = riseMatch
+    ? `आयु ${primeAgeStart} से ${primeAgeEnd} वर्ष (${riseLordHi} महादशा · ई. सन् ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`
+    : `आयु ${primeAgeStart} से ${primeAgeEnd} वर्ष (ई. सन् ${birthYear + primeAgeStart}–${birthYear + primeAgeEnd})`;
 
-  const crisisErasHi = [
-    `आयु 22 से 24 वर्ष (ई. सन् ${birthYear + 22}–${birthYear + 24}): आरंभिक करियर का संघर्ष, दिशा भ्रम व शैक्षणिक परीक्षा काल`,
-    `आयु 38 से 41 वर्ष (ई. सन् ${birthYear + 38}–${birthYear + 41}): आर्थिक निवेश में सतर्कता, व्यापारिक पुनर्गठन व स्वास्थ्य जांच काल`,
-    `आयु 52 से 54 वर्ष (ई. सन् ${birthYear + 52}–${birthYear + 54}): पारिवारिक जिम्मेदारियों का दबाव, वात/जोड़ों की देखभाल व धैर्य काल`,
-  ];
+  // Dynamic Testing / Crisis Eras from actual Trik/Saturn/Rahu/Ketu Mahadashas
+  const testMatches = adultDashas.filter((d) => trikLords.has(d.lord)).slice(0, 3);
+  const crisisErasEn = testMatches.length > 0
+    ? testMatches.map((d) => {
+        const s = Math.max(14, d.sAge);
+        const e = Math.min(80, d.eAge);
+        return `Age ${s} to ${e} (${d.lord} Mahadasha · A.D. ${birthYear + s}–${birthYear + e}): ${d.lord === 'Saturn' ? 'Karmic endurance, structural restructuring & patience test' : d.lord === 'Rahu' || d.lord === 'Ketu' ? 'Nodal transformation, sudden shifts & discernment test' : '6th/8th/12th Trik-lord vigilance in health, disputes & expenses'}`;
+      })
+    : [
+        `Age 29 to 30 (First Saturn Return · A.D. ${birthYear + 29}–${birthYear + 30}): Career consolidation & responsibility test`,
+        `Age 58 to 60 (Second Saturn Return · A.D. ${birthYear + 58}–${birthYear + 60}): Health discipline & structural transition`,
+      ];
 
-  const purusharthas = computePurusharthaBalance(chart);
-  const karmicMissionEn = purusharthas.soulMissionEn;
-  const karmicMissionHi = purusharthas.soulMissionHi;
+  const crisisErasHi = testMatches.length > 0
+    ? testMatches.map((d) => {
+        const s = Math.max(14, d.sAge);
+        const e = Math.min(80, d.eAge);
+        const lHi = GRAHA_NAMES_HI[d.lord] ?? d.lord;
+        return `आयु ${s} से ${e} वर्ष (${lHi} महादशा · ई. सन् ${birthYear + s}–${birthYear + e}): ${d.lord === 'Saturn' ? 'शनि कर्म-परीक्षा, धैर्य व पुनर्गठन काल' : d.lord === 'Rahu' || d.lord === 'Ketu' ? 'राहु-केतु परिवर्तन, आकस्मिक मोड़ व विवेक-परीक्षा' : 'त्रिक-भाव सतर्कता, स्वास्थ्य व व्यय नियंत्रण काल'}`;
+      })
+    : [
+        `आयु 29 से 30 वर्ष (प्रथम शनि चक्र · ई. सन् ${birthYear + 29}–${birthYear + 30}): दायित्व व करियर स्थायित्व परीक्षा`,
+        `आयु 58 से 60 वर्ष (द्वितीय शनि चक्र · ई. सन् ${birthYear + 58}–${birthYear + 60}): स्वास्थ्य व विश्राम संतुलन काल`,
+      ];
   const dinaMrityuRoga = computeDinaMrityuAndRoga(chart);
   const twelveBhavaYogas = computeTwelveBhavaAndParivartanaYogas(chart);
   const badhakaDosha = computeBadhakaAndFunctionalDoshas(chart);

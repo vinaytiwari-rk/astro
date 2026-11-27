@@ -169,7 +169,7 @@ export function getParentsInfluencePred(h9: HousePacProfile, h4: HousePacProfile
   const stronger = h9.tier === 'strong' ? 'Father’s disciplined guidance and social standing' : 'Mother’s emotional wisdom and domestic values';
   const strongerHi = h9.tier === 'strong' ? 'पिता के अनुशासन, सिद्धांतों व सामाजिक प्रतिष्ठा' : 'माता के स्नेह, त्याग व सांस्कृतिक संस्कारों';
   return {
-    valEn: `${stronger} shapes the native’s core worldview; balanced blend of ancestral values and personal effort`,
+    valEn: `${stronger} shape the native’s core worldview; balanced blend of ancestral values and personal effort`,
     valHi: `${strongerHi} का जीवन पर गहरा प्रभाव; पारिवारिक मूल्यों और स्व-परिश्रम का संतुलित संगम`,
     explEn: `Asymmetry between 9th (lord in H${h9.lordHouse}) and 4th (lord in H${h4.lordHouse}) shows one parent acts as the primary anchor while the native builds independent momentum.`,
     explHi: `नवमेश (भाव ${h9.lordHouse}) और चतुर्थेश (भाव ${h4.lordHouse}) की स्थिति के अनुसार किसी एक अभिभावक का मार्गदर्शन जीवन की दिशा तय करता है।`,
@@ -1402,9 +1402,10 @@ export function getComprehensiveMarriageAnalysis(
       ? 'संतुलित समयबद्ध योग (आयु 25–29 वर्ष)'
       : 'शीघ्र व समयबद्ध योग (आयु 23–27 वर्ष)';
 
+  const timingLords = [...new Set([h7.lordId, venus ? 'Venus' : h2.lordId, d9LagnaSign.lord])];
   const timingTriggers = {
-    valEn: `${ageBandEn}; triggers in Dasha/Bhukti of ${h7.lordId}, ${venus ? 'Venus' : h2.lordId}, or ${d9LagnaSign.lord} when Guru transits ${vivahaTransitSign.name} or trines`,
-    valHi: `${ageBandHi}; ${h7.lordId}, शुक्र अथवा नवांश लग्नेश (${d9LagnaSign.lord}) की दशा-अंतर्दशा एवं ${vivahaTransitSign.name} या त्रिकोण में गुरु गोचर से विवाह सिद्ध`,
+    valEn: `${ageBandEn}; triggers in Dasha/Bhukti of ${timingLords.join(' / ')} when Guru transits ${vivahaTransitSign.name} or trines`,
+    valHi: `${ageBandHi}; ${timingLords.join(' / ')} की दशा-अंतर्दशा एवं ${vivahaTransitSign.name} या त्रिकोण में गुरु गोचर से विवाह सिद्ध`,
     explEn: `Classical Bhrigu/Parashari timing adds Lagna lord + 7th lord longitudes (${vivahaTransitSign.name}) and tests D9 Navamsha (${d9LagnaSign.name}) activation alongside Guru/Shani transit.`,
     explHi: `लग्नेश व सप्तमेश के अंशों के योग (${vivahaTransitSign.name}) पर गुरु के गोचर तथा सप्तमेश/नवांश लग्नेश की दशा-अंतर्दशा में विवाह का प्रबल समय बनता है।`,
     pacEn: `7th Lord: ${h7.lordId} (H${h7.lordHouse}); D9 Lagna: ${d9LagnaSign.name}; Transit Seed Sign: ${vivahaTransitSign.name}; Delay Factors: ${delayFactors.length}.`,
@@ -2540,8 +2541,12 @@ export function getComprehensiveParentsAndFamilyAnalysis(
   const ancestralAndUpay = {
     valEn: upayEnParts[0],
     valHi: upayHiParts[0],
-    explEn: upayEnParts.join(' '),
-    explHi: upayHiParts.join(' '),
+    explEn: upayEnParts.length > 1
+      ? upayEnParts.slice(1).join(' ')
+      : `Calibrated from 9th/Sun (Pitru) and 4th/Moon (Matru) dignity to maintain parental harmony.`,
+    explHi: upayHiParts.length > 1
+      ? upayHiParts.slice(1).join(' ')
+      : `नवम/सूर्य (पितृ) एवं चतुर्थ/चंद्र (मातृ) भाव की स्थिति के अनुसार पारिवारिक सौहार्द हेतु उपाय।`,
     pacEn: `Pitru signal: ${pitruDoshaActive ? 'Active (Sun/9th nodal)' : 'Clear'}; 4th Saturn/Node: ${motherSaturnTouch || motherNodeTouch ? 'Present' : 'Clear'}.`,
     pacHi: `पितृ संकेत: ${pitruDoshaActive ? 'सक्रिय' : 'शुभ'}; चतुर्थ शनि/राहु: ${motherSaturnTouch || motherNodeTouch ? 'प्रभावित' : 'शुभ'}।`,
   };
@@ -2659,8 +2664,8 @@ export function getComprehensiveSiblingsAnalysis(
     birthOrderEn = `Eldest-child leadership signature (${countLabelEn}; younger siblings read via 3rd -> 5th -> 7th)`;
     birthOrderHi = `ज्येष्ठ संतान व नेतृत्व योग (${countLabelHi}; छोटे भाई-बहन ३, ५, ७ भावों से विचारणीय)`;
   } else if (h11.occupants.length >= 1 && h3.occupants.length === 0) {
-    birthOrderEn = `Youngest-child signature with elder sibling guidance (${countLabelEn}; elder read via 11th -> 9th -> 7th)`;
-    birthOrderHi = `कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (${countLabelHi}; बड़े सहोदर ११, ९, ७ भाव से विचारणीय)`;
+    birthOrderEn = `Youngest-child signature with elder sibling guidance (${countLabelEn}) — elder read via 11th -> 9th -> 7th`;
+    birthOrderHi = `कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (${countLabelHi}) — बड़े सहोदर ११, ९, ७ भाव से विचारणीय`;
   } else if (h3.occupants.length >= 1 && h11.occupants.length >= 1) {
     birthOrderEn = `Middle-child / multi-sibling circle (${countLabelEn}; both 3rd and 11th houses active)`;
     birthOrderHi = `मध्यम संतान व सक्रिय सहोदर परिवार (${countLabelHi}; अनुज ३ और ज्येष्ठ ११ दोनों भाव सक्रिय)`;

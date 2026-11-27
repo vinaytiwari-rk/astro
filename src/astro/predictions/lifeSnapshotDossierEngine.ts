@@ -1034,8 +1034,12 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           valueHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
             ? 'पैतृक जन्मस्थान से दूर आधुनिक नगर/राज्य में स्थानांतरण व नवीन गृह निर्माण'
             : 'पैतृक गृह व स्थानीय समाज में दृढ़ जुड़ाव; पुश्तैनी जमीन-जायदाद की रक्षा व स्थायित्व',
-          explanationEn: `The 4th lord in relation with movable signs and 12th/3rd houses prompts geographic transition from ancestral homestead to new educational and commercial centers.`,
-          explanationHi: `चतुर्थेश का चर राशि या 3/12 भावों से संबंध माता-पिता को पैतृक भूमि से दूर नए कार्यक्षेत्र की ओर स्थानांतरित करता है।`,
+          explanationEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
+            ? `The 4th house/lord's link with movable signs or 3rd/12th houses prompts geographic transition from the ancestral homestead to new educational and commercial centers.`
+            : `Fixed/dual 4th house stability (${h4Sign.name}) without strong 3rd/12th displacement anchors the family roots in the native's home region.`,
+          explanationHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
+            ? `चतुर्थ भाव/चतुर्थेश का चर राशि या 3/12 भावों से संबंध माता-पिता को पैतृक भूमि से दूर नए कार्यक्षेत्र की ओर स्थानांतरित करता है।`
+            : `चतुर्थ भाव (${SIGN_HI[h4SignIdx]}) की स्थिरता पैतृक निवास व स्थानीय समाज से गहरा जुड़ाव बनाए रखती है।`,
           pacBasisEn: `House 4 Sign ${h4Sign.name} (${h4Sign.modality}); Lord ${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}; 9th Lord ${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}.`,
           pacBasisHi: `चतुर्थ भाव ${SIGN_HI[h4SignIdx]} (${h4Sign.modality}); चतुर्थेश भाव ${motherHouseLord?.placedHouse} में; नवमेश भाव ${fatherHouseLord?.placedHouse} में।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 38–42)',
@@ -1345,10 +1349,15 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     );
     const d9H7HasMercAndNodeOrSat = d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury') &&
       d9?.placements.some((p) => p.houseFromVargaLagna === 7 && (p.id === 'Saturn' || p.id === 'Ketu' || p.id === 'Mars'));
+    const venInMercSatSign = Boolean(venus && [2, 5, 9, 10].includes(venus.signIndex));
+    const venWithNodeOrSatOrMerc = Boolean(venus && [mercury, saturn, rahu, ketu].some((p) => p && p.placedHouse === venus.placedHouse));
+    const h7HasNonTrad = h7Planets.some((p) => ['Rahu', 'Ketu', 'Mercury', 'Saturn'].includes(p.id));
     const hasFluidAttractionSpectrum = Boolean(
       (venus && venus.dignity === 'Debilitated' && d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury')) ||
       (venus && venus.placedHouse === 12 && d9H7HasMercAndNodeOrSat) ||
-      (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12)
+      (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12) ||
+      (venInMercSatSign && venWithNodeOrSatOrMerc && (h7HasNonTrad || [5, 7, 8, 12].includes(venus?.placedHouse ?? 0))) ||
+      (venus && rahu && venus.placedHouse === rahu.placedHouse && [1, 5, 7, 8, 12].includes(venus.placedHouse))
     );
 
     let sexualOrientationValueEn = 'Traditional marital devotion; seeks emotionally anchored, harmonious physical and spiritual bond with spouse';
@@ -1366,8 +1375,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       sexualOrientationPacEn = `Venus with Ketu/Mars in H${venus?.placedHouse}; Saturn in H${saturn?.placedHouse}.`;
       sexualOrientationPacHi = `शुक्र-केतु-मंगल भाव ${venus?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में।`;
     } else if (hasFluidAttractionSpectrum) {
-      sexualOrientationValueEn = 'Fluid / Unconventional Romantic Polarity (Tritiya-Prakriti / Mercury-Venus Spectrum): Attraction may extend beyond rigid binary or conventional norms';
-      sexualOrientationValueHi = 'विविध / अपरंपरागत आकर्षण प्रवृत्ति (बुध-शुक्र-शनि प्रभाव): पारंपरिक ढांचे से हटकर समलैंगिक या उभयलिंगी (Fluid/Bisexual) आकर्षण संभव';
+      sexualOrientationValueEn = 'Fluid / Unconventional Romantic Polarity (Tritiya-Prakriti / Mercury-Venus-Rahu Spectrum): Attraction may extend beyond rigid conventional norms';
+      sexualOrientationValueHi = 'विविध / अपरंपरागत आकर्षण प्रवृत्ति (बुध-शुक्र-राहु प्रभाव): पारंपरिक ढांचे से भिन्न स्वतंत्र व बहुआयामी आकर्षण संभव';
       sexualOrientationExplEn = 'Classical texts (Brihat Jataka Ch. 24) note that when Mercury/Saturn/Nodal axes strongly tint Venus in dual or 12th-house signs alongside D9 7th house, attraction patterns can be fluid, unconventional, or non-binary.';
       sexualOrientationExplHi = 'बृहज्जातक (अध्याय २४) के अनुसार जब बुध, शनि या राहु-केतु का प्रबल प्रभाव शुक्र और D9 सप्तम भाव पर हो, तो व्यक्ति की आकर्षण प्रवृत्ति पारंपरिक द्वि-ध्रुवीय मानकों से भिन्न या उभयलिंगी हो सकती है।';
       sexualOrientationPacEn = `Venus in ${venus?.signName} (H${venus?.placedHouse}); D9 H7 Mercury/Saturn/Ketu echo.`;
@@ -2232,6 +2241,12 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const isL8Afflicted = l8?.placedHouse === 6 || l8?.placedHouse === 12 || l8?.dignity === 'Debilitated';
     const isSaturnFortified = saturn && (saturn.placedHouse === 1 || saturn.placedHouse === 7 || saturn.placedHouse === 8 || saturn.placedHouse === 10 || saturn.placedHouse === 11 || saturn.dignity === 'Exalted' || saturn.dignity === 'Own Sign');
     const isJupKendraTrikona = jupiter && [1, 4, 5, 7, 9, 10].includes(jupiter.placedHouse);
+    const h8MaleficCount = h8Planets.filter((p) => ['Mars', 'Saturn', 'Rahu', 'Ketu', 'Sun'].includes(p.id)).length;
+    const marsRahuOrSatOnVital = Boolean(
+      mars && ((rahu && mars.placedHouse === rahu.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)) ||
+               (saturn && mars.placedHouse === saturn.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)))
+    );
+    const hasAkalMrityuRisk = h8MaleficCount >= 2 || marsRahuOrSatOnVital || (threePairsVerdict === 'Alpayu' && h8MaleficCount >= 1);
 
     const pairsNoteEn = `Three-Pairs Ayurdaya (L1+L8=${g1}, Lagna+Moon=${g2}, Lagna+HL=${g3} → ${threePairsVerdict}).`;
     const pairsNoteHi = `त्रि-युग्म आयुर्दाय (लग्नेश+अष्टमेश=${g1}, लग्न+चंद्र=${g2}, लग्न+होरा लग्न=${g3} → ${threePairsVerdict})।`;
@@ -2241,16 +2256,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let longevityExplEn = `${pairsNoteEn} Strong life vitality provides natural resistance and longevity.`;
     let longevityExplHi = `${pairsNoteHi} जीवन शक्ति उत्तम रहने से जातक दीर्घायु प्राप्त करता है।`;
 
-    if (!isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona && threePairsVerdict !== 'Alpayu') {
+    if (!hasAkalMrityuRisk && !isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona && threePairsVerdict !== 'Alpayu') {
       longevityEn = 'Deergha Ayus (Extended Lifespan: 82 to 90+ years); exceptional constitutional vitality & Jupiterian longevity shield';
       longevityHi = 'दीर्घायु विशेष योग (८२ से ९०+ वर्ष); शनि-गुरु के शुभ संयोग से असाधारण जीवनी शक्ति व दीर्घ जीवन';
       longevityExplEn = `${pairsNoteEn} Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.`;
       longevityExplHi = `${pairsNoteHi} लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।`;
-    } else if ((isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) || (threePairsVerdict === 'Alpayu' && (isL1AfflictedHealth || isL8Afflicted))) {
-      longevityEn = 'Preventive Vitality Care (Alpayu/Vigilance Watch); disciplined medical screening, restorative sleep & stress hygiene essential';
-      longevityHi = 'सजग स्वास्थ्य संरक्षण योग (आयु-रक्षा सतर्कता); नियमित चिकित्सा जांच, पर्याप्त निद्रा व तनाव नियंत्रण से दीर्घ व स्वस्थ जीवन';
-      longevityExplEn = `${pairsNoteEn} Challenging Lagna/8th placements call for preventive healthcare, sattvic routines, and Maha Mrityunjaya calm.`;
-      longevityExplHi = `${pairsNoteHi} लग्नेश व अष्टमेश पर दबाव होने से नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु व स्वास्थ्य की रक्षा करती है।`;
+    } else if (hasAkalMrityuRisk || (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) || (threePairsVerdict === 'Alpayu' && (isL1AfflictedHealth || isL8Afflicted))) {
+      longevityEn = 'Preventive Vitality & Akal-Mrityu Vigilance Care; disciplined safety, medical screening, restorative sleep & Maha Mrityunjaya calm essential';
+      longevityHi = 'सजग स्वास्थ्य व आयु-रक्षा सतर्कता; सुरक्षा सावधानी, नियमित चिकित्सा जांच, पर्याप्त निद्रा व महामृत्युंजय साधना अनिवार्य';
+      longevityExplEn = `${pairsNoteEn} Malefic pressure on 8th/Lagna/vital axes calls for preventive healthcare, physical safety vigilance, and sattvic routines.`;
+      longevityExplHi = `${pairsNoteHi} अष्टम व लग्न अक्ष पर क्रूर प्रभाव होने से शारीरिक सुरक्षा, नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु की रक्षा करती है।`;
     } else if (((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) || threePairsVerdict === 'Madhyayu') {
       longevityEn = 'Madhyama Ayus (Medium Lifespan: 68 to 76 years); sustained health requires regular cardiac/lifestyle vigilance and balanced diet';
       longevityHi = 'मध्यायु योग (६८ से ७६ वर्ष); नियमित स्वास्थ्य परीक्षण, संयमित दिनचर्या व तनावमुक्ति से पूर्ण स्वस्थ जीवन संभव';

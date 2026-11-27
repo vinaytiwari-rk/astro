@@ -297,7 +297,10 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
             const aObj = pObj?.attributes.find((a) => a.id === tile.attrId) || pObj?.attributes[0];
             if (!aObj) return null;
             const rawVal = isHi ? aObj.valueHi : aObj.valueEn;
-            const shortVal = rawVal.split(';')[0].split('|')[0].trim();
+            let shortVal = rawVal.split(';')[0].split('|')[0].trim();
+            if ((shortVal.match(/\(/g)?.length ?? 0) > (shortVal.match(/\)/g)?.length ?? 0)) {
+              shortVal += ')';
+            }
             const sig = getAttrSignalTone(aObj.valueEn);
             return (
               <button
@@ -726,8 +729,8 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
               </div>
               <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
                 {isHi
-                  ? 'इस कालखंड में करियर, संपत्ति व सामाजिक प्रतिष्ठा का सर्वोच्च उत्कर्ष होगा।'
-                  : 'Maximum accumulation of wealth, professional elevation and authority manifests here.'}
+                  ? `${deepReport.purusharthas.dominantTitleHi} के अनुरूप मुख्य महादशा सक्रियता।`
+                  : `Primary Vimshottari Mahadasha alignment under ${deepReport.purusharthas.dominantTitleEn}.`}
               </div>
             </div>
 
@@ -752,9 +755,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                 {isHi ? deepReport.karmicMissionHi : deepReport.karmicMissionEn}
               </div>
               <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text)' }}>
-                {isHi
-                  ? 'सांसारिक उपलब्धियों के साथ-साथ संस्थागत न्याय व धर्म का निर्वहन जीवन का सर्वोच्च उद्देश्य है।'
-                  : 'Balancing executive success with institutional righteousness defines the ultimate destiny.'}
+                {isHi ? deepReport.purusharthas.balanceSynthesisHi : deepReport.purusharthas.balanceSynthesisEn}
               </div>
             </div>
           </div>
@@ -877,7 +878,9 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
 
                   {/* Core Prophetic Narrative */}
                   <div style={{ fontSize: '14px', lineHeight: 1.8, color: 'var(--text)', whiteSpace: 'pre-line' }}>
-                    {isHi ? domain.predictionHi : domain.predictionEn}
+                    {matchingDeep
+                      ? (isHi ? matchingDeep.predictionHi : matchingDeep.predictionEn)
+                      : (isHi ? domain.predictionHi : domain.predictionEn)}
                   </div>
 
                   {/* Strengths & Cautions Dual Grid */}
