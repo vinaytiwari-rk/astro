@@ -241,10 +241,11 @@ function getKpSubAndSubSubLord(longitude: number): { starLord: string; subLord: 
 }
 
 function formatDms(deg: number): string {
-  const d = Math.floor(deg);
-  const remMin = (deg - d) * 60;
-  const m = Math.floor(remMin);
-  const s = Math.round((remMin - m) * 60);
+  const totalSec = Math.round(deg * 3600);
+  const d = Math.floor(totalSec / 3600);
+  const rem = totalSec % 3600;
+  const m = Math.floor(rem / 60);
+  const s = rem % 60;
   return `${d}°${String(m).padStart(2, '0')}'${String(s).padStart(2, '0')}"`;
 }
 
@@ -1043,17 +1044,17 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'parents',
           titleEn: 'Parents Relocation / Transfer Away from Native Seat',
           titleHi: 'स्थानांतरण व पैतृक निवास परिवर्तन',
-          valueEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
-            ? 'Definite relocation away from ancestral village/town to modern metropolitan center for growth'
+          valueEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
+            ? 'Relocation or geographic transition away from ancestral hometown/birthplace for career, domestic, or growth reasons'
             : 'Strong continuity in ancestral hometown/region with deep rooted community ownership',
-          valueHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
+          valueHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
             ? 'पैतृक जन्मस्थान से दूर आधुनिक नगर/राज्य में स्थानांतरण व नवीन गृह निर्माण'
             : 'पैतृक गृह व स्थानीय समाज में दृढ़ जुड़ाव; पुश्तैनी जमीन-जायदाद की रक्षा व स्थायित्व',
-          explanationEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
-            ? `The 4th house/lord's link with movable signs or 3rd/12th houses prompts geographic transition from the ancestral homestead to new educational and commercial centers.`
-            : `Fixed/dual 4th house stability (${h4Sign.name}) without strong 3rd/12th displacement anchors the family roots in the native's home region.`,
-          explanationHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3)
-            ? `चतुर्थ भाव/चतुर्थेश का चर राशि या 3/12 भावों से संबंध माता-पिता को पैतृक भूमि से दूर नए कार्यक्षेत्र की ओर स्थानांतरित करता है।`
+          explanationEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
+            ? `The 4th house/lord's link with movable signs, Rahu/Ketu, or 3rd/12th houses prompts geographic transition from the ancestral homestead to new centers.`
+            : `Fixed/dual 4th house stability (${h4Sign.name}) without strong 3rd/12th or nodal displacement anchors the family roots in the native's home region.`,
+          explanationHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
+            ? `चतुर्थ भाव/चतुर्थेश का चर राशि, राहु-केतु या 3/12 भावों से संबंध माता-पिता को पैतृक भूमि से दूर नए कार्यक्षेत्र की ओर स्थानांतरित करता है।`
             : `चतुर्थ भाव (${SIGN_HI[h4SignIdx]}) की स्थिरता पैतृक निवास व स्थानीय समाज से गहरा जुड़ाव बनाए रखती है।`,
           pacBasisEn: `House 4 Sign ${h4Sign.name} (${h4Sign.modality}); Lord ${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}; 9th Lord ${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}.`,
           pacBasisHi: `चतुर्थ भाव ${SIGN_HI[h4SignIdx]} (${h4Sign.modality}); चतुर्थेश भाव ${motherHouseLord?.placedHouse} में; नवमेश भाव ${fatherHouseLord?.placedHouse} में।`,
@@ -1367,11 +1368,15 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const venInMercSatSign = Boolean(venus && [2, 5, 9, 10].includes(venus.signIndex));
     const venWithNodeOrSatOrMerc = Boolean(venus && [mercury, saturn, rahu, ketu].some((p) => p && p.placedHouse === venus.placedHouse));
     const h7HasNonTrad = h7Planets.some((p) => ['Rahu', 'Ketu', 'Mercury', 'Saturn'].includes(p.id));
-    const hasFluidAttractionSpectrum = Boolean(
+    const strongTradMarriageShield = Boolean(
+      (!hasSaturnOrRahuIn7th && !is7thLordAfflicted && !isManglik && pravrajyaCount < 2) ||
+      (!hasSaturnOrRahuIn7th && !is7thLordAfflicted && hasJupiterAspectOn7th && pravrajyaCount < 2)
+    );
+    const hasFluidAttractionSpectrum = !strongTradMarriageShield && Boolean(
       (venus && venus.dignity === 'Debilitated' && d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury')) ||
       (venus && venus.placedHouse === 12 && d9H7HasMercAndNodeOrSat) ||
       (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12) ||
-      (venInMercSatSign && venWithNodeOrSatOrMerc && (h7HasNonTrad || [5, 7, 8, 12].includes(venus?.placedHouse ?? 0))) ||
+      (venInMercSatSign && venWithNodeOrSatOrMerc && h7HasNonTrad) ||
       (venus && rahu && venus.placedHouse === rahu.placedHouse && [1, 5, 7, 8, 12].includes(venus.placedHouse))
     );
 
@@ -2261,7 +2266,13 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       mars && ((rahu && mars.placedHouse === rahu.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)) ||
                (saturn && mars.placedHouse === saturn.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)))
     );
-    const hasAkalMrityuRisk = h8MaleficCount >= 2 || marsRahuOrSatOnVital || (threePairsVerdict === 'Alpayu' && h8MaleficCount >= 1);
+    const isAscVargottama = ascSignIdx === d9?.lagnaSignIndex;
+    const isLagneshStrong = Boolean(l1 && [1, 4, 5, 7, 9, 10].includes(l1.placedHouse) && !isL1AfflictedHealth);
+    const hasAkalMrityuRisk =
+      (h8MaleficCount >= 2 && !isJupKendraTrikona) ||
+      (marsRahuOrSatOnVital && !isJupKendraTrikona && !isAscVargottama) ||
+      (threePairsVerdict === 'Alpayu' && h8MaleficCount >= 1 && !isLagneshStrong) ||
+      (threePairsVerdict === 'Alpayu' && !isLagneshStrong && !isAscVargottama && !isJupKendraTrikona);
 
     const pairsNoteEn = `Three-Pairs Ayurdaya (L1+L8=${g1}, Lagna+Moon=${g2}, Lagna+HL=${g3} → ${threePairsVerdict}).`;
     const pairsNoteHi = `त्रि-युग्म आयुर्दाय (लग्नेश+अष्टमेश=${g1}, लग्न+चंद्र=${g2}, लग्न+होरा लग्न=${g3} → ${threePairsVerdict})।`;
@@ -2276,7 +2287,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       longevityHi = 'दीर्घायु विशेष योग (८२ से ९०+ वर्ष); शनि-गुरु के शुभ संयोग से असाधारण जीवनी शक्ति व दीर्घ जीवन';
       longevityExplEn = `${pairsNoteEn} Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.`;
       longevityExplHi = `${pairsNoteHi} लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।`;
-    } else if (hasAkalMrityuRisk || (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) || (threePairsVerdict === 'Alpayu' && (isL1AfflictedHealth || isL8Afflicted))) {
+    } else if (hasAkalMrityuRisk || (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified)) {
       longevityEn = 'Preventive Vitality & Akal-Mrityu Vigilance Care; disciplined safety, medical screening, restorative sleep & Maha Mrityunjaya calm essential';
       longevityHi = 'सजग स्वास्थ्य व आयु-रक्षा सतर्कता; सुरक्षा सावधानी, नियमित चिकित्सा जांच, पर्याप्त निद्रा व महामृत्युंजय साधना अनिवार्य';
       longevityExplEn = `${pairsNoteEn} Malefic pressure on 8th/Lagna/vital axes calls for preventive healthcare, physical safety vigilance, and sattvic routines.`;
@@ -2588,20 +2599,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
                 planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
             );
             const classicalBandhana =
-              (countMal(2) > 0 && countMal(2) === countMal(12)) ||
-              (countMal(5) > 0 && countMal(5) === countMal(9)) ||
-              (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              (countMal(2) >= 2 && countMal(2) === countMal(12)) ||
+              (countMal(5) >= 2 && countMal(5) === countMal(9)) ||
+              (countMal(4) >= 2 && countMal(4) === countMal(10)) ||
               h12ClusterBandhana ||
               prashnaMargaSatBandhana ||
-              moonSat410 ||
+              (moonSat410 && (h6Prof.tier === 'afflicted' || h12Prof.tier === 'afflicted')) ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
+              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [6, 8, 12].includes(saturn.placedHouse));
             const rahuVedha = Boolean(
               rahu &&
                 (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)
             );
             let extra = '';
-            if (classicalBandhana) {
+            if (classicalBandhana && !is6thDiplomatic) {
               extra += ' | Bandhana / Legal Vigilance: Risk of prolonged litigation, confinement, or regulatory pressure during Saturn/Rahu or Dasha-Chiddra transitions';
             }
             if (rahuVedha) {
@@ -2630,14 +2641,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
                 planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
             );
             const classicalBandhana =
-              (countMal(2) > 0 && countMal(2) === countMal(12)) ||
-              (countMal(5) > 0 && countMal(5) === countMal(9)) ||
-              (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              (countMal(2) >= 2 && countMal(2) === countMal(12)) ||
+              (countMal(5) >= 2 && countMal(5) === countMal(9)) ||
+              (countMal(4) >= 2 && countMal(4) === countMal(10)) ||
               h12ClusterBandhana ||
               prashnaMargaSatBandhana ||
-              moonSat410 ||
+              (moonSat410 && (h6Prof.tier === 'afflicted' || h12Prof.tier === 'afflicted')) ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
+              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [6, 8, 12].includes(saturn.placedHouse));
             const rahuVedha = Boolean(
               rahu &&
                 (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)

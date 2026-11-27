@@ -240,7 +240,7 @@ export function getSiblingFamilyAndBondingPred(h3: HousePacProfile, h11: HousePa
       family: {
         valEn: 'Siblings live busy, independent or geographically separated lives; occasional domestic hurdles require empathy',
         valHi: 'सहोदर अपने-अपने जीवन व दूरी में व्यस्त; कभी-कभी पारिवारिक जिम्मेदारियों को लेकर तनाव संभव',
-        explEn: `Malefic or Dusthana placement on H3/H11 (${h3.dominantGraha}/${h11.dominantGraha}) creates differing lifestyles and physical distance among co-borns.`,
+        explEn: `Planetary tension or Dusthana lordship across H3/H11 (${h3.dominantGraha} in H3 / ${h11.dominantGraha} in H11) creates differing lifestyles and physical distance among co-borns.`,
         explHi: `तृतीय या एकादश भाव पर क्रूर ग्रह या त्रिक स्थान का प्रभाव सहोदरों की जीवनशैली व निवास में दूरी लाता है।`,
       },
       bonding: {
