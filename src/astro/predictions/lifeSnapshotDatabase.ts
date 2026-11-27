@@ -1835,7 +1835,7 @@ export function getComprehensiveCareerAndWealthAnalysis(
 
   const planetProfessionDomain: Record<GrahaKey, { en: string; hi: string }> = {
     Sun: { en: 'Government Administration, Executive Leadership, Medicine & Authority Roles', hi: 'सरकारी प्रशासन, उच्च नेतृत्व, चिकित्सा व नीति-निर्माण' },
-    Moon: { en: 'Cinema, Performing Arts, Public Relations, Healthcare & Marine/Fluid Trades', hi: 'सिनेमा, कला, जनसंपर्क, स्वास्थ्य सेवा व जलीय व्यापार' },
+    Moon: { en: 'Public Leadership, Healthcare, Counseling, Education, Trade & Mass Influence', hi: 'जन-नेतृत्व, स्वास्थ्य सेवा, परामर्श, शिक्षा, व्यापार व जनसंपर्क' },
     Mars: { en: 'Engineering, Surgery/Ayurveda, Industrial Operations, Defense & Real Estate', hi: 'इंजीनियरिंग, शल्य/आयुर्वेद चिकित्सा, रक्षा, निर्माण व रियल एस्टेट' },
     Mercury: { en: 'Finance, Software/Data Analytics, Commerce, Logistics/Supply Chain & Clerical Administration', hi: 'वित्त, सॉफ्टवेयर/डेटा, वाणिज्य, लॉजिस्टिक्स, क्लर्क/प्रशासन व संचार' },
     Jupiter: { en: 'Law, Public Governance, Higher Education, Medical/Ayurvedic Healing & Institutional Management', hi: 'विधि (Law), प्रशासन, उच्च शिक्षा, आयुर्वेद/चिकित्सा व संस्थागत प्रबंधन' },
@@ -1852,11 +1852,12 @@ export function getComprehensiveCareerAndWealthAnalysis(
   const l10D9SignIdx = d9?.placements.find((pl) => pl.id === h10.lordId)?.signIndex;
 
   const primaryDomainKey: GrahaKey =
-    (h10.occupants.find((o) => o.id in planetProfessionDomain)?.id as GrahaKey) ||
+    (h10.occupants.find((o) => o.id in planetProfessionDomain && !['Rahu', 'Ketu'].includes(o.id))?.id as GrahaKey) ||
     h10.lordId ||
     saturnLink;
   const secondaryDomainKey: GrahaKey =
-    saturnLink !== primaryDomainKey ? saturnLink : h10.lordId;
+    (h10.occupants.find((o) => ['Rahu', 'Ketu'].includes(o.id))?.id as GrahaKey) ||
+    (saturnLink !== primaryDomainKey ? saturnLink : h10.lordId);
 
   const primaryDomain = planetProfessionDomain[primaryDomainKey] ?? planetProfessionDomain.Saturn;
   const secondaryDomain = planetProfessionDomain[secondaryDomainKey] ?? planetProfessionDomain.Mercury;
@@ -2190,6 +2191,18 @@ export function getComprehensiveCareerAndWealthAnalysis(
     detectedYogasHi.push('खजाना-खजांची (चंद्र-शनि) कोष योग');
   }
 
+  // Pravrajya / Sannyasa Recognition (4+ planets in one house or strong Moksha-Dharma axis)
+  const houseCounts = new Map<number, number>();
+  for (const p of planets) {
+    if (!['Rahu', 'Ketu'].includes(p.id)) {
+      houseCounts.set(p.placedHouse, (houseCounts.get(p.placedHouse) || 0) + 1);
+    }
+  }
+  const hasPravrajya = Array.from(houseCounts.values()).some((cnt) => cnt >= 4);
+  if (hasPravrajya && !detectedYogasEn.includes('Pravrajya / Renunciation & Institutional Legacy')) {
+    detectedYogasEn.push('Pravrajya / Renunciation & Institutional Legacy');
+    detectedYogasHi.push('प्रव्रज्या / संन्यास व आध्यात्मिक संस्थान योग');
+  }
   // Realistic 4-Tier Wealth Stratification
   const isL2Weak = h2.tier === 'afflicted';
   const isL11Weak = h11.tier === 'afflicted';
@@ -2219,6 +2232,11 @@ export function getComprehensiveCareerAndWealthAnalysis(
   if (isL11Weak) wealthPts -= 1;
   if (h12.tier === 'afflicted' && vipreetYogas.length === 0) wealthPts -= 1;
 
+  // Floor for genuine Mahapurusha / Dharma-Karma / Vipreet Raja Yoga charts unless compromised
+  if (!surfaceYogaCompromised && !hasWealthErosionRisk && (hasMahapurusha || hasDharmaKarma || vipreetYogas.length > 0)) {
+    wealthPts = Math.max(wealthPts, 3);
+  }
+
   if (surfaceYogaCompromised) {
     wealthPts = Math.min(wealthPts - 4, 1);
   } else if (hasWealthErosionRisk) {
@@ -2240,17 +2258,17 @@ export function getComprehensiveCareerAndWealthAnalysis(
     wealthValHi = 'उतार-चढ़ाव व व्यय-प्रधान धन योग (ऋण-क्षय सतर्कता): अत्यधिक कर्ज व जोखिम से पूंजी की रक्षा आवश्यक';
     wealthExplEn = `⚠️ Wealth-Erosion / Debt-Cycle Watch: Despite active Raja/Neecha-Bhanga yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'career peaks'}), 2nd/Lagna lord in the 12th or debilitated 11th lord warns against over-leveraging, speculative debt, and sudden capital drawdown. Ring-fencing reserves and conservative cashflow discipline are essential.`;
     wealthExplHi = `⚠️ धन-क्षय व ऋण-चक्र सतर्कता: सक्रिय योगों (${detectedYogasHi.slice(0, 3).join(', ') || 'उच्च पद योग'}) के बाद भी द्वितीयेश/लग्नेश का द्वादश भाव में होना अथवा एकादशेश का नीचस्थ होना अत्यधिक ऋण व पूंजी-क्षय से बचने की चेतावनी देता है।`;
-  } else if (wealthPts >= 6) {
+  } else if (wealthPts >= 9) {
     wealthValEn = 'Apex Rajayoga & Legacy Wealth Potential: High compounding capacity, multi-asset portfolio & enduring abundance';
     wealthValHi = 'उच्च राजयोग व स्थायी वैभव श्रेणी: प्रबल धन-संचय क्षमता, बहु-संपत्ति व दीर्घकालिक समृद्धि';
     wealthExplEn = `Exceptionally fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active Dhana/Raja/Vipreet yogas (${detectedYogasEn.slice(0, 4).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} elevate wealth far above average.${isLagnaGandanta ? ' Note: Lagna in Gandanta indicates humble/tested beginnings before monumental self-made rise.' : ''}`;
     wealthExplHi = `अत्यंत सबल द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), सक्रिय राज-धन/विपरीत राजयोग तथा ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न असाधारण आर्थिक उत्थान दर्शाते हैं।${isLagnaGandanta ? ' विशेष: गंडांत लग्न प्रारंभिक संघर्ष के बाद विशाल स्वनिर्मित साम्राज्य का संकेत देता है।' : ''}`;
-  } else if (wealthPts >= 4) {
+  } else if (wealthPts >= 6) {
     wealthValEn = 'Strong Prosperity & Asset-Building Potential: Multi-stream earnings, property accumulation & long-term financial independence';
     wealthValHi = 'उत्तम समृद्धि व संपत्ति निर्माण योग: बहु-आयामी आय स्रोत, अचल संपत्ति व दीर्घकालिक आर्थिक सुदृढ़ता';
     wealthExplEn = `Fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} support compounding wealth during favorable Mahadashas.${isLagnaGandanta ? ' Lagna Gandanta notes early struggle turning into durable success.' : ''}`;
     wealthExplHi = `सशक्त द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), शुभ राज/धन योग (${detectedYogasHi.slice(0, 3).join(', ') || 'धन संयोग'}) और ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न उत्तम आर्थिक उन्नति व संपत्ति निर्माण दर्शाते हैं।`;
-  } else if (wealthPts >= 2) {
+  } else if (wealthPts >= 3) {
     wealthValEn = 'Comfortable Upper-Middle Financial Trajectory: Reliable cashflow, steady asset growth & balanced family prosperity';
     wealthValHi = 'सुदृढ़ उच्च-मध्यम आर्थिक स्थिति: नियमित आय, क्रमिक संपत्ति वृद्धि व संतुलित पारिवारिक समृद्धि';
     wealthExplEn = `Balanced 2nd (${h2.tier}) and 11th (${h11.tier}) houses provide reliable earning capacity, comfortable living standards, and steady asset creation over time.`;

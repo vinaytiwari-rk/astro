@@ -65,7 +65,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
 
   const { birthSummary, pillars } = snapshotReport;
 
-  // Icons for 14 pillars
+  // Icons for 16 pillars
   const pillarIcons: Record<string, React.ReactNode> = {
     physical_persona: <User size={18} />,
     parents_ancestry: <Crown size={18} />,
@@ -81,10 +81,12 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
     vastu_lifestyle: <Compass size={18} />,
     palmistry_gait: <Layers size={18} />,
     lucky_synergy_matrix: <Gem size={18} />,
+    dasha_transit_milestones: <Calendar size={18} />,
+    vargas_ashtakavarga_shadbala: <Award size={18} />,
   };
 
   const pillarFilterButtons = [
-    { id: 'all', titleHi: 'सभी 14 आयाम (All 14)', titleEn: 'All 14 Pillars' },
+    { id: 'all', titleHi: 'सभी 16 आयाम (All 16)', titleEn: 'All 16 Pillars' },
     { id: 'physical_persona', titleHi: '1. देह लक्षण', titleEn: '1. Physical Persona' },
     { id: 'parents_ancestry', titleHi: '2. माता-पिता', titleEn: '2. Parents' },
     { id: 'siblings_bhratri', titleHi: '3. भाई-बहन', titleEn: '3. Siblings' },
@@ -99,6 +101,8 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
     { id: 'vastu_lifestyle', titleHi: '12. गृह वास्तु व जीवनशैली', titleEn: '12. Vastu & Lifestyle' },
     { id: 'palmistry_gait', titleHi: '13. सामुद्रिक लक्षण', titleEn: '13. Palmistry & Gait' },
     { id: 'lucky_synergy_matrix', titleHi: '14. भाग्यशाली मैट्रिक्स', titleEn: '14. Lucky Synergy' },
+    { id: 'dasha_transit_milestones', titleHi: '15. दशा-गोचर कालचक्र', titleEn: '15. Dasha & Transits' },
+    { id: 'vargas_ashtakavarga_shadbala', titleHi: '16. वर्ग व षड्बल', titleEn: '16. Vargas & Shadbala' },
   ];
 
   // Filtered pillars based on pill and search query
@@ -185,16 +189,16 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
             </h2>
             <p className="muted" style={{ margin: '8px 0 0', lineHeight: 1.6, fontSize: '13px', maxWidth: '880px' }}>
               {isHi
-                ? 'महर्षि पाराशर, कल्याण वर्मा, वराहमिहिर एवं जैमिनी के शास्त्रीय सूत्रों पर आधारित १४ मौलिक जीवन-स्तंभ, ७०+ सूक्ष्म लक्षण, ग्रह स्थिति-दृष्टि-युति (PAC) विश्लेषण एवं वर्ग कुंडलियों (D1 से D60) द्वारा प्रमाणित सूक्ष्म फलित।'
-                : 'Authoritative life prophecy encompassing 14 foundational pillars and 70+ micro-attributes synthesized under classical Rishi traditions (Parashara, Saravali, Brihat Jataka, Jaimini), certified via rigorous PAC geometry and divisional charts (D1 through D60).'}
+                ? 'महर्षि पाराशर, कल्याण वर्मा, वराहमिहिर एवं जैमिनी के शास्त्रीय सूत्रों पर आधारित १६ मौलिक जीवन-स्तंभ, ८०+ सूक्ष्म लक्षण, ग्रह स्थिति-दृष्टि-युति (PAC) विश्लेषण एवं वर्ग कुंडलियों (D1 से D60) द्वारा प्रमाणित सूक्ष्म फलित।'
+                : 'Authoritative life prophecy encompassing 16 foundational pillars and 80+ micro-attributes synthesized under classical Rishi traditions (Parashara, Saravali, Brihat Jataka, Jaimini), certified via rigorous PAC geometry and divisional charts (D1 through D60).'}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <span className="badge badge-accent mono" style={{ fontSize: '12px', padding: '6px 12px', fontWeight: 700 }}>
-              {isHi ? '14 जीवन आयाम सक्रिय' : '14 Life Pillars Active'}
+              {isHi ? '16 जीवन आयाम सक्रिय' : '16 Life Pillars Active'}
             </span>
             <span className="badge badge-neutral mono" style={{ fontSize: '12px', padding: '6px 12px', fontWeight: 700 }}>
-              {isHi ? '70+ सूक्ष्म लक्षण' : '70+ Micro Attributes'}
+              {isHi ? '80+ सूक्ष्म लक्षण' : '80+ Micro Attributes'}
             </span>
           </div>
         </div>
@@ -326,7 +330,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
           style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}
         >
           <Sparkles size={16} />
-          <span>{isHi ? '360° जीवन स्नैपशॉट डॉसियर (14 Pillars)' : '360° Life Matrix Snapshot Dossier'}</span>
+          <span>{isHi ? '360° जीवन स्नैपशॉट डॉसियर (16 Pillars)' : '360° Life Matrix Snapshot Dossier (16 Pillars)'}</span>
         </button>
 
         <button
@@ -423,7 +427,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                 flexWrap: 'wrap',
               }}
               role="tablist"
-              aria-label={isHi ? '14 जीवन स्तंभ चयन' : '14 Pillar Filter'}
+              aria-label={isHi ? '16 जीवन स्तंभ चयन' : '16 Pillar Filter'}
             >
               {pillarFilterButtons.map((btn) => {
                 const isActive = selectedPillarId === btn.id;
@@ -513,8 +517,8 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
                           }}
                         >
                           {isHi
-                            ? `स्तंभ ${pillar.pillarNumber} / 14`
-                            : `PILLAR ${pillar.pillarNumber} OF 14`}
+                            ? `स्तंभ ${pillar.pillarNumber} / 16`
+                            : `PILLAR ${pillar.pillarNumber} OF 16`}
                         </div>
                         <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800 }}>
                           {isHi ? pillar.titleHi : pillar.titleEn}

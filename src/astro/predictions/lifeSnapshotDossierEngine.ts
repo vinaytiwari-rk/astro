@@ -3404,6 +3404,168 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     });
   }
 
+  // =========================================================================
+  // PILLAR 15: दशा-गोचर कालचक्र, प्रमुख मोड़ एवं आयु-वार फलित (Dasha & Transits)
+  // =========================================================================
+  {
+    const mdList = chart.vimshottari || [];
+    const favorableLords = new Set<string>([l1?.id, l5?.id, l9?.id, l10?.id, l11?.id].filter((x): x is NonNullable<typeof x> => Boolean(x)));
+    const trikLords = new Set<string>([l6?.id, l8?.id, l12?.id].filter((x): x is NonNullable<typeof x> => Boolean(x)));
+
+    const goldenMds = mdList.filter((d) => favorableLords.has(String(d.lord)));
+    const testingMds = mdList.filter((d) => trikLords.has(String(d.lord)) && !favorableLords.has(String(d.lord)));
+    const fmtSpan = (d: { lord: string; startMs: number; endMs: number }) =>
+      `${d.lord} (${new Date(d.startMs).getUTCFullYear()}–${new Date(d.endMs).getUTCFullYear()})`;
+
+    const goldenStr = goldenMds.slice(0, 4).map(fmtSpan).join(', ') || 'Yogakaraka / Kendra-Trikona Dashas';
+    const testingStr = testingMds.slice(0, 3).map(fmtSpan).join(', ') || '6th/8th/12th Lord & Dasha-Chiddra transitions';
+
+    const birthYear = Number((chart.input.date || '1990').slice(0, 4)) || 1990;
+    const satReturnAge = 'Ages 29–30 & 58–59';
+    const doubleTransitHouseEn = `H10 (${h10Sign.name}), H11 (${h11Sign.name}) & H5 (${h5Sign.name})`;
+
+    pillars.push({
+      id: 'dasha_transit_milestones',
+      pillarNumber: 15,
+      titleEn: 'Dasha-Transit Timing, Life Turning Points & Milestones',
+      titleHi: 'दशा-गोचर कालचक्र, प्रमुख मोड़ एवं आयु-वार फलित',
+      icon: 'Calendar',
+      summaryEn: `Dynamic Vimshottari Mahadasha roadmap, Dasha-Chiddra transition alerts, Saturn Return cycles, and Jupiter–Saturn Double-Transit activation windows.`,
+      summaryHi: `विंशोत्तरी महादशा चक्र, दशा-छिद्र सावधानी, शनि-चक्र (साढ़ेसाती) एवं गुरु-शनि द्वि-गोचर द्वारा जीवन के स्वर्णिम व परीक्षात्मक मोड़ों का विश्लेषण।`,
+      attributes: [
+        {
+          id: 'attr_vimshottari_golden_dashas',
+          category: 'dasha_transits',
+          titleEn: 'Peak Fortune & Rajayoga Mahadasha Windows',
+          titleHi: 'सर्वोच्च भाग्योदय व राजयोग महादशा काल',
+          valueEn: `Golden Dashas: ${goldenStr}`,
+          valueHi: `स्वर्णिम महादशाएं: ${goldenStr}`,
+          explanationEn: `Mahadashas of Lagna, 5th, 9th, 10th, and 11th lords unlock career breakthroughs, authority, and wealth compounding when confirmed by D9/D10.`,
+          explanationHi: `लग्नेश, पंचमेश, नवमेश, दशमेश एवं एकादशेश की महादशाओं में करियर, प्रतिष्ठा व धन-वृद्धि के प्रमुख अवसर प्राप्त होते हैं।`,
+          pacBasisEn: `Vimshottari sequence anchored from ${moon?.nakshatraName ?? 'Janma Nakshatra'} (Birth ${birthYear}).`,
+          pacBasisHi: `${moon?.nakshatraName ?? 'जन्म नक्षत्र'} से आरंभ विंशोत्तरी दशा क्रम।`,
+          shastricRef: 'BPHS (Ch. 46 - Dashaphala), Phaladeepika (Ch. 19)',
+          vargaRef: 'D1, D9 & D10',
+        },
+        {
+          id: 'attr_dasha_chiddra_windows',
+          category: 'dasha_transits',
+          titleEn: 'Dasha-Chiddra & Trik-Lord Testing Phases',
+          titleHi: 'दशा-छिद्र व त्रिकेश (६/८/१२) परीक्षा काल',
+          valueEn: `Testing / Pivot Phases: ${testingStr}`,
+          valueHi: `परीक्षा व परिवर्तन काल: ${testingStr}`,
+          explanationEn: `The closing Antardasha of any Mahadasha (Dasha-Chiddra) and periods of 6th/8th/12th lords trigger restructuring, health vigilance, or role changes.`,
+          explanationHi: `किसी भी महादशा के अंतिम अंतर्दशा काल (दशा-छिद्र) तथा ६/८/१२ भावों के स्वामियों की दशा में स्वास्थ्य, करियर परिवर्तन व संयम आवश्यक रहता है।`,
+          pacBasisEn: `Trik Lords: H6 (${h6Prof.lordId}), H8 (${h8Prof.lordId}), H12 (${h12Prof.lordId}).`,
+          pacBasisHi: `त्रिकेश: षष्ठेश ${h6Prof.lordId}, अष्टमेश ${h8Prof.lordId}, द्वादशेश ${h12Prof.lordId}।`,
+          shastricRef: 'BPHS & K.N. Rao Composite Dasha Technique',
+          vargaRef: 'D1 & D30',
+        },
+        {
+          id: 'attr_sade_sati_double_transit',
+          category: 'dasha_transits',
+          titleEn: 'Saturn Return, Sade Sati & Double-Transit Activation',
+          titleHi: 'शनि साढ़ेसाती, शनि-चक्र एवं द्वि-गोचर सक्रियता',
+          valueEn: `${satReturnAge} maturation pivots | Double-Transit growth triggers on ${doubleTransitHouseEn}`,
+          valueHi: `${satReturnAge} में परिपक्वता मोड़ | ${doubleTransitHouseEn} पर गुरु-शनि द्वि-गोचर से सिद्धि`,
+          explanationEn: `Major life events (marriage, promotion, property) fructify when both Jupiter and Saturn simultaneously aspect or transit the relevant house and its lord.`,
+          explanationHi: `विवाह, पदोन्नति या संपत्ति जैसी बड़ी घटनाएं तब सिद्ध होती हैं जब गुरु और शनि दोनों का गोचर संबंधित भाव पर एक साथ प्रभाव डालता है।`,
+          pacBasisEn: `Natal Moon in ${moon?.signName ?? 'Moon Sign'} (Sade Sati axis: 12th/1st/2nd from Moon).`,
+          pacBasisHi: `जन्म चंद्र ${moon?.signName ?? 'राशि'} में (चंद्र से १२/१/२ भाव साढ़ेसाती अक्ष)।`,
+          shastricRef: 'Brihat Samhita & K.N. Rao Double Transit Rule',
+          vargaRef: 'D1 Gochara',
+        },
+      ],
+    });
+  }
+
+  // =========================================================================
+  // PILLAR 16: षोडशवर्ग (D9/D10/D60), अष्टकवर्ग एवं षड्बल (Vargas & Strength)
+  // =========================================================================
+  {
+    const shadbalaRows = [...(chart.shadbala || [])].sort((a, b) => b.ratio - a.ratio);
+    const strongestShad = shadbalaRows[0];
+    const weakestShad = shadbalaRows[shadbalaRows.length - 1];
+    const vargottamaList = planets.filter((p) => p.isVargottama).map((p) => p.id);
+    if (asc.isVargottama) vargottamaList.unshift('Asc' as never);
+
+    const savArr = chart.ashtakavarga?.sarva || [];
+    const houseSav = savArr.length === 12
+      ? Array.from({ length: 12 }, (_, idx) => {
+          const signIdx = (ascSignIdx + idx) % 12;
+          return { house: idx + 1, sign: SIGNS[signIdx]?.name ?? '', bindus: savArr[signIdx] ?? 28 };
+        })
+      : [];
+    const peakSav = [...houseSav].sort((a, b) => b.bindus - a.bindus).slice(0, 3);
+    const lowSav = [...houseSav].sort((a, b) => a.bindus - b.bindus).slice(0, 2);
+
+    const d9LagnaSignName = SIGNS[d9?.lagnaSignIndex ?? ascSignIdx]?.name ?? '';
+    const d10LagnaSign = SIGNS[d10?.lagnaSignIndex ?? ascSignIdx]?.name ?? '';
+    const d60LagnaSign = SIGNS[chart.divisionalCharts?.D60?.lagnaSignIndex ?? ascSignIdx]?.name ?? '';
+
+    pillars.push({
+      id: 'vargas_ashtakavarga_shadbala',
+      pillarNumber: 16,
+      titleEn: 'Divisional Vargas (D9/D10/D60), Ashtakavarga & Shadbala',
+      titleHi: 'षोडशवर्ग (D9/D10/D60), अष्टकवर्ग एवं षड्बल संश्लेषण',
+      icon: 'Award',
+      summaryEn: `Quantitative strength synthesis across Shadbala (6-fold planetary power), Sarvashtakavarga (SAV house bindus), Vargottama stability, and D9/D10/D60 alignment.`,
+      summaryHi: `षड्बल (६-आयामी ग्रह शक्ति), सर्वाष्टकवर्ग (SAV बिंदु), वर्गोत्तम स्थिति तथा नवांश/दशांश/षष्ट्यंश वर्ग कुंडलियों का सटीक संश्लेषण।`,
+      attributes: [
+        {
+          id: 'attr_shadbala_vimshopaka_power',
+          category: 'vargas_strength',
+          titleEn: 'Shadbala Strongest & Weakest Graha Power',
+          titleHi: 'षड्बल: सर्वाधिक सबल एवं निर्बल ग्रह',
+          valueEn: strongestShad
+            ? `Strongest: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x req) | Needs Support: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x req)`
+            : 'Balanced Shadbala distribution across the 7 classical grahas',
+          valueHi: strongestShad
+            ? `सर्वाधिक सबल: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x) | संवर्धन योग्य: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x)`
+            : 'सप्तग्रहों में संतुलित षड्बल वितरण',
+          explanationEn: `Planets exceeding 1.0x Shadbala ratio deliver their promised yogas reliably; planets below 1.0x require conscious effort and remedial strengthening.`,
+          explanationHi: `१.०० से अधिक षड्बल अनुपात वाले ग्रह अपने योगों का पूर्ण फल देते हैं, जबकि कम बल वाले ग्रहों के लिए विशेष प्रयास व उपाय लाभकारी रहते हैं।`,
+          pacBasisEn: `Strongest: ${strongestShad?.planet ?? '-'} (${strongestShad?.totalRupas.toFixed(1) ?? '-'} Rupas); Weakest: ${weakestShad?.planet ?? '-'}.`,
+          pacBasisHi: `प्रबलतम: ${strongestShad?.planet ?? '-'}; न्यूनतम: ${weakestShad?.planet ?? '-'}।`,
+          shastricRef: 'BPHS (Ch. 27 - Shadbala), Sripati Paddhati',
+          vargaRef: 'Shodashvarga',
+        },
+        {
+          id: 'attr_ashtakavarga_peak_weak',
+          category: 'vargas_strength',
+          titleEn: 'Sarvashtakavarga (SAV) Peak & Sensitive Houses',
+          titleHi: 'सर्वाष्टकवर्ग (SAV): उच्च व संवेदनशील भाव',
+          valueEn: peakSav.length
+            ? `Peak Bindus: ${peakSav.map((h) => `H${h.house} (${h.bindus})`).join(', ')} | Low Bindus: ${lowSav.map((h) => `H${h.house} (${h.bindus})`).join(', ')}`
+            : 'Balanced 28-bindu average across the 12 houses',
+          valueHi: peakSav.length
+            ? `उच्चतम बिंदु: ${peakSav.map((h) => `भाव ${h.house} (${h.bindus})`).join(', ')} | कम बिंदु: ${lowSav.map((h) => `भाव ${h.house} (${h.bindus})`).join(', ')}`
+            : 'द्वादश भावों में संतुलित अष्टकवर्ग बिंदु',
+          explanationEn: `Houses with 30+ SAV bindus flourish effortlessly during transits; houses below 25 bindus demand caution when Saturn or malefics transit through them.`,
+          explanationHi: `३०+ बिंदु वाले भाव गोचर में सहज सफलता देते हैं, जबकि २५ से कम बिंदु वाले भावों में शनि/पाप गोचर के समय सावधानी आवश्यक है।`,
+          pacBasisEn: `SAV Total: ${savArr.reduce((s: number, v: number) => s + v, 0)} bindus across 12 signs.`,
+          pacBasisHi: `कुल सर्वाष्टकवर्ग बिंदु: ${savArr.reduce((s: number, v: number) => s + v, 0)}।`,
+          shastricRef: 'BPHS (Ch. 66–72 - Ashtakavarga)',
+          vargaRef: 'SAV & BAV',
+        },
+        {
+          id: 'attr_d9_d10_vargottama_seal',
+          category: 'vargas_strength',
+          titleEn: 'Vargottama Stability & D9/D10/D60 Divisional Seal',
+          titleHi: 'वर्गोत्तम बल एवं D9/D10/D60 वर्ग पुष्टि',
+          valueEn: `${vargottamaList.length > 0 ? `Vargottama: ${vargottamaList.join(', ')}` : 'No Vargottama anchor (relies on D9/D10 dignity)'} | D9: ${d9LagnaSignName} · D10: ${d10LagnaSign} · D60: ${d60LagnaSign}`,
+          valueHi: `${vargottamaList.length > 0 ? `वर्गोत्तम: ${vargottamaList.join(', ')}` : 'नवांश/दशांश बल आधारित'} | D9: ${SIGN_HI[d9?.lagnaSignIndex ?? ascSignIdx]} · D10: ${d10LagnaSign} · D60: ${d60LagnaSign}`,
+          explanationEn: `A planet or Lagna occupying the same sign in D1 and D9 (Vargottama) acts like an unshakable pillar, guaranteeing consistency across life phases.`,
+          explanationHi: `D1 और D9 दोनों में एक ही राशि में स्थित ग्रह (वर्गोत्तम) जीवन भर स्थिर और प्रामाणिक फल देने की क्षमता रखता है।`,
+          pacBasisEn: `D9 Lagna: ${d9LagnaSignName}; D10 Lagna: ${d10LagnaSign}; Vargottama count: ${vargottamaList.length}.`,
+          pacBasisHi: `D9 लग्न: ${SIGN_HI[d9?.lagnaSignIndex ?? ascSignIdx]}; D10: ${d10LagnaSign}; वर्गोत्तम संख्या: ${vargottamaList.length}।`,
+          shastricRef: 'BPHS (Ch. 6 - Shodashvarga)',
+          vargaRef: 'D1, D9, D10 & D60',
+        },
+      ],
+    });
+  }
+
   return {
     generatedAt: new Date().toISOString(),
     birthSummary,
