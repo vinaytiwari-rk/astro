@@ -1291,14 +1291,30 @@ export function getComprehensiveMarriageAnalysis(
     (h2.lordHouse === 8) ||
     (h2.lordHouse === h7.lordHouse) ||
     (h8.tier === 'strong');
+  // Alimony / Marital Asset-Dispute Vigilance (2/6/7/8 PAC + Saturn-Mars with 8th/7th)
+  const MARRIAGE_SIGN_LORDS: GrahaKey[] = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'];
+  const l6Marriage = planets.find((p) => p.id === MARRIAGE_SIGN_LORDS[(h1.signIdx + 5) % 12]);
+  const satOrMarsOn7or8 = Boolean(
+    (saturn && [7, 8, 2].includes(saturn.placedHouse)) ||
+    (mars && [7, 8, 2].includes(mars.placedHouse))
+  );
+  const pac2678 =
+    [6, 8, 12].includes(h7.lordHouse) &&
+    ([2, 7, 8].includes(l6Marriage?.placedHouse ?? 0) || [2, 6, 7].includes(h8.lordHouse) || [6, 7, 8].includes(h2.lordHouse));
+  const alimonyDisputeWatch = satOrMarsOn7or8 && pac2678;
+
   const inLawsWealthBonus = inLawsWealth
     ? {
-        en: 'Strong yoga for financial support, property, or goodwill gains through in-laws after marriage',
-        hi: 'विवाह उपरांत ससुराल पक्ष से आर्थिक सहयोग, संपत्ति अथवा व्यावसायिक उन्नति का उत्तम योग',
+        en: 'Strong yoga for financial support, property, or goodwill gains through in-laws after marriage' +
+          (alimonyDisputeWatch ? ' | ⚠️ Marital Asset-Dispute Vigilance (2/6/7/8 + Saturn–Mars): Keep financial agreements transparent and prioritize mediation.' : ''),
+        hi: 'विवाह उपरांत ससुराल पक्ष से आर्थिक सहयोग, संपत्ति अथवा व्यावसायिक उन्नति का उत्तम योग' +
+          (alimonyDisputeWatch ? ' | ⚠️ वैवाहिक संपत्ति-विवाद सतर्कता (२/६/७/८ + शनि-मंगल): वित्तीय समझौते पारदर्शी रखें।' : ''),
       }
     : {
-        en: 'Self-earned marital prosperity; polite, dignified in-law relationship without financial dependency',
-        hi: 'स्व-अर्जित समृद्धि; ससुराल पक्ष से आत्मसम्मान व मर्यादित सौहार्दपूर्ण संबंध',
+        en: 'Self-earned marital prosperity; polite, dignified in-law relationship without financial dependency' +
+          (alimonyDisputeWatch ? ' | ⚠️ Marital Asset-Dispute Vigilance (2/6/7/8 + Saturn–Mars): Keep financial agreements transparent and prioritize mediation.' : ''),
+        hi: 'स्व-अर्जित समृद्धि; ससुराल पक्ष से आत्मसम्मान व मर्यादित सौहार्दपूर्ण संबंध' +
+          (alimonyDisputeWatch ? ' | ⚠️ वैवाहिक संपत्ति-विवाद सतर्कता (२/६/७/८ + शनि-मंगल): वित्तीय समझौते पारदर्शी रखें।' : ''),
       };
 
   // 6. Love / Unconventional / Inter-caste Marriage Analysis
@@ -1631,6 +1647,32 @@ export function getComprehensiveMedicalAstrology(
     flagsHi.push('त्वचा, एलर्जी व स्नायु स्वच्छता (बुध/राहु)');
   }
 
+  // Vector-Borne / Viral Blood-Fever & Platelet Immunity (K.N. Rao / BVB 82-chart study: Mars + Ketu + Moon/Venus/Sun)
+  const marsKetuLinked = Boolean(
+    mars && ketu && (
+      [1, 6, 8, 12].includes(mars.placedHouse) ||
+      [1, 6, 8, 12].includes(ketu.placedHouse) ||
+      mars.placedHouse === ketu.placedHouse
+    )
+  );
+  const viralMarkers = [
+    marsKetuLinked,
+    Boolean(moon && ([6, 8, 12].includes(moon.placedHouse) || (rahu && moon.placedHouse === rahu.placedHouse) || (saturn && moon.placedHouse === saturn.placedHouse))),
+    Boolean(venus && ([6, 8, 12].includes(venus.placedHouse) || (mars && venus.placedHouse === mars.placedHouse))),
+    Boolean(sunStrained),
+    [2, 3, 6, 7, 10, 11].includes(h1.signIdx), // Watery or Airy Lagna
+  ].filter(Boolean).length;
+  if (marsKetuLinked && viralMarkers >= 3) {
+    flagsEn.push('Viral Blood-Fever & Platelet Immunity (Mars–Ketu/Moon)');
+    flagsHi.push('विषाणुजनित रक्त-ज्वर व प्लेटलेट सुरक्षा (मंगल-केतु/चंद्र)');
+  }
+
+  // Moon Drekkana Recovery Shield (Moon in Drekkana of Mercury, Venus, or Jupiter)
+  const SIGN_LORDS_MED: GrahaKey[] = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'];
+  const moonDrekIdx = moon ? ((moon.signIndex + (moon.degreeInSign < 10 ? 0 : moon.degreeInSign < 20 ? 4 : 8)) % 12) : 0;
+  const moonDrekLord = SIGN_LORDS_MED[moonDrekIdx];
+  const moonDrekkanaShield = Boolean(moon && ['Mercury', 'Venus', 'Jupiter'].includes(moonDrekLord));
+
   const extMatches = evaluateExtendedMedicalConditions(planets);
   for (const em of extMatches) {
     if (!flagsEn.some((f) => f.toLowerCase().includes(em.conditionEn.split(' ')[0].toLowerCase()))) {
@@ -1649,8 +1691,8 @@ export function getComprehensiveMedicalAstrology(
       ? `निवारक स्वास्थ्य सतर्कता क्षेत्र: ${flagsHi.slice(0, 4).join(' | ')}`
       : 'उत्तम अंग-तंत्र संतुलन: हृदय, चयापचय व श्वास तंत्र में स्वाभाविक सुदृढ़ता',
     explEn: flagsEn.length > 0
-      ? `Extended Medical Screening (${extMatches.length + 8} axes) highlights ${flagsEn.join(', ')}. ${extTipsEn} Preventive lifestyle guidance only, never medical diagnosis.`
-      : 'No heavy multi-malefic clusters afflict the primary organ axes (2nd, 4th, 5th, 6th, 8th, 12th). Maintain regular preventive checkups and balanced diet.',
+      ? `Extended Medical Screening (${extMatches.length + 9} axes) highlights ${flagsEn.join(', ')}. ${extTipsEn}${moonDrekkanaShield ? ` Recovery Shield: Moon in benefic ${moonDrekLord} Drekkana supports swift recovery from acute fevers.` : ''} Preventive lifestyle guidance only, never medical diagnosis.`
+      : `No heavy multi-malefic clusters afflict the primary organ axes (2nd, 4th, 5th, 6th, 8th, 12th).${moonDrekkanaShield ? ` Moon in ${moonDrekLord} Drekkana adds strong recovery resilience.` : ''} Maintain regular preventive checkups and balanced diet.`,
     explHi: flagsHi.length > 0
       ? `विस्तृत चिकित्सा परीक्षण (${extMatches.length + 8} क्षेत्र) के अनुसार ${flagsHi.join(', ')} पर ध्यान दें। ${extTipsHi} यह केवल निवारक संकेत है, चिकित्सकीय निदान नहीं।`
       : 'प्रमुख शारीरिक तंत्रों पर कोई गंभीर बहु-पाप प्रभाव नहीं है। नियमित व्यायाम व सात्विक दिनचर्या से स्वास्थ्य उत्तम रहता है।',
@@ -1692,7 +1734,8 @@ export function getComprehensiveCareerAndWealthAnalysis(
   h12: HousePacProfile,
   d9?: DivisionalChart,
   d10?: DivisionalChart,
-  chartYogas?: Array<{ name: string; category?: string; isBenefic?: boolean }>
+  chartYogas?: Array<{ name: string; category?: string; isBenefic?: boolean }>,
+  ascDegInSign?: number
 ): ComprehensiveCareerResult {
   const SIGN_LORDS: GrahaKey[] = [
     'Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury',
@@ -1969,6 +2012,94 @@ export function getComprehensiveCareerAndWealthAnalysis(
     }
   }
 
+  // 7. Classical Overrides & Amplifiers (Gandanta/AK Override, Vipreet Raj Yoga, D10 Confirmation & Vyaya Erosion)
+  const isGandantaDeg = (signIdx: number, deg: number): boolean =>
+    ([3, 7, 11].includes(signIdx) && deg >= 26.6667) ||
+    ([0, 4, 8].includes(signIdx) && deg <= 3.3333);
+  const isRashiSandhiDeg = (deg: number): boolean => deg < 1.0 || deg > 29.0;
+
+  const akPlanet = planets.find((p) => p.charaKaraka === 'AK');
+  const isAkDebilitated = akPlanet?.dignity === 'Debilitated';
+  const isAkGandanta = Boolean(akPlanet && isGandantaDeg(akPlanet.signIndex, akPlanet.degreeInSign));
+  const isLagnaGandanta = ascDegInSign !== undefined && isGandantaDeg(ascSignIdx, ascDegInSign);
+  const isLagnaSandhi = ascDegInSign !== undefined && isRashiSandhiDeg(ascDegInSign);
+  const isSatMarsConj = Boolean(saturn && mars && saturn.placedHouse === mars.placedHouse);
+  const l1Planet = planets.find((p) => p.id === SIGN_LORDS[ascSignIdx]);
+
+  // Core Pillar Compromise: surface Raja/Dhana Yogas are severely curtailed when AK is debilitated/Gandanta or Lagna Sandhi + Sat-Mars affliction
+  const compromiseReasonsEn: string[] = [];
+  const compromiseReasonsHi: string[] = [];
+  if (isAkDebilitated && akPlanet) {
+    compromiseReasonsEn.push(`Debilitated Atmakaraka (${akPlanet.id})`);
+    compromiseReasonsHi.push(`नीचस्थ आत्मकारक (${GRAHA_HI[toGrahaKey(akPlanet.id)]})`);
+  }
+  if (isAkGandanta && akPlanet) {
+    compromiseReasonsEn.push(`AK ${akPlanet.id} in Gandanta (${akPlanet.degreeInSign.toFixed(1)}°)`);
+    compromiseReasonsHi.push(`आत्मकारक ${GRAHA_HI[toGrahaKey(akPlanet.id)]} गंडांत में`);
+  }
+  if (isLagnaSandhi) {
+    compromiseReasonsEn.push('Lagna in Rashi Sandhi');
+    compromiseReasonsHi.push('लग्न राशि-संधि में');
+  }
+  if (isSatMarsConj) {
+    compromiseReasonsEn.push(`Saturn–Mars conjunction (H${saturn?.placedHouse})`);
+    compromiseReasonsHi.push(`शनि-मंगल युति (भाव ${saturn?.placedHouse})`);
+  }
+
+  const surfaceYogaCompromised =
+    (isAkDebilitated && (isAkGandanta || isSatMarsConj || isLagnaSandhi)) ||
+    (isLagnaSandhi && isSatMarsConj) ||
+    (isAkGandanta && isSatMarsConj);
+
+  // Vipreet Raj Yoga (Harsha / Sarala / Vimala) + Mahapurusha + Dharma-Karmadhipati + D10 Confirmation
+  const vipreetYogas = detectedYogasEn.filter(
+    (y) => y.includes('Viparita') || y.includes('Harsha') || y.includes('Sarala') || y.includes('Vimala')
+  );
+  const hasMahapurusha = detectedYogasEn.some((y) => y.includes('Mahapurusha'));
+  const hasDharmaKarma = detectedYogasEn.some((y) => y.includes('Dharma-Karma'));
+  const hasGajakesari = detectedYogasEn.some((y) => y.includes('Gajakesari'));
+  const hasLagnaLordStrong = Boolean(l1Planet && l1Planet.dignity !== 'Debilitated' && l1Planet.placedHouse !== 12);
+  const hasExaltedArthaLord = [l2, l9, l10, l11].some((p) => p && isStrongDignity(p));
+  const d10LagnaSignIdx = d10?.lagnaSignIndex ?? ascSignIdx;
+  const d10LagnaLordId = SIGN_LORDS[d10LagnaSignIdx];
+  const d10LagnaLord = d10?.placements.find((pl) => pl.id === d10LagnaLordId);
+  const d10L10 = d10?.placements.find((pl) => pl.id === h10.lordId);
+  const d10Confirmed = Boolean(
+    d10Occupants.length > 0 ||
+    (d10L10 && [1, 4, 5, 7, 9, 10, 11].includes(d10L10.houseFromVargaLagna)) ||
+    (d10LagnaLord && [1, 4, 5, 7, 9, 10, 11].includes(d10LagnaLord.houseFromVargaLagna))
+  );
+
+  // Self-Made Billionaire / Vargottama & Effort-Luck Multipliers (11.8.1975 Delhi pattern)
+  const l3Planet = planets.find((p) => p.id === SIGN_LORDS[(ascSignIdx + 2) % 12]);
+  const allBeneficsKendraTrikona = [jupiter, venus, mercury]
+    .filter((p): p is PlanetPos => Boolean(p))
+    .every((p) => [1, 4, 5, 7, 9, 10].includes(p.placedHouse));
+  const maleficsInTrik = [saturn, mars, rahu, ketu]
+    .filter((p): p is PlanetPos => Boolean(p))
+    .every((p) => [3, 6, 8, 12].includes(p.placedHouse));
+  const effortLuck39 = Boolean(l3Planet && l9 && l3Planet.placedHouse === l9.placedHouse);
+  const legacy29In8 = Boolean(l2 && l9 && l2.placedHouse === 8 && l9.placedHouse === 8 && hasLagnaLordStrong);
+  const vargottamaCoreCount = [l1Planet, l2, moon].filter((p) => p?.isVargottama).length;
+  const shivrajYoga = Boolean(sun && jupiter && (sun.placedHouse === jupiter.placedHouse || [5, 7, 9].includes(((sun.placedHouse - jupiter.placedHouse + 12) % 12) || 12)));
+  if (shivrajYoga && !detectedYogasEn.includes('Shivraj Yoga')) {
+    detectedYogasEn.push('Shivraj Yoga');
+    detectedYogasHi.push('शिवराज योग');
+  }
+  if (l1Planet?.placedHouse === 11 && !detectedYogasEn.includes('Vahan / Labha Lagnesha Yoga')) {
+    detectedYogasEn.push('Vahan / Labha Lagnesha Yoga');
+    detectedYogasHi.push('लाभस्थ लग्नेश / वाहन योग');
+  }
+
+  // Vyaya / Maraka Wealth-Erosion Risk (e.g., 2nd/Lagna lord in 12th or debilitated 11th lord)
+  const isL1In12 = l1Planet?.placedHouse === 12;
+  const isL2In12 = l2?.placedHouse === 12;
+  const isL11Debilitated = l11?.dignity === 'Debilitated';
+  const hasWealthErosionRisk =
+    !surfaceYogaCompromised &&
+    vipreetYogas.length === 0 &&
+    ((isL2In12 && isL1In12) || (isL2In12 && isL11Debilitated) || (isL1In12 && isL11Debilitated));
+
   // Realistic 4-Tier Wealth Stratification
   const isL2Weak = h2.tier === 'afflicted';
   const isL11Weak = h11.tier === 'afflicted';
@@ -1980,24 +2111,54 @@ export function getComprehensiveCareerAndWealthAnalysis(
   if (isDhanaStrong) wealthPts += 2;
   if (induBenefics.length > 0) wealthPts += 2;
   if (detectedYogasEn.length >= 2) wealthPts += 1;
+  if (vipreetYogas.length >= 2 && l1Planet?.dignity !== 'Debilitated') wealthPts += 3;
+  else if (vipreetYogas.length === 1 && l1Planet?.dignity !== 'Debilitated') wealthPts += 2;
+  if (hasMahapurusha) wealthPts += 2;
+  if (hasDharmaKarma) wealthPts += 1;
+  if (hasGajakesari && hasLagnaLordStrong) wealthPts += 1;
+  if (hasExaltedArthaLord) wealthPts += 2;
+  if (d10Confirmed && detectedYogasEn.length >= 1) wealthPts += 1;
+  if (allBeneficsKendraTrikona) wealthPts += 2;
+  if (maleficsInTrik && hasLagnaLordStrong) wealthPts += 1;
+  if (effortLuck39) wealthPts += 1;
+  if (legacy29In8) wealthPts += 2;
+  if (vargottamaCoreCount >= 2) wealthPts += 2;
+  else if (vargottamaCoreCount === 1) wealthPts += 1;
+
   if (isL2Weak) wealthPts -= 1;
   if (isL11Weak) wealthPts -= 1;
-  if (h12.tier === 'afflicted') wealthPts -= 1;
+  if (h12.tier === 'afflicted' && vipreetYogas.length === 0) wealthPts -= 1;
+
+  if (surfaceYogaCompromised) {
+    wealthPts = Math.min(wealthPts - 4, 1);
+  } else if (hasWealthErosionRisk) {
+    wealthPts = Math.min(wealthPts, 3);
+  }
 
   let wealthValEn = '';
   let wealthValHi = '';
   let wealthExplEn = '';
   let wealthExplHi = '';
 
-  if (wealthPts >= 6) {
+  if (surfaceYogaCompromised) {
+    wealthValEn = 'Restrained / Tested Financial Trajectory (Surface Yogas Curtailed): Requires disciplined effort over passive luck';
+    wealthValHi = 'संघर्षपूर्ण व परीक्षित आर्थिक मार्ग (सतही राजयोग बाधित): सहज भाग्य की अपेक्षा निरंतर परिश्रम व अनुशासन आवश्यक';
+    wealthExplEn = `⚠️ Core Pillar Override: Although surface yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Kendra/Trikona links'}) appear on paper, ${compromiseReasonsEn.join(' + ')} severely curtail effortless Rajayoga manifestation. Sustainable wealth comes only through steady persistence, conservative risk management, and Atmakaraka remedial discipline.`;
+    wealthExplHi = `⚠️ मूल स्तंभ अवरोध: कुंडली में सतही योग (${detectedYogasHi.slice(0, 3).join(', ') || 'केंद्र-त्रिकोण संयोग'}) दिखने के बावजूद ${compromiseReasonsHi.join(' + ')} के कारण सहज राजयोग फलित नहीं होता। स्थायी आर्थिक प्रगति केवल संयमित परिश्रम व सुरक्षित निवेश से संभव है।`;
+  } else if (hasWealthErosionRisk) {
+    wealthValEn = 'Volatile Peak-and-Drawdown Wealth Profile (Vyaya / Debt Vigilance): Protect capital against over-leveraging';
+    wealthValHi = 'उतार-चढ़ाव व व्यय-प्रधान धन योग (ऋण-क्षय सतर्कता): अत्यधिक कर्ज व जोखिम से पूंजी की रक्षा आवश्यक';
+    wealthExplEn = `⚠️ Wealth-Erosion / Debt-Cycle Watch: Despite active Raja/Neecha-Bhanga yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'career peaks'}), 2nd/Lagna lord in the 12th or debilitated 11th lord warns against over-leveraging, speculative debt, and sudden capital drawdown. Ring-fencing reserves and conservative cashflow discipline are essential.`;
+    wealthExplHi = `⚠️ धन-क्षय व ऋण-चक्र सतर्कता: सक्रिय योगों (${detectedYogasHi.slice(0, 3).join(', ') || 'उच्च पद योग'}) के बाद भी द्वितीयेश/लग्नेश का द्वादश भाव में होना अथवा एकादशेश का नीचस्थ होना अत्यधिक ऋण व पूंजी-क्षय से बचने की चेतावनी देता है।`;
+  } else if (wealthPts >= 6) {
     wealthValEn = 'Apex Rajayoga & Legacy Wealth Potential: High compounding capacity, multi-asset portfolio & enduring abundance';
     wealthValHi = 'उच्च राजयोग व स्थायी वैभव श्रेणी: प्रबल धन-संचय क्षमता, बहु-संपत्ति व दीर्घकालिक समृद्धि';
-    wealthExplEn = `Exceptionally fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active Dhana/Raja yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} elevate wealth far above average.`;
-    wealthExplHi = `अत्यंत सबल द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), सक्रिय राज-धन योग तथा ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न असाधारण आर्थिक उत्थान दर्शाते हैं।`;
+    wealthExplEn = `Exceptionally fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active Dhana/Raja/Vipreet yogas (${detectedYogasEn.slice(0, 4).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} elevate wealth far above average.${isLagnaGandanta ? ' Note: Lagna in Gandanta indicates humble/tested beginnings before monumental self-made rise.' : ''}`;
+    wealthExplHi = `अत्यंत सबल द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), सक्रिय राज-धन/विपरीत राजयोग तथा ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न असाधारण आर्थिक उत्थान दर्शाते हैं।${isLagnaGandanta ? ' विशेष: गंडांत लग्न प्रारंभिक संघर्ष के बाद विशाल स्वनिर्मित साम्राज्य का संकेत देता है।' : ''}`;
   } else if (wealthPts >= 4) {
     wealthValEn = 'Strong Prosperity & Asset-Building Potential: Multi-stream earnings, property accumulation & long-term financial independence';
     wealthValHi = 'उत्तम समृद्धि व संपत्ति निर्माण योग: बहु-आयामी आय स्रोत, अचल संपत्ति व दीर्घकालिक आर्थिक सुदृढ़ता';
-    wealthExplEn = `Fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} support compounding wealth during favorable Mahadashas.`;
+    wealthExplEn = `Fortified 2nd/11th houses (${h2.tier}/${h11.tier}), active yogas (${detectedYogasEn.slice(0, 3).join(', ') || 'Dhana alignment'}), and Indu Lagna in ${SIGNS[induSignIdx].name} support compounding wealth during favorable Mahadashas.${isLagnaGandanta ? ' Lagna Gandanta notes early struggle turning into durable success.' : ''}`;
     wealthExplHi = `सशक्त द्वितीय/एकादश भाव (${TIER_HI[h2.tier]}/${TIER_HI[h11.tier]}), शुभ राज/धन योग (${detectedYogasHi.slice(0, 3).join(', ') || 'धन संयोग'}) और ${SIGN_HI_NAMES[induSignIdx]} में इंदु लग्न उत्तम आर्थिक उन्नति व संपत्ति निर्माण दर्शाते हैं।`;
   } else if (wealthPts >= 2) {
     wealthValEn = 'Comfortable Upper-Middle Financial Trajectory: Reliable cashflow, steady asset growth & balanced family prosperity';
@@ -2016,7 +2177,7 @@ export function getComprehensiveCareerAndWealthAnalysis(
     valHi: wealthValHi,
     explEn: wealthExplEn,
     explHi: wealthExplHi,
-    pacEn: `H2 (${h2.tier}, L2 in H${l2?.placedHouse}) & H11 (${h11.tier}, L11 in H${l11?.placedHouse}); H8 (${h8.tier}), H12 (${h12.tier}).`,
+    pacEn: `H2 (${h2.tier}, L2 in H${l2?.placedHouse}) & H11 (${h11.tier}, L11 in H${l11?.placedHouse}); H8 (${h8.tier}), H12 (${h12.tier}); Score: ${wealthPts}${surfaceYogaCompromised ? ' [AK/Gandanta Override]' : hasWealthErosionRisk ? ' [Vyaya Erosion Watch]' : ''}.`,
     pacHi: `द्वितीय (${TIER_HI[h2.tier]}) व एकादश (${TIER_HI[h11.tier]}); अष्टम (${TIER_HI[h8.tier]}), द्वादश (${TIER_HI[h12.tier]})।`,
   };
 
@@ -2025,13 +2186,23 @@ export function getComprehensiveCareerAndWealthAnalysis(
 
   const yogaListEn = detectedYogasEn.length > 0 ? detectedYogasEn.join(', ') : 'Steady Karma-Artha alignment (earned rise)';
   const yogaListHi = detectedYogasHi.length > 0 ? detectedYogasHi.join(', ') : 'परिश्रम-आधारित क्रमिक कर्म-अर्थ योग';
+  const overrideSuffixEn = surfaceYogaCompromised
+    ? ` ⚠️ Surface Yogas Curtailed (${compromiseReasonsEn.join(', ')})`
+    : hasWealthErosionRisk
+    ? ' ⚠️ Vyaya/Debt-Erosion Watch (L2/L1 in H12 or L11 Debilitated)'
+    : '';
+  const overrideSuffixHi = surfaceYogaCompromised
+    ? ` ⚠️ सतही योग बाधित (${compromiseReasonsHi.join(', ')})`
+    : hasWealthErosionRisk
+    ? ' ⚠️ व्यय/ऋण-क्षय सतर्कता'
+    : '';
 
   const rajaDhanaInduYogas = {
-    valEn: `${yogaListEn} | Indu Lagna: ${SIGNS[induSignIdx].name} (H${induHouseFromLagna})`,
-    valHi: `${yogaListHi} | इंदु लग्न: ${SIGN_HI_NAMES[induSignIdx]} (भाव ${induHouseFromLagna})`,
-    explEn: `${induSummaryEn}. ${induBenefics.length > 0 ? 'Natural benefics in Indu Lagna elevate financial flow and material comfort.' : induMalefics.length > 0 ? 'Malefics in Indu Lagna indicate wealth earned through persistent effort and strategic endurance rather than easy luck.' : 'Wealth timing activates when Indu Lagna lord or Raja/Dhana Yoga planets run their Dasha.'}`,
-    explHi: `${induSummaryHi}। ${induBenefics.length > 0 ? 'इंदु लग्न में शुभ ग्रह धन-प्रवाह व भौतिक समृद्धि को प्रबल बनाते हैं।' : induMalefics.length > 0 ? 'इंदु लग्न में क्रूर/कठोर ग्रह निरंतर परिश्रम व रणनीतिक धैर्य से धनार्जन का संकेत देते हैं।' : 'इंदु लग्नेश अथवा राज-धन योग कारक ग्रहों की दशा में विशेष आर्थिक उत्थान होता है।'}`,
-    pacEn: `Lagna 9th Lord ${lagna9Lord} (${INDU_KALAS[lagna9Lord]}) + Moon 9th Lord ${moon9Lord} (${INDU_KALAS[moon9Lord]}) -> Indu Sign ${SIGNS[induSignIdx].name}; Active Yogas: ${detectedYogasEn.length}.`,
+    valEn: `${yogaListEn}${overrideSuffixEn} | Indu Lagna: ${SIGNS[induSignIdx].name} (H${induHouseFromLagna})`,
+    valHi: `${yogaListHi}${overrideSuffixHi} | इंदु लग्न: ${SIGN_HI_NAMES[induSignIdx]} (भाव ${induHouseFromLagna})`,
+    explEn: `${induSummaryEn}. ${surfaceYogaCompromised ? `Classical caution: ${compromiseReasonsEn.join(' and ')} weaken surface Raja/Dhana Yoga delivery.` : induBenefics.length > 0 ? 'Natural benefics in Indu Lagna elevate financial flow and material comfort.' : induMalefics.length > 0 ? 'Malefics in Indu Lagna indicate wealth earned through persistent effort and strategic endurance rather than easy luck.' : 'Wealth timing activates when Indu Lagna lord or Raja/Dhana Yoga planets run their Dasha.'}`,
+    explHi: `${induSummaryHi}। ${surfaceYogaCompromised ? `शास्त्रीय सावधानी: ${compromiseReasonsHi.join(' व ')} के कारण सतही राजयोग का फल सीमित रहता है।` : induBenefics.length > 0 ? 'इंदु लग्न में शुभ ग्रह धन-प्रवाह व भौतिक समृद्धि को प्रबल बनाते हैं।' : induMalefics.length > 0 ? 'इंदु लग्न में क्रूर/कठोर ग्रह निरंतर परिश्रम व रणनीतिक धैर्य से धनार्जन का संकेत देते हैं।' : 'इंदु लग्नेश अथवा राज-धन योग कारक ग्रहों की दशा में विशेष आर्थिक उत्थान होता है।'}`,
+    pacEn: `Lagna 9th Lord ${lagna9Lord} (${INDU_KALAS[lagna9Lord]}) + Moon 9th Lord ${moon9Lord} (${INDU_KALAS[moon9Lord]}) -> Indu Sign ${SIGNS[induSignIdx].name}; Active Yogas: ${detectedYogasEn.length}; D10 Confirmed: ${d10Confirmed ? 'Yes' : 'No'}.`,
     pacHi: `लग्न नवमेश ${GRAHA_HI[lagna9Lord]} (${INDU_KALAS[lagna9Lord]}) + चंद्र नवमेश ${GRAHA_HI[moon9Lord]} (${INDU_KALAS[moon9Lord]}) -> इंदु राशि ${SIGN_HI_NAMES[induSignIdx]}।`,
   };
 

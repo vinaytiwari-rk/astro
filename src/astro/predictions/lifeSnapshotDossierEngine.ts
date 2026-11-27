@@ -2065,7 +2065,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       h12Prof,
       d9,
       d10,
-      chart.yogas
+      chart.yogas,
+      asc.degreeInSign
     );
     const finDetails = getCareerFinancialDetails(h11Prof, h12Prof, h8Prof);
 
@@ -2306,6 +2307,37 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           (mercury.dignity === 'Debilitated' && (sameSign(mercury, mars) || sameSign(mercury, saturn))))
     );
     const pisachaStress = sameSign(mars, ketu);
+    const satMarsUnmada = Boolean(
+      saturn &&
+        mars &&
+        sameSign(saturn, mars) &&
+        ([1, 4, 7, 10, 12].includes(saturn.placedHouse) || sameSign(saturn, moon))
+    );
+    const isGandantaPt = (signIdx: number, deg: number) =>
+      ([3, 7, 11].includes(signIdx) && deg >= 26.6667) || ([0, 4, 8].includes(signIdx) && deg <= 3.3333);
+    const akBody = planets.find((p) => p.charaKaraka === 'AK');
+    const gandantaSensitivity = Boolean(
+      isGandantaPt(ascSignIdx, asc.degreeInSign) ||
+        (moon && isGandantaPt(moon.signIndex, moon.degreeInSign)) ||
+        (akBody && isGandantaPt(akBody.signIndex, akBody.degreeInSign))
+    );
+    const nonLumNodePlanets = planets.filter((p) => !['Sun', 'Moon', 'Rahu', 'Ketu'].includes(p.id));
+    const isKemadruma = Boolean(
+      moon &&
+        !nonLumNodePlanets.some((p) => {
+          const diff = (p.signIndex - moon.signIndex + 12) % 12;
+          return diff === 1 || diff === 11;
+        })
+    );
+    const kemadrumaAfflicted = Boolean(
+      isKemadruma &&
+        moon &&
+        !jupShieldsMoon &&
+        (sameSign(moon, saturn) ||
+          sameSign(moon, mars) ||
+          sameSign(moon, rahu) ||
+          (saturn && [1, 4, 7, 10].includes(((moon.placedHouse - saturn.placedHouse + 12) % 12) || 12)))
+    );
     const moonNodeOrMaleficNoJup = Boolean(
       moon &&
         !jupShieldsMoon &&
@@ -2325,6 +2357,18 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     if (pisachaStress) {
       stressSignalsEn.push('Mars–Ketu (Pisacha/Agni) impulse heat');
       stressSignalsHi.push('मंगल-केतु अग्नि आवेग');
+    }
+    if (satMarsUnmada) {
+      stressSignalsEn.push('Saturn–Mars (Unmada/Conflict) pressure');
+      stressSignalsHi.push('शनि-मंगल (उन्माद/संघर्ष) मानसिक दबाव');
+    }
+    if (gandantaSensitivity) {
+      stressSignalsEn.push('Gandanta junction sensitivity');
+      stressSignalsHi.push('गंडांत संधि मानसिक संवेदनशीलता');
+    }
+    if (kemadrumaAfflicted) {
+      stressSignalsEn.push('Kemadruma Moon under malefic strain');
+      stressSignalsHi.push('केमद्रुम चंद्र पर पाप प्रभाव');
     }
     if (moonNodeOrMaleficNoJup) {
       stressSignalsEn.push('Unshielded Moon sensitivity');
@@ -2470,18 +2514,66 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'health_crises',
           titleEn: 'Crucible Testing Eras & Phoenix-Like Resurrection',
           titleHi: 'जीवन की अग्नि-परीक्षाएं, आघात व पुनर्विजय',
-          valueEn: p8Det.crises.valEn + (
-            (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-            (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse))
-              ? ' | Legal / Bandhana Vigilance: Risk of prolonged litigation, confinement, or regulatory pressure during Saturn/Rahu periods'
-              : ''
-          ),
-          valueHi: p8Det.crises.valHi + (
-            (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-            (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse))
-              ? ' | बंधन / कानूनी सतर्कता: शनि/राहु दशा में मुकदमा, कानूनी विवाद या बंधन-तुल्य बाधा की संभावना'
-              : ''
-          ),
+          valueEn: p8Det.crises.valEn + (() => {
+            const maleficsSet = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
+            const countMal = (h: number) => planets.filter((p) => p.placedHouse === h && maleficsSet.has(p.id)).length;
+            const moonSat410 = Boolean(
+              moon &&
+                saturn &&
+                (((moon.placedHouse - saturn.placedHouse + 12) % 12) === 3 ||
+                  ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
+                !jupShieldsMoon
+            );
+            const classicalBandhana =
+              (countMal(2) > 0 && countMal(2) === countMal(12)) ||
+              (countMal(5) > 0 && countMal(5) === countMal(9)) ||
+              (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              moonSat410 ||
+              (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
+              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
+            const rahuVedha = Boolean(
+              rahu &&
+                (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)
+            );
+            let extra = '';
+            if (classicalBandhana) {
+              extra += ' | Bandhana / Legal Vigilance: Risk of prolonged litigation, confinement, or regulatory pressure during Saturn/Rahu or Dasha-Chiddra transitions';
+            }
+            if (rahuVedha) {
+              extra += ' | Rahu Vedha & Dasha-Chiddra Caution: Sudden karmic pivots or reputation tests during Dasha junctions';
+            }
+            return extra;
+          })(),
+          valueHi: p8Det.crises.valHi + (() => {
+            const maleficsSet = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
+            const countMal = (h: number) => planets.filter((p) => p.placedHouse === h && maleficsSet.has(p.id)).length;
+            const moonSat410 = Boolean(
+              moon &&
+                saturn &&
+                (((moon.placedHouse - saturn.placedHouse + 12) % 12) === 3 ||
+                  ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
+                !jupShieldsMoon
+            );
+            const classicalBandhana =
+              (countMal(2) > 0 && countMal(2) === countMal(12)) ||
+              (countMal(5) > 0 && countMal(5) === countMal(9)) ||
+              (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              moonSat410 ||
+              (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
+              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
+            const rahuVedha = Boolean(
+              rahu &&
+                (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)
+            );
+            let extra = '';
+            if (classicalBandhana) {
+              extra += ' | बंधन / कानूनी सतर्कता: शनि/राहु दशा या दशा-छिद्र में मुकदमा, कानूनी विवाद या बंधन-तुल्य बाधा की संभावना';
+            }
+            if (rahuVedha) {
+              extra += ' | राहु वेध व दशा-छिद्र सावधानी: दशा-संधि काल में आकस्मिक परिवर्तन व प्रतिष्ठा परीक्षा से सजग रहें';
+            }
+            return extra;
+          })(),
           explanationEn: p8Det.crises.explEn,
           explanationHi: p8Det.crises.explHi,
           pacBasisEn: `8th House ${h8Sign.name}; Saturn in House ${saturn?.placedHouse}; Lagna Lord in H${l1House}.`,
