@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AV Astro Vibe</string>
+    <string name="title_activity_main">AV Astro Vibe</string>
+    <string name="package_name">com.avastrovibe.app</string>
+    <string name="custom_url_scheme">com.avastrovibe.app</string>
+</resources>

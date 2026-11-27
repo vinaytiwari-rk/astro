@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cap:sync": "npm run build && npx cap sync android"
   },
   "keywords": [
     "vedic-astrology",
@@ -18,6 +19,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@capacitor/android": "^8.6.3",
+    "@capacitor/core": "^8.6.3",
     "astronomy-engine": "^2.1.19",
     "cities.json": "^1.1.66",
     "city-timezones": "^1.3.4",
@@ -27,6 +30,7 @@
     "tz-lookup": "^6.1.25"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.2.0",
