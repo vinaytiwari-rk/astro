@@ -1697,6 +1697,22 @@ export function getComprehensiveMedicalAstrology(
     flagsHi.push('विषाणुजनित रक्त-ज्वर व प्लेटलेट सुरक्षा (मंगल-केतु/चंद्र)');
   }
 
+  // Rakta-Majja (Blood & Bone-Marrow) & Sankranti (<1° Sun) Preventive Watch (22 Jan 1962 & Sankranti cases)
+  const raktaMajjaWatch = Boolean(
+    moon && mars &&
+    (moon.placedHouse === mars.placedHouse || Math.abs(moon.placedHouse - mars.placedHouse) === 6 || ((mars.placedHouse - moon.placedHouse + 12) % 12) === 5) &&
+    ((rahu && (moon.placedHouse === rahu.placedHouse || Math.abs(moon.placedHouse - rahu.placedHouse) === 6)) || (ketu && moon.placedHouse === ketu.placedHouse)) &&
+    (jupiter?.dignity === 'Debilitated' || mars.dignity === 'Debilitated' || mars.avasta === 'Mrita')
+  );
+  if (raktaMajjaWatch) {
+    flagsEn.push('Rakta–Majja (Blood & Bone-Marrow) Preventive Hematology (Moon–Mars/Rahu)');
+    flagsHi.push('रक्त-मज्जा व अस्थि-मज्जा निवारक परीक्षण (चंद्र-मंगल/राहु)');
+  }
+  if (sun && sun.degreeInSign < 1.0) {
+    flagsEn.push('Sankranti Dosha Sensitivity (Sun 0°–1° Ingress)');
+    flagsHi.push('संक्रांति दोष संवेदनशीलता (सूर्य ०°–१° प्रवेश)');
+  }
+
   // Moon Drekkana Recovery Shield (Moon in Drekkana of Mercury, Venus, or Jupiter)
   const SIGN_LORDS_MED: GrahaKey[] = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'];
   const moonDrekIdx = moon ? ((moon.signIndex + (moon.degreeInSign < 10 ? 0 : moon.degreeInSign < 20 ? 4 : 8)) % 12) : 0;
@@ -2138,6 +2154,16 @@ export function getComprehensiveCareerAndWealthAnalysis(
     !surfaceYogaCompromised &&
     vipreetYogas.length === 0 &&
     ((isL2In12 && isL1In12) || (isL2In12 && isL11Debilitated) || (isL1In12 && isL11Debilitated));
+  const rahuIn12PartnerWatch = rahu?.placedHouse === 12;
+  const khazanaKhazanchiYoga = Boolean(
+    moon && saturn &&
+    (moon.placedHouse === saturn.placedHouse || Math.abs(moon.placedHouse - saturn.placedHouse) === 6 || [1, 4, 7, 10].includes(((saturn.placedHouse - moon.placedHouse + 12) % 12) || 12)) &&
+    moon.dignity !== 'Debilitated' && saturn.dignity !== 'Debilitated'
+  );
+  if (khazanaKhazanchiYoga && !detectedYogasEn.includes('Khazana–Khazanchi (Moon–Saturn) Treasury Link')) {
+    detectedYogasEn.push('Khazana–Khazanchi (Moon–Saturn) Treasury Link');
+    detectedYogasHi.push('खजाना-खजांची (चंद्र-शनि) कोष योग');
+  }
 
   // Realistic 4-Tier Wealth Stratification
   const isL2Weak = h2.tier === 'afflicted';
@@ -2239,8 +2265,8 @@ export function getComprehensiveCareerAndWealthAnalysis(
   const rajaDhanaInduYogas = {
     valEn: `${yogaListEn}${overrideSuffixEn} | Indu Lagna: ${SIGNS[induSignIdx].name} (H${induHouseFromLagna})`,
     valHi: `${yogaListHi}${overrideSuffixHi} | इंदु लग्न: ${SIGN_HI_NAMES[induSignIdx]} (भाव ${induHouseFromLagna})`,
-    explEn: `${induSummaryEn}. ${surfaceYogaCompromised ? `Classical caution: ${compromiseReasonsEn.join(' and ')} weaken surface Raja/Dhana Yoga delivery.` : induBenefics.length > 0 ? 'Natural benefics in Indu Lagna elevate financial flow and material comfort.' : induMalefics.length > 0 ? 'Malefics in Indu Lagna indicate wealth earned through persistent effort and strategic endurance rather than easy luck.' : 'Wealth timing activates when Indu Lagna lord or Raja/Dhana Yoga planets run their Dasha.'}`,
-    explHi: `${induSummaryHi}। ${surfaceYogaCompromised ? `शास्त्रीय सावधानी: ${compromiseReasonsHi.join(' व ')} के कारण सतही राजयोग का फल सीमित रहता है।` : induBenefics.length > 0 ? 'इंदु लग्न में शुभ ग्रह धन-प्रवाह व भौतिक समृद्धि को प्रबल बनाते हैं।' : induMalefics.length > 0 ? 'इंदु लग्न में क्रूर/कठोर ग्रह निरंतर परिश्रम व रणनीतिक धैर्य से धनार्जन का संकेत देते हैं।' : 'इंदु लग्नेश अथवा राज-धन योग कारक ग्रहों की दशा में विशेष आर्थिक उत्थान होता है।'}`,
+    explEn: `${induSummaryEn}. ${surfaceYogaCompromised ? `Classical caution: ${compromiseReasonsEn.join(' and ')} weaken surface Raja/Dhana Yoga delivery.` : induBenefics.length > 0 ? 'Natural benefics in Indu Lagna elevate financial flow and material comfort.' : induMalefics.length > 0 ? 'Malefics in Indu Lagna indicate wealth earned through persistent effort and strategic endurance rather than easy luck.' : 'Wealth timing activates when Indu Lagna lord or Raja/Dhana Yoga planets run their Dasha.'}${rahuIn12PartnerWatch ? ' Rahu in 12th Watch: Audit partnership agreements and tax compliance carefully (especially around age 42 / Rahu periods) to prevent partner-related losses.' : ''}`,
+    explHi: `${induSummaryHi}। ${surfaceYogaCompromised ? `शास्त्रीय सावधानी: ${compromiseReasonsHi.join(' व ')} के कारण सतही राजयोग का फल सीमित रहता है।` : induBenefics.length > 0 ? 'इंदु लग्न में शुभ ग्रह धन-प्रवाह व भौतिक समृद्धि को प्रबल बनाते हैं।' : induMalefics.length > 0 ? 'इंदु लग्न में क्रूर/कठोर ग्रह निरंतर परिश्रम व रणनीतिक धैर्य से धनार्जन का संकेत देते हैं।' : 'इंदु लग्नेश अथवा राज-धन योग कारक ग्रहों की दशा में विशेष आर्थिक उत्थान होता है।'}${rahuIn12PartnerWatch ? ' द्वादश राहु सतर्कता: साझेदारी व कर (Tax) अनुपालन में पूर्ण पारदर्शिता रखें।' : ''}`,
     pacEn: `Lagna 9th Lord ${lagna9Lord} (${INDU_KALAS[lagna9Lord]}) + Moon 9th Lord ${moon9Lord} (${INDU_KALAS[moon9Lord]}) -> Indu Sign ${SIGNS[induSignIdx].name}; Active Yogas: ${detectedYogasEn.length}; D10 Confirmed: ${d10Confirmed ? 'Yes' : 'No'}.`,
     pacHi: `लग्न नवमेश ${GRAHA_HI[lagna9Lord]} (${INDU_KALAS[lagna9Lord]}) + चंद्र नवमेश ${GRAHA_HI[moon9Lord]} (${INDU_KALAS[moon9Lord]}) -> इंदु राशि ${SIGN_HI_NAMES[induSignIdx]}।`,
   };
