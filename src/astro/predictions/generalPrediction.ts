@@ -226,9 +226,20 @@ function buildReaderPrediction(
   const kind = dignityKind(primaryLord.dignity);
   const planetEn = primaryLord.id;
   const planetHi = HI_NAMES[primaryLord.id] ?? primaryLord.id;
+
+  // Check Gandanta / Debilitated AK / Rashi Sandhi override for honest natal readings
+  const isGandantaLon = (signIdx: number, deg: number) =>
+    ([3, 7, 11].includes(signIdx) && deg >= 26.6667) || ([0, 4, 8].includes(signIdx) && deg <= 3.3333);
+  const akBody = chart.planets.find((p) => p.charaKaraka === 'AK');
+  const isAkCompromised = Boolean(akBody && akBody.dignity === 'Debilitated' && isGandantaLon(akBody.signIndex, akBody.degreeInSign));
+  const isLagnaSandhi = chart.ascendant.degreeInSign < 1.0 || chart.ascendant.degreeInSign > 29.0;
+
   let conditionEn: string;
   let conditionHi: string;
-  if (kind === 'supportive') {
+  if (isAkCompromised || (akBody?.dignity === 'Debilitated' && isLagnaSandhi)) {
+    conditionEn = `Although surface combinations appear around ${destination.en}, a debilitated Atmakaraka (${akBody?.id}) in Gandanta/Sandhi tempers effortless results—sustained discipline matters most.`;
+    conditionHi = `यद्यपि ${destination.hi} के आसपास सतही योग दिखते हैं, परंतु नीचस्थ/गंडांत आत्मकारक (${HI_NAMES[akBody?.id ?? ''] ?? akBody?.id}) के कारण सहज फल सीमित रहते हैं और निरंतर परिश्रम आवश्यक होता है।`;
+  } else if (kind === 'supportive') {
     conditionEn = `This gives the theme a supportive starting point; steady effort around ${destination.en} can help it develop constructively.`;
     conditionHi = `यह इस विषय को सहायक आधार देता है; ${destination.hi} से जुड़े निरंतर प्रयास इसे बेहतर दिशा दे सकते हैं।`;
   } else if (kind === 'caution') {

@@ -937,9 +937,44 @@ function buildDomain(chart: ChartData, config: DomainConfig, classicalYogas: Det
   const hasSupport = strengthsEn.length > 0, hasCaution = watchoutsEn.length > 0;
   const toneEn = hasSupport && hasCaution ? 'mixed' : hasSupport ? 'more supportive' : hasCaution ? 'more challenging' : 'insufficient';
   const toneHi = hasSupport && hasCaution ? 'मिले-जुले' : hasSupport ? 'अपेक्षाकृत अनुकूल' : hasCaution ? 'अपेक्षाकृत चुनौतीपूर्ण' : 'अपर्याप्त';
-  const score = Math.max(25, Math.min(75, Math.round(50 + (count ? (balance / count) * 14 : 0))));
-  const ratingEn = score >= 64 ? 'Very Good' : score <= 40 ? 'Challenging' : 'Moderate';
-  const ratingHi = score >= 64 ? 'उत्तम' : score <= 40 ? 'चुनौतीपूर्ण' : 'मध्यम';
+
+  // Yoga, Gandanta/AK & Bhanga calibration so ratings span Challenging -> Moderate -> Very Good -> Excellent
+  const isGandantaLon = (signIdx: number, deg: number) =>
+    ([3, 7, 11].includes(signIdx) && deg >= 26.6667) || ([0, 4, 8].includes(signIdx) && deg <= 3.3333);
+  const akPlanet = chart.planets.find((p) => p.charaKaraka === 'AK');
+  const isAkDeb = akPlanet?.dignity === 'Debilitated';
+  const isAkGandanta = Boolean(akPlanet && isGandantaLon(akPlanet.signIndex, akPlanet.degreeInSign));
+  const isLagnaSandhi = chart.ascendant.degreeInSign < 1.0 || chart.ascendant.degreeInSign > 29.0;
+  const satP = chart.planets.find((p) => p.id === 'Saturn');
+  const marP = chart.planets.find((p) => p.id === 'Mars');
+  const isSatMarsSame = Boolean(satP && marP && satP.rasiHouseNumber === marP.rasiHouseNumber);
+  const coreCompromised = (isAkDeb && (isAkGandanta || isSatMarsSame || isLagnaSandhi)) || (isLagnaSandhi && isSatMarsSame);
+
+  const activeClassicalPts = Math.min(
+    18,
+    relatedClassicalYogas
+      .filter((y) => (y.strength === 'Strong' || y.strength === 'Supreme') && y.bhangaStatus !== 'Bhanga')
+      .length * 5
+  );
+  const activeChartYogaPts = Math.min(
+    9,
+    relatedYogas.filter((y) => y.strength === 'Strong').length * 3
+  );
+  const bhangaPenalty = relatedClassicalYogas.filter((y) => y.bhangaStatus === 'Bhanga').length * 4;
+  const coreOverridePenalty = coreCompromised ? 16 : (isAkDeb || isAkGandanta) ? 6 : 0;
+
+  if (coreCompromised) {
+    watchoutsEn.unshift(`Core Pillar Override: ${isAkDeb ? `Debilitated Atmakaraka (${akPlanet?.id})` : 'Lagna Sandhi'}${isAkGandanta ? ' in Gandanta' : ''} curtails surface yogas.`);
+    watchoutsHi.unshift(`मूल स्तंभ अवरोध: ${isAkDeb ? `नीचस्थ आत्मकारक (${akPlanet?.id})` : 'लग्न संधि'}${isAkGandanta ? ' (गंडांत)' : ''} के कारण सतही योगों का फल सीमित होता है।`);
+  }
+
+  const rawScore = 50 + (count ? (balance / count) * 28 : 0) + activeClassicalPts + activeChartYogaPts - bhangaPenalty - coreOverridePenalty;
+  const uncappedScore = Math.max(20, Math.min(95, Math.round(rawScore)));
+  const score = coreCompromised ? Math.min(uncappedScore, 40) : uncappedScore;
+  const ratingEn: DeepDomainPrediction['ratingEn'] =
+    score >= 76 ? 'Excellent' : score >= 60 ? 'Very Good' : score <= 42 ? 'Challenging' : 'Moderate';
+  const ratingHi: DeepDomainPrediction['ratingHi'] =
+    score >= 76 ? 'अति उत्तम' : score >= 60 ? 'उत्तम' : score <= 42 ? 'चुनौतीपूर्ण' : 'मध्यम';
   const factorsEn = houseEn.join(' ') + ' Karakas: ' + config.karakas.join(', ') + '. ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'relevant placements unavailable') + '. Related yogas: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'none identified in supplied yoga data') + '.';
   const factorsHi = houseHi.join(' ') + ' कारक ग्रह: ' + config.karakas.join(', ') + '। ' + config.varga + ': ' + (vargaEvidence.length ? vargaEvidence.join('; ') : 'संबंधित स्थिति उपलब्ध नहीं') + '। संबंधित योग: ' + (yogaEvidence.length ? yogaEvidence.join('; ') : 'प्रदत्त योग-डेटा में कोई संबंधित योग दर्ज नहीं') + '।';
 
