@@ -876,16 +876,31 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const isFatherAfflicted = fatherHouseLord?.placedHouse === 6 || fatherHouseLord?.placedHouse === 8 || fatherHouseLord?.placedHouse === 12 || fatherHouseLord?.dignity === 'Debilitated' || (sun && (sun.placedHouse === 6 || sun.placedHouse === 8 || sun.placedHouse === 12 || sun.dignity === 'Debilitated'));
     const isMotherAfflicted = motherHouseLord?.placedHouse === 6 || motherHouseLord?.placedHouse === 8 || motherHouseLord?.placedHouse === 12 || motherHouseLord?.dignity === 'Debilitated' || (moon && (moon.placedHouse === 6 || moon.placedHouse === 8 || moon.placedHouse === 12 || moon.dignity === 'Debilitated'));
 
-    let parentsHardshipValEn = 'Early generational struggle to consolidate assets and settle family affairs; marked stabilization after age 30';
-    let parentsHardshipValHi = 'प्रारंभिक 28-30 वर्षों में पारिवारिक व आर्थिक सुदृढ़ता हेतु कड़ा संघर्ष; बाद में स्थायी समृद्धि';
-    let parentsHardshipExplEn = `Tested from the 6th and 8th houses from the parental anchors. Diligence overcomes initial ancestral bottlenecks.`;
-    let parentsHardshipExplHi = `माता-पिता के भावों पर ग्रहों का प्रभाव दर्शाता है कि उन्होंने कड़े परिश्रम से परिवार की नींव रखी।`;
+    let parentsHardshipValEn = `Balanced parental upbringing (${h9Sign.name}/${h4Sign.name} axis); steady diligence consolidates family stability by age 30`;
+    let parentsHardshipValHi = 'संतुलित पारिवारिक पृष्ठभूमि; माता-पिता के निरंतर परिश्रम से आयु ३० तक स्थायी पारिवारिक सुदृढ़ता';
+    let parentsHardshipExplEn = `9th (${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}) and 4th (${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}) indicate practical growth without extreme upheaval.`;
+    let parentsHardshipExplHi = `नवम (${fatherHouseLord?.id} भाव ${fatherHouseLord?.placedHouse}) व चतुर्थ (${motherHouseLord?.id} भाव ${motherHouseLord?.placedHouse}) भाव व्यावहारिक पारिवारिक प्रगति दर्शाते हैं।`;
 
-    if (isFatherAfflicted || isMotherAfflicted) {
-      parentsHardshipValEn = 'Notable ancestral financial hardships, occupational displacement, or property disputes in the early generations; native emerges as the self-made family redeemer';
-      parentsHardshipValHi = 'माता-पिता के जीवन में आर्थिक तंगी, पैतृक स्थान से विस्थापन अथवा संपत्ति विवादों का कड़ा दौर; जातक अपने बलबूते परिवार की स्थिति सुधारता है';
-      parentsHardshipExplEn = `Parental houses connect with dusthana lords. The native rises through personal enterprise rather than smooth generational privilege.`;
-      parentsHardshipExplHi = `माता-पिता के भावों पर संघर्षकारक ग्रहों का प्रभाव दर्शाता है कि जातक को पैतृक रूप से सब कुछ सरलता से नहीं मिला, बल्कि जातक स्वयं कुलदीपक बनकर परिवार को ऊंचा उठाता है।`;
+    if (isFatherAfflicted && isMotherAfflicted) {
+      parentsHardshipValEn = 'Dual Parental Hardship / Early Separation Risk: Ancestral instability, early loss or distance from parents; native builds life self-made from scratch';
+      parentsHardshipValHi = 'माता-पिता दोनों पक्षों में कड़ा संघर्ष या प्रारंभिक वियोग संकेत: पैतृक अस्थिरता या दूरी के बीच जातक स्वयं अपने बल पर जीवन गढ़ता है';
+      parentsHardshipExplEn = `Both Pitru (9th/Sun) and Matru (4th/Moon) anchors face Dusthana/debilitation strain, forging extraordinary early self-reliance.`;
+      parentsHardshipExplHi = `पितृ (नवम/सूर्य) एवं मातृ (चतुर्थ/चंद्र) दोनों भावों पर संघर्ष होने से जातक को कम उम्र में ही आत्मनिर्भर होना पड़ता है।`;
+    } else if (isFatherAfflicted) {
+      parentsHardshipValEn = `Paternal Testing Pattern (${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}): Father faced career/health strain or ideological distance; native rises independently`;
+      parentsHardshipValHi = `पितृ पक्ष में संघर्ष संकेत (${fatherHouseLord?.id} भाव ${fatherHouseLord?.placedHouse}): पिता के जीवन में कार्य/स्वास्थ्य संघर्ष या वैचारिक दूरी; जातक स्व-बल से उन्नति करता है`;
+      parentsHardshipExplEn = `9th lord or Sun under 6/8/12/debilitation strain shifts paternal support into self-earned discipline.`;
+      parentsHardshipExplHi = `नवमेश या सूर्य पर त्रिक-भाव दबाव होने से पिता से सहज सुख के बजाय स्व-परिश्रम से सफलता मिलती है।`;
+    } else if (isMotherAfflicted) {
+      parentsHardshipValEn = `Maternal / Domestic Testing Pattern (${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}): Mother bore heavy domestic/health burdens or early relocation`;
+      parentsHardshipValHi = `मातृ/गृह पक्ष में संघर्ष संकेत (${motherHouseLord?.id} भाव ${motherHouseLord?.placedHouse}): माता को स्वास्थ्य या पारिवारिक दायित्वों का भारी दबाव सहना पड़ा`;
+      parentsHardshipExplEn = `4th lord or Moon under 6/8/12/debilitation strain brings early emotional maturity and domestic responsibility.`;
+      parentsHardshipExplHi = `चतुर्थेश या चंद्र पर त्रिक-भाव दबाव से प्रारंभिक जीवन में भावनात्मक परिपक्वता व गृह-दायित्व आते हैं।`;
+    } else if (h9Prof.tier === 'strong' && h4Prof.tier === 'strong') {
+      parentsHardshipValEn = 'Protected Ancestral Foundation: Minimal generational upheaval; parents provide stable moral and material backing';
+      parentsHardshipValHi = 'सुदृढ़ पैतृक आधार: माता-पिता के जीवन में स्थिरता व संतान को उत्तम संस्कार एवं सहयोग की प्राप्ति';
+      parentsHardshipExplEn = `Both 9th (${h9Sign.name}) and 4th (${h4Sign.name}) houses hold strong dignity, shielding early family life.`;
+      parentsHardshipExplHi = `नवम व चतुर्थ दोनों भाव सबल होने से प्रारंभिक पारिवारिक जीवन सुरक्षित व सहयोगी रहता है।`;
     }
 
     pillars.push({
@@ -2759,17 +2774,28 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   {
     const d4LagnaSign = d4?.lagnaSignIndex ?? ascSignIdx;
 
-    const hasHospitalAffliction = l12?.placedHouse === 6 || l12?.placedHouse === 8 || h12Planets.some((p) => p.id === 'Mars' || p.id === 'Rahu' || p.id === 'Saturn');
-    let hospitalEn = 'Minimal involuntary hospital confinement; brief medical procedures or planned minor surgeries resolve with rapid, complete recovery';
-    let hospitalHi = 'अस्पताल में लंबे समय तक रुकने का कोई योग नहीं; छोटी-मोटी नियोजित शल्यक्रियाएं शीघ्र स्वास्थ्य लाभ के साथ संपन्न होंगी';
-    let hospitalExplEn = 'The 12th house (Hospitalization / Vyaya Sthana) receives benefic lagna lord rays, mitigating chronic bed-ridden conditions.';
-    let hospitalExplHi = 'द्वादश भाव पर शुभ दृष्टि गंभीर या असाध्य रोगों से रक्षा करती है। जातक की रोग प्रतिरोधक क्षमता उत्तम रहेगी।';
+    const hasSurgicalTrauma = h12Planets.some((p) => p.id === 'Mars' || p.id === 'Ketu') || l12?.placedHouse === 8;
+    const hasChronicHospital = h12Planets.some((p) => p.id === 'Saturn' || p.id === 'Rahu') || l12?.placedHouse === 6;
+    let hospitalEn = `Minimal involuntary hospital confinement (12th lord ${l12?.id} in H${l12?.placedHouse}); routine preventive checkups preserve vitality`;
+    let hospitalHi = `अस्पताल में लंबे वास का योग न्यून (द्वादशेश ${l12?.id} भाव ${l12?.placedHouse}); नियमित स्वास्थ्य जांच से उत्तम स्वास्थ्य`;
+    let hospitalExplEn = 'The 12th house (Hospitalization / Vyaya Sthana) remains free from severe Dusthana affliction, mitigating chronic bed-ridden conditions.';
+    let hospitalExplHi = 'द्वादश भाव पर शुभ प्रभाव गंभीर या दीर्घकालिक रोगों से रक्षा करता है।';
 
-    if (hasHospitalAffliction) {
-      hospitalEn = 'Periodic medical visits or short hospital stays during adverse Dasha transits; preventive health screenings and lifestyle discipline ensure swift recuperation';
-      hospitalHi = 'प्रतिकूल दशा में मौसमी व्याधि अथवा छोटी शल्यक्रिया हेतु अल्पकालिक अस्पताल वास; समय पर जांच व परहेज से शीघ्र स्वास्थ्य लाभ';
-      hospitalExplEn = 'The 12th house or its lord connects with energetic or separating planets, indicating occasional healthcare interventions. Timely medical consultations and preventive wellness prevent prolonged illness.';
-      hospitalExplHi = 'द्वादश भाव पर मंगल/राहु का प्रभाव दर्शाता है कि जीवन में कभी-कभार अस्पताल के चक्कर लग सकते हैं। सतर्कता और नियमित दिनचर्या से जातक शीघ्र स्वस्थ हो जाता है।';
+    if (hasSurgicalTrauma) {
+      hospitalEn = `Surgical / Acute Recovery Watch (Mars/Ketu or 8th link on 12th): Minor surgical or injury interventions resolve well with timely care`;
+      hospitalHi = 'शल्यक्रिया / तीव्र उपचार सतर्कता (द्वादश पर मंगल/केतु या अष्टम प्रभाव): समय पर चिकित्सा से शीघ्र स्वास्थ्य लाभ';
+      hospitalExplEn = 'Mars/Ketu or 8th-house resonance on the 12th house signals occasional acute medical/surgical care rather than prolonged lethargy.';
+      hospitalExplHi = 'द्वादश भाव पर मंगल/केतु या अष्टम संबंध आकस्मिक चिकित्सा या शल्यक्रिया की संभावना दर्शाता है, जो शीघ्र ठीक होती है।';
+    } else if (hasChronicHospital) {
+      hospitalEn = `Periodic Checkups & Stress Recovery Watch (Saturn/Rahu/6th link on 12th): Restorative sleep and preventive screenings prevent prolonged stays`;
+      hospitalHi = 'नियमित जांच व विश्राम सतर्कता (द्वादश पर शनि/राहु/षष्ठ प्रभाव): पर्याप्त निद्रा व समय पर परीक्षण से दीर्घ व्याधि से बचाव';
+      hospitalExplEn = 'Saturn/Rahu or 6th-house connection with the 12th house rewards early screening and disciplined rest.';
+      hospitalExplHi = 'द्वादश भाव पर शनि/राहु या षष्ठ संबंध नियमित स्वास्थ्य परीक्षण व विश्राम को आवश्यक बनाता है।';
+    } else if (h12Prof.tier === 'strong') {
+      hospitalEn = 'Strong Health Shield: Negligible hospitalization risk; natural recovery resilience remains high across life';
+      hospitalHi = 'सुदृढ़ स्वास्थ्य रक्षा कवच: अस्पताल वास की संभावना अत्यंत कम; प्राकृतिक रोग-प्रतिरोधक क्षमता प्रबल';
+      hospitalExplEn = `Fortified 12th house (${h12Sign.name}) protects physical vitality and accelerates recovery.`;
+      hospitalExplHi = `सबल द्वादश भाव (${SIGN_HI[h12SignIdx]}) शारीरिक ऊर्जा व शीघ्र स्वास्थ्य लाभ की रक्षा करता है।`;
     }
 
     const isSelfReliantFortified = (l2?.placedHouse === 1 || l2?.placedHouse === 2 || l2?.placedHouse === 10 || l2?.placedHouse === 11) && (l10?.placedHouse === 1 || l10?.placedHouse === 10 || l10?.placedHouse === 11);

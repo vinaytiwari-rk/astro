@@ -646,28 +646,44 @@ export function getPillar8MicroDetails(
   secrets: BilingualPrediction;
   pets: BilingualPrediction;
 } {
-  // 1. Accidents
+  // 1. Accidents (5-tier)
   const marsRahu8 = h8.occupants.some((p) => p.id === 'Mars' || p.id === 'Rahu') || h8.aspectors.some((p) => p.id === 'Mars' || p.id === 'Rahu');
-  const accidents: BilingualPrediction = marsRahu8
-    ? {
-        valEn: 'Elevated caution required with fast driving, sharp tools, and fire/electricity; strictly wear safety gear',
-        valHi: 'तेज वाहन चालन, अग्नि, बिजली व धारदार उपकरणों से विशेष सावधानी अपेक्षित; सुरक्षा नियमों का पालन अनिवार्य',
-        explEn: `Mars/Rahu influence on 8th house (Randhra) warns against haste and impulsive physical risks.`,
-        explHi: `अष्टम भाव पर मंगल/राहु का प्रभाव आकस्मिक चोट से बचाव हेतु वाहन धीरे व सावधानी से चलाने की चेतावनी देता है।`,
-      }
-    : h8.tier === 'strong'
-    ? {
-        valEn: 'Low accident vulnerability; strong protective shield during travel with minor seasonal precautions',
-        valHi: 'गंभीर दुर्घटना की संभावना अत्यंत न्यून; यात्राओं में दैवीय सुरक्षा व सामान्य सतर्कता पर्याप्त',
-        explEn: `Benefic protection on 8th house mitigates sudden physical mishaps.`,
-        explHi: `अष्टम भाव की शुभ स्थिति आकस्मिक संकटों से जातक की रक्षा करती है।`,
-      }
-    : {
-        valEn: 'Moderate vigilance advised during Rahu/Mars sub-periods; avoid night highway driving when fatigued',
-        valHi: 'राहु/मंगल की अंतर्दशा में सामान्य सतर्कता अपेक्षित; थकान में रात्रि वाहन चालन से बचें',
-        explEn: `8th lord in H${h8.lordHouse} suggests routine caution keeps physical safety intact.`,
-        explHi: `अष्टमेश की स्थिति सामान्य सावधानी के साथ सुरक्षित जीवन दर्शाती है।`,
-      };
+  const ketuSat8 = h8.occupants.some((p) => p.id === 'Ketu' || p.id === 'Saturn');
+  const accidents: BilingualPrediction =
+    marsRahu8 && h8.tier === 'afflicted'
+      ? {
+          valEn: `High Agni / Sudden-Impact Vigilance (H8 ${h8.dominantGraha}, L8 in H${h8.lordHouse}): Strict caution with vehicles, fire, heights, and impulsive risks`,
+          valHi: `तीव्र आकस्मिक चोट व अग्नि सतर्कता (अष्टम ${h8.dominantGraha}, अष्टमेश भाव ${h8.lordHouse}): वाहन, अग्नि, ऊंचाई व जल्दबाजी से पूर्ण बचाव आवश्यक`,
+          explEn: `Mars/Rahu pressure on an afflicted 8th house (Randhra) warns against haste and sudden physical trauma.`,
+          explHi: `पीड़ित अष्टम भाव पर मंगल/राहु का प्रभाव वाहन चालन व जोखिमपूर्ण कार्यों में अत्यधिक सावधानी की चेतावनी देता है।`,
+        }
+      : marsRahu8
+      ? {
+          valEn: `Elevated Caution (${h8.dominantGraha} on H8): Wear safety gear during fast travel and handle sharp tools/electricity mindfully`,
+          valHi: `विशेष सतर्कता (${h8.dominantGraha} अष्टम प्रभाव): तेज यात्रा, बिजली व धारदार उपकरणों में सुरक्षा नियमों का पालन अनिवार्य`,
+          explEn: `Mars/Rahu influence on 8th house advises mindful pace over impulsive physical risks.`,
+          explHi: `अष्टम भाव पर मंगल/राहु का प्रभाव आकस्मिक चोट से बचाव हेतु संयमित गति की सलाह देता है।`,
+        }
+      : ketuSat8
+      ? {
+          valEn: `Fall, Joint & Chronic Strain Vigilance (Saturn/Ketu in H8): Avoid fatigue-induced slips and prioritize bone/nerve protection`,
+          valHi: `फिसलन, जोड़ व स्नायु सतर्कता (अष्टम में शनि/केतु): थकान में यात्रा से बचें व हड्डियों/नसों की रक्षा करें`,
+          explEn: `Saturn/Ketu in the 8th house highlights gradual wear-and-tear or sudden slips when exhausted.`,
+          explHi: `अष्टम भाव में शनि/केतु थकान के समय गिरने या जोड़ों में चोट की संभावना के प्रति सचेत करते हैं।`,
+        }
+      : h8.tier === 'strong'
+      ? {
+          valEn: `Low Accident Vulnerability (Strong H8 in ${h8.signName}): Protective shield during travel with routine seasonal precautions`,
+          valHi: `न्यून दुर्घटना जोखिम (सबल अष्टम ${h8.signName}): यात्राओं में सुरक्षा कवच व सामान्य सतर्कता पर्याप्त`,
+          explEn: `Benefic protection on 8th house mitigates sudden physical mishaps.`,
+          explHi: `अष्टम भाव की शुभ स्थिति आकस्मिक संकटों से जातक की रक्षा करती है।`,
+        }
+      : {
+          valEn: `Moderate Vigilance (L8 in H${h8.lordHouse}): Exercise extra care during Mars/Rahu sub-periods and night highway travel`,
+          valHi: `सामान्य सतर्कता (अष्टमेश भाव ${h8.lordHouse}): मंगल/राहु अंतर्दशा व रात्रि वाहन चालन में विशेष ध्यान दें`,
+          explEn: `8th lord in H${h8.lordHouse} suggests routine caution keeps physical safety intact.`,
+          explHi: `अष्टमेश की स्थिति सामान्य सावधानी के साथ सुरक्षित जीवन दर्शाती है।`,
+        };
 
   // 2. Crises
   const crises: BilingualPrediction =
@@ -705,50 +721,100 @@ export function getPillar8MicroDetails(
     explHi: `चंद्रमा (भाव ${moon?.placedHouse}) एवं द्वादश भाव (${h12.dominantGraha}) से अवचेतन मन, स्वप्न और आंतरिक भय का विश्लेषण होता है।`,
   };
 
-  // 4. Romance & Discretion
-  const hasAffairRisk = h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Venus') || (venus && [6, 8, 12].includes(venus.placedHouse));
-  const romance: BilingualPrediction = hasAffairRisk
+  // 4. Romance & Discretion (5-tier)
+  const rahuVenus12 = h12.occupants.some((p) => p.id === 'Rahu') && (h12.occupants.some((p) => p.id === 'Venus') || venus?.placedHouse === 12);
+  const venusTrik = Boolean(venus && [6, 8, 12].includes(venus.placedHouse));
+  const satKetuRomantic = h12.dominantGraha === 'Saturn' || h12.dominantGraha === 'Ketu';
+  const romance: BilingualPrediction = rahuVenus12
     ? {
-        valEn: 'Strong romantic magnetism; conscious moral boundaries and transparency needed to avoid complicated attachments',
-        valHi: 'प्रबल भावनात्मक आकर्षण; जटिल या गोपनीय संबंधों से बचने हेतु मर्यादा व पारदर्शिता अत्यंत आवश्यक',
-        explEn: `Venus/12th axis activation increases romantic curiosity; fidelity and emotional honesty protect reputation.`,
-        explHi: `शुक्र व द्वादश भाव की सक्रियता आकर्षण बढ़ाती है; नैतिक संयम से जीवन निष्कलंक रहता है।`,
+        valEn: 'High Nodal Magnetism & Scandal Vigilance (Rahu/Venus H12): Strong allure; strict discretion and boundaries prevent public controversy',
+        valHi: 'प्रबल राहु-शुक्र आकर्षण व मर्यादा सतर्कता: तीव्र चुंबकीय आकर्षण; लोक-निंदा व जटिल संबंधों से बचने हेतु स्पष्ट सीमाएं आवश्यक',
+        explEn: `Rahu-Venus resonance in the 12th house amplifies secret attraction; transparent ethics protect reputation.`,
+        explHi: `द्वादश भाव में राहु-शुक्र का प्रभाव गोपनीय आकर्षण बढ़ाता है; नैतिक पारदर्शिता प्रतिष्ठा की रक्षा करती है।`,
+      }
+    : venusTrik
+    ? {
+        valEn: `Private / Tested Romantic Path (Venus in H${venus?.placedHouse}): Hidden or unconventional attachments; emotional honesty preserves peace`,
+        valHi: `गोपनीय / परीक्षित प्रेम मार्ग (शुक्र भाव ${venus?.placedHouse}): छिपे या अपरंपरागत आकर्षण संभव; भावनात्मक स्पष्टता शांति देती है`,
+        explEn: `Venus in Dusthana H${venus?.placedHouse} calls for mature discernment before trusting romantic promises.`,
+        explHi: `त्रिक भाव में शुक्र की स्थिति प्रेम संबंधों में धैर्य और विवेकपूर्ण चयन की सलाह देती है।`,
+      }
+    : satKetuRomantic
+    ? {
+        valEn: `Reserved & Detached Romantic Nature (${h12.dominantGraha} in H12): Selective in intimacy; prioritizes quiet loyalty over casual flings`,
+        valHi: `संयमित व वैराग्ययुक्त प्रेम स्वभाव (द्वादश में ${h12.dominantGraha}): दिखावे के बजाय शांत निष्ठा और मर्यादा को प्राथमिकता`,
+        explEn: `${h12.dominantGraha} on the 12th house cools impulsive romance and favors dignified commitment.`,
+        explHi: `द्वादश भाव पर ${h12.dominantGraha} का प्रभाव क्षणिक आकर्षण से दूर रखकर गंभीर निष्ठा देता है।`,
+      }
+    : h12.occupants.some((p) => p.id === 'Mars' || p.id === 'Venus')
+    ? {
+        valEn: 'Warm, Expressive Romantic Vitality: Passionate affection that flourishes best inside open, committed partnership',
+        valHi: 'ऊर्जावान व स्नेही प्रेम प्रकृति: प्रगाढ़ अनुराग जो स्पष्ट व समर्पित संबंधों में खिलता है',
+        explEn: `Active Venus/Mars currents on 12th keep romantic warmth vibrant when guided by loyalty.`,
+        explHi: `द्वादश भाव पर शुक्र/मंगल की ऊर्जा संबंधों में जीवंतता व आकर्षण बनाए रखती है।`,
       }
     : {
-        valEn: 'Steady, dignified romantic temperament; values loyalty and avoids scandalous or impulsive entanglements',
-        valHi: 'संयमित व मर्यादित प्रेम दृष्टिकोण; निष्ठा को प्राथमिकता तथा लोक-निंदा से पूर्ण बचाव',
+        valEn: `Steady, Dignified Romantic Temperament (H12 ${h12.signName}): Values fidelity and avoids scandalous entanglements`,
+        valHi: `संयमित व मर्यादित प्रेम दृष्टिकोण (द्वादश ${h12.signName}): निष्ठा को प्राथमिकता तथा लोक-निंदा से पूर्ण बचाव`,
         explEn: `Well-regulated Kama houses preserve personal dignity and faithful relationships.`,
         explHi: `शुक्र व सप्तम-द्वादश भावों का संतुलन जातक को मर्यादित और विश्वसनीय बनाए रखता है।`,
       };
 
-  // 5. Occult Interest
-  const occultPlanets = h8.occupants.some((p) => ['Ketu', 'Rahu', 'Saturn', 'Jupiter', 'Mercury'].includes(p.id)) || [8, 12].includes(h8.lordHouse);
-  const occult: BilingualPrediction = occultPlanets
+  // 5. Occult Interest (4-tier)
+  const occult: BilingualPrediction = h8.occupants.some((p) => p.id === 'Ketu' || p.id === 'Rahu')
     ? {
-        valEn: 'Strong natural curiosity in Jyotish, metaphysics, deep psychology, and hidden root causes of life',
-        valHi: 'ज्योतिष, आध्यात्मिक रहस्य, गहन मनोविज्ञान व जीवन के गूढ़ सत्य जानने में स्वाभाविक रुचि',
-        explEn: `Active 8th house (${h8.signName}, ${h8.dominantGraha}) draws the intellect toward mysteries beyond surface appearances.`,
-        explHi: `अष्टम भाव की सक्रियता जातक को गूढ़ ज्ञान, ज्योतिष और मनोविज्ञान के प्रति आकर्षित करती है।`,
+        valEn: `Deep Esoteric & Mystical Pull (${h8.dominantGraha} in H8): Intuitive grasp of Jyotish, tantra, psychology, and karmic patterns`,
+        valHi: `गहन गूढ़ व आध्यात्मिक अंतर्दृष्टि (अष्टम में ${h8.dominantGraha}): ज्योतिष, तंत्र, मनोविज्ञान व कर्म-रहस्यों की स्वाभाविक समझ`,
+        explEn: `Nodal presence in 8th house (${h8.signName}) unlocks piercing intuition beyond ordinary logic.`,
+        explHi: `अष्टम भाव में राहु/केतु की उपस्थिति सामान्य तर्क से परे गहरी अंतर्दृष्टि प्रदान करती है।`,
+      }
+    : h8.occupants.some((p) => p.id === 'Jupiter' || p.id === 'Mercury' || p.id === 'Saturn') || [8, 12].includes(h8.lordHouse)
+    ? {
+        valEn: `Analytical Metaphysics & Research Mindset (H8 ${h8.signName}, L8 in H${h8.lordHouse}): Drawn to structured astrology, history, or deep investigation`,
+        valHi: `विश्लेषणात्मक शोध व ज्योतिष रुचि (अष्टम ${h8.signName}, अष्टमेश भाव ${h8.lordHouse}): शास्त्रीय अध्ययन व गहन अनुसंधान में रुचि`,
+        explEn: `Active 8th house draws the intellect toward systematic research and root-cause discovery.`,
+        explHi: `अष्टम भाव की सक्रियता बुद्धि को गहन शोध व गूढ़ शास्त्रों के अध्ययन की ओर प्रेरित करती है।`,
+      }
+    : h8.tier === 'strong'
+    ? {
+        valEn: `Philosophical & Traditional Spiritual Respect (H8 ${h8.signName}): Appreciates sacred wisdom while staying grounded in daily duty`,
+        valHi: `सात्विक आस्था व व्यावहारिक विवेक (अष्टम ${h8.signName}): पारंपरिक ज्ञान का सम्मान करते हुए कर्मनिष्ठ जीवन`,
+        explEn: `Balanced 8th house harmonizes spiritual curiosity with steady practical judgment.`,
+        explHi: `अष्टम भाव का संतुलन आध्यात्मिक जिज्ञासा और व्यावहारिक जीवन में सामंजस्य रखता है।`,
       }
     : {
-        valEn: 'Practical, grounded mindset; respects traditional spirituality while prioritizing tangible real-world logic',
-        valHi: 'व्यावहारिक व यथार्थवादी दृष्टिकोण; पारंपरिक आस्था का सम्मान किंतु तंत्र-मंत्र के बजाय कर्म को प्राथमिकता',
-        explEn: `8th house remains calm, keeping focus on practical visible duties rather than esoteric pursuits.`,
-        explHi: `अष्टम भाव के शांत रहने से जातक व्यावहारिक जीवन और प्रत्यक्ष प्रमाणों पर अधिक विश्वास करता है।`,
+        valEn: `Practical, Grounded Mindset (H8 ${h8.signName}): Prioritizes tangible real-world evidence over speculative mysticism`,
+        valHi: `व्यावहारिक व यथार्थवादी दृष्टिकोण (अष्टम ${h8.signName}): काल्पनिक रहस्यों के बजाय प्रत्यक्ष कर्म व तर्क को प्राथमिकता`,
+        explEn: `Calm 8th house keeps focus on visible duties rather than esoteric pursuits.`,
+        explHi: `अष्टम भाव के शांत रहने से जातक प्रत्यक्ष प्रमाणों और व्यावहारिक कर्म पर अधिक विश्वास करता है।`,
       };
 
-  // 6. Secrets & Confidence
+  // 6. Secrets & Confidence (4-tier)
   const secrets: BilingualPrediction =
-    h8.dominantGraha === 'Saturn' || h8.dominantGraha === 'Ketu' || h8.dominantGraha === 'Scorpio' as unknown as GrahaKey
+    h8.dominantGraha === 'Saturn' || h8.dominantGraha === 'Ketu'
       ? {
-          valEn: 'Deeply private and guarded; keeps personal struggles and family confidences strictly confidential',
-          valHi: 'अत्यंत गोपनीय व अंतर्मुखी स्वभाव; अपने निजी संघर्ष और परिवार के रहस्य किसी के सामने प्रकट नहीं करता',
-          explEn: `8th house under ${h8.dominantGraha} creates a vault-like personality that rarely overshares.`,
+          valEn: `Vault-Like Privacy (${h8.dominantGraha} H8): Deeply guarded; keeps personal struggles and confidences strictly sealed`,
+          valHi: `अत्यंत गोपनीय स्वभाव (${h8.dominantGraha} अष्टम): निजी संघर्ष और रहस्य किसी के सामने प्रकट नहीं करता`,
+          explEn: `8th house under ${h8.dominantGraha} creates a disciplined, self-contained personality.`,
           explHi: `अष्टम भाव पर ${h8.dominantGraha} का प्रभाव जातक को गंभीर व रहस्य गोपनीय रखने वाला बनाता है।`,
         }
+      : h8.dominantGraha === 'Rahu' || h8.dominantGraha === 'Mars'
+      ? {
+          valEn: `Strategic Discretion (${h8.dominantGraha} H8): Protects competitive plans fiercely; shares only what serves long-term strategy`,
+          valHi: `रणनीतिक गोपनीयता (${h8.dominantGraha} अष्टम): अपनी योजनाओं व चालों को गुप्त रखकर कार्य सिद्धि`,
+          explEn: `${h8.dominantGraha} on the 8th house favors tactical privacy in career and personal matters.`,
+          explHi: `अष्टम भाव पर ${h8.dominantGraha} का प्रभाव रणनीतिक गोपनीयता और सावधानी प्रदान करता है।`,
+        }
+      : h8.dominantGraha === 'Moon' || h8.dominantGraha === 'Venus'
+      ? {
+          valEn: `Empathetic Confidant (${h8.dominantGraha} H8): Friends confide deeply; balances emotional openness with gentle boundaries`,
+          valHi: `विश्वसनीय व संवेदनशील मित्र (${h8.dominantGraha} अष्टम): लोग अपने मन की बात साझा करते हैं; भावनात्मक मर्यादा सुरक्षित`,
+          explEn: `Lunar/Venusian tone on 8th makes the native a compassionate, trustworthy listener.`,
+          explHi: `अष्टम भाव पर चंद्र/शुक्र का प्रभाव जातक को विश्वसनीय और संवेदनशील बनाता है।`,
+        }
       : {
-          valEn: 'Trustworthy confidant for friends while maintaining selective discretion on personal finances and plans',
-          valHi: 'मित्रों के रहस्यों का विश्वसनीय रक्षक; अपनी आर्थिक व भविष्य की योजनाओं में विवेकपूर्ण गोपनीयता',
+          valEn: `Prudent & Transparent Balance (H8 ${h8.signName}): Trustworthy confidant while keeping finances and family plans discreet`,
+          valHi: `विवेकपूर्ण पारदर्शिता (अष्टम ${h8.signName}): मित्रों के रहस्यों का रक्षक व आर्थिक योजनाओं में सतर्क`,
           explEn: `Balanced 8th house (${h8.signName}) blends healthy openness with prudent privacy.`,
           explHi: `अष्टम भाव की संतुलित स्थिति जातक को विश्वसनीय व विवेकशील बनाती है।`,
         };
@@ -837,18 +903,34 @@ export function getPillar9AssetDetails(
           explHi: `सामान्य वाहन योग जीवन की आवश्यकताओं के अनुरूप सुविधाजनक यातायात प्रदान करता है।`,
         };
 
-  // 3. Sleep (H12 & Moon)
-  const sleepAfflicted = h12.tier === 'afflicted' || moon?.placedHouse === 6 || moon?.placedHouse === 8 || moon?.placedHouse === 12;
-  const sleep: BilingualPrediction = sleepAfflicted
+  // 3. Sleep (H12 & Moon — 4 tiers)
+  const sleepNodal = h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Saturn') || (moon && [6, 8, 12].includes(moon.placedHouse));
+  const sleepFiery = h12.occupants.some((p) => p.id === 'Mars' || p.id === 'Sun');
+  const sleepActiveMind = h12.dominantGraha === 'Mercury' || h12.occupants.some((p) => p.id === 'Mercury');
+  const sleep: BilingualPrediction = sleepNodal
     ? {
-        valEn: 'Light, mind-active sleep; overthinking or late screens disturb rest — evening meditation restores deep calm',
-        valHi: 'हल्की व विचारशील निद्रा; रात्रि में अधिक सोचने से नींद प्रभावित — संध्या ध्यान व शांत दिनचर्या लाभकारी',
+        valEn: `Light, Restless Sleep (H12 ${h12.dominantGraha} / Moon H${moon?.placedHouse}): Overthinking disturbs rest — evening meditation restores deep calm`,
+        valHi: `हल्की व विचारशील निद्रा (द्वादश ${h12.dominantGraha} / चंद्र भाव ${moon?.placedHouse}): रात्रि में विचारों की अधिकता से नींद प्रभावित — संध्या ध्यान लाभकारी`,
         explEn: `12th house (${h12.dominantGraha}) or Moon sensitivity stimulates nocturnal thought; regular sleep hygiene is essential.`,
         explHi: `द्वादश भाव या चंद्रमा की संवेदनशीलता रात्रि में मन को सक्रिय रखती है; सोने से पूर्व स्क्रीन से दूरी लाभप्रद है।`,
       }
+    : sleepFiery
+    ? {
+        valEn: `Energetic, Short-Cycle Sleep (Mars/Sun on H12): Needs cool, dark bedroom and early dinner to prevent midnight restlessness`,
+        valHi: `तीव्र व लघु निद्रा चक्र (द्वादश पर मंगल/सूर्य): शांत, शीतल शयनकक्ष व हल्का रात्रि भोजन गहरी नींद देता है`,
+        explEn: `Fiery energy in the 12th house keeps metabolic heat high; calming breathwork aids deep sleep.`,
+        explHi: `द्वादश भाव में अग्नि तत्व के कारण रात्रि में ऊर्जा सक्रिय रहती है; प्राणायाम से उत्तम नींद आती है।`,
+      }
+    : sleepActiveMind
+    ? {
+        valEn: `Vivid, Dream-Active Sleep (Mercury H12): Creative nocturnal thoughts; journaling before bed clears mental clutter`,
+        valHi: `स्वप्नशील व विचारप्रधान निद्रा (द्वादश बुध): सोने से पूर्व डायरी लेखन से मन शांत व नींद गहरी होती है`,
+        explEn: `Mercurial influence on the 12th house produces active dreams and late-evening curiosity.`,
+        explHi: `द्वादश भाव पर बुध के प्रभाव से रात्रि में बौद्धिक सक्रियता और सजीव स्वप्न रहते हैं।`,
+      }
     : {
-        valEn: 'Peaceful, restorative sleep once daily duties conclude; quiet bedroom environment preserves vitality',
-        valHi: 'गहरी, शांत व स्फूर्तिदायक निद्रा; शांत शयन कक्ष व नियमित समय पर शयन स्वास्थ्यवर्धक',
+        valEn: `Peaceful, Restorative Sleep (H12 ${h12.signName}): Deep recuperation once daily duties conclude`,
+        valHi: `गहरी, शांत व स्फूर्तिदायक निद्रा (द्वादश ${h12.signName}): दैनिक कार्यों के बाद सहज व विश्रामदायक नींद`,
         explEn: `Harmonious 12th house (Shayana) and Moon support deep physical and mental recuperation.`,
         explHi: `द्वादश भाव और चंद्रमा का संतुलन गहरी व विश्रामदायक नींद प्रदान करता है।`,
       };
