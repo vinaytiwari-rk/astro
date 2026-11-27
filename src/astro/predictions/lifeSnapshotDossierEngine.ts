@@ -2531,11 +2531,19 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
             const h12ClusterBandhana =
               [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
               (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
+            // Prashna Marga Ch. 14 Stanza 112: Saturn in 4/5/7/8/9 in malefic sign + conjunct malefic
+            const prashnaMargaSatBandhana = Boolean(
+              saturn &&
+                [4, 5, 7, 8, 9].includes(saturn.placedHouse) &&
+                [0, 4, 7, 9, 10].includes(saturn.signIndex) &&
+                planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
+            );
             const classicalBandhana =
               (countMal(2) > 0 && countMal(2) === countMal(12)) ||
               (countMal(5) > 0 && countMal(5) === countMal(9)) ||
               (countMal(4) > 0 && countMal(4) === countMal(10)) ||
               h12ClusterBandhana ||
+              prashnaMargaSatBandhana ||
               moonSat410 ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
               (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
@@ -2565,11 +2573,19 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
             const h12ClusterBandhana =
               [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
               (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
+            // Prashna Marga Ch. 14 Stanza 112: Saturn in 4/5/7/8/9 in malefic sign + conjunct malefic
+            const prashnaMargaSatBandhana = Boolean(
+              saturn &&
+                [4, 5, 7, 8, 9].includes(saturn.placedHouse) &&
+                [0, 4, 7, 9, 10].includes(saturn.signIndex) &&
+                planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
+            );
             const classicalBandhana =
               (countMal(2) > 0 && countMal(2) === countMal(12)) ||
               (countMal(5) > 0 && countMal(5) === countMal(9)) ||
               (countMal(4) > 0 && countMal(4) === countMal(10)) ||
               h12ClusterBandhana ||
+              prashnaMargaSatBandhana ||
               moonSat410 ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
               (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));

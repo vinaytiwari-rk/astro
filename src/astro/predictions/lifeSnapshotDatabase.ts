@@ -1636,9 +1636,13 @@ export function getComprehensiveMedicalAstrology(
   }
 
   const venusMetabolic = venus && ([6, 8, 12].includes(venus.placedHouse) || (jupiter && [6, 8, 12].includes(jupiter.placedHouse) && [3, 7, 11].includes(jupiter.signIndex)));
-  if (venusMetabolic) {
-    flagsEn.push('Glycemic / Pancreatic & Urinary Balance (Venus/Jupiter)');
-    flagsHi.push('मधुमेह/पाचन व मूत्र-तंत्र संतुलन (शुक्र/गुरु)');
+  const endocrineWeightWatch = Boolean(
+    (jupiter && [6, 8, 12].includes(jupiter.placedHouse)) ||
+    (venus && mercury && ([6, 8, 12].includes(venus.placedHouse) && [6, 8, 12].includes(mercury.placedHouse)))
+  );
+  if (venusMetabolic || endocrineWeightWatch) {
+    flagsEn.push('Glycemic, Endocrine & Weight Balance (Venus/Jupiter)');
+    flagsHi.push('मधुमेह, हार्मोनल व वजन संतुलन (शुक्र/गुरु)');
   }
 
   const respWatch = (moon && [6, 8, 12].includes(moon.placedHouse)) || (h4.signIdx === 2 || h4.signIdx === 3) && h4.tier === 'afflicted';
@@ -2144,6 +2148,27 @@ export function getComprehensiveCareerAndWealthAnalysis(
   if (l1Planet?.placedHouse === 11 && !detectedYogasEn.includes('Vahan / Labha Lagnesha Yoga')) {
     detectedYogasEn.push('Vahan / Labha Lagnesha Yoga');
     detectedYogasHi.push('लाभस्थ लग्नेश / वाहन योग');
+  }
+  // K.N. Rao "Born with a Mission" & "Institution Builder" Yogas
+  const isInstitutionBuilder = Boolean(
+    l1Planet && l10 &&
+    (l1Planet.placedHouse === l10.placedHouse ||
+      [1, 4, 7, 10].includes(((l10.placedHouse - l1Planet.placedHouse + 12) % 12) || 12)) &&
+    [1, 4, 7, 10].includes(l1Planet.placedHouse) && [1, 4, 7, 10].includes(l10.placedHouse)
+  );
+  if (isInstitutionBuilder && !detectedYogasEn.includes('Institution Builder Yoga (L1–L10 Kendra)')) {
+    detectedYogasEn.push('Institution Builder Yoga (L1–L10 Kendra)');
+    detectedYogasHi.push('संस्था-निर्माता योग (लग्नेश-दशमेश केंद्र)');
+  }
+  const jupLinks10 = Boolean(
+    jupiter && jupiter.dignity !== 'Debilitated' &&
+    (jupiter.placedHouse === 10 || jupiter.placedHouse === l10?.placedHouse ||
+      [5, 7, 9].includes(((10 - jupiter.placedHouse + 12) % 12) || 12) ||
+      (l10 && [5, 7, 9].includes(((l10.placedHouse - jupiter.placedHouse + 12) % 12) || 12)))
+  );
+  if (hasGajakesari && jupLinks10 && !detectedYogasEn.includes('Mission & Idealism Yoga (Gajakesari–10th)')) {
+    detectedYogasEn.push('Mission & Idealism Yoga (Gajakesari–10th)');
+    detectedYogasHi.push('आदर्श व मिशन योग (गजकेसरी-दशम संबंध)');
   }
 
   // Vyaya / Maraka Wealth-Erosion Risk (e.g., 2nd/Lagna lord in 12th or debilitated 11th lord)
