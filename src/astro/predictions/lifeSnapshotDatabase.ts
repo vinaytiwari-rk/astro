@@ -1161,6 +1161,11 @@ export function getComprehensiveSantanAnalysis(
 
   const rem = remedyMap[blockingGraha];
 
+  const filialFrictionWatch = Boolean(
+    rahu?.placedHouse === 5 &&
+    ((saturn && (saturn.placedHouse === 11 || saturn.placedHouse === 5)) || ketu?.placedHouse === 11 || jupiter?.dignity === 'Debilitated')
+  );
+
   return {
     d7Confirmation: {
       valEn: d7ValEn,
@@ -1181,8 +1186,8 @@ export function getComprehensiveSantanAnalysis(
     badhaAndRemedies: {
       valEn: rem.valEn,
       valHi: rem.valHi,
-      explEn: `${rem.explEn} Consult gemstones (such as Pukhraj) only after verifying Lagna suitability; keep medical care and spiritual observances side by side.`,
-      explHi: `${rem.explHi} पुखराज आदि रत्न बिना विशेषज्ञ परामर्श के धारण न करें। चिकित्सीय उपचार और शास्त्रीय उपाय साथ-साथ जारी रखें।`,
+      explEn: `${rem.explEn}${filialFrictionWatch ? ' Parent–Child Harmony Note: Rahu in 5th opposed by Saturn/Ketu or weak Jupiter indicates generational/communication friction — avoid over-controlling and practice open, patient listening.' : ''} Consult gemstones (such as Pukhraj) only after verifying Lagna suitability; keep medical care and spiritual observances side by side.`,
+      explHi: `${rem.explHi}${filialFrictionWatch ? ' संतान-संवाद मार्गदर्शन: पंचम में राहु पर शनि/केतु प्रभाव या कमजोर गुरु से वैचारिक दूरी रह सकती है — कठोर नियंत्रण से बचें व धैर्यपूर्वक संवाद करें।' : ''} पुखराज आदि रत्न बिना विशेषज्ञ परामर्श के धारण न करें। चिकित्सीय उपचार और शास्त्रीय उपाय साथ-साथ जारी रखें।`,
       pacEn: `Primary Indicator: ${blockingGraha} on 5th/9th axis (${h5.signName}).`,
       pacHi: `मुख्य विचारणीय ग्रह: ${blockingGraha} (पंचम/नवम अक्ष पर प्रभाव)।`,
     },
@@ -1264,7 +1269,9 @@ export function getComprehensiveMarriageAnalysis(
   const dist1to7 = ((h7.lordHouse - h1.lordHouse + 12) % 12) + 1;
   if (dist1to7 === 6 || dist1to7 === 8 || dist1to7 === 2 || dist1to7 === 12) separationRiskCount++;
   if (malefics4812FromVenus >= 2) separationRiskCount++;
-  if (h4.lordHouse === 6 || h7.lordHouse === 6 || h7.lordHouse === 12) separationRiskCount++;
+  if (h4.lordHouse === 6 || h7.lordHouse === 6 || h7.lordHouse === 8 || h7.lordHouse === 12) separationRiskCount++;
+  if (venus && (venus.placedHouse === 6 || venus.degreeInSign < 1.0)) separationRiskCount++;
+  if (sun?.placedHouse === 7 && mars?.placedHouse === 7) separationRiskCount++;
   if (saturn && sun && rahu) {
     const sepOn7 = [saturn, sun, rahu].filter((p) => p.placedHouse === 7 || h7.aspectors.some((a) => a.id === p.id)).length;
     if (sepOn7 >= 2) separationRiskCount++;
@@ -1341,9 +1348,15 @@ export function getComprehensiveMarriageAnalysis(
   const isLove = is5and7Linked || Boolean(venus && mars && (venus.placedHouse === mars.placedHouse || venus.placedHouse === 7));
   const isIntercaste = Boolean(isRahu7OrVenus || is7and12Linked);
 
+  const isThrivingPremVivah =
+    h5.lordHouse === 7 &&
+    Boolean(h7.lordPlanet && ['Own Sign', 'Exalted', 'Moolatrikona'].includes(h7.lordPlanet.dignity));
   let loveNoteEn = 'Traditional family-arranged alliance with mutual consent and parental blessings';
   let loveNoteHi = 'पारिवारिक सहमति व बुजुर्गों के आशीर्वाद से संपन्न होने वाला सुसंस्कृत पारंपरिक विवाह';
-  if (isLove && isIntercaste) {
+  if (isThrivingPremVivah) {
+    loveNoteEn = 'Thriving Prem Vivah Yoga (5th Lord in 7th + Strong 7th Lord): Romantic attraction and personal choice mature into a stable, prosperous lifelong marriage';
+    loveNoteHi = 'श्रेष्ठ प्रेम विवाह योग (पंचमेश सप्तम में व बलवान सप्तमेश): प्रेम व व्यक्तिगत पसंद से अत्यंत सुदृढ़, सुखद एवं दीर्घकालिक वैवाहिक जीवन';
+  } else if (isLove && isIntercaste) {
     loveNoteEn = 'Love / Unconventional / Inter-cultural Alliance: Personal choice transcends traditional caste/regional boundaries (5th-7th & Rahu resonance)';
     loveNoteHi = 'प्रेम / अंतरजातीय अथवा आधुनिक विवाह योग: व्यक्तिगत पसंद और भावनात्मक आकर्षण पारंपरिक सीमाओं से ऊपर उठकर विवाह का रूप लेता है';
   } else if (isLove) {

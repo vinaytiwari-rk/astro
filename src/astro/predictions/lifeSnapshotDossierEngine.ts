@@ -2370,6 +2370,10 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       stressSignalsEn.push('Kemadruma Moon under malefic strain');
       stressSignalsHi.push('केमद्रुम चंद्र पर पाप प्रभाव');
     }
+    if (rahu?.placedHouse === 4) {
+      stressSignalsEn.push('Rahu in 4th (restless inner contentment)');
+      stressSignalsHi.push('चतुर्थस्थ राहु (आंतरिक अशांति व घर में बेचैनी)');
+    }
     if (moonNodeOrMaleficNoJup) {
       stressSignalsEn.push('Unshielded Moon sensitivity');
       stressSignalsHi.push('गुरु-दृष्टि रहित चंद्र संवेदनशीलता');
@@ -2524,10 +2528,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
                   ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
                 !jupShieldsMoon
             );
+            const h12ClusterBandhana =
+              [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
+              (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
             const classicalBandhana =
               (countMal(2) > 0 && countMal(2) === countMal(12)) ||
               (countMal(5) > 0 && countMal(5) === countMal(9)) ||
               (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              h12ClusterBandhana ||
               moonSat410 ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
               (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
@@ -2554,10 +2562,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
                   ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
                 !jupShieldsMoon
             );
+            const h12ClusterBandhana =
+              [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
+              (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
             const classicalBandhana =
               (countMal(2) > 0 && countMal(2) === countMal(12)) ||
               (countMal(5) > 0 && countMal(5) === countMal(9)) ||
               (countMal(4) > 0 && countMal(4) === countMal(10)) ||
+              h12ClusterBandhana ||
               moonSat410 ||
               (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
               (l12 && [6, 8].includes(l12.placedHouse) && saturn && [2, 6, 8, 12].includes(saturn.placedHouse));
