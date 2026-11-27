@@ -881,6 +881,12 @@ export function evaluateAyushyaSafety(
 // ============================================================================
 // 5. MASTER ADVANCE MATCHMAKING COMPOSITE ENGINE
 // ============================================================================
+export interface TemperamentBoundaryReport {
+  cautionLevel: 'Clear' | 'Moderate' | 'Elevated';
+  summaryEn: string;
+  summaryHi: string;
+}
+
 export interface AdvanceMarriageMatchReport {
   ashtakoota: MatchMakingResult;
   dashakoota: PoruthamReport;
@@ -894,6 +900,7 @@ export interface AdvanceMarriageMatchReport {
   striJataka: StriJatakaReport;
   upapadaSynastry: UpapadaSynastryReport;
   ayushyaSafety: AyushyaSafetyReport;
+  temperamentBoundary: TemperamentBoundaryReport;
   totalEffectiveGunas: number; // Ashtakoota score with Bhakoot/Nadi parihara adjustments
   overallVerdictHi: string;
   overallVerdictEn: string;
@@ -936,6 +943,50 @@ export function computeAdvanceMarriageMatching(
 
   // 11. Longevity & Ayushya Safety
   const ayushyaSafety = evaluateAyushyaSafety(groomChart, brideChart);
+
+  // 12. Stacked Temperament & Relationship Boundary Caution (preventive compatibility screen)
+  const scoreChartBoundary = (c: ChartData) => {
+    const g = (id: string) => c.planets.find((p) => p.id === id);
+    const mars = g('Mars');
+    const rahu = g('Rahu');
+    const sat = g('Saturn');
+    const moon = g('Moon');
+    const ven = g('Venus');
+    const jup = g('Jupiter');
+    const hOf = (p?: typeof mars) => (p ? (((p.signIndex - c.ascendant.signIndex + 12) % 12) + 1) : 0);
+    const jupProtects = Boolean(
+      jup &&
+        moon &&
+        (jup.signIndex === moon.signIndex || [5, 7, 9].includes(((hOf(moon) - hOf(jup) + 12) % 12) || 12))
+    );
+    let pts = 0;
+    if (mars && rahu && mars.signIndex === rahu.signIndex) pts += 2;
+    if (sat && [4, 7, 8].includes(hOf(sat)) && mars && [1, 4, 7, 8].includes(hOf(mars))) pts += 1;
+    if (moon && rahu && moon.signIndex === rahu.signIndex && !jupProtects) pts += 1;
+    if (ven && [6, 8, 12].includes(hOf(ven)) && mars && ven.signIndex === mars.signIndex) pts += 1;
+    return { pts, jupProtects };
+  };
+  const gBound = scoreChartBoundary(groomChart);
+  const bBound = scoreChartBoundary(brideChart);
+  const maxBoundPts = Math.max(gBound.pts, bBound.pts);
+  const temperamentBoundary: TemperamentBoundaryReport =
+    maxBoundPts >= 3 && !(gBound.jupProtects && bBound.jupProtects)
+      ? {
+          cautionLevel: 'Elevated',
+          summaryEn: 'Elevated Temperament & Boundary Watch: Stacked Mars/Rahu/Saturn pressure on emotional/7th axis detected; advise deeper pre-marital counseling, anger-management alignment & D9 verification.',
+          summaryHi: 'स्वभाव व मर्यादा सतर्कता: मंगल/राहु/शनि का सघन प्रभाव भावनात्मक व सप्तम अक्ष पर है; विवाह पूर्व संवाद, D9 मिलान एवं शांत स्वभाव परीक्षण अवश्य करें।',
+        }
+      : maxBoundPts >= 2
+      ? {
+          cautionLevel: 'Moderate',
+          summaryEn: 'Moderate Temperament Intensity: Dynamic passion/stubbornness present; clear communication and mutual respect maintain harmony.',
+          summaryHi: 'मध्यम स्वभाव तीव्रता: ऊर्जा व स्वाभिमान अधिक रहेगा; स्पष्ट संवाद व परस्पर सम्मान से दांपत्य सुदृढ़ रहता है।',
+        }
+      : {
+          cautionLevel: 'Clear',
+          summaryEn: 'Balanced Temperament & Respectful Boundaries: Both charts show steady emotional regulation and cooperative partnership cues.',
+          summaryHi: 'संतुलित स्वभाव व मर्यादित सामंजस्य: दोनों कुंडलियों में भावनात्मक स्थिरता व सहयोगी दांपत्य के शुभ संकेत हैं।',
+        };
 
   // Adjusted Gunas incorporating shastric pariharas
   let effectiveGunas = ashtakoota.totalObtained;
@@ -986,6 +1037,7 @@ export function computeAdvanceMarriageMatching(
     striJataka,
     upapadaSynastry,
     ayushyaSafety,
+    temperamentBoundary,
     totalEffectiveGunas: effectiveGunas,
     overallVerdictHi,
     overallVerdictEn,

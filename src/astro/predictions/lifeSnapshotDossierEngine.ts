@@ -1310,6 +1310,11 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       maritalStatusHi = 'विवाह में विलंब (32+ वर्ष) अथवा उच्च वैराग्य / स्वतंत्र जीवन पथ (प्रव्रज्या व अविवाहित संकेत): आजीवन अविवाहित रहने अथवा विवाह के बाद भी स्वतंत्र/पृथक जीवन जीने की प्रबल प्रवृत्ति';
       maritalStatusExplEn = 'Multiple detachment and delay markers (Ketu/Saturn/Rahu on 1-7 axis, 12th/afflicted Venus, or 7th lord in Dusthana) channel life energy toward mission, public duty, or spiritual independence rather than conventional domesticity.';
       maritalStatusExplHi = 'लग्न-सप्तम अक्ष पर केतु/शनि/राहु, व्यय/पीड़ित शुक्र अथवा त्रिक भाव में सप्तमेश होने से जातक की ऊर्जा पारंपरिक गृहस्थ के बजाय स्वतंत्र उद्देश्य, कर्म या आत्मिक मार्ग की ओर अधिक मुड़ती है।';
+    } else if (ketuOn17 && isManglik && moon?.dignity === 'Debilitated') {
+      maritalStatusEn = 'Dynamic / Non-Traditional & Intense Partnership: Demands emotional maturity, clear boundaries & mutual independence';
+      maritalStatusHi = 'विशिष्ट / स्वतंत्र एवं संवेदनशील दांपत्य योग: भावनात्मक परिपक्वता, स्पष्ट सीमाएं व परस्पर सम्मान आवश्यक';
+      maritalStatusExplEn = 'Rahu–Ketu across the 1–7 axis paired with Manglik intensity and Moon sensitivity calls for unconventional understanding, emotional space, and careful D9 compatibility.';
+      maritalStatusExplHi = '१-७ अक्ष पर राहु-केतु, मंगलिक ऊर्जा तथा चंद्र संवेदनशीलता के कारण दांपत्य में आपसी समझ, भावनात्मक स्पेस और D9 मिलान महत्वपूर्ण रहता है।';
     } else if ((hasSaturnOrRahuIn7th || is7thLordAfflicted) && !hasJupiterAspectOn7th) {
       maritalStatusEn = 'Delayed marriage (favored after age 28-32); demands emotional maturity, patience, and meticulous horoscope compatibility; period of adjustment requires mutual understanding to prevent friction';
       maritalStatusHi = 'विवाह में विलंब (आयु २८ से ३२ वर्ष उपरांत अनुकूल); दांपत्य में धैर्य, परिपक्वता व सूक्ष्म कुंडली मिलान अनिवार्य; वैचारिक मतभेद अथवा स्वभावगत अंतर को सुलझाने के लिए परस्पर सामंजस्य आवश्यक';
@@ -2257,6 +2262,23 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       enemiesHi = 'सौहार्दपूर्ण संवाद व न्यूनतम विवाद योग: खुले टकराव के बजाय समझदारी व नैतिक संवाद से विवाद निवारण';
       enemiesExplEn = 'Benefic 6th-house connection keeps litigation minimal and resolves workplace disagreements smoothly.';
       enemiesExplHi = 'षष्ठ भाव पर शुभ ग्रह प्रभाव से कानूनी झंझट न्यूनतम रहते हैं और मतभेद शांति से सुलझते हैं।';
+    }
+
+    // False-Allegation / Reputation Vigilance & 9th-House Exoneration Yoga
+    const falseAllegationRisk =
+      (rahu && [7, 12].includes(rahu.placedHouse) && (sun?.placedHouse === rahu.placedHouse || moon?.placedHouse === rahu.placedHouse)) ||
+      (ketu && ketu.placedHouse === 6 && (sun?.placedHouse === 6 || moon?.placedHouse === 6)) ||
+      (rahu?.placedHouse === 9 && [6, 8, 12].includes(l9?.placedHouse || 0));
+    const exonerationYoga =
+      [jupiter?.placedHouse, sun?.placedHouse, moon?.placedHouse].includes(9) &&
+      [1, 4, 5, 7, 9, 10].includes(l9?.placedHouse || 0);
+    if (falseAllegationRisk) {
+      enemiesExplEn += ' Reputation Watch: Rahu/Ketu on 6/7/9/12 luminaries advises keeping clear written records to guard against misunderstandings or false blame.';
+      enemiesExplHi += ' प्रतिष्ठा सुरक्षा: राहु-केतु व सूर्य/चंद्र की संवेदनशील स्थिति में लिखित प्रमाण व स्पष्ट संवाद से मिथ्या आरोपों से रक्षा होती है।';
+    }
+    if (exonerationYoga) {
+      enemiesExplEn += ' Exoneration Shield: 9th-house Dharma support helps clear misunderstandings and restore honor.';
+      enemiesExplHi += ' मान-सम्मान रक्षा योग: नवम भाव के शुभ बल से किसी भी विवाद में सत्य और प्रतिष्ठा की शीघ्र बहाली होती है।';
     }
 
     const p8Det = getPillar8MicroDetails(h6Prof, h8Prof, h12Prof, moon, venus);
