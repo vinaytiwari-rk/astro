@@ -4,11 +4,11 @@ import { DEFAULT_SETTINGS, SAMPLE_CHARTS } from '../../data/cities';
 import { computeLifeSnapshotDossierReport } from '../predictions/lifeSnapshotDossierEngine';
 
 describe('360° Life Matrix Snapshot Dossier Master Engine', () => {
-  it('computes all 14 comprehensive life pillars with 60+ attributes across sample charts', () => {
+  it('computes all 16 comprehensive life pillars with 60+ attributes across sample charts', () => {
     const chart = calculateChart(SAMPLE_CHARTS[0], DEFAULT_SETTINGS);
     const report = computeLifeSnapshotDossierReport(chart);
 
-    expect(report.pillars.length).toBe(14);
+    expect(report.pillars.length).toBe(16);
     expect(report.birthSummary.lagnaSignEn.length).toBeGreaterThan(0);
     expect(report.birthSummary.lagnaSignHi.length).toBeGreaterThan(0);
     expect(report.birthSummary.d60DevataEn.length).toBeGreaterThan(0);
@@ -30,6 +30,8 @@ describe('360° Life Matrix Snapshot Dossier Master Engine', () => {
       'vastu_lifestyle',
       'palmistry_gait',
       'lucky_synergy_matrix',
+      'dasha_transit_milestones',
+      'vargas_ashtakavarga_shadbala',
     ]);
 
     let totalAttributes = 0;
