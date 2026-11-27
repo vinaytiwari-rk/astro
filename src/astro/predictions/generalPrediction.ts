@@ -276,8 +276,8 @@ function buildReaderPrediction(
   const themeHi = PLANET_THEMES[primaryLord.id]?.hi ?? 'विशेष ग्रह-कर्म';
 
   return {
-    en: `${opening.en} In your chart, ${planetEn} brings ${themeEn} into this area, while its placement links it with ${destination.en}. ${conditionEn}${extraEn.length ? ' ' + extraEn.join(' ') : ''}`,
-    hi: `${opening.hi} आपकी कुंडली में ${planetHi} इस क्षेत्र में ${themeHi} को प्रमुख बनाते हैं और इसकी स्थिति इसे ${destination.hi} से जोड़ती है। ${conditionHi}${extraHi.length ? ' ' + extraHi.join(' ') : ''}`,
+    en: `House ${primaryHouse} lord ${planetEn} (${primaryLord.dignity} in House ${primaryLord.rasiHouseNumber}) brings ${themeEn} into ${destination.en}. ${conditionEn}${extraEn.length ? ' ' + extraEn.join(' ') : ''}`,
+    hi: `भाव ${primaryHouse} के स्वामी ${planetHi} (${primaryLord.dignity}, भाव ${primaryLord.rasiHouseNumber}) इस क्षेत्र में ${themeHi} को प्रमुख बनाकर इसे ${destination.hi} से जोड़ते हैं। ${conditionHi}${extraHi.length ? ' ' + extraHi.join(' ') : ''}`,
   };
 }
 
