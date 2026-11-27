@@ -872,6 +872,12 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     } else if (mProfLord?.id === 'Venus' || mProfLord?.id === 'Moon') {
       mProfEn = 'Hospitality, design, counseling, healthcare, social welfare, or boutique enterprise';
       mProfHi = 'आतिथ्य, डिजाइन, परामर्श, स्वास्थ्य सेवा, समाज कल्याण अथवा स्वतंत्र बुटीक उद्यम';
+    } else if (mProfLord?.id === 'Mars' || mProfLord?.id === 'Sun') {
+      mProfEn = 'Public administration, medical/nursing leadership, landed property, or disciplined household command';
+      mProfHi = 'प्रशासनिक सेवा, चिकित्सा/नर्सिंग नेतृत्व, भू-संपत्ति प्रबंधन अथवा अनुशासित गृह संचालन';
+    } else if (mProfLord?.id === 'Saturn') {
+      mProfEn = 'Long-term institutional service, social work, textiles/crafts, or patient multi-role family stewardship';
+      mProfHi = 'दीर्घकालिक संस्थागत सेवा, समाज सेवा, हस्तशिल्प अथवा धैर्यपूर्ण पारिवारिक दायित्व निर्वहन';
     }
 
     const isFatherAfflicted = fatherHouseLord?.placedHouse === 6 || fatherHouseLord?.placedHouse === 8 || fatherHouseLord?.placedHouse === 12 || fatherHouseLord?.dignity === 'Debilitated' || (sun && (sun.placedHouse === 6 || sun.placedHouse === 8 || sun.placedHouse === 12 || sun.dignity === 'Debilitated'));
@@ -1280,6 +1286,12 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     } else if (l4?.id === 'Mars' || l4?.id === 'Saturn') {
       spouseProfEn = 'Engineering, technical project management, industrial architecture, or enterprise operations';
       spouseProfHi = 'इंजीनियरिंग, तकनीकी प्रोजेक्ट मैनेजमेंट, औद्योगिक वास्तुकला अथवा ऑपरेशन्स';
+    } else if (l4?.id === 'Venus' || l4?.id === 'Moon') {
+      spouseProfEn = 'Design, media, healthcare, hospitality, counseling, or boutique entrepreneurship';
+      spouseProfHi = 'डिज़ाइन, मीडिया, स्वास्थ्य सेवा, आतिथ्य, परामर्श अथवा रचनात्मक उद्यम';
+    } else if (l4?.id === 'Sun') {
+      spouseProfEn = 'Government administration, public policy, medical leadership, or executive management';
+      spouseProfHi = 'सरकारी प्रशासन, सार्वजनिक नीति, चिकित्सा नेतृत्व अथवा उच्च प्रबंधन';
     }
 
     // Age difference
@@ -1968,8 +1980,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           titleHi: 'सर्वोच्च शैक्षणिक स्तर व उपाधि',
           valueEn: degreeEn,
           valueHi: degreeHi,
-          explanationEn: `The 4th and 5th houses form a powerful Saraswati confluence. The native is endowed with high retention capacity, analytical clarity, and academic perseverance.`,
-          explanationHi: `चतुर्थ और पंचम भावों के शुभ योग से जातक उच्च स्तर की उपाधि प्राप्त करेगा। बौद्धिक क्षमता, स्मरण शक्ति और शोध वृत्ति असाधारण रहेगी।`,
+          explanationEn: degreeExplEn,
+          explanationHi: degreeExplHi,
           pacBasisEn: `House 4 Lord ${l4?.id} in H${l4?.placedHouse}; House 5 Lord ${l5?.id} in H${l5?.placedHouse}; D24 Lagna in ${SIGNS[d24LagnaSign].name}.`,
           pacBasisHi: `चतुर्थेश भाव ${l4?.placedHouse} में; पंचमेश भाव ${l5?.placedHouse} में; सिद्धांश (D24) लग्न ${SIGN_HI[d24LagnaSign]} में।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 10–18), Saravali (Ch. 24)',
@@ -3195,11 +3207,19 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'vastu_lifestyle',
           titleEn: 'Chronotype & Daily Cognitive Peak (Bio-Rhythm)',
           titleHi: 'दैनिक जैविक लय व कार्य क्षमता का शिखर समय',
-          valueEn: (sun?.placedHouse === 1 || sun?.placedHouse === 10)
+          valueEn: (sun?.placedHouse === 1 || sun?.placedHouse === 10 || sun?.placedHouse === 11)
             ? 'Early Morning Lark (Brahma Muhurta Peak): Maximum clarity, leadership focus, and executive energy between 5:30 AM and 10:30 AM'
+            : (sun?.placedHouse === 7 || sun?.placedHouse === 8 || sun?.placedHouse === 9)
+            ? 'Midday Solar Peak: Highest analytical throughput and decisive execution between 10:30 AM and 3:30 PM'
+            : (moon?.placedHouse === 1 || moon?.placedHouse === 4 || moon?.placedHouse === 5 || venus?.placedHouse === 1)
+            ? 'Twilight & Evening Flow: Creative synthesis, empathetic dialogue, and intuitive clarity peak between 4:30 PM and 8:30 PM'
             : 'Nocturnal-Contemplative (Night-Owl Peak): Deepest strategic focus, research brilliance, and creative insight manifests between 9:30 PM and 1:00 AM',
-          valueHi: (sun?.placedHouse === 1 || sun?.placedHouse === 10)
+          valueHi: (sun?.placedHouse === 1 || sun?.placedHouse === 10 || sun?.placedHouse === 11)
             ? 'प्रातःकालीन ब्रह्म मुहूर्त लय (Early Lark): प्रातः 5:30 से 10:30 के मध्य मानसिक एकाग्रता व निर्णय क्षमता का सर्वोच्च शिखर'
+            : (sun?.placedHouse === 7 || sun?.placedHouse === 8 || sun?.placedHouse === 9)
+            ? 'मध्याह्न सूर्य शिखर: प्रातः 10:30 से अपराह्न 3:30 के मध्य सर्वाधिक व्यावहारिक व तार्किक कार्यक्षमता'
+            : (moon?.placedHouse === 1 || moon?.placedHouse === 4 || moon?.placedHouse === 5 || venus?.placedHouse === 1)
+            ? 'सांध्यकालीन रचनात्मक लय: सायं 4:30 से 8:30 के मध्य कलात्मक चिंतन, संवाद व अंतर्ज्ञान प्रबल'
             : 'निशाचर-संतुलित लय (Night-Owl): रात्रि 9:30 से 1 बजे के मध्य मस्तिष्क की कार्यक्षमता, शोध व रणनीतिक एकाग्रता चरम पर',
           explanationEn: `The ascendant, Sun, and Moon placements calibrate the native's circadian cognitive stamina.`,
           explanationHi: `सूर्य, चंद्र व लग्न की स्थिति के अनुसार जातक के दैनिक कार्य का सबसे उत्पादक और ऊर्जावान समय निर्धारित होता है।`,

@@ -445,43 +445,72 @@ export function getEducationSubDetails(
   exams: BilingualPrediction;
   friends: BilingualPrediction;
 } {
-  // 1. Teachers (H9 & Jupiter)
+  // 1. Teachers (H9 & Jupiter — 5 tiers)
   const teachers: BilingualPrediction =
     h9.tier === 'strong' && jupiter?.dignity !== 'Debilitated'
       ? {
-          valEn: 'Strong patronage from wise professors and senior mentors who open pivotal career doors',
-          valHi: 'योग्य गुरुजनों व वरिष्ठ प्राध्यापकों का विशेष स्नेह, मार्गदर्शन व करियर में सहयोग',
-          explEn: `Fortified 9th house (${h9.signName}) and Jupiter cultivate lifelong guru-shishya goodwill.`,
+          valEn: `Strong Guru-Shishya Grace (${h9.signName} H9, L9 in H${h9.lordHouse}): Wise professors and senior mentors open pivotal career doors`,
+          valHi: `सबल गुरु-शिष्य योग (नवम ${h9.signName}, नवमेश भाव ${h9.lordHouse}): योग्य गुरुजनों व वरिष्ठ प्राध्यापकों का विशेष मार्गदर्शन व सहयोग`,
+          explEn: `Fortified 9th house (${h9.signName}) and Jupiter cultivate lifelong academic mentorship.`,
           explHi: `नवम भाव व गुरु के बल से जातक को श्रेष्ठ मार्गदर्शकों का आशीर्वाद मिलता है।`,
+        }
+      : h9.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu')
+      ? {
+          valEn: `Unconventional / Cross-Disciplinary Mentors (${h9.dominantGraha} in H9): Learns best from research pioneers, foreign faculty, or self-guided inquiry`,
+          valHi: `विशिष्ट / अपरंपरागत मार्गदर्शक (नवम में ${h9.dominantGraha}): शोधकर्ताओं, विदेशी विद्वानों अथवा स्व-अन्वेषण से श्रेष्ठ ज्ञान प्राप्ति`,
+          explEn: `Nodal presence in the 9th house favors non-traditional mentors and independent research.`,
+          explHi: `नवम भाव में राहु/केतु पारंपरिक ढांचे से हटकर शोध व आधुनिक गुरुओं से सीखने का योग बनाते हैं।`,
         }
       : h9.tier === 'afflicted'
       ? {
-          valEn: 'Self-directed learning; occasional friction with rigid instructors teaches independent critical thinking',
-          valHi: 'स्व-अध्ययन की प्रवृत्ति अधिक; कठोर शिक्षकों से मतभेद के कारण जातक स्वयं के बल पर सीखता है',
+          valEn: `Self-Directed Critical Thinker (H9 ${h9.dominantGraha}): Friction with rigid instructors builds fierce independent mastery`,
+          valHi: `स्व-अध्ययन व स्वतंत्र चिंतन (नवम ${h9.dominantGraha}): कठोर शिक्षकों से मतभेद के बाद जातक स्वयं के बल पर विषय में पारंगत होता है`,
           explEn: `Affliction in 9th house (${h9.dominantGraha}) fosters a questioning, self-taught mind rather than passive obedience.`,
           explHi: `नवम भाव में संघर्ष जातक को स्वतंत्र चिंतक व स्व-शिक्षित बनाता है।`,
         }
+      : h9.dominantGraha === 'Mercury' || h9.dominantGraha === 'Saturn'
+      ? {
+          valEn: `Structured Analytical Mentorship (${h9.dominantGraha} H9): Thrives under disciplined, detail-oriented technical or legal preceptors`,
+          valHi: `अनुशासित व तार्किक मार्गदर्शन (${h9.dominantGraha} नवम): सूक्ष्म विश्लेषण व नियमबद्ध पढ़ाने वाले आचार्यों से विशेष लाभ`,
+          explEn: `${h9.dominantGraha} governing the 9th house rewards rigorous syllabus discipline and peer debate.`,
+          explHi: `नवम भाव पर ${h9.dominantGraha} का प्रभाव व्यवस्थित अध्ययन और तार्किक मार्गदर्शन से उन्नति देता है।`,
+        }
       : {
-          valEn: 'Constructive, practical guidance from experienced teachers during crucial academic transitions',
-          valHi: 'अध्ययन के महत्वपूर्ण पड़ावों पर अनुभवी शिक्षकों का व्यावहारिक व उपयोगी मार्गदर्शन',
+          valEn: `Constructive Mentorship (H9 ${h9.signName}, L9 in H${h9.lordHouse}): Practical guidance from experienced teachers during academic transitions`,
+          valHi: `सहायक शैक्षणिक मार्गदर्शन (नवम ${h9.signName}, नवमेश भाव ${h9.lordHouse}): महत्वपूर्ण पड़ावों पर अनुभवी शिक्षकों का उपयोगी सहयोग`,
           explEn: `Balanced 9th house provides steady educational mentorship when sought sincerely.`,
           explHi: `नवम भाव की सामान्य स्थिति समय-समय पर उचित शैक्षणिक दिशा देती है।`,
         };
 
-  // 2. Hostel / Travel for Education (H4, H9, H12)
-  const moveForEdu = h4.modality === 'Movable' || [3, 9, 12].includes(h4.lordHouse) || [9, 12].includes(h5.lordHouse);
-  const hostel: BilingualPrediction = moveForEdu
+  // 2. Hostel / Travel for Education (H4, H5, H9, H12 — 4 tiers)
+  const foreignEdu = [9, 12].includes(h4.lordHouse) || [9, 12].includes(h5.lordHouse);
+  const interstateEdu = h4.modality === 'Movable' || h4.lordHouse === 3;
+  const hostel: BilingualPrediction = foreignEdu
     ? {
-        valEn: 'Relocation away from hometown for higher studies; hostel life or out-of-state university experience builds independence',
-        valHi: 'उच्च शिक्षा हेतु घर से दूर प्रवास; छात्रावास (Hostel) अथवा अन्य नगर में रहकर अध्ययन व आत्मनिर्भरता',
-        explEn: `4th house (${h4.signName}) connecting with movable/distant houses (lord in H${h4.lordHouse}) triggers academic relocation.`,
-        explHi: `चतुर्थ भाव का चर राशि या ३/९/१२वें भाव से संबंध शिक्षा के लिए घर से दूर जाने का योग बनाता है।`,
+        valEn: `Distant / Cross-Border Academic Relocation (L4 in H${h4.lordHouse}, L5 in H${h5.lordHouse}): Strong yoga for out-of-state university, hostel, or overseas study`,
+        valHi: `दूरस्थ / बाहरी शिक्षा प्रवास (चतुर्थेश भाव ${h4.lordHouse}, पंचमेश भाव ${h5.lordHouse}): अन्य राज्य, छात्रावास या विदेश अध्ययन का प्रबल योग`,
+        explEn: `4th/5th lords connecting with 9th/12th houses trigger long-distance academic relocation.`,
+        explHi: `चतुर्थ/पंचमेश का ९/१२ भावों से संबंध दूरस्थ विश्वविद्यालय या विदेश में उच्च शिक्षा का योग बनाता है।`,
+      }
+    : interstateEdu
+    ? {
+        valEn: `Regional Hostel / Campus Mobility (${h4.signName} H4): Study away from hometown or periodic academic transfers build self-reliance`,
+        valHi: `क्षेत्रीय छात्रावास / स्थान परिवर्तन (चतुर्थ ${h4.signName}): घर से दूर कॉलेज या कैंपस जीवन से आत्मनिर्भरता का विकास`,
+        explEn: `Movable 4th sign (${h4.signName}) or 3rd-house link brings short-to-medium distance study relocation.`,
+        explHi: `चर राशि या तृतीय भाव के संबंध से अध्ययन हेतु अन्य शहर में निवास संभव है।`,
+      }
+    : h4.tier === 'strong'
+    ? {
+        valEn: `Comfortable Home-Base Study (${h4.signName} H4): Primary and higher education supported smoothly from native city/family residence`,
+        valHi: `सुखद गृह-आधारित अध्ययन (चतुर्थ ${h4.signName}): पैतृक नगर व परिवार के शांत वातावरण में उच्च शिक्षा पूर्ण`,
+        explEn: `Strong fixed/dual 4th axis keeps academic base anchored comfortably close to home.`,
+        explHi: `सबल चतुर्थ भाव घर के समीप रहकर उत्तम शिक्षा पूर्ण करने का अवसर देता है।`,
       }
     : {
-        valEn: 'Primary and higher education largely completed near native city/family base; stable home study environment',
-        valHi: 'अधिकांश शिक्षा पैतृक नगर अथवा परिवार के समीप रहकर पूर्ण; घर के शांत वातावरण में अध्ययन',
-        explEn: `Fixed/grounded 4th axis keeps academic base anchored close to home.`,
-        explHi: `चतुर्थ भाव की स्थिरता जातक को परिवार के पास रहकर पढ़ाई पूर्ण करने का अवसर देती है।`,
+        valEn: `Local Study with Self-Reliant Discipline (H4 ${h4.signName}, L4 in H${h4.lordHouse}): Completes credentials near home base through steady routine`,
+        valHi: `स्थानीय अध्ययन व स्वावलंबी अनुशासन (चतुर्थ ${h4.signName}, चतुर्थेश भाव ${h4.lordHouse}): अपने नगर में नियमित परिश्रम से उपाधि प्राप्ति`,
+        explEn: `Grounded 4th axis favors local institutions or hybrid study without prolonged displacement.`,
+        explHi: `चतुर्थ भाव की स्थिति स्थानीय संस्थानों में निरंतर परिश्रम से सफलता दर्शाती है।`,
       };
 
   // 3. Education Hurdles (including 5th Lord in 8th Break + Jupiter Resumption Rule)
@@ -524,25 +553,39 @@ export function getEducationSubDetails(
           explHi: `मध्यम पंचम भाव सामान्य परिश्रम से सभी शैक्षणिक चुनौतियों पर विजय दिलाता है।`,
         };
 
-  // 4. Competitive Exams (H6 & Mars/Mercury)
+  // 4. Competitive Exams (H6 & Mars/Mercury/Saturn — 5 tiers)
   const exams: BilingualPrediction =
-    h6.tier === 'strong' || ['Mars', 'Sun', 'Mercury'].includes(h6.dominantGraha)
+    h6.tier === 'strong' && ['Mars', 'Sun', 'Mercury', 'Jupiter'].includes(h6.dominantGraha)
       ? {
-          valEn: 'High competitive grit: Capable of clearing tough entrance/government exams through focused strategy',
-          valHi: 'प्रबल प्रतिस्पर्धात्मक क्षमता: कठिन प्रवेश परीक्षाओं व सरकारी/प्रतियोगी परीक्षाओं में चयन का उत्तम योग',
+          valEn: `Apex Competitive Grit (${h6.dominantGraha} on H6 ${h6.signName}): Strong potential to clear tough national/civil entrance exams`,
+          valHi: `उत्कृष्ट प्रतियोगी क्षमता (${h6.dominantGraha} षष्ठ ${h6.signName}): कठिन प्रवेश व प्रशासनिक परीक्षाओं में शीर्ष चयन योग`,
+          explEn: `Fortified 6th house led by ${h6.dominantGraha} grants sharp recall and composure under exam pressure.`,
+          explHi: `सबल षष्ठ भाव पर ${h6.dominantGraha} का प्रभाव परीक्षा के दबाव में भी श्रेष्ठ प्रदर्शन दिलाता है।`,
+        }
+      : ['Mars', 'Sun', 'Mercury'].includes(h6.dominantGraha)
+      ? {
+          valEn: `High Tactical Stamina (${h6.dominantGraha} H6, L6 in H${h6.lordHouse}): Clears competitive tests through disciplined mock practice`,
+          valHi: `प्रबल रणनीतिक प्रयास (${h6.dominantGraha} षष्ठ, षष्ठेश भाव ${h6.lordHouse}): नियमित अभ्यास व समय-प्रबंधन से प्रतियोगी परीक्षा में सफलता`,
           explEn: `6th house (Competition) driven by ${h6.dominantGraha} equips the native with analytical stamina under pressure.`,
           explHi: `षष्ठ भाव पर ${h6.dominantGraha} का प्रभाव जातक को प्रतियोगी परीक्षाओं में विजय दिलाने वाला जुझारूपन देता है।`,
         }
+      : h6.dominantGraha === 'Saturn'
+      ? {
+          valEn: `Endurance & Late-Victory Pattern (Saturn H6): Persistent effort across 1–2 cycles secures durable institutional placement`,
+          valHi: `धैर्य व विलंबित विजय योग (षष्ठ शनि): निरंतर परिश्रम व १-२ प्रयासों के बाद स्थायी सरकारी/संस्थागत चयन`,
+          explEn: `Saturn on the 6th rewards marathon consistency over rushed cramming.`,
+          explHi: `षष्ठ भाव पर शनि का प्रभाव निरंतर और धैर्यपूर्ण अभ्यास से स्थायी सफलता देता है।`,
+        }
       : h6.tier === 'afflicted'
       ? {
-          valEn: 'Competitive exams require multiple persistent attempts; skill-based interviews suit better than rote-memory tests',
-          valHi: 'प्रतियोगी परीक्षाओं में एक से अधिक प्रयासों की आवश्यकता; रटने के बजाय व्यावहारिक कौशल-परीक्षण अधिक अनुकूल',
+          valEn: `Skill-First Selection Path (H6 ${h6.dominantGraha}): Practical interviews, portfolios, and applied tests outperform rote-memory exams`,
+          valHi: `कौशल-आधारित चयन मार्ग (षष्ठ ${h6.dominantGraha}): रटने वाली परीक्षाओं के बजाय साक्षात्कार व व्यावहारिक कौशल-परीक्षण अधिक अनुकूल`,
           explEn: `Afflicted 6th axis suggests steady persistence or opting for practical skill-driven career paths.`,
           explHi: `षष्ठ भाव की स्थिति दर्शाती है कि निरंतर अभ्यास या कौशल आधारित चयन से ही सफलता मिलेगी।`,
         }
       : {
-          valEn: 'Steady performance in merit tests and interviews when backed by structured 6–12 month preparation',
-          valHi: 'नियोजित तैयारी व निरंतर अभ्यास द्वारा प्रवेश परीक्षाओं व साक्षात्कार में संतोषजनक सफलता',
+          valEn: `Steady Merit Performance (H6 ${h6.signName}, L6 in H${h6.lordHouse}): Clears entrance tests with structured 6–12 month preparation`,
+          valHi: `संतुलित योग्यता प्रदर्शन (षष्ठ ${h6.signName}, षष्ठेश भाव ${h6.lordHouse}): ६–१२ माह की नियोजित तैयारी से संतोषजनक सफलता`,
           explEn: `6th lord in House ${h6.lordHouse} rewards systematic preparation in competitive arenas.`,
           explHi: `षष्ठेश की भाव ${h6.lordHouse} में स्थिति अनुशासित तैयारी से सफलता सुनिश्चित करती है।`,
         };
@@ -580,22 +623,36 @@ export function getCareerFinancialDetails(h11: HousePacProfile, h12: HousePacPro
   let profitLoss: BilingualPrediction;
   if (h11.tier === 'strong' && h12.tier !== 'afflicted') {
     profitLoss = {
-      valEn: 'Income consistently outpaces expenses; strong savings growth between ages 30 and 45 with disciplined reserves',
-      valHi: 'आय व्यय से निरंतर अधिक; 30 से 45 वर्ष की आयु के मध्य पूंजी व बचत में उल्लेखनीय वृद्धि',
+      valEn: `Sustained Surplus (${h11.signName} H11, L11 in H${h11.lordHouse}): Income outpaces expenses with strong reserve growth`,
+      valHi: `निरंतर लाभ आधिक्य (एकादश ${h11.signName}, एकादशेश भाव ${h11.lordHouse}): आय व्यय से अधिक रहने से पूंजी व बचत में तीव्र वृद्धि`,
       explEn: `11th house (${h11.signName}) dominates 12th house (${h12.signName}), sustaining positive net cash flow.`,
       explHi: `एकादश (लाभ) भाव द्वादश (व्यय) से अधिक बलवान होने से पूंजी संचय सुदृढ़ रहता है।`,
     };
-  } else if (h11.tier === 'afflicted' || h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Mars')) {
+  } else if (h11.dominantGraha === 'Saturn' && h11.tier !== 'afflicted') {
     profitLoss = {
-      valEn: 'Cyclical income-expense waves; unexpected family/medical expenses require strict emergency funds and avoiding risky speculation',
-      valHi: 'आय-व्यय में उतार-चढ़ाव; अनपेक्षित खर्चों से बचने हेतु आपातकालीन बचत व सट्टेबाजी से दूर रहना अनिवार्य',
-      explEn: `Active 12th expenses (${h12.dominantGraha}) vs 11th gains (${h11.dominantGraha}) demand conservative risk management.`,
-      explHi: `द्वादश भाव में व्यय की प्रवृत्ति होने से सुरक्षित निवेश और बजट अनुशासन ही समृद्धि की कुंजी है।`,
+      valEn: `Slow, Compounding Cashflow (Saturn on H11): Modest early gains mature into rock-solid reserves after age 35`,
+      valHi: `क्रमिक व स्थायी धन वृद्धि (एकादश शनि): प्रारंभिक धीमी गति के बाद ३५ वर्ष के उपरांत सुदृढ़ कोष निर्माण`,
+      explEn: `Saturnine discipline on the 11th house builds durable, recession-resistant income streams.`,
+      explHi: `एकादश भाव पर शनि का प्रभाव धैर्यपूर्वक स्थायी और सुरक्षित आय स्रोत विकसित करता है।`,
+    };
+  } else if (h12.occupants.some((p) => p.id === 'Rahu' || p.id === 'Mars')) {
+    profitLoss = {
+      valEn: `High-Burn / Speculative Volatility (${h12.dominantGraha} in H12): Unexpected outlays demand strict emergency reserves`,
+      valHi: `तीव्र व्यय व उतार-चढ़ाव (द्वादश ${h12.dominantGraha}): अनपेक्षित खर्चों से बचने हेतु आपातकालीन कोष व संयम अनिवार्य`,
+      explEn: `Active 12th-house ${h12.dominantGraha} triggers sudden expenditures; automated savings protect net worth.`,
+      explHi: `द्वादश भाव में ${h12.dominantGraha} आकस्मिक व्यय बढ़ाता है; नियमित बचत आर्थिक सुरक्षा देती है।`,
+    };
+  } else if (h11.tier === 'afflicted') {
+    profitLoss = {
+      valEn: `Cyclical Gain-Loss Waves (H11 ${h11.dominantGraha}, L11 in H${h11.lordHouse}): Avoid leveraged debt and prioritize steady retainers`,
+      valHi: `लाभ-हानि चक्र सतर्कता (एकादश ${h11.dominantGraha}, एकादशेश भाव ${h11.lordHouse}): कर्ज व जोखिमपूर्ण सट्टेबाजी से दूर रहें`,
+      explEn: `Afflicted 11th axis rewards conservative budgeting and diversified client/income streams.`,
+      explHi: `एकादश भाव पर दबाव होने से सुरक्षित निवेश और बजट अनुशासन ही समृद्धि की कुंजी है।`,
     };
   } else {
     profitLoss = {
-      valEn: 'Balanced cash flow: Steady earnings cover living needs comfortably; wealth grows gradually after mid-30s',
-      valHi: 'संतुलित आय-व्यय चक्र: नियमित कमाई से सभी दायित्व पूर्ण; 35 वर्ष के बाद संचित कोष में धीरे-धीरे वृद्धि',
+      valEn: `Balanced Cashflow (L11 in H${h11.lordHouse}, L12 in H${h12.lordHouse}): Steady earnings cover duties with gradual compounding`,
+      valHi: `संतुलित आय-व्यय चक्र (एकादशेश भाव ${h11.lordHouse}, द्वादशेश भाव ${h12.lordHouse}): नियमित कमाई से क्रमिक बचत वृद्धि`,
       explEn: `11th lord in H${h11.lordHouse} and 12th lord in H${h12.lordHouse} indicate steady financial equilibrium.`,
       explHi: `एकादश व द्वादश भावों का संतुलन जीवन में आर्थिक स्थिरता बनाए रखता है।`,
     };
@@ -604,22 +661,36 @@ export function getCareerFinancialDetails(h11: HousePacProfile, h12: HousePacPro
   let hiddenWealth: BilingualPrediction;
   if (h8.tier === 'strong' && !h8.occupants.some((p) => p.id === 'Rahu' || p.id === 'Saturn')) {
     hiddenWealth = {
-      valEn: 'Favorable gains through long-term PF/insurance maturity, ancestral settlement, or quiet investments',
-      valHi: 'दीर्घकालिक निवेश, बीमा/पीएफ परिपक्वता अथवा पैतृक हिस्सेदारी से अप्रत्याशित लाभ का योग',
+      valEn: `Favorable Settlement & Reserve Gains (Strong H8 ${h8.signName}): PF/insurance maturity, research royalties, or ancestral equity`,
+      valHi: `बीमा, पैतृक व गुप्त कोष लाभ (सबल अष्टम ${h8.signName}): दीर्घकालिक निवेश, बीमा परिपक्वता अथवा पैतृक हिस्सेदारी से लाभ`,
       explEn: `Fortified 8th house (${h8.signName}) unlocks unearned reserves and structured settlements.`,
       explHi: `अष्टम भाव के शुभ बल से रुका हुआ धन, बीमा अथवा पैतृक लाभ प्राप्त होता है।`,
     };
+  } else if (h8.occupants.some((p) => p.id === 'Rahu' || p.id === 'Ketu')) {
+    hiddenWealth = {
+      valEn: `Sudden Windfall vs Volatility Watch (${h8.dominantGraha} in H8): Avoid speculative F&O/gambling; document all joint assets`,
+      valHi: `आकस्मिक लाभ-हानि सतर्कता (अष्टम ${h8.dominantGraha}): सट्टेबाजी व अनधिकृत लेन-देन से बचें; संयुक्त संपत्ति लिखित रखें`,
+      explEn: `Nodal presence in the 8th house brings sudden financial surprises — discipline prevents sudden reversals.`,
+      explHi: `अष्टम भाव में राहु/केतु आकस्मिक आर्थिक उतार-चढ़ाव देते हैं; अनुशासन हानि से बचाता है।`,
+    };
+  } else if (h8.dominantGraha === 'Saturn') {
+    hiddenWealth = {
+      valEn: `Slow Institutional & Pension Equity (Saturn H8): Long-horizon retirement funds and real-asset appreciation build quiet security`,
+      valHi: `दीर्घकालिक पेंशन व अचल कोष (अष्टम शनि): धैर्यपूर्ण दीर्घकालिक बचत व भूमि/भविष्य निधि से स्थायी सुरक्षा`,
+      explEn: `Saturn on the 8th house favors patient, decades-long compounding rather than quick windfalls.`,
+      explHi: `अष्टम भाव पर शनि का प्रभाव धीमे किंतु अत्यंत सुरक्षित दीर्घकालिक कोष का निर्माण करता है।`,
+    };
   } else if (h8.tier === 'afflicted') {
     hiddenWealth = {
-      valEn: 'No reliance on windfalls or lottery; speculative trading can cause losses — wealth comes strictly through earned work',
-      valHi: 'लॉटरी या शॉर्टकट से धन की आशा न रखें; सट्टेबाजी में हानि संभव — केवल परिश्रम की कमाई ही फलदायी',
+      valEn: `Earned-Only Wealth Discipline (H8 ${h8.dominantGraha}, L8 in H${h8.lordHouse}): Zero reliance on lottery; wealth comes strictly via hard work`,
+      valHi: `परिश्रम-आधारित धन योग (अष्टम ${h8.dominantGraha}, अष्टमेश भाव ${h8.lordHouse}): लॉटरी/शॉर्टकट से बचें — केवल मेहनत की कमाई फलदायी`,
       explEn: `Afflicted 8th house (${h8.dominantGraha}, lord in H${h8.lordHouse}) warns against get-rich-quick schemes or undocumented loans.`,
       explHi: `अष्टम भाव पर ${h8.dominantGraha} के दबाव के कारण बिना सोचे-समझे जोखिम भरे निवेश से बचना चाहिए।`,
     };
   } else {
     hiddenWealth = {
-      valEn: 'Modest long-term compounding through retirement funds, insurance, and gradual asset appreciation',
-      valHi: 'भविष्य निधि, बीमा व दीर्घकालिक सुरक्षित बचत के माध्यम से समय के साथ शांत पूंजी वृद्धि',
+      valEn: `Quiet Compounding Reserves (L8 in H${h8.lordHouse}): Gradual appreciation through retirement funds, insurance, and tax planning`,
+      valHi: `शांत पूंजी संवर्धन (अष्टमेश भाव ${h8.lordHouse}): भविष्य निधि, बीमा व सुरक्षित बचत से क्रमिक धन वृद्धि`,
       explEn: `8th lord in House ${h8.lordHouse} favors patient, low-risk compounding over sudden speculation.`,
       explHi: `अष्टमेश की स्थिति धैर्यपूर्ण व सुरक्षित दीर्घकालिक निवेश को लाभकारी बनाती है।`,
     };
