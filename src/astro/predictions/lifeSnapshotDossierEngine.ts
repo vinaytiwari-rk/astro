@@ -2212,31 +2212,50 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       doshaHi = 'कफ-प्रधान: श्वास नली में कफ संचय, जल प्रतिधारण, थायरॉयड संतुलन व चयापचय (Metabolism) की देखभाल';
     }
 
+    // BPHS Three-Pairs Ayurdaya Method (Group I: L1+L8, Group II: Lagna+Moon, Group III: Lagna+Hora Lagna)
+    const pairAyur = (sA: number, sB: number): 'Poornayu' | 'Madhyayu' | 'Alpayu' => {
+      const mA = sA % 3; // 0=Movable, 1=Fixed, 2=Dual
+      const mB = sB % 3;
+      const pair = [mA, mB].sort((x, y) => x - y).join(',');
+      if (pair === '0,0' || pair === '1,2') return 'Poornayu';
+      if (pair === '2,2' || pair === '0,1') return 'Madhyayu';
+      return 'Alpayu'; // 1,1 or 0,2
+    };
+    const hlPoint = chart.specialPoints?.find((sp) => sp.id === 'HL');
+    const g1 = pairAyur(l1?.signIndex ?? ascSignIdx, l8?.signIndex ?? ((ascSignIdx + 7) % 12));
+    const g2 = pairAyur(ascSignIdx, moon?.signIndex ?? ascSignIdx);
+    const g3 = pairAyur(ascSignIdx, hlPoint?.signIndex ?? ascSignIdx);
+    const threePairsVerdict: 'Poornayu' | 'Madhyayu' | 'Alpayu' =
+      g1 === g2 ? g1 : g1 === g3 ? g1 : g2 === g3 ? g2 : g3;
+
     const isL1AfflictedHealth = l1?.placedHouse === 6 || l1?.placedHouse === 8 || l1?.placedHouse === 12 || l1?.dignity === 'Debilitated';
     const isL8Afflicted = l8?.placedHouse === 6 || l8?.placedHouse === 12 || l8?.dignity === 'Debilitated';
     const isSaturnFortified = saturn && (saturn.placedHouse === 1 || saturn.placedHouse === 7 || saturn.placedHouse === 8 || saturn.placedHouse === 10 || saturn.placedHouse === 11 || saturn.dignity === 'Exalted' || saturn.dignity === 'Own Sign');
     const isJupKendraTrikona = jupiter && [1, 4, 5, 7, 9, 10].includes(jupiter.placedHouse);
 
+    const pairsNoteEn = `Three-Pairs Ayurdaya (L1+L8=${g1}, Lagna+Moon=${g2}, Lagna+HL=${g3} → ${threePairsVerdict}).`;
+    const pairsNoteHi = `त्रि-युग्म आयुर्दाय (लग्नेश+अष्टमेश=${g1}, लग्न+चंद्र=${g2}, लग्न+होरा लग्न=${g3} → ${threePairsVerdict})।`;
+
     let longevityEn = 'Purna Ayus (Long Lifespan: 75 to 82 years); robust vital Prana anchored by strong Lagnesha and Saturn';
     let longevityHi = 'पूर्णायु योग (दीर्घायु: ७५ से ८२ वर्ष); लग्नेश, अष्टमेश व आयुकारक शनि के शुभ प्रभाव से सुदृढ़ जीवनी शक्ति';
-    let longevityExplEn = 'Classical longevity methods (Lagna lord + 8th lord, Saturn + Moon) converge upon the Purna Ayus category. Strong life vitality provides natural resistance and longevity.';
-    let longevityExplHi = 'पाराशरी आयु निर्धारण पद्धति (लग्नेश+अष्टमेश, शनि+चंद्र) के अनुसार जातक पूर्णायु वर्ग में आता है। जीवन शक्ति उत्तम रहने से जातक दीर्घायु प्राप्त करता है।';
+    let longevityExplEn = `${pairsNoteEn} Strong life vitality provides natural resistance and longevity.`;
+    let longevityExplHi = `${pairsNoteHi} जीवन शक्ति उत्तम रहने से जातक दीर्घायु प्राप्त करता है।`;
 
-    if (!isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona) {
+    if (!isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona && threePairsVerdict !== 'Alpayu') {
       longevityEn = 'Deergha Ayus (Extended Lifespan: 82 to 90+ years); exceptional constitutional vitality & Jupiterian longevity shield';
       longevityHi = 'दीर्घायु विशेष योग (८२ से ९०+ वर्ष); शनि-गुरु के शुभ संयोग से असाधारण जीवनी शक्ति व दीर्घ जीवन';
-      longevityExplEn = 'Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.';
-      longevityExplHi = 'लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।';
-    } else if (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) {
-      longevityEn = 'Preventive Vitality Care (64 to 74 years); disciplined medical screening, restorative sleep & stress hygiene essential';
-      longevityHi = 'सजग स्वास्थ्य संरक्षण योग (६४ से ७४ वर्ष); नियमित चिकित्सा जांच, पर्याप्त निद्रा व तनाव नियंत्रण से दीर्घ व स्वस्थ जीवन';
-      longevityExplEn = 'Both Lagna and 8th lords occupy challenging houses without Saturnine stabilization, making preventive healthcare and steady routines vital.';
-      longevityExplHi = 'लग्नेश व अष्टमेश दोनों पर दबाव होने से नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु व स्वास्थ्य की रक्षा करती है।';
-    } else if ((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) {
+      longevityExplEn = `${pairsNoteEn} Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.`;
+      longevityExplHi = `${pairsNoteHi} लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।`;
+    } else if ((isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified) || (threePairsVerdict === 'Alpayu' && (isL1AfflictedHealth || isL8Afflicted))) {
+      longevityEn = 'Preventive Vitality Care (Alpayu/Vigilance Watch); disciplined medical screening, restorative sleep & stress hygiene essential';
+      longevityHi = 'सजग स्वास्थ्य संरक्षण योग (आयु-रक्षा सतर्कता); नियमित चिकित्सा जांच, पर्याप्त निद्रा व तनाव नियंत्रण से दीर्घ व स्वस्थ जीवन';
+      longevityExplEn = `${pairsNoteEn} Challenging Lagna/8th placements call for preventive healthcare, sattvic routines, and Maha Mrityunjaya calm.`;
+      longevityExplHi = `${pairsNoteHi} लग्नेश व अष्टमेश पर दबाव होने से नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु व स्वास्थ्य की रक्षा करती है।`;
+    } else if (((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) || threePairsVerdict === 'Madhyayu') {
       longevityEn = 'Madhyama Ayus (Medium Lifespan: 68 to 76 years); sustained health requires regular cardiac/lifestyle vigilance and balanced diet';
       longevityHi = 'मध्यायु योग (६८ से ७६ वर्ष); नियमित स्वास्थ्य परीक्षण, संयमित दिनचर्या व तनावमुक्ति से पूर्ण स्वस्थ जीवन संभव';
-      longevityExplEn = 'Lagna or 8th lord receives moderate stress in Trik houses, indicating that longevity is safeguarded by conscious lifestyle choices, timely medical checkups, and spiritual discipline.';
-      longevityExplHi = 'लग्नेश अथवा अष्टमेश की स्थिति मध्यम आयु खंड की ओर संकेत करती है। जातक यदि खानपान में संयम और नियमित व्यायाम रखे, तो स्वास्थ्य संबंधी व्याधियों से सुरक्षित रहता है।';
+      longevityExplEn = `${pairsNoteEn} Longevity is safeguarded by conscious lifestyle choices, timely medical checkups, and spiritual discipline.`;
+      longevityExplHi = `${pairsNoteHi} खानपान में संयम और नियमित व्यायाम से स्वास्थ्य संबंधी व्याधियों से सुरक्षित रहता है।`;
     }
 
     const hasEnemiesChallenge = h6Planets.some((p) => p.id === 'Rahu' || p.id === 'Saturn') || l6?.placedHouse === 10 || l6?.placedHouse === 7;
