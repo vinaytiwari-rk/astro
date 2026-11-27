@@ -2630,12 +2630,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           titleHi: 'आयु खंड निर्धारण: पूर्णायु / दीर्घायु व मारक विचार',
           valueEn: longevityEn,
           valueHi: longevityHi,
-          explanationEn: longevityExplEn,
-          explanationHi: longevityExplHi,
-          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House}; 8th Lord in H${l8?.placedHouse}; Saturn (Ayushkaraka) in House ${saturn?.placedHouse}.`,
-          pacBasisHi: `लग्नेश भाव ${l1House} में; अष्टमेश भाव ${l8?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में।`,
+          explanationEn: `${longevityExplEn} Primary Marakas: ${l2?.id} (2L) & ${l7?.id} (7L) — note that Maraka periods alone indicate transformation or preventive health care unless Dasha, Transit, and Ayurdaya ("Triple Lock") all align. 8th House (${h8Sign.name}, ${h8Sign.modality}): ${
+            (ketu?.placedHouse === 12 && jupiter && [4, 8, 9, 12].includes(jupiter.placedHouse))
+              ? 'Iccha / Yogic Transition signature (Ketu 12th + Jupiter Moksha support).'
+              : (mars?.placedHouse === 8 && rahu?.placedHouse === 8)
+              ? 'Agni / Accident Safety Watch (Mars–Rahu in 8th): prioritize road safety & Maha Mrityunjaya calm.'
+              : (moon?.placedHouse === 8 && (rahu?.placedHouse === 8 || ketu?.placedHouse === 8))
+              ? 'Jala / Emotional-Fluid Watch: prioritize hydration balance and serene emotional outlets.'
+              : 'Ayushya Kshaya (natural karmic completion) archetype.'
+          }`,
+          explanationHi: `${longevityExplHi} प्रमुख मारक ग्रह: ${l2?.id} (द्वितीयेश) व ${l7?.id} (सप्तमेश) — केवल मारक दशा से मृत्यु नहीं होती जब तक दशा, गोचर व आयु-क्षय तीनों एक साथ सक्रिय न हों। अष्टम भाव (${SIGN_HI[h8SignIdx]}): शांत आध्यात्मिक रूपांतरण व निवारक स्वास्थ्य संरक्षण।`,
+          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House}; 8th Lord ${l8?.id} in H${l8?.placedHouse}; Primary Marakas: ${l2?.id}, ${l7?.id}; Saturn in H${saturn?.placedHouse}.`,
+          pacBasisHi: `लग्नेश भाव ${l1House} में; अष्टमेश भाव ${l8?.placedHouse} में; मारक ${l2?.id}/${l7?.id}; शनि भाव ${saturn?.placedHouse} में।`,
           shastricRef: 'BPHS (Ch. 43 - Ayurdaya Adhyaya), Jaimini Sutras (2.1)',
-          vargaRef: 'D1 & D8',
+          vargaRef: 'D1, D3, D8 & D9',
         },
         {
           id: 'attr_enemies_litigation',
@@ -2868,8 +2876,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'assets_travel',
           titleEn: 'Spiritual Liberation, Detachment & Moksha',
           titleHi: 'आध्यात्मिक मुक्ति, वैराग्य व मोक्ष मार्ग',
-          valueEn: p9Det.moksha.valEn,
-          valueHi: p9Det.moksha.valHi,
+          valueEn: p9Det.moksha.valEn + (
+            (ketu?.placedHouse === 12 && jupiter && [4, 8, 9, 12].includes(jupiter.placedHouse))
+              ? ' | Ketu–Jupiter Moksha Yoga Active'
+              : ([4, 8, 12].includes(l4?.placedHouse ?? 0) && [4, 8, 12].includes(l8?.placedHouse ?? 0) && [4, 8, 12].includes(l12?.placedHouse ?? 0))
+              ? ' | Tri-Moksha (4/8/12) Alignment'
+              : ''
+          ),
+          valueHi: p9Det.moksha.valHi + (
+            (ketu?.placedHouse === 12 && jupiter && [4, 8, 9, 12].includes(jupiter.placedHouse))
+              ? ' | केतु-गुरु मोक्ष योग सक्रिय'
+              : ([4, 8, 12].includes(l4?.placedHouse ?? 0) && [4, 8, 12].includes(l8?.placedHouse ?? 0) && [4, 8, 12].includes(l12?.placedHouse ?? 0))
+              ? ' | त्रि-मोक्ष (४/८/१२) संयोग'
+              : ''
+          ),
           explanationEn: p9Det.moksha.explEn,
           explanationHi: p9Det.moksha.explHi,
           pacBasisEn: `House 12: ${h12Sign.name}; Ketu in House ${ketu?.placedHouse}; Karakamsha 12th house: ${karakamsha.ishtaDevata || 'Deva Grace'}.`,
