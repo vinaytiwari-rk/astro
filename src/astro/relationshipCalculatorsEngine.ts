@@ -1685,7 +1685,7 @@ export interface JaiminiAyurdayaPairDetail {
 }
 
 export interface AyurdayaClassResult {
-  longevityClassHi: 'अल्पायु (०–३६ वर्ष)' | 'मध्यायु (३६–७२ वर्ष)' | 'दीर्घायु (७२–१०८ वर्ष)' | 'पूर्णायु (१०८–१२० वर्ष)';
+  longevityClassHi: 'अल्पायु / सजग सुरक्षा' | 'मध्यायु / संतुलित जीवनी-कोष' | 'दीर्घायु / सुदृढ़ जीवनी-कोष' | 'पूर्णायु / परम सुदृढ़ जीवनी-कोष';
   longevityClassEn: string;
   estimatedSpanYears: string;
   jaiminiPairDetails: JaiminiAyurdayaPairDetail[];
@@ -1782,29 +1782,29 @@ export function computeParasharaJaiminiAyurdaya(chart: ChartData): AyurdayaClass
   counts[pair2.span]++;
   counts[pair3.span]++;
 
-  let longevityClassHi: AyurdayaClassResult['longevityClassHi'] = 'दीर्घायु (७२–१०८ वर्ष)';
-  let longevityClassEn = 'Deerghayu (Long Span: 72 - 108 Years)';
-  let estimatedSpanYears = '७२ से ९६+ वर्ष';
+  let longevityClassHi: AyurdayaClassResult['longevityClassHi'] = 'दीर्घायु / सुदृढ़ जीवनी-कोष';
+  let longevityClassEn = 'Deerghayu / Strong Constitutional Reserve';
+  let estimatedSpanYears = 'सुदृढ़ दीर्घकालिक जीवनी-शक्ति कोष (कोई निश्चित मृत्यु-आयु सीमा नहीं)';
 
   if (counts.Alpayu >= 2) {
     const jupiter = chart.planets.find((p) => p.id === 'Jupiter');
     if (jupiter && [1, 5, 8, 9].includes(jupiter.rasiHouseNumber)) {
-      longevityClassHi = 'मध्यायु (३६–७२ वर्ष)';
-      longevityClassEn = 'Madhyayu (Medium Span: 36 - 72 Years with Kakshya Vriddhi)';
-      estimatedSpanYears = '५५ से ७२ वर्ष (कक्षा वृद्धि योग)';
+      longevityClassHi = 'मध्यायु / संतुलित जीवनी-कोष';
+      longevityClassEn = 'Madhyayu / Lifestyle-Sensitive Reserve (Kakshya Vriddhi)';
+      estimatedSpanYears = 'कक्षा वृद्धि व गुरु संरक्षण से संतुलित जीवनी-शक्ति';
     } else {
-      longevityClassHi = 'अल्पायु (०–३६ वर्ष)';
-      longevityClassEn = 'Alpayu (Short Span: < 36 Years)';
-      estimatedSpanYears = '० से ३६ वर्ष';
+      longevityClassHi = 'अल्पायु / सजग सुरक्षा';
+      longevityClassEn = 'Alpayu Test / Extra Health & Safety Vigilance';
+      estimatedSpanYears = 'निवारक स्वास्थ्य जांच, सुरक्षा सतर्कता एवं महामृत्युंजय साधना अपेक्षित';
     }
   } else if (counts.Madhyayu >= 2) {
-    longevityClassHi = 'मध्यायु (३६–७२ वर्ष)';
-    longevityClassEn = 'Madhyayu (Medium Span: 36 - 72 Years)';
-    estimatedSpanYears = '४८ से ७२ वर्ष';
+    longevityClassHi = 'मध्यायु / संतुलित जीवनी-कोष';
+    longevityClassEn = 'Madhyayu / Lifestyle-Sensitive Reserve';
+    estimatedSpanYears = 'नियमित दिनचर्या व स्वास्थ्य परीक्षण से संतुलित दीर्घ-स्थायित्व';
   } else if (counts.Deerghayu >= 2) {
-    longevityClassHi = 'दीर्घायु (७२–१०८ वर्ष)';
-    longevityClassEn = 'Deerghayu (Long Span: 72 - 108 Years)';
-    estimatedSpanYears = '७२ से ९६+ वर्ष';
+    longevityClassHi = 'दीर्घायु / सुदृढ़ जीवनी-कोष';
+    longevityClassEn = 'Deerghayu / Strong Constitutional Reserve';
+    estimatedSpanYears = 'सुदृढ़ संवैधानिक जीवनी-शक्ति एवं रोग-प्रतिरोधक बल';
   }
 
   return {

@@ -395,6 +395,81 @@ export function buildAllDivisionalCharts(
   return charts;
 }
 
+export interface VimsopakaRow {
+  planet: NineGrahaId;
+  shadvarga: number;
+  saptavarga: number;
+  dashavarga: number;
+  shodashavarga: number;
+}
+
+const VIMSOPAKA_DIGNITY_SCORE: Record<DignityLevel, number> = {
+  Exalted: 1,
+  Moolatrikona: 0.95,
+  'Own Sign': 0.9,
+  'Great Friend': 0.75,
+  Friend: 0.65,
+  Neutral: 0.5,
+  Enemy: 0.35,
+  'Great Enemy': 0.25,
+  Debilitated: 0.15,
+  '-': 0.5,
+};
+
+const VIMSOPAKA_WEIGHT_SETS: Record<'shadvarga' | 'saptavarga' | 'dashavarga' | 'shodashavarga', Array<[DivisionalChartId, number]>> = {
+  // Classical BPHS Ch. 6 weights summing to 20.0
+  shadvarga: [
+    ['D1', 6], ['D2', 2], ['D3', 4], ['D9', 5], ['D12', 2], ['D30', 1],
+  ],
+  saptavarga: [
+    ['D1', 5], ['D2', 2], ['D3', 3], ['D7', 2.5], ['D9', 4.5], ['D12', 2], ['D30', 1],
+  ],
+  dashavarga: [
+    ['D1', 3], ['D2', 1.5], ['D3', 1.5], ['D7', 1.5], ['D9', 1.5],
+    ['D10', 1.5], ['D12', 1.5], ['D16', 1.5], ['D30', 1.5], ['D60', 5],
+  ],
+  shodashavarga: [
+    ['D1', 3.5], ['D2', 1], ['D3', 1], ['D4', 0.5],
+    ['D7', 0.5], ['D9', 3], ['D10', 0.5], ['D12', 0.5],
+    ['D16', 2], ['D20', 0.5], ['D24', 0.5], ['D27', 0.5],
+    ['D30', 1], ['D40', 0.5], ['D45', 0.5], ['D60', 4],
+  ],
+};
+
+function scoreVimsopakaSet(
+  planet: NineGrahaId,
+  weights: Array<[DivisionalChartId, number]>,
+  charts: Record<DivisionalChartId, DivisionalChart>,
+  maitriMatrix: Record<SevenPlanetId, Record<SevenPlanetId, string>>
+): number {
+  let total = 0;
+  for (const [vId, w] of weights) {
+    const pl = charts[vId]?.placements.find((x) => x.id === planet);
+    if (!pl) continue;
+    const dig = evaluateDignity(planet, pl.signIndex, pl.degreeInSign, maitriMatrix);
+    total += w * (VIMSOPAKA_DIGNITY_SCORE[dig] ?? 0.5);
+  }
+  return Math.round(total * 100) / 100;
+}
+
+/**
+ * Computes all 4 classical BPHS Vimsopaka Bala hierarchies (out of 20):
+ * Shadvarga (6), Saptavarga (7), Dashavarga (10), and Shodashavarga (16).
+ */
+export function computeAllVimsopakaBalas(
+  charts: Record<DivisionalChartId, DivisionalChart>,
+  maitriMatrix: Record<SevenPlanetId, Record<SevenPlanetId, string>>
+): VimsopakaRow[] {
+  const nine: NineGrahaId[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+  return nine.map((planet) => ({
+    planet,
+    shadvarga: scoreVimsopakaSet(planet, VIMSOPAKA_WEIGHT_SETS.shadvarga, charts, maitriMatrix),
+    saptavarga: scoreVimsopakaSet(planet, VIMSOPAKA_WEIGHT_SETS.saptavarga, charts, maitriMatrix),
+    dashavarga: scoreVimsopakaSet(planet, VIMSOPAKA_WEIGHT_SETS.dashavarga, charts, maitriMatrix),
+    shodashavarga: scoreVimsopakaSet(planet, VIMSOPAKA_WEIGHT_SETS.shodashavarga, charts, maitriMatrix),
+  }));
+}
+
 /**
  * Computes Vimshopaka Bala (out of 20) across the Shodasavarga (16 classical divisions).
  */
@@ -402,37 +477,9 @@ export function computeVimshopakaShodash(
   charts: Record<DivisionalChartId, DivisionalChart>,
   maitriMatrix: Record<SevenPlanetId, Record<SevenPlanetId, string>>
 ): Record<NineGrahaId, number> {
-  const weights: Array<[DivisionalChartId, number]> = [
-    ['D1', 3.5], ['D2', 1], ['D3', 1], ['D4', 0.5],
-    ['D7', 0.5], ['D9', 3], ['D10', 0.5], ['D12', 0.5],
-    ['D16', 2], ['D20', 0.5], ['D24', 0.5], ['D27', 0.5],
-    ['D30', 1], ['D40', 0.5], ['D45', 0.5], ['D60', 4],
-  ];
-  const scoreMap: Record<DignityLevel, number> = {
-    Exalted: 1,
-    Moolatrikona: 0.95,
-    'Own Sign': 0.9,
-    'Great Friend': 0.75,
-    Friend: 0.65,
-    Neutral: 0.5,
-    Enemy: 0.35,
-    'Great Enemy': 0.25,
-    Debilitated: 0.15,
-    '-': 0.5,
-  };
-
   const out = {} as Record<NineGrahaId, number>;
-  const nine: NineGrahaId[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
-
-  for (const g of nine) {
-    let total = 0;
-    for (const [vId, w] of weights) {
-      const pl = charts[vId].placements.find((x) => x.id === g);
-      if (!pl) continue;
-      const dig = evaluateDignity(g, pl.signIndex, pl.degreeInSign, maitriMatrix);
-      total += w * (scoreMap[dig] ?? 0.5);
-    }
-    out[g] = Math.round(total * 100) / 100;
+  for (const row of computeAllVimsopakaBalas(charts, maitriMatrix)) {
+    out[row.planet] = row.shodashavarga;
   }
   return out;
 }

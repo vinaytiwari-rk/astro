@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Printer, X } from 'lucide-react';
 import {
   computeAvakahadaChakra,
@@ -10,6 +10,8 @@ import { computeFullLalKitabReport } from '../astro/lalKitabExtended';
 import { generatePredictionReport } from '../astro/predictions/engine';
 import { buildSpecializedAstrologySuite } from '../astro/predictions/specialized';
 import { computeGemstoneAndRudraksha } from '../astro/rashifalBabyRudraksha';
+import { computeShadPhalaHouses } from '../astro/shadPhalaEngine';
+import { computeVarshaphala12MonthlyCharts } from '../astro/workstationUtils';
 import { formatDateDmy, formatDateTimeDmyAmPm, formatLocalDateTimeFromUtc } from '../astro/time';
 import type { ChartData, ChartStyle } from '../astro/types';
 import {
@@ -26,6 +28,7 @@ import {
   type AppLanguage,
 } from '../i18n/translations';
 import { ParamayusLockBanner } from './ParamayusLockBanner';
+import { ParasharaBookletFolios } from './ParasharaBookletFolios';
 import { VedicChartSvg } from './VedicChartSvg';
 import { PatrikaBookFullPrintEdition } from './predictions/PatrikaBookContent';
 
@@ -44,6 +47,36 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
   chartStyle,
   language,
 }) => {
+  const [printSections, setPrintSections] = useState({
+    coverBasics: true,
+    coreCharts: true,
+    strengthsDasha: true,
+    shadPhala: true,
+    monthlyVarsha: true,
+    yogasDoshas: true,
+    lifeBranches: true,
+    remediesVarsha: true,
+    patrikaEdition: true,
+    vargaFolios: true,
+  });
+
+  const [astrologerFooter, setAstrologerFooter] = useState<string>(() => {
+    try {
+      return localStorage.getItem('av_astrologer_footer_v1') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const handleSaveFooter = (val: string) => {
+    setAstrologerFooter(val);
+    try {
+      localStorage.setItem('av_astrologer_footer_v1', val);
+    } catch {
+      // ignore
+    }
+  };
+
   const bundle = useMemo(() => {
     if (!open) return null;
     const rawReport = generatePredictionReport(chart);
@@ -58,6 +91,8 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
     const chalit = computeBhavaChalitPlacements(chart);
     const lkFull = computeFullLalKitabReport(chart, new Date().getFullYear());
     const gemReport = computeGemstoneAndRudraksha(chart);
+    const shadPhala = computeShadPhalaHouses(chart);
+    const monthlyVarsha = computeVarshaphala12MonthlyCharts(chart, new Date().getFullYear());
     return {
       report,
       spec,
@@ -66,13 +101,15 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
       chalit,
       lkFull,
       gemReport,
+      shadPhala,
+      monthlyVarsha,
       moon,
     };
   }, [open, chart, language]);
 
   if (!open || !bundle) return null;
 
-  const { report, spec, avakahada, ghatak, chalit, lkFull, gemReport, moon } = bundle;
+  const { report, spec, avakahada, ghatak, chalit, lkFull, gemReport, shadPhala, monthlyVarsha, moon } = bundle;
   const t = UI_TEXT[language];
   const isHi = language === 'hi';
 
@@ -139,6 +176,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
 
   return (
     <div className="modal-backdrop print-booklet-backdrop" onClick={onClose}>
+      <div className="print-page-frame" />
       <div
         className="modal-card modal-lg booklet-modal"
         onClick={(e) => e.stopPropagation()}
@@ -146,8 +184,8 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
         <div className="modal-header no-print">
           <h3>
             {isHi
-              ? 'बृहत् जन्म पत्रिका — संपूर्ण Birth Report (PDF)'
-              : 'Brihat Janam Patrika — Complete Birth Report (PDF)'}
+              ? 'AV Astro Vibe · बृहत् जन्म पत्रिका (कस्टम प्रिंट चयन)'
+              : 'AV Astro Vibe · Complete Print Sheet Designer (PDF)'}
           </h3>
           <div className="toolbar-group">
             <button type="button" className="btn btn-primary btn-sm" onClick={handlePrint}>
@@ -165,8 +203,50 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
           </div>
         </div>
 
+        {/* Unified Print Sheet Designer */}
+        <div className="no-print av-print-picker">
+          <strong className="av-print-picker-lbl">
+            {isHi ? 'प्रिंट पृष्ठ चुनें:' : 'Print Sections:'}
+          </strong>
+          {(
+            [
+              ['coverBasics', isHi ? 'कवर व पंचांग' : 'Cover & Panchang'],
+              ['coreCharts', isHi ? 'D1/D9/D10 चक्र' : 'D1/Chalit/D9/D10'],
+              ['strengthsDasha', isHi ? 'षड्बल/SAV/दशा' : 'Shadbala/SAV/Dasha'],
+              ['shadPhala', isHi ? 'षड्फल 12-भाव' : 'Shad Phala 12 Houses'],
+              ['monthlyVarsha', isHi ? '12-मासिक वर्षफल' : '12-Mo Varsha Charts'],
+              ['yogasDoshas', isHi ? 'योग व दोष' : 'Yogas & Doshas'],
+              ['lifeBranches', isHi ? 'जीवन स्तंभ' : 'Life Pillars'],
+              ['remediesVarsha', isHi ? 'वर्षफल व उपाय' : 'Varsha & Remedies'],
+              ['patrikaEdition', isHi ? '360° संपूर्ण पत्रिका' : 'Full Patrika Edition'],
+              ['vargaFolios', isHi ? 'षोडशवर्ग फोलियो' : 'Vargas & Synthesis Folio'],
+            ] as const
+          ).map(([key, label]) => (
+            <label key={key} className="av-print-chk">
+              <input
+                type="checkbox"
+                checked={printSections[key]}
+                onChange={() =>
+                  setPrintSections((prev) => ({ ...prev, [key]: !prev[key] }))
+                }
+              />
+              <span>{label}</span>
+            </label>
+          ))}
+          <input
+            type="text"
+            className="av-input-xs"
+            style={{ minWidth: '210px' }}
+            placeholder={isHi ? 'ज्योतिषी नाम / संपर्क (फ़ुटर के लिए)...' : 'Prepared by / Astrologer Studio footer...'}
+            value={astrologerFooter}
+            onChange={(e) => handleSaveFooter(e.target.value)}
+          />
+        </div>
+
         <div className="booklet-body">
           {/* PAGE 1: Cover, Birth Particulars, Panchang, Avakahada & Ghatak */}
+          {printSections.coverBasics && (
+            <>
           <div className="booklet-cover">
             <img src="/logo.png" alt="AV Astro Vibe" className="booklet-logo" />
             <div className="booklet-letterhead">
@@ -330,8 +410,13 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             </section>
           </div>
 
+            </>
+          )}
+
           {/* PAGE 2: 4 Core Charts (D1, Bhava Chalit, D9, D10) + Planet Table */}
-          <div className="print-page-break" />
+          {printSections.coreCharts && (
+            <>
+          <div className="print-page-break is-primary-break" />
 
           <div className="dual-chart-grid">
             <VedicChartSvg
@@ -411,7 +496,12 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             </div>
           </section>
 
+            </>
+          )}
+
           {/* PAGE 3: Shadbala, Sarvashtakavarga (SAV), & Full Vimshottari Mahadasha */}
+          {printSections.strengthsDasha && (
+            <>
           <div className="print-page-break" />
 
           <div className="pred-top-grid">
@@ -526,12 +616,17 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             </div>
           </section>
 
+            </>
+          )}
+
           {/* PAGE 4: 10 Kundali Doshas & Classical Yogas */}
           <div className="print-page-break" />
 
           {report.paramayus.exceeded ? (
             <ParamayusLockBanner status={report.paramayus} />
           ) : (
+            <>
+          {printSections.yogasDoshas && (
             <>
           <section className="panel">
             <div className="panel-header">
@@ -598,7 +693,12 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             </section>
           )}
 
+            </>
+          )}
+
           {/* PAGE 5: Life Pillars, Specialized Branches & Family Heritage */}
+          {printSections.lifeBranches && (
+            <>
           <div className="print-page-break" />
 
           <section className="panel">
@@ -620,7 +720,7 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
                   <div key={d.id}>
                     <strong>{d.title}:</strong>{' '}
                     {plainVerdict(d.verdict)}
-                    <details className="prediction-technical-detail">
+                    <details className="prediction-technical-detail" open>
                       <summary>{isHi ? 'ज्योतिषीय आधार देखें' : 'See astrological basis'}</summary>
                       <p>{d.summary}</p>
                       <p>{d.details.join(' ')}</p>
@@ -687,7 +787,12 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
             </div>
           </section>
 
+            </>
+          )}
+
           {/* PAGE 6: Varshaphala, Lal Kitab, Gemstones & Rudraksha Remedies */}
+          {printSections.remediesVarsha && (
+            <>
           <div className="print-page-break" />
 
           <section className="panel">
@@ -738,17 +843,112 @@ export const KundaliBookletModal: React.FC<KundaliBookletModalProps> = ({
           </section>
             </>
           )}
+            </>
+          )}
 
+          {printSections.patrikaEdition && (
           <PatrikaBookFullPrintEdition
             chart={chart}
             chartStyle={chartStyle}
             report={report}
             language={language}
           />
+          )}
+
+          {printSections.vargaFolios && (
+          <ParasharaBookletFolios
+            chart={chart}
+            chartStyle={chartStyle}
+            language={language}
+          />
+          )}
+
+          {printSections.shadPhala && (
+            <>
+              <div className="print-page-break" />
+              <section className="panel">
+                <div className="panel-header">
+                  <h3>
+                    {isHi
+                      ? 'षड्फल द्वादश भाव बल एवं जीवन क्षेत्र विश्लेषण'
+                      : 'Shad Phala — 12-House Strength & Domain Analysis'}
+                  </h3>
+                </div>
+                <div className="table-scroll">
+                  <table className="data-table pl-compact-table">
+                    <thead>
+                      <tr>
+                        <th>{isHi ? 'भाव' : 'House'}</th>
+                        <th>{isHi ? 'जीवन क्षेत्र' : 'Domain'}</th>
+                        <th>{isHi ? 'राशि / स्वामी' : 'Sign / Lord'}</th>
+                        <th>{isHi ? 'SAV' : 'SAV'}</th>
+                        <th>{isHi ? 'स्कोर' : 'Score'}</th>
+                        <th>{isHi ? 'शास्त्रीय प्रभाव' : 'Effect'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {shadPhala.map((row) => (
+                        <tr key={row.house}>
+                          <td className="mono"><strong>H{row.house}</strong></td>
+                          <td><strong>{isHi ? row.domainHi : row.domainEn}</strong></td>
+                          <td>{row.signName} ({trPlanetShort(row.lord, language)})</td>
+                          <td className="mono">{row.savBindus}</td>
+                          <td className="mono"><strong>{row.shadPhalaScore > 0 ? `+${row.shadPhalaScore}` : row.shadPhalaScore}</strong></td>
+                          <td>{isHi ? row.readingHi : row.readingEn}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </>
+          )}
+
+          {printSections.monthlyVarsha && (
+            <>
+              <div className="print-page-break" />
+              <section className="panel">
+                <div className="panel-header">
+                  <h3>
+                    {isHi
+                      ? `वार्षिक ताजिक 12-मासिक कुंडली चक्र (${new Date().getFullYear()})`
+                      : `Varshaphala 12 Monthly Progression Charts (${new Date().getFullYear()})`}
+                  </h3>
+                </div>
+                <div className="pl-varga-grid">
+                  {monthlyVarsha.map((m) => (
+                    <div key={m.monthNumber} className="pl-varga-cell">
+                      <VedicChartSvg
+                        title={`M${m.monthNumber} · ${m.dateDmy}`}
+                        subtitle={`Muntha: ${m.munthaSignName}`}
+                        style={chartStyle}
+                        lagnaSignIndex={m.chart.ascendant.signIndex}
+                        items={[
+                          { id: 'Asc', label: 'As', signIndex: m.chart.ascendant.signIndex, isLagna: true },
+                          ...m.chart.planets.map((p) => ({
+                            id: p.id,
+                            label: trPlanetShort(p.id, language),
+                            signIndex: p.signIndex,
+                            isRetrograde: p.isRetrograde,
+                          })),
+                        ]}
+                        centerLabel={`M${m.monthNumber}`}
+                        compact
+                        showDownload={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
 
           <footer className="booklet-footer">
-            <div><strong>AV Astro Vibe</strong> · Vedic Astrological Systems</div>
-            <div className="small-text muted">Prepared with Traditional Vedic, KP, Nadi &amp; Lal Kitab Siddhanta · 100% Free Open Vedic Portal</div>
+            <div>
+              <strong>AV Astro Vibe</strong> · Vedic Astrological Systems
+              {astrologerFooter.trim() ? ` · ${astrologerFooter.trim()}` : ''}
+            </div>
+            <div className="small-text muted">Prepared with Traditional Vedic, KP, Nadi &amp; Lal Kitab Siddhanta · Comprehensive Jyotish Dossier</div>
           </footer>
         </div>
       </div>

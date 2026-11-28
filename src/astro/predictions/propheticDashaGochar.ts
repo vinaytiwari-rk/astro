@@ -187,29 +187,38 @@ export function computePropheticTransitRoadmap(
   const sadeSati = transitForecast.sadeSatiStatus;
 
   // Jupiter transit narrative
+  const jupSignEn = jupItem?.transitSign || 'its natal/current cycle';
+  const jupSignHi = jupItem?.transitSignHi || jupItem?.transitSign || 'वर्तमान गोचर';
   let jupiterProphecyEn = '';
   let jupiterProphecyHi = '';
   const isJupFavorable = [2, 5, 7, 9, 11].includes(jupHouseFromMoon);
-  if (isJupFavorable) {
-    jupiterProphecyEn = `Devaguru Jupiter transits House ${jupHouseFromMoon} from your Moon sign (${jupHouseFromLagna} from Lagna) in ${jupItem?.transitSign}. This constitutes a classical Shubha Gochar of the highest magnitude, expanding financial treasury, intellectual clarity, marital/progeny blessings, and social reverence.`;
-    jupiterProphecyHi = `देवगुरु बृहस्पति आपकी जन्म राशि से भाव ${jupHouseFromMoon} (लग्न से भाव ${jupHouseFromLagna}) में ${jupItem?.transitSign} राशि पर गोचर कर रहे हैं। यह परम शुभ गोचर ज्ञान, संतान सुख, धन लाभ एवं सामाजिक प्रतिष्ठा में विस्तार करेगा।`;
+  if (!jupItem) {
+    jupiterProphecyEn = deepGochar.overallSummary || 'Historical / Paramayus range (>120 years from birth): natal Dasha & Ashtakavarga dynamics take precedence over live transit dates.';
+    jupiterProphecyHi = deepGochar.overallSummaryHi || 'ऐतिहासिक / परमायु सीमा (>१२० वर्ष): लाइव गोचर के स्थान पर जन्मकुंडली व विंशोत्तरी दशा प्रमुख हैं।';
+  } else if (isJupFavorable) {
+    jupiterProphecyEn = `Devaguru Jupiter transits House ${jupHouseFromMoon} from your Moon sign (${jupHouseFromLagna} from Lagna) in ${jupSignEn}. This constitutes a classical Shubha Gochar of the highest magnitude, expanding financial treasury, intellectual clarity, marital/progeny blessings, and social reverence.`;
+    jupiterProphecyHi = `देवगुरु बृहस्पति आपकी जन्म राशि से भाव ${jupHouseFromMoon} (लग्न से भाव ${jupHouseFromLagna}) में ${jupSignHi} राशि पर गोचर कर रहे हैं। यह परम शुभ गोचर ज्ञान, संतान सुख, धन लाभ एवं सामाजिक प्रतिष्ठा में विस्तार करेगा।`;
   } else {
-    jupiterProphecyEn = `Jupiter transits House ${jupHouseFromMoon} from Moon sign in ${jupItem?.transitSign}. While inner wisdom deepens, expenses on noble causes or pilgrimages rise. Maintain patience regarding career recognition until Jupiter's next ingress.`;
-    jupiterProphecyHi = `बृहस्पति का चंद्र राशि से भाव ${jupHouseFromMoon} में गोचर आंतरिक ज्ञान व आध्यात्मिक चिंतन को बढ़ावा देगा, यद्यपि शुभ कार्यों व यात्राओं में धन व्यय बढ़ेगा। व्यावसायिक निर्णयों में धैर्य रखें।`;
+    jupiterProphecyEn = `Jupiter transits House ${jupHouseFromMoon} from Moon sign in ${jupSignEn}. While inner wisdom deepens, expenses on noble causes or pilgrimages rise. Maintain patience regarding career recognition until Jupiter's next ingress.`;
+    jupiterProphecyHi = `बृहस्पति का चंद्र राशि से भाव ${jupHouseFromMoon} में ${jupSignHi} गोचर आंतरिक ज्ञान व आध्यात्मिक चिंतन को बढ़ावा देगा, यद्यपि शुभ कार्यों व यात्राओं में धन व्यय बढ़ेगा। व्यावसायिक निर्णयों में धैर्य रखें।`;
   }
 
   // Saturn transit narrative
+  const satSignEn = satItem?.transitSign || 'its current sign';
   let saturnProphecyEn = '';
   let saturnProphecyHi = '';
   const isSatUpachaya = [3, 6, 11].includes(satHouseFromMoon);
-  if (isSatUpachaya) {
-    saturnProphecyEn = `Saturn transits an Upachaya House (${satHouseFromMoon} from Moon, ${satHouseFromLagna} from Lagna) in ${satItem?.transitSign}. Under classical Phaladeepika rules, this vanquishes adversaries, solidifies career permanence, and rewards diligent perseverance with durable wealth.`;
+  if (!satItem) {
+    saturnProphecyEn = 'Natal Saturn Shadbala and Vimshottari Mahadasha govern structural discipline across life cycles.';
+    saturnProphecyHi = 'जन्मकुंडली में शनि का षड्बल व विंशोत्तरी दशा कर्म-अनुशासन तय करते हैं।';
+  } else if (isSatUpachaya) {
+    saturnProphecyEn = `Saturn transits an Upachaya House (${satHouseFromMoon} from Moon, ${satHouseFromLagna} from Lagna) in ${satSignEn}. Under classical Phaladeepika rules, this vanquishes adversaries, solidifies career permanence, and rewards diligent perseverance with durable wealth.`;
     saturnProphecyHi = `कर्मफलदाता शनि आपकी राशि से उपचय भाव (${satHouseFromMoon} भाव, लग्न से ${satHouseFromLagna} भाव) में गोचरस्थ हैं। यह अत्यंत शक्तिशाली फलप्रद गोचर है जो विरोधियों को शांत कर आजीविका में स्थायी पदोन्नति एवं आर्थिक संबल प्रदान करेगा।`;
   } else if (sadeSati.active) {
-    saturnProphecyEn = `You are undergoing Saturn's ${sadeSati.phase} (${satItem?.transitSign}). Saturn acts as the master refiner, stripping away superficiality and testing endurance. Dedicated labor, humility, and avoiding hasty commitments turn this trial into your greatest life foundation.`;
+    saturnProphecyEn = `You are undergoing Saturn's ${sadeSati.phase} (${satSignEn}). Saturn acts as the master refiner, stripping away superficiality and testing endurance. Dedicated labor, humility, and avoiding hasty commitments turn this trial into your greatest life foundation.`;
     saturnProphecyHi = `आपकी जन्म राशि पर शनि की ${sadeSati.phase} का प्रभाव है। शनिदेव आपके धैर्य, निष्ठा व कर्म-संस्कारों की परीक्षा ले रहे हैं। अहंकार व जल्दबाजी त्यागकर प्रामाणिक परिश्रम करें; यह समय आपके जीवन का स्थायी निर्माण करेगा।`;
   } else {
-    saturnProphecyEn = `Saturn occupies House ${satHouseFromMoon} from your Moon sign in ${satItem?.transitSign}. Disciplined pacing, structural organization of finances, and caring for joint/bone health are paramount.`;
+    saturnProphecyEn = `Saturn occupies House ${satHouseFromMoon} from your Moon sign in ${satSignEn}. Disciplined pacing, structural organization of finances, and caring for joint/bone health are paramount.`;
     saturnProphecyHi = `शनि का राशि से भाव ${satHouseFromMoon} में गोचर कार्यक्षेत्र में अतिरिक्त अनुशासन और स्वास्थ्य (हड्डी/जोड़ों) के प्रति सतर्कता की मांग करता है। संगठित होकर कार्य करें।`;
   }
 

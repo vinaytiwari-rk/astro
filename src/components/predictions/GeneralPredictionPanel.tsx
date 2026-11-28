@@ -52,7 +52,7 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
     if (/(high discord|vigilance|delayed|afflicted|friction|karmic paternal friction|shukra-kshaya|preventive vitality|heavy family obligations|caution|barren|pravrajya|multiple-union)/.test(v)) {
       return { tone: 'caution', labelEn: 'Watch / Remedy', labelHi: 'सजगता / उपाय' };
     }
-    if (/(auspicious|strong|shatruhanta|bhagyodaya|single-marriage|ek-vivaha|purna ayus|deergha ayus|apex|matru yoga|respected|wise mentor|favorable|warm, cooperative)/.test(v)) {
+    if (/(auspicious|strong|shatruhanta|bhagyodaya|single-marriage|ek-vivaha|purna ayus|poornayu|deergha ayus|apex|matru yoga|respected|wise mentor|favorable|warm, cooperative)/.test(v)) {
       return { tone: 'favorable', labelEn: 'Favorable', labelHi: 'शुभ / सबल' };
     }
     return { tone: 'balanced', labelEn: 'Balanced', labelHi: 'संतुलित' };
@@ -189,8 +189,8 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
             </h2>
             <p className="muted" style={{ margin: '8px 0 0', lineHeight: 1.6, fontSize: '13px', maxWidth: '880px' }}>
               {isHi
-                ? 'महर्षि पाराशर, कल्याण वर्मा, वराहमिहिर एवं जैमिनी के शास्त्रीय सूत्रों पर आधारित १६ मौलिक जीवन-स्तंभ, ८०+ सूक्ष्म लक्षण, ग्रह स्थिति-दृष्टि-युति (PAC) विश्लेषण एवं वर्ग कुंडलियों (D1 से D60) द्वारा प्रमाणित सूक्ष्म फलित।'
-                : 'Authoritative life prophecy encompassing 16 foundational pillars and 80+ micro-attributes synthesized under classical Rishi traditions (Parashara, Saravali, Brihat Jataka, Jaimini), certified via rigorous PAC geometry and divisional charts (D1 through D60).'}
+                ? `महर्षि पाराशर, कल्याण वर्मा, वराहमिहिर एवं जैमिनी के शास्त्रीय सूत्रों पर आधारित १६ मौलिक जीवन-स्तंभ, ${pillars.reduce((sum, p) => sum + p.attributes.length, 0)} प्रामाणिक शास्त्रीय लक्षण, ग्रह स्थिति-दृष्टि-युति (PAC) विश्लेषण एवं वर्ग कुंडलियों (D1 से D60) द्वारा प्रमाणित फलित।`
+                : `Authoritative life prophecy encompassing 16 foundational pillars and ${pillars.reduce((sum, p) => sum + p.attributes.length, 0)} authentic classical attributes synthesized under Rishi traditions (Parashara, Saravali, Brihat Jataka, Jaimini), certified via PAC geometry and divisional charts (D1 through D60).`}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -198,7 +198,9 @@ export const GeneralPredictionPanel: React.FC<GeneralPredictionPanelProps> = ({ 
               {isHi ? '16 जीवन आयाम सक्रिय' : '16 Life Pillars Active'}
             </span>
             <span className="badge badge-neutral mono" style={{ fontSize: '12px', padding: '6px 12px', fontWeight: 700 }}>
-              {isHi ? '80+ सूक्ष्म लक्षण' : '80+ Micro Attributes'}
+              {isHi
+                ? `${pillars.reduce((sum, p) => sum + p.attributes.length, 0)} शास्त्रीय लक्षण`
+                : `${pillars.reduce((sum, p) => sum + p.attributes.length, 0)} Classical Attributes`}
             </span>
           </div>
         </div>

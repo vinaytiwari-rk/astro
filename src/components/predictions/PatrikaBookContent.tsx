@@ -992,7 +992,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
       {/* PART I: All 16 Shodashavargas + Vaiseshikamsha + Higher Vargas Summary */}
       {edition === 'complete' && (
         <>
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 13: संपूर्ण षोडशवर्ग कुंडलियाँ (D1–D60) एवं नित्य वर्ग' : 'Ch 13: Complete Shodashavarga Charts (D1–D60)'}</h3>
@@ -1014,7 +1014,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
             </div>
           </section>
 
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 15–16: षोडशवर्ग देवता, वैशेषिकांश एवं उच्च सूक्ष्म वर्ग (D64–D360)' : 'Ch 15–16: Shodasha Varga Deities, Vaiseshikamsha & Higher Micro Vargas (D64–D360)'}</h3>
@@ -1127,7 +1127,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
       {/* PART II: SAV Shodhana, Sodhya Pinda, Avasthas, Dasha Support Index, Life Purpose (only when not Paramayus-locked) */}
       {!report.paramayus.exceeded && (
         <>
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 18–20: सर्वाष्टकवर्ग शोधन, शोध्य पिंड, जीवन क्षेत्र एवं नवग्रह अवस्था व्याख्या' : 'Ch 18–20: SAV Shodhana Retention, Sodhya Pinda & 9 Planetary Avasthas'}</h3>
@@ -1300,7 +1300,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
           </section>
 
           {/* CH 28: MASTER HOROSCOPE PREDICTIONS (COMPLETE BIRTH REPORT PARITY) */}
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 28: कुंडली सर्वांगीण विश्लेषण एवं लग्न संपूर्ण फलादेश (Pages 54-61 Parity)' : 'Ch 28: Master Horoscope Analysis & Ascendant Deep Predictions'}</h3>
@@ -1384,7 +1384,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
           </section>
 
           {/* CH 28.E: Predictions of House Lords Placed in Various Houses (Bhavesha) */}
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 28.E: द्वादश भावेशों का विभिन्न भावों में फल (Bhavesha in Houses — Pages 62-64 Parity)' : 'Ch 28.E: Predictions of House Lords Placed in Various Houses'}</h3>
@@ -1411,7 +1411,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
           </section>
 
           {/* CH 28.F: Planetary Positions & House Predictions (Sun to Ketu: Zodiac + House) */}
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 28.F: नवग्रह राशि एवं भाव स्थिति फल (Sun to Ketu — Pages 64-72 Parity)' : 'Ch 28.F: Planetary Positions & House Predictions (Sun to Ketu)'}</h3>
@@ -1462,7 +1462,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
             </section>
           )}
 
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 28: बृहत् फलादेश — पंचांग फल एवं लग्न संपूर्ण विश्लेषण' : 'Ch 28: Master Horoscope Predictions — Panchanga Phal & Lagna Complete Analysis'}</h3>
@@ -1499,7 +1499,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
           ))}
 
           {/* CH 29-33: Rahu-Ketu Nakshatra, 10-Yr Gochar, Special Points & Disclaimer */}
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 29–33: राहु-केतु नक्षत्र, 10-वर्षीय गोचर व विशेष बिंदु फलादेश' : 'Ch 29–33: Rahu–Ketu Nakshatra, 10-Year Gochar & Special Point Readings'}</h3>
@@ -1555,7 +1555,7 @@ export const PatrikaBookFullPrintEdition: React.FC<{
           </section>
 
           {/* CH 34: 300+ CLASSICAL YOGAS, BHRIGU SARAL PADDHATI, KP 4-STEP & LAL KITAB */}
-          <div className="print-page-break" />
+          <div className="patrika-toc-spacer" />
           <section className="panel">
             <div className="panel-header patrika-chapter-head">
               <h3>{isHi ? 'अध्याय 34: शास्त्रीय वैदिक योग (300+), भृगु सरल पद्धति, केपी 4-चरण व लाल किताब ऋण' : 'Ch 34: 300+ Classical Yogas, Bhrigu Saral Paddhati, KP 4-Step & Lal Kitab Heritage'}</h3>

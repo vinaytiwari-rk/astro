@@ -162,7 +162,7 @@ describe('Authentic Relationship, Marriage, Numerology & Longevity Calculators S
   // Category 3: Classical Ayurdaya & Longevity Protection
   it('13. computes Parashara & Jaimini Ayurdaya Longevity Class (Strictly ethical without death clock)', () => {
     const res = computeParasharaJaiminiAyurdaya(chart1);
-    expect(['अल्पायु (०–३६ वर्ष)', 'मध्यायु (३६–७२ वर्ष)', 'दीर्घायु (७२–१०८ वर्ष)', 'पूर्णायु (१०८–१२० वर्ष)']).toContain(
+    expect(['अल्पायु / सजग सुरक्षा', 'मध्यायु / संतुलित जीवनी-कोष', 'दीर्घायु / सुदृढ़ जीवनी-कोष', 'पूर्णायु / परम सुदृढ़ जीवनी-कोष']).toContain(
       res.longevityClassHi
     );
     expect(res.jaiminiPairDetails.length).toBe(3);

@@ -228,7 +228,7 @@ export interface PanchangInfo {
 
 export interface DashaPeriod {
   lord: NineGrahaId | string;
-  level: 1 | 2 | 3 | 4;
+  level: 1 | 2 | 3 | 4 | 5;
   startMs: number;
   endMs: number;
   durationDays: number;

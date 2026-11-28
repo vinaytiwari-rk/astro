@@ -591,8 +591,21 @@ export function buildAuthenticHousePrediction(input: AuthenticHousePredictionInp
       ? `अष्टकवर्ग में ${savBindus} बिंदु होने के कारण संसाधनों का अपव्यय रोकने तथा धैर्यपूर्वक कदम आगे बढ़ाने की आवश्यकता है।`
       : `अष्टकवर्ग में ${savBindus} बिंदुओं के संतुलित प्रभाव से आपकी प्रगति आपके व्यक्तिगत उद्यम और सूझबूझ के सीधे अनुपात में रहेगी।`;
 
-  const para3En = `Real-World Trajectory: ${b144.eventEn} ${savNoteEn} ${theme.timingEn}`;
-  const para3Hi = `वास्तविक जीवन फल: ${b144.eventHi} ${savNoteHi} ${theme.timingHi}`;
+  const isKendraTrikona = [1, 4, 5, 7, 9, 10].includes(lordPlacedHouse);
+  const isTrikLord = [6, 8, 12].includes(lordPlacedHouse);
+  const dynamicTimingEn = isCombust || isTrikLord || finalScore < 52
+    ? `Delayed / Mature Cycle (${PLANET_NAME_EN[lordPlanet]} in H${lordPlacedHouse}, ${savBindus} SAV): Gradual fruition unfolds during mature Mahadasha/Antardasha periods | OR / अथवा: Earlier breakthroughs if strong Jupiter/Saturn transit activates House ${h}.`
+    : isKendraTrikona && savBindus >= 29 && finalScore >= 68
+      ? `Timely Acceleration (${PLANET_NAME_EN[lordPlanet]} in H${lordPlacedHouse}, ${savBindus} SAV): House ${h} promises activate cleanly during early-to-mid ${PLANET_NAME_EN[lordPlanet]} or Yoga-karaka Dashas.`
+      : `Measured Phased Timing (${PLANET_NAME_EN[lordPlanet]} in H${lordPlacedHouse}, SAV ${savBindus}): ${theme.timingEn.replace(/Ages\s*\d+[–-]\d+/gi, 'Key Dashas')}`;
+  const dynamicTimingHi = isCombust || isTrikLord || finalScore < 52
+    ? `परिपक्व व क्रमिक फलोदय (${PLANET_NAME_HI[lordPlanet]} भाव ${lordPlacedHouse} में, SAV ${savBindus}): वास्तविक परिणाम परिपक्व महादशा/अंतर्दशा में स्थिर होते हैं | अथवा: अनुकूल गुरु/शनि गोचर में शीघ्र प्रगति संभव।`
+    : isKendraTrikona && savBindus >= 29 && finalScore >= 68
+      ? `समयबद्ध व प्रबल फलोदय (${PLANET_NAME_HI[lordPlanet]} भाव ${lordPlacedHouse} में, SAV ${savBindus}): भाव ${h} से जुड़े शुभ फल ${PLANET_NAME_HI[lordPlanet]} की दशा में सुगमता से मिलते हैं।`
+      : `संतुलित दशा-आधारित फलोदय (${PLANET_NAME_HI[lordPlanet]} भाव ${lordPlacedHouse}, SAV ${savBindus}): क्रमिक प्रयास व अनुकूल अंतर्दशा से स्थायित्व।`;
+
+  const para3En = `Real-World Trajectory: ${b144.eventEn} ${savNoteEn} ${dynamicTimingEn}`;
+  const para3Hi = `वास्तविक जीवन फल: ${b144.eventHi} ${savNoteHi} ${dynamicTimingHi}`;
 
   const coreNarrativeEn = `${para1En}\n\n${para2En.trim()}\n\n${para3En}`;
   const coreNarrativeHi = `${para1Hi}\n\n${para2Hi.trim()}\n\n${para3Hi}`;
@@ -621,7 +634,7 @@ export function buildAuthenticHousePrediction(input: AuthenticHousePredictionInp
     keyStrengthsHi,
     watchOutsEn,
     watchOutsHi,
-    timingMilestonesEn: theme.timingEn,
-    timingMilestonesHi: theme.timingHi,
+    timingMilestonesEn: dynamicTimingEn,
+    timingMilestonesHi: dynamicTimingHi,
   };
 }

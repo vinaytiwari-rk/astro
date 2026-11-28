@@ -928,6 +928,10 @@ export function getPillar9AssetDetails(
   sleep: BilingualPrediction;
   moksha: BilingualPrediction;
 } {
+  const SIGN_HI_NAMES = [
+    'मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
+    'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन',
+  ];
   // 1. Property (H4)
   const property: BilingualPrediction =
     h4.tier === 'strong'
@@ -1006,33 +1010,40 @@ export function getPillar9AssetDetails(
         explHi: `द्वादश भाव और चंद्रमा का संतुलन गहरी व विश्रामदायक नींद प्रदान करता है।`,
       };
 
-  // 4. Moksha / Spiritual Path (H12 & Ketu — 4 paths)
+  // 4. Moksha / Spiritual Path (H12, Ketu, Jupiter, Saturn, Moon, Venus, Sun)
   const moksha: BilingualPrediction =
-    ketu?.placedHouse === 12 || ketu?.placedHouse === 9
+    ketu?.placedHouse === 12 || ketu?.placedHouse === 9 || ketu?.placedHouse === 8
       ? {
-          valEn: 'Strong Moksha-orientation: Contemplative wisdom and natural spiritual detachment deepen in mature years',
-          valHi: 'प्रबल मोक्ष-प्रवृत्ति: उत्तरार्ध में आध्यात्मिक चिंतन, ध्यान व वैराग्य भाव में गहन परिपक्वता',
-          explEn: `Ketu in the 12th/9th axis turns the soul naturally toward self-realization and inner liberation.`,
-          explHi: `द्वादश/नवम भाव में केतु की स्थिति आत्म-चिंतन और मोक्ष मार्ग की ओर स्वाभाविक रूप से अग्रसर करती है।`,
+          valEn: `Dhyana & Contemplative Detachment (Ketu H${ketu.placedHouse}): Natural mystical pull | OR / अथवा: Structured Seva through deep inner wisdom`,
+          valHi: `ध्यान एवं वैराग्य-प्रधान मोक्ष मार्ग (केतु भाव ${ketu.placedHouse}): सहज आत्म-चिंतन व गूढ़ अंतर्ज्ञान | अथवा: विवेकपूर्ण लोक-सेवा`,
+          explEn: `Ketu in the Moksha/Dharma house (${ketu.placedHouse}) turns the soul naturally toward self-realization and inner liberation.`,
+          explHi: `मोक्ष/धर्म भाव (${ketu.placedHouse}) में केतु की स्थिति आत्म-चिंतन और मोक्ष मार्ग की ओर स्वाभाविक रूप से अग्रसर करती है।`,
         }
-      : h12.dominantGraha === 'Jupiter' || h12.dominantGraha === 'Mercury'
+      : h12.dominantGraha === 'Jupiter' || h12.dominantGraha === 'Mercury' || h12.lordId === 'Jupiter'
       ? {
-          valEn: 'Jnana-Yoga & Wisdom Path: Liberation through scriptural study, teaching, and philosophical clarity',
-          valHi: 'ज्ञान-योग मार्ग: शास्त्र अध्ययन, स्वाध्याय, शिक्षण और तात्विक विवेक के माध्यम से आत्मोन्नति',
+          valEn: `Jnana-Yoga & Scriptural Inquiry (${h12.signName} 12th / ${h12.lordId}): Liberation through teaching & study | OR / अथवा: Mentorship Seva`,
+          valHi: `ज्ञान-योग व स्वाध्याय मार्ग (द्वादश ${SIGN_HI_NAMES[h12.signIdx]}): शास्त्र अध्ययन, शिक्षण व विवेक से आत्मोन्नति | अथवा: मार्गदर्शन सेवा`,
           explEn: `Jupiter/Mercury resonance on the 12th house channels spiritual growth through knowledge and mentorship.`,
           explHi: `द्वादश भाव पर गुरु/बुध का प्रभाव ज्ञान, स्वाध्याय और विवेक द्वारा आध्यात्मिक प्रगति दर्शाता है।`,
         }
-      : h12.dominantGraha === 'Moon' || h12.dominantGraha === 'Venus'
+      : h12.dominantGraha === 'Moon' || h12.dominantGraha === 'Venus' || h12.lordId === 'Venus' || h12.lordId === 'Moon'
       ? {
-          valEn: 'Bhakti-Yoga & Heart-Centered Devotion: Spiritual peace through music, prayer, empathy, and sacred beauty',
-          valHi: 'भक्ति-योग व हृदय-केंद्रित साधना: भक्ति, संगीत, करुणा और निष्काम प्रेम से आंतरिक शांति',
+          valEn: `Bhakti-Yoga & Heart-Centered Devotion (${h12.signName} 12th / ${h12.lordId}): Peace via prayer, music & empathy`,
+          valHi: `भक्ति-योग व हृदय-केंद्रित साधना (द्वादश ${SIGN_HI_NAMES[h12.signIdx]}): भक्ति, संगीत, करुणा और निष्काम प्रेम से आंतरिक शांति`,
           explEn: `Moon/Venus influence on the 12th house nurtures devotional surrender and compassionate service.`,
           explHi: `द्वादश भाव पर चंद्र/शुक्र का प्रभाव भक्ति, करुणा और आध्यात्मिक शांति को पुष्ट करता है।`,
         }
+      : h12.dominantGraha === 'Saturn' || h12.lordId === 'Saturn'
+      ? {
+          valEn: `Tapas & Raja-Yoga Discipline (${h12.signName} 12th / Saturn): Selfless endurance & quiet meditative detachment`,
+          valHi: `तप एवं राजयोग अनुशासन (द्वादश ${SIGN_HI_NAMES[h12.signIdx]} / शनि): मौन साधना, धैर्य व निष्काम कर्म`,
+          explEn: `Saturn's governance of the 12th fosters disciplined detachment, solitude maturity, and steady karma-purification.`,
+          explHi: `द्वादश भाव पर शनि का प्रभाव एकांत-साधना, अनुशासन और धीरज से आध्यात्मिक शुद्धि देता है।`,
+        }
       : {
-          valEn: 'Karma-Yoga path: Achieves spiritual fulfillment through honest family duty, charity, and selfless service',
-          valHi: 'कर्म-योग मार्ग: निष्ठापूर्वक गृहस्थ धर्म, दान व समाज सेवा के माध्यम से आध्यात्मिक उन्नति',
-          explEn: `12th house (${h12.signName}) channels spiritual growth through ethical worldly action rather than renunciation.`,
+          valEn: `Karma-Yoga & Nishkama Duty (${h12.signName} 12th / ${h12.lordId}): Spiritual fulfillment through ethical enterprise & charity`,
+          valHi: `कर्म-योग व निष्काम कर्तव्य मार्ग (द्वादश ${SIGN_HI_NAMES[h12.signIdx]}): ईमानदार गृहस्थ धर्म, दान व समाज सेवा से आत्मिक उन्नति`,
+          explEn: `12th house (${h12.signName}) ruled by ${h12.lordId} channels spiritual growth through ethical worldly action rather than renunciation.`,
           explHi: `द्वादश भाव की स्थिति दर्शाती है कि जातक अपने कर्तव्यों का ईमानदारी से पालन करते हुए सद्गति प्राप्त करता है।`,
         };
 
@@ -2816,10 +2827,10 @@ export function getComprehensiveSiblingsAnalysis(
   } else if (jupIn11 || (h1.tier === 'strong' && sun && [1, 9, 10].includes(sun.placedHouse) && h3.occupants.length >= 1)) {
     birthOrderEn = `Eldest-child leadership signature (${countLabelEn}; younger siblings read via 3rd -> 5th -> 7th)`;
     birthOrderHi = `ज्येष्ठ संतान व नेतृत्व योग (${countLabelHi}; छोटे भाई-बहन ३, ५, ७ भावों से विचारणीय)`;
-  } else if (h11.occupants.length >= 1 && h3.occupants.length === 0) {
+  } else if (h11.occupants.length >= 1 && h3.occupants.length === 0 && h3.tier !== 'strong') {
     birthOrderEn = `Youngest-child signature with elder sibling guidance (${countLabelEn}) — elder read via 11th -> 9th -> 7th`;
     birthOrderHi = `कनिष्ठ संतान योग व बड़े भाई-बहनों का संबल (${countLabelHi}) — बड़े सहोदर ११, ९, ७ भाव से विचारणीय`;
-  } else if (h3.occupants.length >= 1 && h11.occupants.length >= 1) {
+  } else if ((h3.occupants.length >= 1 || h3.tier === 'strong') && h11.occupants.length >= 1) {
     birthOrderEn = `Middle-child / multi-sibling circle (${countLabelEn}; both 3rd and 11th houses active)`;
     birthOrderHi = `मध्यम संतान व सक्रिय सहोदर परिवार (${countLabelHi}; अनुज ३ और ज्येष्ठ ११ दोनों भाव सक्रिय)`;
   }
@@ -2868,18 +2879,27 @@ export function getComprehensiveSiblingsAnalysis(
   const bondDetailsEn: string[] = [];
   const bondDetailsHi: string[] = [];
 
-  if ((beneficIn35911 || l1L3Link || gajakesariOn3Or11) && !marsStrained && !nodeIn3Or11) {
-    bondValEn = 'Warm, Cooperative Brother-Sister Bond: Mutual loyalty, protective care & lifelong family harmony';
-    bondValHi = 'स्नेहपूर्ण व सहयोगी भाई-बहन संबंध: आपसी विश्वास, सुरक्षा भावना व आजीवन पारिवारिक सौहार्द';
-  } else if (marsStrained || nodeIn3Or11) {
-    bondValEn = 'Dynamic / Karmically Tested Sibling Bond: Occasional ego or authority friction; matures with clear boundaries and calm talk';
-    bondValHi = 'संवेदनशील व कर्म-परीक्षित सहोदर संबंध: अधिकार या विचारों के मतभेद संभव; स्पष्ट संवाद व धैर्य से संबंध सुधरते हैं';
+  if (saturnIn3Or11 && marsStrained) {
+    bondValEn = 'Karmic Restraint & Distance Bond (Saturn + Strained Mars on H3/H11): Duty-anchored loyalty beneath formal distance | OR / अथवा: Warmth deepens after midlife reconciliation';
+    bondValHi = 'शनि-मंगल कर्म-संयमित सहोदर संबंध: औपचारिक दूरी के भीतर कर्तव्य-निष्ठा | अथवा: मध्यायु के बाद संबंधों में गहन आत्मीयता';
+  } else if (gajakesariOn3Or11 && !marsStrained && !nodeIn3Or11) {
+    bondValEn = 'Gajakesari Blessed Sibling Alliance: Generous counsel, prestige & affectionate brotherhood/sisterhood';
+    bondValHi = 'गजकेसरी-रक्षित सहोदर सौहार्द: उदार मार्गदर्शन, पारिवारिक गौरव व आत्मीय स्नेह';
+  } else if (beneficIn35911 && mercStrong && !marsStrained && !nodeIn3Or11) {
+    bondValEn = 'Communicative & Warm Sibling Camaraderie (Jupiter/Mercury/Venus active): Shared celebrations & active dialogue';
+    bondValHi = 'संवादप्रिय व मधुर भाई-बहन संबंध (गुरु-बुध-शुक्र सक्रिय): उत्सवों में सहभागिता व स्नेह';
+  } else if (marsWellPlaced && l1L3Link) {
+    bondValEn = 'Protective Dynamic Alliance (Strong Lagna–3rd & Mars): Spirited teamwork & mutual crisis support';
+    bondValHi = 'सक्रिय व रक्षक सहोदर बंधन (लग्न-तृतीय व मंगल सबल): संकट में दृढ़ साथ व ऊर्जावान तालमेल';
+  } else if (nodeIn3Or11 || marsStrained) {
+    bondValEn = `Tested / Boundary-Driven Sibling Bond (${nodeIn3Or11 ? 'Rahu/Ketu' : 'Mars'} H${mars?.placedHouse ?? 3}): Geographical or ideological gap resolves via clear financial boundaries | OR / अथवा: Unconventional mutual support during crises`;
+    bondValHi = `परीक्षापूर्ण व सीमा-आधारित सहोदर संबंध: भौगोलिक या वैचारिक अंतर — स्पष्ट आर्थिक लेन-देन से शांति | अथवा: संकट में अप्रत्याशित सहयोग`;
   } else if (saturnIn3Or11) {
-    bondValEn = 'Duty-Over-Warmth / Age-Gap Bond: Dependable during crises, though daily contact may feel reserved or distant';
-    bondValHi = 'कर्तव्य-प्रधान व गंभीर सहोदर संबंध: संकट में पूर्ण सहयोग, किंतु दैनिक संवाद में कुछ दूरी या संकोच';
+    bondValEn = 'Duty-Over-Warmth / Age-Gap Bond: Dependable during crises, though daily contact remains reserved';
+    bondValHi = 'कर्तव्य-प्रधान व गंभीर सहोदर संबंध: संकट में पूर्ण सहयोग, किंतु दैनिक संवाद सीमित';
   } else {
-    bondValEn = 'Steady & Independent Sibling Bond: Caring relationship balanced with healthy personal independence';
-    bondValHi = 'संतुलित व स्वतंत्र सहोदर संबंध: आपसी स्नेह के साथ अपने-अपने जीवन पथ पर प्रगति';
+    bondValEn = `Steady Self-Reliant Sibling Bond (H3 ${h3.tier} / H11 ${h11.tier}): Mutual goodwill balanced with healthy autonomy`;
+    bondValHi = `संतुलित व स्वावलंबी सहोदर संबंध: आपसी सद्भाव व स्वतंत्र जीवन पथ`;
   }
 
   if (marsWellPlaced) {

@@ -1,6 +1,11 @@
 import { NAKSHATRAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import {
+  buildClassicalSynthesisContext,
+  evaluateWeightedAyusVitality,
+  evaluateWeightedProgenyAxis,
+} from './classicalSynthesisEngine';
+import {
   evaluateExtendedMedicalConditions,
   type ExtendedMedicalConditionMatch,
 } from './extendedMedicalDatabase';
@@ -419,26 +424,26 @@ export function computeComprehensiveChikitsaReport(chart: ChartData): Comprehens
   const rahuWithSun = rahu && sun && rahu.rasiHouseNumber === sun.rasiHouseNumber;
   const hasPitruDoshaInProgeny = Boolean(sunIn5thOr9th && (satWithSun || rahuWithSun));
 
+  const synthCtx = buildClassicalSynthesisContext(chart);
+  const progenyWeighted = evaluateWeightedProgenyAxis(synthCtx, ascSign);
+  const ayusWeighted = evaluateWeightedAyusVitality(synthCtx, ascSign, chart);
+
   let overallPromise: ProgenyDiagnosticReport['overallPromise'] = 'Auspicious';
   let overallPromiseHi = 'संतान सुख अनुकूल व श्रेष्ठ';
 
-  if (hasNagaSarpaDosha || hasPitruDoshaInProgeny || (l5Body && [6, 8, 12].includes(l5Body.rasiHouseNumber))) {
-    overallPromise = hasNagaSarpaDosha && hasPitruDoshaInProgeny ? 'Challenging (Requires Upaya)' : 'Delayed / Obstacles';
-    overallPromiseHi = hasNagaSarpaDosha && hasPitruDoshaInProgeny ? 'विशेष शांति उपाय अपेक्षित' : 'विलंब उपरांत संतान सुख';
+  if (progenyWeighted.obstructionScore >= 5 || (hasNagaSarpaDosha && hasPitruDoshaInProgeny)) {
+    overallPromise = 'Challenging (Requires Upaya)';
+    overallPromiseHi = 'विशेष शांति उपाय अपेक्षित';
+  } else if (progenyWeighted.obstructionScore >= 2.5 || hasNagaSarpaDosha || hasPitruDoshaInProgeny || (l5Body && [6, 8, 12].includes(l5Body.rasiHouseNumber))) {
+    overallPromise = 'Delayed / Obstacles';
+    overallPromiseHi = 'विलंब उपरांत संतान सुख';
   } else if (['Exalted', 'Own Sign', 'Moolatrikona'].includes(l5Dignity) && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(jupDignity)) {
     overallPromise = 'Highly Auspicious';
     overallPromiseHi = 'अत्यंत शुभ, सुयोग्य व संस्कारी संतान योग';
   }
 
-  const timingPredictionEn =
-    l5Placed === 5 || [1, 4, 7, 10, 9].includes(l5Placed)
-      ? 'Auspicious planetary triggers support timely family expansion during Mahadasha/Antardasha of 5th lord, 9th lord, or Jupiter.'
-      : 'Family lineage manifests successfully past age 29–32 with conscious medical and spiritual alignment during Jupiter or 5th lord sub-periods.';
-
-  const timingPredictionHi =
-    l5Placed === 5 || [1, 4, 7, 10, 9].includes(l5Placed)
-      ? 'पंचमेश, नवमेश अथवा गुरु की दशा-अंतर्दशा में समयानुकूल संतान सुख व कुल वृद्धि के अत्यंत शुभ योग हैं।'
-      : 'आयु २९ से ३२ वर्ष के उपरांत गुरु अथवा पंचमेश की शुभ अंतर्दशा में संतान सुख की पूर्ण प्राप्ति होती है।';
+  const timingPredictionEn = `${progenyWeighted.conceiveTiming.valEn} | ${progenyWeighted.childrenYoga.valEn}`;
+  const timingPredictionHi = `${progenyWeighted.conceiveTiming.valHi} | ${progenyWeighted.childrenYoga.valHi}`;
 
   const vedicRemediesEn: string[] = [
     'Chant the sacred Santana Gopala Mantra (108 times daily): "Om Shreem Hreem Kleem Glaum Devakisuta Govinda Vasudeva Jagatpate Dehi Me Tanayam Krishna Tvamaham Sharanam Gatah".',
@@ -485,12 +490,14 @@ export function computeComprehensiveChikitsaReport(chart: ChartData): Comprehens
   };
 
   const criticalHealthPhasesEn = [
+    ayusWeighted.valEn,
     'Sub-periods of 6th Lord, 8th Lord, or Badhakadhipati require heightened lifestyle and dietary vigilance.',
     'Major transits of Saturn or Rahu over natal Sun or natal Moon indicate periods for preventive clinical checkups.',
     'Transits of Jupiter over Lagna or 11th House bring accelerated convalescence, cellular rejuvenation, and healing.',
   ];
 
   const criticalHealthPhasesHi = [
+    ayusWeighted.valHi,
     'षष्ठेश, अष्टमेश अथवा बाधकेश की अंतर्दशा में आहार-विहार व दिनचर्या में विशेष सतर्कता बरतें।',
     'गोचर में शनि या राहु का जन्म सूर्य अथवा जन्म चंद्र पर से भ्रमण स्वास्थ्य परीक्षण कराने का उपयुक्त संकेत है।',
     'लग्न अथवा एकादश भाव पर गुरु का शुभ गोचर शीघ्र स्वास्थ्य लाभ, रोग-मुक्ति व जीवनी शक्ति की पुनर्स्थापना करता है।',

@@ -275,9 +275,12 @@ function buildReaderPrediction(
   const themeEn = PLANET_THEMES[primaryLord.id]?.en ?? 'focused planetary karma';
   const themeHi = PLANET_THEMES[primaryLord.id]?.hi ?? 'विशेष ग्रह-कर्म';
 
+  const originThemeEn = HOUSE_THEMES[primaryHouse]?.en ?? 'core life themes';
+  const originThemeHi = HOUSE_THEMES[primaryHouse]?.hi ?? 'प्रमुख जीवन विषय';
+
   return {
-    en: `House ${primaryHouse} lord ${planetEn} (${primaryLord.dignity} in House ${primaryLord.rasiHouseNumber}) brings ${themeEn} into ${destination.en}. ${conditionEn}${extraEn.length ? ' ' + extraEn.join(' ') : ''}`,
-    hi: `भाव ${primaryHouse} के स्वामी ${planetHi} (${primaryLord.dignity}, भाव ${primaryLord.rasiHouseNumber}) इस क्षेत्र में ${themeHi} को प्रमुख बनाकर इसे ${destination.hi} से जोड़ते हैं। ${conditionHi}${extraHi.length ? ' ' + extraHi.join(' ') : ''}`,
+    en: `${opening.en} ${planetEn} (guiding ${originThemeEn}, ${primaryLord.dignity.toLowerCase()}) channels ${themeEn} into ${destination.en}. ${conditionEn}${extraEn.length ? ' ' + extraEn.join(' ') : ''}`,
+    hi: `${opening.hi} ${planetHi} (${originThemeHi}, ${primaryLord.dignity}) इस क्षेत्र में ${themeHi} को प्रमुख बनाकर इसे ${destination.hi} से जोड़ते हैं। ${conditionHi}${extraHi.length ? ' ' + extraHi.join(' ') : ''}`,
   };
 }
 

@@ -25,8 +25,8 @@ function buildVimshottariChildren(
   parentLordIdx: number,
   parentStartMs: number,
   parentDurationMs: number,
-  level: 2 | 3 | 4,
-  maxDepth: 2 | 3 | 4
+  level: 2 | 3 | 4 | 5,
+  maxDepth: 2 | 3 | 4 | 5
 ): DashaPeriod[] {
   const children: DashaPeriod[] = [];
   let cursor = parentStartMs;
@@ -47,7 +47,7 @@ function buildVimshottariChildren(
         idx,
         cursor,
         spanMs,
-        (level + 1) as 3 | 4,
+        (level + 1) as 3 | 4 | 5,
         maxDepth
       );
     }
@@ -110,6 +110,22 @@ export function expandSookshmaDasha(pratyantardasha: DashaPeriod): DashaPeriod[]
     pratyantardasha.endMs - pratyantardasha.startMs,
     4,
     4
+  );
+}
+
+/**
+ * Expands a Sookshma Dasha period (level 4) into its 9 Prana Dasha sub-periods (level 5),
+ * matching 5-level Vimshottari precision.
+ */
+export function expandPranaDasha(sookshma: DashaPeriod): DashaPeriod[] {
+  const idx = VIMSHOTTARI_ORDER.indexOf(sookshma.lord as typeof VIMSHOTTARI_ORDER[number]);
+  if (idx === -1) return [];
+  return buildVimshottariChildren(
+    idx,
+    sookshma.startMs,
+    sookshma.endMs - sookshma.startMs,
+    5,
+    5
   );
 }
 

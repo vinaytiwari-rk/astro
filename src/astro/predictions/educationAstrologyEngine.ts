@@ -13,6 +13,7 @@
 
 import { NINE_GRAHAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
+import { buildClassicalSynthesisContext } from './classicalSynthesisEngine';
 import { getFunctionalLordship } from './functionalLordship';
 
 export interface EducationHouseInsight {
@@ -1317,25 +1318,39 @@ export function computeEducationAstrologyEngine(chart: ChartData): EducationAstr
   // Yogas bonus
   totalScore += activeYogas.length * 4;
 
-  // Penalties from breaks
+  // Penalties from breaks + Classical Synthesis D24 / Shadbala cross-check
   totalScore -= triggeredBreakCount * 3.5;
 
+  const synthCtx = buildClassicalSynthesisContext(chart);
+  const d24Lagna = synthCtx.getVargaPlacement('D24', 'Asc');
+  const d24Merc = synthCtx.getVargaPlacement('D24', 'Mercury');
+  const d24Jup = synthCtx.getVargaPlacement('D24', 'Jupiter');
+  const mercShad = synthCtx.shadbalaByPlanet.get('Mercury');
+  const jupShad = synthCtx.shadbalaByPlanet.get('Jupiter');
+  if (d24Merc && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(d24Merc.dignity)) totalScore += 4;
+  if (d24Jup && ['Exalted', 'Own Sign', 'Moolatrikona'].includes(d24Jup.dignity)) totalScore += 4;
+  if (mercShad && mercShad.rank <= 2) totalScore += 3;
+  if (jupShad && jupShad.rank <= 2) totalScore += 3;
+
   const finalScore = Math.max(25, Math.min(98, Math.round(totalScore)));
+  const d24Elem = SIGNS[((d24Lagna?.signIndex ?? ascSign) + 4) % 12].element;
+  const d24AltEn = ` | D24 Siddhamsha (Mercury Rank #${mercShad?.rank ?? '-'}/7, Guru Rank #${jupShad?.rank ?? '-'}/7): ${d24Elem === 'Air' || d24Elem === 'Earth' ? 'Analytics, Computing & Commerce OR / अथवा Applied Research' : 'Higher Research, Law, Philosophy OR / अथवा Leadership Studies'}`;
+  const d24AltHi = ` | D24 सिद्धांश (बुध रैंक #${mercShad?.rank ?? '-'}/7, गुरु रैंक #${jupShad?.rank ?? '-'}/7): ${d24Elem === 'Air' || d24Elem === 'Earth' ? 'कंप्यूटर, विश्लेषण व वाणिज्य अथवा व्यावहारिक शोध' : 'गहन शोध, विधि, दर्शन अथवा नेतृत्व अध्ययन'}`;
 
   let overallVerdictEn = '';
   let overallVerdictHi = '';
   if (finalScore >= 80) {
-    overallVerdictEn = 'Extraordinary Scholastic Potential: Destined for exceptional academic milestones, prestigious degrees, and scholarly renown.';
-    overallVerdictHi = 'असाधारण शैक्षणिक सामर्थ्य: उच्च उपाधियों, राष्ट्रीय-अंतरराष्ट्रीय सम्मान और समाज में अद्वितीय विद्वता का प्रबल योग।';
+    overallVerdictEn = `Extraordinary Scholastic Potential: Destined for exceptional academic milestones, prestigious degrees, and scholarly renown.${d24AltEn}`;
+    overallVerdictHi = `असाधारण शैक्षणिक सामर्थ्य: उच्च उपाधियों, राष्ट्रीय-अंतरराष्ट्रीय सम्मान और समाज में अद्वितीय विद्वता का प्रबल योग।${d24AltHi}`;
   } else if (finalScore >= 65) {
-    overallVerdictEn = 'Strong & Auspicious Academic Aptitude: Steady success across graduation and postgraduate disciplines with consistent merit.';
-    overallVerdictHi = 'सशक्त व अनुकूल विद्या योग: स्नातक व उच्च शिक्षा में उत्कृष्ट सफलता, सुदृढ़ स्मरण शक्ति व परीक्षाओं में सफलता।';
+    overallVerdictEn = `Strong & Auspicious Academic Aptitude: Steady success across graduation and postgraduate disciplines with consistent merit.${d24AltEn}`;
+    overallVerdictHi = `सशक्त व अनुकूल विद्या योग: स्नातक व उच्च शिक्षा में उत्कृष्ट सफलता, सुदृढ़ स्मरण शक्ति व परीक्षाओं में सफलता।${d24AltHi}`;
   } else if (finalScore >= 50) {
-    overallVerdictEn = 'Balanced Educational Trajectory: Progressive milestones achieved through dedicated effort, disciplined routine, and structured mentoring.';
-    overallVerdictHi = 'संतुलित शैक्षणिक योग: नियमित अभ्यास व सुनियोजित मार्गदर्शन द्वारा क्रमशः प्रगतिशील परिणाम व डिग्री की प्राप्ति।';
+    overallVerdictEn = `Balanced Educational Trajectory: Progressive milestones achieved through dedicated effort, disciplined routine, and structured mentoring.${d24AltEn}`;
+    overallVerdictHi = `संतुलित शैक्षणिक योग: नियमित अभ्यास व सुनियोजित मार्गदर्शन द्वारा क्रमशः प्रगतिशील परिणाम व डिग्री की प्राप्ति।${d24AltHi}`;
   } else {
-    overallVerdictEn = 'Demands Remedial Focus: Academic hurdles or delays require conscious discipline, quiet study environment, and Vedic remedial upayas.';
-    overallVerdictHi = 'शास्त्रीय उपाय व संयम अपेक्षित: अध्ययन में व्यवधान दूर करने हेतु एकाग्रता, अनुकूल वातावरण व वैदिक उपायों की आवश्यकता।';
+    overallVerdictEn = `Demands Remedial Focus: Academic hurdles or delays require conscious discipline, quiet study environment, and Vedic remedial upayas.${d24AltEn}`;
+    overallVerdictHi = `शास्त्रीय उपाय व संयम अपेक्षित: अध्ययन में व्यवधान दूर करने हेतु एकाग्रता, अनुकूल वातावरण व वैदिक उपायों की आवश्यकता।${d24AltHi}`;
   }
 
   const classicalUpayas = {

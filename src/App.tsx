@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { calculateChart } from './astro/calculator';
 import type { BirthInput, CalcSettings, ChartStyle } from './astro/types';
+import { shiftBirthInputTime } from './astro/workstationUtils';
 import { OnlineJyotishHomePortal } from './components/OnlineJyotishHomePortal';
 import { GlobalCommandPaletteModal } from './components/GlobalCommandPaletteModal';
 import type { MarriageSubTab } from './components/marriage/AdvanceMarriageMatchingView';
 import type { AstroToolCategory } from './components/onlinejyotish/OnlineJyotishToolsView';
 import type { SpecificCalculatorId } from './components/onlinejyotish/FortuneCalculatorsView';
+import { AvProControlStrip } from './components/workstation/AvProControlStrip';
+import type { WorksheetId } from './components/workstation/workstationTypes';
 
 // Modals lazy-loaded on demand
 const BirthEditorModal = React.lazy(() => import('./components/BirthEditorModal').then(m => ({ default: m.BirthEditorModal })));
@@ -54,7 +57,7 @@ const AstroSageToolsView = React.lazy(() => import('./components/AstroSageToolsV
 const CalculationsDossierView = React.lazy(() => import('./components/CalculationsDossierView').then(m => ({ default: m.CalculationsDossierView })));
 const PrasnaMargaWorkstationPanel = React.lazy(() => import('./components/predictions/PrasnaMargaWorkstationPanel').then(m => ({ default: m.PrasnaMargaWorkstationPanel })));
 const ParasharaKalaWorkstationPanel = React.lazy(() => import('./components/predictions/ParasharaKalaWorkstationPanel').then(m => ({ default: m.ParasharaKalaWorkstationPanel })));
-const VedicMasterWorkstation = React.lazy(() => import('./components/VedicMasterWorkstation').then(m => ({ default: m.VedicMasterWorkstation })));
+const AvAstroVibeWorkstation = React.lazy(() => import('./components/workstation/AvAstroVibeWorkstation').then(m => ({ default: m.AvAstroVibeWorkstation })));
 import { DropdownNavHeader } from './components/layout/DropdownNavHeader';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
@@ -190,8 +193,10 @@ export function App() {
     return t === 'dark' ? 'dark' : 'light';
   });
 
-  // Current Active View in AV Astro Vibe
-  const [currentView, setCurrentView] = useState<string>('home');
+  // Current Active View in AV Astro Vibe (single unified shell across all tools & worksheets)
+  const [currentView, setCurrentView] = useState<string>('workstation');
+  const [activeWorksheet, setActiveWorksheet] = useState<WorksheetId>('main');
+  const [rectifySeconds, setRectifySeconds] = useState<number>(0);
   const [workstationSubTab, setWorkstationSubTab] = useState<string>('1');
   const [predictionsSubTab, setPredictionsSubTab] = useState<string>('deep_life');
   const [marriageSubTab, setMarriageSubTab] = useState<MarriageSubTab>('ashtakoota');
@@ -220,12 +225,29 @@ export function App() {
     localStorage.setItem(STORAGE_THEME_KEY, theme);
   }, [theme]);
 
-  // Global Ctrl + K / Cmd + K Command Palette Shortcut
+  // Global Ctrl + K and F1..F9 Worksheet Shortcuts
   useEffect(() => {
+    const fKeyMap: Record<string, WorksheetId> = {
+      F1: 'main',
+      F2: 'vargas',
+      F3: 'strengths',
+      F4: 'dashas',
+      F5: 'transits',
+      F6: 'yogas_research',
+      F7: 'matchmaking',
+      F8: 'ephemeris_panchang',
+      F9: 'custom',
+    };
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+      if (fKeyMap[e.key]) {
+        e.preventDefault();
+        setCurrentView('workstation');
+        setActiveWorksheet(fKeyMap[e.key]);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -268,9 +290,18 @@ export function App() {
     [profiles, activeId]
   );
 
+  useEffect(() => {
+    setRectifySeconds(0);
+  }, [activeInput.id, activeInput.date, activeInput.time]);
+
+  const liveInput = useMemo(
+    () => (rectifySeconds === 0 ? activeInput : shiftBirthInputTime(activeInput, rectifySeconds)),
+    [activeInput, rectifySeconds]
+  );
+
   const chart = useMemo(
-    () => calculateChart(activeInput, settings),
-    [activeInput, settings]
+    () => calculateChart(liveInput, settings),
+    [liveInput, settings]
   );
 
   // Central Navigation Dispatcher
@@ -281,7 +312,16 @@ export function App() {
       return;
     }
     if (view === 'workstation') {
-      setCurrentView('split-studio');
+      setCurrentView('workstation');
+      if (sub) {
+        const wsIds: WorksheetId[] = [
+          'main', 'vargas', 'strengths', 'dashas', 'transits',
+          'yogas_research', 'matchmaking', 'ephemeris_panchang', 'custom',
+        ];
+        if (wsIds.includes(sub as WorksheetId)) {
+          setActiveWorksheet(sub as WorksheetId);
+        }
+      }
       return;
     }
 
@@ -395,12 +435,12 @@ export function App() {
 
   return (
     <LanguageProvider lang={language} setLang={setLanguage}>
-      <div className="app-shell">
-        {/* AV Astro Vibe Navigation Header */}
+      <div className={bookletOpen ? 'app-shell has-booklet-open' : 'app-shell'}>
+        {/* Unified Single AV Astro Vibe Header across all views & worksheets */}
         <DropdownNavHeader
           currentView={currentView}
           onNavigate={navigateTo}
-          activeInput={activeInput}
+          activeInput={liveInput}
           profiles={profiles}
           onSelectProfile={(id) => setActiveId(id)}
           onOpenEditor={() => setEditorOpen(true)}
@@ -419,6 +459,34 @@ export function App() {
           onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
           theme={theme}
           onToggleTheme={() => setTheme((th) => (th === 'light' ? 'dark' : 'light'))}
+        />
+
+        {/* Unified Global Pro Control Strip (Live Time Stepper, Ayanamsha, XML I/O & F1-F9 Worksheets) */}
+        <AvProControlStrip
+          chart={chart}
+          activeInput={liveInput}
+          settings={settings}
+          lang={language}
+          currentView={currentView}
+          activeWorksheet={activeWorksheet}
+          rectifySeconds={rectifySeconds}
+          onSelectWorksheet={(ws) => {
+            setCurrentView('workstation');
+            setActiveWorksheet(ws);
+          }}
+          onStepBirthSeconds={(sec) => setRectifySeconds((prev) => prev + sec)}
+          onResetRectify={() => setRectifySeconds(0)}
+          onCommitRectify={() => {
+            handleApplyBirth(liveInput, false);
+            setRectifySeconds(0);
+          }}
+          onUpdateSettings={(next) => setSettings(next)}
+          onImportXmlChart={(imported) => {
+            setProfiles((prev) => [imported, ...prev]);
+            setActiveId(imported.id);
+            setCurrentView('workstation');
+            setActiveWorksheet('main');
+          }}
         />
 
         {/* Mobile Navigation Drawer */}
@@ -450,7 +518,7 @@ export function App() {
 
         {/* View Router Shell */}
         <div className="workspace-shell">
-          <main className="main-content">
+          <main className={currentView === 'workstation' ? 'main-content is-av-desktop' : 'main-content'}>
             <React.Suspense fallback={<ViewLoadingFallback />}>
             {currentView === 'home' && (
               <OnlineJyotishHomePortal
@@ -824,18 +892,17 @@ export function App() {
 
 
             {currentView === 'workstation' && (
-              <VedicMasterWorkstation
+              <AvAstroVibeWorkstation
                 chart={chart}
-                chartStyle={settings.chartStyle}
-                onChangeChartStyle={(st) => setSettings({ ...settings, chartStyle: st })}
-                settings={settings}
                 profiles={profiles}
-                activeProfileId={activeInput.id}
-                onSelectProfile={(id) => setActiveId(id)}
-                onOpenEditor={() => setEditorOpen(true)}
-                onOpenBooklet={() => setBookletOpen(true)}
-                onOpenMatchMaking={() => navigateTo('marriage-matching')}
-                requestedMenu={{ id: workstationSubTab, nonce: 0 }}
+                settings={settings}
+                lang={language}
+                activeWorksheet={activeWorksheet}
+                onSelectWorksheet={setActiveWorksheet}
+                onAddAndLoadProfile={(input) => {
+                  setProfiles((prev) => (prev.some((p) => p.id === input.id) ? prev : [input, ...prev]));
+                  setActiveId(input.id);
+                }}
               />
             )}
             </React.Suspense>

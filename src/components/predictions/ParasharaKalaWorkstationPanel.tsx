@@ -2,12 +2,10 @@ import React, { useMemo, useState } from 'react';
 import {
   Activity,
   Award,
-  BookOpen,
   Calendar,
   CheckCircle2,
   Clock,
   Compass,
-  ExternalLink,
   Flame,
   Layers,
   Shield,
@@ -35,9 +33,8 @@ import {
   type TajakaSahamsReport,
   type TajakaSahamResult,
 } from '../../astro/tajakaSahams';
-import { formatDateTimeDmyAmPm, formatDateDmy } from '../../astro/time';
+import { formatDateTimeDmyAmPm } from '../../astro/time';
 import type { BirthInput, ChartData } from '../../astro/types';
-import { RESEARCH_BENCHMARK_CHARTS, type ResearchBenchmarkChart } from '../../data/researchCharts';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface ParasharaKalaWorkstationPanelProps {
@@ -46,12 +43,11 @@ export interface ParasharaKalaWorkstationPanelProps {
   onLoadBenchmarkChart?: (input: BirthInput) => void;
 }
 
-type MainTab = 'kakshya' | 'sahams' | 'kp_cil' | 'bhavabala' | 'research_charts';
+type MainTab = 'kakshya' | 'sahams' | 'kp_cil' | 'bhavabala';
 
 export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPanelProps> = ({
   natalChart,
   transitChart: propTransitChart,
-  onLoadBenchmarkChart,
 }) => {
   const { lang } = useLanguage();
   const isHi = lang === 'hi';
@@ -60,9 +56,6 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
 
   // Sub-filters for Sahams (Direct categories, no manual search)
   const [sahamCategory, setSahamCategory] = useState<string>('all');
-
-  // Sub-filters for Research Charts
-  const [researchCategory, setResearchCategory] = useState<string>('all');
 
   // Selected planet for Kakshya detail
   const [selectedPlanetKakshya, setSelectedPlanetKakshya] = useState<string>('Saturn');
@@ -113,12 +106,6 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
     return sahamsReport.sahams.filter((s) => s.category === sahamCategory);
   }, [sahamsReport, sahamCategory]);
 
-  // Filtered Research Charts by category
-  const filteredResearchCharts = useMemo(() => {
-    if (researchCategory === 'all') return RESEARCH_BENCHMARK_CHARTS;
-    return RESEARCH_BENCHMARK_CHARTS.filter((c) => c.category === researchCategory);
-  }, [researchCategory]);
-
   const activeKakshyaDetail: PlanetKakshyaTransitDetail | undefined = useMemo(() => {
     return kakshyaReport.allPlanets.find((p) => p.planet === selectedPlanetKakshya) || kakshyaReport.allPlanets[0];
   }, [kakshyaReport, selectedPlanetKakshya]);
@@ -135,8 +122,8 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           </div>
           <h2>
             {isHi
-              ? 'उन्नत ज्योतिष फलित एवं शोध कार्यशाला'
-              : 'Advanced Vedic Astrology & Research Workstation'}
+              ? 'उन्नत ज्योतिष फलित कार्यशाला'
+              : 'Advanced Vedic Astrology Workstation'}
           </h2>
           <p>
             {isHi
@@ -191,16 +178,6 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
           <Activity className="h-4 w-4" />
           {isHi ? 'सम्पूर्ण भावबल' : 'Bhavabala Engine'}
           <span className="sw-tab-badge">{bhavabalaReport.averageRupas} Rupas</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('research_charts')}
-          className={`sw-tab-btn ${activeTab === 'research_charts' ? 'is-active' : ''}`}
-        >
-          <BookOpen className="h-4 w-4" />
-          {isHi ? 'शोध पत्रिका बैंक' : 'Research Benchmark Charts'}
-          <span className="sw-tab-badge">{RESEARCH_BENCHMARK_CHARTS.length}</span>
         </button>
       </div>
 
@@ -860,123 +837,6 @@ export const ParasharaKalaWorkstationPanel: React.FC<ParasharaKalaWorkstationPan
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 5: 11,500 RESEARCH BENCHMARK CHARTS BANK */}
-        {/* ========================================================================= */}
-        {activeTab === 'research_charts' && (
-          <div>
-            {/* Purpose & Predictive Explanation Box */}
-            <div className="sw-purpose-box">
-              <h4>
-                <BookOpen className="h-4 w-4" />
-                {isHi
-                  ? 'शोध पत्रिका बैंक का उद्देश्य क्या है?'
-                  : 'Purpose of the Classical Research Benchmark Charts Bank'}
-              </h4>
-              <p>
-                {isHi
-                  ? 'शास्त्रीय तुलना: वैदिक ज्योतिष में सिद्धांतों की प्रामाणिकता ऐतिहासिक महापुरुषों, वैज्ञानिकों, आध्यात्मिक संतों और राजनेताओं की जन्म कुंडलियों से सिद्ध होती है। इस शोध बैंक से आप किसी भी ऐतिहासिक पत्रिका को सीधे कार्यशाला में लोड कर सकते हैं और अपनी कुंडली के साथ तुलनात्मक अध्ययन (Comparative Jyotish Research) कर सकते हैं।'
-                  : 'Comparative Research Principle: Classical Jyotish principles are validated through benchmark horoscopes (Pramana Kundalis) demonstrating how archetypal Raja Yogas, Amala Yogas, Ruchaka Yogas, and Saraswati Yogas manifest in real life. Load any celebrated historical birth chart into your active workspace with one click to perform side-by-side comparative research.'}
-              </p>
-            </div>
-
-            {/* Category Filter Chips */}
-            <div className="sw-category-strip">
-              {[
-                { id: 'all', en: 'All Benchmark Charts', hi: 'सभी शोध पत्रिकाएं' },
-                { id: 'Scientists & Geniuses', en: 'Scientists & Geniuses', hi: 'वैज्ञानिक व मनीषी' },
-                { id: 'Spiritual Masters', en: 'Spiritual Masters', hi: 'आध्यात्मिक संत' },
-                { id: 'World Leaders', en: 'World Leaders', hi: 'राष्ट्रनायक' },
-                { id: 'Masters of Arts', en: 'Arts & Literature', hi: 'कला व साहित्य' },
-                { id: 'Industrial Pioneers', en: 'Industry & Wealth', hi: 'उद्योग व धनपति' },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setResearchCategory(cat.id)}
-                  className={`sw-category-chip ${researchCategory === cat.id ? 'is-active' : ''}`}
-                >
-                  {isHi ? cat.hi : cat.en}
-                </button>
-              ))}
-            </div>
-
-            {/* Benchmark Cards Grid */}
-            <div className="sw-grid-3">
-              {filteredResearchCharts.map((rc) => (
-                <div key={rc.id} className="sw-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span className="sw-badge sw-badge-warning">
-                        {isHi ? rc.categoryHi : rc.category}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#64748b' }}>
-                        {formatDateDmy(rc.birthInput.date)}
-                      </span>
-                    </div>
-
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary, #0f172a)' }}>
-                      {isHi ? rc.nameHi : rc.name}
-                    </h4>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
-                      {rc.birthInput.city}, {rc.birthInput.country} · {formatDateTimeDmyAmPm(rc.birthInput.date, rc.birthInput.time)}
-                    </div>
-
-                    <div style={{
-                      padding: '10px',
-                      borderRadius: '8px',
-                      background: 'var(--bg-subtle, #f8fafc)',
-                      border: '1px solid var(--border-color, #e2e8f0)',
-                      fontSize: '0.8rem',
-                      lineHeight: 1.5,
-                      marginBottom: '10px',
-                    }}>
-                      <div style={{ fontWeight: 700, color: '#b45309', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                        {isHi ? 'शास्त्रीय योग संयोजन:' : 'Astrological Signatures:'}
-                      </div>
-                      <p style={{ margin: '0 0 8px 0', color: 'var(--text-primary, #334155)' }}>
-                        {isHi ? rc.keyAstrologicalHighlightsHi : rc.keyAstrologicalHighlightsEn}
-                      </p>
-                      <div style={{ fontWeight: 600, color: '#64748b', marginBottom: '2px' }}>
-                        {isHi ? 'ऐतिहासिक संदर्भ:' : 'Biographical Context:'}
-                      </div>
-                      <p style={{ margin: 0, color: '#64748b' }}>
-                        {isHi ? rc.biographicalNoteHi : rc.biographicalNoteEn}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingTop: '10px',
-                    borderTop: '1px solid var(--border-color, #e2e8f0)',
-                  }}>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                      ID: {rc.id}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onLoadBenchmarkChart) {
-                          onLoadBenchmarkChart(rc.birthInput);
-                        }
-                      }}
-                      className="sw-badge sw-badge-warning"
-                      style={{ cursor: 'pointer', padding: '6px 12px' }}
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" style={{ marginRight: '4px' }} />
-                      {isHi ? 'कार्यशाला में लोड करें' : 'Load into Workspace'}
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         )}

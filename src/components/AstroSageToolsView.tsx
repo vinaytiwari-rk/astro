@@ -99,7 +99,7 @@ export const AstroSageToolsView: React.FC<AstroSageToolsViewProps> = ({ chart, r
 
   useEffect(() => {
     let active = true;
-    fetchClickAstroFeed(feedPeriod).then((res) => {
+    fetchClickAstroFeed(feedPeriod, false).then((res) => {
       if (active) {
         setFeedItems(res.items);
         setFeedStatus(res.status);

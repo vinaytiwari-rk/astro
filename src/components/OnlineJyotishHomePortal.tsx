@@ -197,7 +197,7 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
 
   useEffect(() => {
     let active = true;
-    fetchClickAstroFeed(portalFeedPeriod).then((res) => {
+    fetchClickAstroFeed(portalFeedPeriod, false).then((res) => {
       if (active) {
         setPortalFeedItems(res.items);
         setPortalFeedStatus(res.status);
@@ -314,8 +314,11 @@ export const OnlineJyotishHomePortal: React.FC<OnlineJyotishHomePortalProps> = (
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('transit-calendar')}>
               {isHi ? '365-दिवसीय गोचर कैलेंडर' : '365-Day Transit Calendar'}
             </button>
+            <button type="button" className="oj-link-pill" onClick={() => onNavigate('workstation')}>
+              {isHi ? 'AV Astro Vibe डेस्कटॉप कार्यशाला' : 'AV Astro Vibe Desktop Workstation'}
+            </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('parashara-workstation')}>
-              {isHi ? 'पाराशर-काला कार्यशाला (कक्ष्य, CIL, भावबल)' : 'Parashara-Kala Workstation (Kakshya & CIL)'}
+              {isHi ? 'कक्ष्य गोचर, सहम व CIL कार्यशाला' : 'Kakshya, 50 Sahams & CIL Desk'}
             </button>
             <button type="button" className="oj-link-pill" onClick={() => onNavigate('financial-astrology')}>
               {isHi ? 'शेयर बाजार व इंदु लग्न' : 'Financial Astrology & Indu Lagna'}

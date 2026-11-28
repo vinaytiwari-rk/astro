@@ -49,6 +49,18 @@ import {
   getVastuPanchaMahabhutaAndRemedies,
   getMarriageLongevityAndMultiUnionAnalysis,
 } from './lifeSnapshotDatabase';
+import {
+  buildClassicalSynthesisContext,
+  evaluateCareerAndAbroadOverlay,
+  evaluateEnrichedAttribute,
+  evaluateFullVargaProgeny,
+  evaluateFullVargaSiblings,
+  evaluateMultiHypothesisCareer,
+  evaluateWeightedAyusVitality,
+  evaluateWeightedFatherAxis,
+  evaluateWeightedMarriageAxis,
+  evaluateWeightedProgenyAxis,
+} from './classicalSynthesisEngine';
 
 export type PlanetPosition = BodyPosition & { placedHouse: number };
 
@@ -384,6 +396,23 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
   const karakamsha = computeKarakamsha(chart, karakas);
   const ak = karakas.find((k) => k.role === 'AK') || karakas[0];
 
+  // Unified Weighted Classical Synthesis Context (Shadbala Rank, Ishta/Kashta, Bhavabala, Avastha, SAV, Vargas, Dashas)
+  const synthCtx = buildClassicalSynthesisContext(chart);
+  const fatherWeighted = evaluateWeightedFatherAxis(synthCtx, ascSignIdx);
+  const marriageWeighted = evaluateWeightedMarriageAxis(synthCtx, ascSignIdx);
+  const progenyWeighted = evaluateWeightedProgenyAxis(synthCtx, ascSignIdx);
+  const careerAbroadWeighted = evaluateCareerAndAbroadOverlay(synthCtx, ascSignIdx);
+  const ayusVitalityWeighted = evaluateWeightedAyusVitality(synthCtx, ascSignIdx, chart);
+  const careerMultiWeighted = evaluateMultiHypothesisCareer(synthCtx, ascSignIdx);
+  const siblingsFullWeighted = evaluateFullVargaSiblings(synthCtx, ascSignIdx);
+  const progenyFullWeighted = evaluateFullVargaProgeny(
+    synthCtx,
+    ascSignIdx,
+    progenyWeighted.obstructionScore,
+    progenyWeighted.conceiveTiming.valEn,
+    progenyWeighted.conceiveTiming.valHi
+  );
+
   // D60 Deities
   const d60LagnaDeity = getShashtiamsaDeity(asc.longitude);
 
@@ -674,76 +703,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 Rashi & D9 Navamsha',
         },
         {
-          id: 'attr_eyes_colour',
-          category: 'physical',
-          titleEn: 'Eyes, Pupil Colour & Gaze',
-          titleHi: 'नेत्र, पुतली का रंग व दृष्टि प्रभाव',
-          valueEn: eyesEn,
-          valueHi: eyesHi,
-          explanationEn: `Right eye significator (2nd house, Sun) and left eye significator (12th house, Moon) synergize with 1st house lords, giving eyes that communicate depth, intelligence, and focused perception.`,
-          explanationHi: `दाहिनी आँख (द्वितीय भाव, सूर्य) और बाईं आँख (द्वादश भाव, चंद्र) का समन्वय दृष्टि में एकाग्रता, बुद्धिमत्ता और आंतरिक अंतर्दृष्टि प्रदान करता है।`,
-          pacBasisEn: `House 2 Lord ${l2?.id} in H${l2?.placedHouse}; House 12 Lord ${l12?.id} in H${l12?.placedHouse}; Sun in ${sun?.signName}; Moon in ${moon?.signName}.`,
-          pacBasisHi: `द्वितीयेश ${PLANET_HI[l2?.id || '']} भाव ${l2?.placedHouse} में; द्वादशेश भाव ${l12?.placedHouse} में; सूर्य ${sun?.signName} व चंद्र ${moon?.signName} में।`,
-          shastricRef: 'Saravali (Ch. 23, Sl. 31–38)',
-          vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_nose',
-          category: 'physical',
-          titleEn: 'Nose Profile & Contour',
-          titleHi: 'नासिका स्वरूप व उभार',
-          valueEn: noseEn,
-          valueHi: noseHi,
-          explanationEn: `Nose symmetry is ruled by Mercury, Mars, and the central meridian of the 1st house. The profile is cleanly shaped, communicating self-respect and resolute executive posture.`,
-          explanationHi: `नासिका का गठन बुध और मंगल के सूक्ष्म प्रभाव से सुडौल बनता है। यह जातक के स्वाभिमान, दृढ़ इच्छाशक्ति और कुलीन दृष्टिकोण को स्पष्ट रूप से दर्शाती है।`,
-          pacBasisEn: `Lagna degree ${birthSummary.lagnaDegStr} in ${ascNak.name} Nakshatra; Mars placed in House ${mars?.placedHouse}.`,
-          pacBasisHi: `लग्न अंश ${birthSummary.lagnaDegStr} नक्षत्र ${ascNak.name} में; मंगल भाव ${mars?.placedHouse} में स्थित।`,
-          shastricRef: 'Brihat Jataka (Ch. 2, Sl. 8–12)',
-          vargaRef: 'D1 Rashi',
-        },
-        {
-          id: 'attr_teeth',
-          category: 'physical',
-          titleEn: 'Dental Architecture (Danta Bhava)',
-          titleHi: 'दंत संरचना व मुख सौंदर्य',
-          valueEn: teethEn,
-          valueHi: teethHi,
-          explanationEn: `The 2nd house (Danta Bhava) and natural significator Mercury rule teeth formation. The dental arch is well-founded, reflecting good mineralization and aesthetic facial harmony.`,
-          explanationHi: `द्वितीय भाव (दंत भाव) और कारक बुध की स्थिति से दांत सुव्यवस्थित, मजबूत और चेहरे की सौम्यता को निखारने वाले होते हैं।`,
-          pacBasisEn: `House 2 Sign: ${h2Sign.name}; Lord: ${l2?.id} in H${l2?.placedHouse} (${l2?.dignity || 'Dignified'}).`,
-          pacBasisHi: `द्वितीय भाव राशि: ${SIGN_HI[h2SignIdx]}; भावेश: ${PLANET_HI[l2?.id || '']} भाव ${l2?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 5–9)',
-          vargaRef: 'D1 & D2',
-        },
-        {
-          id: 'attr_hair',
-          category: 'physical',
-          titleEn: 'Hair Type, Texture & Crown Density',
-          titleHi: 'केश विन्यास, बाल का प्रकार व ललाट रेखा',
-          valueEn: hairEn,
-          valueHi: hairHi,
-          explanationEn: `Hair follicle strength and scalp vitality are ruled by the 1st house element and Sun-Saturn dynamics. The hair frames the face with natural authority and mature presence.`,
-          explanationHi: `केशों का घनत्व लग्न तत्व और सूर्य-शनि की किरणों पर आधारित है। बाल चेहरे को गरिमापूर्ण और आकर्षक आवरण प्रदान करते हैं।`,
-          pacBasisEn: `Lagna Element: ${elem}; Sun in House ${sun?.placedHouse}; Saturn in House ${saturn?.placedHouse}.`,
-          pacBasisHi: `लग्न तत्व: ${elem}; सूर्य भाव ${sun?.placedHouse} में; शनि भाव ${saturn?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 22, Sl. 15–22)',
-          vargaRef: 'D1 Rashi',
-        },
-        {
-          id: 'attr_height_build',
-          category: 'physical',
-          titleEn: 'Height, Skeletal Frame & Bodily Build',
-          titleHi: 'कद-काठी, शारीरिक ढांचा व शारीरिक गठन',
-          valueEn: `${heightEn}; ${buildEn}`,
-          valueHi: `${heightHi}; ${buildHi}`,
-          explanationEn: `Skeletal proportions stem from the interaction between Lagna sign modality (${ascSign.modality}), Lagna lord ${lagnaLordId}, and Jupiter/Saturn gravitational influence.`,
-          explanationHi: `शारीरिक ढांचा लग्न की गतिशीलता (${ascSign.modality}) और लग्नेश ${PLANET_HI[lagnaLordId]} के प्रभाव से पुष्ट होता है, जो जातक को सम्मानजनक कद और गठीला गठन देता है।`,
-          pacBasisEn: `Lagna Modality: ${ascSign.modality}; Lord ${lagnaLordId} in H${l1House} (${l1?.dignity || 'Dignified'}).`,
-          pacBasisHi: `लग्नेश भाव ${l1House} में; लग्न स्वभाव ${ascSign.modality}।`,
-          shastricRef: 'Brihat Jataka (Ch. 2, Sl. 15–20), BPHS (Ch. 11)',
-          vargaRef: 'D1 & D9',
-        },
-        {
           id: 'attr_birthmark_mole',
           category: 'physical',
           titleEn: 'Birthmark, Moles & Scars (Kalapurusha Anga)',
@@ -776,8 +735,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'physical',
           titleEn: 'Core Temperament & Psychological Aura',
           titleHi: 'मूल स्वभाव, चित्त वृत्ति व आभा',
-          valueEn: tempEn,
-          valueHi: tempHi,
+          valueEn: evaluateEnrichedAttribute('attr_temperament', synthCtx, ascSignIdx, tempEn, tempHi).valEn,
+          valueHi: evaluateEnrichedAttribute('attr_temperament', synthCtx, ascSignIdx, tempEn, tempHi).valHi,
           explanationEn: `The triad of Lagna (${ascSign.name}), Moon (${moon?.signName}), and Atmakaraka (${ak?.planet}) creates a high-integrity mind. The native blends strategic composure with genuine ethical empathy.`,
           explanationHi: `लग्न (${SIGN_HI[ascSignIdx]}), चंद्र (${SIGN_HI[moon?.signIndex ?? 0]}) और आत्मकारक (${PLANET_HI[ak?.planet || 'Jupiter']}) का त्रिकोण जातक को दृढ़ चरित्र, निष्ठा, उच्च नैतिक मूल्य और संतुलित दृष्टिकोण प्रदान करता है।`,
           pacBasisEn: `Lagna: ${ascSign.name}; Moon in ${moon?.signName}; Atmakaraka: ${ak?.planet} in D9 ${karakamsha.karakamshaSignName}.`,
@@ -888,7 +847,17 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let parentsHardshipExplEn = `9th (${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}) and 4th (${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}) indicate practical growth without extreme upheaval.`;
     let parentsHardshipExplHi = `नवम (${fatherHouseLord?.id} भाव ${fatherHouseLord?.placedHouse}) व चतुर्थ (${motherHouseLord?.id} भाव ${motherHouseLord?.placedHouse}) भाव व्यावहारिक पारिवारिक प्रगति दर्शाते हैं।`;
 
-    if (isFatherAfflicted && isMotherAfflicted) {
+    if (fatherWeighted.riskLevel === 'severe_paternal_vulnerability') {
+      parentsHardshipValEn = `Critical Paternal Testing Window: ${fatherWeighted.valEn}`;
+      parentsHardshipValHi = `गंभीर पितृ-परीक्षण काल: ${fatherWeighted.valHi}`;
+      parentsHardshipExplEn = fatherWeighted.explEn;
+      parentsHardshipExplHi = fatherWeighted.explHi;
+    } else if (fatherWeighted.riskLevel === 'moderate_strain' && isMotherAfflicted) {
+      parentsHardshipValEn = `Dual Parental Testing Pattern (Pitru Strain + ${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}): Father faced health/work tests & mother bore heavy domestic duties`;
+      parentsHardshipValHi = `पितृ-मातृ दोनों पक्षों में परीक्षा (पितृ दबाव + ${PLANET_HI[motherHouseLord?.id || '']} भाव ${motherHouseLord?.placedHouse}): पिता के स्वास्थ्य/कार्य एवं माता के घरेलू दायित्वों में संघर्ष`;
+      parentsHardshipExplEn = `${fatherWeighted.explEn} Meanwhile 4th/Moon linkage brings domestic responsibilities.`;
+      parentsHardshipExplHi = `${fatherWeighted.explHi} साथ ही चतुर्थ भाव पारिवारिक जिम्मेदारियां बढ़ाता है।`;
+    } else if (isFatherAfflicted && isMotherAfflicted) {
       parentsHardshipValEn = 'Dual Parental Hardship / Early Separation Risk: Ancestral instability, early loss or distance from parents; native builds life self-made from scratch';
       parentsHardshipValHi = 'माता-पिता दोनों पक्षों में कड़ा संघर्ष या प्रारंभिक वियोग संकेत: पैतृक अस्थिरता या दूरी के बीच जातक स्वयं अपने बल पर जीवन गढ़ता है';
       parentsHardshipExplEn = `Both Pitru (9th/Sun) and Matru (4th/Moon) anchors face Dusthana/debilitation strain, forging extraordinary early self-reliance.`;
@@ -924,28 +893,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'parents',
           titleEn: "Father's Stature, Relationship & Life Path",
           titleHi: 'पिता का स्वरूप, आपसी संबंध व जीवन पथ',
-          valueEn: parentsRes.fatherBondAndPath.valEn,
-          valueHi: parentsRes.fatherBondAndPath.valHi,
-          explanationEn: parentsRes.fatherBondAndPath.explEn,
-          explanationHi: parentsRes.fatherBondAndPath.explHi,
-          pacBasisEn: parentsRes.fatherBondAndPath.pacEn,
-          pacBasisHi: parentsRes.fatherBondAndPath.pacHi,
+          valueEn: fatherWeighted.riskLevel === 'strong' ? parentsRes.fatherBondAndPath.valEn : fatherWeighted.valEn,
+          valueHi: fatherWeighted.riskLevel === 'strong' ? parentsRes.fatherBondAndPath.valHi : fatherWeighted.valHi,
+          explanationEn: fatherWeighted.riskLevel === 'strong' ? `${parentsRes.fatherBondAndPath.explEn} ${fatherWeighted.explEn}` : fatherWeighted.explEn,
+          explanationHi: fatherWeighted.riskLevel === 'strong' ? `${parentsRes.fatherBondAndPath.explHi} ${fatherWeighted.explHi}` : fatherWeighted.explHi,
+          pacBasisEn: fatherWeighted.pacEn,
+          pacBasisHi: fatherWeighted.pacHi,
           shastricRef: 'BPHS (Ch. 11.11 & Ch. 12), Saravali (Ch. 34)',
           vargaRef: 'D1 Rashi & D12 Dwadashamsha',
-        },
-        {
-          id: 'attr_father_profession',
-          category: 'parents',
-          titleEn: "Father's Career & Professional Calling",
-          titleHi: 'पिता का कार्यक्षेत्र व आजीविका',
-          valueEn: fProfEn,
-          valueHi: fProfHi,
-          explanationEn: `Evaluated from the 10th house from the 9th (House 6 of D1). The father builds dependable, respectable career equity through demonstrated diligence and ethical reliability.`,
-          explanationHi: `नवम से दशम (कुंडली का छठा भाव) के आधार पर पिता का कर्मक्षेत्र प्रतिष्ठित, स्थायी और उत्तरदायित्वपूर्ण भूमिका में स्थापित होता है।`,
-          pacBasisEn: `10th from 9th is House 6 (${h6Sign.name}); Lord: ${fProfLord?.id} in H${fProfLord?.placedHouse}; Sun in D12 sits in ${d12?.placements?.find((p) => p.id === 'Sun')?.signName || 'D12'}.`,
-          pacBasisHi: `नवम से दशम भाव ६ (${SIGN_HI[h6SignIdx]}); भावेश: ${PLANET_HI[fProfLord?.id || '']} भाव ${fProfLord?.placedHouse} में; D12 में सूर्य की स्थिति बलवान।`,
-          shastricRef: 'Brihat Jataka (Ch. 10, Sl. 1–5)',
-          vargaRef: 'D1 & D12',
         },
         {
           id: 'attr_mother_life',
@@ -976,48 +931,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D12',
         },
         {
-          id: 'attr_mother_profession',
-          category: 'parents',
-          titleEn: "Mother's Calling & Social Contribution",
-          titleHi: 'माता का कार्यक्षेत्र व सामाजिक प्रभाव',
-          valueEn: mProfEn,
-          valueHi: mProfHi,
-          explanationEn: `Evaluated from the 10th house from the 4th (the native's 1st house/Lagna). The mother's moral character directly influences the native's physical constitution, self-esteem, and core ethical compass.`,
-          explanationHi: `चतुर्थ से दशम (लग्न भाव) के अनुसार माता का नैतिक प्रभाव जातक के व्यक्तित्व और जीवनशैली पर अमिट छाप छोड़ता है।`,
-          pacBasisEn: `10th from 4th is House 1 (${ascSign.name}); Lord ${mProfLord?.id} placed in House ${mProfLord?.placedHouse}.`,
-          pacBasisHi: `चतुर्थ से दशम लग्न भाव (${SIGN_HI[ascSignIdx]}); लग्नेश ${PLANET_HI[mProfLord?.id || '']} भाव ${mProfLord?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 34, Sl. 10–18)',
-          vargaRef: 'D1 & D12',
-        },
-        {
-          id: 'attr_parents_siblings',
-          category: 'parents',
-          titleEn: "Parents' Siblings: Paternal & Maternal Uncles/Aunts",
-          titleHi: 'माता-पिता के भाई-बहन: चाचा, ताऊ, बुआ, मामा व मौसी',
-          valueEn: getParentsSiblingsPred(h11Prof, h6Prof).valEn,
-          valueHi: getParentsSiblingsPred(h11Prof, h6Prof).valHi,
-          explanationEn: getParentsSiblingsPred(h11Prof, h6Prof).explEn,
-          explanationHi: getParentsSiblingsPred(h11Prof, h6Prof).explHi,
-          pacBasisEn: `Paternal: House 11 (${h11Sign.name}); Maternal: House 6 (${h6Sign.name}) & Mercury in House ${mercury?.placedHouse}.`,
-          pacBasisHi: `पितृ सहोदर: एकादश भाव (${SIGN_HI[h11SignIdx]}); मातृ सहोदर: षष्ठ भाव (${SIGN_HI[h6SignIdx]}) व बुध भाव ${mercury?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 25 & Sl. 65), Phaladeepika (Ch. 16)',
-          vargaRef: 'D1 & D12 Dwadashamsha',
-        },
-        {
-          id: 'attr_parents_influence_transfer',
-          category: 'parents',
-          titleEn: 'Parental Heritage, Value Transmission & Asset Transfer',
-          titleHi: 'पैतृक संस्कार, नैतिक प्रभाव व संपत्ति का हस्तांतरण',
-          valueEn: getParentsInfluencePred(h9Prof, h4Prof).valEn,
-          valueHi: getParentsInfluencePred(h9Prof, h4Prof).valHi,
-          explanationEn: getParentsInfluencePred(h9Prof, h4Prof).explEn,
-          explanationHi: getParentsInfluencePred(h9Prof, h4Prof).explHi,
-          pacBasisEn: `House 2 Lord ${l2?.id} in H${l2?.placedHouse}; House 8 Lord ${l8?.id} in H${l8?.placedHouse}; 9th lord in Kendra/Trikona.`,
-          pacBasisHi: `द्वितीयेश भाव ${l2?.placedHouse} में; अष्टमेश भाव ${l8?.placedHouse} में; नवमेश केंद्र-त्रिकोण में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 45–50)',
-          vargaRef: 'D1 & D12',
-        },
-        {
           id: 'attr_parents_hardship',
           category: 'parents',
           titleEn: "Parents' Hardships & Testing Periods",
@@ -1044,28 +957,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: parentsRes.ancestralAndUpay.pacHi,
           shastricRef: 'Vedic Grihastha & Pitru Dharma',
           vargaRef: 'D1 & D12',
-        },
-        {
-          id: 'attr_parents_relocation',
-          category: 'parents',
-          titleEn: 'Parents Relocation / Transfer Away from Native Seat',
-          titleHi: 'स्थानांतरण व पैतृक निवास परिवर्तन',
-          valueEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
-            ? 'Relocation or geographic transition away from ancestral hometown/birthplace for career, domestic, or growth reasons'
-            : 'Strong continuity in ancestral hometown/region with deep rooted community ownership',
-          valueHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
-            ? 'पैतृक जन्मस्थान से दूर आधुनिक नगर/राज्य में स्थानांतरण व नवीन गृह निर्माण'
-            : 'पैतृक गृह व स्थानीय समाज में दृढ़ जुड़ाव; पुश्तैनी जमीन-जायदाद की रक्षा व स्थायित्व',
-          explanationEn: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
-            ? `The 4th house/lord's link with movable signs, Rahu/Ketu, or 3rd/12th houses prompts geographic transition from the ancestral homestead to new centers.`
-            : `Fixed/dual 4th house stability (${h4Sign.name}) without strong 3rd/12th or nodal displacement anchors the family roots in the native's home region.`,
-          explanationHi: (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || l4?.placedHouse === 3 || h4Planets.some((p) => p.id === 'Rahu' || p.id === 'Ketu'))
-            ? `चतुर्थ भाव/चतुर्थेश का चर राशि, राहु-केतु या 3/12 भावों से संबंध माता-पिता को पैतृक भूमि से दूर नए कार्यक्षेत्र की ओर स्थानांतरित करता है।`
-            : `चतुर्थ भाव (${SIGN_HI[h4SignIdx]}) की स्थिरता पैतृक निवास व स्थानीय समाज से गहरा जुड़ाव बनाए रखती है।`,
-          pacBasisEn: `House 4 Sign ${h4Sign.name} (${h4Sign.modality}); Lord ${motherHouseLord?.id} in H${motherHouseLord?.placedHouse}; 9th Lord ${fatherHouseLord?.id} in H${fatherHouseLord?.placedHouse}.`,
-          pacBasisHi: `चतुर्थ भाव ${SIGN_HI[h4SignIdx]} (${h4Sign.modality}); चतुर्थेश भाव ${motherHouseLord?.placedHouse} में; नवमेश भाव ${fatherHouseLord?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 38–42)',
-          vargaRef: 'D1 & D4',
         },
       ],
     });
@@ -1132,64 +1023,34 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'siblings',
           titleEn: 'Total Sibling Count, Birth Order & Family Structure',
           titleHi: 'कुल सहोदर संख्या, जन्म क्रम व पारिवारिक स्वरूप',
-          valueEn: sibRes.countAndBirthOrder.valEn,
-          valueHi: sibRes.countAndBirthOrder.valHi,
-          explanationEn: sibRes.countAndBirthOrder.explEn,
-          explanationHi: sibRes.countAndBirthOrder.explHi,
-          pacBasisEn: sibRes.countAndBirthOrder.pacEn,
-          pacBasisHi: sibRes.countAndBirthOrder.pacHi,
-          shastricRef: 'BPHS (Ch. 12, Sl. 19–24), Saravali (Ch. 26)',
-          vargaRef: 'D1 Rashi, D3 Drekkana & D9',
-        },
-        {
-          id: 'attr_younger_sibling',
-          category: 'siblings',
-          titleEn: 'Younger Siblings (Anuja / Kanishtha Bhrata)',
-          titleHi: 'छोटे भाई-बहन का सुख व विशेषताएं',
-          valueEn: youngerEn,
-          valueHi: youngerHi,
-          explanationEn: `The 3rd house (${h3Sign.name}) polarity (${h3Sign.gender} sign) and 3rd lord dignity govern younger co-borns. The native plays a protective parental elder role.`,
-          explanationHi: `तृतीय भाव (${SIGN_HI[h3SignIdx]}) की प्रकृति और भावेश के आधार पर छोटे भाई/बहन से आजीवन आत्मीयता व सहयोग बना रहता है। जातक उनका मार्गदर्शक बनता है।`,
-          pacBasisEn: `House 3: ${h3Sign.name} (${h3Sign.gender}); Lord ${youngerSiblingsLord?.id} in H${youngerSiblingsLord?.placedHouse}; Mars in H${mars?.placedHouse}.`,
-          pacBasisHi: `तृतीय भाव: ${SIGN_HI[h3SignIdx]} (${h3Sign.gender}); तृतीयेश भाव ${youngerSiblingsLord?.placedHouse} में; मंगल भाव ${mars?.placedHouse} में।`,
-          shastricRef: 'Brihat Jataka (Ch. 15, Sl. 1–6)',
-          vargaRef: 'D1 & D3',
-        },
-        {
-          id: 'attr_elder_sibling',
-          category: 'siblings',
-          titleEn: 'Elder Siblings (Jyeshtha Bhrata / Bhagini)',
-          titleHi: 'बड़े भाई-बहन का सुख व मार्गदर्शन',
-          valueEn: elderEn,
-          valueHi: elderHi,
-          explanationEn: `The 11th house (${h11Sign.name}) and natural Karaka Jupiter rule elder co-borns. An elder sibling provides steady moral advice and celebrates the native's milestones.`,
-          explanationHi: `एकादश भाव (${SIGN_HI[h11SignIdx]}) और गुरु की स्थिति बड़े सहोदर से स्नेह, संरक्षण और जीवन के महत्वपूर्ण पड़ावों पर भरपूर सहयोग सुनिश्चित करती है।`,
-          pacBasisEn: `House 11: ${h11Sign.name}; Lord ${elderSiblingsLord?.id} placed in House ${elderSiblingsLord?.placedHouse}.`,
-          pacBasisHi: `एकादश भाव: ${SIGN_HI[h11SignIdx]}; एकादशेश ${PLANET_HI[elderSiblingsLord?.id || '']} भाव ${elderSiblingsLord?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 65–70)',
-          vargaRef: 'D1 & D3',
-        },
-        {
-          id: 'attr_sibling_profession_life',
-          category: 'siblings',
-          titleEn: "Siblings' Career Stature, Professions & Life Growth",
-          titleHi: 'भाई-बहनों का कार्यक्षेत्र, पेशा व सामाजिक प्रतिष्ठा',
-          valueEn: getSiblingCareersPred(h3Prof, h11Prof).valEn,
-          valueHi: getSiblingCareersPred(h3Prof, h11Prof).valHi,
-          explanationEn: getSiblingCareersPred(h3Prof, h11Prof).explEn,
-          explanationHi: getSiblingCareersPred(h3Prof, h11Prof).explHi,
-          pacBasisEn: `10th from 3rd is H12 (${h12Sign.name}); 10th from 11th is H8 (${h8Sign.name}); Mars in H${mars?.placedHouse}.`,
-          pacBasisHi: `तृतीय से दशम भाव १२ (${SIGN_HI[h12SignIdx]}); एकादश से दशम भाव ८ (${SIGN_HI[h8SignIdx]}); मंगल भाव ${mars?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 26, Sl. 10–18)',
-          vargaRef: 'D1 & D3 Drekkana',
+          valueEn: siblingsFullWeighted.valEn,
+          valueHi: siblingsFullWeighted.valHi,
+          explanationEn: `${siblingsFullWeighted.explEn} ${sibRes.countAndBirthOrder.explEn}`,
+          explanationHi: `${siblingsFullWeighted.explHi} ${sibRes.countAndBirthOrder.explHi}`,
+          pacBasisEn: siblingsFullWeighted.pacEn,
+          pacBasisHi: siblingsFullWeighted.pacHi,
+          shastricRef: 'BPHS (Ch. 12, Sl. 19–24), Saravali (Ch. 26), D3/D11 & Mars BAV',
+          vargaRef: 'D1 Rashi, D3 Drekkana, D11 & BAV',
         },
         {
           id: 'attr_sibling_family_influence',
           category: 'siblings',
           titleEn: "Siblings' Domestic Harmony & Constructive Counsel",
           titleHi: 'सहोदरों का पारिवारिक सुख व जातक के जीवन पर प्रभाव',
-          valueEn: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valEn,
-          valueHi: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valHi,
+          valueEn: evaluateEnrichedAttribute(
+            'attr_sibling_family_influence',
+            synthCtx,
+            ascSignIdx,
+            getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valEn,
+            getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valHi
+          ).valEn,
+          valueHi: evaluateEnrichedAttribute(
+            'attr_sibling_family_influence',
+            synthCtx,
+            ascSignIdx,
+            getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valEn,
+            getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.valHi
+          ).valHi,
           explanationEn: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.explEn,
           explanationHi: getSiblingFamilyAndBondingPred(h3Prof, h11Prof).family.explHi,
           pacBasisEn: `House 3 Lord ${youngerSiblingsLord?.id} in H${youngerSiblingsLord?.placedHouse}; House 11 Lord in H${elderSiblingsLord?.placedHouse}.`,
@@ -1378,8 +1239,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     const d9H7HasMercAndNodeOrSat = d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury') &&
       d9?.placements.some((p) => p.houseFromVargaLagna === 7 && (p.id === 'Saturn' || p.id === 'Ketu' || p.id === 'Mars'));
     const venInMercSatSign = Boolean(venus && [2, 5, 9, 10].includes(venus.signIndex));
-    const venWithNodeOrSatOrMerc = Boolean(venus && [mercury, saturn, rahu, ketu].some((p) => p && p.placedHouse === venus.placedHouse));
-    const h7HasNonTrad = h7Planets.some((p) => ['Rahu', 'Ketu', 'Mercury', 'Saturn'].includes(p.id));
+    const venWithNodeOrSat = Boolean(venus && [saturn, rahu, ketu].some((p) => p && p.placedHouse === venus.placedHouse));
+    const h7HasNonTradNodeSat = h7Planets.some((p) => ['Rahu', 'Ketu', 'Saturn'].includes(p.id));
     const strongTradMarriageShield = Boolean(
       (!hasSaturnOrRahuIn7th && !is7thLordAfflicted && !isManglik && pravrajyaCount < 2) ||
       (!hasSaturnOrRahuIn7th && !is7thLordAfflicted && hasJupiterAspectOn7th && pravrajyaCount < 2)
@@ -1388,7 +1249,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       (venus && venus.dignity === 'Debilitated' && d9?.placements.some((p) => p.houseFromVargaLagna === 7 && p.id === 'Mercury')) ||
       (venus && venus.placedHouse === 12 && d9H7HasMercAndNodeOrSat) ||
       (ketu?.placedHouse === 1 && rahu?.placedHouse === 7 && venus?.placedHouse === 12) ||
-      (venInMercSatSign && venWithNodeOrSatOrMerc && h7HasNonTrad) ||
+      (venInMercSatSign && venWithNodeOrSat && h7HasNonTradNodeSat) ||
       (venus && rahu && venus.placedHouse === rahu.placedHouse && [1, 5, 7, 8, 12].includes(venus.placedHouse))
     );
 
@@ -1456,19 +1317,33 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           titleEn: 'Marital Destiny, Lifespan Parity & Permanence',
           titleHi: 'वैवाहिक स्थिति, स्थायित्व, अखंड सौभाग्य व आयु सामंजस्य',
           valueEn:
-            maritalStatusEn.startsWith('Auspicious, harmonious') &&
-            multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
-              ? 'Tested wedlock requiring conscious harmony, open dialogue & meticulous D9 compatibility'
-              : maritalStatusEn,
+            marriageWeighted.maritalStatusOverride && !maritalStatusEn.includes('Pravrajya')
+              ? marriageWeighted.maritalStatusOverride.valEn
+              : maritalStatusEn.startsWith('Auspicious, harmonious') &&
+                  multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+                ? 'Tested wedlock requiring conscious harmony, open dialogue & meticulous D9 compatibility'
+                : multiDivorceRes.multipleMarriageYog.valEn.includes('Multiple-Union') &&
+                    maritalStatusEn.startsWith('Auspicious, harmonious')
+                  ? 'Multiple-Union / Second-Chapter Matrimonial Trajectory (Dwi-Vivaha Signals): Dual H7/D9 resonance brings potential for two significant unions; conscious maturity protects peace'
+                  : maritalStatusEn,
           valueHi:
-            maritalStatusEn.startsWith('Auspicious, harmonious') &&
-            multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
-              ? 'परीक्षापूर्ण दांपत्य योग: धैर्य, खुला संवाद एवं सूक्ष्म D9 कुंडली मिलान आवश्यक'
-              : maritalStatusHi,
-          explanationEn: maritalStatusExplEn,
-          explanationHi: maritalStatusExplHi,
-          pacBasisEn: `House 7: ${h7Sign.name}; Lord: ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in House ${venus?.placedHouse} (${marDet.venusCombust ? 'Combust <8°' : venus?.dignity || 'Dignified'}); D9 H7 in ${SIGNS[d9H7Sign].name}.`,
-          pacBasisHi: `सप्तम भाव: ${SIGN_HI[h7SignIdx]}; सप्तमेश: ${PLANET_HI[spouseLord?.id || '']} भाव ${spouseLord?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में; D9 सप्तम: ${SIGN_HI[d9H7Sign]}।`,
+            marriageWeighted.maritalStatusOverride && !maritalStatusEn.includes('Pravrajya')
+              ? marriageWeighted.maritalStatusOverride.valHi
+              : maritalStatusEn.startsWith('Auspicious, harmonious') &&
+                  multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+                ? 'परीक्षापूर्ण दांपत्य योग: धैर्य, खुला संवाद एवं सूक्ष्म D9 कुंडली मिलान आवश्यक'
+                : multiDivorceRes.multipleMarriageYog.valEn.includes('Multiple-Union') &&
+                    maritalStatusEn.startsWith('Auspicious, harmonious')
+                  ? 'द्वि-विवाह / द्वितीयाध्याय दांपत्य योग (Dwi-Vivaha संकेत): द्विस्वभाव सप्तम व D9 प्रभाव से दो विवाह या प्रमुख संबंध मोड़ संभावित; धैर्य व सूक्ष्म मिलान लाभकारी'
+                  : maritalStatusHi,
+          explanationEn: marriageWeighted.maritalStatusOverride && !maritalStatusEn.includes('Pravrajya')
+            ? marriageWeighted.maritalStatusOverride.explEn
+            : maritalStatusExplEn,
+          explanationHi: marriageWeighted.maritalStatusOverride && !maritalStatusEn.includes('Pravrajya')
+            ? marriageWeighted.maritalStatusOverride.explHi
+            : maritalStatusExplHi,
+          pacBasisEn: `House 7: ${h7Sign.name} (SAV ${synthCtx.bhavaByHouse.get(7)?.savBindus ?? '-'}); Lord: ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in H${venus?.placedHouse} (${marDet.venusCombust ? 'Combust <8°' : venus?.dignity || 'Dignified'}, Rank #${synthCtx.shadbalaByPlanet.get('Venus')?.rank ?? '-'}/7); D9 H7 in ${SIGNS[d9H7Sign].name}.`,
+          pacBasisHi: `सप्तम भाव: ${SIGN_HI[h7SignIdx]} (SAV ${synthCtx.bhavaByHouse.get(7)?.savBindus ?? '-'}); सप्तमेश: ${PLANET_HI[spouseLord?.id || '']} भाव ${spouseLord?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में; D9 सप्तम: ${SIGN_HI[d9H7Sign]}।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 1–15), Phaladeepika (Ch. 10)',
           vargaRef: 'D1 Rashi & D9 Navamsha',
         },
@@ -1477,8 +1352,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'spouse',
           titleEn: 'Marriage Timing Windows (D1, D9 & Dasha/Transit Triggers)',
           titleHi: 'विवाह समय, दशा-अंतर्दशा व गुरु/शनि गोचर सूत्र',
-          valueEn: marDet.timingTriggers.valEn,
-          valueHi: marDet.timingTriggers.valHi,
+          valueEn: `${marriageWeighted.timingWindowEn} | ${marDet.timingTriggers.valEn.replace(/^(Early-to-timely|Balanced timely|Delayed) window \([^)]+\);\s*/i, '')}`,
+          valueHi: `${marriageWeighted.timingWindowHi} | ${marDet.timingTriggers.valHi.replace(/^(शीघ्र व समयबद्ध|संतुलित समयबद्ध|विलंबित विवाह) योग \([^)]+\);\s*/i, '')}`,
           explanationEn: marDet.timingTriggers.explEn,
           explanationHi: marDet.timingTriggers.explHi,
           pacBasisEn: marDet.timingTriggers.pacEn,
@@ -1501,68 +1376,20 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D9',
         },
         {
-          id: 'attr_spouse_family',
-          category: 'spouse',
-          titleEn: "Spouse's Family Background, In-Laws & Post-Marriage Gains",
-          titleHi: 'ससुराल पक्ष की प्रतिष्ठा, कुल व विवाह से धन-लाभ योग',
-          valueEn: `${getInLawsPred(h8Prof, h7Prof).valEn} | ${marDet.inLawsWealthBonus.en}`,
-          valueHi: `${getInLawsPred(h8Prof, h7Prof).valHi} | ${marDet.inLawsWealthBonus.hi}`,
-          explanationEn: getInLawsPred(h8Prof, h7Prof).explEn,
-          explanationHi: getInLawsPred(h8Prof, h7Prof).explHi,
-          pacBasisEn: `House 8 (${h8Sign.name}); Lord ${l8?.id} placed in House ${l8?.placedHouse}; 2nd/7th/11th links checked.`,
-          pacBasisHi: `अष्टम भाव (${SIGN_HI[h8SignIdx]}); भावेश भाव ${l8?.placedHouse} में; द्वितीय-सप्तम-एकादश संबंध।`,
-          shastricRef: 'BPHS (Ch. 13, Sl. 28–34)',
-          vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_spouse_profession',
-          category: 'spouse',
-          titleEn: "Spouse's Profession, Education & Calling",
-          titleHi: 'जीवनसाथी का पेशा, शिक्षा व कार्यक्षेत्र',
-          valueEn: spouseProfEn,
-          valueHi: spouseProfHi,
-          explanationEn: `Derived from the 10th house from the 7th (House 4 of D1) and D9 Navamsha career indicators. The spouse contributes meaningfully to household prosperity through professional self-reliance.`,
-          explanationHi: `सप्तम से दशम (चतुर्थ भाव) व नवांश दशम भाव के अनुसार जीवनसाथी सुशिक्षित, आर्थिक रूप से स्वावलंबी और सम्मानजनक पद पर कार्यरत रहेगा।`,
-          pacBasisEn: `10th from 7th is House 4 (${h4Sign.name}); Lord ${l4?.id} in H${l4?.placedHouse}; D9 10th lord placement.`,
-          pacBasisHi: `सप्तम से दशम भाव ४ (${SIGN_HI[h4SignIdx]}); चतुर्थेश भाव ${l4?.placedHouse} में।`,
-          shastricRef: 'Brihat Jataka (Ch. 18, Sl. 5–12)',
-          vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_spouse_age_diff',
-          category: 'spouse',
-          titleEn: 'Spouse Age Difference & Mutual Parity',
-          titleHi: 'जीवनसाथी से आयु का अंतर व मानसिक तालमेल',
-          valueEn: ageDiffEn,
-          valueHi: ageDiffHi,
-          explanationEn: `The planetary ray spectrum between Venus, Jupiter, and the 7th house lord generates ideal generational synergy without ego clashes or excessive generational disparity.`,
-          explanationHi: `शुक्र, गुरु और सप्तमेश के शुभ संबंधों के कारण जीवनसाथी के साथ आयु का अंतर आदर्श रहेगा, जिससे दोनों के बीच परस्पर आदर और समझ बनी रहेगी।`,
-          pacBasisEn: `7th House Lord ${spouseLord?.id} in H${spouseLord?.placedHouse}; Venus in House ${venus?.placedHouse}.`,
-          pacBasisHi: `सप्तमेश ${PLANET_HI[spouseLord?.id || '']} भाव ${spouseLord?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 27, Sl. 35–42)',
-          vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_spouse_looks',
-          category: 'spouse',
-          titleEn: 'Spouse Appearance, Temperament & Character Traits',
-          titleHi: 'जीवनसाथी का रूप-रंग, स्वभाव व चारित्रिक गुण',
-          valueEn: `${spouseLooksEn} | Temperament: ${marDet.spouseTemperament.en}`,
-          valueHi: `${spouseLooksHi} | स्वभाव: ${marDet.spouseTemperament.hi}`,
-          explanationEn: `D9 Navamsha 7th house (${SIGNS[d9H7Sign].name}), Venus, and 7th dominant graha (${h7Prof.dominantGraha}) shape both physical grace and core personality.`,
-          explanationHi: `नवांश सप्तम भाव (${SIGN_HI[d9H7Sign]}), शुक्र व सप्तम भाव के प्रमुख ग्रह (${h7Prof.dominantGraha}) द्वारा जीवनसाथी का रूप-रंग व स्वभाव निर्धारित होता है।`,
-          pacBasisEn: `D9 7th Sign: ${SIGNS[d9H7Sign].name}; D1 7th Dominant: ${h7Prof.dominantGraha}; Venus in ${venus?.signName}.`,
-          pacBasisHi: `D9 सप्तम राशि: ${SIGN_HI[d9H7Sign]}; सप्तम प्रमुख ग्रह: ${h7Prof.dominantGraha}; शुक्र ${venus?.signName} में।`,
-          shastricRef: 'Phaladeepika (Ch. 10, Sl. 8–16)',
-          vargaRef: 'D9 Navamsha',
-        },
-        {
           id: 'attr_marriage_nature',
           category: 'spouse',
           titleEn: 'Marriage Nature: Love, Arranged & Inter-Cultural Yoga',
           titleHi: 'विवाह का प्रकार: प्रेम, पारंपरिक व अंतरजातीय योग',
-          valueEn: marDet.unconventionalOrLoveNote.en,
-          valueHi: marDet.unconventionalOrLoveNote.hi,
+          valueEn: `${marDet.unconventionalOrLoveNote.en}${
+            !marDet.unconventionalOrLoveNote.en.includes('OR') && (hasLoveMarriageYoga || (d9?.placements.some((p) => p.id === 'Venus' && [1, 5, 7, 9].includes(p.houseFromVargaLagna))))
+              ? ' | OR / अथवा: Family-blessed arranged introduction that evolves into deep personal affection (D1–D9 dual harmony)'
+              : ''
+          }`,
+          valueHi: `${marDet.unconventionalOrLoveNote.hi}${
+            !marDet.unconventionalOrLoveNote.en.includes('OR') && (hasLoveMarriageYoga || (d9?.placements.some((p) => p.id === 'Venus' && [1, 5, 7, 9].includes(p.houseFromVargaLagna))))
+              ? ' | अथवा: पारिवारिक सहमति से सुसंयोग व गहन आपसी प्रेम (D1–D9 युगल संतुलन)'
+              : ''
+          }`,
           explanationEn: `Evaluated from 5th-7th lord connections, Venus-Mars proximity, and Rahu/12th house influence on the marriage axis.`,
           explanationHi: `पंचमेश-सप्तमेश संबंध, शुक्र-मंगल युति तथा सप्तम/द्वादश भाव पर राहु के प्रभाव से प्रेम, पारंपरिक अथवा आधुनिक विवाह का निर्धारण होता है।`,
           pacBasisEn: `House 5 Lord ${l5?.id} in H${l5?.placedHouse} ↔ House 7 Lord ${spouseLord?.id} in H${spouseLord?.placedHouse}; Rahu in H${rahu?.placedHouse}.`,
@@ -1571,28 +1398,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D9',
         },
         {
-          id: 'attr_luck_after_marriage_devotion',
-          category: 'spouse',
-          titleEn: 'Luck After Marriage, Mutual Devotion & Harmony',
-          titleHi: 'विवाह उपरांत भाग्योदय, परस्पर समर्पण व अनुकूलता',
-          valueEn: marDet.luckAndDevotion.valEn,
-          valueHi: marDet.luckAndDevotion.valHi,
-          explanationEn: marDet.luckAndDevotion.explEn,
-          explanationHi: marDet.luckAndDevotion.explHi,
-          pacBasisEn: marDet.luckAndDevotion.pacEn,
-          pacBasisHi: marDet.luckAndDevotion.pacHi,
-          shastricRef: 'BPHS, Saravali (Ch. 27), Classical Marriage Yogas',
-          vargaRef: 'D1 & D9 Navamsha',
-        },
-        {
           id: 'attr_bed_pleasure',
           category: 'spouse',
           titleEn: 'Bed Pleasure, Physical Chemistry & Intimacy',
           titleHi: 'शयन सुख, शारीरिक सामंजस्य व रति आनंद',
-          valueEn: getIntimacyBondingPred(h12Prof, venus, mars).valEn,
-          valueHi: getIntimacyBondingPred(h12Prof, venus, mars).valHi,
-          explanationEn: getIntimacyBondingPred(h12Prof, venus, mars).explEn,
-          explanationHi: getIntimacyBondingPred(h12Prof, venus, mars).explHi,
+          valueEn: marriageWeighted.bedPleasure.valEn,
+          valueHi: marriageWeighted.bedPleasure.valHi,
+          explanationEn: marriageWeighted.bedPleasure.explEn,
+          explanationHi: marriageWeighted.bedPleasure.explHi,
           pacBasisEn: `House 12: ${h12Sign.name}; Lord ${l12?.id} in H${l12?.placedHouse}; Venus placed in House ${venus?.placedHouse}.`,
           pacBasisHi: `द्वादश भाव: ${SIGN_HI[h12SignIdx]}; द्वादशेश भाव ${l12?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में।`,
           shastricRef: 'BPHS (Ch. 13, Sl. 36–42), Saravali (Ch. 27)',
@@ -1641,28 +1454,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D9',
         },
         {
-          id: 'attr_marriage_mediator_mode',
-          category: 'spouse',
-          titleEn: 'Marriage Mediator, Meeting Context & Proximity',
-          titleHi: 'विवाह मध्यस्थ, परिचय स्रोत व भौगोलिक दूरी',
-          valueEn: ulMarriageRes.mediatorAndMeetingMode.valEn,
-          valueHi: ulMarriageRes.mediatorAndMeetingMode.valHi,
-          explanationEn: ulMarriageRes.mediatorAndMeetingMode.explEn,
-          explanationHi: ulMarriageRes.mediatorAndMeetingMode.explHi,
-          pacBasisEn: ulMarriageRes.mediatorAndMeetingMode.pacEn,
-          pacBasisHi: ulMarriageRes.mediatorAndMeetingMode.pacHi,
-          shastricRef: 'Classical 7th Lord House & Sign Modality Rules',
-          vargaRef: 'D1 & D9',
-        },
-        {
           id: 'attr_d9_marriage_resilience_upay',
           category: 'spouse',
           titleEn: 'D1–D9 Resilience, Delay Filter & Practical Remedies',
           titleHi: 'D1–D9 दांपत्य सुरक्षा, विलंब संतुलन व सरल उपाय',
-          valueEn: ulMarriageRes.d9ResilienceAndUpay.valEn,
-          valueHi: ulMarriageRes.d9ResilienceAndUpay.valHi,
-          explanationEn: ulMarriageRes.d9ResilienceAndUpay.explEn,
-          explanationHi: ulMarriageRes.d9ResilienceAndUpay.explHi,
+          valueEn: marriageWeighted.d9Resilience.valEn,
+          valueHi: marriageWeighted.d9Resilience.valHi,
+          explanationEn: `${marriageWeighted.d9Resilience.explEn} ${ulMarriageRes.d9ResilienceAndUpay.explEn}`,
+          explanationHi: `${marriageWeighted.d9Resilience.explHi} ${ulMarriageRes.d9ResilienceAndUpay.explHi}`,
           pacBasisEn: ulMarriageRes.d9ResilienceAndUpay.pacEn,
           pacBasisHi: ulMarriageRes.d9ResilienceAndUpay.pacHi,
           shastricRef: 'BPHS, D9 Navamsha Cross-Check & Vedic Upay',
@@ -1673,10 +1472,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'spouse',
           titleEn: 'Multiple Marriage Yog (Dwi/Tri-Vivaha Signals & D9 Check)',
           titleHi: 'बहु-विवाह / द्वितीय विवाह योग एवं D9 परीक्षण',
-          valueEn: multiDivorceRes.multipleMarriageYog.valEn,
-          valueHi: multiDivorceRes.multipleMarriageYog.valHi,
-          explanationEn: multiDivorceRes.multipleMarriageYog.explEn,
-          explanationHi: multiDivorceRes.multipleMarriageYog.explHi,
+          valueEn: multiDivorceRes.multipleMarriageYog.valEn.includes('Multiple')
+            ? multiDivorceRes.multipleMarriageYog.valEn
+            : marriageWeighted.multiMarriage.valEn,
+          valueHi: multiDivorceRes.multipleMarriageYog.valEn.includes('Multiple')
+            ? multiDivorceRes.multipleMarriageYog.valHi
+            : marriageWeighted.multiMarriage.valHi,
+          explanationEn: `${marriageWeighted.multiMarriage.explEn} ${multiDivorceRes.multipleMarriageYog.explEn}`,
+          explanationHi: `${marriageWeighted.multiMarriage.explHi} ${multiDivorceRes.multipleMarriageYog.explHi}`,
           pacBasisEn: multiDivorceRes.multipleMarriageYog.pacEn,
           pacBasisHi: multiDivorceRes.multipleMarriageYog.pacHi,
           shastricRef: 'Phaladeepika, BPHS (Dual Signs & 2nd/7th/9th Axis)',
@@ -1687,10 +1490,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'spouse',
           titleEn: 'Divorce / Separation Resilience & Conflict Triggers',
           titleHi: 'अलगाव / वैचारिक तनाव निदान एवं दांपत्य सुरक्षा',
-          valueEn: multiDivorceRes.divorceSeparationYog.valEn,
-          valueHi: multiDivorceRes.divorceSeparationYog.valHi,
-          explanationEn: multiDivorceRes.divorceSeparationYog.explEn,
-          explanationHi: multiDivorceRes.divorceSeparationYog.explHi,
+          valueEn: multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+            ? multiDivorceRes.divorceSeparationYog.valEn
+            : marriageWeighted.divorceResilience.valEn,
+          valueHi: multiDivorceRes.divorceSeparationYog.valEn.includes('High Discord')
+            ? multiDivorceRes.divorceSeparationYog.valHi
+            : marriageWeighted.divorceResilience.valHi,
+          explanationEn: `${marriageWeighted.divorceResilience.explEn} ${multiDivorceRes.divorceSeparationYog.explEn}`,
+          explanationHi: `${marriageWeighted.divorceResilience.explHi} ${multiDivorceRes.divorceSeparationYog.explHi}`,
           pacBasisEn: multiDivorceRes.divorceSeparationYog.pacEn,
           pacBasisHi: multiDivorceRes.divorceSeparationYog.pacHi,
           shastricRef: 'BPHS (6/8/12 Lords, Combustion & Benefic Shield)',
@@ -1719,11 +1526,15 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
     let childCountExplEn = 'The 5th house (Suta Bhava) and natural Putrakaraka Jupiter support lineage continuation. The children inherit noble ethical values, achieve academic success, and maintain deep filial devotion towards parents.';
     let childCountExplHi = 'पंचम भाव (सुत भाव) और संतानकारक देवगुरु बृहस्पति की शुभ स्थिति कुल की वंश वृद्धि को दर्शाती है। संतान संस्कारी, मेधावी और माता-पिता का आदर करने वाली होगी।';
 
-    if ((hasDelayPlanetsIn5th || is5thLordAfflicted || (isBarren5th && jupiter && [6, 8, 12].includes(jupiter.placedHouse))) && !hasJupiterAspectOn5th) {
-      childCountEn = '1 to 2 children indicated with delayed timing (Santan Vilamba Yoga); conception favored between ages 29 and 34; modern medical support and spiritual remedies (Santana Gopala) recommended';
-      childCountHi = '१ से २ संतानों का योग, किंतु समय में विलंब (संतान विलंब योग); आयु २९ से ३४ वर्ष के मध्य संतति सुख; समय पर चिकित्सीय परामर्श व संतान गोपाल जप से शुभ फल की प्राप्ति';
-      childCountExplEn = 'The 5th house connects with barren signs or delay-inducing influences (Saturn/Rahu). Classical texts emphasize that initial delays resolve through patience, timely medical guidance, and Brihaspati propitiation, ensuring blessed progeny.';
-      childCountExplHi = 'पंचम भाव पर शुष्क राशि अथवा शनि/राहु का प्रभाव संतान प्राप्ति में स्वाभाविक विलंब दर्शाता है। शास्त्रों के अनुसार धैर्य, चिकित्सकीय मार्गदर्शन और देवगुरु बृहस्पति की कृपा से उत्तम संतति सुख अवश्य प्राप्त होता है।';
+    if (progenyWeighted.obstructionScore >= 3.5 || (progenyWeighted.obstructionScore >= 2.0 && (hasDelayPlanetsIn5th || is5thLordAfflicted || (isBarren5th && jupiter && [6, 8, 12].includes(jupiter.placedHouse))) && !hasJupiterAspectOn5th)) {
+      childCountEn = progenyWeighted.obstructionScore >= 5
+        ? `Delayed / Tested Progeny (delayed timing / Santan-Badha Obstruction — ${progenyWeighted.conceiveTiming.valEn}); medical fertility partnership & Santana Gopala Upasana strongly recommended`
+        : '1 to 2 children indicated with delayed timing (Santan Vilamba Yoga); conception favored between ages 29 and 34; modern medical support and spiritual remedies (Santana Gopala) recommended';
+      childCountHi = progenyWeighted.obstructionScore >= 5
+        ? `गंभीर संतान विलंब व परीक्षा योग (संतान विलंब योग / बाधा संकेत — ${progenyWeighted.conceiveTiming.valHi}); चिकित्सकीय मार्गदर्शन व संतान गोपाल साधना लाभकारी`
+        : '१ से २ संतानों का योग, किंतु समय में विलंब (संतान विलंब योग); आयु २९ से ३४ वर्ष के मध्य संतति सुख; समय पर चिकित्सीय परामर्श व संतान गोपाल जप से शुभ फल की प्राप्ति';
+      childCountExplEn = progenyWeighted.childrenYoga.explEn;
+      childCountExplHi = progenyWeighted.childrenYoga.explHi;
     }
 
     let child1GenderEn = child1SignOdd
@@ -1782,12 +1593,12 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'children',
           titleEn: 'Children Yoga (Santan Prapti Yoga)',
           titleHi: 'संतान प्राप्ति योग व वंश वृद्धि',
-          valueEn: p5Det.yoga.valEn,
-          valueHi: p5Det.yoga.valHi,
-          explanationEn: p5Det.yoga.explEn,
-          explanationHi: p5Det.yoga.explHi,
-          pacBasisEn: `House 5: ${h5Sign.name}; Lord: ${l5?.id} in H${l5?.placedHouse}; Jupiter in House ${jupiter?.placedHouse} (${jupiter?.dignity || 'Dignified'}); D7 Lagna: ${SIGNS[d7LagnaSign].name}.`,
-          pacBasisHi: `पंचम भाव: ${SIGN_HI[h5SignIdx]}; पंचमेश: ${PLANET_HI[l5?.id || '']} भाव ${l5?.placedHouse} में; गुरु भाव ${jupiter?.placedHouse} में; D7 लग्न: ${SIGN_HI[d7LagnaSign]}।`,
+          valueEn: progenyWeighted.childrenYoga.valEn,
+          valueHi: progenyWeighted.childrenYoga.valHi,
+          explanationEn: progenyWeighted.childrenYoga.explEn,
+          explanationHi: progenyWeighted.childrenYoga.explHi,
+          pacBasisEn: `House 5: ${h5Sign.name} (SAV ${synthCtx.bhavaByHouse.get(5)?.savBindus ?? '-'}, Bhava Rank #${synthCtx.bhavaByHouse.get(5)?.bhavaRow?.rank ?? '-'}/12); Lord: ${l5?.id} in H${l5?.placedHouse}; Jupiter in H${jupiter?.placedHouse} (${jupiter?.dignity || 'Dignified'}); D7 Lagna: ${SIGNS[d7LagnaSign].name}.`,
+          pacBasisHi: `पंचम भाव: ${SIGN_HI[h5SignIdx]} (SAV ${synthCtx.bhavaByHouse.get(5)?.savBindus ?? '-'}); पंचमेश: ${PLANET_HI[l5?.id || '']} भाव ${l5?.placedHouse} में; गुरु भाव ${jupiter?.placedHouse} में; D7 लग्न: ${SIGN_HI[d7LagnaSign]}।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 25–40), Phaladeepika (Ch. 12)',
           vargaRef: 'D1 Rashi & D7 Saptamsha',
         },
@@ -1796,52 +1607,24 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'children',
           titleEn: 'Child Count & Gender Sequence (1st, 2nd, 3rd)',
           titleHi: 'संतान संख्या व लिंग क्रम (प्रथम, द्वितीय व तृतीय संतान)',
-          valueEn: `${childCountEn} — ${child1GenderEn}; ${child2GenderEn}; ${child3GenderEn}`,
-          valueHi: `${childCountHi} — ${child1GenderHi}; ${child2GenderHi}; ${child3GenderHi}`,
-          explanationEn: `The 5th house (${h5Sign.gender} sign for 1st child), 7th house (${h7Sign.gender} sign for 2nd child), and 9th house (${h9Sign.gender} sign for 3rd child) determine the exact sequence of biological conceptions.`,
-          explanationHi: `पंचम भाव (प्रथम संतान), सप्तम भाव (द्वितीय संतान) एवं नवम भाव (तृतीय संतान) की राशि प्रकृति द्वारा संतानों का लिंग क्रम निर्धारित होता है।`,
-          pacBasisEn: `H5 (${h5Sign.gender}) -> H7 (${h7Sign.gender}) -> H9 (${h9Sign.gender}); D7 Saptamsha progeny axis verified.`,
-          pacBasisHi: `पंचम (${h5Sign.gender}) -> सप्तम (${h7Sign.gender}) -> नवम (${h9Sign.gender}); सप्तांश D7 पुष्टि।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 35–42), Saravali (Ch. 35)',
-          vargaRef: 'D7 Saptamsha',
-        },
-        {
-          id: 'attr_progeny_intellect',
-          category: 'children',
-          titleEn: 'Progeny Intellect, Academic Brilliance & Character',
-          titleHi: 'संतान की बुद्धि, शिक्षा व नैतिक आचरण',
-          valueEn: p5Det.intellect.valEn,
-          valueHi: p5Det.intellect.valHi,
-          explanationEn: p5Det.intellect.explEn,
-          explanationHi: p5Det.intellect.explHi,
-          pacBasisEn: `9th House Lord ${l9?.id} in H${l9?.placedHouse}; Jupiter holds strong Shadbala ratio.`,
-          pacBasisHi: `नवमेश भाव ${l9?.placedHouse} में; गुरु का षड्बल उत्तम।`,
-          shastricRef: 'Brihat Jataka (Ch. 16, Sl. 8–14)',
-          vargaRef: 'D1 & D7',
-        },
-        {
-          id: 'attr_progeny_bonding_traits',
-          category: 'children',
-          titleEn: 'Progeny Filial Devotion, Character & Mutual Camaraderie',
-          titleHi: 'संतान से आत्मीयता, संस्कार व पितृ-मातृ भक्ति',
-          valueEn: p5Det.bonding.valEn,
-          valueHi: p5Det.bonding.valHi,
-          explanationEn: p5Det.bonding.explEn,
-          explanationHi: p5Det.bonding.explHi,
-          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House} ↔ 5th Lord in H${l5?.placedHouse}; Jupiter aspects lagna/5th axis.`,
-          pacBasisHi: `लग्नेश भाव ${l1House} ↔ पंचमेश भाव ${l5?.placedHouse}; गुरु की शुभ दृष्टि।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 30–36)',
-          vargaRef: 'D1 & D7',
+          valueEn: progenyFullWeighted.countAndGenderEn,
+          valueHi: progenyFullWeighted.countAndGenderHi,
+          explanationEn: `Synthesizes D1 (H5 ${h5Sign.gender} → H7 ${h7Sign.gender} → H9 ${h9Sign.gender}), BPHS D7 Saptamsha Savya/Apasavya child nodes, D7 planetary/lord gender weights, and Jupiter BAV bindus across child slots.`,
+          explanationHi: `जन्म कुंडली (पंचम→सप्तम→नवम), सप्तांश (D7) के सव्य/अपसव्य नियम, D7 ग्रह/भावेश लिंग और गुरु अष्टकवर्ग से संतान संख्या व क्रमवार संभावना।`,
+          pacBasisEn: `D1 H5 (${h5Sign.gender}) -> H7 (${h7Sign.gender}) -> H9 (${h9Sign.gender}); D7 Lagna ${SIGNS[d7LagnaSign].name} (${ascSignIdx % 2 === 0 ? 'Savya/Forward' : 'Apasavya/Reverse'}).`,
+          pacBasisHi: `D1 पंचम (${h5Sign.gender}) -> सप्तम (${h7Sign.gender}) -> नवम (${h9Sign.gender}); D7 लग्न ${SIGN_HI[d7LagnaSign]}।`,
+          shastricRef: 'BPHS (Ch. 12, Sl. 35–42), Saravali (Ch. 35), D7 Savya/Apasavya',
+          vargaRef: 'D1, D7 Saptamsha & BAV',
         },
         {
           id: 'attr_conceive_timing',
           category: 'children',
           titleEn: 'Auspicious Conceiving Age & Timing Window',
           titleHi: 'गर्भधारण व संतति प्राप्ति का स्वर्णिम समय',
-          valueEn: p5Det.timing.valEn,
-          valueHi: p5Det.timing.valHi,
-          explanationEn: p5Det.timing.explEn,
-          explanationHi: p5Det.timing.explHi,
+          valueEn: progenyWeighted.conceiveTiming.valEn,
+          valueHi: progenyWeighted.conceiveTiming.valHi,
+          explanationEn: progenyWeighted.conceiveTiming.explEn,
+          explanationHi: progenyWeighted.conceiveTiming.explHi,
           pacBasisEn: `Jupiter transit over 5th/9th from Lagna/Moon; 5th Lord dasha periods.`,
           pacBasisHi: `गुरु का पंचम/नवम पर गोचर व पंचमेश की विंशोत्तरी दशा।`,
           shastricRef: 'Phaladeepika (Ch. 12, Sl. 15–20)',
@@ -1888,20 +1671,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: santanDet.badhaAndRemedies.pacHi,
           shastricRef: 'Phaladeepika (Ch. 12), Harivamsha Purana, Santan Gopal Stotra',
           vargaRef: 'D1 & D7',
-        },
-        {
-          id: 'attr_parent_child_dynamics_adoption',
-          category: 'children',
-          titleEn: 'Parent-Child Dynamics, 5th Planetary Flavor & Adoption',
-          titleHi: 'माता-पिता व संतान संबंध, स्वभाव एवं दत्तक विचार',
-          valueEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).valEn,
-          valueHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).valHi,
-          explanationEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).explEn,
-          explanationHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).explHi,
-          pacBasisEn: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).pacEn,
-          pacBasisHi: getParentChildDynamicsAndAdoption(planets, h5Prof, h9Prof, d7).pacHi,
-          shastricRef: 'BPHS (5th/9th), Sun/Moon Parental Karakas & D7 Saptamsha',
-          vargaRef: 'D1 & D7 Saptamsha',
         },
       ],
     });
@@ -1978,8 +1747,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'education',
           titleEn: 'Highest Educational Degree Attainment',
           titleHi: 'सर्वोच्च शैक्षणिक स्तर व उपाधि',
-          valueEn: degreeEn,
-          valueHi: degreeHi,
+          valueEn: evaluateEnrichedAttribute('attr_highest_education', synthCtx, ascSignIdx, degreeEn, degreeHi).valEn,
+          valueHi: evaluateEnrichedAttribute('attr_highest_education', synthCtx, ascSignIdx, degreeEn, degreeHi).valHi,
           explanationEn: degreeExplEn,
           explanationHi: degreeExplHi,
           pacBasisEn: `House 4 Lord ${l4?.id} in H${l4?.placedHouse}; House 5 Lord ${l5?.id} in H${l5?.placedHouse}; D24 Lagna in ${SIGNS[d24LagnaSign].name}.`,
@@ -1992,55 +1761,41 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'education',
           titleEn: 'Ideal Subject Streams & Core Intellectual Field',
           titleHi: 'अनुकूल अध्ययन संकाय व मुख्य विषय',
-          valueEn: subjectsEn,
-          valueHi: subjectsHi,
+          valueEn: (() => {
+            const d24H5SignIdx = (d24LagnaSign + 4) % 12;
+            const d24Elem = SIGNS[d24H5SignIdx].element;
+            const d24AltEn =
+              d24Elem !== h5Sign.element
+                ? d24Elem === 'Fire'
+                  ? ' | OR / अथवा (D24 Resonance): Engineering, Operations, Defense Strategy or Leadership'
+                  : d24Elem === 'Earth'
+                    ? ' | OR / अथवा (D24 Resonance): Commerce, Finance, Economics or Applied Systems'
+                    : d24Elem === 'Air'
+                      ? ' | OR / अथवा (D24 Resonance): Computer Science, Data Analytics, Law or Journalism'
+                      : ' | OR / अथवा (D24 Resonance): Research Psychology, Healthcare, Philosophy or Fine Arts'
+                : '';
+            return `${subjectsEn}${d24AltEn}`;
+          })(),
+          valueHi: (() => {
+            const d24H5SignIdx = (d24LagnaSign + 4) % 12;
+            const d24Elem = SIGNS[d24H5SignIdx].element;
+            const d24AltHi =
+              d24Elem !== h5Sign.element
+                ? d24Elem === 'Fire'
+                  ? ' | अथवा (D24 प्रभाव): इंजीनियरिंग, रक्षा रणनीति, चिकित्सा या प्रशासन'
+                  : d24Elem === 'Earth'
+                    ? ' | अथवा (D24 प्रभाव): वाणिज्य, वित्त, अर्थशास्त्र या व्यावहारिक प्रबंधन'
+                    : d24Elem === 'Air'
+                      ? ' | अथवा (D24 प्रभाव): कंप्यूटर विज्ञान, डेटा विश्लेषण, विधि या संचार'
+                      : ' | अथवा (D24 प्रभाव): गहन शोध, मनोविज्ञान, स्वास्थ्य विज्ञान या कला'
+                : '';
+            return `${subjectsHi}${d24AltHi}`;
+          })(),
           explanationEn: `Planetary rays across the 5th and 10th axes shape the intellect. The mind flourishes in structured technical frameworks and strategic problem-solving.`,
           explanationHi: `पंचम व दशम भाव के ग्रहों का समन्वित प्रभाव जातक को जटिल समस्याओं को चुटकी में हल करने वाली मेधा प्रदान करता है।`,
           pacBasisEn: `Mercury in House ${mercury?.placedHouse}; Jupiter in House ${jupiter?.placedHouse}; 5th house element: ${h5Sign.element}.`,
           pacBasisHi: `बुध भाव ${mercury?.placedHouse} में; गुरु भाव ${jupiter?.placedHouse} में; पंचम भाव तत्व: ${h5Sign.element}।`,
           shastricRef: 'Brihat Jataka (Ch. 14, Sl. 1–6)',
-          vargaRef: 'D1 & D24',
-        },
-        {
-          id: 'attr_scholarships_honors',
-          category: 'education',
-          titleEn: 'Scholarships, Academic Fellowships & Institutional Honors',
-          titleHi: 'छात्रवृत्ति, पदक, सम्मान व मेरिट उपलब्धियां',
-          valueEn: scholarshipEn,
-          valueHi: scholarshipHi,
-          explanationEn: `The 5th lord forming a sambandha with the 9th lord (Guru/Budha grace) unlocks government and institutional scholarships during higher undergraduate and postgraduate research.`,
-          explanationHi: `पंचमेश व नवमेश के शुभ योग से जातक को अपनी मेधा के बल पर छात्रवृत्ति, शुल्क मुक्ति एवं अंतरराष्ट्रीय स्तर पर शैक्षणिक मान्यता प्राप्त होती है।`,
-          pacBasisEn: `5th Lord ${l5?.id} connects with 9th House (${h9Sign.name}); Jupiter aspects Saraswati trine.`,
-          pacBasisHi: `पंचमेश का नवम भाव से संबंध; गुरु की शुभ दृष्टि।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 14–18)',
-          vargaRef: 'D1 & D24',
-        },
-        {
-          id: 'attr_teachers_influence',
-          category: 'education',
-          titleEn: 'Teachers, University Mentors & Guru Preceptors',
-          titleHi: 'गुरुजनों व प्रख्यात प्राध्यापकों का विशेष मार्गदर्शन',
-          valueEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).teachers.valEn,
-          valueHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).teachers.valHi,
-          explanationEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).teachers.explEn,
-          explanationHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).teachers.explHi,
-          pacBasisEn: `House 9: ${h9Sign.name}; Lord ${l9?.id} in H${l9?.placedHouse}; Jupiter in House ${jupiter?.placedHouse}.`,
-          pacBasisHi: `नवम भाव: ${SIGN_HI[h9SignIdx]}; नवमेश भाव ${l9?.placedHouse} में; गुरु भाव ${jupiter?.placedHouse} में।`,
-          shastricRef: 'Brihat Jataka (Ch. 14, Sl. 3–5)',
-          vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_education_hostel_travel',
-          category: 'education',
-          titleEn: 'Hostel Life, Boarding & Distant Study Relocation',
-          titleHi: 'छात्रावास (Hostel) वास, दूरस्थ अध्ययन व देशाटन',
-          valueEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).hostel.valEn,
-          valueHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).hostel.valHi,
-          explanationEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).hostel.explEn,
-          explanationHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).hostel.explHi,
-          pacBasisEn: `House 4 Lord ${l4?.id} in H${l4?.placedHouse}; 9th Lord in H${l9?.placedHouse}; 12th House connections.`,
-          pacBasisHi: `चतुर्थेश भाव ${l4?.placedHouse} में; नवमेश भाव ${l9?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 24, Sl. 15–20)',
           vargaRef: 'D1 & D24',
         },
         {
@@ -2070,20 +1825,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: `षष्ठेश भाव ${l6?.placedHouse} में; मंगल का पराक्रम प्रतियोगी क्षमता को शिखर पर रखता है।`,
           shastricRef: 'Phaladeepika (Ch. 16, Sl. 16–21)',
           vargaRef: 'D1 & D24',
-        },
-        {
-          id: 'attr_friends_networking',
-          category: 'education',
-          titleEn: 'Friends Circle, Mentors & Networking Gains',
-          titleHi: 'मित्र वर्ग, गुरु कृपा व संपर्कों से लाभ',
-          valueEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).friends.valEn,
-          valueHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).friends.valHi,
-          explanationEn: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).friends.explEn,
-          explanationHi: getEducationSubDetails(h4Prof, h5Prof, h6Prof, h9Prof, h11Prof, jupiter).friends.explHi,
-          pacBasisEn: `House 11: ${h11Sign.name}; Lord ${l11?.id} in H${l11?.placedHouse}.`,
-          pacBasisHi: `एकादश भाव: ${SIGN_HI[h11SignIdx]}; एकादशेश भाव ${l11?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 36, Sl. 1–10)',
-          vargaRef: 'D1 & D10',
         },
       ],
     });
@@ -2125,14 +1866,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'career',
           titleEn: 'Prime Suitable Profession & Career Trajectory',
           titleHi: 'सर्वोत्तम आजीविका व कार्यक्षेत्र की दिशा',
-          valueEn: careerRes.suitableProfession.valEn,
-          valueHi: careerRes.suitableProfession.valHi,
-          explanationEn: careerRes.suitableProfession.explEn,
-          explanationHi: careerRes.suitableProfession.explHi,
+          valueEn: `${careerMultiWeighted.combinedEn}${careerAbroadWeighted.techCareerSuffixEn}`,
+          valueHi: `${careerMultiWeighted.combinedHi}${careerAbroadWeighted.techCareerSuffixHi}`,
+          explanationEn: `${careerMultiWeighted.explEn} ${careerRes.suitableProfession.explEn}`,
+          explanationHi: `${careerMultiWeighted.explHi} ${careerRes.suitableProfession.explHi}`,
           pacBasisEn: careerRes.suitableProfession.pacEn,
           pacBasisHi: careerRes.suitableProfession.pacHi,
-          shastricRef: 'BPHS (Ch. 12, Sl. 55–64), Saravali (Ch. 33)',
-          vargaRef: 'D1 Rashi, D9 & D10 Dashamsha',
+          shastricRef: 'BPHS (Ch. 12, Sl. 55–64), Saravali (Ch. 33), Multi-Varga Hypothesis',
+          vargaRef: 'D1, D2, D4, D6, D9, D10, D20 & D24',
         },
         {
           id: 'attr_karaka_and_10th_lord_analysis',
@@ -2153,28 +1894,14 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'career',
           titleEn: 'Job (Service) vs Business (Enterprise) Destiny',
           titleHi: 'नौकरी (Service) बनाम व्यापार (Enterprise)',
-          valueEn: careerRes.jobVsBusiness.valEn,
-          valueHi: careerRes.jobVsBusiness.valHi,
+          valueEn: `${evaluateEnrichedAttribute('attr_job_vs_business', synthCtx, ascSignIdx, careerRes.jobVsBusiness.valEn, careerRes.jobVsBusiness.valHi).valEn}${careerMultiWeighted.jobVsBizAltEn}`,
+          valueHi: `${evaluateEnrichedAttribute('attr_job_vs_business', synthCtx, ascSignIdx, careerRes.jobVsBusiness.valEn, careerRes.jobVsBusiness.valHi).valHi}${careerMultiWeighted.jobVsBizAltHi}`,
           explanationEn: careerRes.jobVsBusiness.explEn,
           explanationHi: careerRes.jobVsBusiness.explHi,
           pacBasisEn: careerRes.jobVsBusiness.pacEn,
           pacBasisHi: careerRes.jobVsBusiness.pacHi,
           shastricRef: 'Phaladeepika (Ch. 15, Sl. 1–12)',
           vargaRef: 'D1 & D10',
-        },
-        {
-          id: 'attr_profit_loss_cycles',
-          category: 'career',
-          titleEn: 'Commercial Profit & Loss Waves (Vyapar Labha-Hani)',
-          titleHi: 'व्यापारिक लाभ-हानि चक्र, मंदी व तेजी का समय',
-          valueEn: finDetails.profitLoss.valEn,
-          valueHi: finDetails.profitLoss.valHi,
-          explanationEn: finDetails.profitLoss.explEn,
-          explanationHi: finDetails.profitLoss.explHi,
-          pacBasisEn: `House 11: ${h11Sign.name} (Lord in H${l11?.placedHouse}) vs House 12: ${h12Sign.name} (Lord in H${l12?.placedHouse}).`,
-          pacBasisHi: `एकादश भाव: ${SIGN_HI[h11SignIdx]} बनाम द्वादश भाव: ${SIGN_HI[h12SignIdx]}।`,
-          shastricRef: 'Saravali (Ch. 36, Sl. 15–22)',
-          vargaRef: 'D1 & D2 Hora',
         },
         {
           id: 'attr_financial_wealth_tier',
@@ -2203,20 +1930,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: careerRes.rajaDhanaInduYogas.pacHi,
           shastricRef: 'Uttara Kalamrita (Indu Lagna), BPHS (Ch. 39–41)',
           vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_hidden_sudden_wealth',
-          category: 'career',
-          titleEn: 'Hidden Wealth, Inheritance & Sudden Windfalls',
-          titleHi: 'गुप्त धन, वसीयत व आकस्मिक लाभ (Gupt Dhan)',
-          valueEn: finDetails.hiddenWealth.valEn,
-          valueHi: finDetails.hiddenWealth.valHi,
-          explanationEn: finDetails.hiddenWealth.explEn,
-          explanationHi: finDetails.hiddenWealth.explHi,
-          pacBasisEn: `House 8: ${h8Sign.name}; Lord ${l8?.id} placed in House ${l8?.placedHouse}; Jupiter aspects 8th axis.`,
-          pacBasisHi: `अष्टम भाव: ${SIGN_HI[h8SignIdx]}; अष्टमेश भाव ${l8?.placedHouse} में; गुरु का शुभ संबंध।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 43–48)',
-          vargaRef: 'D1 & D8',
         },
         {
           id: 'attr_investment_market_temperament',
@@ -2253,63 +1966,7 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
       doshaHi = 'कफ-प्रधान: श्वास नली में कफ संचय, जल प्रतिधारण, थायरॉयड संतुलन व चयापचय (Metabolism) की देखभाल';
     }
 
-    // BPHS Three-Pairs Ayurdaya Method (Group I: L1+L8, Group II: Lagna+Moon, Group III: Lagna+Hora Lagna)
-    const pairAyur = (sA: number, sB: number): 'Poornayu' | 'Madhyayu' | 'Alpayu' => {
-      const mA = sA % 3; // 0=Movable, 1=Fixed, 2=Dual
-      const mB = sB % 3;
-      const pair = [mA, mB].sort((x, y) => x - y).join(',');
-      if (pair === '0,0' || pair === '1,2') return 'Poornayu';
-      if (pair === '2,2' || pair === '0,1') return 'Madhyayu';
-      return 'Alpayu'; // 1,1 or 0,2
-    };
-    const hlPoint = chart.specialPoints?.find((sp) => sp.id === 'HL');
-    const g1 = pairAyur(l1?.signIndex ?? ascSignIdx, l8?.signIndex ?? ((ascSignIdx + 7) % 12));
-    const g2 = pairAyur(ascSignIdx, moon?.signIndex ?? ascSignIdx);
-    const g3 = pairAyur(ascSignIdx, hlPoint?.signIndex ?? ascSignIdx);
-    const threePairsVerdict: 'Poornayu' | 'Madhyayu' | 'Alpayu' =
-      g1 === g2 ? g1 : g1 === g3 ? g1 : g2 === g3 ? g2 : g3;
-
-    const isL1AfflictedHealth = l1?.placedHouse === 6 || l1?.placedHouse === 8 || l1?.placedHouse === 12 || l1?.dignity === 'Debilitated';
-    const isL8Afflicted = l8?.placedHouse === 6 || l8?.placedHouse === 12 || l8?.dignity === 'Debilitated';
-    const isSaturnFortified = saturn && (saturn.placedHouse === 1 || saturn.placedHouse === 7 || saturn.placedHouse === 8 || saturn.placedHouse === 10 || saturn.placedHouse === 11 || saturn.dignity === 'Exalted' || saturn.dignity === 'Own Sign');
-    const isJupKendraTrikona = jupiter && [1, 4, 5, 7, 9, 10].includes(jupiter.placedHouse);
-    const h8MaleficCount = h8Planets.filter((p) => ['Mars', 'Saturn', 'Rahu', 'Ketu', 'Sun'].includes(p.id)).length;
-    const marsRahuOrSatOnVital = Boolean(
-      mars && ((rahu && mars.placedHouse === rahu.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)) ||
-               (saturn && mars.placedHouse === saturn.placedHouse && [1, 6, 8, 12].includes(mars.placedHouse)))
-    );
-    const isAscVargottama = ascSignIdx === d9?.lagnaSignIndex;
-    const isLagneshStrong = Boolean(l1 && [1, 4, 5, 7, 9, 10].includes(l1.placedHouse) && !isL1AfflictedHealth);
-    const hasAkalMrityuRisk =
-      (h8MaleficCount >= 2 && !isJupKendraTrikona) ||
-      (marsRahuOrSatOnVital && !isJupKendraTrikona && !isAscVargottama) ||
-      (threePairsVerdict === 'Alpayu' && h8MaleficCount >= 1 && !isLagneshStrong) ||
-      (threePairsVerdict === 'Alpayu' && !isLagneshStrong && !isAscVargottama && !isJupKendraTrikona);
-
-    const pairsNoteEn = `Three-Pairs Ayurdaya (L1+L8=${g1}, Lagna+Moon=${g2}, Lagna+HL=${g3} → ${threePairsVerdict}).`;
-    const pairsNoteHi = `त्रि-युग्म आयुर्दाय (लग्नेश+अष्टमेश=${g1}, लग्न+चंद्र=${g2}, लग्न+होरा लग्न=${g3} → ${threePairsVerdict})।`;
-
-    let longevityEn = 'Purna Ayus (Long Lifespan: 75 to 82 years); robust vital Prana anchored by strong Lagnesha and Saturn';
-    let longevityHi = 'पूर्णायु योग (दीर्घायु: ७५ से ८२ वर्ष); लग्नेश, अष्टमेश व आयुकारक शनि के शुभ प्रभाव से सुदृढ़ जीवनी शक्ति';
-    let longevityExplEn = `${pairsNoteEn} Strong life vitality provides natural resistance and longevity.`;
-    let longevityExplHi = `${pairsNoteHi} जीवन शक्ति उत्तम रहने से जातक दीर्घायु प्राप्त करता है।`;
-
-    if (!hasAkalMrityuRisk && !isL1AfflictedHealth && !isL8Afflicted && isSaturnFortified && isJupKendraTrikona && threePairsVerdict !== 'Alpayu') {
-      longevityEn = 'Deergha Ayus (Extended Lifespan: 82 to 90+ years); exceptional constitutional vitality & Jupiterian longevity shield';
-      longevityHi = 'दीर्घायु विशेष योग (८२ से ९०+ वर्ष); शनि-गुरु के शुभ संयोग से असाधारण जीवनी शक्ति व दीर्घ जीवन';
-      longevityExplEn = `${pairsNoteEn} Unbroken Lagna and 8th lords paired with fortified Saturn and angular/trinal Jupiter form a classic Deergha Ayus shield.`;
-      longevityExplHi = `${pairsNoteHi} लग्नेश, अष्टमेश, शनि और केंद्र/त्रिकोणस्थ गुरु का शुभ योग उत्तम रोग-प्रतिरोधक क्षमता और दीर्घायु प्रदान करता है।`;
-    } else if (hasAkalMrityuRisk || (isL1AfflictedHealth && isL8Afflicted && !isSaturnFortified)) {
-      longevityEn = 'Preventive Vitality & Akal-Mrityu Vigilance Care; disciplined safety, medical screening, restorative sleep & Maha Mrityunjaya calm essential';
-      longevityHi = 'सजग स्वास्थ्य व आयु-रक्षा सतर्कता; सुरक्षा सावधानी, नियमित चिकित्सा जांच, पर्याप्त निद्रा व महामृत्युंजय साधना अनिवार्य';
-      longevityExplEn = `${pairsNoteEn} Malefic pressure on 8th/Lagna/vital axes calls for preventive healthcare, physical safety vigilance, and sattvic routines.`;
-      longevityExplHi = `${pairsNoteHi} अष्टम व लग्न अक्ष पर क्रूर प्रभाव होने से शारीरिक सुरक्षा, नियमित स्वास्थ्य जांच व सात्विक दिनचर्या आयु की रक्षा करती है।`;
-    } else if (((isL1AfflictedHealth || isL8Afflicted) && !isSaturnFortified) || threePairsVerdict === 'Madhyayu') {
-      longevityEn = 'Madhyama Ayus (Medium Lifespan: 68 to 76 years); sustained health requires regular cardiac/lifestyle vigilance and balanced diet';
-      longevityHi = 'मध्यायु योग (६८ से ७६ वर्ष); नियमित स्वास्थ्य परीक्षण, संयमित दिनचर्या व तनावमुक्ति से पूर्ण स्वस्थ जीवन संभव';
-      longevityExplEn = `${pairsNoteEn} Longevity is safeguarded by conscious lifestyle choices, timely medical checkups, and spiritual discipline.`;
-      longevityExplHi = `${pairsNoteHi} खानपान में संयम और नियमित व्यायाम से स्वास्थ्य संबंधी व्याधियों से सुरक्षित रहता है।`;
-    }
+    // Constituted by evaluateWeightedAyusVitality above (no deterministic lifespan age brackets)
 
     const hasEnemiesChallenge = h6Planets.some((p) => p.id === 'Rahu' || p.id === 'Saturn') || l6?.placedHouse === 10 || l6?.placedHouse === 7;
     const is6thDiplomatic = !hasEnemiesChallenge && (l6?.placedHouse === 1 || l6?.placedHouse === 5 || l6?.placedHouse === 9 || h6Planets.some((p) => p.id === 'Jupiter' || p.id === 'Venus'));
@@ -2516,20 +2173,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D30',
         },
         {
-          id: 'attr_medical_system_screening',
-          category: 'health_crises',
-          titleEn: 'Organ-System Preventive Screening (Cardiac, Metabolic & Ortho)',
-          titleHi: 'प्रमुख अंग-तंत्र निवारक स्वास्थ्य परीक्षण (हृदय, मधुमेह व अस्थि)',
-          valueEn: medDet.systemSpecificScreening.valEn,
-          valueHi: medDet.systemSpecificScreening.valHi,
-          explanationEn: medDet.systemSpecificScreening.explEn,
-          explanationHi: medDet.systemSpecificScreening.explHi,
-          pacBasisEn: medDet.systemSpecificScreening.pacEn,
-          pacBasisHi: medDet.systemSpecificScreening.pacHi,
-          shastricRef: 'Classical Medical Astrology & Iatromathematics',
-          vargaRef: 'D1 & D30 Trimsamsha',
-        },
-        {
           id: 'attr_mental_nervous_health',
           category: 'health_crises',
           titleEn: 'Mental Calm, Nervous System & Emotional Health',
@@ -2542,20 +2185,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: medDet.mentalAndNervousHealth.pacHi,
           shastricRef: 'Phaladeepika (Ch. 14), Saravali',
           vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_impulse_stress_resilience',
-          category: 'health_crises',
-          titleEn: 'Emotional Impulse, Pitta–Vata Stress & Preventive Remedies',
-          titleHi: 'भावनात्मक आवेग, पित्त-वात मानसिक तनाव व निवारक उपाय',
-          valueEn: impulseValEn,
-          valueHi: impulseValHi,
-          explanationEn: impulseExplEn,
-          explanationHi: impulseExplHi,
-          pacBasisEn: `Moon H${moon?.placedHouse} (${moon?.dignity}); Mercury H${mercury?.placedHouse}; Jupiter Shield on Moon: ${jupShieldsMoon ? 'Yes' : 'No'}; Signals: ${stressSignalsEn.length}.`,
-          pacBasisHi: `चंद्र भाव ${moon?.placedHouse}; बुध भाव ${mercury?.placedHouse}; चंद्र पर गुरु कवच: ${jupShieldsMoon ? 'हाँ' : 'नहीं'}; संकेत: ${stressSignalsHi.length}।`,
-          shastricRef: 'Jataka Tattva (Unmada Yogas), BPHS, Charaka Samhita',
-          vargaRef: 'D1 Rashi & Manas Axis',
         },
         {
           id: 'attr_ayurveda_dhatu_herbs',
@@ -2586,136 +2215,26 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D30',
         },
         {
-          id: 'attr_tragedy_recovery',
-          category: 'health_crises',
-          titleEn: 'Crucible Testing Eras & Phoenix-Like Resurrection',
-          titleHi: 'जीवन की अग्नि-परीक्षाएं, आघात व पुनर्विजय',
-          valueEn: p8Det.crises.valEn + (() => {
-            const maleficsSet = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
-            const countMal = (h: number) => planets.filter((p) => p.placedHouse === h && maleficsSet.has(p.id)).length;
-            const moonSat410 = Boolean(
-              moon &&
-                saturn &&
-                (((moon.placedHouse - saturn.placedHouse + 12) % 12) === 3 ||
-                  ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
-                !jupShieldsMoon
-            );
-            const h12ClusterBandhana =
-              [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
-              (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
-            // Prashna Marga Ch. 14 Stanza 112: Saturn in 4/5/7/8/9 in malefic sign + conjunct malefic
-            const prashnaMargaSatBandhana = Boolean(
-              saturn &&
-                [4, 5, 7, 8, 9].includes(saturn.placedHouse) &&
-                [0, 4, 7, 9, 10].includes(saturn.signIndex) &&
-                planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
-            );
-            const classicalBandhana =
-              (countMal(2) >= 2 && countMal(2) === countMal(12)) ||
-              (countMal(5) >= 2 && countMal(5) === countMal(9)) ||
-              (countMal(4) >= 2 && countMal(4) === countMal(10)) ||
-              h12ClusterBandhana ||
-              prashnaMargaSatBandhana ||
-              (moonSat410 && (h6Prof.tier === 'afflicted' || h12Prof.tier === 'afflicted')) ||
-              (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [6, 8, 12].includes(saturn.placedHouse));
-            const rahuVedha = Boolean(
-              rahu &&
-                (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)
-            );
-            let extra = '';
-            if (classicalBandhana && !is6thDiplomatic) {
-              extra += ' | Bandhana / Legal Vigilance: Risk of prolonged litigation, confinement, or regulatory pressure during Saturn/Rahu or Dasha-Chiddra transitions';
-            }
-            if (rahuVedha) {
-              extra += ' | Rahu Vedha & Dasha-Chiddra Caution: Sudden karmic pivots or reputation tests during Dasha junctions';
-            }
-            return extra;
-          })(),
-          valueHi: p8Det.crises.valHi + (() => {
-            const maleficsSet = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
-            const countMal = (h: number) => planets.filter((p) => p.placedHouse === h && maleficsSet.has(p.id)).length;
-            const moonSat410 = Boolean(
-              moon &&
-                saturn &&
-                (((moon.placedHouse - saturn.placedHouse + 12) % 12) === 3 ||
-                  ((moon.placedHouse - saturn.placedHouse + 12) % 12) === 9) &&
-                !jupShieldsMoon
-            );
-            const h12ClusterBandhana =
-              [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length >= 2 &&
-              (ketu?.placedHouse === 6 || [mars, saturn, rahu].filter((p) => p && p.placedHouse === 12).length === 3);
-            // Prashna Marga Ch. 14 Stanza 112: Saturn in 4/5/7/8/9 in malefic sign + conjunct malefic
-            const prashnaMargaSatBandhana = Boolean(
-              saturn &&
-                [4, 5, 7, 8, 9].includes(saturn.placedHouse) &&
-                [0, 4, 7, 9, 10].includes(saturn.signIndex) &&
-                planets.some((p) => p.id !== 'Saturn' && p.placedHouse === saturn.placedHouse && maleficsSet.has(p.id))
-            );
-            const classicalBandhana =
-              (countMal(2) >= 2 && countMal(2) === countMal(12)) ||
-              (countMal(5) >= 2 && countMal(5) === countMal(9)) ||
-              (countMal(4) >= 2 && countMal(4) === countMal(10)) ||
-              h12ClusterBandhana ||
-              prashnaMargaSatBandhana ||
-              (moonSat410 && (h6Prof.tier === 'afflicted' || h12Prof.tier === 'afflicted')) ||
-              (saturn && [6, 8, 12].includes(saturn.placedHouse) && ((rahu && [6, 8, 12].includes(rahu.placedHouse)) || (ketu && [6, 8, 12].includes(ketu.placedHouse)) || (mars && [6, 8, 12].includes(mars.placedHouse)))) ||
-              (l12 && [6, 8].includes(l12.placedHouse) && saturn && [6, 8, 12].includes(saturn.placedHouse));
-            const rahuVedha = Boolean(
-              rahu &&
-                (rahu.placedHouse === 1 || rahu.placedHouse === moon?.placedHouse || rahu.placedHouse === l10?.placedHouse)
-            );
-            let extra = '';
-            if (classicalBandhana) {
-              extra += ' | बंधन / कानूनी सतर्कता: शनि/राहु दशा या दशा-छिद्र में मुकदमा, कानूनी विवाद या बंधन-तुल्य बाधा की संभावना';
-            }
-            if (rahuVedha) {
-              extra += ' | राहु वेध व दशा-छिद्र सावधानी: दशा-संधि काल में आकस्मिक परिवर्तन व प्रतिष्ठा परीक्षा से सजग रहें';
-            }
-            return extra;
-          })(),
-          explanationEn: p8Det.crises.explEn,
-          explanationHi: p8Det.crises.explHi,
-          pacBasisEn: `8th House ${h8Sign.name}; Saturn in House ${saturn?.placedHouse}; Lagna Lord in H${l1House}.`,
-          pacBasisHi: `अष्टम भाव ${SIGN_HI[h8SignIdx]}; शनि भाव ${saturn?.placedHouse} में; लग्नेश भाव ${l1House} में।`,
-          shastricRef: 'Phaladeepika (Ch. 18, Sl. 1–10)',
-          vargaRef: 'D1 & D30',
-        },
-        {
-          id: 'attr_dreams_fears',
-          category: 'health_crises',
-          titleEn: 'Dreams, Nightmares & Subconscious Psychological Fears',
-          titleHi: 'स्वप्न प्रकृति, अचेतन भय व मानसिक शांति उपाय',
-          valueEn: p8Det.dreams.valEn,
-          valueHi: p8Det.dreams.valHi,
-          explanationEn: p8Det.dreams.explEn,
-          explanationHi: p8Det.dreams.explHi,
-          pacBasisEn: `Moon in House ${moon?.placedHouse} (${moon?.signName}); Ketu in House ${ketu?.placedHouse}.`,
-          pacBasisHi: `चंद्र भाव ${moon?.placedHouse} में; केतु भाव ${ketu?.placedHouse} में।`,
-          shastricRef: 'Prasna Marga (Ch. 21 - Swapna Adhyaya)',
-          vargaRef: 'D1 & D9',
-        },
-        {
           id: 'attr_longevity_tier',
           category: 'health_crises',
-          titleEn: 'Ayushya Longevity Tier & Vital Span Assessment',
-          titleHi: 'आयु खंड निर्धारण: पूर्णायु / दीर्घायु व मारक विचार',
-          valueEn: longevityEn,
-          valueHi: longevityHi,
-          explanationEn: `${longevityExplEn} Primary Marakas: ${l2?.id} (2L) & ${l7?.id} (7L) — note that Maraka periods alone indicate transformation or preventive health care unless Dasha, Transit, and Ayurdaya ("Triple Lock") all align. 8th House (${h8Sign.name}, ${h8Sign.modality}): ${
+          titleEn: 'Ayushya Constitutional Reserve & Health-Care Cycles',
+          titleHi: 'आयुर्दाय व संवैधानिक जीवनी-शक्ति कोष (सावधानी काल सहित)',
+          valueEn: ayusVitalityWeighted.valEn,
+          valueHi: ayusVitalityWeighted.valHi,
+          explanationEn: `${ayusVitalityWeighted.explEn} Primary Marakas: ${l2?.id} (2L) & ${l7?.id} (7L) — Maraka periods signify lifestyle, health screening & transformation rather than fixed lifespan cutoffs. 8th House (${h8Sign.name}, ${h8Sign.modality}): ${
             (ketu?.placedHouse === 12 && jupiter && [4, 8, 9, 12].includes(jupiter.placedHouse))
-              ? 'Iccha / Yogic Transition signature (Ketu 12th + Jupiter Moksha support).'
+              ? 'Spiritual & meditative resilience signature (Ketu 12th + Jupiter grace).'
               : (mars?.placedHouse === 8 && rahu?.placedHouse === 8)
-              ? 'Agni / Accident Safety Watch (Mars–Rahu in 8th): prioritize road safety & Maha Mrityunjaya calm.'
+              ? 'Agni / Physical-Safety Watch (Mars–Rahu in 8th): prioritize road safety & Maha Mrityunjaya calm.'
               : (moon?.placedHouse === 8 && (rahu?.placedHouse === 8 || ketu?.placedHouse === 8))
-              ? 'Jala / Emotional-Fluid Watch: prioritize hydration balance and serene emotional outlets.'
-              : 'Ayushya Kshaya (natural karmic completion) archetype.'
+              ? 'Jala / Fluid-Stress Watch: prioritize hydration and calm nervous-system routines.'
+              : 'Constitutional preservation through balanced rest and regular checkups.'
           }`,
-          explanationHi: `${longevityExplHi} प्रमुख मारक ग्रह: ${l2?.id} (द्वितीयेश) व ${l7?.id} (सप्तमेश) — केवल मारक दशा से मृत्यु नहीं होती जब तक दशा, गोचर व आयु-क्षय तीनों एक साथ सक्रिय न हों। अष्टम भाव (${SIGN_HI[h8SignIdx]}): शांत आध्यात्मिक रूपांतरण व निवारक स्वास्थ्य संरक्षण।`,
-          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House}; 8th Lord ${l8?.id} in H${l8?.placedHouse}; Primary Marakas: ${l2?.id}, ${l7?.id}; Saturn in H${saturn?.placedHouse}.`,
-          pacBasisHi: `लग्नेश भाव ${l1House} में; अष्टमेश भाव ${l8?.placedHouse} में; मारक ${l2?.id}/${l7?.id}; शनि भाव ${saturn?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 43 - Ayurdaya Adhyaya), Jaimini Sutras (2.1)',
-          vargaRef: 'D1, D3, D8 & D9',
+          explanationHi: `${ayusVitalityWeighted.explHi} प्रमुख मारक ग्रह: ${l2?.id} (द्वितीयेश) व ${l7?.id} (सप्तमेश) — मारक दशा स्वास्थ्य सतर्कता और जीवन-शैली संतुलन का संकेत है, न कि किसी निश्चित उम्र की सीमा।`,
+          pacBasisEn: `Lagna Lord ${lagnaLordId} in H${l1House}; 8th Lord ${l8?.id} in H${l8?.placedHouse}; Primary Marakas: ${l2?.id}, ${l7?.id}; Saturn in H${saturn?.placedHouse}; Reserve Index ${ayusVitalityWeighted.reserveIndex}/100.`,
+          pacBasisHi: `लग्नेश भाव ${l1House} में; अष्टमेश भाव ${l8?.placedHouse} में; मारक ${l2?.id}/${l7?.id}; शनि भाव ${saturn?.placedHouse} में; बल ${ayusVitalityWeighted.reserveIndex}/100।`,
+          shastricRef: 'BPHS (Ch. 43 - Ayurdaya Adhyaya), Jaimini Sutras (2.1), D8 & D30',
+          vargaRef: 'D1, D3, D8, D9, D27 & D30',
         },
         {
           id: 'attr_enemies_litigation',
@@ -2732,20 +2251,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           vargaRef: 'D1 & D6',
         },
         {
-          id: 'attr_love_affairs_secret',
-          category: 'health_crises',
-          titleEn: 'Romantic Encounters, Love Affairs & Discretion',
-          titleHi: 'प्रेम संबंध, गुप्त आकर्षण व मर्यादा रक्षा',
-          valueEn: p8Det.romance.valEn,
-          valueHi: p8Det.romance.valHi,
-          explanationEn: p8Det.romance.explEn,
-          explanationHi: p8Det.romance.explHi,
-          pacBasisEn: `House 5 Lord ${l5?.id} in H${l5?.placedHouse}; Venus in House ${venus?.placedHouse}; Rahu in H${rahu?.placedHouse}.`,
-          pacBasisHi: `पंचमेश भाव ${l5?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में; राहु भाव ${rahu?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 27, Sl. 18–25)',
-          vargaRef: 'D1 & D9',
-        },
-        {
           id: 'attr_occult_secrets',
           category: 'health_crises',
           titleEn: 'Occult Intuition, Astrology, Tantra & Dark Mysteries',
@@ -2758,34 +2263,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: `अष्टम भाव: ${SIGN_HI[h8SignIdx]}; केतु भाव ${ketu?.placedHouse} में; आत्मकारक का नवांश संबंध।`,
           shastricRef: 'BPHS (Ch. 12, Sl. 43–48), Jaimini Sutras (1.2)',
           vargaRef: 'D1, D9 & D20',
-        },
-        {
-          id: 'attr_dark_secrets',
-          category: 'health_crises',
-          titleEn: 'Concealed Realities & Unrevealed Life Mysteries',
-          titleHi: 'गोपनीय सत्य, अनावृत रहस्य व जीवन का छिपा पहलू',
-          valueEn: p8Det.secrets.valEn,
-          valueHi: p8Det.secrets.valHi,
-          explanationEn: p8Det.secrets.explEn,
-          explanationHi: p8Det.secrets.explHi,
-          pacBasisEn: `House 8: ${h8Sign.name}; House 12: ${h12Sign.name}; Ketu in House ${ketu?.placedHouse}.`,
-          pacBasisHi: `अष्टम भाव ${SIGN_HI[h8SignIdx]}; द्वादश भाव ${SIGN_HI[h12SignIdx]}; केतु भाव ${ketu?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 28, Sl. 22–26)',
-          vargaRef: 'D1 & D8',
-        },
-        {
-          id: 'attr_pet_affinity',
-          category: 'health_crises',
-          titleEn: 'Pet Animals & Birds Affinity (Pashu-Pakshi Seva)',
-          titleHi: 'पालतू पशु-पक्षी प्रेम व भाग्य संवर्धन',
-          valueEn: p8Det.pets.valEn,
-          valueHi: p8Det.pets.valHi,
-          explanationEn: p8Det.pets.explEn,
-          explanationHi: p8Det.pets.explHi,
-          pacBasisEn: `House 6 Lord ${l6?.id}; Saturn/Mercury planetary vibrations across daily routine houses.`,
-          pacBasisHi: `षष्ठेश व शनि-बुध का संबंध।`,
-          shastricRef: 'Lal Kitab (Ch. 6)',
-          vargaRef: 'D1 Rashi',
         },
       ],
     });
@@ -2863,8 +2340,16 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'assets_travel',
           titleEn: 'Real Estate & Residential Property Ownership',
           titleHi: 'स्वयं का भवन, भूमि व अचल संपत्ति',
-          valueEn: p9Det.property.valEn,
-          valueHi: p9Det.property.valHi,
+          valueEn: `${evaluateEnrichedAttribute('attr_real_estate', synthCtx, ascSignIdx, p9Det.property.valEn, p9Det.property.valHi).valEn}${
+            (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || d4?.lagnaSignIndex !== ascSignIdx)
+              ? ` | OR / अथवा (D4 ${SIGNS[d4LagnaSign].name}): Income-generating / second-city property or REITs alongside homeland asset`
+              : ''
+          }`,
+          valueHi: `${evaluateEnrichedAttribute('attr_real_estate', synthCtx, ascSignIdx, p9Det.property.valEn, p9Det.property.valHi).valHi}${
+            (h4Sign.modality === 'Movable' || l4?.placedHouse === 12 || d4?.lagnaSignIndex !== ascSignIdx)
+              ? ` | अथवा (D4 ${SIGN_HI[d4LagnaSign]}): मूल निवास से बाहर निवेश/किराए या दूसरे शहर की संपत्ति योग`
+              : ''
+          }`,
           explanationEn: p9Det.property.explEn,
           explanationHi: p9Det.property.explHi,
           pacBasisEn: `House 4: ${h4Sign.name}; Lord ${l4?.id} in H${l4?.placedHouse}; Mars in House ${mars?.placedHouse}; D4 Lagna in ${SIGNS[d4LagnaSign].name}.`,
@@ -2877,82 +2362,36 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'assets_travel',
           titleEn: 'Vehicles & Conveyance Comfort (Vahana Sukha)',
           titleHi: 'वाहन सुख, प्रकार व वाहन सुरक्षा',
-          valueEn: p9Det.vehicles.valEn,
-          valueHi: p9Det.vehicles.valHi,
+          valueEn: `${evaluateEnrichedAttribute('attr_vehicles', synthCtx, ascSignIdx, p9Det.vehicles.valEn, p9Det.vehicles.valHi).valEn}${
+            chart.divisionalCharts?.D16
+              ? ` (D16 Shodashamsha: ${SIGNS[chart.divisionalCharts.D16.lagnaSignIndex].name})`
+              : ''
+          }`,
+          valueHi: `${evaluateEnrichedAttribute('attr_vehicles', synthCtx, ascSignIdx, p9Det.vehicles.valEn, p9Det.vehicles.valHi).valHi}${
+            chart.divisionalCharts?.D16
+              ? ` (षोडशांश D16: ${SIGN_HI[chart.divisionalCharts.D16.lagnaSignIndex]})`
+              : ''
+          }`,
           explanationEn: p9Det.vehicles.explEn,
           explanationHi: p9Det.vehicles.explHi,
-          pacBasisEn: `House 4: ${h4Sign.name}; Venus in House ${venus?.placedHouse} (${venus?.dignity || 'Dignified'}).`,
-          pacBasisHi: `चतुर्थ भाव: ${SIGN_HI[h4SignIdx]}; शुक्र भाव ${venus?.placedHouse} में।`,
-          shastricRef: 'Phaladeepika (Ch. 16, Sl. 5–12)',
-          vargaRef: 'D1 & D4',
+          pacBasisEn: `House 4: ${h4Sign.name}; Venus in House ${venus?.placedHouse} (${venus?.dignity || 'Dignified'}); D16 lagna checked.`,
+          pacBasisHi: `चतुर्थ भाव: ${SIGN_HI[h4SignIdx]}; शुक्र भाव ${venus?.placedHouse} में; D16 षोडशांश विचारित।`,
+          shastricRef: 'Phaladeepika (Ch. 16, Sl. 5–12), D16 Shodashamsha',
+          vargaRef: 'D1, D4 & D16',
         },
         {
           id: 'attr_foreign_travel',
           category: 'assets_travel',
           titleEn: 'Foreign Travel & International Relocation',
           titleHi: 'विदेश यात्राएं, देशाटन व अंतरराष्ट्रीय संपर्क',
-          valueEn: (l9?.placedHouse === 12 || l12?.placedHouse === 9 || rahu?.placedHouse === 12 || rahu?.placedHouse === 9)
-            ? 'Long-term international settlement / foreign residence and extensive overseas executive travels'
-            : (h9Sign.modality === 'Movable' || h12Sign.modality === 'Movable' || moon?.placedHouse === 12 || mercury?.placedHouse === 12)
-            ? 'Frequent international work travel, global trade/academic exchanges & multi-city mobility'
-            : (l4?.placedHouse === 3 || l4?.placedHouse === 9 || l4?.placedHouse === 12 || h4Sign.modality === 'Movable')
-            ? 'Inter-state relocation and periodic long-distance or pilgrimage journeys'
-            : 'Homeland-rooted stability with selective milestone travels and family pilgrimages',
-          valueHi: (l9?.placedHouse === 12 || l12?.placedHouse === 9 || rahu?.placedHouse === 12 || rahu?.placedHouse === 9)
-            ? 'दीर्घकालिक विदेश वास / स्थायी निवास (PR) एवं अंतरराष्ट्रीय स्तर पर कार्यक्षेत्र का विस्तार'
-            : (h9Sign.modality === 'Movable' || h12Sign.modality === 'Movable' || moon?.placedHouse === 12 || mercury?.placedHouse === 12)
-            ? 'कार्यक्षेत्र, व्यापार या शिक्षा हेतु बार-बार विदेश यात्रा व वैश्विक संपर्कों का विस्तार'
-            : (l4?.placedHouse === 3 || l4?.placedHouse === 9 || l4?.placedHouse === 12 || h4Sign.modality === 'Movable')
-            ? 'अन्य राज्य/शहर में प्रवास तथा समय-समय पर तीर्थयात्रा व दूरस्थ देशाटन'
-            : 'मातृभूमि में स्थायी निवास के साथ विशेष अवसरों पर चुनिंदा यात्राओं व तीर्थयात्रा का योग',
-          explanationEn: `The 9th (Tirtha/Long journeys) and 12th (Foreign lands) houses form active connections with Rahu and Moon, opening global frontiers effortlessly.`,
-          explanationHi: `नवम व द्वादश भावों का चर राशियों अथवा राहु/चंद्र से संबंध जातक को जीवन में कई बार विदेश जाने और अंतरराष्ट्रीय स्तर पर ख्याति पाने का मार्ग खोलता है।`,
+          valueEn: careerAbroadWeighted.abroadTravelResult.valEn,
+          valueHi: careerAbroadWeighted.abroadTravelResult.valHi,
+          explanationEn: careerAbroadWeighted.abroadTravelResult.explEn,
+          explanationHi: careerAbroadWeighted.abroadTravelResult.explHi,
           pacBasisEn: `House 9 Lord ${l9?.id} in H${l9?.placedHouse}; House 12 Lord ${l12?.id} in H${l12?.placedHouse}; Rahu in House ${rahu?.placedHouse}.`,
           pacBasisHi: `नवमेश भाव ${l9?.placedHouse} में; द्वादशेश भाव ${l12?.placedHouse} में; राहु भाव ${rahu?.placedHouse} में।`,
           shastricRef: 'Saravali (Ch. 37, Sl. 14–22)',
           vargaRef: 'D1 & D9',
-        },
-        {
-          id: 'attr_hospitalization_periods',
-          category: 'assets_travel',
-          titleEn: 'Hospital Stays, Medical Procedures & Recovery',
-          titleHi: 'चिकित्सालय वास, शल्यक्रिया व स्वास्थ्य लाभ काल',
-          valueEn: hospitalEn,
-          valueHi: hospitalHi,
-          explanationEn: hospitalExplEn,
-          explanationHi: hospitalExplHi,
-          pacBasisEn: `House 12: ${h12Sign.name}; Lord ${l12?.id} in H${l12?.placedHouse}; 6th Lord in H${l6?.placedHouse}.`,
-          pacBasisHi: `द्वादश भाव: ${SIGN_HI[h12SignIdx]}; द्वादशेश भाव ${l12?.placedHouse} में; षष्ठेश भाव ${l6?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 80–85)',
-          vargaRef: 'D1 & D30',
-        },
-        {
-          id: 'attr_sleep_quality',
-          category: 'assets_travel',
-          titleEn: 'Sleep Quality, Rest & Bedroom Energy (Nidra Sukha)',
-          titleHi: 'निद्रा सुख, अनिद्रा निवारण व शयन कक्ष ऊर्जा',
-          valueEn: p9Det.sleep.valEn,
-          valueHi: p9Det.sleep.valHi,
-          explanationEn: p9Det.sleep.explEn,
-          explanationHi: p9Det.sleep.explHi,
-          pacBasisEn: `House 12: ${h12Sign.name}; Moon in House ${moon?.placedHouse}; Venus in House ${venus?.placedHouse}.`,
-          pacBasisHi: `द्वादश भाव: ${SIGN_HI[h12SignIdx]}; चंद्र भाव ${moon?.placedHouse} में; शुक्र भाव ${venus?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 27, Sl. 30–35)',
-          vargaRef: 'D1 Rashi',
-        },
-        {
-          id: 'attr_dependents_self_reliance',
-          category: 'assets_travel',
-          titleEn: 'Family Dependents, Liabilities & Self-Reliance',
-          titleHi: 'आश्रितों का भरण-पोषण, दायित्व व आत्मनिर्भरता',
-          valueEn: selfRelianceEn,
-          valueHi: selfRelianceHi,
-          explanationEn: selfRelianceExplEn,
-          explanationHi: selfRelianceExplHi,
-          pacBasisEn: `House 2 Lord ${l2?.id} in H${l2?.placedHouse}; 10th Lord ${l10?.id} in H${l10?.placedHouse}.`,
-          pacBasisHi: `द्वितीयेश भाव ${l2?.placedHouse} में; दशमेश भाव ${l10?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 5–10)',
-          vargaRef: 'D1 & D2',
         },
         {
           id: 'attr_moksha_path',
@@ -3032,8 +2471,8 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           category: 'past_life',
           titleEn: 'Karmic Debts (Rinanubandhana: Pitru, Matru, Guru Rina)',
           titleHi: 'ऋणानुबंधन व कर्म ऋण मुक्ति (पितृ, गुरु, मातृ ऋण)',
-          valueEn: p10_11Det.debt.valEn,
-          valueHi: p10_11Det.debt.valHi,
+          valueEn: evaluateEnrichedAttribute('attr_karmic_debts', synthCtx, ascSignIdx, p10_11Det.debt.valEn, p10_11Det.debt.valHi).valEn,
+          valueHi: evaluateEnrichedAttribute('attr_karmic_debts', synthCtx, ascSignIdx, p10_11Det.debt.valEn, p10_11Det.debt.valHi).valHi,
           explanationEn: p10_11Det.debt.explEn,
           explanationHi: p10_11Det.debt.explHi,
           pacBasisEn: `Sun in House ${sun?.placedHouse}; 9th Lord ${l9?.id} in H${l9?.placedHouse}; Saturn aspecting ancestral axes.`,
@@ -3099,20 +2538,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisHi: `आत्मकारक ${PLANET_HI[ak?.planet || 'Jupiter']} नवांश में ${karakamsha.karakamshaSignName} में; कारकांश से 12वां भाव ${SIGNS[(karakamsha.karakamshaSignIndex + 11) % 12].name}।`,
           shastricRef: 'Jaimini Upadesha Sutras (1.2.68–72), BPHS (Ch. 33)',
           vargaRef: 'D9 Navamsha',
-        },
-        {
-          id: 'attr_kula_devi',
-          category: 'ishta_mantra',
-          titleEn: 'Ancestral Lineage Protector (Kula Devi / Kula Devata)',
-          titleHi: 'कुलदेवी व कुल देवता (पैतृक वंश रक्षक)',
-          valueEn: getPastLifeAndSpiritualDetails(ak?.planet || 'Jupiter', h2Prof, h9Prof, rahu, ketu, lagnaLordId).kuladevata.valEn,
-          valueHi: getPastLifeAndSpiritualDetails(ak?.planet || 'Jupiter', h2Prof, h9Prof, rahu, ketu, lagnaLordId).kuladevata.valHi,
-          explanationEn: getPastLifeAndSpiritualDetails(ak?.planet || 'Jupiter', h2Prof, h9Prof, rahu, ketu, lagnaLordId).kuladevata.explEn,
-          explanationHi: getPastLifeAndSpiritualDetails(ak?.planet || 'Jupiter', h2Prof, h9Prof, rahu, ketu, lagnaLordId).kuladevata.explHi,
-          pacBasisEn: `House 5: ${h5Sign.name}; Lord ${l5?.id} in H${l5?.placedHouse}.`,
-          pacBasisHi: `पंचम भाव: ${SIGN_HI[h5SignIdx]}; पंचमेश भाव ${l5?.placedHouse} में।`,
-          shastricRef: 'BPHS (Ch. 12, Sl. 25–30)',
-          vargaRef: 'D1 & D9',
         },
         {
           id: 'attr_siddha_mantra_kavach',
@@ -3202,60 +2627,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           shastricRef: 'BPHS (Ch. 12, Sl. 5–9), Charaka Samhita',
           vargaRef: 'D1 & D2',
         },
-        {
-          id: 'attr_chronotype',
-          category: 'vastu_lifestyle',
-          titleEn: 'Chronotype & Daily Cognitive Peak (Bio-Rhythm)',
-          titleHi: 'दैनिक जैविक लय व कार्य क्षमता का शिखर समय',
-          valueEn: (sun?.placedHouse === 1 || sun?.placedHouse === 10 || sun?.placedHouse === 11)
-            ? 'Early Morning Lark (Brahma Muhurta Peak): Maximum clarity, leadership focus, and executive energy between 5:30 AM and 10:30 AM'
-            : (sun?.placedHouse === 7 || sun?.placedHouse === 8 || sun?.placedHouse === 9)
-            ? 'Midday Solar Peak: Highest analytical throughput and decisive execution between 10:30 AM and 3:30 PM'
-            : (moon?.placedHouse === 1 || moon?.placedHouse === 4 || moon?.placedHouse === 5 || venus?.placedHouse === 1)
-            ? 'Twilight & Evening Flow: Creative synthesis, empathetic dialogue, and intuitive clarity peak between 4:30 PM and 8:30 PM'
-            : 'Nocturnal-Contemplative (Night-Owl Peak): Deepest strategic focus, research brilliance, and creative insight manifests between 9:30 PM and 1:00 AM',
-          valueHi: (sun?.placedHouse === 1 || sun?.placedHouse === 10 || sun?.placedHouse === 11)
-            ? 'प्रातःकालीन ब्रह्म मुहूर्त लय (Early Lark): प्रातः 5:30 से 10:30 के मध्य मानसिक एकाग्रता व निर्णय क्षमता का सर्वोच्च शिखर'
-            : (sun?.placedHouse === 7 || sun?.placedHouse === 8 || sun?.placedHouse === 9)
-            ? 'मध्याह्न सूर्य शिखर: प्रातः 10:30 से अपराह्न 3:30 के मध्य सर्वाधिक व्यावहारिक व तार्किक कार्यक्षमता'
-            : (moon?.placedHouse === 1 || moon?.placedHouse === 4 || moon?.placedHouse === 5 || venus?.placedHouse === 1)
-            ? 'सांध्यकालीन रचनात्मक लय: सायं 4:30 से 8:30 के मध्य कलात्मक चिंतन, संवाद व अंतर्ज्ञान प्रबल'
-            : 'निशाचर-संतुलित लय (Night-Owl): रात्रि 9:30 से 1 बजे के मध्य मस्तिष्क की कार्यक्षमता, शोध व रणनीतिक एकाग्रता चरम पर',
-          explanationEn: `The ascendant, Sun, and Moon placements calibrate the native's circadian cognitive stamina.`,
-          explanationHi: `सूर्य, चंद्र व लग्न की स्थिति के अनुसार जातक के दैनिक कार्य का सबसे उत्पादक और ऊर्जावान समय निर्धारित होता है।`,
-          pacBasisEn: `Sun in House ${sun?.placedHouse}; Moon in House ${moon?.placedHouse}.`,
-          pacBasisHi: `सूर्य भाव ${sun?.placedHouse} में; चंद्र भाव ${moon?.placedHouse} में।`,
-          shastricRef: 'Saravali (Ch. 22, Sl. 50–55)',
-          vargaRef: 'D1 Rashi',
-        },
-        {
-          id: 'attr_vastu_pancha_mahabhuta',
-          category: 'vastu_lifestyle',
-          titleEn: 'Sthapatya Veda: Pancha Mahabhuta & Directional Zone Balance',
-          titleHi: 'स्थापत्य वेद: पंचमहाभूत व वास्तु दिशा संतुलन',
-          valueEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.valEn,
-          valueHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.valHi,
-          explanationEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.explEn,
-          explanationHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.explHi,
-          pacBasisEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.pacEn,
-          pacBasisHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).panchaMahabhuta.pacHi,
-          shastricRef: 'Sthapatya Veda (Atharva Veda) & Garuda Purana',
-          vargaRef: 'D1 & D4 Chaturthamsha',
-        },
-        {
-          id: 'attr_vastu_colour_yogic_remedies',
-          category: 'vastu_lifestyle',
-          titleEn: 'Vastu Colour Therapy, Havan & Yogic Remedies',
-          titleHi: 'वास्तु रंग चिकित्सा, हवन एवं योगिक शुद्धि उपाय',
-          valueEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.valEn,
-          valueHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.valHi,
-          explanationEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.explEn,
-          explanationHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.explHi,
-          pacBasisEn: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.pacEn,
-          pacBasisHi: getVastuPanchaMahabhutaAndRemedies(planets, ascSignIdx, h4Prof).colourAndYogicUpay.pacHi,
-          shastricRef: 'Brihat Samhita (Vastu) & Vedic Colour/Prana Remedies',
-          vargaRef: 'D1 & D4',
-        },
       ],
     });
   }
@@ -3308,20 +2679,6 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           pacBasisEn: `Lagna Sign ${ascSign.name} (${ascSign.element} element); Mercury/Jupiter prominent mounts.`,
           pacBasisHi: `लग्न राशि ${SIGN_HI[ascSignIdx]} (${ascSign.element} तत्व); बुध-गुरु के उन्नत पर्वत।`,
           shastricRef: 'Bhavishya Purana (Brahma Parva - Samudrika), Hastasanjeevani',
-          vargaRef: 'D1 Rashi',
-        },
-        {
-          id: 'attr_walking_gait',
-          category: 'palmistry',
-          titleEn: 'Walking Gait & Bodily Posture (Gajagami / Veera)',
-          titleHi: 'चाल-ढाल, गति व शारीरिक गरिमा (गजगामी / वीर)',
-          valueEn: gaitEn,
-          valueHi: gaitHi,
-          explanationEn: `Planetary lordship of ${lagnaLordId} and ascendant element resonance bestow a distinctive, authoritative walking gait.`,
-          explanationHi: `लग्नेश ${PLANET_HI[lagnaLordId]} और लग्न तत्व के शुभ प्रभाव से जातक की चाल में स्वाभाविक अधिकार और गरिमा झलकती है।`,
-          pacBasisEn: `Lagna Lord ${lagnaLordId}; Ascendant in ${ascSign.name}.`,
-          pacBasisHi: `लग्नेश ${PLANET_HI[lagnaLordId]}; लग्न राशि ${SIGN_HI[ascSignIdx]}।`,
-          shastricRef: 'Saravali (Ch. 22, Sl. 48–54)',
           vargaRef: 'D1 Rashi',
         },
       ],
@@ -3629,10 +2986,10 @@ export function computeLifeSnapshotDossierReport(chart: ChartData): LifeSnapshot
           titleEn: 'Shadbala Strongest & Weakest Graha Power',
           titleHi: 'षड्बल: सर्वाधिक सबल एवं निर्बल ग्रह',
           valueEn: strongestShad
-            ? `Strongest: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x req) | Needs Support: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x req)`
+            ? `Strongest: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x req, Rank #1/7) | Weakest: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x req, ${synthCtx.avasthaByPlanet.get(weakestShad?.planet)?.baladi.split(' ')[0] ?? 'Balanced'}) | 22nd Drekkana: ${synthCtx.specialPointsDigest.kharaDrekkanaLord} · 64th D9: ${synthCtx.specialPointsDigest.chaturshashtaNavLord} · Yogi/Avayogi: ${synthCtx.specialPointsDigest.yogiLord}/${synthCtx.specialPointsDigest.avayogiLord}`
             : 'Balanced Shadbala distribution across the 7 classical grahas',
           valueHi: strongestShad
-            ? `सर्वाधिक सबल: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x) | संवर्धन योग्य: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x)`
+            ? `सर्वाधिक सबल: ${strongestShad.planet} (${strongestShad.ratio.toFixed(2)}x) | निर्बलतम: ${weakestShad?.planet} (${weakestShad?.ratio.toFixed(2)}x) | २२वाँ द्रेष्काण: ${weakestShad ? synthCtx.specialPointsDigest.kharaDrekkanaLord : '-'} · ६४वाँ नवांश: ${synthCtx.specialPointsDigest.chaturshashtaNavLord}`
             : 'सप्तग्रहों में संतुलित षड्बल वितरण',
           explanationEn: `Planets exceeding 1.0x Shadbala ratio deliver their promised yogas reliably; planets below 1.0x require conscious effort and remedial strengthening.`,
           explanationHi: `१.०० से अधिक षड्बल अनुपात वाले ग्रह अपने योगों का पूर्ण फल देते हैं, जबकि कम बल वाले ग्रहों के लिए विशेष प्रयास व उपाय लाभकारी रहते हैं।`,

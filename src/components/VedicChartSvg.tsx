@@ -27,6 +27,8 @@ interface VedicChartSvgProps {
   compact?: boolean;
   showDownload?: boolean;
   centerLabel?: string;
+  onSelectBody?: (id: string) => void;
+  onSelectHouse?: (houseNumber: number, signIndex: number) => void;
 }
 
 function formatBadgeText(item: ChartBadgeItem, lang: AppLanguage): string {
@@ -113,7 +115,8 @@ function renderItemsCluster(
   cy: number,
   maxPerRow: number,
   compact: boolean,
-  lang: AppLanguage
+  lang: AppLanguage,
+  onSelectBody?: (id: string) => void
 ) {
   if (items.length === 0) return null;
   const rows: ChartBadgeItem[][] = [];
@@ -134,6 +137,8 @@ function renderItemsCluster(
         y={y}
         textAnchor="middle"
         dominantBaseline="central"
+        style={onSelectBody ? { cursor: 'pointer' } : undefined}
+        onClick={onSelectBody ? () => onSelectBody(item.id) : undefined}
         className={`chart-planet-text ${getBadgeColorClass(item)} ${compact ? 'is-compact' : ''}`}
       >
         <title>{item.tooltip || item.label}</title>
@@ -153,6 +158,8 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
   compact = false,
   showDownload = true,
   centerLabel,
+  onSelectBody,
+  onSelectHouse,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -237,12 +244,14 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
                     y={reg.signPos[1]}
                     textAnchor="middle"
                     dominantBaseline="central"
+                    style={onSelectHouse ? { cursor: 'pointer' } : undefined}
+                    onClick={onSelectHouse ? () => onSelectHouse(reg.house, signIdx) : undefined}
                     className="chart-rasi-num"
                   >
                     {signIdx + 1}
                     {bindu !== undefined ? ` (${bindu})` : ''}
                   </text>
-                  {renderItemsCluster(signItems, reg.center[0], reg.center[1], reg.maxPerRow, compact, lang)}
+                  {renderItemsCluster(signItems, reg.center[0], reg.center[1], reg.maxPerRow, compact, lang, onSelectBody)}
                 </g>
               );
             })}
@@ -282,12 +291,20 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
               const isLagnaSign = sign === lagnaSignIndex;
               const signItems = groupedBySign[sign];
               const bindu = savBindus ? savBindus[sign] : undefined;
+              const houseNum = ((sign - lagnaSignIndex + 12) % 12) + 1;
               return (
                 <g key={sign}>
                   {isLagnaSign && (
                     <line x1={x0} y1={y0 + 22} x2={x0 + 22} y2={y0} className="chart-lagna-slash" />
                   )}
-                  <text x={x0 + 90} y={y0 + 13} textAnchor="end" className="chart-sign-tag">
+                  <text
+                    x={x0 + 90}
+                    y={y0 + 13}
+                    textAnchor="end"
+                    style={onSelectHouse ? { cursor: 'pointer' } : undefined}
+                    onClick={onSelectHouse ? () => onSelectHouse(houseNum, sign) : undefined}
+                    className="chart-sign-tag"
+                  >
                     {trSignShort(sign, lang)}
                   </text>
                   {bindu !== undefined && (
@@ -295,7 +312,7 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
                       {bindu}
                     </text>
                   )}
-                  {renderItemsCluster(signItems, x0 + 48, y0 + 52, 2, compact, lang)}
+                  {renderItemsCluster(signItems, x0 + 48, y0 + 52, 2, compact, lang, onSelectBody)}
                 </g>
               );
             })}
@@ -327,13 +344,21 @@ export const VedicChartSvg: React.FC<VedicChartSvgProps> = ({
             {EAST_SIGN_CENTERS.map(({ sign, cx, cy, numPos }) => {
               const signItems = groupedBySign[sign];
               const bindu = savBindus ? savBindus[sign] : undefined;
+              const houseNum = ((sign - lagnaSignIndex + 12) % 12) + 1;
               return (
                 <g key={sign}>
-                  <text x={numPos[0]} y={numPos[1]} textAnchor="middle" className="chart-rasi-num">
+                  <text
+                    x={numPos[0]}
+                    y={numPos[1]}
+                    textAnchor="middle"
+                    style={onSelectHouse ? { cursor: 'pointer' } : undefined}
+                    onClick={onSelectHouse ? () => onSelectHouse(houseNum, sign) : undefined}
+                    className="chart-rasi-num"
+                  >
                     {sign + 1}
                     {bindu !== undefined ? `·${bindu}` : ''}
                   </text>
-                  {renderItemsCluster(signItems, cx, cy, 2, true, lang)}
+                  {renderItemsCluster(signItems, cx, cy, 2, true, lang, onSelectBody)}
                 </g>
               );
             })}

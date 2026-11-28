@@ -14,16 +14,16 @@ import { normalizeDeg } from '../time';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 
 export type LongevitySpanCategory =
-  | 'Alpayu (Short Span: < 36 Years)'
-  | 'Madhyayu (Medium Span: 36 - 72 Years)'
-  | 'Deerghayu (Long Span: 72 - 108 Years)'
-  | 'Poornayu (Full Paramayus: 108 - 120 Years)';
+  | 'Alpayu Test / Extra Health & Safety Vigilance'
+  | 'Madhyayu / Lifestyle-Sensitive Reserve'
+  | 'Deerghayu / Strong Constitutional Reserve'
+  | 'Poornayu / Fortified Vitality Reserve';
 
 export type LongevitySpanCategoryHi =
-  | 'अल्पायु (अल्प जीवन काल: ३६ वर्ष से कम)'
-  | 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)'
-  | 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)'
-  | 'पूर्णायु (पूर्ण परमायु काल: १०८ से १२० वर्ष)';
+  | 'अल्पायु संदेह / स्वास्थ्य एवं जीवन-रक्षा सतर्कता'
+  | 'मध्यायु / दिनचर्या-संवेदनशील जीवनी कोष'
+  | 'दीर्घायु / सुदृढ़ संवैधानिक जीवनी कोष'
+  | 'पूर्णायु / परम सुदृढ़ प्राण-शक्ति योग';
 
 export interface LongevityReport {
   category: LongevitySpanCategory;
@@ -170,35 +170,35 @@ export function computeAyurdaya(chart: ChartData): LongevityReport {
     longevitySupport++;
   }
 
-  let category: LongevitySpanCategory = 'Deerghayu (Long Span: 72 - 108 Years)';
-  let categoryHi: LongevitySpanCategoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
-  let estimatedRange = '74 से 88 वर्ष';
+  let category: LongevitySpanCategory = 'Deerghayu / Strong Constitutional Reserve';
+  let categoryHi: LongevitySpanCategoryHi = 'दीर्घायु / सुदृढ़ संवैधानिक जीवनी कोष';
+  let estimatedRange = 'Strong Long-Cycle Reserve (no deterministic age cutoff; sustained by lifestyle & 2L/7L Dasha care)';
 
   if (scores.Deerghayu === 3 && longevitySupport >= 4) {
-    category = 'Poornayu (Full Paramayus: 108 - 120 Years)';
-    categoryHi = 'पूर्णायु (पूर्ण परमायु काल: १०८ से १२० वर्ष)';
-    estimatedRange = '96 से 120 वर्ष (शास्त्रीय पूर्ण परमायु)';
+    category = 'Poornayu / Fortified Vitality Reserve';
+    categoryHi = 'पूर्णायु / परम सुदृढ़ प्राण-शक्ति योग';
+    estimatedRange = 'Poornayu Reserve (High natural recovery stamina across D1/D8/Saturn balance)';
   } else if (scores.Deerghayu >= 2 || (scores.Madhyayu >= 2 && longevitySupport === 4)) {
-    category = 'Deerghayu (Long Span: 72 - 108 Years)';
-    categoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
-    estimatedRange = '74 से 94 वर्ष';
+    category = 'Deerghayu / Strong Constitutional Reserve';
+    categoryHi = 'दीर्घायु / सुदृढ़ संवैधानिक जीवनी कोष';
+    estimatedRange = 'Deerghayu Reserve (Steady constitutional stamina OR / अथवा Maraka-transit health care)';
   } else if (scores.Madhyayu >= 2) {
-    category = 'Madhyayu (Medium Span: 36 - 72 Years)';
-    categoryHi = 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)';
-    estimatedRange = '58 से 72 वर्ष';
+    category = 'Madhyayu / Lifestyle-Sensitive Reserve';
+    categoryHi = 'मध्यायु / दिनचर्या-संवेदनशील जीवनी कोष';
+    estimatedRange = 'Madhyayu Reserve (Responds strongly to sleep, cardiac/metabolic screening & stress hygiene)';
   } else if (scores.Alpayu >= 2) {
     if (longevitySupport === 4) {
-      category = 'Deerghayu (Long Span: 72 - 108 Years)';
-      categoryHi = 'दीर्घायु (दीर्घ जीवन काल: ७२ से १०८ वर्ष)';
-      estimatedRange = '72 से 86 वर्ष (लग्नेश व शुभ ग्रहों द्वारा पूर्ण आयु-रक्षा)';
+      category = 'Deerghayu / Strong Constitutional Reserve';
+      categoryHi = 'दीर्घायु / सुदृढ़ संवैधानिक जीवनी कोष';
+      estimatedRange = 'Protected Long-Cycle Reserve (Lagna/benefics shield vitality)';
     } else if (longevitySupport >= 2 || hasBeneficsInKendraOrTrikona) {
-      category = 'Madhyayu (Medium Span: 36 - 72 Years)';
-      categoryHi = 'मध्यायु (मध्यम जीवन काल: ३६ से ७२ वर्ष)';
-      estimatedRange = '50 से 68 वर्ष (शुभ ग्रहों द्वारा अल्पायु भंग)';
+      category = 'Madhyayu / Lifestyle-Sensitive Reserve';
+      categoryHi = 'मध्यायु / दिनचर्या-संवेदनशील जीवनी कोष';
+      estimatedRange = 'Madhyayu Reserve via Shubha-Graha Bhanga (routine screening & disciplined rest advised)';
     } else {
-      category = 'Alpayu (Short Span: < 36 Years)';
-      categoryHi = 'अल्पायु (अल्प जीवन काल: ३६ वर्ष से कम)';
-      estimatedRange = '32 से 36 वर्ष (शांति अनुष्ठान अनिवार्य)';
+      category = 'Alpayu Test / Extra Health & Safety Vigilance';
+      categoryHi = 'अल्पायु संदेह / स्वास्थ्य एवं जीवन-रक्षा सतर्कता';
+      estimatedRange = 'Preventive Health & Safety Vigilance (regular diagnostics & Maha Mrityunjaya calm essential)';
     }
   }
 

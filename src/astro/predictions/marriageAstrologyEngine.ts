@@ -1,6 +1,7 @@
 import { NAKSHATRAS, SEVEN_PLANETS, SIGNS } from '../constants';
 import type { ChartData, NineGrahaId, SevenPlanetId } from '../types';
 import { computeCharaKarakas } from '../jaimini';
+import { buildClassicalSynthesisContext, evaluateWeightedMarriageAxis } from './classicalSynthesisEngine';
 
 export type MarriageNature =
   | 'Arranged / Family-Sanctioned'
@@ -247,6 +248,10 @@ export function computeComprehensiveMarriageReport(chart: ChartData): Comprehens
   if (h7Occupants.some((p) => p.id === h6LordId)) negationScore += 16;
   if (saturn && (saturn.rasiHouseNumber === 7 || (saturn.rasiHouseNumber + 6) % 12 + 1 === 7)) negationScore += 12;
 
+  const synthCtx = buildClassicalSynthesisContext(chart);
+  const marriageWeighted = evaluateWeightedMarriageAxis(synthCtx, ascSign);
+  const h7Sav = synthCtx.bhavaByHouse.get(7)?.savBindus ?? 28;
+
   // Classify Marriage Nature
   let marriageNature: MarriageNature = 'Arranged / Family-Sanctioned';
   let marriageNatureHi = 'पारंपरिक पारिवारिक विवाह (Arranged Marriage)';
@@ -257,7 +262,7 @@ export function computeComprehensiveMarriageReport(chart: ChartData): Comprehens
   } else if (loveScore >= 22 && marriageScore >= 35) {
     marriageNature = 'Love-cum-Arranged';
     marriageNatureHi = 'प्रेम-सह-पारिवारिक स्वीकृति विवाह (Love-cum-Arranged)';
-  } else if (negationScore >= 30 && saturn && [1, 7, 10].includes(saturn.rasiHouseNumber)) {
+  } else if (marriageWeighted.delayScore >= 4.5 || (negationScore >= 30 && saturn && [1, 7, 10].includes(saturn.rasiHouseNumber))) {
     marriageNature = 'Delayed / Obstacle-Prone';
     marriageNatureHi = 'विलंब एवं धैर्य-साध्य विवाह (Delayed Marriage)';
   } else if (rahu && [7, 8].includes(rahu.rasiHouseNumber)) {
@@ -265,17 +270,17 @@ export function computeComprehensiveMarriageReport(chart: ChartData): Comprehens
     marriageNatureHi = 'विशिष्ट कार्मिक वैवाहिक संबंध (Karmic Union)';
   }
 
-  // Promise Rating
+  // Promise Rating (Weighted across Shadbala, Avastha, SAV & D9!)
   let marriagePromiseRating: 'Highly Auspicious' | 'Auspicious' | 'Average / Delayed' | 'Challenging (Requires Upaya)' = 'Auspicious';
   let marriagePromiseRatingHi = 'शुभ एवं सुदृढ़ दांपत्य योग';
 
-  if (marriageScore >= 55 && negationScore < 20) {
+  if (marriageScore >= 55 && negationScore < 20 && marriageWeighted.delayScore < 3 && h7Sav >= 27) {
     marriagePromiseRating = 'Highly Auspicious';
     marriagePromiseRatingHi = 'अत्यंत शुभ, सुखद एवं दीर्घायु दांपत्य योग';
-  } else if (negationScore >= 35 && negationScore > marriageScore) {
+  } else if ((negationScore >= 35 && negationScore > marriageScore) || marriageWeighted.delayScore >= 6) {
     marriagePromiseRating = 'Challenging (Requires Upaya)';
     marriagePromiseRatingHi = 'चुनौतीपूर्ण (शास्त्रीय शांति व परिहार अपेक्षित)';
-  } else if (marriageNature === 'Delayed / Obstacle-Prone') {
+  } else if (marriageNature === 'Delayed / Obstacle-Prone' || marriageWeighted.delayScore >= 3) {
     marriagePromiseRating = 'Average / Delayed';
     marriagePromiseRatingHi = 'मध्यम / परिपक्व आयु में शुभ फलप्रद';
   }
@@ -411,29 +416,32 @@ export function computeComprehensiveMarriageReport(chart: ChartData): Comprehens
   const dkRow = charaKarakas.find((k) => k.role === 'DK');
   const daraKarakaPlanet: NineGrahaId = (dkRow?.planet as NineGrahaId) || 'Venus';
 
-  // Prime Marriage Age Window
+  // Prime Marriage Age Window (Synced with Weighted Shadbala/D9/SAV Synthesis)
   const birthYear = Number((chart.input.date || '2000-01-01').split('-')[0]) || 2000;
   let primeStart = 24;
   let primeEnd = 28;
 
-  if (marriageNature === 'Delayed / Obstacle-Prone' || (saturn && [1, 7].includes(saturn.rasiHouseNumber))) {
-    primeStart = 27;
-    primeEnd = 32;
+  if (marriageWeighted.delayScore >= 4.5 || marriageNature === 'Delayed / Obstacle-Prone') {
+    primeStart = 28;
+    primeEnd = 34;
+  } else if (marriageWeighted.delayScore >= 3) {
+    primeStart = 26;
+    primeEnd = 30;
   } else if (h7Lord && ['Exalted', 'Own Sign'].includes(h7Lord.dignity) && (venus?.dignity === 'Exalted' || jupiter?.dignity === 'Exalted')) {
     primeStart = 22;
     primeEnd = 26;
   }
 
-  const primeMarriageAgeWindowEn = `Age ${primeStart} to ${primeEnd} Years (A.D. ${birthYear + primeStart}–${birthYear + primeEnd})`;
-  const primeMarriageAgeWindowHi = `आयु ${primeStart} से ${primeEnd} वर्ष (ई. सन् ${birthYear + primeStart}–${birthYear + primeEnd})`;
+  const primeMarriageAgeWindowEn = `Age ${primeStart} to ${primeEnd} Years (A.D. ${birthYear + primeStart}–${birthYear + primeEnd}) | ${marriageWeighted.timingWindowEn}`;
+  const primeMarriageAgeWindowHi = `आयु ${primeStart} से ${primeEnd} वर्ष (ई. सन् ${birthYear + primeStart}–${birthYear + primeEnd}) | ${marriageWeighted.timingWindowHi}`;
 
   const timingAndDoubleTransit: DoubleTransitAndTimingWindow = {
     isDoubleTransitFavorable: true,
     upapadaLagnaSign: SIGNS[ulSign].name,
     upapadaLord: ulLordId,
     upapadaLordDignity: ulLordDignity,
-    upapadaSustenanceEn,
-    upapadaSustenanceHi,
+    upapadaSustenanceEn: `${upapadaSustenanceEn} ${marriageWeighted.d9Resilience.valEn}`,
+    upapadaSustenanceHi: `${upapadaSustenanceHi} ${marriageWeighted.d9Resilience.valHi}`,
     daraKarakaPlanet,
     primeMarriageAgeWindowEn,
     primeMarriageAgeWindowHi,

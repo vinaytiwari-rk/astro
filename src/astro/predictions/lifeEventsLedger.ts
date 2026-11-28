@@ -794,12 +794,12 @@ export function computeLifeEventsAndLedger(chart: ChartData): LifeEventsAndLedge
   const jupProtects = isAspecting(jupiter, ascSign) || jupiter.rasiHouseNumber === 1 || isAspecting(jupiter, l8.signIndex);
   const balarishtaRaw = [6, 8, 12].includes(moon.rasiHouseNumber) && !jupProtects && digWeight(l1.dignity) < 0;
 
-  let lonCatEn = 'Madhyayu (Balanced Life Span · ~60–75 Yrs Classical Range)';
-  let lonCatHi = 'मध्यायु (संतुलित आयु — ~60–75+ वर्ष शास्त्रीय मानक)';
+  let lonCatEn = 'Madhyayu (Balanced Constitutional Vitality Reserve)';
+  let lonCatHi = 'मध्यायु (संतुलित संवैधानिक जीवनी-शक्ति कोष)';
   let hasAlpayuCaution = false;
   if (longCount >= 2 || (longCount === 1 && satStrong && jupProtects)) {
-    lonCatEn = 'Purnayu / Deerghayu (Strong Longevity Resilience · 75+ Yrs Classical Range)';
-    lonCatHi = 'पूर्णायु / दीर्घायु (मजबूत जीवन-शक्ति — 75+ वर्ष शास्त्रीय योग)';
+    lonCatEn = 'Poornayu / Deerghayu (Strong Constitutional Vitality Reserve)';
+    lonCatHi = 'पूर्णायु / दीर्घायु (सुदृढ़ संवैधानिक जीवनी-शक्ति योग)';
   } else if (shortCount >= 2 && !satStrong && !jupProtects) {
     lonCatEn = 'Alpayu Test / Extra Health & Safety Vigilance Needed';
     lonCatHi = 'अल्पायु संदेह / स्वास्थ्य एवं जीवन-रक्षा पर विशेष सतर्कता अपेक्षित';

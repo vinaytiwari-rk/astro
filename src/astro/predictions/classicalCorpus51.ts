@@ -1203,7 +1203,7 @@ export function build51LifeDimensions(ctx: Classical51Context): LifeDimensionRea
       astroBasisEn: `Ayushkaraka Saturn in House ${saturn.placedHouse} (${saturn.dignity}); 8th Lord ${h8.lord} in House ${h8.placedHouse}; 8th SAV: ${sav[7]} bindus.`,
       verdictHi: `आयुष्यकारक शनि (${saturn.placedHouse}वें भाव) एवं अष्टमेश ${h8.lordHi} (भाव ${h8.placedHouse}) के प्रभाव से दीर्घायु (पूर्णायु) के प्रबल शास्त्रीय योग।`,
       verdictEn: `Purnayu (long lifespan) indicators confirmed by Ayushkaraka Saturn in House ${saturn.placedHouse} and 8th Lord ${h8.lord} in House ${h8.placedHouse}.`,
-      detailedAnalysisHi: `महर्षि पराशर और जैमिनी के 3-विधि आयु साधन अनुसार लग्नेश और अष्टमेश की बली स्थिति जातक को पूर्णायु (75-85+ वर्ष) प्रदान करती है।`,
+      detailedAnalysisHi: `महर्षि पराशर और जैमिनी के 3-विधि आयु साधन अनुसार लग्नेश और अष्टमेश की बली स्थिति जातक को पूर्णायु व सुदृढ़ जीवनी-शक्ति प्रदान करती है।`,
       detailedAnalysisEn: `Per BPHS Ch. 20 and Jaimini 3-pair methodology, fortified Lagna and 8th lords establish enduring longevity (Purnayu).`,
       remedyHi: `महामृत्युंजय मंत्र का नित्य जप करें तथा मंगलवार/शनिवार को हनुमान चालीसा पढ़ें।`,
       remedyEn: `Chant the Maha Mrityunjaya Mantra daily and read the Hanuman Chalisa on Tuesdays/Saturdays.`,

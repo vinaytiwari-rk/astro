@@ -430,6 +430,18 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
               </button>
             </li>
 
+            {/* 1B. Multi-Pane Worksheets Hub */}
+            <li className="oj-nav-item">
+              <button
+                type="button"
+                className={`oj-nav-link-btn ${currentView === 'workstation' ? 'is-current' : ''}`}
+                onClick={() => handleLinkClick('workstation', 'main')}
+              >
+                <Layers size={13} />
+                <span>{isHi ? 'वर्कशीट कार्यशाला (F1–F9)' : 'Worksheets (F1–F9)'}</span>
+              </button>
+            </li>
+
             {/* 2. Janam Kundli — Direct Link (No Dropdown) */}
             <li className="oj-nav-item">
               <button
@@ -733,8 +745,8 @@ export const DropdownNavHeader: React.FC<DropdownNavHeaderProps> = ({
                     <span className="oj-dd-sub">{isHi ? '१२०+ वैश्विक महानगर, MC/IC/AC रेखाएं' : '120+ Global Cities & Power Lines'}</span>
                   </button>
                   <button type="button" onClick={() => handleLinkClick('parashara-workstation')}>
-                    <strong>{isHi ? 'उन्नत फलित एवं शोध कार्यशाला' : 'Advanced Predictive & Research Workstation'}</strong>
-                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, 50 सहम, CIL 1-2193, भावबल एवं शोध पत्रिकाएं' : 'Kakshya Transit, 50 Sahams, CIL 1-2193, Bhavabala & Research Charts'}</span>
+                    <strong>{isHi ? 'उन्नत फलित कार्यशाला' : 'Advanced Predictive Workstation'}</strong>
+                    <span className="oj-dd-sub">{isHi ? 'कक्ष्य गोचर, 50 सहम, CIL 1-2193 एवं भावबल' : 'Kakshya Transit, 50 Sahams, CIL 1-2193 & Bhavabala'}</span>
                   </button>
                 </div>
               )}
